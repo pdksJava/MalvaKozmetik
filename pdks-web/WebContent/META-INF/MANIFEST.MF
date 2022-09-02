@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Class-Path: pdks-ejb.jar 
+ antlr-runtime.jar 
+ drools-compiler.jar 
+ drools-core.jar 
+ jboss-el.jar 
+ jbpm-jpdl.jar 
+ mvel14.jar 
+ richfaces-api.jar
+

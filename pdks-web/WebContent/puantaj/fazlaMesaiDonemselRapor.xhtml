@@ -1,0 +1,222 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" xmlns:a="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('fazlaMesaiDonemselRapor')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(fazlaMesaiDonemselRaporHome.session,'fazlaMesaiDonemselRapor')}">
+				<a4j:outputPanel ajaxRendered="true" id="anaForm">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+
+				<h:panelGrid columns="1" width="70%" id="girisler">
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">Yıl</ui:define>
+						<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{ortakIslemler.getParameterKey('sistemBaslangicYili')}"
+							maxValue="#{fazlaMesaiDonemselRaporHome.maxYil}" inputSize="1" value="#{fazlaMesaiDonemselRaporHome.yil}">
+							<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiDonemselRaporHome.fillDonemDoldur()}"
+								reRender="denklestirmeDonemiTable,girisler" />
+						</rich:inputNumberSpinner>
+
+
+					</s:decorate>
+					<h:panelGrid columns="2">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Başlangıç Ay</ui:define>
+							<h:selectOneMenu id="basAy" value="#{fazlaMesaiDonemselRaporHome.basAy}" required="false" requiredMessage="Başlangıç ay seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{fazlaMesaiDonemselRaporHome.donemler}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiDonemselRaporHome.sirketDoldur()}"
+									reRender="denklestirmeDonemiTable,girisler" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Bitiş Ay</ui:define>
+							<h:selectOneMenu id="basAy" value="#{fazlaMesaiDonemselRaporHome.bitAy}" required="false" requiredMessage="Bitiş ay seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{fazlaMesaiDonemselRaporHome.donemler}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiDonemselRaporHome.sirketDoldur()}"
+									reRender="denklestirmeDonemiTable,girisler" />
+							</h:selectOneMenu>
+						</s:decorate>
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+							<h:selectOneMenu value="#{fazlaMesaiDonemselRaporHome.sirketId}">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{fazlaMesaiDonemselRaporHome.sirketler}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiDonemselRaporHome.tesisDoldur()}"
+									reRender="denklestirmeDonemiTable,girisler" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+							<h:selectOneMenu value="#{fazlaMesaiDonemselRaporHome.tesisId}" disabled="#{fazlaMesaiDonemselRaporHome.tesisler.size() lt 2}">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{fazlaMesaiDonemselRaporHome.tesisler}" />
+								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable"
+									action="#{fazlaMesaiDonemselRaporHome.personelList.clear()}" />
+							</h:selectOneMenu>
+						</s:decorate>
+					</h:panelGrid>
+
+				</h:panelGrid>
+				<a4j:outputPanel id="denklestirmeDonemiTable">
+					<ui:fragment rendered="#{not empty fazlaMesaiDonemselRaporHome.sirketler}">
+						<TABLE width="45%">
+							<TR>
+								<TD width="35%" valign="top"><a4j:commandButton action="#{fazlaMesaiDonemselRaporHome.fillBilgileriDoldur()}" value="Getir"
+										reRender="denklestirmeDonemiTable" onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide()" /></TD>
+								<ui:fragment rendered="#{not empty fazlaMesaiDonemselRaporHome.personelList}">
+									<TD width="35%" valign="top"><h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
+											action="#{fazlaMesaiDonemselRaporHome.fazlaMesaiExcel}" target="blank">
+											<a4j:support event="oncomplete" onclick="#{rich:component('wait')}.show()" oncomplete=" #{rich:component('wait')}.hide()" />
+										</h:commandLink></TD>
+								</ui:fragment>
+							</TR>
+						</TABLE>
+
+						<rich:panel id="denklestirmeDonemi" style="overflow: auto;" rendered="#{not empty fazlaMesaiDonemselRaporHome.personelList}">
+
+							<rich:dataTable styleClass="mars" rowClasses="even,odd" value="#{fazlaMesaiDonemselRaporHome.personelList}" var="pdksPersonel"
+								style="width: 80%;" rows="50" rowKeyVar="row">
+
+								<f:facet name="header">
+									<h:outputText value="Fazla Mesai Özet Raporu" />
+								</f:facet>
+								<rich:column style="text-align: center;width: 30px;">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+									</f:facet>
+									<SPAN> <h:outputText value="#{pdksPersonel.sicilNo}" />
+									</SPAN>
+
+								</rich:column>
+								<rich:column style="width: 100px;">
+									<f:facet name="header">
+										<h:outputText value="Adı Soyadı" />
+									</f:facet>
+									<SPAN> <SPAN id="perBilgi#{pdksPersonel.id}"> <h:outputText value="#{pdksPersonel.adSoyad}"
+												style="width:autostretch ;white-space: nowrap;" /></SPAN> <rich:toolTip for="perBilgi#{pdksPersonel.id}">
+														#{pdksPersonel.sirket.ad}
+										
+									</rich:toolTip></SPAN>
+								</rich:column>
+								<rich:column style="width: 100px;" rendered="#{fazlaMesaiDonemselRaporHome.sirketId==null}">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+									</f:facet>
+									<h:outputText value="#{pdksPersonel.sirket.ad}" style="width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+								<rich:column style="width: 100px;" rendered="#{fazlaMesaiDonemselRaporHome.tesisId==null and fazlaMesaiDonemselRaporHome.tesisVar}">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+									</f:facet>
+									<h:outputText value="#{pdksPersonel.tesis.aciklama}" style="width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+								<rich:column style="width: 100px;">
+									<f:facet name="header">
+										<h:outputText value="#{fazlaMesaiDonemselRaporHome.bolumAciklama}" />
+									</f:facet>
+									<h:outputText value="#{pdksPersonel.ekSaha3.aciklama}" style="width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+								<rich:column style="width: 100px;">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+									</f:facet>
+									<SPAN style="width: autostretch; white-space: nowrap;"> <ui:fragment rendered="#{pdksPersonel.yoneticisi!=null}">
+											<h:outputText value="#{pdksPersonel.yoneticisi.adSoyad}" rendered="#{pdksPersonel.yoneticisi.id!=null}" />
+
+										</ui:fragment></SPAN>
+								</rich:column>
+								<c:if test="#{fazlaMesaiDonemselRaporHome.denklestirmeAyList!=null }">
+									<c:forEach items="#{fazlaMesaiDonemselRaporHome.denklestirmeAyList}" var="dm">
+										<rich:column style="width: 30px;" rendered="#{authenticatedUser.admin}">
+											<f:facet name="header">
+												<ui:fragment>
+													<SPAN id="tcs#{dm.id}">#{dm.ayAdi}<bR />TÇS
+													</SPAN>
+													<rich:toolTip for="tcs#{dm.id}">
+														<SPAN class="rich-table-subheadercell">Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati</SPAN>
+													</rich:toolTip>
+												</ui:fragment>
+
+											</f:facet>
+											<ui:fragment rendered="#{fazlaMesaiDonemselRaporHome.getPersonelDenklestirme(dm,pdksPersonel)!=null}">
+												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesaiDonemselRaporHome.denklestirme.hesaplananSure)}"
+													rendered="#{fazlaMesaiDonemselRaporHome.denklestirme.hesaplananSure!=0}" />
+											</ui:fragment>
+										</rich:column>
+										<rich:column style="width: 30px;" rendered="#{authenticatedUser.admin}">
+											<f:facet name="header">
+												<ui:fragment>
+													<SPAN id="cgs#{dm.id}">#{dm.ayAdi}<bR />ÇGS
+													</SPAN>
+													<rich:toolTip for="cgs#{dm.id}">
+														<SPAN class="rich-table-subheadercell">Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat</SPAN>
+													</rich:toolTip>
+												</ui:fragment>
+
+											</f:facet>
+
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesaiDonemselRaporHome.denklestirme.planlanSure)}"
+												rendered="#{fazlaMesaiDonemselRaporHome.denklestirme.planlanSure!=0}" />
+
+										</rich:column>
+										<rich:column style="width: 30px;">
+											<f:facet name="header">
+												<ui:fragment>
+													<SPAN id="uom#{dm.id}">#{dm.ayAdi}<bR />ÜÖM
+													</SPAN>
+													<rich:toolTip for="uom#{dm.id}">
+														<SPAN class="rich-table-subheadercell">Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati</SPAN>
+													</rich:toolTip>
+												</ui:fragment>
+
+											</f:facet>
+
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesaiDonemselRaporHome.denklestirme.odenenSure)}"
+												rendered="#{fazlaMesaiDonemselRaporHome.denklestirme.odenenSure!=0}" />
+
+										</rich:column>
+										<rich:column style="width: 30px;">
+											<f:facet name="header">
+												<ui:fragment>
+													<SPAN id="b#{dm.id}">#{dm.ayAdi}<bR />B
+													</SPAN>
+													<rich:toolTip for="b#{dm.id}">
+														<SPAN class="rich-table-subheadercell">Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi</SPAN>
+													</rich:toolTip>
+												</ui:fragment>
+
+											</f:facet>
+
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesaiDonemselRaporHome.denklestirme.devredenSure)}"
+												rendered="#{fazlaMesaiDonemselRaporHome.denklestirme.devredenSure!=0}" />
+
+										</rich:column>
+									</c:forEach>
+								</c:if>
+
+								<f:facet name="footer">
+									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+								</f:facet>
+							</rich:dataTable>
+
+
+						</rich:panel>
+					</ui:fragment>
+				</a4j:outputPanel>
+			</rich:panel>
+		</h:form>
+
+
+
+	</ui:define>
+
+</ui:composition>

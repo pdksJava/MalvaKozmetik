@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j">
+ 
+	<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.ekSahaTanimMap.ekSaha1!=null}">
+		<ui:define name="label">#{ortakIslemler.ekSaha1.aciklama}</ui:define>
+		<h:selectOneMenu value="#{ortakIslemler.seciliEkSaha1}">
+			<s:selectItems var="comp" value="#{ortakIslemler.ekSahaListMap.get('ekSaha1')}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+			<s:convertEntity />
+		</h:selectOneMenu>
+	</s:decorate>
+	<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.ekSahaTanimMap.ekSaha2!=null}">
+		<ui:define name="label">#{ortakIslemler.ekSaha2.aciklama}</ui:define>
+		<h:selectOneMenu value="#{ortakIslemler.seciliEkSaha2}">
+			<s:selectItems var="comp" value="#{ortakIslemler.ekSahaListMap.get('ekSaha2')}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+			<s:convertEntity />
+		</h:selectOneMenu>
+	</s:decorate>
+	<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.ekSahaTanimMap.ekSaha3!=null}">
+		<ui:define name="label">#{ortakIslemler.ekSaha3.aciklama}</ui:define>
+		<h:selectOneMenu value="#{ortakIslemler.seciliEkSaha3}">
+			<s:selectItems var="comp" value="#{ortakIslemler.ekSahaListMap.get('ekSaha3')}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+			<s:convertEntity />
+		</h:selectOneMenu>
+	</s:decorate>
+	<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.ekSahaTanimMap.ekSaha4!=null}">
+		<ui:define name="label">#{ortakIslemler.ekSaha4.aciklama}</ui:define>
+		<h:selectOneMenu value="#{ortakIslemler.seciliEkSaha4}">
+			<s:selectItems var="comp" value="#{ortakIslemler.ekSahaListMap.get('ekSaha4')}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+			<s:convertEntity />
+		</h:selectOneMenu>
+	</s:decorate>
+
+</ui:composition>
+

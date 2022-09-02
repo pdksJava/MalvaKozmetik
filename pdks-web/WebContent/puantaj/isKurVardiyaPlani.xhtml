@@ -1,0 +1,309 @@
+
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:t="http://myfaces.apache.org/tomahawk" xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:c="http://java.sun.com/jstl/core" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('isKurVardiyaPlani')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="planForm">
+
+
+			<rich:panel style="vardiyaGun" header="#{ortakIslemler.getMenuUserAdi(iskurVardiyaGunHome.session,'isKurVardiyaPlani')}">
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<a4j:outputPanel id="girisler">
+					<h:panelGrid columns="2">
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Yıl</ui:define>
+							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{ortakIslemler.getParameterKey('sistemBaslangicYili')}"
+								maxValue="#{iskurVardiyaGunHome.maxYil}" inputSize="1" value="#{iskurVardiyaGunHome.yil}">
+								<a4j:support event="onchange" action="#{iskurVardiyaGunHome.yilAyDegisti(true)}" ajaxSingle="true" reRender="vardiyaPanel,girisler" />
+							</rich:inputNumberSpinner>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Ay</ui:define>
+							<h:selectOneMenu id="basAy" value="#{iskurVardiyaGunHome.ay}" required="true" requiredMessage="Başlangıç ay seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{iskurVardiyaGunHome.aylar}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{iskurVardiyaGunHome.yilAyDegisti(false)}" ajaxSingle="true"
+									reRender="vardiyaPanel,girisler" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{iskurVardiyaGunHome.adminRole  and iskurVardiyaGunHome.aramaSecenekleri.departmanIdList.size()>1}">
+							<ui:define name="label">PDKS Departman</ui:define>
+							<h:selectOneMenu value="#{iskurVardiyaGunHome.aramaSecenekleri.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{iskurVardiyaGunHome.aramaSecenekleri.departmanIdList}" />
+								<a4j:support event="onchange" action="#{iskurVardiyaGunHome.fillSirketList()}" ajaxSingle="true" reRender="girisler,vardiyaPanel" />
+							</h:selectOneMenu>
+
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{iskurVardiyaGunHome.aramaSecenekleri.sirketIdList.size()>0}">
+							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+							<h:selectOneMenu value="#{iskurVardiyaGunHome.aramaSecenekleri.sirketId}"
+								disabled="#{iskurVardiyaGunHome.aramaSecenekleri.sirketIdList.size()==1}" required="true" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{iskurVardiyaGunHome.aramaSecenekleri.sirketIdList}" />
+ 							</h:selectOneMenu>
+						</s:decorate>
+
+
+
+						<s:decorate template="/layout/edit.xhtml" rendered="#{iskurVardiyaGunHome.kullaniciPersonel==false}">
+							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+							<h:inputText value="#{iskurVardiyaGunHome.sicilNo}">
+								<a4j:support event="onchange" status="ajaxStatus" action="#{iskurVardiyaGunHome.aylikPuantajList.clear()}" ajaxSingle="true"
+									reRender="girisler" />
+							</h:inputText>
+						</s:decorate>
+						 
+
+					</h:panelGrid>
+					<a4j:commandButton value="Aylık Plan Getir" action="#{iskurVardiyaGunHome.fillAylikVardiyaPlanList}" onclick="#{rich:component('wait')}.show()"
+						rendered="#{not empty iskurVardiyaGunHome.aramaSecenekleri.sirketIdList}"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide()" reRender="vardiyaPanel,girisler" />
+					<a4j:commandButton value="Excel'den Plan Güncelle" onclick="#{rich:component('wait')}.show()"
+						action="#{iskurVardiyaGunHome.fileImportDosyaSifirla()}" ajaxSingle="true"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide();#{rich:component('fileImportPanel')}.show()"
+						rendered="#{authenticatedUser.admin and  iskurVardiyaGunHome.fileImport}" reRender="fileImportPanel" />
+
+					 
+				</a4j:outputPanel>
+			</rich:panel>
+
+
+			<a4j:outputPanel id="vardiyaPanel">
+
+				<rich:panel styleClass="vardiyaGun">
+
+					<ui:include src="/puantaj/includes/aylikIskurPlani.xhtml" />
+
+				</rich:panel>
+			</a4j:outputPanel>
+		</h:form>
+
+	 
+		<rich:modalPanel id="editAylikPanel" autosized="true" width="900" top="30">
+			<f:facet name="header">
+				<h:outputText
+					value="#{iskurVardiyaGunHome.personelAylikPuantaj.pdksPersonel.pdksSicilNo} #{iskurVardiyaGunHome.personelAylikPuantaj.pdksPersonel.adSoyad} Çalışma Planı Güncelleme" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{iskurVardiyaGunHome.aylikRefresh}" reRender="vardiyaPanel" onclick="#{rich:component('wait')}.show()"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) { #{rich:component('editAylikPanel')}.hide();#{rich:component('wait')}.hide();}"
+								ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<a4j:outputPanel id="secimler">
+					<table class="mars">
+						<a4j:repeat value="#{iskurVardiyaGunHome.personelAylikPuantaj.vardiyaPlan.vardiyaHaftaList}" var="vardiyaHafta">
+							<ui:fragment rendered="#{vardiyaHafta.hafta==1}">
+
+								<tr>
+									<a4j:repeat value="#{vardiyaHafta.vardiyaGunler}" var="vardiyaGun">
+										<th><h:outputText value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'EEE')}" /></th>
+									</a4j:repeat>
+									<ui:fragment rendered="#{iskurVardiyaGunHome.sablonGuncelle}">
+										<th width="100px">Vardiya</th>
+									</ui:fragment>
+								</tr>
+							</ui:fragment>
+							<tr>
+								<a4j:repeat value="#{vardiyaHafta.vardiyaGunler}" var="vardiyaGun">
+									<ui:fragment rendered="#{vardiyaGun.tatil==null}">
+										<th style="width: 90px"><h:outputText value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')}" /></th>
+									</ui:fragment>
+
+									<ui:fragment rendered="#{vardiyaGun.tatil.yarimGun==true}">
+										<td class="arife" title="#{vardiyaGun.tatil.aciklama}"
+											style="width: 90px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
+												value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')}" /></td>
+									</ui:fragment>
+									<ui:fragment rendered="#{vardiyaGun.tatil.yarimGun==false}">
+										<td class="bayram" title="#{vardiyaGun.tatil.aciklama}"
+											style="width: 90px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
+												value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')}" /></td>
+									</ui:fragment>
+
+
+								</a4j:repeat>
+								<ui:fragment rendered="#{iskurVardiyaGunHome.sablonGuncelle and vardiyaHafta.hafta==1}">
+									<th width="100px">Şablonu</th>
+								</ui:fragment>
+							</tr>
+							<tr>
+								<a4j:repeat value="#{vardiyaHafta.vardiyaGunler}" var="vardiyaGun">
+									<td style="width: 90px" id="vardiya#{vardiyaGun.vardiyaDateStr}" class="#{vardiyaGun.getAylikClassAdi(aylikPuantaj.trClass)}" align="center"><ui:fragment
+											rendered="#{vardiyaGun.vardiya==null or vardiyaGun.aylikGirisYap==false or vardiyaGun.izin!=null or vardiyaGun.kullaniciYetkili==false}">
+											<h:panelGrid id="veriDigerAy">
+												<h:outputText value="#{vardiyaGun.aciklama}" />
+											</h:panelGrid>
+											<rich:toolTip for="veriDigerAy" rendered="#{vardiyaGun.title!=''}">
+												<SPAN style="font-size: 14px; font-weight: bold;"> #{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')} -->
+													#{vardiyaGun.title}</SPAN>
+											</rich:toolTip>
+										</ui:fragment> <ui:fragment rendered="#{vardiyaGun.vardiyalar!=null and vardiyaGun.aylikGirisYap==true  and vardiyaGun.kullaniciYetkili}">
+											<h:selectOneMenu styleClass="size10" style="width:85px" disabled="#{iskurVardiyaGunHome.personelAylikPuantaj.kaydet==false}"
+												value="#{vardiyaGun.vardiya}" required="true" rendered="#{vardiyaGun!=null}"
+												requiredMessage="#{vardiyaGun.vardiyaGunAciklama} günü vardiyasını seçiniz">
+												<s:selectItems var="comp" value="#{vardiyaGun.vardiyalar}" label="#{comp.kisaAciklama}" noSelectionLabel="Seçiniz" />
+												<s:convertEntity />
+												<a4j:support event="onchange" ajaxSingle="true" action="#{iskurVardiyaGunHome.vardiyaDegistir(vardiyaGun)}" reRender="secimler" />
+											</h:selectOneMenu>
+											<rich:toolTip for="vardiya#{vardiyaGun.vardiyaDateStr}">
+												<ui:fragment rendered="#{iskurVardiyaGunHome.personelAylikPuantaj.kaydet==false}">
+													<h2>#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM ')} : #{vardiyaGun.vardiyaPlanAdi}</h2>
+												</ui:fragment>
+												<ui:fragment rendered="#{iskurVardiyaGunHome.personelAylikPuantaj.kaydet}">
+													<DIV>
+														<h2>#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM yyyy')}</h2>
+														<TABLE>
+															<a4j:repeat value="#{vardiyaGun.vardiyalar}" var="vt">
+																<TR>
+																	<TD><ui:fragment rendered="#{vt.id==vardiyaGun.vardiya.id}">
+																			<SPAN style="font-size: 14px; font-weight: bold; color: red;">#{vardiyaGun.getVardiyaAdi(vt)}</SPAN>
+																		</ui:fragment> <ui:fragment rendered="#{vt.id!=vardiyaGun.vardiya.id}">
+																			<SPAN style="font-size: 14px;">#{vardiyaGun.getVardiyaAdi(vt)}</SPAN>
+																		</ui:fragment></TD>
+																</TR>
+															</a4j:repeat>
+														</TABLE>
+													</DIV>
+												</ui:fragment>
+											</rich:toolTip>
+
+											<ui:fragment rendered="#{iskurVardiyaGunHome.ozelIstek}">
+												<br />
+												<B> Özel Durum :</B>
+												<h:selectOneMenu style="width:90px" value="#{vardiyaGun.vardiyaGorev.ozelIstekDurum}">
+													<f:selectItems value="#{iskurVardiyaGunHome.ozelDurumList}" />
+													<a4j:support event="onchange" ajaxSingle="true" reRender="secimler" action="#{iskurVardiyaGunHome.vardiyaDegistir(vardiyaGun)}" />
+												</h:selectOneMenu>
+											</ui:fragment>
+											<ui:fragment
+												rendered="#{iskurVardiyaGunHome.ozelIstek==false and iskurVardiyaGunHome.personelAylikPuantaj.gorevYeriSec==false and not empty iskurVardiyaGunHome.bolumKatlari }">
+												<br />
+												<h:selectOneMenu styleClass="size10" style="width:85px" disabled="#{iskurVardiyaGunHome.personelAylikPuantaj.kaydet==false}"
+													value="#{vardiyaGun.vardiyaGorev.bolumKat}" rendered="#{vardiyaGun!=null}">
+													<s:selectItems var="comp" value="#{iskurVardiyaGunHome.bolumKatlari}" label="#{comp.aciklama}" noSelectionLabel="Seçiniz" />
+													<s:convertEntity />
+													<a4j:support event="onchange" ajaxSingle="true" reRender="secimler" action="#{iskurVardiyaGunHome.vardiyaDegistir(vardiyaGun)}" />
+												</h:selectOneMenu>
+											</ui:fragment>
+											<ui:fragment
+												rendered="#{vardiyaGun.ayinGunu and iskurVardiyaGunHome.ozelIstek==false and iskurVardiyaGunHome.personelAylikPuantaj.gorevYeriSec}">
+												<br />
+												<h:selectOneMenu styleClass="size10" style="width:85px" disabled="#{iskurVardiyaGunHome.personelAylikPuantaj.kaydet==false}"
+													value="#{vardiyaGun.vardiyaGorev.yeniGorevYeri}" rendered="#{vardiyaGun!=null}">
+													<s:selectItems var="kat" value="#{iskurVardiyaGunHome.gorevYeriTanimList}" label="#{kat.aciklama}" noSelectionLabel="Seçiniz" />
+													<s:convertEntity />
+													<a4j:support event="onchange" ajaxSingle="true" reRender="secimler" action="#{iskurVardiyaGunHome.vardiyaDegistir(vardiyaGun)}" />
+												</h:selectOneMenu>
+											</ui:fragment>
+										</ui:fragment> <ui:fragment rendered="#{iskurVardiyaGunHome.ozelIstek and ortakIslemler.getParameterKey('shiftSorumlusu')=='1'}">
+											<br />
+											<P align="left">
+												<B> Shift Sorumlusu :</B>
+												<h:selectBooleanCheckbox value="#{vardiyaGun.vardiyaGorev.gorevliDurum}">
+													<a4j:support event="onclick" reRender="secimler" ajaxSingle="true" action="#{iskurVardiyaGunHome.vardiyaDegistir(vardiyaGun)}" />
+
+												</h:selectBooleanCheckbox>
+											</P>
+										</ui:fragment></td>
+
+								</a4j:repeat>
+								<ui:fragment rendered="#{iskurVardiyaGunHome.sablonGuncelle and authenticatedUser==null}">
+									<td align="center" width="100px"><h:panelGrid columns="2" rendered="#{vardiyaHafta.durum}">
+
+											<h:selectOneMenu value="#{vardiyaHafta.vardiyaSablonu}" styleClass="size10" required="true" style="width:85px"
+												requiredMessage="Sablon Seciniz">
+												<s:selectItems var="comp" value="#{iskurVardiyaGunHome.sablonList}" label="#{comp.adi}" noSelectionLabel="Lutfen Seciniz" />
+												<s:convertEntity />
+											</h:selectOneMenu>
+											<ui:fragment>
+
+												<a4j:commandButton status="ajaxStatus" id="sablonlink" reRender="secimler"
+													action="#{iskurVardiyaGunHome.aylikSablonGuncelle(vardiyaHafta)}" image="/img/ok.gif" />
+												<rich:toolTip for="sablonlink" value="#{vardiyaHafta.hafta}. hafta şablon güncelle" />
+											</ui:fragment>
+										</h:panelGrid></td>
+								</ui:fragment>
+							</tr>
+						</a4j:repeat>
+					</table>
+
+					 
+				</a4j:outputPanel>
+				<a4j:commandButton value="Kaydet" action="#{iskurVardiyaGunHome.aylikKaydet}" reRender="vardiyaPanel" onclick="#{rich:component('wait')}.show()"
+					oncomplete="if (#{facesContext.maximumSeverity==null}) { #{rich:component('editAylikPanel')}.hide();}#{rich:component('wait')}.hide();" />
+			</h:form>
+		</rich:modalPanel>
+ 
+		
+		
+		<rich:modalPanel id="saatPanel" autosized="true" width="300">
+			<f:facet name="header">
+				<h:outputText
+					value="#{authenticatedUser.getTarihFormatla(iskurVardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMMMM yyyy')} Çalışma Planı Güncelleme" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hideSaatLink" styleClass="hideSaatLink">
+							<a4j:support event="onclick" status="ajaxStatus" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('saatPanel')}.hide();"
+								ajaxSingle="true" reRender="editAylikPanel" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+
+
+				<h:panelGrid columns="8" rendered="#{iskurVardiyaGunHome.seciliVardiyaGun!=null}">
+
+					<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="0" maxValue="23" inputSize="1"
+						value="#{iskurVardiyaGunHome.seciliVardiyaGun.basSaat}">
+						<a4j:support event="onchange" action="#{iskurVardiyaGunHome.seciliVardiyaGun.setGuncellendi(true)}" />
+					</rich:inputNumberSpinner>
+					<h:outputText value=":" styleClass="size10" />
+					<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="0" maxValue="59" inputSize="1" step="5"
+						value="#{iskurVardiyaGunHome.seciliVardiyaGun.basDakika}">
+						<a4j:support event="onchange" action="#{iskurVardiyaGunHome.seciliVardiyaGun.setGuncellendi(true)}" />
+					</rich:inputNumberSpinner>
+					<h:outputText value="-" styleClass="size10" />
+					<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="0" maxValue="23" inputSize="1"
+						value="#{iskurVardiyaGunHome.seciliVardiyaGun.bitSaat}">
+						<a4j:support event="onchange" action="#{iskurVardiyaGunHome.seciliVardiyaGun.setGuncellendi(true)}" />
+					</rich:inputNumberSpinner>
+					<h:outputText value=":" styleClass="size10" />
+					<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="0" maxValue="59" inputSize="1" step="5"
+						value="#{iskurVardiyaGunHome.seciliVardiyaGun.bitDakika}">
+						<a4j:support event="onchange" action="#{iskurVardiyaGunHome.seciliVardiyaGun.setGuncellendi(true)}" />
+					</rich:inputNumberSpinner>
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+	</ui:define>
+
+</ui:composition>

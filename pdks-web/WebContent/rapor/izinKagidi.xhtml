@@ -1,0 +1,104 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('izinKagidi')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(izinKagidiHome.session,'izinKagidi')}">
+					<rich:dataTable rowClasses="acik,koyu" value="#{izinKagidiHome.personelizinList}" var="izin" rows="25" rowKeyVar="row" id="izinTable">
+						<f:facet name="header">
+							<h:outputText value="İzin Kagidi Gelmeyen Personeller" />
+						</f:facet>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{izin.izinSahibi.sicilNo}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Adı Soyadı" />
+							</f:facet>
+							<h:outputText value="#{izin.izinSahibi.adSoyad}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="İzin Tipi" />
+							</f:facet>
+
+							<h:outputText value="#{izin.izinTipiAciklama}" />
+						</rich:column>
+						<rich:column sortBy="#{izin.baslangicZamani}">
+							<f:facet name="header">
+								<h:outputText value="İzin Başlangıç Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(izin.baslangicZamani)}" />
+
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="İşe Başlama Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(izin.bitisZamani)}" />
+
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Süresi" />
+							</f:facet>
+							<h:outputText value="#{izin.sureAciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Onay Durum" />
+							</f:facet>
+							<h:outputText title="#{izin.onaylamamaNedenAciklama}" value="#{izin.getIzinDurumuAciklama(ortakIslemler,izinKagidiHome.session)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Yapan" />
+							</f:facet>
+							<h:outputText value="#{izin.sonIslemYapan.adSoyad}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Tarihi" />
+							</f:facet>
+							<h:outputText value="#{izin.sonIslemTarihiStr}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="" />
+							</f:facet>
+							<a4j:commandButton status="ajaxStatus" action="#{izinKagidiHome.hatirlatmaIzin(izin)}" value="Mail Gonder" />
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+
+
+
+
+				</rich:panel>
+
+
+			</a4j:region>
+		</h:form>
+
+
+	</ui:define>
+
+</ui:composition>
+
+
+

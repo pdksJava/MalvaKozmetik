@@ -1,0 +1,33 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('superVisorDegistir')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(superVisorDegistirHome.session,'superVisorDegistir')}">
+					<h:panelGrid columns="1">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{not empty superVisorDegistirHome.superVisorList}">
+							<ui:define name="label">Süper Visör </ui:define>
+							<h:selectOneMenu id="toSuperVisor" value="#{superVisorDegistirHome.instance}">
+								<s:selectItems var="superVisor" value="#{superVisorDegistirHome.superVisorList}" label="#{superVisor.adSoyad}" noSelectionLabel="Lütfen seçiniz" />
+								<s:convertEntity />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<a4j:commandButton status="ajaxStatus" rendered="#{not empty superVisorDegistirHome.superVisorList}" action="#{superVisorDegistirHome.superVisorSec}" value="Süper Visör Seç" />
+							<a4j:commandButton status="ajaxStatus" rendered="#{authenticatedUser.seciliSuperVisor!=null}" action="#{superVisorDegistirHome.superVisorIptalSec}" value="Süper Visör İptal" />
+						</s:decorate>
+					</h:panelGrid>
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+
+		
+	</ui:define>
+
+</ui:composition>

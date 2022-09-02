@@ -1,0 +1,157 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:rich="http://richfaces.org/rich" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('personelRoleTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+		<h:form>
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(pdksPersonelRoleHome.session,'personelRoleTanimlama')}">
+					<h:panelGroup id="sss">
+						<h:panelGrid columns="1"  cellpadding="0" cellspacing="0">
+									<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelRoleHome.rolKayitGiris()}" oncomplete="#{rich:component('savePanel')}.show()" reRender="userTable" />
+						<br/>
+							
+						</h:panelGrid>
+					</h:panelGroup>
+					<rich:dataTable value="#{pdksPersonelRoleHome.rolList}" var="ro" rows="20" rowKeyVar="row" id="userTable">
+						<f:facet name="header">
+							<h:outputText value="Roller" />
+						</f:facet>
+						<rich:column>
+							<f:facet name="header">
+                        İşlem
+           			     </f:facet>
+							<a4j:commandLink title="Güncelle" status="ajaxStatus" id="editlink" action="#{pdksPersonelRoleHome.rolGuncelleGiris(ro)}"
+								oncomplete="#{rich:component('editPanel')}.show()">
+								<h:graphicImage value="/img/edit.gif" style="border:0" />
+							</a4j:commandLink>
+							<a4j:commandLink title="Sil" status="ajaxStatus" id="savelink" action="#{pdksPersonelRoleHome.rolSil(ro)}"
+								oncomplete="#{pdksPersonelRoleHome.rolGetir()}" reRender="userTable">
+								<h:graphicImage value="/img/delete.gif" style="border:0" />
+							</a4j:commandLink>
+
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Rol Adı" />
+							</f:facet>
+							<h:outputText value="#{ro.rolename}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Rol Açıklama" />
+							</f:facet>
+							<h:outputText value="#{ro.aciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Durum" />
+							</f:facet>
+							<h:outputText value="#{ro.status}" />
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="750">
+			<f:facet name="header">
+				<h:outputText value="Rol Bilgileri" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{pdksPersonelRoleHome.rolGetir()}"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" reRender="katTable" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form id="rolGuncelleForm">
+
+
+				<a4j:outputPanel ajaxRendered="true">
+
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+
+
+					<h:panelGrid columns="1" style="align:left" id="userEdit">
+
+						<s:decorate template="/layout/display.xhtml">
+							<ui:define name="label">Rol Adı</ui:define>
+							<h:inputText value="#{pdksPersonelRoleHome.roleView.rolename}" required="true" />
+						</s:decorate>
+						<s:decorate template="/layout/display.xhtml">
+							<ui:define name="label">Rol Açıklaması</ui:define>
+							<h:inputText value="#{pdksPersonelRoleHome.roleView.aciklama}" required="true" />
+						</s:decorate>
+						<s:decorate template="/layout/display.xhtml">
+							<ui:define name="label">Aktif</ui:define>
+							<h:selectBooleanCheckbox id="enabled" required="true" value="#{pdksPersonelRoleHome.roleView.status}" />
+						</s:decorate>
+					</h:panelGrid>
+				</a4j:outputPanel>
+
+				<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelRoleHome.rolKaydet()}" reRender="userTable"
+					oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+			</h:form>
+		</rich:modalPanel>
+		
+			<rich:modalPanel id="savePanel" autosized="true" width="750">
+			<f:facet name="header">
+				<h:outputText value="Rol Bilgileri" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{pdksPersonelRoleHome.rolGetir()}"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('savePanel')}.hide();" ajaxSingle="true" reRender="katTable" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form id="rolKayitForm">
+
+
+				<a4j:outputPanel ajaxRendered="true">
+
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+
+
+					<h:panelGrid columns="1" style="align:left" id="rolSave">
+
+						<s:decorate template="/layout/display.xhtml">
+							<ui:define name="label">Rol Adı</ui:define>
+							<h:inputText value="#{pdksPersonelRoleHome.rolAdi}" required="true" />
+						</s:decorate>
+						<s:decorate template="/layout/display.xhtml">
+							<ui:define name="label">Rol Açıklaması</ui:define>
+							<h:inputText value="#{pdksPersonelRoleHome.rolAciklama}" required="true" />
+						</s:decorate>
+						<s:decorate template="/layout/display.xhtml">
+							<ui:define name="label">Aktif</ui:define>
+							<h:selectBooleanCheckbox id="enabled" required="true" value="#{pdksPersonelRoleHome.rolAktif}" />
+						</s:decorate>
+					</h:panelGrid>
+				</a4j:outputPanel>
+
+				<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelRoleHome.rolNewKaydet()}" reRender="userTable"
+					oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('savePanel')}.hide();" />
+
+			</h:form>
+		</rich:modalPanel>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,304 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('tatilTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(tatilHome.session,'tatilTanimlama')}">
+					<h:panelGrid columns="1">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Tarih</ui:define>
+							<rich:calendar value="#{tatilHome.tarih}" datePattern="#{authenticatedUser.dateFormat}" />
+						</s:decorate>
+						<a4j:commandButton status="ajaxStatus" action="#{tatilHome.fillPdksTatilList}" reRender="tatilData" value=" Tatil Getir" />
+						<a4j:outputPanel id="tatilData">
+
+							<rich:dataTable rowClasses="acik,koyu" value="#{tatilHome.tatilList}" var="tatil" rows="20" rowKeyVar="row" id="tatilTable">
+								<f:facet name="header">
+									<h:outputText value="Tatiller" />
+								</f:facet>
+								<rich:column>
+									<f:facet name="header">
+                        İşlemler
+                </f:facet>
+									<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{tatilHome.kayitGuncelle(tatil)}"
+										oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+										<h:graphicImage value="/img/edit.gif" style="border:0" />
+
+									</a4j:commandLink>
+
+									<rich:toolTip for="editlink" value="Güncelle" />
+								</rich:column>
+
+
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Ad" />
+									</f:facet>
+									<h:outputText value="#{tatil.ad}" />
+								</rich:column>
+
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Açıklama" />
+									</f:facet>
+									<h:outputText value="#{tatil.aciklama}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Tatil Tipi" />
+									</f:facet>
+									<h:outputText value="#{tatil.tatilTipi.aciklama}" />
+								</rich:column>
+
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Başlangıç Günü Yarım mı?" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.getYesNo(tatil.yarimGun)}" />
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Baslangıç Tarihi" />
+									</f:facet>
+									<h:outputText value="#{tatil.basTarihAciklama}">
+
+									</h:outputText>
+								</rich:column>
+
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Bitis Tarihi" />
+									</f:facet>
+									<h:outputText value="#{tatil.bitisTarihAciklama}">
+
+									</h:outputText>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Arife Vardiya Yarım Hesapla" />
+									</f:facet>
+									<ui:fragment rendered="#{tatil.yarimGunMu}">
+										<h:outputText value="#{authenticatedUser.getYesNo(tatil.arifeVardiyaYarimHesapla)}" />
+									</ui:fragment>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Aktif" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.getYesNo(tatil.durum)}" />
+								</rich:column>
+
+
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Son İşlem Yapan" />
+									</f:facet>
+									<h:outputText value="#{tatil.sonIslemYapan.adSoyad}" />
+								</rich:column>
+
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Son İşlem Tarihi" />
+									</f:facet>
+									<h:outputText value="#{tatil.sonIslemTarihiStr}" />
+								</rich:column>
+
+
+								<f:facet name="footer">
+									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+								</f:facet>
+							</rich:dataTable>
+						</a4j:outputPanel>
+					</h:panelGrid>
+					<a4j:commandButton status="ajaxStatus" value="Tatil Ekle" action="#{tatilHome.kayitGuncelle(null)}"
+						oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+
+					</a4j:commandButton>
+					<rich:toolTip for="addlink" value="Add" />
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" rendered="#{authenticatedUser.admin}"
+						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:tatilTable')}" />
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="650">
+			<f:facet name="header">
+				<h:outputText value="Tatil Ekle" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{tatilHome.instanceRefresh}"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" reRender="tatilData" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
+
+
+					<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
+
+						<s:decorate template="/layout/edit.xhtml" rendered="#{tatilHome.instance.id!=null}">
+							<ui:define name="label">Tatil Tipi</ui:define>
+							<h:outputText value="#{tatilHome.instance.tatilTipi.aciklama}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Adı</ui:define>
+							<h:inputText required="true" value="#{tatilHome.instance.ad}" size="35" requiredMessage="Tatil adını giriniz" />
+						</s:decorate>
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Açıklama</ui:define>
+							<h:inputText required="true" value="#{tatilHome.instance.aciklama}" size="35" requiredMessage="Tatil açıklama giriniz" />
+						</s:decorate>
+						<h:panelGrid columns="1" cellpadding="0" cellspacing="0" id="yarimGun">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Başlangıç Günü Yarım mı? </ui:define>
+								<h:selectBooleanCheckbox value="#{tatilHome.instance.yarimGun}" disabled="#{tatilHome.instance.id!=null and tatilHome.instance.periyodik}">
+									<a4j:support event="onclick" action="#{tatilHome.tipDegisti}" reRender="yarimGun" status="ajaxStatus" ajaxSingle="true" />
+								</h:selectBooleanCheckbox>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{tatilHome.instance.yarimGun}">
+								<ui:define name="label">Arife Vardiya Yarım Hesapla</ui:define>
+								<h:selectBooleanCheckbox value="#{tatilHome.instance.arifeVardiyaYarimHesapla}" disabled="#{tatilHome.instance.id!=null and tatilHome.instance.periyodik}">
+									 
+								</h:selectBooleanCheckbox>
+							</s:decorate>
+						</h:panelGrid>
+						<a4j:outputPanel cellpadding="0" cellspacing="0" id="tatilTipi">
+							<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
+								<s:decorate template="/layout/edit.xhtml" rendered="#{tatilHome.instance.id==null}">
+									<ui:define name="label">Tatil Tipi</ui:define>
+									<h:selectOneMenu value="#{tatilHome.instance.tatilTipi}" required="true" requiredMessage="Tatil tipi seçiniz">
+										<s:selectItems value="#{tatilHome.tatilTanimList}" var="tatilTip" label="#{tatilTip.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+										<a4j:support event="onchange" action="#{tatilHome.tipDegisti}" reRender="tatilTipi" status="ajaxStatus" ajaxSingle="true" />
+										<s:convertEntity />
+									</h:selectOneMenu>
+								</s:decorate>
+								<h:inputHidden id="tatilTipiKodu" value="#{tatilHome.instance.tatilTipi.kodu}" />
+								<h:panelGrid columns="2" id="tekSeferId" cellpadding="0" cellspacing="0">
+									<s:decorate template="/layout/edit.xhtml" rendered="#{tatilHome.instance.tekSefer}">
+										<ui:define name="label">Tatil Başlangıç Tarihi</ui:define>
+										<rich:calendar id="basTarih" datePattern="#{authenticatedUser.dateFormat}" value="#{tatilHome.instance.basTarih}" required="true">
+											<a4j:support event="onchanged" action="#{tatilHome.tarihDegisti()}" onclick="#{rich:component('wait')}.show()"
+												oncomplete="#{rich:component('wait')}.hide();" ajaxSingle="true" reRender="tatilTipi" />
+										</rich:calendar>
+
+									</s:decorate>
+
+									<s:decorate template="/layout/edit.xhtml" rendered="#{tatilHome.instance.tekSefer}">
+										<ui:define name="label">Tatil Bitiş Tarihi</ui:define>
+										<rich:calendar id="bitisTarih" datePattern="#{authenticatedUser.dateFormat}" value="#{tatilHome.instance.bitisTarih}" required="true">
+											<a4j:support event="onchanged" action="#{tatilHome.tarihDegisti()}" onclick="#{rich:component('wait')}.show()"
+												oncomplete="#{rich:component('wait')}.hide();" ajaxSingle="true" reRender="tatilTipi" />
+										</rich:calendar>
+									</s:decorate>
+								</h:panelGrid>
+
+								<h:panelGrid columns="1" id="periyodikId" cellpadding="0" cellspacing="0">
+									<h:panelGrid columns="1" rendered="#{tatilHome.instance.periyodik}" cellpadding="0" cellspacing="0">
+										<a4j:region renderRegionOnly="true" cellpadding="0" cellspacing="0">
+											<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+												<s:decorate template="/layout/edit.xhtml">
+													<ui:define name="label">Başlangıç Ay</ui:define>
+													<h:selectOneMenu id="basAy" value="#{tatilHome.instance.basAy}" disabled="#{tatilHome.instance.id!=null }" required="true"
+														requiredMessage="Başlangıç ay seçiniz">
+														<f:selectItem itemLabel="Lütfen seçiniz" />
+														<f:selectItems value="#{tatilHome.ayList}" />
+														<a4j:support event="onchange" action="#{tatilHome.fillGunBasList}" reRender="basGun" status="ajaxStatus" ajaxSingle="true" />
+													</h:selectOneMenu>
+												</s:decorate>
+
+												<s:decorate template="/layout/edit.xhtml" id="basGun">
+													<ui:define name="label">Başlangıç Gün</ui:define>
+													<h:selectOneMenu id="basGunler" value="#{tatilHome.instance.basGun}" disabled="#{tatilHome.instance.id!=null }" required="true"
+														requiredMessage="Lütfen başlangıç gün seçiniz" rendered="#{not empty tatilHome.basGunList}">
+														<f:selectItem itemLabel="Lütfen seçiniz" />
+														<f:selectItems value="#{tatilHome.basGunList}" />
+													</h:selectOneMenu>
+												</s:decorate>
+											</h:panelGrid>
+										</a4j:region>
+
+										<a4j:region renderRegionOnly="true" cellpadding="0" cellspacing="0">
+											<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+												<s:decorate template="/layout/edit.xhtml">
+													<ui:define name="label">Bitiş Ay</ui:define>
+													<h:selectOneMenu id="bitisAy" value="#{tatilHome.instance.bitisAy}" disabled="#{tatilHome.instance.id!=null }" required="true"
+														requiredMessage="Lütfen bitiş ay seçiniz">
+														<f:selectItem itemLabel="Lütfen seçiniz" />
+														<f:selectItems value="#{tatilHome.ayList}" />
+														<a4j:support event="onchange" action="#{tatilHome.fillGunBitisList}" reRender="bitisGun" status="ajaxStatus" ajaxSingle="true" />
+													</h:selectOneMenu>
+												</s:decorate>
+
+												<s:decorate template="/layout/edit.xhtml" id="bitisGun">
+													<ui:define name="label">Bitiş Gün</ui:define>
+													<h:selectOneMenu id="bitisGunler" value="#{tatilHome.instance.bitisGun}" disabled="#{tatilHome.instance.id!=null }" required="true"
+														requiredMessage="Lütfen bitiş gün seçiniz" rendered="#{not empty tatilHome.bitisGunList}">
+														<f:selectItem itemLabel="Lütfen seçiniz" />
+														<f:selectItems value="#{tatilHome.bitisGunList}" />
+													</h:selectOneMenu>
+												</s:decorate>
+											</h:panelGrid>
+										</a4j:region>
+									</h:panelGrid>
+								</h:panelGrid>
+							</h:panelGrid>
+						</a4j:outputPanel>
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Aktif</ui:define>
+							<h:selectBooleanCheckbox value="#{tatilHome.instance.durum}" />
+						</s:decorate>
+					</h:panelGrid>
+					<a4j:commandButton status="ajaxStatus" id="KaydetButon" value="Kaydet" action="#{tatilHome.save}" reRender="tatilData"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+					<!--  -->
+
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{tatilHome.remove}"
+									oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+</ui:composition>

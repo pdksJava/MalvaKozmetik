@@ -1,0 +1,489 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('fazlaMesaiHesapla')}" />
+	</ui:define>
+	<ui:define name="body">
+		<h:form>
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(fazlaMesaiHesaplaHome.session,'fazlaMesaiHesapla')}">
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<a4j:outputPanel id="anaForm">
+					<h:panelGrid columns="2" width="50%" id="girisler">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Yıl</ui:define>
+							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{ortakIslemler.getParameterKey('sistemBaslangicYili')}"
+								maxValue="#{fazlaMesaiHesaplaHome.maxYil}" inputSize="1" value="#{fazlaMesaiHesaplaHome.yil}">
+								<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.yilAyDegisti(true)}" ajaxSingle="true"
+									reRender="denklestirmeDonemiTable,girisler,hareketTables" />
+							</rich:inputNumberSpinner>
+
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Ay</ui:define>
+							<h:selectOneMenu id="basAy" value="#{fazlaMesaiHesaplaHome.ay}" required="true" requiredMessage="Başlangıç ay seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{fazlaMesaiHesaplaHome.aylar}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.yilAyDegisti(false)}" ajaxSingle="true"
+									reRender="denklestirmeDonemiTable,girisler,anaForm,hareketTables" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.adminRole and fazlaMesaiHesaplaHome.departmanList.size()>1}">
+							<ui:define name="label">PDKS Departman</ui:define>
+							<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{fazlaMesaiHesaplaHome.departmanList}" />
+								<a4j:support event="onchange" action="#{fazlaMesaiHesaplaHome.departmanDegisti(true)}" ajaxSingle="true"
+									reRender="denklestirmeDonemiTable,girisler" />
+							</h:selectOneMenu>
+
+
+						</s:decorate>
+						<c:if test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and not empty fazlaMesaiHesaplaHome.pdksSirketList}">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:selectOneMenu id="sirketSec" value="#{fazlaMesaiHesaplaHome.sirketId}" disabled="#{fazlaMesaiHesaplaHome.pdksSirketList.size()==1}"
+									required="true" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{fazlaMesaiHesaplaHome.pdksSirketList}" />
+									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.tesisDoldur(true)}" ajaxSingle="true"
+										reRender="denklestirmeDonemiTable,girisler" />
+								</h:selectOneMenu>
+							</s:decorate>
+
+							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.tesisList!=null and fazlaMesaiHesaplaHome.tesisList.size()>0}">
+								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+								<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
+									disabled="#{fazlaMesaiHesaplaHome.tesisList.size()==1}">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{fazlaMesaiHesaplaHome.tesisList}" />
+									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.bolumDoldur()}" ajaxSingle="true"
+										reRender="denklestirmeDonemiTable,girisler" />
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{fazlaMesaiHesaplaHome.gorevYeriList!=null and fazlaMesaiHesaplaHome.gorevYeriList.size()>0}">
+								<ui:define name="label">#{fazlaMesaiHesaplaHome.bolumAciklama}</ui:define>
+								<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.seciliEkSaha3Id}" disabled="#{fazlaMesaiHesaplaHome.gorevYeriList.size()==1}"
+									requiredMessage="#{fazlaMesaiHesaplaHome.bolumAciklama} giriniz!" required="#{fazlaMesaiHesaplaHome.gorevYeriList.size()>1}">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{fazlaMesaiHesaplaHome.gorevYeriList}" />
+									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.aylikPuantajList.clear()}" ajaxSingle="true"
+										reRender="denklestirmeDonemiTable,girisler" />
+								</h:selectOneMenu>
+							</s:decorate>
+
+							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.kullaniciPersonel==false}">
+								<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+								<h:inputText value="#{fazlaMesaiHesaplaHome.sicilNo}">
+									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="denklestirmeDonemiTable,hataliPuantajGoster"
+										action="#{fazlaMesaiHesaplaHome.fillPersonelSicilDenklestirmeList}" />
+
+								</h:inputText>
+							</s:decorate>
+							<a4j:outputPanel id="hataliPuantajGoster">
+
+								<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum and fazlaMesaiHesaplaHome.sicilNo==''}">
+									<ui:define name="label">Hatalı Personel Göster</ui:define>
+									<h:selectBooleanCheckbox value="#{fazlaMesaiHesaplaHome.hataliPuantajGoster}">
+										<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" />
+									</h:selectBooleanCheckbox>
+								</s:decorate>
+
+							</a4j:outputPanel>
+						</c:if>
+					</h:panelGrid>
+					<rich:panel id="denklestirmeDonemiTable" style="overflow: auto;">
+						<a4j:outputPanel id="hareketTables">
+							<c:if test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and  not empty fazlaMesaiHesaplaHome.gorevYeriList}">
+								<TABLE width="45%">
+									<TR>
+										<TD width="35%" valign="top"><a4j:commandButton action="#{fazlaMesaiHesaplaHome.fillPersonelDenklestirmeList}"
+												value="Fazla Mesai Getir" rendered="#{not empty fazlaMesaiHesaplaHome.pdksSirketList}" reRender="denklestirmeDonemiTable,hareketTables"
+												onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide()" /></TD>
+										<TD width="35%" valign="top"><ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
+												<ui:fragment rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum}">
+													<ui:fragment
+														rendered="#{(fazlaMesaiHesaplaHome.denklestirmeAy.durum or fazlaMesaiHesaplaHome.ikRole) and fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.hataYok and (fazlaMesaiHesaplaHome.sicilNo==null or fazlaMesaiHesaplaHome.sicilNo=='')}">
+														<a4j:commandButton value="Fazla Mesai Onayla" action="#{fazlaMesaiHesaplaHome.fazlaMesaiOnayKontrol()}"
+															onclick="#{rich:component('wait')}.show()" reRender="onayPanel" rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiOnayDurum}"
+															oncomplete="#{rich:component('wait')}.hide();if (#{fazlaMesaiHesaplaHome.onayla}) #{rich:component('onayPanel')}.show() ; " />
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.ayrikHareketVar}">
+														<a4j:commandButton value="Ayrık kayıt oluştur" id="ayrikOlustur" action="#{fazlaMesaiHesaplaHome.ayrikKayitlariOlustur()}"
+															reRender="denklestirmeDonemiTable" onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide(); " />
+														<rich:toolTip for="ayrikOlustur">
+														 İki vardiya arasında kalan giriş ve çıkış kayıtları arasında önceki vardiya sonuna manuel çıkış ve sonraki vardiya başına manuel giriş kayıtı eklemektedir.
+														
+														</rich:toolTip>
+														<br />
+
+													</ui:fragment>
+												</ui:fragment>
+											</ui:fragment></TD>
+										<td nowrap="nowrap" width="30%">
+											<TABLE width="85%">
+												<TR>
+													<TD nowrap="nowrap"><SPAN style="font-size: 14;"><h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
+																action="#{fazlaMesaiHesaplaHome.fazlaMesaiExcel}" target="blank">
+																<a4j:support event="oncomplete" status="ajaxStatus" />
+															</h:commandLink></SPAN></TD>
+												</TR>
+
+												<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole}">
+													<TR>
+														<TD nowrap="nowrap"><SPAN style="font-size: 14; font-weight: bold;"><h:commandLink value="Kapı Hareketleri Excel"
+																	action="#{fazlaMesaiHesaplaHome.aylikVardiyaHareketExcel}" target="blank">
+																	<a4j:support event="oncomplete" status="ajaxStatus" />
+																</h:commandLink></SPAN></TD>
+													</TR>
+												</ui:fragment>
+											</TABLE>
+										</td>
+
+
+
+									</TR>
+									<ui:fragment
+										rendered="#{fazlaMesaiOrtakIslemler.getDurum(fazlaMesaiHesaplaHome.denklestirmeAy,authenticatedUser)==false  and not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
+										<tr>
+											<td><c:if test="#{fazlaMesaiHesaplaHome.ikRole and ortakIslemler.sistemDestekVar}">
+													<s:decorate template="/layout/edit.xhtml">
+														<ui:define name="label">
+															 Bakiye Güncelle 
+														</ui:define>
+														<h:selectBooleanCheckbox value="#{fazlaMesaiHesaplaHome.bakiyeGuncelle}" />
+													</s:decorate>
+													<ui:fragment rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum}">
+														<SPAN style="color: red;">Bakiye Güncelle</SPAN>
+														<h:selectBooleanCheckbox value="#{fazlaMesaiHesaplaHome.bakiyeGuncelle}" />
+													</ui:fragment>
+												</c:if></td>
+										</tr>
+									</ui:fragment>
+
+								</TABLE>
+							</c:if>
+							<c:if test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
+								<c:choose>
+									<c:when test="#{ortakIslemler.getParameterKey('puantajPageSize')!=''}">
+										<ui:include src="/puantaj/includes/aylikFazlaMesaiTable.xhtml" />
+									</c:when>
+									<c:otherwise>
+										<ui:include src="/puantaj/includes/aylikFazlaMesai.xhtml" />
+
+									</c:otherwise>
+								</c:choose>
+								<ui:fragment>
+									<SCRIPT>
+									tableScroll("#{authenticatedUser.scroolDiv}",1200);
+	 							</SCRIPT>
+								</ui:fragment>
+							</c:if>
+
+						</a4j:outputPanel>
+
+						<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList and (fazlaMesaiHesaplaHome.denklestirmeAyDurum==false)}">
+
+
+							<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiHesaplaHome.fazlaMesaiExcel}" target="blank">
+								<a4j:support event="oncomplete" onclick="#{rich:component('wait')}.show()" oncomplete=" #{rich:component('wait')}.hide()" />
+							</h:commandLink>
+						</ui:fragment>
+					</rich:panel>
+				</a4j:outputPanel>
+
+
+			</rich:panel>
+		</h:form>
+		<rich:modalPanel id="hareketDetayPanel" autosized="true" width="650">
+			<f:facet name="header">
+				<ui:fragment>
+					<DIV id="vardiyaAciklama">#{authenticatedUser.getTarihFormatla(fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiyaDate,'d MMMMM yyyy EEEEE')} -
+						#{fazlaMesaiHesaplaHome.seciliVardiyaGun.personel.pdksSicilNo} #{fazlaMesaiHesaplaHome.seciliVardiyaGun.personel.adSoyad}
+						#{fazlaMesaiHesaplaHome.seciliVardiyaGun.title}</DIV>
+					<rich:toolTip for="vardiyaAciklama" rendered="#{authenticatedUser.admin}">
+						<span style="color: black;"> <h:outputText value="Vardiya Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya.id}"
+								rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya!=null}" /></span>
+					</rich:toolTip>
+				</ui:fragment>
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="harekethidelink" styleClass="hidelink" />
+					<rich:componentControl for="hareketDetayPanel" attachTo="harekethidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+
+				<h:panelGrid width="600">
+					<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.orjinalHareketler}" var="hareket" rows="20"
+						rowKeyVar="row">
+						<f:facet name="header">
+							<ui:fragment>
+								<h:outputText value="Giriş Çıkış Hareketleri" id="vardiyaPlanAciklama" />
+								<rich:toolTip for="vardiyaPlanAciklama" rendered="#{authenticatedUser.admin}">
+									<span style="color: black;"> <h:outputText value="Vardiya Plan Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.id}"
+											rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun!=null}" /></span>
+								</rich:toolTip>
+							</ui:fragment>
+						</f:facet>
+						<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}" style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Hareket No" />
+							</f:facet>
+							<h:outputText value="#{hareket.id}" />
+
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Kapı" />
+							</f:facet>
+							<ui:fragment rendered="#{hareket.islem==null}">
+								<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+							</ui:fragment>
+							<ui:fragment rendered="#{hareket.islem!=null}">
+								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole==false and fazlaMesaiHesaplaHome.adminRole==false}">
+									<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+								</ui:fragment>
+								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole or fazlaMesaiHesaplaHome.adminRole}">
+									<a href="#" id="hareketBilgi#{hareket.id}"><h:outputText value="#{hareket.kapiView.kapi.aciklama}" /></a>
+									<rich:toolTip for="hareketBilgi#{hareket.id}">
+										<TABLE>
+											<TR>
+												<TD nowrap="nowrap" align="left"><b>Onaylayan : </b>
+												<h:outputText value="#{hareket.islem.onaylayanUser.adSoyad }" /></TD>
+											</TR>
+											<TR>
+												<TD nowrap="nowrap" align="left"><b>Onay Nedeni : </b>
+												<h:outputText value="#{hareket.islem.neden.aciklama}" /></TD>
+											</TR>
+											<TR>
+												<TD nowrap="nowrap" align="left"><b>Onay Zamanı : </b>
+												<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.islem.olusturmaTarihi)}" /></TD>
+											</TR>
+
+										</TABLE>
+									</rich:toolTip>
+								</ui:fragment>
+							</ui:fragment>
+
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Kapı Tip" />
+							</f:facet>
+							<h:outputText value="#{hareket.kapiView.kapi.tipi.aciklama}" />
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.orjinalZaman)}" />
+						</rich:column>
+						<rich:column rendered="#{fazlaMesaiHesaplaHome.toplamFazlamMesai!=0}" style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Fazla Çalışma (Saat)" />
+							</f:facet>
+
+							<ui:fragment
+								rendered="#{hareket.personelFazlaMesai!=null and hareket.personelFazlaMesai.onaylandi and hareket.personelFazlaMesai.fazlaMesaiSaati!=0}">
+								<A href="#" id="fazlaMesaiSaati#{hareket.personelFazlaMesai.id}"><h:outputText
+										value="#{authenticatedUser.sayiFormatliGoster(hareket.personelFazlaMesai.fazlaMesaiSaati)} " /> </A>
+								<rich:toolTip for="fazlaMesaiSaati#{hareket.personelFazlaMesai.id}">
+									<TABLE>
+										<TR>
+											<TD nowrap="nowrap" align="left"><b>Onaylayan : </b> <h:outputText value="#{hareket.personelFazlaMesai.olusturanUser.adSoyad }" /></TD>
+										</TR>
+										<TR>
+											<TD nowrap="nowrap" align="left"><b>Onay Nedeni : </b> <h:outputText
+													value="#{hareket.personelFazlaMesai.fazlaMesaiOnayDurum.aciklama}" /></TD>
+										</TR>
+										<TR>
+											<TD nowrap="nowrap" align="left"><b>Onay Zamanı : </b> <h:outputText
+													value="#{authenticatedUser.dateTimeFormatla(hareket.personelFazlaMesai.olusturmaTarihi)}" /></TD>
+										</TR>
+										<ui:fragment rendered="#{hareket.personelFazlaMesai.fazlaMesaiTalep!=null}">
+											<TR>
+												<TD nowrap="nowrap" align="left"><b>Mesai Talep Id : </b> <h:outputText value="#{hareket.personelFazlaMesai.fazlaMesaiTalep.id }" /></TD>
+											</TR>
+										</ui:fragment>
+
+									</TABLE>
+								</rich:toolTip>
+								<ui:fragment rendered="#{hareket.personelFazlaMesai.tatilDurum!=null}">
+									<h:outputText title="Resmi Tatil" value="(*)" />
+								</ui:fragment>
+							</ui:fragment>
+
+						</rich:column>
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+					<ui:fragment rendered="#{fazlaMesaiHesaplaHome.toplamFazlamMesai!=0}">
+						<LABEL><B>Fazla Çalışma :</B></LABEL>
+						<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesaiHesaplaHome.toplamFazlamMesai)} Saat" />
+
+					</ui:fragment>
+					<ui:fragment
+						rendered="#{fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.denklestirmeAyDurum and fazlaMesaiHesaplaHome.seciliVardiyaGun.linkAdresler!=null and not empty fazlaMesaiHesaplaHome.seciliVardiyaGun.linkAdresler}">
+						<f:verbatim>#{fazlaMesaiHesaplaHome.seciliVardiyaGun.linkAdresHtml}</f:verbatim>
+
+					</ui:fragment>
+					<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fmtList!=null}">
+						<br />
+						<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiHesaplaHome.fmtList}" var="fmt" rows="50" rowKeyVar="row" id="fmtTable">
+							<f:facet name="header">
+								<h:outputText value="Fazla Çalışma Talep Formları" />
+							</f:facet>
+							<rich:column style="text-align:center;" rendered="#{fazlaMesaiHesaplaHome.adminRole}">
+								<f:facet name="header">
+									<h:outputText value="Mesai Talep Id" />
+								</f:facet>
+								<h:outputText value="#{fmt.id}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Mesai Başlangıç Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.baslangicZamani)}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Mesai Bitiş Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.bitisZamani)}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Mesai Süresi (Saat)" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fmt.mesaiSuresi)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Mesai Nedeni" />
+								</f:facet>
+								<a href="#"><h:outputText value="#{fmt.mesaiNeden.aciklama}" id="mnd" /></a>
+								<ui:fragment rendered="#{fmt.aciklama!=null and fmt.aciklama!='' }">
+									<rich:toolTip for="mnd" value="Açıklama : #{fmt.aciklama}" />
+								</ui:fragment>
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Onay Durum" />
+								</f:facet>
+								<h:outputText value="#{fmt.onayDurumAciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Onay'a Gönderen" />
+								</f:facet>
+								<h:outputText value="#{fmt.olusturanUser.adSoyad}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Onay'a Gönderme Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.olusturmaTarihi)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Onaylayan" />
+								</f:facet>
+								<h:outputText value="#{fmt.guncelleyenUser.adSoyad}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Onaylama Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.guncellemeTarihi)}" />
+							</rich:column>
+						</rich:dataTable>
+
+					</ui:fragment>
+					<ui:fragment rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.izin==null}">
+						<br />
+						<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.izinler}" var="izin" rows="20" rowKeyVar="row"
+							rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.izinler!=null}">
+							<f:facet name="header">
+
+								<h:outputText value="İzinler" />
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İzin Tipi" />
+								</f:facet>
+								<h:outputText value="#{izin.izinTipiAciklama}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Başlangıç Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(izin.baslangicZamani)}" />
+							</rich:column>
+
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Bitiş Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(izin.bitisZamani)}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Süre" />
+								</f:facet>
+								<h:outputText value="#{ izin.sureAciklama }" />
+							</rich:column>
+						</rich:dataTable>
+					</ui:fragment>
+				</h:panelGrid>
+
+			</h:form>
+
+		</rich:modalPanel>
+
+		<rich:modalPanel id="onayPanel" autosized="true" width="750">
+			<f:facet name="header">
+	 			Fazla Mesai Onaylama
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink" />
+					<rich:componentControl for="onayPanel" attachTo="hidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<ui:fragment rendered="#{fazlaMesaiHesaplaHome.onayla}">
+					<ui:fragment endered="#{fazlaMesaiHesaplaHome.seciliBolum!=null}">
+						<LABEL> <B>#{fazlaMesaiHesaplaHome.bolumAciklama} : </B> <h:outputText value="#{fazlaMesaiHesaplaHome.seciliBolum.aciklama}" />
+						</LABEL>
+					</ui:fragment>
+
+					<TABLE width="80%">
+
+						<TR>
+
+							<TD width="50%"><a4j:commandButton action="#{fazlaMesaiHesaplaHome.fazlaMesaiOnayla}" value="Mesaileri Onayla" reRender="hareketTables"
+									ajaxSingle="true" onclick="#{rich:component('wait')}.show()"
+									oncomplete="#{rich:component('wait')}.hide();#{rich:component('onayPanel')}.hide()" /></TD>
+							<TD width="50%"><b>Mail Gönder : </b> <h:selectBooleanCheckbox value="#{fazlaMesaiHesaplaHome.mailGonder}">
+									<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" />
+								</h:selectBooleanCheckbox></TD>
+
+						</TR>
+					</TABLE>
+				</ui:fragment>
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+</ui:composition>

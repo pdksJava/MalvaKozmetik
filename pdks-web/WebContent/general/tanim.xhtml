@@ -1,0 +1,338 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('tanim')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(tanimHome.session,'tanim')}">
+				<a4j:outputPanel ajaxRendered="true" id="anaForm">
+					<TABLE style="vertical-align: top;" width="80%">
+						<TR>
+							<TD valign="top"><h:panelGrid columns="1" style="vertical-align: top;">
+									<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+										<ui:define name="label">Tanım Tipi</ui:define>
+										<h:selectOneMenu id="genelTanim" value="#{tanimHome.genelTanim}">
+											<s:selectItems var="tanim" value="#{tanimHome.genelTanimList}" label="#{tanim.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+											<a4j:support event="onchange" reRender="anaTable,childTanimGroup" status="ajaxStatus" ajaxSingle="true" />
+											<s:convertEntity />
+										</h:selectOneMenu>
+									</s:decorate>
+									<a4j:outputPanel id="anaTable">
+
+										<rich:dataTable rowClasses="acik,koyu" value="#{tanimHome.tanimList}" rendered="#{tanimHome.genelTanim!=null}" var="tanim" rows="20"
+											rowKeyVar="row" id="table">
+											<f:facet name="header">
+												<h:outputText value="#{tanimHome.genelTanim.aciklama} Tanımları" />
+											</f:facet>
+											<rich:column style="heigth" rendered="#{tanimHome.genelTanim!=null and (tanimHome.genelTanim.guncelle or authenticatedUser.admin)}">
+												<f:facet name="header">
+                        İşlemler
+               				 </f:facet>
+												<h:panelGrid columns="4" style="vertical-align: top;">
+													<a4j:commandLink status="ajaxStatus" id="editlink" action="#{tanimHome.guncelle(tanim)}"
+														rendered="#{authenticatedUser.admin or  tanim.guncelle}" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel"
+														ajaxSingle="true">
+														<h:graphicImage value="/img/edit.gif" style="border:0" alt="Edit" />
+
+													</a4j:commandLink>
+													<rich:toolTip for="editlink" value="Güncelle" />
+
+													<a4j:commandLink status="ajaxStatus" id="childTanim" action="#{tanimHome.fillChildTanimList(tanim)}"
+														reRender="childTanimTable,childEkle,childTanimGroup" ajaxSingle="true"
+														rendered="#{tanimHome.genelTanim!=null and tanimHome.genelTanim.childGenelTanim.id!=null}">
+														<h:graphicImage value="/img/select.gif" style="border:0"
+															alt="#{tanim.aciklama} #{tanimHome.genelTanim.childGenelTanim.aciklama}lerini Görüntüle" />
+													</a4j:commandLink>
+													<rich:toolTip for="childTanim" value="#{tanim.aciklama} #{tanimHome.genelTanim.childGenelTanim.aciklama}lerini Görüntüle" />
+												</h:panelGrid>
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													<h:outputText value="Kodu" />
+												</f:facet>
+												<h:outputText value="#{tanim.kodu}" id="kodu" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													<h:outputText value="ERP Kodu" />
+												</f:facet>
+												<h:outputText value="#{tanim.erpKodu}" id="erpKodu" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													<h:outputText value="Türkçe" />
+												</f:facet>
+												<h:outputText value="#{tanim.aciklamatr}" id="aciklamatr" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													<h:outputText value="İngilizce" />
+												</f:facet>
+												<h:outputText value="#{tanim.aciklamaen}" id="aciklamaen" />
+											</rich:column>
+											<rich:column>
+												<f:facet name="header">
+													<h:outputText value="Aktif" />
+												</f:facet>
+												<h:outputText value="#{authenticatedUser.getYesNo(tanim.durum)}" id="durum" />
+											</rich:column>
+											<f:facet name="footer">
+												<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+											</f:facet>
+										</rich:dataTable>
+										<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{tanimHome.tanimExcel('P',tanimHome.genelTanim.aciklama)}"
+											target="blank">
+											<a4j:support event="oncomplete" status="ajaxStatus" process="table" reRender="table" />
+										</h:commandLink>
+
+
+
+										<h:panelGrid columns="1" id="ekleTanim">
+											<s:decorate rendered="#{tanimHome.genelTanim!=null and (tanimHome.genelTanim.guncelle or authenticatedUser.admin)}"
+												template="/layout/edit.xhtml">
+												<a4j:commandButton status="ajaxStatus" value="#{tanimHome.genelTanim.aciklama} Ekle" action="#{tanimHome.tanimEkle(null)}"
+													oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" ajaxSingle="true" id="parentEkle">
+													<f:setPropertyActionListener value="#{tanim}" target="#{tanimHome.instance}">
+														<s:convertEntity />
+													</f:setPropertyActionListener>
+												</a4j:commandButton>
+											</s:decorate>
+										</h:panelGrid>
+										<rich:toolTip for="parentEkle" value="Ekle" />
+
+									</a4j:outputPanel>
+								</h:panelGrid></TD>
+
+							<TD valign="top"><a4j:outputPanel id="childTanimGroup">
+									<rich:panel header="#{tanimHome.selectedParentTanim.aciklama}"
+										rendered="#{tanimHome.genelTanim.childGenelTanim!=null and tanimHome.selectedParentTanim.id!=null}">
+										<h:panelGrid columns="1">
+											<rich:dataTable rowClasses="acik,koyu" style="height:150;" value="#{tanimHome.childTanimList}" var="childTanim" rows="20" rowKeyVar="row"
+												id="childTanimTable">
+
+												<rich:column>
+													<f:facet name="header">
+                        İşlemler
+               				 </f:facet>
+													<h:panelGrid columns="1">
+														<a4j:commandLink status="ajaxStatus" id="editlinkCh" rendered="#{authenticatedUser.admin or childTanim.guncelle}"
+															reRender="editChildPanel" ajaxSingle="true" action="#{tanimHome.guncelle(childTanim)}"
+															oncomplete="#{rich:component('editChildPanel')}.show()">
+															<h:graphicImage value="/img/edit.gif" style="border:0" alt="Edit" />
+
+														</a4j:commandLink>
+														<rich:toolTip for="editlinkCh" value="Güncelle" />
+													</h:panelGrid>
+
+
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
+														<h:outputText value="Kodu" />
+													</f:facet>
+													<h:outputText value="#{childTanim.kodu}" id="kodu" />
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
+														<h:outputText value="ERP Kodu" />
+													</f:facet>
+													<h:outputText value="#{childTanim.erpKodu}" id="erpKodu" />
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
+														<h:outputText value="Türkçe" />
+													</f:facet>
+													<h:outputText value="#{childTanim.aciklamatr}" id="aciklamatr" />
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
+														<h:outputText value="İngilizce" />
+													</f:facet>
+													<h:outputText value="#{childTanim.aciklamaen}" id="aciklamaen" />
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
+														<h:outputText value="Aktif" />
+													</f:facet>
+													<h:outputText value="#{authenticatedUser.getYesNo(childTanim.durum)}" id="durum" />
+												</rich:column>
+												<f:facet name="footer">
+													<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+												</f:facet>
+											</rich:dataTable>
+
+										</h:panelGrid>
+									</rich:panel>
+									<ui:fragment rendered="#{tanimHome.genelTanim.childGenelTanim!=null and tanimHome.selectedParentTanim.id!=null}">
+										<a4j:commandButton status="ajaxStatus" id="childEkle" value="#{tanimHome.selectedParentTanim.aciklama} Ekle" reRender="editChildPanel"
+											rendered="#{tanimHome.selectedParentTanim.guncelle or authenticatedUser.admin}" ajaxSingle="true"
+											action="#{tanimHome.tanimEkle(tanimHome.selectedParentTanim)}" oncomplete="#{rich:component('editChildPanel')}.show()">
+
+										</a4j:commandButton>
+										<ui:fragment rendered="#{authenticatedUser.admin and not empty tanimHome.childTanimList}">
+											<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{tanimHome.tanimExcel('C',tanimHome.selectedParentTanim.aciklama)}"
+												target="blank">
+												<a4j:support event="oncomplete" status="ajaxStatus" onclick="#{rich:component('wait')}.show()" reRender="childTanimTable"
+													oncomplete=" #{rich:component('wait')}.hide()" />
+											</h:commandLink>
+										</ui:fragment>
+
+									</ui:fragment>
+								</a4j:outputPanel></TD>
+						</TR>
+
+					</TABLE>
+				</a4j:outputPanel>
+
+			</rich:panel>
+
+		</h:form>
+
+
+		<rich:modalPanel id="editPanel" autosized="true" width="650">
+			<f:facet name="header">
+	 			#{tanimHome.genelTanim.aciklama} #{tanimHome.durumAciklama}
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink" />
+					<rich:componentControl for="editPanel" attachTo="hidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+					</a4j:outputPanel>
+					<h:panelGrid columns="1">
+						<s:decorate id="parametreAdiField1" template="/layout/edit.xhtml">
+							<ui:define name="label">Kodu</ui:define>
+							<h:inputText rendered="#{authenticatedUser.admin==true}" required="true" value="#{tanimHome.instance.kodu}" />
+							<h:outputText rendered="#{authenticatedUser.admin==false}" required="true" value="#{tanimHome.instance.kodu}" />
+						</s:decorate>
+						<s:decorate id="parametreAdiField2" template="/layout/edit.xhtml">
+							<ui:define name="label">ERP Kodu</ui:define>
+							<h:inputText rendered="#{authenticatedUser.admin==true}" value="#{tanimHome.instance.erpKodu}" />
+							<h:outputText rendered="#{authenticatedUser.admin==false}" required="true" value="#{tanimHome.instance.erpKodu}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Açiklama(tr)</ui:define>
+							<h:inputText id="id1" required="true" value="#{tanimHome.instance.aciklamatr}" style="width:350px" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Açiklama(en)</ui:define>
+							<h:inputText id="id2" required="true" value="#{tanimHome.instance.aciklamaen}" style="width:350px" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin==true}">
+							<ui:define name="label">Güncelle</ui:define>
+							<h:selectBooleanCheckbox required="true" value="#{tanimHome.instance.guncelle}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Aktif</ui:define>
+							<h:selectBooleanCheckbox id="id3" required="true" value="#{tanimHome.instance.durum}" />
+						</s:decorate>
+					</h:panelGrid>
+
+
+					<!--  -->
+
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{tanimHome.save}" reRender="anaTable"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="editChildPanel" autosized="true" width="650">
+			<f:facet name="header">
+					 #{tanimHome.selectedParentTanim.aciklama} #{tanimHome.durumAciklama}
+		</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink1" styleClass="hidelink" />
+					<rich:componentControl for="editChildPanel" attachTo="hidelink1" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+					</a4j:outputPanel>
+					<h:panelGrid columns="1">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Kodu</ui:define>
+							<h:inputText rendered="#{authenticatedUser.admin==true}" required="true" value="#{tanimHome.instance.kodu}" />
+							<h:outputText rendered="#{authenticatedUser.admin==false}" required="true" value="#{tanimHome.instance.kodu}" />
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">ERP Kodu</ui:define>
+							<h:inputText rendered="#{authenticatedUser.admin==true}" value="#{tanimHome.instance.erpKodu}" />
+							<h:outputText rendered="#{authenticatedUser.admin==false}" required="true" value="#{tanimHome.instance.erpKodu}" />
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Açiklama(tr)</ui:define>
+							<h:inputText required="true" value="#{tanimHome.instance.aciklamatr}" style="width:350px" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Açiklama(en)</ui:define>
+							<h:inputText required="true" value="#{tanimHome.instance.aciklamaen}" style="width:350px" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin==true}">
+							<ui:define name="label">Güncelle</ui:define>
+							<h:selectBooleanCheckbox required="true" value="#{tanimHome.instance.guncelle}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Aktif</ui:define>
+							<h:selectBooleanCheckbox id="id3" required="true" value="#{tanimHome.instance.durum}" />
+						</s:decorate>
+
+					</h:panelGrid>
+
+
+					<!--  -->
+
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{tanimHome.saveChild}" reRender="childTanimTable"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editChildPanel')}.hide();" />
+
+
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Delete this tanim from list?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{tanimHome.remove}"
+									oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,205 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('yemekKartsizTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(yemekHome.session,'yemekKartsizTanimlama')}">
+					<h:panelGrid columns="2">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Başlangıç Tarihi</ui:define>
+							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekHome.basTarih}" required="true" requiredMessage="Başlangıç tarihi seçiniz" />
+						</s:decorate>
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Bitiş Tarihi</ui:define>
+							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekHome.bitTarih}" />
+						</s:decorate>
+						<a4j:commandButton value="Girişleri Getir" action="#{yemekHome.fillKartSizYemek}" onclick="#{rich:component('wait')}.show()"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide()" reRender="yemekPanel" />
+						<a4j:commandButton status="ajaxStatus" value="Kartsız Giriş Ekle" action="#{yemekHome.kartSizYemekGetir(null)}"
+							oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
+
+					</h:panelGrid>
+					<a4j:outputPanel id="yemekPanel">
+						<rich:dataTable rowClasses="acik,koyu" value="#{yemekHome.kartsizYemekList}" var="yemek" rows="20" rowKeyVar="row" id="yemekTable"
+							rendered="#{not empty yemekHome.kartsizYemekList}">
+							<f:facet name="header">
+								<h:outputText value="Kartsız Yemekler" />
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">İşlemler</f:facet>
+								<a4j:commandButton status="ajaxStatus" value="Güncelle" action="#{yemekHome.kartSizYemekGetir(yemek)}"
+									oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
+
+
+
+							</rich:column>
+
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Tarih" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(yemek.tarih)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{yemek.sirket.ad}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Yemekhane" />
+								</f:facet>
+								<h:outputText value="#{yemek.yemekkapi.aciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Öğün Zamani" />
+								</f:facet>
+								<h:outputText value="#{yemek.yemekOgun.yemekAciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Adet" />
+								</f:facet>
+								<h:outputText value="#{yemek.adet}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Aktif" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(yemek.durum)}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Yapan" />
+								</f:facet>
+								<h:outputText value="#{yemek.sonIslemYapan.adSoyad}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Tarihi" />
+								</f:facet>
+								<h:outputText value="#{yemek.sonIslemTarihiStr}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+					</a4j:outputPanel>
+
+
+
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="650">
+			<f:facet name="header">
+				<h:outputText value="Güncelle Yemek Zaman" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{yemekHome.instanceKartsizRefresh}" reRender="yemekTable"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+						<h:panelGrid columns="1">
+
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id!=null}">
+								<ui:define name="label">Tarihi</ui:define>
+								<h:outputText value="#{authenticatedUser.dateFormatla(yemekHome.yemekKartsiz.tarih)}" />
+
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id!=null}">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:outputText value="#{yemekHome.yemekKartsiz.sirket.ad}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id!=null}">
+								<ui:define name="label">Yemekhane</ui:define>
+								<h:outputText value="#{yemekHome.yemekKartsiz.yemekkapi.aciklama}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id!=null}">
+								<ui:define name="label">Yemek Açıklama</ui:define>
+								<h:outputText value="#{yemekHome.yemekKartsiz.yemekOgun.yemekAciklama}" />
+							</s:decorate>
+
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id==null}">
+								<ui:define name="label">Tarihi</ui:define>
+								<rich:calendar value="#{yemekHome.yemekKartsiz.tarih}" datePattern="#{authenticatedUser.dateFormat}" required="true" requiredMessage="Tarihi Seçiniz">
+									<a4j:support event="onchanged" action="#{yemekHome.fillYemekOgunler}" reRender="yemekler" />
+								</rich:calendar>
+
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id==null}">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:selectOneMenu value="#{yemekHome.yemekKartsiz.sirket}">
+									<s:selectItems var="sirket" value="#{yemekHome.sirketList}" label="#{sirket.ad}" noSelectionLabel="Lütfen seçiniz" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+							</s:decorate>
+
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id==null}">
+								<ui:define name="label">Yemekhane</ui:define>
+								<h:selectOneMenu value="#{yemekHome.yemekKartsiz.yemekKapi}">
+									<s:selectItems var="comp" value="#{yemekHome.yemekHaneList}" label="#{comp.aciklama}" noSelectionLabel="Yemekhane seçiniz" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{yemekHome.yemekKartsiz.id==null}" id="yemekler">
+								<ui:define name="label">Yemek Açıklama</ui:define>
+								<h:selectOneMenu value="#{yemekHome.yemekKartsiz.yemekOgun}">
+									<s:selectItems var="comp" value="#{yemekHome.yemekList}" label="#{comp.yemekAciklama}" noSelectionLabel="Yemek açıklama seçiniz" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Adet</ui:define>
+								<h:inputText value="#{yemekHome.yemekKartsiz.adet}" required="true" requiredMessage="Adet giriniz">
+									<f:validateLongRange minimum="1" maximum="5000" />
+								</h:inputText>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Aktif</ui:define>
+								<h:selectBooleanCheckbox value="#{yemekHome.yemekKartsiz.durum}" />
+							</s:decorate>
+						</h:panelGrid>
+					</a4j:outputPanel>
+					<a4j:commandButton value="Kaydet" action="#{yemekHome.saveKartSizYemek}" onclick="#{rich:component('wait')}.show()"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) { #{rich:component('editPanel')}.hide()} #{rich:component('wait')}.hide()"
+						reRender="yemekPanel" />
+
+
+
+
+
+				</h:panelGrid>
+
+			</h:form>
+		</rich:modalPanel>
+
+
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,295 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"  xmlns:c="http://java.sun.com/jstl/core" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('personelListesi')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+			<a4j:region>
+
+				<rich:panel style="vardiyaGun" header="#{ortakIslemler.getMenuUserAdi(pdksPersonelHome.session,'personelListesi')}">
+					<h:panelGrid id="pdksPersonelList" columns="1" cellpadding="0" cellspacing="0">
+						<rich:dataTable rowClasses="acik,koyu" value="#{pdksPersonelHome.personelList}" var="personelView" rows="50" rowKeyVar="row"
+							id="personelViewTable">
+							<f:facet name="header">
+								<h:outputText value="Personeller" />
+							</f:facet>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.personelKGS.sicilNo}" id="pdksname" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header" filterEvent="onkeyup">
+									<h:outputText value="Adı Soyadı" />
+								</f:facet>
+								<h:outputText value="#{personelView.adSoyad}" id="adSoyad" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.sirket.ad}" id="sirket" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.departmanGoster}">
+								<f:facet name="header">
+									<h:outputText value="PDKS Departman" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.sirket.departman.departmanTanim.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.yoneticiRolVarmi}">
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.pdksYonetici.adSoyad}" title="#{personelView.pdksPersonel.asilYonetici1.adSoyad}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.yoneticiRolVarmi}">
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.yonetici2Aciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.yonetici2.adSoyad}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Vardiya Şablon" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.sablon.adi}" id="vardiya" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Çalışma Modeli" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.calismaModeli.aciklama}" id="calismaModeli" />
+							</rich:column>
+							<rich:column rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla( personelView.pdksPersonel.izinHakEdisTarihi)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İşe Giriş Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla( personelView.pdksPersonel.iseBaslamaTarihi)}" />
+							</rich:column>
+							<rich:column rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
+								<f:facet name="header">
+									<h:outputText value="Doğum Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla( personelView.pdksPersonel.dogumTarihi)}" />
+							</rich:column>
+							<rich:column rendered="#{authenticatedUser.IK and authenticatedUser.IKAdmin==false}">
+								<f:facet name="header">
+									<h:outputText value="#{pdksPersonelHome.bolumAciklama}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.ekSaha3.aciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Cinsiyet" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.cinsiyet.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.icapDurum}">
+								<f:facet name="header">
+									<h:outputText value="İcapçı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.icapciOlabilir)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.yoneticiRolVarmi and pdksPersonelHome.personelDurumMap.get('ikinciYoneticiIzinOnayla')}">
+								<f:facet name="header">
+									<h:outputText value="İzni #{ortakIslemler.yonetici2Aciklama()} Onaylasın" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.ikinciYoneticiIzinOnayla)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.personelDurumMap.get('onaysizIzinKullanilir')}">
+								<f:facet name="header">
+									<h:outputText value="Onaysız İzin Girebilir" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.onaysizIzinKullanilir)}" />
+							</rich:column>
+							
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.tesis.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha1!=null}">
+								<f:facet name="header">
+									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.ekSaha1.aciklama}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.ekSaha1.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha2!=null}">
+								<f:facet name="header">
+									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.ekSaha2.aciklama}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.ekSaha2.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha3!=null}">
+								<f:facet name="header">
+									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.ekSaha3.aciklama}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.ekSaha3.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha4!=null}">
+								<f:facet name="header">
+									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.ekSaha4.aciklama}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.ekSaha4.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin)}">
+								<f:facet name="header">
+									<h:outputText value="Görevi" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.gorevTipi.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.partTimeDurum}">
+								<f:facet name="header">
+									Part Time
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.partTime)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.suaOlabilir}">
+								<f:facet name="header">
+									Şua
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.suaOlabilir)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.sutIzni}">
+								<f:facet name="header">
+									Süt İzni
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sutIzni)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.gebeMi}">
+								<f:facet name="header">
+									GebeMi
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.gebeMi)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.sanalPersonel}">
+								<f:facet name="header">
+									<h:outputText value="#{pdksPersonelHome.sanalPersonelAciklama}" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sanalPersonel)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.egitimDonemi}">
+								<f:facet name="header">
+									Eğitim Dönemi
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.egitimDonemi)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Mail Takip" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.mailTakip)}" />
+							</rich:column>
+							<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+								<f:facet name="header">
+									<h:outputText value="Fazla Mesai Var" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.pdks)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.fazlaMesaiOde}">
+								<f:facet name="header">
+									<h:outputText value="Fazla Mesai Öde" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiOde)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.fazlaMesaiIzinKullan }">
+								<f:facet name="header">
+									<h:outputText value="Fazla Mesai İzin Kullandır" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiIzinKullan)}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.sanalPersonel}">
+								<f:facet name="header">
+									<h:outputText value="#{pdksPersonelHome.sanalPersonelAciklama}" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sanalPersonel)}" />
+							</rich:column>
+							<c:forEach items="#{pdksPersonelHome.dinamikDurumList}" var="alan">
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{alan.aciklama}" />
+									</f:facet>
+									<ui:fragment rendered="#{personelView.pdksPersonel!=null}">
+										<h:outputText value="#{authenticatedUser.getYesNo(pdksPersonelHome.getPersonelDinamikAlan(alan,personelView.pdksPersonel).durumSecim)}" />
+									</ui:fragment>
+
+								</rich:column>
+							</c:forEach>
+							<c:forEach items="#{pdksPersonelHome.dinamikAciklamaList}" var="alan">
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{alan.aciklama}" />
+									</f:facet>
+									<ui:fragment rendered="#{personelView.pdksPersonel!=null}">
+										<h:outputText value="#{pdksPersonelHome.getPersonelDinamikAlan(alan,personelView.pdksPersonel).tanimDeger.aciklama}" />
+									</ui:fragment>
+
+								</rich:column>
+							</c:forEach>
+							<c:forEach items="#{pdksPersonelHome.dinamikSayisalList}" var="alan">
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="#{alan.aciklama}" />
+									</f:facet>
+									<ui:fragment rendered="#{personelView.pdksPersonel!=null}">
+										<h:outputText
+											value="#{authenticatedUser.sayiFormatliGoster(pdksPersonelHome.getPersonelDinamikAlan(alan,personelView.pdksPersonel).sayisalDeger)}" />
+									</ui:fragment>
+
+								</rich:column>
+							</c:forEach>
+							<rich:column rendered="#{pdksPersonelHome.kullaniciPersonel}">
+								<f:facet name="header">
+									<h:outputText value="Kullanici Adı" />
+								</f:facet>
+								<h:outputText value="#{personelView.userName}" id="username" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.emailCCDurum}">
+								<f:facet name="header">
+									<h:outputText value="E-Posta CC" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.emailCC}" />
+							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.emailBCCDurum}">
+								<f:facet name="header">
+									<h:outputText value="E-Posta BCC" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.emailBCC}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+						<ui:fragment rendered="#{not empty pdksPersonelHome.personelList}">
+							<h:commandLink value="Excel" action="#{pdksPersonelHome.excelAktar(null)}" target="blank">
+								<a4j:support event="oncomplete" status="ajaxStatus" process="hareketTable" reRender="hareketTable" />
+							</h:commandLink>
+							<h:commandLink title="Excel Servis" action="#{pdksPersonelHome.excelServiceAktar}" target="blank"
+								rendered="#{ortakIslemler.getParameterKey('personelERPOku')!='1' and authenticatedUser.admin}">
+								<h:graphicImage value="/img/down.gif" style="border:0" />
+								<a4j:support event="oncomplete" status="ajaxStatus" process="hareketTable" reRender="hareketTable" />
+
+							</h:commandLink>
+						</ui:fragment>
+
+					</h:panelGrid>
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+	</ui:define>
+</ui:composition>

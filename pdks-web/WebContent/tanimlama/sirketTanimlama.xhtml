@@ -1,0 +1,470 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jstl/core" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('sirketTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(sirketHome.session,'sirketTanimlama')}">
+					<rich:dataTable rowClasses="acik,koyu" value="#{sirketHome.sirketList}" var="sirket" rows="50" rowKeyVar="row" id="sirketTable">
+						<f:facet name="header">
+							<h:outputText value="#{ortakIslemler.sirketAciklama()}ler" />
+						</f:facet>
+						<rich:column>
+							<f:facet name="header">
+                        İşlemler
+                </f:facet>
+							<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{sirketHome.guncelle(sirket)}"
+								oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+								<h:graphicImage value="/img/edit.gif" style="border:0" />
+
+							</a4j:commandLink>
+							<rich:toolTip for="editlink" value="Güncelle" />
+
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()} Adı" />
+							</f:facet>
+							<h:outputText value="#{sirket.ad}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()} Açıklama" />
+							</f:facet>
+							<h:outputText value="#{sirket.aciklama}" />
+						</rich:column>
+
+						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IKAdmin}">
+							<f:facet name="header">
+								<h:outputText value="PDKS Departman" />
+							</f:facet>
+							<h:outputText value="#{sirket.departman.departmanTanim.aciklama}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="ERP" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.erpDurum)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="ERP Kodu" />
+							</f:facet>
+							<h:outputText value="#{sirket.erpKodu}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="LDAP" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.ldap)}" id="ldap" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="PDKS Dahil" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.pdks)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Fazla Mesai" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.fazlaMesai)}" />
+						</rich:column>
+						<rich:column rendered="#{ortakIslemler.getParameterKey('uygulamaTipi')=='H'}">
+							<f:facet name="header">
+								<h:outputText value="Şua Olabilir" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.suaOlabilir)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Fazla Mesai Öde" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.fazlaMesaiOde)}" />
+						</rich:column>
+						<rich:column rendered="#{ortakIslemler.getParameterKey('fazlaMesaiTalepDurum')=='1'}">
+							<f:facet name="header">
+								<h:outputText value="Fazla Mesai Talep" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.fazlaMesaiTalepGirilebilir)}" />
+						</rich:column>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.getParameterKey('fazlaMesaiTalepDurum')=='1'}">
+							<ui:define name="label">Fazla Mesai Talep</ui:define>
+							<h:selectBooleanCheckbox value="#{departmanHome.instance.fazlaMesaiTalepGirilebilir}" />
+						</s:decorate>
+						<rich:column rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="İşten Ayrıldığı Tarih Çalışıyor" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.istenAyrilmaTarihindeCalisiyor)}" />
+						</rich:column>
+						<rich:column rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="Departman #{sirketHome.bolumAciklama} Aynı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.departmanBolumAyni)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Aktif" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(sirket.durum)}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Yapan" />
+							</f:facet>
+							<h:outputText value="#{sirket.sonIslemYapan.adSoyad}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Tarihi" />
+							</f:facet>
+							<h:outputText value="#{sirket.sonIslemTarihiStr}" />
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+					<a4j:commandButton status="ajaxStatus" value="#{ortakIslemler.sirketAciklama()} Ekle" action="#{sirketHome.guncelle(null)}" rendered="#{sirketHome.sirketEklenebilir}"
+						oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+
+					</a4j:commandButton>
+					<rich:toolTip for="addlink" value="Add" />
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="900">
+			<f:facet name="header">
+				<h:outputText value="#{ortakIslemler.sirketAciklama()} Ekle / Düzenle" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink" />
+					<rich:componentControl for="editPanel" attachTo="hidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:panelGrid columns="1">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()} adı</ui:define>
+								<h:inputText required="true" value="#{sirketHome.seciliSirket.ad}" size="35" requiredMessage="#{ortakIslemler.sirketAciklama()} adı giriniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()} açıklama</ui:define>
+								<h:inputText required="true" value="#{sirketHome.seciliSirket.aciklama}" size="35" requiredMessage="#{ortakIslemler.sirketAciklama()} açıklama giriniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and not empty sirketHome.departmanList}">
+								<ui:define name="label">PDKS Departman</ui:define>
+								<h:selectOneMenu required="true" id="toComp" value="#{sirketHome.seciliSirket.departman}" disabled="#{sirketHome.departmanList.size()==1}"
+									requiredMessage="PDKS Departman giriniz">
+									<s:selectItems var="comp" value="#{sirketHome.departmanList}" label="#{comp.departmanTanim.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+							</s:decorate>
+							<h:panelGrid columns="2">
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">ERP</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.erpDurum}">
+										<a4j:support event="onclick" reRender="erpKoduDurum" />
+									</h:selectBooleanCheckbox>
+								</s:decorate>
+								<c:if test="#{sirketHome.seciliSirket.erp}">
+									<a4j:region id="erpKoduDurum">
+										<s:decorate template="/layout/edit.xhtml">
+											<ui:define name="label">ERP Kodu</ui:define>
+											<h:inputText value="#{sirketHome.seciliSirket.erpKodu}" size="5" maxlength="5" />
+										</s:decorate>
+									</a4j:region>
+								</c:if>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">LDAP</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.ldapDurum}">
+										<a4j:support event="onclick" reRender="ldapKodu" />
+									</h:selectBooleanCheckbox>
+								</s:decorate>
+								<c:if test="#{sirketHome.seciliSirket.ldap}">
+									<a4j:region id="ldapKodu">
+										<s:decorate template="/layout/edit.xhtml">
+											<ui:define name="label">LDAP Ön Ek</ui:define>
+											<h:inputText value="#{sirketHome.seciliSirket.lpdapOnEk}" size="5" maxlength="5" />
+										</s:decorate>
+									</a4j:region>
+								</c:if>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">PDKS Dahil</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.pdks}" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" rendered="#{sirketHome.seciliSirket.departman.suaOlabilir}">
+									<ui:define name="label">Şua Olabilir</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.suaOlabilir}" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Fazla Mesai Durum</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.fazlaMesai}" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Fazla Mesai Öde</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.fazlaMesaiOde}" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.getParameterKey('fazlaMesaiIzinKullan')=='1'}">
+									<ui:define name="label">Fazla Mesai İzin Kullandır</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.fazlaMesaiIzinKullan}" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml"
+									rendered="#{ortakIslemler.getParameterKey('fazlaMesaiTalepDurum')=='1' and sirketHome.seciliSirket.departman.fazlaMesaiTalepGirilebilir}">
+									<ui:define name="label">Fazla Mesai Talep</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.fazlaMesaiTalepGirilebilir}" />
+								</s:decorate>
+
+
+								<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+									<ui:define name="label">İşten Ayrıldığı Tarih Çalışıyor</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.istenAyrilmaTarihindeCalisiyor}" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+									<ui:define name="label">Departman #{sirketHome.bolumAciklama} Aynı</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.departmanBolumAyni}" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Aktif</ui:define>
+									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.durum}" />
+								</s:decorate>
+							</h:panelGrid>
+						</h:panelGrid>
+
+					</a4j:outputPanel>
+					<!--  -->
+
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{sirketHome.save}" reRender="sirketTable"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+					<a4j:outputPanel id="personelListTable">
+						<h:panelGrid columns="3" rendered="#{sirketHome.seciliSirket.id!=null and sirketHome.seciliSirket.pdks}">
+							<a4j:commandButton status="ajaxStatus" value="Personel Getir" action="#{sirketHome.fillPersonelList()}" reRender="personelListTable" />
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+								<ui:define name="label">İşten Ayrılanları Getir</ui:define>
+								<h:selectBooleanCheckbox value="#{sirketHome.istenAyrilanlariEkle}" />
+							</s:decorate>
+							<a4j:commandButton status="ajaxStatus" value="Kapat" action="#{sirketHome.personelList.clear()}" reRender="personelListTable"
+								rendered="#{not empty sirketHome.personelList}" />
+						</h:panelGrid>
+						<rich:panel style="vardiyaGun" header="Personel Listesi" rendered="#{not empty sirketHome.personelList}">
+							<h:panelGrid id="pdksPersonelList" columns="1" cellpadding="0" cellspacing="0">
+								<rich:dataTable rowClasses="acik,koyu" value="#{sirketHome.personelList}" var="personelView" rows="50" rowKeyVar="row" id="personelViewTable">
+									<f:facet name="header">
+										<h:outputText value="Personeller" />
+									</f:facet>
+
+									<rich:column style="text-align:center">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{personelView.personelKGS.sicilNo}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header" filterEvent="onkeyup">
+											<h:outputText value="Adı Soyadı" />
+										</f:facet>
+										<h:outputText value="#{personelView.adSoyad}" id="adSoyad" />
+									</rich:column>
+
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.pdksYonetici.adSoyad}" title="#{personelView.pdksPersonel.asilYonetici1.adSoyad}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.yonetici2Aciklama()}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.yonetici2.adSoyad}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="Vardiya Şablon" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.sablon.adi}" id="vardiya" />
+									</rich:column>
+									<rich:column style="text-align:center">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.dateFormatla( personelView.pdksPersonel.izinHakEdisTarihi)}" />
+									</rich:column>
+									<rich:column style="text-align:center">
+										<f:facet name="header">
+											<h:outputText value="İşe Giriş Tarihi" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.dateFormatla( personelView.pdksPersonel.iseBaslamaTarihi)}" />
+									</rich:column>
+									<rich:column style="text-align:center">
+										<f:facet name="header">
+											<h:outputText value="Doğum Tarihi" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.dateFormatla( personelView.pdksPersonel.dogumTarihi)}" />
+									</rich:column>
+									<rich:column style="text-align:center" rendered="#{sirketHome.istenAyrilanlariEkle}">
+										<f:facet name="header">
+											<h:outputText value="İşten Ayrılma Tarihi" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.dateFormatla( personelView.pdksPersonel.istenAyrilisTarihi)}" />
+									</rich:column>
+									<rich:column rendered="#{authenticatedUser.IK and authenticatedUser.IKAdmin==false}">
+										<f:facet name="header">
+											<h:outputText value="#{sirketHome.bolumAciklama}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.ekSaha3.aciklama}" />
+									</rich:column>
+
+									 
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.tesis.aciklama}" />
+									</rich:column>
+									<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and sirketHome.ekSahaTanimMap.containsKey('ekSaha1')}">
+										<f:facet name="header">
+											<h:outputText value="#{sirketHome.ekSahaTanimMap.get('ekSaha1').aciklama}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.ekSaha1.aciklama}" />
+									</rich:column>
+									<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and sirketHome.ekSahaTanimMap.containsKey('ekSaha2')}">
+										<f:facet name="header">
+											<h:outputText value="#{sirketHome.ekSahaTanimMap.get('ekSaha2').aciklama}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.ekSaha2.aciklama}" />
+									</rich:column>
+									<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and sirketHome.ekSahaTanimMap.containsKey('ekSaha3')}">
+										<f:facet name="header">
+											<h:outputText value="#{sirketHome.ekSahaTanimMap.get('ekSaha3').aciklama}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.ekSaha3.aciklama}" />
+									</rich:column>
+									<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and sirketHome.ekSahaTanimMap.containsKey('ekSaha4')}">
+										<f:facet name="header">
+											<h:outputText value="#{sirketHome.ekSahaTanimMap.get('ekSaha4').aciklama}" />
+										</f:facet>
+										<h:outputText value="#{personelView.pdksPersonel.ekSaha4.aciklama}" />
+									</rich:column>
+
+									<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+										<f:facet name="header">
+									Part Time
+								</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.partTime)}" />
+									</rich:column>
+									<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IKAdmin}">
+										<f:facet name="header">
+									Şua
+								</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.suaOlabilir)}" />
+									</rich:column>
+									<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+										<f:facet name="header">
+									Süt İzni
+								</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sutIzni)}" />
+									</rich:column>
+									<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+										<f:facet name="header">
+									GebeMi
+								</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.gebeMi)}" />
+									</rich:column>
+									<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+										<f:facet name="header">
+									Eğitim Dönemi
+								</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.egitimDonemi)}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="Mail Takip" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.mailTakip)}" />
+									</rich:column>
+									<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+										<f:facet name="header">
+											<h:outputText value="Fazla Mesai Var" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.pdks)}" />
+									</rich:column>
+									<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+										<f:facet name="header">
+											<h:outputText value="Fazla Mesai Öde" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiOde)}" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="Kullanici Adı" />
+										</f:facet>
+										<h:outputText value="#{personelView.userName}" id="username" />
+									</rich:column>
+
+
+
+
+									<f:facet name="footer">
+										<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+									</f:facet>
+								</rich:dataTable>
+								<h:commandLink value="Excel" action="#{sirketHome.excelAktar}" target="blank" rendered="#{not empty sirketHome.personelList}">
+									<a4j:support event="oncomplete" status="ajaxStatus" process="hareketTable" reRender="hareketTable" />
+								</h:commandLink>
+
+
+							</h:panelGrid>
+						</rich:panel>
+					</a4j:outputPanel>
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{sirketHome.remove}"
+									oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+</ui:composition>
