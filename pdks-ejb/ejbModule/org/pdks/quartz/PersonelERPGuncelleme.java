@@ -104,7 +104,7 @@ public class PersonelERPGuncelleme {
 						hataGonder = Boolean.TRUE;
 						hataKonum = "Zaman kontrolu yapılıyor ";
 						Date tarih = zamanlayici.getDbTime(session);
-						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, tarih);
+						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, tarih) && ortakIslemler.getGuncellemeDurum(session);
 						// if (!zamanDurum)
 						// zamanDurum = pdksUtil.getUrl() != null && pdksUtil.getUrl().indexOf("localhost") >= 0;
 
@@ -564,7 +564,11 @@ public class PersonelERPGuncelleme {
 							if (!deleteMailGrubuList.isEmpty()) {
 								session.saveOrUpdate(user);
 								for (MailGrubu mailGrubu : deleteMailGrubuList) {
-									session.delete(mailGrubu);
+									try {
+										pdksEntityController.deleteObject(session, entityManager, mailGrubu);
+									} catch (Exception e) {
+										logger.error(e);
+									}
 								}
 							}
 							session.flush();

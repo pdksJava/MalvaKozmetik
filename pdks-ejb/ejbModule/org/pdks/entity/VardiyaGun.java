@@ -63,7 +63,7 @@ public class VardiyaGun extends BaseObject {
 	private VardiyaGun oncekiVardiyaGun, sonrakiVardiyaGun;
 	private IsKurVardiyaGun isKurVardiya;
 	private int beklemeSuresi = 6;
-	private Double calismaSuaSaati=PersonelDenklestirme.getCalismaSaatiSua();
+	private Double calismaSuaSaati = PersonelDenklestirme.getCalismaSaatiSua();
 
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
@@ -430,7 +430,6 @@ public class VardiyaGun extends BaseObject {
 
 			if (this.getIslemVardiya() == null)
 				setVardiyaZamani();
-
 			Kapi kapi = null;
 			try {
 				kapi = hareket.getKapiView().getKapi();
@@ -464,8 +463,7 @@ public class VardiyaGun extends BaseObject {
 
 			}
 		}
-		if (durum && getVardiyaDateStr().equals("20211223"))
-			logger.debug(hareket.getZaman() + " " + hareket.getId());
+
 		return durum;
 
 	}
@@ -478,6 +476,8 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public boolean hareketKontrolZamansiz(HareketKGS hareket, Boolean hareketDuzelt) {
 		Kapi kapi = null;
+	
+
 		try {
 			kapi = hareket.getKapiView().getKapi();
 		} catch (Exception e) {
@@ -1167,7 +1167,7 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public boolean isCalismayaBaslamadi() {
-		boolean iseBaslamadi = PdksUtil.tarihKarsilastirNumeric(personel.getIseBaslamaTarihi(), vardiyaDate) == 1;
+		boolean iseBaslamadi = PdksUtil.tarihKarsilastirNumeric(personel.getIseGirisTarihi(), vardiyaDate) == 1;
 		return iseBaslamadi;
 	}
 
@@ -1947,6 +1947,7 @@ public class VardiyaGun extends BaseObject {
 	public void setIsKurVardiya(IsKurVardiyaGun isKurVardiya) {
 		this.isKurVardiya = isKurVardiya;
 	}
+
 	@Transient
 	public Double getCalismaSuaSaati() {
 		return calismaSuaSaati;

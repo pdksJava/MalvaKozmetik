@@ -204,7 +204,7 @@ public class KGSHareketHome extends EntityHome<HareketKGS> {
 	public void iptalIslemi() {
 		if (onayDurum.equals("1")) {
 
-			if (this.getInstance().getSirket().equals("K"))
+			if (this.getInstance().getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
 				kgsId = this.getInstance().getHareketTableId();
 			else
 				pdksId = this.getInstance().getHareketTableId();
@@ -265,7 +265,7 @@ public class KGSHareketHome extends EntityHome<HareketKGS> {
 
 	public void onaylama() {
 		HareketKGS kgsHareket = this.getInstance();
-		if (kgsHareket.getSirket().equals("A")) {
+		if (kgsHareket.getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS)) {
 			kgsId = 0;
 			pdksId = kgsHareket.getHareketTableId();
 		} else {

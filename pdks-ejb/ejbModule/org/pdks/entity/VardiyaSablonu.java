@@ -212,7 +212,7 @@ public class VardiyaSablonu extends BaseObject {
 		Date tarih = personel != null ? gunler.get(gun - 1) : null;
 		boolean offAcik = Boolean.FALSE;
 		if (tarih != null)
-			offAcik = PdksUtil.tarihKarsilastirNumeric(personel.getIseBaslamaTarihi(), tarih) == 1 || PdksUtil.tarihKarsilastirNumeric(tarih, personel.getSonCalismaTarihi()) == 1;
+			offAcik = PdksUtil.tarihKarsilastirNumeric(personel.getIseGirisTarihi(), tarih) == 1 || PdksUtil.tarihKarsilastirNumeric(tarih, personel.getSonCalismaTarihi()) == 1;
 		ArrayList<Vardiya> list = (ArrayList<Vardiya>) vardiyaList.clone();
 		if (offAcik) {
 			switch (gun) {

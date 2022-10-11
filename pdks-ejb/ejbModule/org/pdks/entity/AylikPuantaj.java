@@ -709,7 +709,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 					String dateStr = (yil * 100 + ay) + "01";
 					Date basTarih = PdksUtil.convertToJavaDate(dateStr, "yyyyMMdd");
 					Date bitTarih = PdksUtil.tariheGunEkleCikar(PdksUtil.tariheAyEkleCikar(basTarih, 1), -1);
-					if (yoneticisi.getIseBaslamaTarihi().getTime() <= bitTarih.getTime() && yoneticisi.getIstenAyrilisTarihi().getTime() >= basTarih.getTime())
+					if (yoneticisi.getIseGirisTarihi().getTime() <= bitTarih.getTime() && yoneticisi.getIstenAyrilisTarihi().getTime() >= basTarih.getTime())
 						yonetici = yoneticisi;
 				}
 				value = (yonetici != null && yonetici.getId() != null) || pdksPersonel.isSanalPersonelMi();

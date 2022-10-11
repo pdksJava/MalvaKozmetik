@@ -256,16 +256,14 @@
 									<rich:toolTip for="hareketBilgi#{hareket.id}">
 										<TABLE>
 											<TR>
-												<TD nowrap="nowrap" align="left"><b>Onaylayan : </b>
-												<h:outputText value="#{hareket.islem.onaylayanUser.adSoyad }" /></TD>
+												<TD nowrap="nowrap" align="left"><b>Onaylayan : </b> <h:outputText value="#{hareket.islem.onaylayanUser.adSoyad }" /></TD>
 											</TR>
 											<TR>
-												<TD nowrap="nowrap" align="left"><b>Onay Nedeni : </b>
-												<h:outputText value="#{hareket.islem.neden.aciklama}" /></TD>
+												<TD nowrap="nowrap" align="left"><b>Onay Nedeni : </b> <h:outputText value="#{hareket.islem.neden.aciklama}" /></TD>
 											</TR>
 											<TR>
-												<TD nowrap="nowrap" align="left"><b>Onay Zamanı : </b>
-												<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.islem.olusturmaTarihi)}" /></TD>
+												<TD nowrap="nowrap" align="left"><b>Onay Zamanı : </b> <h:outputText
+														value="#{authenticatedUser.dateTimeFormatla(hareket.islem.olusturmaTarihi)}" /></TD>
 											</TR>
 
 										</TABLE>
@@ -449,6 +447,93 @@
 
 		</rich:modalPanel>
 
+		<rich:modalPanel id="editIzinliHareketPanel" autosized="true" width="750">
+			<f:facet name="header">
+				<ui:fragment>
+					<DIV>#{fazlaMesaiHesaplaHome.seciliAylikPuantaj.pdksPersonel.pdksSicilNo} #{fazlaMesaiHesaplaHome.seciliAylikPuantaj.pdksPersonel.adSoyad}
+						Hareket Aktarımı</DIV>
+
+				</ui:fragment>
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="editIzinliHareketlink" styleClass="hidelink" />
+					<rich:componentControl for="editIzinliHareketPanel" attachTo="editIzinliHareketlink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<f:verbatim> #{fazlaMesaiHesaplaHome.tmpAlan}</f:verbatim>
+				<br />
+				<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.hareketler}">
+					<a4j:commandButton value="Hareket Aktar" action="#{fazlaMesaiHesaplaHome.ciftBolumCalisanHareketGuncelle()}"
+						onclick="#{rich:component('wait')}.show()" reRender="hareketTables"
+						oncomplete="#{rich:component('wait')}.hide();if (#{fazlaMesaiHesaplaHome.tmpAlan==''})   #{rich:component('editIzinliHareketPanel')}.hide() ;" />
+					<a4j:outputPanel id="onayList">
+						<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiHesaplaHome.hareketler}" var="hareket" rows="20" rowKeyVar="row">
+							<f:facet name="header">
+								<ui:fragment>
+									<h:outputText value="Giriş Çıkış Hareketleri" />
+
+								</ui:fragment>
+							</f:facet>
+
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+
+									<ui:fragment>
+										<h:outputText value="İşlem Yap" />
+										<br></br>
+										<h:selectBooleanCheckbox value="#{fazlaMesaiHesaplaHome.checkBoxDurum}">
+											<a4j:support event="onclick" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.ciftBolumCalisanSec}" reRender="onayList" />
+
+										</h:selectBooleanCheckbox>
+									</ui:fragment>
+								</f:facet>
+								<h:selectBooleanCheckbox value="#{hareket.checkBoxDurum}" />
+							</rich:column>
+
+
+							<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}" style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Hareket No" />
+								</f:facet>
+								<h:outputText value="#{hareket.id}" />
+
+							</rich:column>
+
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Kapı" />
+								</f:facet>
+
+								<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+
+
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Kapı Tip" />
+								</f:facet>
+								<h:outputText value="#{hareket.kapiView.kapi.tipi.aciklama}" />
+							</rich:column>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.orjinalZaman)}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+					</a4j:outputPanel>
+				</ui:fragment>
+
+			</h:form>
+		</rich:modalPanel>
+
 		<rich:modalPanel id="onayPanel" autosized="true" width="750">
 			<f:facet name="header">
 	 			Fazla Mesai Onaylama
@@ -482,8 +567,6 @@
 				</ui:fragment>
 			</h:form>
 		</rich:modalPanel>
-
-
 	</ui:define>
 
 </ui:composition>

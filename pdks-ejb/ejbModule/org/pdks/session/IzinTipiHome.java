@@ -394,8 +394,8 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 					adresler = new ArrayList<IzinTipiMailAdres>(mailMap.values());
 					for (Iterator iterator = adresler.iterator(); iterator.hasNext();) {
 						IzinTipiMailAdres izinTipiMailAdres = (IzinTipiMailAdres) iterator.next();
-						session.delete(izinTipiMailAdres);
-					}
+						pdksEntityController.deleteObject(session, entityManager, izinTipiMailAdres);
+ 					}
 				}
 				adresler = null;
 				mailMap = null;

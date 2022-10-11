@@ -21,14 +21,14 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity(name = "NOTICE")
-public class Notice implements Serializable,  Cloneable {
+public class Notice implements Serializable, Cloneable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3459223276596848291L;
 	// seam-gen attributes (you should probably edit these)
 	private Long id;
-	private Integer version;
+	private Integer version = 0;
 	private String name = "";
 	private String value = "";
 	private String description = "";
@@ -70,8 +70,9 @@ public class Notice implements Serializable,  Cloneable {
 		return value;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setValue(String aciklama) {
+		// aciklama = aciklama != null ? PdksUtil.getHtmlAciklama(aciklama) : "";
+		this.value = aciklama;
 	}
 
 	@Lob
@@ -114,10 +115,17 @@ public class Notice implements Serializable,  Cloneable {
 	public void setChangeDate(Date changeDate) {
 		this.changeDate = changeDate;
 	}
+
+	@Transient
+	public String getStringHTML() {
+		String aciklama = value != null ? PdksUtil.getHtmlAciklama(value) : "";
+		return aciklama;
+	}
+
 	@Transient
 	public Object clone() {
 		try {
-			 
+
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
 			// bu class cloneable oldugu icin buraya girilmemeli...

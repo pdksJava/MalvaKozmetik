@@ -46,7 +46,7 @@ public class Vardiya extends BaseObject {
 	public static final char TIPI_IZIN = 'I';
 	public static final char TIPI_HASTALIK_RAPOR = 'S';
 
-	public static Date vardiyaKontrolTarih, vardiyaKontrolTarih2, vardiyaKontrolTarih3;
+	public static Date vardiyaKontrolTarih, vardiyaKontrolTarih2, vardiyaKontrolTarih3, vardiyaAySonuKontrolTarih;
 
 	private static Integer fazlaMesaiBasSaati = 2, offFazlaMesaiBasDakika = -60, haftaTatiliFazlaMesaiBasDakika = -60;
 	private String adi, kisaAdi, styleClass;
@@ -65,7 +65,7 @@ public class Vardiya extends BaseObject {
 	private Date vardiyaBasZaman, vardiyaBitZaman, vardiyaTarih, arifeBaslangicTarihi;
 	private Date vardiyaTelorans1BasZaman, vardiyaTelorans2BasZaman, vardiyaTelorans1BitZaman, vardiyaTelorans2BitZaman;
 	private Date vardiyaFazlaMesaiBasZaman, vardiyaFazlaMesaiBitZaman;
-	private boolean farkliGun = Boolean.FALSE;
+	private boolean farkliGun = Boolean.FALSE, ayinSonGunDurum = Boolean.FALSE;
 	private Boolean mesaiOde, sua = Boolean.FALSE;
 	private Vardiya sonrakiVardiya, oncekiVardiya;
 	private CalismaSekli calismaSekli;
@@ -458,8 +458,12 @@ public class Vardiya extends BaseObject {
 	// TODO Vardiyalar kontrol ediliyor
 	@Transient
 	public void setVardiyaZamani(VardiyaGun pdksVardiyaGun) {
-		Date tarih = pdksVardiyaGun.getVardiyaDate();
-		if (tarih != null) {
+		Date tarih = null;
+		ayinSonGunDurum = false;
+		if (pdksVardiyaGun != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(pdksVardiyaGun.getVardiyaDate());
+			tarih = cal.getTime();
 			if (vardiyaKontrolTarih3 != null && tarih.after(vardiyaKontrolTarih3))
 				vardiyaKontrol3(pdksVardiyaGun, tarih);
 			else if (vardiyaKontrolTarih2 != null && tarih.after(vardiyaKontrolTarih2))
@@ -468,6 +472,45 @@ public class Vardiya extends BaseObject {
 				vardiyaKontrol1(pdksVardiyaGun, tarih);
 			else
 				vardiyaKontrol(pdksVardiyaGun, tarih);
+
+			tarih = cal.getTime();
+
+			Vardiya vardiyaCalisma = null;
+			if (vardiyaAySonuKontrolTarih != null && tarih.after(vardiyaAySonuKontrolTarih)) {
+				Personel personel = pdksVardiyaGun.getPersonel();
+				if (personel != null && personel.getId() != null) {
+					vardiyaCalisma = pdksVardiyaGun.getIslemVardiya();
+					if (personel.getSskCikisTarihi() != null && personel.getSskCikisTarihi().getTime() <= tarih.getTime()) {
+						ayinSonGunDurum = vardiyaCalisma.isCalisma() == false || vardiyaCalisma.getBitSaat() > vardiyaCalisma.getBasSaat();
+					} else if (pdksVardiyaGun.getVardiya().isCalisma()) {
+						if (vardiyaCalisma.getBitSaat() > vardiyaCalisma.getBasSaat()) {
+							if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null) {
+								// Calendar cal = Calendar.getInstance();
+								// cal.setTime(tarih);
+								// cal.set(Calendar.DATE, 1);
+								// cal.add(Calendar.MONTH, 1);
+								// String key2 = PdksUtil.convertToDateString(cal.getTime(), "yyyyMMdd");
+								// ayinSonGunDurum = pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().getId() != null && key2.equals(pdksVardiyaGun.getSonrakiVardiyaGun().getVardiyaDateStr());
+								ayinSonGunDurum = true;
+							}
+						}
+					}
+				}
+				if (ayinSonGunDurum) {
+					cal.setTime(PdksUtil.tariheGunEkleCikar(tarih, 1));
+					int dakika = vardiyaCalisma.getCikisGecikmeToleransDakika();
+					if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().isCalisma())
+						dakika = pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().getGirisErkenToleransDakika();
+					cal.set(Calendar.MINUTE, -dakika);
+					cal.set(Calendar.MILLISECOND, -100);
+					vardiyaFazlaMesaiBitZaman = cal.getTime();
+					vardiyaCalisma.setVardiyaFazlaMesaiBitZaman(vardiyaFazlaMesaiBitZaman);
+					if (pdksVardiyaGun.getSonrakiVardiya() != null) {
+						pdksVardiyaGun.getSonrakiVardiya().setVardiyaFazlaMesaiBasZaman(vardiyaFazlaMesaiBitZaman);
+
+					}
+				}
+			}
 		}
 		setVardiyaTarih(tarih);
 
@@ -821,11 +864,11 @@ public class Vardiya extends BaseObject {
 			}
 		}
 		String key = PdksUtil.convertToDateString(tarih, "yyyyMMdd");
+		Calendar cal = Calendar.getInstance();
 
 		long zamanBas = basSaat * 100 + basDakika;
 		long zamanBit = bitSaat * 100 + bitDakika;
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(tarih);
+
 		Date sonGun = null;
 		if (bitSaat > basSaat) {
 			if (sonrakiVardiya != null && sonrakiVardiya.isHaftaTatil()) {
@@ -839,6 +882,8 @@ public class Vardiya extends BaseObject {
 				logger.debug(pdksVardiyaGun.getVardiyaKeyStr() + " " + sonrakiVardiya.getKisaAciklama());
 		}
 		if (isCalisma()) {
+			// if (sonGun == null && ayinSonGun)
+			// sonGun = PdksUtil.tariheGunEkleCikar(tarih, 1);
 			cal = Calendar.getInstance();
 			cal.setTime(tarih);
 			cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE), bitSaat, bitDakika, 0);
@@ -918,7 +963,7 @@ public class Vardiya extends BaseObject {
 
 		} else if (tarih != null) {
 			Vardiya oncekiIslemVardiya = pdksVardiyaGun.getOncekiVardiyaGun() != null && pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() != null ? pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() : null;
-			Vardiya sonrakiIslemVardiya = pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().isCalisma() ? pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() : null;
+			Vardiya sonrakiIslemVardiya = pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().isCalisma() ? pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() : null;
 			vardiyaBasZaman = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(tarih, "yyyyMMdd") + " 13:00", "yyyyMMdd HH:mm");
 			cal = Calendar.getInstance();
 			cal.setTime(tarih);
@@ -1551,5 +1596,22 @@ public class Vardiya extends BaseObject {
 	@Transient
 	public boolean isIsKurMu() {
 		return isKur != null && isKur;
+	}
+
+	public static Date getVardiyaAySonuKontrolTarih() {
+		return vardiyaAySonuKontrolTarih;
+	}
+
+	public static void setVardiyaAySonuKontrolTarih(Date vardiyaAySonuKontrolTarih) {
+		Vardiya.vardiyaAySonuKontrolTarih = vardiyaAySonuKontrolTarih;
+	}
+
+	@Transient
+	public boolean isAyinSonGunDurum() {
+		return ayinSonGunDurum;
+	}
+
+	public void setAyinSonGunDurum(boolean ayinSonGunDurum) {
+		this.ayinSonGunDurum = ayinSonGunDurum;
 	}
 }

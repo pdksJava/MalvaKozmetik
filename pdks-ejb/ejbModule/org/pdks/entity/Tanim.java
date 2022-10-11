@@ -52,6 +52,7 @@ public class Tanim implements Serializable, Cloneable {
 	public static final String TIPI_IL = "IL";
 	public static final String TIPI_ILCE = "ILCE";
 	public static final String TIPI_MENU_BILESENI = "MENU_BILESENI";
+	public static final String TIPI_DUYURU = "DUYURULAR";
 	public static final String TIPI_BAGLI_DEPARTMANLAR = "BAGLI_DEPARTMAN";
 	public static final String TIPI_TATIL_TIPI = "TATIL_TIPI";
 	public static final String TIPI_IZIN_TIPI = "IZIN_TIPI";
@@ -97,7 +98,7 @@ public class Tanim implements Serializable, Cloneable {
 
 	public static final String DEFAULT_DOVIZ_KODU = "TL";
 	public static final String IKINCI_YONETICI_ONAYLAMAZ = "ikinciYoneticiOlmaz";
-	
+
 	private Long id;
 	private String tipi;
 	private Tanim parentTanim;

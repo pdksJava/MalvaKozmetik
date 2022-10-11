@@ -104,7 +104,7 @@ public class IzinBakiyeGuncelleme {
 						Date time = zamanlayici.getDbTime(session);
 						hataGonder = Boolean.TRUE;
 						hataKonum = "Zaman kontrolu yapılıyor ";
-						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
+						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(session);
 
 						// if (!zamanDurum)
 						// zamanDurum = PdksUtil.getTestDurum();

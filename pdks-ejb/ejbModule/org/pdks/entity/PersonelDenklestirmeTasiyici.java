@@ -56,8 +56,6 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 	private DenklestirmeAy denklestirmeAy;
 	private Integer version = 0;
 
-	
-	
 	public PersonelDenklestirmeTasiyici() {
 		super();
 	}
@@ -182,6 +180,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 			vardiyaGunleriMap = new TreeMap<String, VardiyaGun>();
 			VardiyaSablonu sablonu = personel.getSablon();
 			Calendar cal = Calendar.getInstance();
+			Date iseGirisTarihi = personel.getIseGirisTarihi(), sonCalismaTarihi = personel.getSonCalismaTarihi();
 			TreeMap<Integer, TreeMap> vardiyaHaftaMap = new TreeMap<Integer, TreeMap>();
 			for (Iterator<String> iterator = genelHaftaMap.keySet().iterator(); iterator.hasNext();) {
 				String gun = (String) iterator.next();
@@ -196,7 +195,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 				if (tatilGunleriMap.containsKey(gun))
 					pdksVardiyaGun.setTatil(tatilGunleriMap.get(gun));
 
-				if (sablonu != null && vardiyaDate.getTime() >= personel.getIseBaslamaTarihi().getTime() && vardiyaDate.getTime() <= personel.getSonCalismaTarihi().getTime()) {
+				if (sablonu != null && vardiyaDate.getTime() >= iseGirisTarihi.getTime() && vardiyaDate.getTime() <= sonCalismaTarihi.getTime()) {
 					cal.setTime(vardiyaDate);
 					switch (cal.get(Calendar.DAY_OF_WEEK)) {
 					case Calendar.MONDAY:

@@ -779,7 +779,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							yetkiliTesisler = new ArrayList<UserTesis>(tesisler.values());
 							for (Iterator iterator = yetkiliTesisler.iterator(); iterator.hasNext();) {
 								UserTesis userTesis = (UserTesis) iterator.next();
-								session.delete(userTesis);
+
+								pdksEntityController.deleteObject(session, entityManager, userTesis);
 
 							}
 						}
@@ -787,7 +788,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							yetkiliRoller = new ArrayList<UserRoles>(roller.values());
 							for (Iterator iterator = yetkiliRoller.iterator(); iterator.hasNext();) {
 								UserRoles userRoles = (UserRoles) iterator.next();
-								session.delete(userRoles);
+								pdksEntityController.deleteObject(session, entityManager, userRoles);
 
 							}
 						}
@@ -1196,7 +1197,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (kullanici.getId() != null)
 				PdksUtil.setUserYetki(kullanici);
 			pdksPersonel.setKullanici(kullanici);
-//			logger.info(tesisYetki + " " + kullanici.getId());
+			// logger.info(tesisYetki + " " + kullanici.getId());
 		}
 		if (pdksPersonel.getCalismaModeli() == null && calismaModeliList.size() == 1) {
 			pdksPersonel.setCalismaModeli(calismaModeliList.get(0));

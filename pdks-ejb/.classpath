@@ -15,7 +15,6 @@
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/janino.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jboss-el.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jboss-seam-remoting.jar"/>
-	<classpathentry kind="lib" path="/pdks-ear/EarContent/jboss-seam.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jbosssx.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jbpm-jpdl.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/log4j.jar"/>
@@ -30,5 +29,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container/pdks-web"/>
+	<classpathentry kind="lib" path="/pdks-ear/EarContent/jboss-seam.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

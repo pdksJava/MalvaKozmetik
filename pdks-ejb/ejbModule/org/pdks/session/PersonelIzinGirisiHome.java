@@ -3650,8 +3650,11 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 				session.saveOrUpdate(istirahat);
 
-			} else if (istirahat.getId() != null)
-				session.delete(istirahat);
+			} else if (istirahat.getId() != null) {
+
+				pdksEntityController.deleteObject(session, entityManager, istirahat);
+
+			}
 			boolean dosyaYazildi = Boolean.FALSE;
 			if (personelIzin.getIzinTipi().getDosyaEkle() != null && personelIzin.getIzinTipi().getDosyaEkle()) {
 				Dosya dosya = izinDosya.getDosya();
@@ -3670,13 +3673,16 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				}
 
 			}
-			if (!dosyaYazildi && izinDosya.getId() != null)
-
-				session.delete(izinDosya);
+			if (!dosyaYazildi && izinDosya.getId() != null) {
+			 
+					pdksEntityController.deleteObject(session, entityManager, izinDosya );
+				 
+			}
 
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 				PersonelIzinDetay personelIzinDetay = (PersonelIzinDetay) iterator.next();
-				session.delete(personelIzinDetay);
+
+				pdksEntityController.deleteObject(session, entityManager, personelIzinDetay);
 
 			}
 			if (isYeni || (personelIzin.getOnaylayanlar() == null || personelIzin.getOnaylayanlar().isEmpty()))

@@ -8,7 +8,8 @@
 	<ui:fragment>
 
 		<ui:fragment rendered="#{fazlaMesaiHesaplaHome.seciliBolum!=null and fazlaMesaiHesaplaHome.ikRole }">
-			<DIV style="text-align: center; font-weight: bold; color: blue; font-size: 16px;">#{fazlaMesaiHesaplaHome.seciliBolum.aciklama} [ #{fazlaMesaiHesaplaHome.denklestirmeAy.ayAdi} #{fazlaMesaiHesaplaHome.yil} ]</DIV>
+			<DIV style="text-align: center; font-weight: bold; color: blue; font-size: 16px;">#{fazlaMesaiHesaplaHome.seciliBolum.aciklama} [
+				#{fazlaMesaiHesaplaHome.denklestirmeAy.ayAdi} #{fazlaMesaiHesaplaHome.yil} ]</DIV>
 		</ui:fragment>
 		<DIV class="#{authenticatedUser.scroolClass}" id="#{authenticatedUser.scroolDiv}">
 
@@ -23,6 +24,9 @@
 								</ui:fragment></th>
 
 
+						</ui:fragment>
+						<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.ciftBolumCalisanMap}">
+							<th style="width: 60px"><h:outputText value="Çift Çalışan" /></th>
 						</ui:fragment>
 						<th style="width: 20px"><h:outputText value="#{ortakIslemler.personelNoAciklama()}" /></th>
 						<th style="width: 60px"><h:outputText value="Adı Soyadı" /></th>
@@ -44,6 +48,7 @@
 						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.partTimeGoster}">
 							<th style="width: 60px"><h:outputText value="Part Time" /></th>
 						</ui:fragment>
+
 						<a4j:repeat value="#{fazlaMesaiHesaplaHome.aylikPuantajDefault.vardiyalar}" var="vardiya">
 
 							<td class="#{vardiya.headerClass}"
@@ -174,9 +179,22 @@
 												<a4j:commandButton id="donemBitti" image="/img/msgerror.png" />
 												<rich:toolTip for="donemBitti">
 																		Ayın son günü vardiyası bitmedi! 
-																	</rich:toolTip>
+												</rich:toolTip>
 											</ui:fragment>
 										</ui:fragment>
+									</ui:fragment></td>
+							</ui:fragment>
+							<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.ciftBolumCalisanMap}">
+								<td class="#{aylikPuantaj.trClass}" style="width: 20px" align="center"><ui:fragment
+										rendered="#{fazlaMesaiHesaplaHome.ciftBolumCalisan(aylikPuantaj)}">
+										<DIV id="editCiftLink#{aylikPuantaj.pdksPersonel.sicilNo}">
+											<a4j:commandLink ajaxSingle="true" action="#{fazlaMesaiHesaplaHome.ciftBolumCalisanGetir(aylikPuantaj)}"
+												onclick="#{rich:component('wait')}.show()"
+												oncomplete="#{rich:component('wait')}.hide();#{rich:component('editIzinliHareketPanel')}.show()" reRender="editIzinliHareketPanel">
+												<h:graphicImage value="/img/middle.gif" style="border:0" />
+											</a4j:commandLink>
+										</DIV>
+
 									</ui:fragment></td>
 							</ui:fragment>
 							<td class="#{aylikPuantaj.trClass}" style="width: 20px" align="center">
@@ -334,7 +352,7 @@
 											<ui:fragment rendered="#{aylikPuantaj.fazlaMesaiSure==0}">
 												<SPAN style="color: red;">#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.personelDenklestirmeAylik.kismiOdemeSure)}</SPAN>
 											</ui:fragment>
- 										</ui:fragment></td>
+										</ui:fragment></td>
 								</ui:fragment>
 								<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
 										rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.fazlaMesaiSure!=0}">

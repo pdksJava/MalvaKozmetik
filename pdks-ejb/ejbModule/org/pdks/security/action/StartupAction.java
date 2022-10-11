@@ -31,8 +31,10 @@ import org.pdks.entity.AccountPermission;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.LDAPDomain;
 import org.pdks.entity.MenuItem;
+import org.pdks.entity.NoteTipi;
 import org.pdks.entity.Notice;
 import org.pdks.entity.Parameter;
+import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.SkinBean;
@@ -212,7 +214,7 @@ public class StartupAction implements Serializable {
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		try {
-			parametreMap.put("name", "anaSayfa");
+			parametreMap.put("name", NoteTipi.ANA_SAYFA.value());
 			parametreMap.put("active", Boolean.TRUE);
 			List<Notice> noticeList = pdksEntityController.getObjectByInnerObjectList(parametreMap, Notice.class);
 			Notice notice = null;
@@ -373,6 +375,24 @@ public class StartupAction implements Serializable {
 			}
 			Vardiya.setVardiyaKontrolTarih(vardiyaKontrolTarih);
 		}
+		Vardiya.setVardiyaAySonuKontrolTarih(null);
+		String grubaGirisTarihiAlanAdi = null;
+		if (parameterMap.containsKey("grubaGirisTarihiAlanAdi"))
+			grubaGirisTarihiAlanAdi = parameterMap.get("grubaGirisTarihiAlanAdi");
+		if (grubaGirisTarihiAlanAdi == null || !(grubaGirisTarihiAlanAdi.trim().equalsIgnoreCase(Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI) || grubaGirisTarihiAlanAdi.trim().equalsIgnoreCase(Personel.COLUMN_NAME_GRUBA_GIRIS_TARIHI)))
+			grubaGirisTarihiAlanAdi = Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI;
+		Personel.setGrubaGirisTarihiAlanAdi(grubaGirisTarihiAlanAdi);
+		if (parameterMap.containsKey("vardiyaAySonuKontrolTarih")) {
+			String dateStr = parameterMap.get("vardiyaAySonuKontrolTarih");
+			Date vardiyaAySonuKontrolTarih = null;
+			try {
+				vardiyaAySonuKontrolTarih = PdksUtil.convertToJavaDate(dateStr, "yyyy-MM-dd");
+			} catch (Exception e) {
+				vardiyaAySonuKontrolTarih = null;
+			}
+			Vardiya.setVardiyaAySonuKontrolTarih(vardiyaAySonuKontrolTarih);
+		}
+
 		if (parameterMap.containsKey("vardiyaKontrolTarih3")) {
 			String dateStr = parameterMap.get("vardiyaKontrolTarih3");
 			Date vardiyaKontrolTarih3 = null;

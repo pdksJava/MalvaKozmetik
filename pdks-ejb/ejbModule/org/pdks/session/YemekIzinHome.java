@@ -117,7 +117,7 @@ public class YemekIzinHome extends EntityHome<YemekIzin> implements Serializable
 			}
 			for (Iterator iterator2 = kayitliVardiyaYemekIzinList.iterator(); iterator2.hasNext();) {
 				VardiyaYemekIzin vyi = (VardiyaYemekIzin) iterator2.next();
-				session.delete(vyi);
+				pdksEntityController.deleteObject(session, entityManager,vyi );
 			}
 
 			session.flush();

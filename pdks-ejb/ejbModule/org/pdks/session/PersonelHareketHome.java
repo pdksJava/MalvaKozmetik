@@ -484,7 +484,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	public void guncelleSil(HareketKGS kgsHareket, String tip) {
 		setInstance(kgsHareket);
 		fillHareketIslemList();
-		if (tip.equals("S") || tip.equals("D") || kgsHareket.getSirket().equals("K"))
+		if (tip.equals("S") || tip.equals("D") || kgsHareket.getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
 			getInstance().setIslem(new PersonelHareketIslem());
 		Calendar cal = Calendar.getInstance();
 		if (islemVardiyaGun != null)
@@ -511,7 +511,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		Tanim neden = (Tanim) pdksEntityController.getObjectByInnerObject(map1, Tanim.class);
 		if (kgsHareket.getTerminalKapi() != null && neden != null) {
 			Long kgsId = 0L, abhId = 0L;
-			if (kgsHareket.getId().startsWith("K"))
+			if (kgsHareket.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
 				kgsId = kgsHareket.getHareketTableId();
 			else
 				abhId = kgsHareket.getHareketTableId();
@@ -626,7 +626,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					session.clear();
 				} else {
 
-					if (kgsHareket.getId().startsWith("K"))
+					if (kgsHareket.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
 						kgsId = kgsHareket.getHareketTableId();
 					else
 						abhId = kgsHareket.getHareketTableId();
@@ -638,9 +638,9 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 
 					parametreMap.clear();
 					if (kgsId != 0)
-						parametreMap.put("hareketTableId", "K" + kgsId);
+						parametreMap.put("hareketTableId", HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS + kgsId);
 					else
-						parametreMap.put("hareketTableId", "A" + abhId);
+						parametreMap.put("hareketTableId", HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS + abhId);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 
@@ -986,7 +986,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		for (Iterator<Personel> iterator = list.iterator(); iterator.hasNext();) {
 			Personel pdksPersonel = iterator.next();
 			pdksPersonel.setCheckBoxDurum(Boolean.TRUE);
-			if (!pdksPersonel.getPdks() || PdksUtil.tarihKarsilastirNumeric(pdksPersonel.getIseBaslamaTarihi(), tarih) == 1 || PdksUtil.tarihKarsilastirNumeric(tarih, pdksPersonel.getSonCalismaTarihi()) == 1)
+			if (!pdksPersonel.getPdks() || PdksUtil.tarihKarsilastirNumeric(pdksPersonel.getIseGirisTarihi(), tarih) == 1 || PdksUtil.tarihKarsilastirNumeric(tarih, pdksPersonel.getSonCalismaTarihi()) == 1)
 				pdksPersonel.setCheckBoxDurum(Boolean.FALSE);
 
 		}

@@ -121,6 +121,133 @@ public class PdksUtil implements Serializable {
 
 	private static boolean sistemDestekVar = false;
 
+	public static String getHtmlAciklama(String aciklama) {
+		String str = aciklama;
+		if (aciklama != null) {
+			if (str.length() > 0) {
+				StringBuffer sb = new StringBuffer();
+				for (int i = 0; i < str.length(); i++) {
+					char c = str.charAt(i);
+					int j = (int) c;
+					switch (j) {
+					case 10:
+						sb.append("\n");
+						break;
+					default:
+						if (j >= 32)
+							sb.append(String.valueOf(c));
+						else
+							sb.append("");
+						break;
+					}
+				}
+				str = sb.toString();
+				sb = null;
+			}
+			HashMap<String, String> map = getSpecialMap();
+			for (String pattern : map.keySet()) {
+				if (str.indexOf(pattern) >= 0) {
+					String replace = map.get(pattern);
+					str = PdksUtil.replaceAllManuel(str, pattern, replace);
+				}
+			}
+			str = convertUTF8(str);
+		}
+
+		return str;
+	}
+
+	/**
+	 * @return
+	 */
+	private static HashMap<String, String> getSpecialMap() {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("&Agrave;", "À");
+		map.put("&Aacute;", "Á");
+		map.put("&Acirc;", "Â");
+		map.put("&Atilde;", "Ã");
+		map.put("&Auml;", "Ä");
+		map.put("&Aring;", "Å");
+		map.put("&agrave;", "à");
+		map.put("&aacute;", "á");
+		map.put("&acirc;", "â");
+		map.put("&atilde;", "ã");
+		map.put("&auml;", "ä");
+		map.put("&aring;", "å");
+		map.put("&AElig;", "Æ");
+		map.put("&aelig;", "æ");
+		map.put("&szlig;", "ß");
+		map.put("&Ccedil;", "Ç");
+		map.put("&ccedil;", "ç");
+		map.put("&Egrave;", "È");
+		map.put("&Eacute;", "É");
+		map.put("&Ecirc;", "Ê");
+		map.put("&Euml;", "Ë");
+		map.put("&egrave;", "è");
+		map.put("&eacute;", "é");
+		map.put("&ecirc;", "ê");
+		map.put("&euml;", "ë");
+		map.put("&#131;", "ƒ");
+		map.put("&Igrave;", "Ì");
+		map.put("&Iacute;", "Í");
+		map.put("&Icirc;", "Î");
+		map.put("&Iuml;", "Ï");
+		map.put("&igrave;", "ì");
+		map.put("&iacute;", "í");
+		map.put("&icirc;", "î");
+		map.put("&iuml;", "ï");
+		map.put("&Ntilde;", "Ñ");
+		map.put("&ntilde;", "ñ");
+		map.put("&Ograve;", "Ò");
+		map.put("&Oacute;", "Ó");
+		map.put("&Ocirc;", "Ô");
+		map.put("&Otilde;", "Õ");
+		map.put("&Ouml;", "Ö");
+		map.put("&ograve;", "ò");
+		map.put("&oacute;", "ó");
+		map.put("&ocirc;", "ô");
+		map.put("&otilde;", "õ");
+		map.put("&ouml;", "ö");
+		map.put("&Oslash;", "Ø");
+		map.put("&oslash;", "ø");
+		map.put("&#140;", "Œ");
+		map.put("&#156;", "œ");
+		map.put("&#138;", "Š");
+		map.put("&#154;", "š");
+		map.put("&Ugrave;", "Ù");
+		map.put("&Uacute;", "Ú");
+		map.put("&Ucirc;", "Û");
+		map.put("&Uuml;", "Ü");
+		map.put("&ugrave;", "ù");
+		map.put("&uacute;", "ú");
+		map.put("&ucirc;", "û");
+		map.put("&uuml;", "ü");
+		map.put("&#181;", "µ");
+		map.put("&#215;", "×");
+		map.put("&Yacute;", "Ý");
+		map.put("&#159;", "Ÿ");
+		map.put("&yacute;", "ý");
+		map.put("&yuml;", "ÿ");
+		map.put("&#176;", "°");
+		map.put("&#134;", "†");
+		map.put("&#135;", "‡");
+		map.put("&lt;", "<");
+		map.put("&gt;", ">");
+		map.put("&#177;", "±");
+		map.put("&#171;", "«");
+		map.put("&#187;", "»");
+		map.put("&#191;", "¿");
+		map.put("&#161;", "¡");
+		map.put("&#183;", "·");
+		map.put("&#149;", "•");
+		map.put("&#153;", "™");
+		map.put("&copy;", "©");
+		map.put("&reg;", "®");
+		map.put("&#167;", "§");
+		map.put("&#182;", "¶");
+		return map;
+	}
+
 	/**
 	 * @param value
 	 * @return
@@ -541,22 +668,22 @@ public class PdksUtil implements Serializable {
 	public static String convertUTF8(String sonuc) {
 		if (sonuc != null) {
 			if (sonuc.indexOf('İ') >= 0) {// I için 1
-				sonuc = replaceAll(sonuc, String.valueOf('İ'), "\u0130");
+				sonuc = replaceAllManuel(sonuc, String.valueOf('İ'), "\u0130");
 			}
 			if (sonuc.indexOf('ı') >= 0) {// i için 2
-				sonuc = replaceAll(sonuc, String.valueOf('ı'), "\u0131");
+				sonuc = replaceAllManuel(sonuc, String.valueOf('ı'), "\u0131");
 			}
 			if (sonuc.indexOf('Ş') >= 0) {// i için 2
-				sonuc = replaceAll(sonuc, String.valueOf('Ş'), "\u015E");
+				sonuc = replaceAllManuel(sonuc, String.valueOf('Ş'), "\u015E");
 			}
 			if (sonuc.indexOf('ş') >= 0) {// i için 2
-				sonuc = replaceAll(sonuc, String.valueOf('ş'), "\u015F");
+				sonuc = replaceAllManuel(sonuc, String.valueOf('ş'), "\u015F");
 			}
 			if (sonuc.indexOf('Ğ') >= 0) {// i için 2
-				sonuc = replaceAll(sonuc, String.valueOf('Ğ'), "\u011E");
+				sonuc = replaceAllManuel(sonuc, String.valueOf('Ğ'), "\u011E");
 			}
 			if (sonuc.indexOf('ğ') >= 0) {// i için 2
-				sonuc = replaceAll(sonuc, String.valueOf('ğ'), "\u011F");
+				sonuc = replaceAllManuel(sonuc, String.valueOf('ğ'), "\u011F");
 			}
 		}
 		return sonuc;
@@ -979,6 +1106,20 @@ public class PdksUtil implements Serializable {
 		if (newId == null)
 			newId = 0L;
 		boolean degisti = newId.longValue() != oldId.longValue();
+		return degisti;
+	}
+
+	/**
+	 * @param oldId
+	 * @param newId
+	 * @return
+	 */
+	public static boolean isDoubleDegisti(Double oldId, Double newId) {
+		if (oldId == null)
+			oldId = 0.0d;
+		if (newId == null)
+			newId = 0.0d;
+		boolean degisti = newId.doubleValue() != oldId.doubleValue();
 		return degisti;
 	}
 

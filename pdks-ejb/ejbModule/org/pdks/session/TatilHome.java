@@ -378,8 +378,10 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 					if (pdksTatil.getId() != null && pdksTatil.isPeriyodik())
 						pdksTatil.setDurum(Boolean.TRUE);
 					session.saveOrUpdate(pdksTatil);
-				} else
-					session.delete(pdksTatil);
+				} else {
+					pdksEntityController.deleteObject(session, entityManager, pdksTatil);
+				}
+
 				session.flush();
 				session.clear();
 				fillPdksTatilList();

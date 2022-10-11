@@ -28,6 +28,8 @@ import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiView;
 import org.pdks.entity.Liste;
+import org.pdks.entity.NoteTipi;
+import org.pdks.entity.Notice;
 import org.pdks.entity.Parameter;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelGeciciYonetici;
@@ -89,6 +91,7 @@ public class IseGelmemeUyari implements Serializable {
 	private int ekSahaAlanNo = 2;
 	private List<String> ikMailList = new ArrayList<String>();
 	private boolean tesisYetki = false;
+	private Notice uyariNot;
 
 	/**
 	 * @param sessionx
@@ -518,6 +521,7 @@ public class IseGelmemeUyari implements Serializable {
 							}
 
 							if (kayitVar && !yoneticiMap.isEmpty()) {
+								uyariNot = ortakIslemler.getNotice(NoteTipi.MAIL_CEVAPLAMAMA.value(), Boolean.TRUE, session);
 								ikMailList.clear();
 								fillEkSahaTanim(session);
 								hareketPersonelMap = null;
@@ -719,7 +723,6 @@ public class IseGelmemeUyari implements Serializable {
 
 									logger.info(PdksUtil.setTurkishStr(userYonetici.getPdksPersonel().getSirket().getAd() + " " + user.getAdSoyad() + " " + eposta + " iseGelisUyariMail mesaj gönderildi! "));
 							}
-
 						} catch (Exception ee) {
 							if (islemYapan != null)
 								ee.printStackTrace();
@@ -823,22 +826,28 @@ public class IseGelmemeUyari implements Serializable {
 		} else
 			devam = ikMailList.contains(userYonetici.getStaffId());
 		if (devam) {
-			mail.setSubject("Giriş-Çıkış problemli personeller");
-			StringBuffer sb = new StringBuffer();
-			sb.append("<p>Sayın " + userYonetici.getAdSoyad() + "</p>");
-			sb.append("<p>Aşağıdaki personel giriş çıkışlarında problem vardır.</p>");
-			sb.append("<p></p>");
-			sb.append("<p>Saygılarımla,</p>");
 			List<VardiyaGun> list = userYonetici.getPdksPersonel().getPersonelVardiyalari();
-			mesajIcerikOlustur(userYonetici, sb, list, session);
-			mail.setBody(sb.toString());
-			try {
-				if (tesisYetki && tesisVar)
-					mail.getCcList().clear();
-				mailSatu = ortakIslemler.mailSoapServisGonder(true, mail, renderer, renderAdres, session);
-			} catch (Exception e) {
-				logger.error(e);
-				e.printStackTrace();
+			if (list != null && !list.isEmpty()) {
+				mail.setSubject("Giriş-Çıkış problemli personeller");
+				StringBuffer sb = new StringBuffer();
+				sb.append("<p>Sayın " + userYonetici.getAdSoyad() + "</p>");
+				sb.append("<p>Aşağıdaki personel giriş çıkışlarında problem vardır.</p>");
+				sb.append("<p></p>");
+				sb.append("<p>Saygılarımla,</p>");
+				if (mesajIcerikOlustur(userYonetici, sb, list, session)) {
+					if (uyariNot != null)
+						sb.append(uyariNot.getValue());
+					mail.setBody(sb.toString());
+					try {
+						if (tesisYetki && tesisVar)
+							mail.getCcList().clear();
+						mailSatu = ortakIslemler.mailSoapServisGonder(true, mail, renderer, renderAdres, session);
+					} catch (Exception e) {
+						logger.error(e);
+						e.printStackTrace();
+					}
+				}
+
 			}
 		}
 
@@ -851,7 +860,8 @@ public class IseGelmemeUyari implements Serializable {
 	 * @param list
 	 * @param session
 	 */
-	private void mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, Session session) {
+	private boolean mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, Session session) {
+		boolean mesajGonder = false;
 		TreeMap<String, List<VardiyaGun>> sirketParcalaMap = new TreeMap<String, List<VardiyaGun>>();
 		List<Liste> listeler = new ArrayList<Liste>();
 		List<VardiyaGun> yeniList = new ArrayList<VardiyaGun>();
@@ -903,7 +913,7 @@ public class IseGelmemeUyari implements Serializable {
 					}
 
 				}
-
+				mesajGonder = true;
 				Personel sirketPersonel = sirketSubeList.get(0).getPersonel();
 				sb.append("<H3>" + sirketPersonel.getSirket().getAd() + (sirketPersonel.getTesis() != null ? " " + sirketPersonel.getTesis().getAciklama() : "") + "</H3>");
 				sb.append("<TABLE class=\"mars\" style=\"border: solid 1px\" cellpadding=\"5\" cellspacing=\"0\"><THEAD> <TR>");
@@ -965,6 +975,7 @@ public class IseGelmemeUyari implements Serializable {
 			}
 		}
 		user.getPdksPersonel().setPersonelVardiyalari(yeniList);
+		return mesajGonder;
 	}
 
 	/**
@@ -1131,7 +1142,7 @@ public class IseGelmemeUyari implements Serializable {
 						hataGonder = Boolean.TRUE;
 						hataKonum = "Zaman kontrolu yapılıyor ";
 						Date time = zamanlayici.getDbTime(session);
-						boolean zamanDurum = PdksUtil.getTestDurum() == false && PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
+						boolean zamanDurum = PdksUtil.getTestDurum() == false && PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(session);
 						// if (!zamanDurum)
 						// zamanDurum = PdksUtil.getTestDurum();
 						if (zamanDurum)
@@ -1165,6 +1176,7 @@ public class IseGelmemeUyari implements Serializable {
 	 * @throws Exception
 	 */
 	public String iseGelmemeDurumuCalistir(Session session, User islemYapan, boolean mailGonder) throws Exception {
+		uyariNot = null;
 		if (userYoneticiList == null)
 			userYoneticiList = new ArrayList<User>();
 		else

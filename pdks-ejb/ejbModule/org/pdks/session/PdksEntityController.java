@@ -486,6 +486,20 @@ public class PdksEntityController implements Serializable {
 		return object;
 	}
 
+	/**
+	 * @param session
+	 * @param em
+	 * @param del
+	 */
+	public void deleteObject(Session session, EntityManager em, Object del) {
+		try {
+			session.delete(em == null || em.contains(del) ? del : em.merge(del));
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+
 	public Object getObjectByInnerObject(HashMap fields, Class class1, String esit) {
 		ArrayList<Object> tempObjectList = (ArrayList<Object>) getObjectByInnerObjectList(fields, class1, esit);
 		return (tempObjectList != null && !tempObjectList.isEmpty() ? tempObjectList.get(0) : null);

@@ -1,20 +1,25 @@
 package org.pdks.session;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
+import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.pdks.entity.Notice;
-import org.pdks.security.action.StartupAction;
-import org.pdks.security.entity.User;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.NoteTipi;
+import org.pdks.entity.Notice;
+import org.pdks.entity.Tanim;
+import org.pdks.security.action.StartupAction;
+import org.pdks.security.entity.User;
 
 @Name("noticeHome")
 public class NoticeHome extends EntityHome<Notice> {
@@ -30,6 +35,10 @@ public class NoticeHome extends EntityHome<Notice> {
 	StartupAction startupAction;
 	@In(required = false, create = true)
 	EntityManager entityManager;
+	@In(required = false, create = true)
+	OrtakIslemler ortakIslemler;
+	private List<SelectItem> duyuruTipleri;
+	private String duyuruTip;
 	private Session session;
 	private Notice homeNotice = new Notice();
 
@@ -52,8 +61,8 @@ public class NoticeHome extends EntityHome<Notice> {
 	public String save() {
 		try {
 			Notice notice = getHomeNotice();
-			notice.setChangeDate(new Date());
 			notice.setChangeUser(authenticatedUser);
+			notice.setChangeDate(new Date());
 			session.saveOrUpdate(notice);
 			session.flush();
 
@@ -71,30 +80,55 @@ public class NoticeHome extends EntityHome<Notice> {
 	}
 
 	public void fillNotice() {
-		HashMap parametreMap = new HashMap();
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.clear();
-		parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<Tanim> list = ortakIslemler.getTanimList(Tanim.TIPI_DUYURU, session);
+		if (duyuruTipleri == null)
+			duyuruTipleri = new ArrayList<SelectItem>();
+		else
+			duyuruTipleri.clear();
+		duyuruTip = null;
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			Tanim duyuru = (Tanim) iterator.next();
+			NoteTipi noteTipi = null;
+			try {
+				noteTipi = NoteTipi.fromValue(duyuru.getKodu());
+			} catch (Exception e) {
+			}
+			if (noteTipi == null)
+				continue;
+			if (duyuruTip == null && noteTipi.equals(NoteTipi.ANA_SAYFA))
+				duyuruTip = noteTipi.value();
+			duyuruTipleri.add(new SelectItem(duyuru.getKodu(), duyuru.getAciklama()));
+		}
+		if (duyuruTip != null)
+			getNotice();
+	}
 
+	public void getNotice() {
+		Notice notice = null;
 		try {
-			parametreMap.put("name", "anaSayfa");
-			parametreMap.put("active", Boolean.TRUE);
-			Notice notice = (Notice) pdksEntityController.getObjectByInnerObject(parametreMap, Notice.class);
+			notice = ortakIslemler.getNotice(duyuruTip, null, session);
 			if (notice == null) {
 				notice = new Notice();
-				notice.setName("anaSayfa");
-				notice.setDescription("Ana sayfa açıklama");
+				notice.setName(duyuruTip);
+				for (SelectItem selectItem : duyuruTipleri) {
+					if (selectItem.getValue().equals(duyuruTip))
+						notice.setDescription((String) selectItem.getLabel());
+				}
+				notice.setChangeUser(authenticatedUser);
+				notice.setChangeDate(new Date());
 				notice.setActive(Boolean.TRUE);
 			}
-			setHomeNotice(notice);
+
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
 			logger.error("PDKS hata out : " + e.getMessage());
 			logger.error(e);
 		}
-
+		setHomeNotice(notice);
 	}
 
 	public Session getSession() {
@@ -103,6 +137,22 @@ public class NoticeHome extends EntityHome<Notice> {
 
 	public void setSession(Session session) {
 		this.session = session;
+	}
+
+	public List<SelectItem> getDuyuruTipleri() {
+		return duyuruTipleri;
+	}
+
+	public void setDuyuruTipleri(List<SelectItem> duyuruTipleri) {
+		this.duyuruTipleri = duyuruTipleri;
+	}
+
+	public String getDuyuruTip() {
+		return duyuruTip;
+	}
+
+	public void setDuyuruTip(String duyuruTip) {
+		this.duyuruTip = duyuruTip;
 	}
 
 }

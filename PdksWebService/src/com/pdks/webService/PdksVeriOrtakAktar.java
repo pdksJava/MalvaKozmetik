@@ -2354,12 +2354,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (personel.getId() == null && personel.getSirket() != null) {
 						personel.setFazlaMesaiOde(personel.getSirket().getFazlaMesaiOde() != null && personel.getSirket().getFazlaMesaiOde());
 					}
-					Tanim departman = getTanim(null, "ekSaha1", personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi(), dataMap, saveList);
-					if (departman == null) {
-						departman = bosDepartman;
-						if (bosDepartman != null)
-							kidemHataList.add(parentDepartman.getAciklamatr() + " bilgisi boş olamaz!");
-					}
+
 
 					Tanim bolum = getTanim(null, "ekSaha3", personelERP.getBolumKodu(), personelERP.getBolumAdi(), dataMap, saveList);
 					personel.setTesis(getTanim(personelERP.getSirketKodu(), Tanim.TIPI_TESIS, personelERP.getTesisKodu(), personelERP.getTesisAdi(), dataMap, saveList));
@@ -2377,6 +2372,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (istenAyrilisTarihi == null && notEmptyStr(personelERP.getIstenAyrilmaTarihi()) == false)
 							istenAyrilisTarihi = personel.getIstenAyrilisTarihi();
 					}
+		
 					boolean sanalPersonel = personelERP.getSanalPersonel() != null && personelERP.getSanalPersonel().booleanValue();
 					if (iskurManuelGiris && (personelERP.getIseGirisTarihi() == null || personelERP.getIseGirisTarihi().equals(""))) {
 						sanalPersonel = personel.getId() == null || personel.getSanalPersonel();
@@ -2439,6 +2435,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 						}
 
+					}
+					Tanim departman = getTanim(null, "ekSaha1", personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi(), dataMap, saveList);
+					if (departman == null) {
+						departman = bosDepartman;
+						if (bosDepartman != null && calisiyor)
+							kidemHataList.add(parentDepartman.getAciklamatr() + " bilgisi boş olamaz!");
 					}
 					if (istenAyrilisTarihi != null && istenAyrilisTarihi.after(bugun)) {
 						if (departmanYoneticiRolVar && departman == null && parentDepartman != null)

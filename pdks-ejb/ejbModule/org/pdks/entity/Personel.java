@@ -63,7 +63,6 @@ public class Personel extends BaseObject {
 	public static final String COLUMN_NAME_DOGUM_TARIHI = "DOGUM_TARIHI";
 	public static final String COLUMN_NAME_SSK_CIKIS_TARIHI = "SSK_CIKIS_TARIHI";
 	public static final String COLUMN_NAME_ISKUR_SABLON = "ISKUR_SABLON_ID";
-	
 
 	public static final String STATU_HEKIM = "2";
 
@@ -74,6 +73,8 @@ public class Personel extends BaseObject {
 	public static final String MASRAF_YERI_GENEL_DIREKTOR = "310000";
 
 	private static final long serialVersionUID = -3910172727430872797L;
+
+	public static String grubaGirisTarihiAlanAdi = COLUMN_NAME_ISE_BASLAMA_TARIHI;
 	// seam-gen attributes (you should probably edit these)
 	private String ad = "", soyad = "", erpSicilNo = "", pdksSicilNo, sortAlanAdi = "";
 
@@ -995,6 +996,26 @@ public class Personel extends BaseObject {
 			emailBCC = mailGrubuBCC.getEmail();
 		List<String> mailList = PdksUtil.getListFromString(emailBCC, null);
 		return mailList;
+	}
+
+	@Transient
+	public Date getIseGirisTarihi() {
+		Date tarih = !grubaGirisTarihiAlanAdi.equals(COLUMN_NAME_ISE_BASLAMA_TARIHI) && grubaGirisTarihi != null && iseBaslamaTarihi != null && grubaGirisTarihi.before(iseBaslamaTarihi) ? grubaGirisTarihi : iseBaslamaTarihi;
+		return tarih;
+	}
+
+	public static String getIseGirisTarihiColumn() {
+		String str = grubaGirisTarihiAlanAdi != null && grubaGirisTarihiAlanAdi.trim().length() > 0 ? grubaGirisTarihiAlanAdi : COLUMN_NAME_ISE_BASLAMA_TARIHI;
+		return str;
+	}
+
+	public static String getGrubaGirisTarihiAlanAdi() {
+		String grubaGirisTarihiAlanAdiStr = grubaGirisTarihiAlanAdi != null ? grubaGirisTarihiAlanAdi.trim() : COLUMN_NAME_ISE_BASLAMA_TARIHI;
+		return grubaGirisTarihiAlanAdiStr;
+	}
+
+	public static void setGrubaGirisTarihiAlanAdi(String grubaGirisTarihiAlanAdi) {
+		Personel.grubaGirisTarihiAlanAdi = grubaGirisTarihiAlanAdi;
 	}
 
 }

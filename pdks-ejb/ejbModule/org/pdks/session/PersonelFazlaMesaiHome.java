@@ -682,7 +682,10 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				}
 
 				parametreMap2.put("sskCikisTarihi>=", date);
-				parametreMap2.put("iseBaslamaTarihi<=", date);
+				if (!Personel.getGrubaGirisTarihiAlanAdi().equalsIgnoreCase(Personel.COLUMN_NAME_GRUBA_GIRIS_TARIHI))
+					parametreMap2.put("iseBaslamaTarihi<=", date);
+				else
+					parametreMap2.put("grubaGirisTarihi<=", date);
 				// parametreMap2.put("pdks=", Boolean.TRUE);
 				parametreMap2.put("id", idler);
 				if (session != null)
@@ -1345,7 +1348,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 				List<HareketKGS> list = null;
 				try {
-					list = ortakIslemler.getHareketIdBilgileri(null, "A" + abhCikisId, HareketKGS.class, session);
+					list = ortakIslemler.getHareketIdBilgileri(null, HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS + abhCikisId, HareketKGS.class, session);
 				} catch (Exception e) {
 					list = new ArrayList<HareketKGS>();
 					e.printStackTrace();
@@ -1388,8 +1391,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				mesai.setGuncellemeTarihi(new Date());
 				mesai.setDurum(Boolean.FALSE);
 				session.saveOrUpdate(mesai);
-				// session.delete(mesai);
-				session.flush();
+ 				session.flush();
 				fillHareketMesaiList();
 			} catch (Exception e) {
 			}
