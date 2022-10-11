@@ -1109,8 +1109,6 @@ public class OrtakIslemler implements Serializable {
 		}
 	}
 
-
-
 	/**
 	 * @param fnName
 	 * @param session
@@ -7876,8 +7874,10 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<VardiyaGun> getPersonelIdVardiyalar(List<Long> personelIdler, Date basTarih, Date bitTarih, Session session) {
-		List vardiyaGunList = getAllPersonelIdVardiyalar(personelIdler, basTarih, bitTarih, Boolean.FALSE, session);
-
+		Boolean hepsi = null;
+		if (PdksUtil.isSistemDestekVar() && bitTarih.before(PdksUtil.tariheAyEkleCikar(new Date(), -1)))
+			hepsi = Boolean.TRUE;
+		List vardiyaGunList = getAllPersonelIdVardiyalar(personelIdler, basTarih, bitTarih, hepsi, session);
 		return vardiyaGunList;
 	}
 
@@ -7890,7 +7890,6 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<VardiyaGun> getAllPersonelIdVardiyalar(List<Long> personelIdler, Date basTarih, Date bitTarih, Boolean hepsi, Session session) {
-
 		HashMap map = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT V.* FROM " + VardiyaGun.TABLE_NAME + " V WITH(nolock) ");

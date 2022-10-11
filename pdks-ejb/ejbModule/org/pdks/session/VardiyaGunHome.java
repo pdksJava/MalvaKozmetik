@@ -2452,7 +2452,28 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	}
 
-	
+	/**
+	 * @param vardiyaIdList
+	 * @param tableName
+	 * @param columnName
+	 * @param table
+	 * @return
+	 */
+	private List getVardiyaTable(List<Long> vardiyaIdList, String tableName, String columnName, Object table) {
+		HashMap map = new HashMap();
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT P.* FROM " + tableName + " P WITH(nolock) ");
+		sb.append(" WHERE P." + columnName + " :id  ");
+		map.put("id", vardiyaIdList);
+		if (session != null)
+			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List list = pdksEntityController.getObjectBySQLList(sb, map, table.getClass());
+		return list;
+	}
+
+	/**
+	 * 
+	 */
 	private void savePlanLastParameter() {
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 		lastMap.put("yil", "" + yil);
@@ -4076,7 +4097,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @param aylikPuantaj
 	 * @return
 	 */
-	
+
 	private Boolean saveOnay(Session session, AylikPuantaj aylikPuantaj) {
 		Personel personel = aylikPuantaj.getPdksPersonel();
 		PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
@@ -4794,32 +4815,35 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				setVardiyalarToMap(pdksVardiyaGun, vardiyalarMap, null);
 			}
 			TreeMap<Long, List> bagliIdMap = new TreeMap<Long, List>();
-			fields.clear();
-			fields.put("vardiyaGun", new ArrayList(vardiyaGunList));
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<PersonelFazlaMesai> personelFazlaMesaiList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelFazlaMesai.class);
-			for (PersonelFazlaMesai personelFazlaMesai : personelFazlaMesaiList) {
-				Long id = personelFazlaMesai.getVardiyaGun().getId();
-				List list = bagliIdMap.containsKey(id) ? bagliIdMap.get(id) : new ArrayList();
-				if (list.isEmpty())
-					bagliIdMap.put(id, list);
-				list.add(personelFazlaMesai);
-			}
-			if (fazlaMesaiTalepVar) {
-				fields.clear();
-				fields.put("vardiyaGun", new ArrayList(vardiyaGunList));
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<FazlaMesaiTalep> fazlaMesaiList = pdksEntityController.getObjectByInnerObjectList(fields, FazlaMesaiTalep.class);
-				for (FazlaMesaiTalep fazlaMesaiTalep : fazlaMesaiList) {
-					Long id = fazlaMesaiTalep.getVardiyaGun().getId();
-					List list = bagliIdMap.containsKey(id) ? bagliIdMap.get(id) : new ArrayList();
-					if (list.isEmpty())
-						bagliIdMap.put(id, list);
-					list.add(fazlaMesaiTalep);
+			if (!vardiyaGunList.isEmpty()) {
+				List<Long> vardiyaIdList = new ArrayList<Long>();
+				for (VardiyaGun vardiyaGun : vardiyaGunList) {
+					if (vardiyaGun.getId() != null)
+						vardiyaIdList.add(vardiyaGun.getId());
 				}
+				if (!vardiyaIdList.isEmpty()) {
+					if (fazlaMesaiTalepVar) {
+						List<FazlaMesaiTalep> fazlaMesaiList = getVardiyaTable(vardiyaIdList, FazlaMesaiTalep.TABLE_NAME, FazlaMesaiTalep.COLUMN_NAME_VARDIYA_GUN, FazlaMesaiTalep.class);
+						for (FazlaMesaiTalep fazlaMesaiTalep : fazlaMesaiList) {
+							Long id = fazlaMesaiTalep.getVardiyaGun().getId();
+							List list = bagliIdMap.containsKey(id) ? bagliIdMap.get(id) : new ArrayList();
+							if (list.isEmpty())
+								bagliIdMap.put(id, list);
+							list.add(fazlaMesaiTalep);
+						}
+					}
+					List<PersonelFazlaMesai> personelFazlaMesaiList = getVardiyaTable(vardiyaIdList, PersonelFazlaMesai.TABLE_NAME, PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN, PersonelFazlaMesai.class);
+					for (PersonelFazlaMesai personelFazlaMesai : personelFazlaMesaiList) {
+						Long id = personelFazlaMesai.getVardiyaGun().getId();
+						List list = bagliIdMap.containsKey(id) ? bagliIdMap.get(id) : new ArrayList();
+						if (list.isEmpty())
+							bagliIdMap.put(id, list);
+						list.add(personelFazlaMesai);
+					}
+				}
+				vardiyaIdList = null;
 			}
+
 			ortakIslemler.fazlaMesaiSaatiAyarla(vardiyalarMap);
 			vardiyaGunList = null;
 			vardiyaGunGorevMap = null;
