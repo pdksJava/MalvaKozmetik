@@ -44,6 +44,8 @@ import org.pdks.entity.Dosya;
 import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Liste;
 import org.pdks.entity.MailGrubu;
+import org.pdks.entity.NoteTipi;
+import org.pdks.entity.Notice;
 import org.pdks.entity.PdksPersonelView;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDinamikAlan;
@@ -975,8 +977,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				denemeMesaj = PdksUtil.replaceAll(denemeMesaj, "\n", "<br/>");
 			MailStatu mailStatu = null;
 			if (PdksUtil.isValidEMail(ePosta)) {
+				Notice uyariNot = ortakIslemler.getNotice(NoteTipi.MAIL_CEVAPLAMAMA.value(), Boolean.TRUE, session);
 				MailObject mailObject = new MailObject();
 				mailObject.setSubject("Test mail");
+				if (uyariNot != null)
+					denemeMesaj += uyariNot.getValue();
 				mailObject.setBody(denemeMesaj);
 				MailPersonel mailUser = new MailPersonel();
 				mailUser.setEPosta(ePosta);
