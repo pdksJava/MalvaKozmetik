@@ -7870,12 +7870,12 @@ public class OrtakIslemler implements Serializable {
 	 * @param personelIdler
 	 * @param basTarih
 	 * @param bitTarih
+	 * @param hepsi
 	 * @param session
 	 * @return
 	 */
-	public List<VardiyaGun> getPersonelIdVardiyalar(List<Long> personelIdler, Date basTarih, Date bitTarih, Session session) {
-		Boolean hepsi = null;
-		if (PdksUtil.isSistemDestekVar() && bitTarih.before(PdksUtil.tariheAyEkleCikar(new Date(), -1)))
+	public List<VardiyaGun> getPersonelIdVardiyalar(List<Long> personelIdler, Date basTarih, Date bitTarih, Boolean hepsi, Session session) {
+		if (hepsi == null && PdksUtil.isSistemDestekVar() && bitTarih.before(PdksUtil.tariheAyEkleCikar(new Date(), -1)))
 			hepsi = Boolean.TRUE;
 		List vardiyaGunList = getAllPersonelIdVardiyalar(personelIdler, basTarih, bitTarih, hepsi, session);
 		return vardiyaGunList;
@@ -7919,30 +7919,40 @@ public class OrtakIslemler implements Serializable {
 			TreeMap<String, BigDecimal> sureMap = planKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HAREKET_BEKLEME_SURESI, session) : null;
 			TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.SUA_GUNLUK_SAAT_SURESI, session) : null;
 			boolean kontrolEt = sureMap != null && !sureMap.isEmpty();
-			HashMap<Long, Date> tarihMap = new HashMap<Long, Date>();
+			HashMap<Long, Date> tarih1Map = new HashMap<Long, Date>(), tarih2Map = new HashMap<Long, Date>();
+			List<VardiyaGun> bosList = new ArrayList<VardiyaGun>();
 			for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 				String str = vardiyaGun.getVardiyaDateStr();
 				if (sureSuaMap != null && sureSuaMap.containsKey(str))
 					vardiyaGun.setCalismaSuaSaati(sureSuaMap.get(str).doubleValue());
 				if (kontrolEt) {
-
 					if (sureMap.containsKey(str))
 						vardiyaGun.setBeklemeSuresi(sureMap.get(str).intValue());
 				}
-				Date tarih = null;
+				Date tarih1 = null, tarih2 = null;
 				Long key = vardiyaGun.getPersonel().getId();
-				if (tarihMap.containsKey(key))
-					tarih = tarihMap.get(key);
+				if (tarih1Map.containsKey(key))
+					tarih1 = tarih1Map.get(key);
 				else {
-					tarih = vardiyaGun.getPersonel().getSonCalismaTarihi();
-					tarihMap.put(key, tarih);
+					tarih1 = vardiyaGun.getPersonel().getIseGirisTarihi();
+					tarih1Map.put(key, tarih1);
 				}
-				if (vardiyaGun.getVardiyaDate().after(tarih))
-					if (hepsi == null || hepsi.booleanValue() == false)
+				if (tarih2Map.containsKey(key))
+					tarih2 = tarih2Map.get(key);
+				else {
+					tarih2 = vardiyaGun.getPersonel().getSonCalismaTarihi();
+					tarih2Map.put(key, tarih2);
+				}
+				if (tarih1 == null || tarih2 == null || vardiyaGun.getVardiyaDate().after(tarih2) || vardiyaGun.getVardiyaDate().before(tarih1)) {
+					if (hepsi == null || hepsi.booleanValue() == false) {
 						iterator.remove();
-
+					}
+				}
 			}
+			if (!bosList.isEmpty())
+				vardiyaGunList.addAll(bosList);
+			bosList = null;
 			sureMap = null;
 		}
 		map = null;
@@ -8004,7 +8014,7 @@ public class OrtakIslemler implements Serializable {
 		List<Long> personelIdler = new ArrayList<Long>();
 		for (Personel personel : personeller)
 			personelIdler.add(personel.getId());
-		List<VardiyaGun> vardiyaGunList = getPersonelIdVardiyalar(personelIdler, basTarih, bitTarih, session);
+		List<VardiyaGun> vardiyaGunList = getPersonelIdVardiyalar(personelIdler, basTarih, bitTarih, Boolean.FALSE, session);
 		personelIdler = null;
 		return vardiyaGunList;
 	}

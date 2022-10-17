@@ -748,7 +748,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			TreeMap<String, VardiyaGun> vardiyalarMap = new TreeMap<String, VardiyaGun>();
 			ArrayList<Long> pdksPersonelIds = new ArrayList<Long>();
 			pdksPersonelIds.add(personelIzin.getIzinSahibi().getId());
-			List<VardiyaGun> vardiyaList = ortakIslemler.getPersonelIdVardiyalar(pdksPersonelIds, basTarih, bitTarih, session);
+			List<VardiyaGun> vardiyaList = ortakIslemler.getPersonelIdVardiyalar(pdksPersonelIds, basTarih, bitTarih, Boolean.FALSE, session);
 			for (VardiyaGun pdksVardiyaGun : vardiyaList) {
 				vardiyalarMap.put(pdksVardiyaGun.getVardiyaDateStr(), pdksVardiyaGun);
 			}
@@ -3674,9 +3674,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 			}
 			if (!dosyaYazildi && izinDosya.getId() != null) {
-			 
-					pdksEntityController.deleteObject(session, entityManager, izinDosya );
-				 
+
+				pdksEntityController.deleteObject(session, entityManager, izinDosya);
+
 			}
 
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
