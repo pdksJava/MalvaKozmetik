@@ -67,19 +67,19 @@
 										<ui:define name="label">Red Açıklama</ui:define>
 										<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.iptalAciklama}" />
 									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;" rendered="#{vardiyaGunHome.mesaiIptalNedenTanimList!=null}">
+									<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;" rendered="#{vardiyaGunHome.redNedenleri!=null}">
 										<ui:define name="label">Red Nedeni</ui:define>
-										<h:selectOneMenu value="#{vardiyaGunHome.islemFazlaMesaiTalep.redNedeni}" styleClass="size10" required="true" style="width:85px"
+										<h:selectOneMenu value="#{vardiyaGunHome.redNedeniId}" styleClass="size10" required="true" style="width:85px"
 											requiredMessage="Fazla Mesai Nedeni Seçiniz">
-											<s:selectItems var="comp" value="#{vardiyaGunHome.mesaiIptalNedenTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
-											<s:convertEntity />
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{vardiyaGunHome.redNedenleri}" />
 										</h:selectOneMenu>
 									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;" rendered="#{vardiyaGunHome.mesaiIptalNedenTanimList!=null}">
+									<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;" rendered="#{vardiyaGunHome.redNedenleri!=null}">
 										<ui:define name="label">Red Açıklama</ui:define>
-										 <h:inputTextarea value="#{vardiyaGunHome.islemFazlaMesaiTalep.iptalAciklama}" cols="80" rows="3" />
+										<h:inputTextarea value="#{vardiyaGunHome.islemFazlaMesaiTalep.iptalAciklama}" cols="80" rows="3" />
 									</s:decorate>
-									<a4j:commandButton value="Red" action="#{vardiyaGunHome.mesaiRedIslemi}" rendered="#{vardiyaGunHome.mesaiIptalNedenTanimList!=null}"
+									<a4j:commandButton value="Red" action="#{vardiyaGunHome.mesaiRedIslemi}" rendered="#{vardiyaGunHome.redNedenleri!=null}"
 										onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide();" />
 
 								</h:panelGrid>

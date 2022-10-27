@@ -101,6 +101,10 @@
 					<a4j:commandButton value="Aylık Plan Getir" action="#{vardiyaGunHome.fillAylikVardiyaPlanList}" onclick="#{rich:component('wait')}.show()"
 						rendered="#{not empty vardiyaGunHome.aramaSecenekleri.gorevYeriList}"
 						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide()" reRender="vardiyaPanel,girisler,ozelIstekSec" />
+					<a4j:commandButton value="Aylık Hareket Kayıtları Düzenle" action="#{vardiyaGunHome.aylikHareketKaydiVardiyaBulGuncelle}"
+						onclick="#{rich:component('wait')}.show()" rendered="#{vardiyaGunHome.aylikHareketKaydiVardiyaBul}"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide()" reRender="girisler" />
+
 					<a4j:commandButton value="Excel'den Plan Güncelle" onclick="#{rich:component('wait')}.show()" action="#{vardiyaGunHome.fileImportDosyaSifirla()}"
 						ajaxSingle="true"
 						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide();#{rich:component('fileImportPanel')}.show()"
@@ -351,7 +355,7 @@
 							<tr>
 								<a4j:repeat value="#{vardiyaHafta.vardiyaGunler}" var="vardiyaGun">
 									<td style="width: 90px" id="vardiya#{vardiyaGun.vardiyaDateStr}" class="#{vardiyaGun.getAylikClassAdi(aylikPuantaj.trClass)}" align="center">
-									   <ui:fragment
+										<ui:fragment
 											rendered="#{vardiyaGun.vardiyalar==null or vardiyaGun.vardiya==null or vardiyaGun.aylikGirisYap==false or  vardiyaGun.izin!=null or vardiyaGun.kullaniciYetkili==false}">
 											<h:panelGrid id="veriDigerAy">
 												<h:outputText value="#{vardiyaGun.aciklama}" />
@@ -360,8 +364,7 @@
 												<SPAN style="font-size: 14px; font-weight: bold;"> #{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')} -->
 													#{vardiyaGun.title}</SPAN>
 											</rich:toolTip>
-										</ui:fragment> 
-										<ui:fragment rendered="#{vardiyaGun.vardiyalar!=null and vardiyaGun.aylikGirisYap==true  and vardiyaGun.kullaniciYetkili}">
+										</ui:fragment> <ui:fragment rendered="#{vardiyaGun.vardiyalar!=null and vardiyaGun.aylikGirisYap==true  and vardiyaGun.kullaniciYetkili}">
 											<h:selectOneMenu styleClass="size10" style="width:85px" disabled="#{vardiyaGunHome.personelAylikPuantaj.kaydet==false}"
 												value="#{vardiyaGun.vardiya}" required="true" rendered="#{vardiyaGun!=null}"
 												requiredMessage="#{vardiyaGun.vardiyaGunAciklama} günü vardiyasını seçiniz">
@@ -427,7 +430,8 @@
 
 												</h:selectBooleanCheckbox>
 											</P>
-										</ui:fragment></td>
+										</ui:fragment>
+									</td>
 
 								</a4j:repeat>
 								<ui:fragment rendered="#{vardiyaGunHome.sablonGuncelle and authenticatedUser==null}">
@@ -484,7 +488,8 @@
 									<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" ajaxSingle="true" reRender="secimler" />
 								</h:selectBooleanCheckbox>
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.personelDenklestirme.kismiOdemeSure>0 or ortakIslemler.getParameterKey('kismiOdemeSureGuncelle')=='1'}" >
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{vardiyaGunHome.personelDenklestirme.kismiOdemeSure>0 or ortakIslemler.getParameterKey('kismiOdemeSureGuncelle')=='1'}">
 								<ui:define name="label">Kısmi Ödenecek Süre</ui:define>
 								<h:inputText value="#{vardiyaGunHome.personelDenklestirme.kismiOdemeSure}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
 									validatorMessage="Hatalı giriş">
@@ -857,7 +862,7 @@
 							</tr>
 							<tr>
 								<a4j:repeat value="#{vardiyaHafta.vardiyaGunler}" var="vardiyaGun">
-									<td style="width: 90px;height: 25px;" class="#{vardiyaGun.getAylikClassAdi(aylikPuantaj.trClass)}" align="center"><ui:fragment
+									<td style="width: 90px; height: 25px;" class="#{vardiyaGun.getAylikClassAdi(aylikPuantaj.trClass)}" align="center"><ui:fragment
 											rendered="#{vardiyaGun.vardiya==null or vardiyaGun.aylikGirisYap==false or vardiyaGun.izin!=null or vardiyaGun.kullaniciYetkili==false}">
 											<h:panelGrid id="veriDigerAy">
 												<h:outputText value="#{vardiyaGun.aciklama}" />
@@ -868,8 +873,8 @@
 												<ui:fragment rendered="#{vardiyaGun.ayinGunu and vardiyaGun.vardiya!=null}">
 
 													<a4j:commandButton value="#{vardiyaGun.vardiya.kisaAdi}" id="mesaiVardiya" onclick="#{rich:component('wait')}.show()"
-														action="#{vardiyaGunHome.mesaiGuncelle(vardiyaGun)}" ajaxSingle="true"
-														oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide(); " reRender="seciliMesaiGun" />
+														action="#{vardiyaGunHome.mesaiGuncelle(vardiyaGun)}" ajaxSingle="true" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide(); "
+														reRender="seciliMesaiGun" />
 													<ui:fragment rendered="#{vardiyaGun.fazlaMesaiTalepler==null}">
 
 
@@ -909,6 +914,7 @@
 				<a4j:outputPanel id="seciliMesaiGun">
 					<rich:panel rendered="#{vardiyaGunHome.seciliVardiyaGun!=null}"
 						header="#{authenticatedUser.getTarihFormatla(vardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMM yyyy')} ( #{vardiyaGunHome.seciliVardiyaGun.vardiyaAdi} )">
+						
 						<ui:fragment rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.fazlaMesaiTalep!=null}">
 							<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGunHome.seciliVardiyaGun)}"></s:formattedText>
 
@@ -1168,7 +1174,7 @@
 							<h:inputTextarea value="#{vardiyaGunHome.islemFazlaMesaiTalep.iptalAciklama}" cols="80" rows="3" />
 						</s:decorate>
 						<a4j:commandButton value="İptal Et" action="#{vardiyaGunHome.mesaiIptal}" rendered="#{vardiyaGunHome.mesaiIptalNedenTanimList!=null}"
-							onclick="#{rich:component('wait')}.show()" reRender="fmtTable,secimler"
+							onclick="#{rich:component('wait')}.show()" reRender="fmtTable,secimler,seciliMesaiGun"
 							oncomplete="#{rich:component('wait')}.hide();if (#{facesContext.maximumSeverity==null}) #{rich:component('mesaiIptalPanel')}.hide();" />
 
 					</h:panelGrid>

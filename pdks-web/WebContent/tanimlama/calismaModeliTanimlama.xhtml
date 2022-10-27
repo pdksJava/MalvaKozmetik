@@ -91,6 +91,14 @@
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.geceCalismaOdemeVar)}" />
 						</rich:column>
+
+						<rich:column rendered="#{calismaModeliHome.hareketKaydiVardiyaBul}">
+							<f:facet name="header">
+								<h:outputText value="Hareket Kayıtlarından Vardiya Bul" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.hareketKaydiVardiyaBul)}" />
+						</rich:column>
+
 						<rich:column rendered="#{ortakIslemler.getParameterKey('haftaTatilDurum')=='1'}">
 							<f:facet name="header">
 								<h:outputText value="Hafta Sonu Fazla Mesai Ode" />
@@ -224,6 +232,13 @@
 							rendered="#{ortakIslemler.getParameterKey('aksamBordroBasZamani')!='' and ortakIslemler.getParameterKey('aksamBordroBitZamani')!=''}">
 							<ui:define name="label">Gece Çalışması Öde</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.geceCalismaOdemeVar}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{calismaModeliHome.hareketKaydiVardiyaBul or calismaModeliHome.calismaModeli.hareketKaydiVardiyaBul}">
+							<ui:define name="label">Hareket Kayıtlarından Vardiya Bul</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.hareketKaydiVardiyaBul}" disabled="#{authenticatedUser.admin==false}">
 
 							</h:selectBooleanCheckbox>
 						</s:decorate>

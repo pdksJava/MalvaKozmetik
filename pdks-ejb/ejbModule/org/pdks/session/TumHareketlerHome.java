@@ -921,8 +921,10 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			Personel personel = null;
 			try {
 				personel = hareket.getPersonel().getPdksPersonel();
-			} catch (Exception e) {
-				// TODO: handle exception
+			} catch (Exception ex) {
+				logger.error(ex);
+				ex.printStackTrace();
+
 			}
 
 			try {

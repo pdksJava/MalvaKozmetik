@@ -874,7 +874,7 @@ public class PdksEntityController implements Serializable {
 			e1.printStackTrace();
 		}
 		while (!veriler.isEmpty()) {
-			TreeMap fieldsOther = new TreeMap();
+			LinkedHashMap fieldsOther = new LinkedHashMap();
 			StringBuffer strArray = new StringBuffer();
 			for (Iterator iterator = veriler.iterator(); iterator.hasNext();) {
 				Object data = (Object) iterator.next();

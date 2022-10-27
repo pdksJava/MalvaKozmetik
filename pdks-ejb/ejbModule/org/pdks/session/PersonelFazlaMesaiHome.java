@@ -541,22 +541,18 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 	}
 
 	public void fillHareketMesaiList() {
+		session.clear();
 		if (seciliEkSaha3Id != null) {
 			HashMap parametreMap = new HashMap();
-
 			parametreMap.put("id", seciliEkSaha3Id);
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			seciliEkSaha3 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
-
 		}
-
-		// ArrayList<String> sicilNoList = ortakIslemler.getPersonelSicilNo(ad, soyad, sicilNo, sirket, seciliEkSaha1, seciliEkSaha2, seciliEkSaha3, seciliEkSaha4, Boolean.FALSE, session);
 		ArrayList<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.FALSE, session);
 		String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo());
 		if (linkAdres != null && sicilNo != null && !sicilNo.equals("") && !sicilNoList.contains(sicilNo))
 			sicilNoList.add(sicilNo);
-
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		HashMap fields = new HashMap();
@@ -632,8 +628,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				Date tarih4 = null;
 				TreeMap<String, VardiyaGun> vardiyaMap = null;
 				try {
-					vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) personeller.clone(), date, PdksUtil.tariheGunEkleCikar(date, 1), yaz, session, Boolean.FALSE);
-
+					vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) personeller.clone(), PdksUtil.tariheGunEkleCikar(date, -2), PdksUtil.tariheGunEkleCikar(date, 3), yaz, session, Boolean.FALSE);
 				} catch (Exception e) {
 					vardiyaMap = new TreeMap<String, VardiyaGun>();
 					e.printStackTrace();
@@ -656,7 +651,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 					List<VardiyaGun> list = perVardiyaMap.get(key);
 					for (VardiyaGun vardiyaGun : list)
 						vardiyalarMap.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
-					// ortakIslemler.fazlaMesaiSaatiAyarla(vardiyalarMap);
+					ortakIslemler.fazlaMesaiSaatiAyarla(vardiyalarMap);
 					vardiyalarMap.clear();
 					list = null;
 				}
@@ -1391,7 +1386,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				mesai.setGuncellemeTarihi(new Date());
 				mesai.setDurum(Boolean.FALSE);
 				session.saveOrUpdate(mesai);
- 				session.flush();
+				session.flush();
 				fillHareketMesaiList();
 			} catch (Exception e) {
 			}

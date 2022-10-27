@@ -56,6 +56,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	private List<VardiyaSablonu> sablonList;
 	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>(), kayitliVardiyaList = new ArrayList<Vardiya>();
 	private List<Departman> departmanList;
+	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Session session;
 
 	public Session getSession() {
@@ -101,7 +102,6 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 
 		try {
 			tanimList = ortakIslemler.fillDepartmanTanimList(session);
-			;
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
@@ -251,12 +251,20 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	}
 
 	public void fillCalismaModeliList() {
+		hareketKaydiVardiyaBul = ortakIslemler.getParameterKey("hareketKaydiVardiyaBul").equals("1");
 		calismaModeli = new CalismaModeli();
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("durum", Boolean.TRUE);
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		calismaModeliList = pdksEntityController.getObjectByInnerObjectList(parametreMap, CalismaModeli.class);
+		if (!hareketKaydiVardiyaBul) {
+			for (CalismaModeli cm : calismaModeliList) {
+				if (!hareketKaydiVardiyaBul)
+					hareketKaydiVardiyaBul = cm.getHareketKaydiVardiyaBul() && cm.getDurum();
+
+			}
+		}
 	}
 
 	public List<Vardiya> getVardiyaList() {
@@ -305,6 +313,14 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 
 	public void setDepartmanList(List<Departman> departmanList) {
 		this.departmanList = departmanList;
+	}
+
+	public Boolean getHareketKaydiVardiyaBul() {
+		return hareketKaydiVardiyaBul;
+	}
+
+	public void setHareketKaydiVardiyaBul(Boolean hareketKaydiVardiyaBul) {
+		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
 	}
 
 }

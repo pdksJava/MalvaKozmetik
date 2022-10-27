@@ -476,7 +476,6 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public boolean hareketKontrolZamansiz(HareketKGS hareket, Boolean hareketDuzelt) {
 		Kapi kapi = null;
-	
 
 		try {
 			kapi = hareket.getKapiView().getKapi();
@@ -1148,6 +1147,8 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public boolean isGuncellendi() {
+		if (guncellendi && version < 0)
+			this.version = 0;
 		return guncellendi;
 	}
 

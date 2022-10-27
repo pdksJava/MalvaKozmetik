@@ -71,6 +71,7 @@ import org.pdks.entity.BaseObject;
 import org.pdks.entity.BasitHareket;
 import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.CalismaModeliAy;
+import org.pdks.entity.CalismaModeliVardiya;
 import org.pdks.entity.CalismaSekli;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
@@ -1314,7 +1315,7 @@ public class OrtakIslemler implements Serializable {
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("status=", Boolean.TRUE);
 		if (!authenticatedUser.isAdmin())
-			parametreMap.put("rolename not ", Arrays.asList(Role.TIPI_ADMIN, Role.TIPI_SISTEM_YONETICI));
+			parametreMap.put("adminRole = ", Boolean.FALSE);
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<Role> allRoles = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, Role.class);
@@ -4119,15 +4120,16 @@ public class OrtakIslemler implements Serializable {
 		if (session != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
 		KapiView girisView = getKapiView(map);
-
+		boolean yenidenCalistir = false;
 		List<YemekIzin> yemekAraliklari = getYemekList(session);
 
-		List<PersonelDenklestirmeTasiyici> list = new ArrayList<PersonelDenklestirmeTasiyici>();
+		List<PersonelDenklestirmeTasiyici> personelDenklestirmeTasiyiciList = new ArrayList<PersonelDenklestirmeTasiyici>();
 		HashMap parametreMap = new HashMap();
 
 		List<PersonelView> perViewList = denklestirmePersonelBul(denklestirmeDonemi, searchKey, value, pdks, session);
 
 		if (!perViewList.isEmpty()) {
+			Date bugun = PdksUtil.getDate(new Date());
 			List<Personel> perList = new ArrayList<Personel>();
 			HashMap<Long, PersonelView> kgsPerList = new HashMap<Long, PersonelView>();
 			for (Iterator<PersonelView> iterator = perViewList.iterator(); iterator.hasNext();) {
@@ -4183,6 +4185,7 @@ public class OrtakIslemler implements Serializable {
 
 				parametreMap.clear();
 				TreeMap<Long, PersonelDenklestirmeTasiyici> personelDenklestirmeMap = new TreeMap<Long, PersonelDenklestirmeTasiyici>();
+				TreeMap<Long, List<VardiyaGun>> personelVardiyaBulMap = new TreeMap<Long, List<VardiyaGun>>();
 				if (!perList.isEmpty() && vardiyaDblar != null) {
 					List<VardiyaGun> vardiyalar = new ArrayList<VardiyaGun>();
 					// Personel calisma planlari olusturuluyor
@@ -4191,7 +4194,26 @@ public class OrtakIslemler implements Serializable {
 					TreeMap<Long, PersonelDenklestirme> personelDenklestirmeDonemMap = denklestirmeDonemi.getPersonelDenklestirmeDonemMap();
 					if (personelDenklestirmeDonemMap == null)
 						personelDenklestirmeDonemMap = new TreeMap<Long, PersonelDenklestirme>();
+					HashMap<Long, Boolean> hareketKaydiVardiyaMap = new HashMap<Long, Boolean>();
+					Date donemBas = denklestirmeDonemi.getBaslangicTarih(), donemBit = denklestirmeDonemi.getBitisTarih();
+					if (pdks && denklestirmeDonemi.getDenklestirmeAy() != null && denklestirmeDonemi.getDenklestirmeAyDurum()) {
+						DenklestirmeAy denklestirmeAy = denklestirmeDonemi.getDenklestirmeAy();
+						donemBas = PdksUtil.convertToJavaDate((denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) + "01", "yyyyMMdd");
+						donemBit = PdksUtil.tariheGunEkleCikar(PdksUtil.tariheAyEkleCikar(donemBas, 1), -1);
+						HashMap fields = new HashMap();
+						fields.put(PdksEntityController.MAP_KEY_SELECT, "calismaModeli.id");
+						fields.put("denklestirmeAy.id", denklestirmeAy.getId());
+						fields.put("hareketKaydiVardiyaBul", Boolean.TRUE);
+						if (session != null)
+							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+						List<Long> idList = pdksEntityController.getObjectByInnerObjectList(fields, CalismaModeliAy.class);
+						for (Long long1 : idList)
+							hareketKaydiVardiyaMap.put(long1, Boolean.TRUE);
+
+					}
+					Departman departman = null;
 					for (Personel personel : perList) {
+						departman = personel.getSirket().getDepartman();
 						PersonelDenklestirmeTasiyici personelDenklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
 						if (personelDenklestirmeDonemMap.containsKey(personel.getId())) {
 							PersonelDenklestirme denklestirme = personelDenklestirmeDonemMap.get(personel.getId());
@@ -4210,7 +4232,6 @@ public class OrtakIslemler implements Serializable {
 								String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
 								vardiyaGun.setZamanGuncelle(zamanGuncelle);
 								vardiyaTarihMap.put(key, vardiyaGun);
-
 								if (vardiyaGun.getPersonel().getId().equals(personel.getId())) {
 									if (tatilGunleriMap.containsKey(key))
 										vardiyaGun.setTatil(tatilGunleriMap.get(key));
@@ -4244,6 +4265,7 @@ public class OrtakIslemler implements Serializable {
 							ArrayList<VardiyaGun> varList = new ArrayList<VardiyaGun>(personelDenklestirmeTasiyici.getVardiyaGunleriMap().values());
 							for (Iterator iterator = varList.iterator(); iterator.hasNext();) {
 								VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+								vardiyaGun.setGuncellendi(Boolean.FALSE);
 								vardiyaGun.setZamanGuncelle(zamanGuncelle);
 								vardiyaGun.setVardiyaZamani();
 								String key = vardiyaGun.getPersonel().getId() + "_" + getHafta(vardiyaGun.getVardiyaDate());
@@ -4255,23 +4277,70 @@ public class OrtakIslemler implements Serializable {
 							calismaPlaniMap.put(personel.getId(), varList);
 							vardiyalar.addAll(varList);
 						}
+						if (personelDenklestirmeTasiyici.getCalismaModeli() != null && hareketKaydiVardiyaMap.containsKey(personelDenklestirmeTasiyici.getCalismaModeli().getId()) && calismaPlaniMap.containsKey(personel.getId())) {
+							List<VardiyaGun> varList = calismaPlaniMap.get(personel.getId()), saveList = new ArrayList<VardiyaGun>();
+							for (VardiyaGun vardiyaGun : varList) {
+								Date vd = vardiyaGun.getVardiyaDate();
+								vardiyaGun.setAyinGunu(!(vd.before(donemBas) || vd.after(donemBit)));
+								if ((vardiyaGun.getId() == null || vardiyaGun.getVersion() < 0 || !vardiyaGun.getDurum()) && vardiyaGun.getVardiya() != null && vardiyaGun.isAyinGunu() && vd.before(bugun)) {
+									saveList.add(vardiyaGun);
+								}
+
+							}
+							if (!saveList.isEmpty()) {
+								boolean flush = false;
+								for (Iterator iterator = saveList.iterator(); iterator.hasNext();) {
+									VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+									if (!vardiyaGun.getVardiya().isHaftaTatil()) {
+										vardiyaGun.setVersion(-1);
+										vardiyaGun.setDurum(Boolean.FALSE);
+									} else
+										iterator.remove();
+									if (vardiyaGun.getId() == null) {
+										flush = true;
+										session.saveOrUpdate(vardiyaGun);
+									}
+								}
+								if (flush)
+									session.flush();
+
+							}
+							if (!saveList.isEmpty())
+								personelVardiyaBulMap.put(personel.getId(), saveList);
+							else
+								saveList = null;
+						}
 						personelDenklestirmeMap.put(personel.getId(), personelDenklestirmeTasiyici);
 					}
+
 					Date tarih1 = PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBaslangicTarih(), -1);
 					Date tarih2 = PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBitisTarih(), 1);
 					// Personel izinleri bulunuyor
 
 					HashMap<Long, ArrayList<PersonelIzin>> izinMap = denklestirmeIzinleriOlustur(denklestirmeDonemi, perList, session);
+
 					// Fazla mesailer bulunuyor
 					// Personel Hareketler personel bazli dolduruluyor
 
 					HashMap<Long, ArrayList<HareketKGS>> personelHareketMap = personelHareketleriGetir(kgsPerList, PdksUtil.tariheGunEkleCikar(tarih1, -1), PdksUtil.tariheGunEkleCikar(tarih2, 1), session);
 
-					List<YemekIzin> yemekList = getYemekList(session);
+					if (!personelVardiyaBulMap.isEmpty() && !personelHareketMap.isEmpty()) {
+						yenidenCalistir = vardiyaHareketlerdenGuncelle(session, personelDenklestirmeMap, personelVardiyaBulMap, calismaPlaniMap, hareketKaydiVardiyaMap, departman, personelHareketMap);
+						TreeMap<String, VardiyaGun> vardiyalarMap = new TreeMap<String, VardiyaGun>();
+						for (Long key : calismaPlaniMap.keySet()) {
+							List<VardiyaGun> list = calismaPlaniMap.get(key);
+							for (VardiyaGun vardiyaGun : list) {
+								vardiyalarMap.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
+							}
+						}
+						fazlaMesaiSaatiAyarla(vardiyalarMap);
+						vardiyalarMap = null;
+					}
 
+					personelVardiyaBulMap = null;
+					List<YemekIzin> yemekList = getYemekList(session);
 					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
 					Long perNoId = null;
-
 					for (Iterator<Long> iterator2 = personelDenklestirmeMap.keySet().iterator(); iterator2.hasNext();) {
 						perNoId = iterator2.next();
 						Long kgsId = personelDenklestirmeMap.get(perNoId).getPersonel().getPersonelKGS().getId();
@@ -4280,12 +4349,10 @@ public class OrtakIslemler implements Serializable {
 						String ilkgun = "01";
 						if (denklestirmeDonemi.getBaslangicTarih().before(personelDenklestirme.getPersonel().getIseGirisTarihi()))
 							ilkgun = PdksUtil.convertToDateString(personelDenklestirme.getPersonel().getIseGirisTarihi(), "dd");
-
 						if (personelDenklestirme.getVardiyaGunleriMap() != null) {
 							TreeMap<String, VardiyaGun> vardiyaGunleriMap = personelDenklestirme.getVardiyaGunleriMap();
 							for (String key : vardiyaGunleriMap.keySet()) {
 								VardiyaGun vardiyaGun = vardiyaGunleriMap.get(key);
-
 								String gun = key.substring(6);
 								if (gun.equals(ilkgun)) {
 									ayinGunumu = !ayBasladi;
@@ -4304,7 +4371,8 @@ public class OrtakIslemler implements Serializable {
 						List<HareketKGS> perHareketList = personelHareketMap.containsKey(kgsId) ? personelHareketMap.get(kgsId) : new ArrayList<HareketKGS>();
 						// Denklestirme islemleri yapiliyor
 						ArrayList<PersonelIzin> izinler = izinMap.containsKey(perNoId) ? izinMap.get(perNoId) : null;
-						denklestirmeOlustur(gunMap, tarihHareketEkle, yemekAraliklari, girisView, list, tatilGunleriMap, personelDenklestirmeMap, vardiyaNetCalismaSuresiMap, izinler, fazlaMesailer, calismaPlaniMap, perHareketList, perNoId, yemekList, session);
+
+						denklestirmeOlustur(gunMap, tarihHareketEkle, yemekAraliklari, girisView, personelDenklestirmeTasiyiciList, tatilGunleriMap, personelDenklestirmeMap, vardiyaNetCalismaSuresiMap, izinler, fazlaMesailer, calismaPlaniMap, perHareketList, perNoId, yemekList, session);
 						personelDenklestirme.setToplamCalisilacakZaman(0);
 						personelDenklestirme.setToplamCalisilanZaman(0);
 						for (Iterator<PersonelDenklestirmeTasiyici> iterator = personelDenklestirme.getPersonelDenklestirmeleri().iterator(); iterator.hasNext();) {
@@ -4321,15 +4389,13 @@ public class OrtakIslemler implements Serializable {
 				}
 			}
 		}
-
-		if (!list.isEmpty()) {
+		if (!personelDenklestirmeTasiyiciList.isEmpty()) {
 			boolean durum = Boolean.FALSE;
 			boolean hataYok = Boolean.TRUE;
 			// Bos kayitlar siliniyor hatali kayitlar set ediliyor
-			for (Iterator<PersonelDenklestirmeTasiyici> iterator = list.iterator(); iterator.hasNext();) {
+			for (Iterator<PersonelDenklestirmeTasiyici> iterator = personelDenklestirmeTasiyiciList.iterator(); iterator.hasNext();) {
 				PersonelDenklestirmeTasiyici personelDenklestirme = iterator.next();
 				double normalFazlaMesai = 0, resmiTatilMesai = 0;
-
 				personelDenklestirme.setCheckBoxDurum(Boolean.TRUE);
 				if (personelDenklestirme.getDurum())
 					personelDenklestirme.setTrClass(String.valueOf(durum));
@@ -4338,12 +4404,10 @@ public class OrtakIslemler implements Serializable {
 					if (!denklestirme.isCheckBoxDurum())
 						personelDenklestirme.setCheckBoxDurum(Boolean.FALSE);
 					else {
-
 						normalFazlaMesai += denklestirme.getCalisilanFark();
 						resmiTatilMesai += denklestirme.getResmiTatilMesai();
 					}
 				}
-
 				personelDenklestirme.setNormalFazlaMesai(PdksUtil.setSureDoubleRounded(normalFazlaMesai));
 				personelDenklestirme.setResmiTatilMesai(resmiTatilMesai);
 				durum = !durum;
@@ -4352,7 +4416,148 @@ public class OrtakIslemler implements Serializable {
 			}
 		}
 		gunMap = null;
-		return list;
+		if (yenidenCalistir && denklestirmeDonemi.getDurum())
+			personelDenklestirmeTasiyiciList.clear();
+		return personelDenklestirmeTasiyiciList;
+	}
+
+	/**
+	 * @param session
+	 * @param personelDenklestirmeMap
+	 * @param personelVardiyaBulMap
+	 * @param calismaPlaniMap
+	 * @param hareketKaydiVardiyaMap
+	 * @param departman
+	 * @param personelHareketMap
+	 */
+	private boolean vardiyaHareketlerdenGuncelle(Session session, TreeMap<Long, PersonelDenklestirmeTasiyici> personelDenklestirmeMap, TreeMap<Long, List<VardiyaGun>> personelVardiyaBulMap, HashMap<Long, ArrayList<VardiyaGun>> calismaPlaniMap, HashMap<Long, Boolean> hareketKaydiVardiyaMap,
+			Departman departman, HashMap<Long, ArrayList<HareketKGS>> personelHareketMap) {
+		boolean yenidenCalistir = false;
+		HashMap fields = new HashMap();
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT S.* from " + Vardiya.TABLE_NAME + " S WITH(nolock) ");
+		sb.append(" WHERE (S." + Vardiya.COLUMN_NAME_DEPARTMAN + " IS NULL  OR S." + Vardiya.COLUMN_NAME_DEPARTMAN + "=:deptId )");
+		sb.append(" AND  S." + Vardiya.COLUMN_NAME_KISA_ADI + "<>'' AND S." + Vardiya.COLUMN_NAME_DURUM + "=1  AND COALESCE(S." + Vardiya.COLUMN_NAME_ISKUR + ",0)<>1");
+		fields.put("deptId", departman.getId());
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<Vardiya> vardiyaList = pdksEntityController.getObjectBySQLList(sb, fields, Vardiya.class);
+		for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
+			Vardiya vardiya = (Vardiya) iterator.next();
+			if (!vardiya.isCalisma())
+				iterator.remove();
+		}
+
+		fields.clear();
+		fields.put("calismaModeli.id", new ArrayList(hareketKaydiVardiyaMap.keySet()));
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<CalismaModeliVardiya> calismaModeliVardiyaList = pdksEntityController.getObjectByInnerObjectList(fields, CalismaModeliVardiya.class);
+		HashMap<Long, List<Vardiya>> calismaModeliVardiyaMap = new HashMap<Long, List<Vardiya>>();
+		for (CalismaModeliVardiya calismaModeliVardiya : calismaModeliVardiyaList) {
+			if (calismaModeliVardiya.getVardiya().getDurum()) {
+				Long key = calismaModeliVardiya.getCalismaModeli().getId();
+				List<Vardiya> list1 = calismaModeliVardiyaMap.containsKey(key) ? calismaModeliVardiyaMap.get(key) : new ArrayList<Vardiya>();
+				if (list1.isEmpty())
+					calismaModeliVardiyaMap.put(key, list1);
+				list1.add(calismaModeliVardiya.getVardiya());
+			}
+		}
+
+		List<HareketKGS> personelHareketList = new ArrayList<HareketKGS>();
+		List<String> hareketIdList = new ArrayList<String>();
+		for (Long perId : personelVardiyaBulMap.keySet()) {
+			PersonelDenklestirmeTasiyici personelDenklestirmeTasiyici = personelDenklestirmeMap.get(perId);
+			Personel personel = personelDenklestirmeTasiyici.getPersonel();
+			Long personelKGSId = personel.getPersonelKGS().getId();
+			boolean flush = false;
+			List<VardiyaGun> vardiyaGunList = calismaPlaniMap.get(perId);
+			TreeMap<String, VardiyaGun> vgMap = new TreeMap<String, VardiyaGun>();
+			for (VardiyaGun vardiyaGun : vardiyaGunList) {
+				String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
+				vgMap.put(key, vardiyaGun);
+			}
+
+			if (personelHareketMap.containsKey(personelKGSId)) {
+				List<VardiyaGun> varList = new ArrayList<VardiyaGun>(personelVardiyaBulMap.get(perId));
+				Collections.reverse(varList);
+				TreeMap<String, VardiyaGun> vardiyalarMap = new TreeMap<String, VardiyaGun>();
+				for (Iterator iterator = varList.iterator(); iterator.hasNext();) {
+					VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+					vardiyalarMap.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
+				}
+				List<Vardiya> vardiyaPerList = new ArrayList<Vardiya>();
+				Long cmId = personelDenklestirmeTasiyici.getCalismaModeli().getId();
+				if (!calismaModeliVardiyaMap.containsKey(cmId)) {
+					if (!vardiyaList.isEmpty())
+						calismaModeliVardiyaMap.put(cmId, vardiyaList);
+				}
+				if (calismaModeliVardiyaMap.containsKey(cmId))
+					vardiyaPerList.addAll(calismaModeliVardiyaMap.get(cmId));
+
+				if (!vardiyaPerList.isEmpty()) {
+					for (Iterator iterator = varList.iterator(); iterator.hasNext();) {
+						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+						fazlaMesaiSaatiAyarla(vardiyalarMap);
+						vardiyaGun.setGuncellendi(Boolean.FALSE);
+						String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
+						List<Liste> listeler = new ArrayList<Liste>();
+						for (Vardiya vardiya : vardiyaPerList) {
+							personelHareketList.clear();
+							personelHareketList.addAll(personelHareketMap.get(personelKGSId));
+							VardiyaGun vardiyaGunNew = new VardiyaGun(personelDenklestirmeTasiyici.getPersonel(), vardiya, vardiyaGun.getVardiyaDate());
+							vardiyaGunNew.setVardiyaZamani();
+							for (Iterator iterator1 = personelHareketList.iterator(); iterator1.hasNext();) {
+								HareketKGS hareket = (HareketKGS) iterator1.next();
+								if (!hareketIdList.contains(hareket.getId()) && vardiyaGunNew.addHareket(hareket, Boolean.TRUE))
+									iterator1.remove();
+
+							}
+							if (vardiyaGunNew.getHareketler() != null && vardiyaGunNew.getHareketDurum()) {
+								List<HareketKGS> girisler = vardiyaGunNew.getGirisHareketleri(), cikislar = vardiyaGunNew.getCikisHareketleri();
+								if (girisler != null && cikislar != null && cikislar.size() == girisler.size()) {
+									double sure = 0.0d;
+									for (int i = 0; i < girisler.size(); i++) {
+										HareketKGS giris = girisler.get(i), cikis = cikislar.get(i);
+										if (giris != null && cikis != null && giris.getZaman().before(cikis.getZaman()))
+											sure += PdksUtil.setSureDoubleRounded(PdksUtil.getSaatFarki(cikis.getZaman(), giris.getZaman()).doubleValue());
+									}
+									if (sure > 0.0d)
+										listeler.add(new Liste(vardiyaGunNew, sure));
+								}
+							}
+						}
+						if (!listeler.isEmpty()) {
+							if (listeler.size() > 1)
+								listeler = PdksUtil.sortListByAlanAdi(listeler, "value", true);
+							VardiyaGun vg = (VardiyaGun) listeler.get(0).getId();
+							for (HareketKGS hareket : vg.getHareketler()) {
+								hareketIdList.add(hareket.getId());
+							}
+							vardiyaGun.setVardiya(vg.getVardiya());
+							vardiyaGun.setVersion(0);
+							session.saveOrUpdate(vardiyaGun);
+							vardiyaGun.setGuncellendi(Boolean.TRUE);
+							personelDenklestirmeTasiyici.getVardiyaGunleriMap().put(key, vardiyaGun);
+							vgMap.put(key, vardiyaGun);
+							flush = true;
+							logger.debug(vg.getVardiyaKeyStr() + " " + vg.getVardiyaAdi());
+
+						}
+					}
+
+				}
+			}
+			if (flush) {
+				ArrayList<VardiyaGun> vardiyalar = new ArrayList<VardiyaGun>(vgMap.values());
+				calismaPlaniMap.put(perId, vardiyalar);
+				personelDenklestirmeTasiyici.setVardiyalar(vardiyalar);
+				session.flush();
+				yenidenCalistir = true;
+			}
+
+		}
+		return yenidenCalistir;
 	}
 
 	/**
@@ -7099,13 +7304,10 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param kgsPerIdler
-	 * @param vardiyaBas
-	 * @param vardiyaBit
 	 * @param session
 	 * @return
 	 */
-	public HashMap<Long, ArrayList<HareketKGS>> fillPersonelKGSHareketMap(List<Long> kgsPerIdler, Date vardiyaBas, Date vardiyaBit, Session session) {
+	public HashMap<Long, KapiView> fillPDKSKapilari(Session session) {
 		HashMap parametreMap = new HashMap();
 		List<String> hareketTip = new ArrayList<String>();
 		hareketTip.add(Kapi.TIPI_KODU_GIRIS);
@@ -7128,8 +7330,21 @@ public class OrtakIslemler implements Serializable {
 		HashMap<Long, KapiView> kapiMap = new HashMap<Long, KapiView>();
 		for (Kapi kapi : kapilar)
 			kapiMap.put(kapi.getKapiKGS().getId(), kapi.getKapiNewView());
+		return kapiMap;
+	}
+
+	/**
+	 * @param kgsPerIdler
+	 * @param vardiyaBas
+	 * @param vardiyaBit
+	 * @param session
+	 * @return
+	 */
+	public HashMap<Long, ArrayList<HareketKGS>> fillPersonelKGSHareketMap(List<Long> kgsPerIdler, Date vardiyaBas, Date vardiyaBit, Session session) {
+
+		HashMap<Long, KapiView> kapiMap = fillPDKSKapilari(session);
+
 		List<BasitHareket> hareketList = null;
-		parametreMap.clear();
 
 		try {
 			hareketList = getHareketBilgileri(new ArrayList(kapiMap.keySet()), kgsPerIdler, vardiyaBas, vardiyaBit, BasitHareket.class, session);
@@ -7139,7 +7354,6 @@ public class OrtakIslemler implements Serializable {
 			e.printStackTrace();
 		}
 
-		parametreMap.clear();
 		HashMap<Long, ArrayList<HareketKGS>> personelHareketMap = new HashMap<Long, ArrayList<HareketKGS>>();
 		if (!hareketList.isEmpty()) {
 			Long perNoId = null;
@@ -7269,18 +7483,8 @@ public class OrtakIslemler implements Serializable {
 		return vardiyaSonucMap;
 	}
 
-	/**
-	 * @param personeller
-	 * @param baslamaTarih
-	 * @param bitisTarih
-	 * @param veriYaz
-	 * @param session
-	 * @param zamanGuncelle
-	 * @return
-	 * @throws Exception
-	 */
 	@Transactional
-	public TreeMap<String, VardiyaGun> getVardiyalar(List<Personel> personeller, Date baslamaTarih, Date bitisTarih, boolean veriYaz, Session session, boolean zamanGuncelle) throws Exception {
+	public TreeMap<String, VardiyaGun> getVardiyalarOld(List<Personel> personeller, Date baslamaTarih, Date bitisTarih, boolean veriYaz, Session session, boolean zamanGuncelle) throws Exception {
 		List saveList = new ArrayList();
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
@@ -7593,6 +7797,263 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param personeller
+	 * @param baslamaTarih
+	 * @param bitisTarih
+	 * @param veriYaz
+	 * @param session
+	 * @param zamanGuncelle
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional
+	public TreeMap<String, VardiyaGun> getVardiyalar(List<Personel> personeller, Date baslamaTarih, Date bitisTarih, boolean veriYaz, Session session, boolean zamanGuncelle) throws Exception {
+		List saveList = new ArrayList();
+		if (session == null)
+			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
+		Calendar cal = Calendar.getInstance();
+		TreeMap<String, VardiyaGun> vardiyaIstenen = new TreeMap<String, VardiyaGun>(), vardiyaMap = new TreeMap<String, VardiyaGun>();
+		TreeMap<String, Tatil> tatillerMap = getTatilGunleri(personeller, PdksUtil.tariheAyEkleCikar(baslamaTarih, -1), PdksUtil.tariheAyEkleCikar(baslamaTarih, 1), session);
+		cal.setTime(baslamaTarih);
+		int haftaGun = cal.get(Calendar.DAY_OF_WEEK);
+		cal.add(Calendar.DATE, haftaGun == Calendar.SUNDAY ? -6 : -haftaGun + 2);
+		Date startWeekDate1 = (Date) cal.getTime().clone();
+		cal.setTime(bitisTarih);
+		haftaGun = cal.get(Calendar.DAY_OF_WEEK);
+		cal.add(Calendar.DATE, haftaGun == Calendar.SUNDAY ? -6 : -haftaGun + 2);
+		Date startWeekDate2 = (Date) cal.getTime().clone();
+		HashMap map = new HashMap();
+		map.clear();
+		map.put("vardiyaTipi", Vardiya.TIPI_OFF);
+		if (session != null)
+			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+
+		Vardiya offVardiya = (Vardiya) pdksEntityController.getObjectByInnerObject(map, Vardiya.class);
+		// map.put(PdksEntityController.MAP_KEY_MAP, "getVardiyaKey");
+
+		map.clear();
+		List<Long> personelIdler = new ArrayList<Long>();
+
+		Date basTarih = PdksUtil.getDate(PdksUtil.tariheGunEkleCikar((Date) startWeekDate1.clone(), -14));
+		Date bitTarih = PdksUtil.getDate(PdksUtil.tariheGunEkleCikar((Date) startWeekDate2.clone(), 6));
+		List<VardiyaGun> vardiyaGunList = getPersonelVardiyalar(personeller, basTarih, bitTarih, session);
+		for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
+			VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+			try {
+
+				vardiyaGun.setHareketHatali(Boolean.FALSE);
+				vardiyaGun.setHataliDurum(Boolean.FALSE);
+				vardiyaGun.setIzinler(null);
+				vardiyaGun.setIzin(null);
+				vardiyaGun.setCalismaSuresi(0);
+				vardiyaGun.setNormalSure(0);
+				vardiyaGun.setResmiTatilSure(0);
+				vardiyaGun.setBayramCalismaSuresi(0);
+				vardiyaGun.setCalisilmayanAksamSure(0d);
+				vardiyaGun.setHaftaCalismaSuresi(0d);
+				vardiyaGun.setHareketler(null);
+				vardiyaGun.setYemekHareketleri(null);
+				vardiyaGun.setGirisHareketleri(null);
+				vardiyaGun.setCikisHareketleri(null);
+				vardiyaGun.setZamanGuncelle(zamanGuncelle);
+				vardiyaGun.setTatil(tatillerMap.get(vardiyaGun.getVardiyaDateStr()));
+				String key = vardiyaGun.getVardiyaKeyStr();
+				if (!vardiyaMap.containsKey(key))
+					vardiyaMap.put(key, vardiyaGun);
+				else
+					iterator.remove();
+			} catch (Exception e) {
+				logger.error("Pdks hata in : \n");
+				e.printStackTrace();
+				logger.error("Pdks hata out : " + e.getMessage());
+			}
+
+		}
+
+		map.clear();
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT  V." + VardiyaHafta.COLUMN_NAME_ID + " FROM " + VardiyaHafta.TABLE_NAME + " V WITH(nolock) ");
+		sb.append(" WHERE " + VardiyaHafta.COLUMN_NAME_BAS_TARIH + "<= :bitTarih AND " + VardiyaHafta.COLUMN_NAME_BIT_TARIH + ">= :basTarih AND " + VardiyaHafta.COLUMN_NAME_PERSONEL + ":pId ");
+		map.put(PdksEntityController.MAP_KEY_MAP, "getDateKey");
+		map.put("pId", personelIdler);
+		map.put("basTarih", baslamaTarih);
+		map.put("bitTarih", bitisTarih);
+		TreeMap<String, VardiyaHafta> vardiyaHaftaMap = new TreeMap<String, VardiyaHafta>();
+
+		VardiyaGun testVardiyaGun1 = null, testVardiyaGun2 = null;
+		VardiyaHafta testVardiyaHafta = null;
+		boolean devam = Boolean.TRUE;
+		List<Date> vardiyaGunleri = new ArrayList<Date>();
+		while (devam && PdksUtil.tarihKarsilastirNumeric(startWeekDate2, startWeekDate1) != -1) {
+			Date endWeekDate1 = PdksUtil.tariheGunEkleCikar(startWeekDate1, 6);
+
+			for (int i = 0; i < 7; i++)
+				vardiyaGunleri.add(PdksUtil.tariheGunEkleCikar((Date) startWeekDate1.clone(), i));
+
+			for (Personel personel : personeller) {
+
+				Date sonCalismaTarihi = personel.getSonCalismaTarihi(), iseBaslamaTarihi = personel.getIseGirisTarihi();
+				if (personel.getSicilNo().trim().equals("") || iseBaslamaTarihi == null || sonCalismaTarihi == null)
+					continue;
+
+				testVardiyaGun1 = new VardiyaGun();
+				testVardiyaGun2 = new VardiyaGun();
+				testVardiyaGun1.setVardiyaDate(startWeekDate1);
+				testVardiyaGun2.setVardiyaDate(endWeekDate1);
+				testVardiyaGun1.setPersonel(personel);
+				testVardiyaGun2.setPersonel(personel);
+				testVardiyaHafta = new VardiyaHafta();
+				testVardiyaHafta.setBasTarih(startWeekDate1);
+				testVardiyaHafta.setBitTarih(endWeekDate1);
+
+				if (PdksUtil.tarihKarsilastirNumeric(iseBaslamaTarihi, endWeekDate1) == 1 || PdksUtil.tarihKarsilastirNumeric(startWeekDate1, sonCalismaTarihi) == 1)
+					continue;
+				testVardiyaHafta.setId(null);
+				String dateKey = testVardiyaHafta.getDateKey();
+				VardiyaSablonu vardiyaSablonu = personel.getSablon();
+				testVardiyaHafta.setPersonel(personel);
+				testVardiyaHafta.setVardiyaSablonu(vardiyaSablonu);
+				if (!vardiyaHaftaMap.isEmpty() && vardiyaHaftaMap.containsKey(dateKey)) {
+					testVardiyaHafta = vardiyaHaftaMap.get(dateKey);
+					vardiyaSablonu = testVardiyaHafta.getVardiyaSablonu();
+				}
+
+				for (int i = 0; i < 7; i++) {
+					Date vardiyaDate = (Date) vardiyaGunleri.get(i).clone();
+					if (vardiyaDate == null || PdksUtil.tarihKarsilastirNumeric(personel.getIseGirisTarihi(), vardiyaDate) == 1 || PdksUtil.tarihKarsilastirNumeric(vardiyaDate, personel.getSonCalismaTarihi()) == 1)
+						continue;
+					if (vardiyaDate.before(basTarih) || vardiyaDate.after(bitTarih))
+						continue;
+					if (PdksUtil.tarihKarsilastirNumeric(bitisTarih, vardiyaDate) == -1) {
+						devam = Boolean.FALSE;
+						break;
+					}
+					if (PdksUtil.tarihKarsilastirNumeric(vardiyaDate, baslamaTarih) == -1)
+						continue;
+					if (testVardiyaGun1 == null)
+						testVardiyaGun1 = new VardiyaGun();
+
+					testVardiyaGun1.setVardiyaDate((Date) vardiyaDate.clone());
+					String vardiyaKey = testVardiyaGun1.getVardiyaKeyStr();
+					if (!vardiyaMap.containsKey(vardiyaKey)) {
+						String vardiyaMetodName = "getVardiya" + (i + 1);
+						Vardiya vardiya = (Vardiya) PdksUtil.getMethodObject(vardiyaSablonu, vardiyaMetodName, null);
+						testVardiyaGun1 = null;
+						if (veriYaz) {
+							testVardiyaGun1 = new VardiyaGun();
+							testVardiyaGun1.setPersonel(personel);
+							testVardiyaGun1.setVardiyaDate(vardiyaDate);
+							String key = testVardiyaGun1.getVardiyaDateStr();
+							testVardiyaGun1.setVardiya((Vardiya) vardiya.clone());
+							if (tatillerMap.containsKey(key) && testVardiyaGun1.getVardiya().isCalisma()) {
+								Tatil pdksTatil = tatillerMap.get(key);
+								if (!pdksTatil.isYarimGunMu())
+									vardiya = offVardiya;
+							}
+							if (saveList != null && testVardiyaGun1 != null) {
+								if (!vardiyaMap.containsKey(vardiyaKey))
+									saveList.add(testVardiyaGun1);
+								else
+									testVardiyaGun1 = vardiyaMap.get(vardiyaKey);
+							}
+
+						}
+						if (testVardiyaGun1 != null)
+							vardiyaMap.put(vardiyaKey, testVardiyaGun1);
+					}
+				}
+
+				if (saveList != null && !saveList.isEmpty()) {
+					Exception e = null;
+					for (Iterator iterator = saveList.iterator(); iterator.hasNext();) {
+						Object oVardiya = (Object) iterator.next();
+						try {
+							// if (oVardiya instanceof VardiyaGun) {
+							// VardiyaGun vardiyaGun = (VardiyaGun) oVardiya;
+							// if (vardiyaGun.getId() == null && vardiyaGun.getVardiyaDate().before(vardiyaGun.getPersonel().getIseGirisTarihi())) {
+							// continue;
+							// }
+							// }
+							session.saveOrUpdate(oVardiya);
+						} catch (Exception e1) {
+							if (oVardiya instanceof VardiyaGun) {
+								VardiyaGun vardiyaGun = (VardiyaGun) oVardiya;
+								logger.info(vardiyaGun.getVardiyaKeyStr());
+
+							}
+							logger.error(e1);
+							e = e1;
+						}
+
+					}
+					if (e == null)
+						session.flush();
+					else
+						throw e;
+
+				}
+				saveList = null;
+
+			}
+			cal.setTime(startWeekDate1);
+			cal.add(Calendar.DATE, 7);
+			startWeekDate1 = (Date) cal.getTime().clone();
+		}
+		if (!vardiyaMap.isEmpty()) {
+			vardiyaCalismaModeliGuncelle(new ArrayList<VardiyaGun>(vardiyaMap.values()), session);
+			if (vardiyaMap.size() > 1) {
+				fazlaMesaiSaatiAyarla(vardiyaMap);
+			}
+		}
+
+		if (!vardiyaMap.isEmpty()) {
+			Date tarih1 = PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(baslamaTarih, -5));
+			Date tarih2 = PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(bitisTarih, 5));
+			for (Iterator iterator = vardiyaMap.keySet().iterator(); iterator.hasNext();) {
+				String key = (String) iterator.next();
+				try {
+					if (!vardiyaMap.containsKey(key) || vardiyaMap.get(key) == null)
+						continue;
+					VardiyaGun vardiyaGun = vardiyaMap.get(key);
+					if (vardiyaGun == null || vardiyaGun.getVardiyaDate().before(tarih1) || vardiyaGun.getVardiyaDate().after(tarih2))
+						continue;
+					vardiyaIstenen.put(key, vardiyaGun);
+				} catch (Exception e) {
+					logger.error("Pdks hata in : \n");
+					e.printStackTrace();
+					logger.error("Pdks hata out : " + e.getMessage());
+
+				}
+
+			}
+
+		}
+		if (vardiyaIstenen != null) {
+			HashMap<String, List<VardiyaGun>> map1 = new HashMap<String, List<VardiyaGun>>();
+			for (String key1 : vardiyaIstenen.keySet()) {
+				VardiyaGun vardiyaGun = vardiyaIstenen.get(key1);
+				vardiyaGun.setVardiyaZamani();
+				String sicilNo = vardiyaGun.getPersonel().getPdksSicilNo();
+				List<VardiyaGun> list = map1.containsKey(sicilNo) ? map1.get(sicilNo) : new ArrayList<VardiyaGun>();
+				if (list.isEmpty())
+					map1.put(sicilNo, list);
+				else {
+					VardiyaGun vardiyaGun2 = list.get(list.size() - 1);
+					if (vardiyaGun.getOncekiVardiyaGun() == null)
+						vardiyaGun.setOncekiVardiyaGun(vardiyaGun2);
+					if (vardiyaGun2.getSonrakiVardiya() == null)
+						vardiyaGun2.setSonrakiVardiya(vardiyaGun.getIslemVardiya());
+				}
+				list.add(vardiyaGun);
+			}
+			map1 = null;
+		}
+		vardiyaMap = null;
+		return vardiyaIstenen;
+
+	}
+
+	/**
 	 * @param vm
 	 * @param vg
 	 */
@@ -7669,6 +8130,7 @@ public class OrtakIslemler implements Serializable {
 			VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 			if (vardiyaGun.getVardiya() == null)
 				continue;
+
 			Boolean geceHaftaTatilMesaiParcala = null;
 			if (haftaTatilDurum.equals("1") && vardiyaGun.getVardiya().isHaftaTatil() && vardiyaGun.getCalismaModeli() != null) {
 				geceHaftaTatilMesaiParcala = vardiyaGun.getCalismaModeli().getGeceHaftaTatilMesaiParcala();
@@ -7714,11 +8176,13 @@ public class OrtakIslemler implements Serializable {
 					}
 
 				}
+
 				if (geceHaftaTatilMesaiParcala != null && !geceHaftaTatilMesaiParcala) {
 					VardiyaGun oncekiVardiya = vardiyaGun.getOncekiVardiyaGun();
 					if (oncekiVardiya != null) {
 						Vardiya vardiya = oncekiVardiya.getIslemVardiya();
 						Date vardiyaBitZaman = null;
+
 						if (vardiya != null && vardiya.isCalisma() && vardiya.getBasSaat() >= vardiya.getBitSaat()) {
 							vardiyaBitZaman = vardiya.getVardiyaTelorans2BitZaman();
 							vardiya.setVardiyaFazlaMesaiBitZaman(vardiyaBitZaman);
@@ -7731,12 +8195,22 @@ public class OrtakIslemler implements Serializable {
 
 					}
 				}
+
+				if (vardiyaGun.getVardiya().isCalisma() && islemVardiya.getBasSaat() <= islemVardiya.getBitSaat()) {
+					VardiyaGun sonrakiVardiyaGun = vardiyaGun.getSonrakiVardiyaGun();
+					if (sonrakiVardiyaGun != null) {
+						Vardiya vardiya = sonrakiVardiyaGun.getIslemVardiya();
+						if (vardiya != null && vardiya.isCalisma() == false) {
+							islemVardiya.setVardiyaTelorans2BitZaman(PdksUtil.addTarih(vardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -20));
+							islemVardiya.setVardiyaFazlaMesaiBitZaman(PdksUtil.addTarih(vardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -40));
+						}
+					}
+				}
 				if (islemVardiya.getVardiyaBitZaman().after(islemVardiya.getVardiyaFazlaMesaiBitZaman())) {
 					islemVardiya.setVardiyaTelorans2BitZaman(PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -20));
 					islemVardiya.setVardiyaBitZaman(PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -40));
 
 				}
-				// logger.info(vardiyaGun.getVardiyaKeyStr() + " " + islemVardiya.getVardiyaFazlaMesaiBitZaman());
 
 			} catch (Exception ex1) {
 				ex1.printStackTrace();
@@ -11249,26 +11723,26 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @param gunMap
 	 * @param girisView
-	 * @param denklestirme
+	 * @param denklestirmeTasiyici
 	 * @param vardiyaNetCalismaSuresiMap
 	 * @param yemekList
 	 * @param tatilGunleriMap
 	 * @param session
 	 * @return
 	 */
-	private VardiyaGun personelVardiyaDenklestir(TreeMap<String, Boolean> gunMap, KapiView girisView, PersonelDenklestirmeTasiyici denklestirme, HashMap<Long, Double> vardiyaNetCalismaSuresiMap, List<YemekIzin> yemekList, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
+	private VardiyaGun personelVardiyaDenklestir(TreeMap<String, Boolean> gunMap, KapiView girisView, PersonelDenklestirmeTasiyici denklestirmeTasiyici, HashMap<Long, Double> vardiyaNetCalismaSuresiMap, List<YemekIzin> yemekList, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
 		double resmiTatilMesai = 0;
-		VardiyaGun sonVardiyaGun = denklestirme.getSonVardiyaGun();
-		Double yemekMolasiYuzdesi = getYemekMolasiYuzdesi(denklestirme.getDenklestirmeAy(), session);
-		DenklestirmeAy denklestirmeAy = denklestirme.getDenklestirmeAy();
+		VardiyaGun sonVardiyaGun = denklestirmeTasiyici.getSonVardiyaGun();
+		Double yemekMolasiYuzdesi = getYemekMolasiYuzdesi(denklestirmeTasiyici.getDenklestirmeAy(), session);
+		DenklestirmeAy denklestirmeAy = denklestirmeTasiyici.getDenklestirmeAy();
 		Date ilkGun = PdksUtil.convertToJavaDate(String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) + "01", "yyyyMMdd");
-		if (denklestirme.getVardiyalar() != null) {
-			List<VardiyaGun> vardiyalar = denklestirme.getVardiyalar();
+		if (denklestirmeTasiyici.getVardiyalar() != null) {
+			List<VardiyaGun> vardiyalar = denklestirmeTasiyici.getVardiyalar();
 			if (vardiyalar != null)
 				try {
-					if (denklestirme.getDenklestirmeAy() != null && denklestirme.getDenklestirmeAy().isDurumu()) {
-						VardiyaGun oncekiVardiyaGun = addManuelGirisCikisHareketler(vardiyalar, false, denklestirme.getOncekiVardiyaGun(), session);
-						denklestirme.setOncekiVardiyaGun(oncekiVardiyaGun);
+					if (denklestirmeTasiyici.getDenklestirmeAy() != null && denklestirmeTasiyici.getDenklestirmeAy().isDurumu()) {
+						VardiyaGun oncekiVardiyaGun = addManuelGirisCikisHareketler(vardiyalar, false, denklestirmeTasiyici.getOncekiVardiyaGun(), session);
+						denklestirmeTasiyici.setOncekiVardiyaGun(oncekiVardiyaGun);
 					}
 				} catch (Exception e) {
 					logger.error(e);
@@ -11277,10 +11751,10 @@ public class OrtakIslemler implements Serializable {
 
 			TreeMap<String, VardiyaGun> haftaTatilMap = new TreeMap<String, VardiyaGun>();
 			String haftaTatilDurum = getParameterKey("haftaTatilDurum");
-			CalismaModeli calismaModeli = denklestirme.getCalismaModeli();
+			CalismaModeli calismaModeli = denklestirmeTasiyici.getCalismaModeli();
 			if (calismaModeli == null) {
-				if (denklestirme.getPersonel() != null)
-					calismaModeli = denklestirme.getPersonel().getCalismaModeli();
+				if (denklestirmeTasiyici.getPersonel() != null)
+					calismaModeli = denklestirmeTasiyici.getPersonel().getCalismaModeli();
 				if (calismaModeli == null)
 					calismaModeli = new CalismaModeli();
 			}
@@ -11302,14 +11776,14 @@ public class OrtakIslemler implements Serializable {
 				}
 			}
 
-			denklestirme.setToplamCalisilacakZaman(0);
-			denklestirme.setToplamCalisilanZaman(0);
-			denklestirme.setToplamRaporIzni(0);
-			denklestirme.setCheckBoxDurum(Boolean.TRUE);
+			denklestirmeTasiyici.setToplamCalisilacakZaman(0);
+			denklestirmeTasiyici.setToplamCalisilanZaman(0);
+			denklestirmeTasiyici.setToplamRaporIzni(0);
+			denklestirmeTasiyici.setCheckBoxDurum(Boolean.TRUE);
 			double maxSure = 0;
 			int gunSayisi = 0;
 			double maxSuresi = 0;
-			boolean eksikCalisma = !denklestirme.getVardiyalar().isEmpty();
+			boolean eksikCalisma = !denklestirmeTasiyici.getVardiyalar().isEmpty();
 			int adet = 0;
 			// String bayramEkleme = getParameterKey("bayramEkle");
 			// Date simdikiZaman = new Date();
@@ -11336,7 +11810,7 @@ public class OrtakIslemler implements Serializable {
 
 			if (adet > 0) {
 				if (gunSayisi > 0 && maxSure > 0 && !eksikCalisma)
-					denklestirme.setToplamCalisilacakZaman(maxSure * gunSayisi);
+					denklestirmeTasiyici.setToplamCalisilacakZaman(maxSure * gunSayisi);
 				TreeMap<String, Double> haftaSonuSureMap = new TreeMap<String, Double>();
 				Calendar cal = Calendar.getInstance();
 
@@ -11830,11 +12304,11 @@ public class OrtakIslemler implements Serializable {
 							vardiyaGun.setResmiTatilSure(PdksUtil.setSureDoubleRounded(resmiTatilSure));
 						}
 
-						if (denklestirme.isCheckBoxDurum())
-							denklestirme.setCheckBoxDurum(vardiyaGun.getHareketDurum());
+						if (denklestirmeTasiyici.isCheckBoxDurum())
+							denklestirmeTasiyici.setCheckBoxDurum(vardiyaGun.getHareketDurum());
 
 						if (sureHesapla && vardiyaGun.isAyinGunu() && vardiyaGun.getCalismaSuresi() > 0.0d) {
-							denklestirme.addToplamCalisilanZaman(vardiyaGun.getVardiyaKeyStr(), vardiyaGun.getCalismaSuresi());
+							denklestirmeTasiyici.addToplamCalisilanZaman(vardiyaGun.getVardiyaKeyStr(), vardiyaGun.getCalismaSuresi());
 
 						}
 						if (vardiyaGun.getVardiya().isHaftaTatil()) {
@@ -11960,14 +12434,14 @@ public class OrtakIslemler implements Serializable {
 					vardiyaGun.setHaftaCalismaSuresi(haftaCalismaSuresi);
 				}
 
-				if (adet == 7 || maxSuresi < denklestirme.getToplamCalisilacakZaman())
-					denklestirme.setToplamCalisilacakZaman(maxSuresi);
+				if (adet == 7 || maxSuresi < denklestirmeTasiyici.getToplamCalisilacakZaman())
+					denklestirmeTasiyici.setToplamCalisilacakZaman(maxSuresi);
 
 			}
 			if (resmiTatilMesai == 0)
-				denklestirme.setResmiTatilMesai(0d);
+				denklestirmeTasiyici.setResmiTatilMesai(0d);
 			else
-				denklestirme.setResmiTatilMesai(PdksUtil.setSureDoubleRounded(resmiTatilMesai));
+				denklestirmeTasiyici.setResmiTatilMesai(PdksUtil.setSureDoubleRounded(resmiTatilMesai));
 
 		}
 		return sonVardiyaGun;
@@ -12136,14 +12610,14 @@ public class OrtakIslemler implements Serializable {
 			}
 			kapiList = null;
 			if (girisKapi != null && cikisKapi != null) {
-
 				for (VardiyaGun pdksVardiyaGun : vardiyalar) {
 					try {
+						if (pdksVardiyaGun == null || pdksVardiyaGun.getVardiyaDate() == null)
+							continue;
 						String key = pdksVardiyaGun.getVardiyaDateStr();
 						if (key.equals("20210915") || key.equals("20210916"))
 							logger.debug(pdksVardiyaGun.getVardiyaKeyStr());
 						pdksVardiyaGun.setAyrikHareketVar(Boolean.FALSE);
-
 						if (oncekiVardiyaGun != null && pdksVardiyaGun.getVardiya() != null) {
 							if (pdksVardiyaGun.getHareketler() != null && !pdksVardiyaGun.getHareketler().isEmpty()) {
 								HareketKGS hareketKGS = pdksVardiyaGun.getHareketler().get(0);
@@ -12447,6 +12921,8 @@ public class OrtakIslemler implements Serializable {
 					vg.setFazlaMesaiTalepler(null);
 					if (vg.getId() == null)
 						continue;
+					if (vg.isGuncellendi())
+						logger.debug(vg.getVardiyaKeyStr() + " " + vg.getVardiya().getVardiyaAdi());
 					vMap.put(vg.getId(), vg);
 				}
 				HashMap fields = new HashMap();

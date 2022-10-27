@@ -95,7 +95,7 @@
 
 
 		</h:form>
-		<rich:modalPanel id="editPanel" autosized="true" width="600">
+		<rich:modalPanel id="editPanel" autosized="true" width="#{vardiyaTanimlaHome.girisKolonSayisi*100+600}">
 
 			<f:facet name="header">
 				<h:outputText value="Vardiya Planı Tanımlama/Güncelleme" />
@@ -131,8 +131,6 @@
 
 							<h:panelGrid columns="#{vardiyaTanimlaHome.girisKolonSayisi}">
 								<c:forEach items="#{vardiyaTanimlaHome.denklestirmeAy.modeller}" var="md">
-
-
 									<s:decorate template="/layout/edit.xhtml">
 										<ui:define name="label">#{md.calismaModeli.aciklama} Süre</ui:define>
 										<h:inputText value="#{md.sure}"
@@ -143,15 +141,24 @@
 										<h:inputText value="#{md.toplamIzinSure}"
 											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or !(authenticatedUser.admin or authenticatedUser.IKAdmin)}" />
 									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml"
-										rendered="#{authenticatedUser.admin and (md.negatifBakiyeDenkSaat lt 0 or md.calismaModeli.negatifBakiyeDenkSaat lt 0)}">
+
+									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.negatifBakiyeDenkSaat}">
 										<ui:define name="label">#{md.calismaModeli.aciklama} Negatif Bakiye Max (Saati)</ui:define>
 										<h:inputText required="true" value="#{md.negatifBakiyeDenkSaat}"
-											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or !(authenticatedUser.admin or authenticatedUser.IKAdmin)}" size="6"
+											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or ( md.negatifBakiyeDenkSaat ge 0  and md.calismaModeli.negatifBakiyeDenkSaat ge 0)}" size="6"
 											validatorMessage="Negatif bakiye saati giriniz">
 											<f:validateDoubleRange maximum="0" />
 										</h:inputText>
 									</s:decorate>
+
+
+									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.hareketKaydiVardiyaBul}">
+										<ui:define name="label">#{md.calismaModeli.aciklama} Hareket Kayıtlarından Vardiya Bul</ui:define>
+										<h:selectBooleanCheckbox value="#{md.hareketKaydiVardiyaBul}"
+											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or (md.hareketKaydiVardiyaBulsunmu==false and md.calismaModeli.hareketKaydiVardiyaBulsunmu==false)}">
+										</h:selectBooleanCheckbox>
+									</s:decorate>
+
 								</c:forEach>
 
 							</h:panelGrid>
@@ -295,7 +302,7 @@
 												<ui:fragment rendered="#{veri.fazlaMesaiIzinKullan==false}">
 													<SPAN style="color: red"><h:outputText value="#{authenticatedUser.getYesNo(veri.fazlaMesaiIzinKullan)}" /></SPAN>
 												</ui:fragment>
- 											</rich:column>
+											</rich:column>
 										</c:if>
 										<f:facet name="footer">
 											<rich:datascroller renderIfSinglePage="false" maxPages="5" />
@@ -307,7 +314,8 @@
 						</a4j:outputPanel>
 
 						<a4j:outputPanel id="bakiyePanel">
-							<rich:panel header="Bakiye Dosyayla Güncelleme" rendered="#{fazlaMesaiOrtakIslemler.getDurum(vardiyaTanimlaHome.denklestirmeAy,authenticatedUser)==false }">
+							<rich:panel header="Bakiye Dosyayla Güncelleme"
+								rendered="#{fazlaMesaiOrtakIslemler.getDurum(vardiyaTanimlaHome.denklestirmeAy,authenticatedUser)==false }">
 								<h:panelGrid columns="2" style="width:700px;">
 
 									<rich:fileUpload id="fileUpload" fileUploadListener="#{vardiyaTanimlaHome.listenerDevirBakiyeDosya}" listHeight="50px" listWidth="300px"

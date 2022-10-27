@@ -80,19 +80,27 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 	private TreeMap<String, PersonelDenklestirme> bakiySonrakiMap;
 	private List<CalismaModeli> calismaModeliList = new ArrayList<CalismaModeli>();
 	private List<SelectItem> kesintiTuruList = new ArrayList<SelectItem>();
-
+	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, negatifBakiyeDenkSaat = Boolean.FALSE;
 	private Session session;
 
 	public int getGirisKolonSayisi() {
 		int artiAdet = 0;
+		hareketKaydiVardiyaBul = Boolean.FALSE;
+		negatifBakiyeDenkSaat = Boolean.FALSE;
 		if (authenticatedUser.isAdmin() && denklestirmeAy != null && denklestirmeAy.getModeller() != null) {
-			boolean ekle = false;
+
 			for (CalismaModeliAy calismaModeliAy : denklestirmeAy.getModeller()) {
-				if (calismaModeliAy.getNegatifBakiyeDenkSaat() < 0 || calismaModeliAy.getCalismaModeli().getNegatifBakiyeDenkSaat() < 0)
-					ekle = true;
+				CalismaModeli cm = calismaModeliAy.getCalismaModeli();
+				if (calismaModeliAy.getNegatifBakiyeDenkSaat() < 0 || cm.getNegatifBakiyeDenkSaat() < 0)
+					negatifBakiyeDenkSaat = Boolean.TRUE;
+				if (cm.isHareketKaydiVardiyaBulsunmu() || calismaModeliAy.isHareketKaydiVardiyaBulsunmu())
+					hareketKaydiVardiyaBul = Boolean.TRUE;
+
 			}
-			if (ekle)
-				artiAdet = 1;
+			if (negatifBakiyeDenkSaat)
+				artiAdet += 1;
+			if (hareketKaydiVardiyaBul)
+				artiAdet += 1;
 		}
 		int sayi = artiAdet + 2;
 		return sayi;
@@ -902,6 +910,22 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 
 	public void setKesintiTuruList(List<SelectItem> kesintiTuruList) {
 		this.kesintiTuruList = kesintiTuruList;
+	}
+
+	public Boolean getHareketKaydiVardiyaBul() {
+		return hareketKaydiVardiyaBul;
+	}
+
+	public void setHareketKaydiVardiyaBul(Boolean hareketKaydiVardiyaBul) {
+		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
+	}
+
+	public Boolean getNegatifBakiyeDenkSaat() {
+		return negatifBakiyeDenkSaat;
+	}
+
+	public void setNegatifBakiyeDenkSaat(Boolean negatifBakiyeDenkSaat) {
+		this.negatifBakiyeDenkSaat = negatifBakiyeDenkSaat;
 	}
 
 }

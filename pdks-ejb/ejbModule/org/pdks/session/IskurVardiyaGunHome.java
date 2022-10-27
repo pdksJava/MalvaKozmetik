@@ -4111,6 +4111,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				hashMap.put(pdksVardiyaPlan.getPersonel().getId(), pdksVardiyaPlan);
 			DepartmanDenklestirmeDonemi denklestirmeDonemi = (DepartmanDenklestirmeDonemi) getDenklestirmeDonemi().clone();
 			denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
+			denklestirmeDonemi.setDenklestirmeAyDurum(denklestirmeAyDurum);
 			for (int i = 0; i < 3; i++) {
 				if (denklestirmeDonemi.getBaslangicTarih() != null && PdksUtil.tarihKarsilastirNumeric(denklestirmeDonemi.getBitisTarih(), denklestirmeDonemi.getBaslangicTarih()) == 1) {
 					tatilGunleriMap = ortakIslemler.getTatilGunleri(new ArrayList<Personel>(), PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBaslangicTarih(), -1), PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBitisTarih(), 1), session);

@@ -186,7 +186,7 @@
 													<TD><ui:fragment rendered="#{aylikPuantaj.fazlaMesaiTalepVar}">
 															<a4j:commandLink id="mesaiAylikLink" ajaxSingle="true" disabled="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi==false}"
 																action="#{vardiyaGunHome.aylikPuantajSec(aylikPuantaj,'M')}" onclick="#{rich:component('wait')}.show()"
-																oncomplete="#{rich:component('wait')}.hide();#{rich:component('mesaiAylikPanel')}.show()" reRender="mesaiAylikPanel">
+																oncomplete="#{rich:component('wait')}.hide(); #{rich:component('mesaiAylikPanel')}.show()" reRender="mesaiAylikPanel">
 																<h:graphicImage value="/img/home_32.png" style="border:0" height="16" />
 															</a4j:commandLink>
 															<rich:toolTip for="mesaiAylikLink">

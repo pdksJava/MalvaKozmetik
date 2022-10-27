@@ -28,6 +28,8 @@ public class CalismaModeliAy implements Serializable {
 	public static final String COLUMN_NAME_ID = "ID";
 	public static final String COLUMN_NAME_DONEM = "DONEM_ID";
 	public static final String COLUMN_NAME_CALISMA_MODELI = "CALISMA_MODELI_ID";
+	public static final String COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL = "HAREKET_KAYDI_VARDIYA_BUL";
+
 	private Long id;
 
 	private DenklestirmeAy denklestirmeAy;
@@ -35,6 +37,8 @@ public class CalismaModeliAy implements Serializable {
 	private CalismaModeli calismaModeli;
 
 	private double sure = 0, toplamIzinSure = 0, negatifBakiyeDenkSaat = 0.0d;
+
+	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE;
 
 	public CalismaModeliAy() {
 		super();
@@ -44,8 +48,10 @@ public class CalismaModeliAy implements Serializable {
 		super();
 		this.denklestirmeAy = denklestirmeAy;
 		this.calismaModeli = calismaModeli;
-		if (calismaModeli != null)
+		if (calismaModeli != null) {
 			this.negatifBakiyeDenkSaat = calismaModeli.getNegatifBakiyeDenkSaat();
+			this.hareketKaydiVardiyaBul = calismaModeli.getHareketKaydiVardiyaBul();
+		}
 	}
 
 	@Id
@@ -108,10 +114,24 @@ public class CalismaModeliAy implements Serializable {
 		this.negatifBakiyeDenkSaat = negatifBakiyeDenkSaat;
 	}
 
+	@Column(name = COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL)
+	public Boolean getHareketKaydiVardiyaBul() {
+		return hareketKaydiVardiyaBul;
+	}
+
+	public void setHareketKaydiVardiyaBul(Boolean hareketKaydiVardiyaBul) {
+		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
+	}
+
 	@Transient
 	public static String getKey(DenklestirmeAy xDenklestirmeAy, CalismaModeli xCalismaModeli) {
 		String key = (xDenklestirmeAy != null ? xDenklestirmeAy.getId() : 0) + "_" + (xCalismaModeli != null ? xCalismaModeli.getId() : 0);
 		return key;
+	}
+
+	@Transient
+	public boolean isHareketKaydiVardiyaBulsunmu() {
+		return hareketKaydiVardiyaBul != null && hareketKaydiVardiyaBul.booleanValue();
 	}
 
 	@Transient

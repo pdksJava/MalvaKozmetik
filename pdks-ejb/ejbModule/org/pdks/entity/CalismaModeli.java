@@ -41,6 +41,7 @@ public class CalismaModeli implements Serializable {
 	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEMETARIHI";
 	public static final String COLUMN_NAME_BAGLI_VARDIYA_SABLON = "BAGLI_VARDIYA_SABLON_ID";
 	public static final String COLUMN_NAME_DEPARTMAN = "DEPARTMAN_ID";
+	public static final String COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL = "HAREKET_KAYDI_VARDIYA_BUL";
 
 	private Long id;
 
@@ -49,7 +50,7 @@ public class CalismaModeli implements Serializable {
 	/**
 	 * 
 	 */
-	private Boolean toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE;
+	private Boolean toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
@@ -184,6 +185,17 @@ public class CalismaModeli implements Serializable {
 		this.toplamGunGuncelle = toplamGunGuncelle;
 	}
 
+	@Column(name = COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL)
+	public Boolean getHareketKaydiVardiyaBul() {
+		return hareketKaydiVardiyaBul;
+	}
+
+	public void setHareketKaydiVardiyaBul(Boolean hareketKaydiVardiyaBul) {
+		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
+	}
+
+	
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_BAGLI_VARDIYA_SABLON)
 	@Fetch(FetchMode.JOIN)
@@ -264,7 +276,10 @@ public class CalismaModeli implements Serializable {
 		String str = date != null ? PdksUtil.convertToDateString(date, PdksUtil.getDateFormat() + " H:mm:ss") : "";
 		return str;
 	}
-
+	@Transient
+	public boolean isHareketKaydiVardiyaBulsunmu() {
+		return hareketKaydiVardiyaBul != null && hareketKaydiVardiyaBul.booleanValue();
+	}
 	@Transient
 	public double getIzinSaat(VardiyaGun pdksVardiyaGun) {
 		double izinSure = izin;

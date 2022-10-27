@@ -668,6 +668,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	}
 
 	public void fillHareketList() {
+		session.clear();
 		TreeMap<Long, KapiView> terminalGirisCikisMap = fillKGSKapiList();
 		manuelHakeretDuzenle(false);
 		donemBul(tarih);

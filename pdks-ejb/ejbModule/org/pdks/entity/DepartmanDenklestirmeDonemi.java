@@ -4,17 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TreeMap;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
 import org.apache.log4j.Logger;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.pdks.session.PdksUtil;
 
 public class DepartmanDenklestirmeDonemi extends BaseObject {
@@ -47,7 +37,8 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 
 	private DenklestirmeAy denklestirmeAy;
 
-	@Column(name = "VERSION")
+	private Boolean denklestirmeAyDurum = Boolean.FALSE;
+
 	public Integer getVersion() {
 		return version;
 	}
@@ -56,8 +47,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.version = version;
 	}
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "BASLANGIC_TARIH", nullable = false)
 	public Date getBaslangicTarih() {
 		return baslangicTarih;
 	}
@@ -66,8 +55,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.baslangicTarih = baslangicTarih;
 	}
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "BITIS_TARIH", nullable = false)
 	public Date getBitisTarih() {
 		return bitisTarih;
 	}
@@ -76,7 +63,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.bitisTarih = bitisTarih;
 	}
 
-	@Column(name = "FAZLA_MESAI_BAS_TARIH", nullable = false)
 	public Date getFazlaMesaiBaslangicTarih() {
 		return fazlaMesaiBaslangicTarih;
 	}
@@ -85,9 +71,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.fazlaMesaiBaslangicTarih = fazlaMesaiBaslangicTarih;
 	}
 
-	@ManyToOne(cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "DEPARTMAN_ID", nullable = false)
-	@Fetch(FetchMode.JOIN)
 	public Departman getDepartman() {
 		return departman;
 	}
@@ -96,7 +79,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.departman = departman;
 	}
 
-	@Column(name = "ISLEM_TIPI", nullable = false, length = 1)
 	public String getIslemTipi() {
 		return islemTipi;
 	}
@@ -105,37 +87,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.islemTipi = islemTipi;
 	}
 
-	@Transient
-	public boolean isDonemKapali() {
-		return islemTipi != null && islemTipi.equals(ISLEM_TIPI_DONEM_KAPANDI);
-	}
-
-	@Transient
-	public boolean isAcik() {
-		return islemTipi == null || islemTipi.equals(ISLEM_TIPI_ACIK) || islemTipi.equals(ISLEM_TIPI_HESAPLANDI);
-	}
-
-	@Transient
-	public String getIslemTipiAciklama() {
-		String tip = islemTipi;
-		if (tip == null)
-			tip = ISLEM_TIPI_ACIK;
-		String aciklama = PdksUtil.getMessageBundleMessage("puantaj.etiket.denklestirmeDonem.islemTipi" + tip);
-		return aciklama;
-	}
-
-	@Transient
-	public long getDepartmanId() {
-		return departman != null ? departman.getId() : 0;
-	}
-
-	@Transient
-	public String getAciklama() {
-		String str = PdksUtil.convertToDateString(baslangicTarih, PdksUtil.getDateFormat()) + "-" + PdksUtil.convertToDateString(bitisTarih, PdksUtil.getDateFormat());
-		return str;
-	}
-
-	@Column(name = "AY")
 	public Integer getAy() {
 		return ay;
 	}
@@ -144,7 +95,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.ay = ay;
 	}
 
-	@Column(name = "YIL")
 	public Integer getYil() {
 		return yil;
 	}
@@ -153,7 +103,31 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.yil = yil;
 	}
 
-	@Transient
+	public boolean isDonemKapali() {
+		return islemTipi != null && islemTipi.equals(ISLEM_TIPI_DONEM_KAPANDI);
+	}
+
+	public boolean isAcik() {
+		return islemTipi == null || islemTipi.equals(ISLEM_TIPI_ACIK) || islemTipi.equals(ISLEM_TIPI_HESAPLANDI);
+	}
+
+	public String getIslemTipiAciklama() {
+		String tip = islemTipi;
+		if (tip == null)
+			tip = ISLEM_TIPI_ACIK;
+		String aciklama = PdksUtil.getMessageBundleMessage("puantaj.etiket.denklestirmeDonem.islemTipi" + tip);
+		return aciklama;
+	}
+
+	public long getDepartmanId() {
+		return departman != null ? departman.getId() : 0;
+	}
+
+	public String getAciklama() {
+		String str = PdksUtil.convertToDateString(baslangicTarih, PdksUtil.getDateFormat()) + "-" + PdksUtil.convertToDateString(bitisTarih, PdksUtil.getDateFormat());
+		return str;
+	}
+
 	public Date getBordroTarihi() {
 		Date bordroTarihi = null;
 		Calendar cal = Calendar.getInstance();
@@ -169,22 +143,18 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		return bordroTarihi;
 	}
 
-	@Transient
 	public boolean isDenklestirmeYapilmadi() {
 		return islemTipi.equals(ISLEM_TIPI_ACIK);
 	}
 
-	@Transient
 	public boolean isDenklestirmeYapildi() {
 		return islemTipi.equals(ISLEM_TIPI_HESAPLANDI);
 	}
 
-	@Transient
 	public boolean isDonemKapandi() {
 		return islemTipi.equals(ISLEM_TIPI_DONEM_KAPANDI);
 	}
 
-	@Transient
 	public TreeMap<String, Tatil> getTatilGunleriMap() {
 		return tatilGunleriMap;
 	}
@@ -193,7 +163,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.tatilGunleriMap = tatilGunleriMap;
 	}
 
-	@Transient
 	public DenklestirmeAy getDenklestirmeAy() {
 		return denklestirmeAy;
 	}
@@ -208,6 +177,14 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 
 	public void setPersonelDenklestirmeDonemMap(TreeMap<Long, PersonelDenklestirme> personelDenklestirmeDonemMap) {
 		this.personelDenklestirmeDonemMap = personelDenklestirmeDonemMap;
+	}
+
+	public Boolean getDenklestirmeAyDurum() {
+		return denklestirmeAyDurum;
+	}
+
+	public void setDenklestirmeAyDurum(Boolean denklestirmeAyDurum) {
+		this.denklestirmeAyDurum = denklestirmeAyDurum;
 	}
 
 }

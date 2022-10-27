@@ -2810,11 +2810,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		fillGorevTipiTanimList();
 	}
 
+	/**
+	 * 
+	 */
 	public void fillDistinctRoleList() {
 		Personel personel = getInstance();
-		List<Role> allRoles = ortakIslemler.yetkiRolleriGetir(session);
-
 		List<String> yoneticiOlmayanRoller = getPersonelYoneticiolmayanRoller(personel);
+		List<Role> allRoles = ortakIslemler.yetkiRolleriGetir(session);
 		for (Iterator iterator = allRoles.iterator(); iterator.hasNext();) {
 			Role role = (Role) iterator.next();
 			if (authenticatedUser.isAdmin() == false && role.isAdminRoleMu())
@@ -2837,10 +2839,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						iterator.remove();
 						continue;
 					}
-					String rolAdi = role.getRolename();
-					if (yoneticiOlmayanRoller != null && !yoneticiOlmayanRoller.contains(rolAdi))
-						iterator.remove();
-					else if (allRoles.contains(role))
+					if (allRoles.contains(role))
 						allRoles.remove(role);
 				}
 			}
