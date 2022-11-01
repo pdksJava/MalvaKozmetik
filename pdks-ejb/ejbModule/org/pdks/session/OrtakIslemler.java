@@ -6750,11 +6750,13 @@ public class OrtakIslemler implements Serializable {
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					List<ArifeVardiyaDonem> arifeTatilList = pdksEntityController.getObjectByInnerObjectListInLogic(map, ArifeVardiyaDonem.class);
 					boolean arifeVardiyaHesapla = false;
+					List idList = new ArrayList();
 					for (Iterator iterator = arifeTatilList.iterator(); iterator.hasNext();) {
 						ArifeVardiyaDonem arifeVardiyaDonem = (ArifeVardiyaDonem) iterator.next();
 						if (arifeVardiyaDonem.getDurum().equals(Boolean.FALSE))
 							iterator.remove();
-
+						if (arifeVardiyaDonem.getVardiya() != null && !idList.contains(arifeVardiyaDonem.getVardiya().getId()))
+							idList.add(arifeVardiyaDonem.getVardiya().getId());
 					}
 					map.clear();
 					sb = new StringBuffer();
@@ -6773,6 +6775,10 @@ public class OrtakIslemler implements Serializable {
 					Personel p = new Personel();
 					List<YemekIzin> yemekList = new ArrayList<YemekIzin>();
 					List<YemekIzin> yemekDataList = getYemekList(session);
+					Date basArifeTarih = PdksUtil.tariheGunEkleCikar(tarihi, -1), bitArifeTarih = PdksUtil.convertToJavaDate("99991231", "yyyyMMdd");
+					User sistemUser = null;
+					List saveList = new ArrayList();
+
 					for (Vardiya vardiya : vardiyalar) {
 						VardiyaGun tmp = new VardiyaGun(p, vardiya, tarihi);
 						tmp.setVardiyaZamani();
@@ -6782,12 +6788,14 @@ public class OrtakIslemler implements Serializable {
 						Double arifeCalismaSure = null;
 						if (vardiya.isCalisma()) {
 							String tatilStr = arifeTatilBasZaman.equals("") ? null : arifeTatilBasZaman;
+							ArifeVardiyaDonem arifeVardiyaDonemDB = null;
 							for (ArifeVardiyaDonem arifeVardiyaDonem : arifeTatilList) {
-								if (arifeVardiyaDonem.getVardiya() != null && !vardiya.getId().equals(arifeVardiyaDonem.getVardiya()))
+								if (arifeVardiyaDonem.getVardiya() != null && !vardiya.getId().equals(arifeVardiyaDonem.getVardiya().getId()))
 									continue;
 								tatilStr = arifeVardiyaDonem.getTatilBasZaman();
 								arifeVardiyaHesapla = arifeVardiyaDonem.getArifeVardiyaHesapla();
 								tatilIslem.setArifeSonraVardiyaDenklestirmeVar(arifeVardiyaDonem.getArifeSonraVardiyaDenklestirmeVar());
+								arifeVardiyaDonemDB = arifeVardiyaDonem;
 								if (arifeVardiyaDonem.getVardiya() != null)
 									break;
 							}
@@ -6795,21 +6803,40 @@ public class OrtakIslemler implements Serializable {
 							if (tatilStr != null) {
 								String dateStr = PdksUtil.convertToDateString(arifeBaslangicTarihi, "yyyyMMdd") + " " + tatilStr;
 								Date yeniZaman = PdksUtil.convertToJavaDate(dateStr, "yyyyMMdd HH:mm");
-								if (yeniZaman != null)
+								if (yeniZaman != null) {
+									if (yeniZaman.before(islemVardiya.getVardiyaBasZaman()))
+										yeniZaman = PdksUtil.tariheGunEkleCikar(yeniZaman, 1);
 									arifeBaslangicTarihi = yeniZaman;
+								}
+
 							} else if ((calismaSekli != null || (vardiya.getArifeNormalCalismaDakika() != null && vardiya.getArifeNormalCalismaDakika() != 0.0d))) {
 								arifeNormalCalismaDakika = calismaSekli != null ? calismaSekli.getArifeNormalCalismaDakika() : null;
 								if (vardiya.getArifeNormalCalismaDakika() != null && vardiya.getArifeNormalCalismaDakika() != 0.0d)
 									arifeNormalCalismaDakika = vardiya.getArifeNormalCalismaDakika();
 								else if (arifeNormalCalismaDakika == null || arifeNormalCalismaDakika.doubleValue() == 0.0d)
 									arifeNormalCalismaDakika = null;
-								if (arifeNormalCalismaDakika == null)
-									arifeNormalCalismaDakika = vardiya.getNetCalismaSuresi() * 30.0d + (vardiya.getYemekSuresi() * 0.5);
+								if (arifeNormalCalismaDakika == null) {
+									arifeNormalCalismaDakika = (vardiya.getNetCalismaSuresi() * 30.0d) + (vardiya.getYemekSuresi() * 0.5);
 
+								}
 								if (arifeNormalCalismaDakika != null) {
 									cal.setTime(islemVardiya.getVardiyaBasZaman());
 									cal.add(Calendar.MINUTE, arifeNormalCalismaDakika.intValue());
 									arifeBaslangicTarihi = cal.getTime();
+									if (arifeVardiyaDonemDB == null && !idList.contains(vardiya.getId())) {
+										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
+										arifeVardiyaDonemDB.setVardiya(vardiya);
+										arifeVardiyaDonemDB.setBasTarih(basArifeTarih);
+										arifeVardiyaDonemDB.setBitTarih(bitArifeTarih);
+										arifeVardiyaDonemDB.setTatilBasZaman(PdksUtil.convertToDateString(arifeBaslangicTarihi, "HH:mm:ss"));
+										if (sistemUser == null)
+											sistemUser = getSistemAdminUser(session);
+										arifeVardiyaDonemDB.setOlusturanUser(sistemUser);
+										arifeVardiyaDonemDB.setOlusturmaTarihi(new Date());
+										arifeVardiyaDonemDB.setVersion(0);
+										arifeVardiyaDonemDB.setDurum(Boolean.TRUE);
+										saveList.add(arifeVardiyaDonemDB);
+									}
 								}
 
 							}
@@ -6832,6 +6859,15 @@ public class OrtakIslemler implements Serializable {
 						tmp = null;
 						vardiyaMap.put(islemVardiya.getId(), islemVardiya);
 					}
+					if (!saveList.isEmpty()) {
+						for (Iterator iterator = saveList.iterator(); iterator.hasNext();) {
+							Object object = (Object) iterator.next();
+							session.saveOrUpdate(object);
+						}
+						session.flush();
+					}
+					idList = null;
+					saveList = null;
 					p = null;
 					tatilIslem.setVardiyaMap(vardiyaMap);
 				}

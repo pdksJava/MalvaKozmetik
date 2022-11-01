@@ -6561,7 +6561,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 			}
 			StringBuffer sb = new StringBuffer();
- 			sb.append("SP_GET_PERSONEL_VARDIYA");
+			sb.append("SP_GET_PERSONEL_VARDIYA");
 			LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
 			veriMap.put("basYil", yilBas);
 			veriMap.put("bitDonem", maxDonem);
