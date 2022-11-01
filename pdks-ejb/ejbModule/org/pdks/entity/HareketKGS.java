@@ -74,7 +74,7 @@ public class HareketKGS implements Serializable, Cloneable {
 	private YemekOgun yemekOgun;
 	private List<HareketKGS> yemekList;
 	protected boolean checkBoxDurum;
-	protected String style = VardiyaGun.STYLE_CLASS_ODD;
+	protected String style = VardiyaGun.STYLE_CLASS_ODD, islemYapan = "";
 
 	@Id
 	@Column(name = COLUMN_NAME_ID)
@@ -534,6 +534,14 @@ public class HareketKGS implements Serializable, Cloneable {
 
 	public void setTerminalKapi(KapiView terminalKapi) {
 		this.terminalKapi = terminalKapi;
+	}
+	@Transient
+	public String getIslemYapan() {
+		return islemYapan;
+	}
+
+	public void setIslemYapan(String islemYapan) {
+		this.islemYapan = islemYapan;
 	}
 
 }

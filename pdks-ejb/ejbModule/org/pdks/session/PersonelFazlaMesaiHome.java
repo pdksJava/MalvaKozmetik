@@ -153,11 +153,9 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		if (!ayniSayfa)
 			authenticatedUser.setCalistigiSayfa("personelFazlaMesai");
 
-		List<Tanim> list1 = ortakIslemler.getTanimList(Tanim.TIPI_ONAYLAMAMA_NEDEN, session);
 		fillEkSahaTanim();
 		pdksDenklestirmeAy = null;
 		tatil = null;
-		setOnaylamamaNedeniList(list1);
 		setHareketList(new ArrayList<HareketKGS>());
 		PersonelFazlaMesai mesai = new PersonelFazlaMesai();
 		HareketKGS hareket = new HareketKGS();
@@ -549,6 +547,9 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			seciliEkSaha3 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
 		}
+		List<Tanim> list1 = ortakIslemler.getTanimList(Tanim.TIPI_ONAYLAMAMA_NEDEN, session);
+		setOnaylamamaNedeniList(list1);
+
 		ArrayList<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.FALSE, session);
 		String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo());
 		if (linkAdres != null && sicilNo != null && !sicilNo.equals("") && !sicilNoList.contains(sicilNo))
@@ -812,6 +813,10 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 								bitZaman2 = islemVardiya.getVardiyaTelorans2BitZaman().getTime();
 								bitFazlaMesai = islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime();
 								if (vardiyaGun.getHareketDurum() && izin == null && cikisHareketleri.size() > 0) {
+									Date vardiyaFazlaMesaiBasZaman = islemVardiya.getVardiyaFazlaMesaiBasZaman();
+									Date vardiyaTelorans1BasZaman = islemVardiya.getVardiyaTelorans1BasZaman();
+									Date vardiyaTelorans2BitZaman = islemVardiya.getVardiyaTelorans2BitZaman();
+									Date vardiyaFazlaMesaiBitZaman = islemVardiya.getVardiyaFazlaMesaiBitZaman();
 									for (int j = 0; j < cikisHareketleri.size(); j++) {
 										HareketKGS kgsHareketGiris = (HareketKGS) girisHareketleri.get(j).clone();
 										HareketKGS kgsHareketCikis = (HareketKGS) cikisHareketleri.get(j).clone();
@@ -821,7 +826,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 											Date girisZaman = kgsHareketGiris != null && kgsHareketGiris.getZaman() != null ? (Date) kgsHareketGiris.getZaman().clone() : null;
 											Date cikisZaman = kgsHareketCikis != null && kgsHareketCikis.getZaman() != null ? (Date) kgsHareketCikis.getZaman().clone() : null;
 
-											if ((cikisZaman.getTime() > islemVardiya.getVardiyaTelorans2BitZaman().getTime()) && (cikisZaman.getTime() <= islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime())) {
+											if ((cikisZaman.getTime() > vardiyaTelorans2BitZaman.getTime()) && (cikisZaman.getTime() <= vardiyaFazlaMesaiBitZaman.getTime())) {
 												kgsHareketCikis.setVardiyaGun(vardiyaGun);
 
 												kgsHareketCikis.setGirisZaman(girisZaman.before(islemVardiya.getVardiyaBitZaman()) ? islemVardiya.getVardiyaBitZaman() : girisZaman);
@@ -853,8 +858,8 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 											cikisZaman = kgsHareketCikis != null && kgsHareketCikis.getZaman() != null ? (Date) kgsHareketCikis.getZaman().clone() : null;
 
 											kgsZaman = kgsHareketGiris.getZaman().getTime();
-											long basZaman = kgsHareketGiris == null ? 0L : islemVardiya.getVardiyaTelorans1BasZaman().getTime();
-											long basZaman2 = kgsHareketGiris == null ? 0L : islemVardiya.getVardiyaFazlaMesaiBasZaman().getTime();
+											long basZaman = kgsHareketGiris == null ? 0L : vardiyaTelorans1BasZaman.getTime();
+											long basZaman2 = kgsHareketGiris == null ? 0L : vardiyaFazlaMesaiBasZaman.getTime();
 											if (kgsZaman < basZaman && kgsZaman >= basZaman2) {
 												double saat = 0.0d;
 												kgsHareketGiris.setVardiyaGun(vardiyaGun);

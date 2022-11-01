@@ -154,11 +154,11 @@
 							</s:decorate>
 							<s:decorate id="parametreAdiField2" template="/layout/edit.xhtml">
 								<ui:define name="label">Değeri</ui:define>
-								<h:inputText id="parametreAdi2" required="true" size="80" value="#{parameterHome.instance.value}" />
+								<h:inputText id="parametreAdi2" style="width: 500px" required="true" maxlength="255" value="#{parameterHome.instance.value}" />
 							</s:decorate>
 							<s:decorate id="parametreAdiField3" template="/layout/edit.xhtml">
 								<ui:define name="label">Açıklama</ui:define>
-								<h:inputText id="parametreAdi3" size="80" value="#{parameterHome.instance.description}">
+								<h:inputText id="parametreAdi3" style="width: 500px" maxlength="1024" value="#{parameterHome.instance.description}">
 								</h:inputText>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml">

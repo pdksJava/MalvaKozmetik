@@ -1495,7 +1495,7 @@ public class Vardiya extends BaseObject {
 				kod = "00";
 
 		}
-		String aciklamaStr = (PdksUtil.textBaslangicinaKarakterEkle((ekranSira != null ? String.valueOf(ekranSira) : "0"), '0', 5)) + kod + (kisaAdi != null ? kisaAdi : "ZZZZZ");
+		String aciklamaStr = (PdksUtil.textBaslangicinaKarakterEkle((ekranSira != null ? String.valueOf(ekranSira) : "0"), '0', 6)) + kod + (kisaAdi != null ? kisaAdi : "ZZZZZ");
 		return aciklamaStr;
 	}
 

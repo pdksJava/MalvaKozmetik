@@ -620,8 +620,10 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		return onayDurum;
 	}
 
-	public void setOnayDurum(boolean onayDurum) {
-		this.onayDurum = onayDurum;
+	public void setOnayDurum(boolean value) {
+		if (pdksPersonel != null)
+			logger.debug(pdksPersonel.getPdksSicilNo() + " " + pdksPersonel.getAdSoyad() + " " + value);
+		this.onayDurum = value;
 	}
 
 	public AylikPuantaj getGecenAylikPuantaj() {

@@ -69,7 +69,7 @@ public class VardiyaGun extends BaseObject {
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
-	private String tdClass = "", style = "";
+	private String tdClass = "", style = "", manuelGirisHTML = "";
 	private Tatil tatil;
 	private PersonelIzin izin;
 	private VardiyaSablonu vardiyaSablonu;
@@ -1958,4 +1958,12 @@ public class VardiyaGun extends BaseObject {
 		this.calismaSuaSaati = calismaSuaSaati;
 	}
 
+	@Transient
+	public String getManuelGirisHTML() {
+		return manuelGirisHTML;
+	}
+
+	public void setManuelGirisHTML(String manuelGirisHTML) {
+		this.manuelGirisHTML = manuelGirisHTML;
+	}
 }

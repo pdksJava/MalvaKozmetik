@@ -224,11 +224,11 @@
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Açiklama(tr)</ui:define>
-							<h:inputText id="id1" required="true" value="#{tanimHome.instance.aciklamatr}" style="width:350px" />
+							<h:inputText id="id1" required="true" value="#{tanimHome.instance.aciklamatr}" style="width: 500px" maxlength="128" />
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Açiklama(en)</ui:define>
-							<h:inputText id="id2" required="true" value="#{tanimHome.instance.aciklamaen}" style="width:350px" />
+							<h:inputText id="id2" required="true" value="#{tanimHome.instance.aciklamaen}" style="width: 500px" maxlength="128" />
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin==true}">
 							<ui:define name="label">Güncelle</ui:define>
@@ -281,11 +281,11 @@
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Açiklama(tr)</ui:define>
-							<h:inputText required="true" value="#{tanimHome.instance.aciklamatr}" style="width:350px" />
+							<h:inputText required="true" value="#{tanimHome.instance.aciklamatr}" style="width: 500px" maxlength="128" />
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Açiklama(en)</ui:define>
-							<h:inputText required="true" value="#{tanimHome.instance.aciklamaen}" style="width:350px" />
+							<h:inputText required="true" value="#{tanimHome.instance.aciklamaen}" style="width: 500px" maxlength="128" />
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin==true}">
 							<ui:define name="label">Güncelle</ui:define>

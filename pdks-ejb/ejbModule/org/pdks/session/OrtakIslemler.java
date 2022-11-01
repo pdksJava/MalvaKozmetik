@@ -8201,7 +8201,6 @@ public class OrtakIslemler implements Serializable {
 					if (sonrakiVardiyaGun != null) {
 						Vardiya vardiya = sonrakiVardiyaGun.getIslemVardiya();
 						if (vardiya != null && vardiya.isCalisma() == false) {
-							islemVardiya.setVardiyaTelorans2BitZaman(PdksUtil.addTarih(vardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -20));
 							islemVardiya.setVardiyaFazlaMesaiBitZaman(PdksUtil.addTarih(vardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -40));
 						}
 					}
@@ -11038,7 +11037,7 @@ public class OrtakIslemler implements Serializable {
 
 						for (VardiyaGun pdksVardiyaGun : haftaVardiyaGunler) {
 							String key = pdksVardiyaGun.getVardiyaDateStr();
-							if (key.equals("20220720") || key.equals("20220721"))
+							if (key.equals("20221028") || key.equals("20220721"))
 								logger.debug(key);
 							if (pdksVardiyaGun.isFiiliHesapla() == false) {
 								if (ilkGiris)
@@ -11764,7 +11763,7 @@ public class OrtakIslemler implements Serializable {
 					if (vardiyaGun.getVardiya() != null) {
 						String gun = vardiyaGun.getVardiyaDateStr();
 						vardiyaGun.setCalismaModeli(calismaModeli);
-						if (gun.equals("20220708"))
+						if (gun.equals("20221028"))
 							logger.debug(gun);
 						if (vardiyaGun.isHaftaTatil() && (!tatilGunleriMap.containsKey(gun) || tatilGunleriMap.get(gun).isYarimGunMu())) {
 							String key1 = (vardiyaGun.getPersonel() != null ? vardiyaGun.getPersonel().getSicilNo() : "") + "_" + gun;
@@ -11852,7 +11851,7 @@ public class OrtakIslemler implements Serializable {
 						if (tatilGunleriMap.containsKey(key))
 							vardiyaGun.setTatil(tatilGunleriMap.get(key));
 						double resmiTatilSure = 0, toplamYemekSuresi = 0, vardiyaYemekSuresi = 0, calSure = 0d;
-						if (vGun.equals("20220720"))
+						if (vGun.equals("20221028"))
 							logger.debug(vGun);
 						if (gun.equals("01")) {
 							if (vardiyaGun.getTatil() != null && vardiyaGun.getVardiya() != null && sonVardiyaGun != null) {
@@ -11934,6 +11933,8 @@ public class OrtakIslemler implements Serializable {
 							}
 						}
 						if (gunlukSaat > 0 || fmSaat > 0) {
+							if (vGun.equals("20221028"))
+								logger.debug(vGun);
 							ArrayList<HareketKGS> girisHareketleri = new ArrayList<HareketKGS>(), cikisHareketleri = new ArrayList<HareketKGS>();
 							vardiyaYemekSuresi = vardiyaGun.getIslemVardiya() != null && vardiyaGun.getIslemVardiya().getYemekSuresi() != null ? vardiyaGun.getIslemVardiya().getYemekSuresi() / 60 : 0d;
 							vardiyaGun.setNormalSure(gunlukSaat);
@@ -12016,8 +12017,6 @@ public class OrtakIslemler implements Serializable {
 
 						boolean sureHesapla = Boolean.FALSE;
 						TreeMap<String, Double> yemekFarkMap = new TreeMap<String, Double>();
-						if (vGun.equals("20220720"))
-							logger.debug(vGun);
 
 						if (!tatilCikisHareketleri.isEmpty() && tatilCikisHareketleri.size() == tatilGirisHareketleri.size()) {
 							Tatil tatil = null;
@@ -12196,12 +12195,11 @@ public class OrtakIslemler implements Serializable {
 									toplamYemekSuresi = vardiyaYemekSuresi;
 								} else if (vardiyaYemekSuresi > toplamYemekSuresi && netSure * yemekMolasiYuzdesi <= calSure) {
 									calSure += fark;
-									double resmiCalisma = resmiTatilSure + toplamYemekSuresi;
-									Double vardiyaToplamYemekSuresi = toplamYemekSuresi;
+									double resmiCalisma = resmiTatilSure;
 									toplamYemekSuresi = vardiyaYemekSuresi;
 									if (resmiTatilSure > 0.0d) {
 										double resmiTatilYemekSuresi = PdksUtil.setSureDoubleRounded((resmiCalisma * vardiyaYemekSuresi) / (netSure + vardiyaYemekSuresi));
-										fark = vardiyaToplamYemekSuresi - resmiTatilYemekSuresi;
+										fark = resmiTatilYemekSuresi - toplamYemekSuresi;
 										vardiyaYemekSuresi += fark;
 										resmiTatilSure += fark;
 										vardiyaGun.addBayramCalismaSuresi(fark);
@@ -12234,7 +12232,7 @@ public class OrtakIslemler implements Serializable {
 						}
 						ArrayList<PersonelFazlaMesai> vardiyaFazlaMesailer = vardiyaGun.getFazlaMesailer();
 						if (vardiyaFazlaMesailer != null) {
-							if (key.equals("20220720"))
+							if (key.equals("20221028"))
 								logger.debug(key);
 
 							if (session == null)
@@ -12315,7 +12313,7 @@ public class OrtakIslemler implements Serializable {
 							if (vardiyaGun.getCalismaSuresi() > 0.0d && haftaTatilMap.containsKey(vardiyaGun.getVardiyaKeyStr()))
 								vardiyaHaftaTatil = vardiyaGun;
 						}
-						if (vGun.equals("20220708"))
+						if (vGun.equals("20221028"))
 							logger.debug(vGun);
 						if (vardiyaHaftaTatil != null) {
 							String key1 = vardiyaHaftaTatil.getVardiyaKeyStr();
