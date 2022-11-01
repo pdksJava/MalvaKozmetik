@@ -6823,6 +6823,12 @@ public class OrtakIslemler implements Serializable {
 									cal.setTime(islemVardiya.getVardiyaBasZaman());
 									cal.add(Calendar.MINUTE, arifeNormalCalismaDakika.intValue());
 									arifeBaslangicTarihi = cal.getTime();
+									Double sure = (vardiya.getNetCalismaSuresi() * 0.5d) - getSaatSure(islemVardiya.getVardiyaBasZaman(), arifeBaslangicTarihi, yemekDataList, tmp, session);
+									if (sure.doubleValue() != 0.0d) {
+										cal.setTime(arifeBaslangicTarihi);
+										cal.add(Calendar.MINUTE, new Double(sure * 60).intValue());
+										arifeBaslangicTarihi = cal.getTime();
+									}
 									if (arifeVardiyaDonemDB == null && !idList.contains(vardiya.getId())) {
 										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
 										arifeVardiyaDonemDB.setVardiya(vardiya);
