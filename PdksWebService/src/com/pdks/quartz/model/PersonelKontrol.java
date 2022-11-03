@@ -39,7 +39,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 					fields.put("name", "canliSunucu");
 					fields.put("active", Boolean.TRUE);
 					Parameter parameter = (Parameter) pdksDAO.getObjectByInnerObject(fields, Parameter.class);
-					if (parameter != null && PdksUtil.getTestDurum(parameter.getValue()) == false)
+					if (parameter != null && PdksUtil.getCanliSunucuDurum())
 						personelKontrol();
 				}
 

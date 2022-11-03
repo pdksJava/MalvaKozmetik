@@ -89,7 +89,7 @@ public class PdksUtil implements Serializable {
 
 	private static int sistemBaslangicYili, izinOffAdet, izinHaftaAdet, planOffAdet;
 
-	private static String url, bundleName, dateFormat = "dd/MM/yyyy";
+	private static String url, bundleName, dateFormat = "dd/MM/yyyy", canliSunucu, testSunucu;
 
 	private static Date sonSistemTarih;
 
@@ -471,15 +471,28 @@ public class PdksUtil implements Serializable {
 	}
 
 	/**
-	 * @param canliSunucu
 	 * @return
 	 */
-	public static boolean getTestDurum(String canliSunucu) {
+	public static boolean getTestSunucuDurum() {
 		String hostName = getHostName();
-		boolean test = !hostName.toLowerCase(Locale.ENGLISH).startsWith(canliSunucu);
+		String sunucu = testSunucu != null ? testSunucu.toLowerCase(Locale.ENGLISH) : "srvglf";
+		boolean test = hostName.toLowerCase(Locale.ENGLISH).startsWith(sunucu);
 		return test;
 	}
 
+	/**
+	 * @return
+	 */
+	public static boolean getCanliSunucuDurum() {
+		String hostName = getHostName();
+		String sunucu = canliSunucu != null ? canliSunucu.toLowerCase(Locale.ENGLISH) : "srvglf";
+		boolean canli = hostName.toLowerCase(Locale.ENGLISH).startsWith(sunucu);
+		return canli;
+	}
+
+	/**
+	 * @return
+	 */
 	public static String getHostName() {
 		String hostName = null;
 		try {
@@ -2203,6 +2216,22 @@ public class PdksUtil implements Serializable {
 
 	public static void setDateFormat(String dateFormat) {
 		PdksUtil.dateFormat = dateFormat;
+	}
+
+	public static String getCanliSunucu() {
+		return canliSunucu;
+	}
+
+	public static void setCanliSunucu(String canliSunucu) {
+		PdksUtil.canliSunucu = canliSunucu;
+	}
+
+	public static String getTestSunucu() {
+		return testSunucu;
+	}
+
+	public static void setTestSunucu(String testSunucu) {
+		PdksUtil.testSunucu = testSunucu;
 	}
 
 }

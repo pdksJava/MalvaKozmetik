@@ -39,6 +39,7 @@ public class PersonelIzin extends BaseObject {
 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
 	public static final String COLUMN_NAME_IZIN_KAGIDI_GELDI = "IZIN_KAGIDI_GELDI";
 	public static final String COLUMN_NAME_VERSION = "VERSION";
+	public static final String COLUMN_NAME_PERSONEL_NO = "PERSONEL_NO";
 
 	public static final int IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA = 1;
 	public static final int IZIN_DURUMU_IKINCI_YONETICI_ONAYINDA = 2;
@@ -74,7 +75,7 @@ public class PersonelIzin extends BaseObject {
 
 	private int izinDurumu = IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA;
 
-	private String aciklama, mesaj;
+	private String aciklama, mesaj, personelNo;
 
 	private Personel izinSahibi;
 
@@ -155,6 +156,15 @@ public class PersonelIzin extends BaseObject {
 
 	public void setHesapTipi(Integer hesapTipi) {
 		this.hesapTipi = hesapTipi;
+	}
+
+	@Column(name = COLUMN_NAME_PERSONEL_NO, insertable = false, updatable = false)
+	public String getPersonelNo() {
+		return personelNo;
+	}
+
+	public void setPersonelNo(String personelNo) {
+		this.personelNo = personelNo;
 	}
 
 	@Temporal(value = TemporalType.TIMESTAMP)

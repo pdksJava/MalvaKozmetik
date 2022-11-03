@@ -1,9 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
-
-<suite name="Sadd Tests" verbose="2" parallel="false">
-   <test name="Sadd Test">
-     <classes>
-       <class name="org.domain.abh2.test.SaddTest"/>       
-     </classes>
-   </test>	
-</suite>
