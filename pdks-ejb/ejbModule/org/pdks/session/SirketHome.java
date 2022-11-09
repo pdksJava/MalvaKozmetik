@@ -10,10 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
@@ -83,25 +80,10 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 	public String excelAktar() {
 		try {
 			Sirket sirket = getInstance();
-			ByteArrayOutputStream baos = ortakIslemler.personelExcelDevam(istenAyrilanlariEkle, sirket.isLdap(), personelList, ekSahaTanimMap, authenticatedUser, null, session);
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=personelListesi.xlsx");
+			ByteArrayOutputStream baosDosya = ortakIslemler.personelExcelDevam(istenAyrilanlariEkle, sirket.isLdap(), personelList, ekSahaTanimMap, authenticatedUser, null, session);
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "personelListesi.xlsx");
 
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();

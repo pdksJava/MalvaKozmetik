@@ -17,9 +17,7 @@ import java.util.TreeMap;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -2020,24 +2018,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 				String gorevYeriAciklama = getExcelAciklama();
 				ByteArrayOutputStream baosDosya = aylikVardiyaHareketExcelDevam(list);
 				if (baosDosya != null) {
-					HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-					ServletOutputStream sos = response.getOutputStream();
-					response.setContentType("application/vnd.ms-excel");
-					response.setHeader("Expires", "0");
-					response.setHeader("Pragma", "cache");
-					response.setHeader("Cache-Control", "cache");
-
-					String dosyaAdi = PdksUtil.setTurkishStr("AylikCalismaHareket_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM")) + ".xlsx";
-					response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-					if (baosDosya != null) {
-						response.setContentLength(baosDosya.size());
-						byte[] bytes = baosDosya.toByteArray();
-						sos.write(bytes, 0, bytes.length);
-						sos.flush();
-						sos.close();
-						FacesContext.getCurrentInstance().responseComplete();
-					}
+					String dosyaAdi = "AylikCalismaHareket_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
+					PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 				}
 			}
 		} catch (Exception e) {
@@ -2277,24 +2259,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			String gorevYeriAciklama = getExcelAciklama();
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(gorevYeriAciklama, aylikPuantajList);
 			if (baosDosya != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-
-				String dosyaAdi = PdksUtil.setTurkishStr("DonemselCalisma_" + gorevYeriAciklama + PdksUtil.convertToDateString(basTarih, "yyyyMMdd") + "_" + PdksUtil.convertToDateString(bitTarih, "yyyyMMdd")) + ".xlsx";
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
+				String dosyaAdi = "DonemselCalisma_" + gorevYeriAciklama + PdksUtil.convertToDateString(basTarih, "yyyyMMdd") + "_" + PdksUtil.convertToDateString(bitTarih, "yyyyMMdd") + ".xlsx";
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");

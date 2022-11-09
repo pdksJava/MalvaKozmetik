@@ -11,11 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -328,24 +325,8 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 			}
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(donem);
 			if (baosDosya != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-
-				String dosyaAdi = PdksUtil.setTurkishStr(("FazlaMesaiDonem " + donemOrj + " " + donem).trim() + ".xlsx");
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
+				String dosyaAdi = "FazlaMesaiDonem " + donemOrj + " " + donem.trim() + ".xlsx";
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
@@ -362,7 +343,7 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		setEkSahaListMap((HashMap<String, List<Tanim>>) sonucMap.get("ekSahaList"));
 		setEkSahaTanimMap((TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap"));
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
- 	}
+	}
 
 	/**
 	 * @param donem

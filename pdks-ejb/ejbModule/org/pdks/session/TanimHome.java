@@ -1,7 +1,6 @@
 package org.pdks.session;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,10 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -20,8 +16,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.pdks.entity.Tanim;
-import org.pdks.security.entity.User;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
@@ -31,6 +25,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.Tanim;
+import org.pdks.security.entity.User;
 
 @Name("tanimHome")
 public class TanimHome extends EntityHome<Tanim> implements Serializable {
@@ -125,28 +121,9 @@ public class TanimHome extends EntityHome<Tanim> implements Serializable {
 			e.printStackTrace();
 		}
 		if (baosDosya != null) {
-			try {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
+			String dosyaAdi = sayfaAdi + ".xlsx";
+			PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 
-				String dosyaAdi = PdksUtil.setTurkishStr(sayfaAdi + ".xlsx");
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 		return null;
 	}
@@ -330,8 +307,8 @@ public class TanimHome extends EntityHome<Tanim> implements Serializable {
 			parametreMap.put("tipi", Tanim.TIPI_GENEL_TANIM);
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
- 			Tanim parentGenelTanim = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
- 			parametreMap.clear();
+			Tanim parentGenelTanim = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+			parametreMap.clear();
 			parametreMap.put("parentTanim.id", parentTanim.getId());
 			if (parentGenelTanim != null)
 				parametreMap.put("tipi", parentGenelTanim.getKodu());

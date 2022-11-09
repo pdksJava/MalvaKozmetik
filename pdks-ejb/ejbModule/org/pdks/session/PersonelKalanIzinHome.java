@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -182,8 +183,8 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	public void pdfYaz() {
 		ByteArrayOutputStream baosPDF = new ByteArrayOutputStream();
 		String fileName = "izinKarti_" + updateTempIzin.getPersonel().getPdksSicilNo() + ".pdf";
-		HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
 		try {
+			HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
 			ServletOutputStream sos = response.getOutputStream();
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Type", "Content-Type: text/plain; charset=ISO-8859-9");
@@ -403,11 +404,13 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 				String fileName = "izinKarti" + ek + (zipDosya ? ".zip" : ".pdf");
 				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
 				ServletOutputStream sos = response.getOutputStream();
+				String characterEncoding = "ISO-8859-9";
 				if (zipDosya == false)
-					response.setContentType("application/pdf;charset=ISO-8859-9");
+					response.setContentType("application/pdf;charset=" + characterEncoding);
 				else
-					response.setContentType("application/zip");
-				response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+					response.setContentType("application/zip;charset=" + characterEncoding);
+				response.setCharacterEncoding(characterEncoding);
+				response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, characterEncoding));
 				response.setContentLength(baosPDF.size());
 				baosPDF.writeTo(sos);
 				sos.flush();
@@ -955,24 +958,10 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	public String excelAktar() {
 
 		try {
-			ByteArrayOutputStream baos = excelAktarDevam();
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=kalanIzin.xlsx");
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
+			ByteArrayOutputStream baosDosya = excelAktarDevam();
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "kalanIzin.xlsx");
+
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();
@@ -986,24 +975,10 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 	public String izinKartiExcelAktar() {
 		try {
-			ByteArrayOutputStream baos = izinKartiExcelAktarDevam();
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=izinKarti.xlsx");
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
+			ByteArrayOutputStream baosDosya = izinKartiExcelAktarDevam();
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "izinKarti.xlsx");
+
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();

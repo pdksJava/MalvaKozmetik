@@ -22,9 +22,7 @@ import java.util.TreeMap;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -2032,24 +2030,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			String gorevYeriAciklama = getExcelAciklama();
 			baosDosya = aylikVardiyaExcelDevam(gorevYeriAciklama, aylikPuantajList, Boolean.TRUE);
 			if (baosDosya != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-
 				dosyaAdi = "AylıkÇalışmaPlanı_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
@@ -6257,26 +6239,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		try {
 
 			baosDosya = excelAylikMesaiTalepDevam();
-			if (baosDosya != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "FazlaMesaiTalepListesi.xlsx");
 
-				dosyaAdi = "FazlaMesaiTalepListesi.xlsx";
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();
@@ -7534,25 +7499,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			String gorevYeriAciklama = getExcelAciklama();
 			ByteArrayOutputStream baosDosya = fazlaMesaiTalepExcelDevam();
 			if (baosDosya != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-
-				String dosyaAdi = "AylıkFazlaMesaiTalep_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
+ 				String dosyaAdi = "AylıkFazlaMesaiTalep_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
+  			}
 
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");

@@ -10,25 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.pdks.entity.Personel;
-import org.pdks.entity.Sirket;
-import org.pdks.entity.VardiyaGun;
-import org.pdks.entity.YemekKartsiz;
-import org.pdks.entity.YemekOgun;
-import org.pdks.entity.KapiView;
-import org.pdks.entity.HareketKGS;
-import org.pdks.entity.PersonelView;
-import org.pdks.security.entity.User;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
@@ -36,6 +24,15 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.HareketKGS;
+import org.pdks.entity.KapiView;
+import org.pdks.entity.Personel;
+import org.pdks.entity.PersonelView;
+import org.pdks.entity.Sirket;
+import org.pdks.entity.VardiyaGun;
+import org.pdks.entity.YemekKartsiz;
+import org.pdks.entity.YemekOgun;
+import org.pdks.security.entity.User;
 
 @Name("yemekYiyenSayisiHome")
 public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Serializable {
@@ -201,26 +198,10 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 
 	public String excelToplamAktar() {
 		try {
-			ByteArrayOutputStream baos = excelDevam(toplamYemekList, true);
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=toplamYemekYiyenler.xlsx");
-
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
-		} catch (Exception e) {
+			ByteArrayOutputStream baosDosya = excelDevam(toplamYemekList, true);
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "toplamYemekYiyenler.xlsx");
+  		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
 			logger.error("PDKS hata out : " + e.getMessage());
@@ -231,25 +212,10 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 
 	public String excelGunlukAktar() {
 		try {
-			ByteArrayOutputStream baos = excelDevam(hareketList, Boolean.FALSE);
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=gunlukYemekYiyenler.xlsx");
-
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
+			ByteArrayOutputStream baosDosya = excelDevam(hareketList, Boolean.FALSE);
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "gunlukYemekYiyenler.xlsx");
+ 
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();

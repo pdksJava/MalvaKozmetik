@@ -3,6 +3,7 @@ package org.pdks.session;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -89,7 +90,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 	private List<SelectItem> aylar;
 
 	private String sicilNo = "", sanalPersonelAciklama, bolumAciklama;
-	
+
 	private Date basGun, bitGun;
 
 	private Sirket sirket;
@@ -175,10 +176,8 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		// return ortakIslemler.yetkiIKAdmin(Boolean.FALSE);
 		fillEkSahaTanim();
 		return "";
-		
-		}
 
-	 
+	}
 
 	private String getSheetStringValue(Sheet sheet, int row, int col) throws Exception {
 		String value = null;
@@ -528,11 +527,12 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 						String contentType = (String) map.get("contentType");
 						HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
 						ServletOutputStream sos = response.getOutputStream();
-						response.setContentType(contentType);
+						response.setContentType(contentType + "; charset=UTF-8");
+						response.setCharacterEncoding("UTF-8");
 						response.setHeader("Expires", "0");
 						response.setHeader("Pragma", "cache");
 						response.setHeader("Cache-Control", "cache");
-						response.setHeader("Content-Disposition", "attachment;filename=" + PdksUtil.setTurkishStr(dosyaAdi.trim()));
+						response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dosyaAdi, "UTF-8"));
 						if (content != null) {
 							response.setContentLength(content.length());
 							byte[] bytes = content.getBytes();
@@ -557,36 +557,22 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 
 	public String denklestirmeExcelAktar() {
 		try {
-			ByteArrayOutputStream baos = null;
+			ByteArrayOutputStream baosDosya = null;
 			String dosyaAdi = null;
 			if (onaylanmayanDurum == null || !onaylanmayanDurum.booleanValue()) {
 				dosyaAdi = "fazlaMesai";
-				baos = denklestirmeExcelAktarDevam();
+				baosDosya = denklestirmeExcelAktarDevam();
 			}
 
 			else {
 				dosyaAdi = "fazlaMesaiOnaysiz";
-				baos = denklestirmeOnaylamayanExcelAktarDevam();
+				baosDosya = denklestirmeOnaylamayanExcelAktarDevam();
 			}
 			if (sirket != null)
 				dosyaAdi += "_" + sirket.getAd() + "_";
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=" + PdksUtil.setTurkishStr(dosyaAdi.trim() + PdksUtil.convertToDateString(basGun, "_MMMMM_yyyy")) + ".xlsx");
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi + PdksUtil.convertToDateString(basGun, "_MMMMM_yyyy") + ".xlsx");
+
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();

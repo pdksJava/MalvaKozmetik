@@ -16,9 +16,7 @@ import java.util.TreeMap;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -2149,24 +2147,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			String gorevYeriAciklama = getExcelAciklama();
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(gorevYeriAciklama, aylikPuantajList);
 			if (baosDosya != null) {
-				String dosyaAdi = PdksUtil.setTurkishStr("FazlaMesai_" + gorevYeriAciklama + yil) + ".xlsx";
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
+				String dosyaAdi = "FazlaMesai_" + gorevYeriAciklama + yil + ".xlsx";
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");

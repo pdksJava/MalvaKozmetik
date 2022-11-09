@@ -23,13 +23,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.pdks.entity.AramaSecenekleri;
-import org.pdks.entity.Personel;
-import org.pdks.entity.KapiView;
-import org.pdks.entity.HareketKGS;
-import org.pdks.entity.PersonelHareketIslem;
-import org.pdks.entity.PersonelView;
-import org.pdks.security.entity.User;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
@@ -39,6 +32,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.AramaSecenekleri;
+import org.pdks.entity.HareketKGS;
+import org.pdks.entity.KapiView;
+import org.pdks.entity.Personel;
+import org.pdks.entity.PersonelHareketIslem;
+import org.pdks.entity.PersonelView;
+import org.pdks.security.entity.User;
 
 @Name("P10P20Home")
 public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
@@ -202,7 +202,7 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 	}
 
 	public String excelAktar() {
-		ByteArrayOutputStream baos = null;
+		ByteArrayOutputStream baosDosya = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Karti", Boolean.TRUE);
 		CellStyle style = ExcelUtil.getStyleData(wb);
@@ -238,36 +238,16 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		for (int i = 0; i < col; i++)
 			sheet.autoSizeColumn(i);
 		try {
-			baos = new ByteArrayOutputStream();
-			wb.write(baos);
+			baosDosya = new ByteArrayOutputStream();
+			wb.write(baosDosya);
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();
 			logger.error("Pdks hata out : " + e.getMessage());
-			baos = null;
+			baosDosya = null;
 		}
-
-		try {
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=p10p20.xlsx");
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
-		} catch (Exception e) {
-
-		}
+		if (baosDosya != null)
+			PdksUtil.setExcelHttpServletResponse(baosDosya, "p10p20.xlsx");
 
 		return "";
 	}

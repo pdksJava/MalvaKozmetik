@@ -2,9 +2,9 @@ package org.pdks.session;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -55,7 +56,9 @@ import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -606,7 +609,7 @@ public class PdksUtil implements Serializable {
 		return new ValidatorException(new FacesMessage(""));
 	}
 
-	public static byte[] getFileByteArray(File file) throws FileNotFoundException, IOException {
+	public static byte[] getFileByteArray(File file) throws Exception {
 		byte[] dosyaIcerik = new byte[(int) file.length()];
 		InputStream ios = null;
 		try {
@@ -662,6 +665,50 @@ public class PdksUtil implements Serializable {
 
 		return deger;
 
+	}
+
+	/**
+	 * @param baos
+	 * @param fileName
+	 * @return
+	 */
+	public static void setExcelHttpServletResponse(ByteArrayOutputStream baos, String fileName) {
+		try {
+			if (baos != null) {
+				HttpServletResponse httpServletResponse = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+				httpServletResponse.setContentType("application/vnd.ms-excel; charset=UTF-8");
+				httpServletResponse.setCharacterEncoding("UTF-8");
+				httpServletResponse.setHeader("Expires", "0");
+				httpServletResponse.setHeader("Pragma", "cache");
+				httpServletResponse.setHeader("Cache-Control", "cache");
+				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+				writeByteArrayOutputStream(httpServletResponse, baos);
+			}
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @param httpServletResponse
+	 * @param baos
+	 */
+	public static void writeByteArrayOutputStream(HttpServletResponse httpServletResponse, ByteArrayOutputStream baos) {
+		try {
+			if (baos != null && httpServletResponse != null) {
+				ServletOutputStream sos = httpServletResponse.getOutputStream();
+				httpServletResponse.setContentLength(baos.size());
+				byte[] bytes = baos.toByteArray();
+				sos.write(bytes, 0, bytes.length);
+				sos.flush();
+				sos.close();
+				FacesContext.getCurrentInstance().responseComplete();
+			}
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 	}
 
 	// String yeniString=new

@@ -10,11 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -215,27 +212,11 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 
 	public String excelAktar() {
 		try {
-
-			ByteArrayOutputStream baos = excelDevam();
-			if (baos != null) {
-				String dosya = PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basDate, "MMMMM-yyyy") + "_İzinRaporu.xlsx");
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosya);
-
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
+ 			ByteArrayOutputStream baosDosya = excelDevam();
+			if (baosDosya != null) {
+				String dosya = PdksUtil.convertToDateString(basDate, "MMMMM-yyyy") + "_İzinRaporu.xlsx";
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosya);
+ 			}
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();

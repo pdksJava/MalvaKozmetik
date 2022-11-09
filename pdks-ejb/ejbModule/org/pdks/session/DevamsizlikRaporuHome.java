@@ -9,10 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -126,24 +123,8 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		try {
 			baosDosya = excelAktarDevam();
 			if (baosDosya != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				String dosyaAdi = PdksUtil.setTurkishStr("DevamsizlikRaporu_" + PdksUtil.convertToDateString(date, "yyyy_MM_dd") + ".xlsx");
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
-
-				if (baosDosya != null) {
-					response.setContentLength(baosDosya.size());
-					byte[] bytes = baosDosya.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-
+				String dosyaAdi = "DevamsizlikRaporu_" + PdksUtil.convertToDateString(date, "yyyy_MM_dd") + ".xlsx";
+				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
 

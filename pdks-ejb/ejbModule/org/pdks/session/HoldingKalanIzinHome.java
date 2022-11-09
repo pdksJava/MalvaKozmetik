@@ -12,10 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -23,13 +20,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.pdks.entity.AramaSecenekleri;
-import org.pdks.entity.HoldingIzin;
-import org.pdks.entity.Personel;
-import org.pdks.entity.Sirket;
-import org.pdks.quartz.IzinBakiyeGuncelleme;
-import org.pdks.security.entity.MenuItemConstant;
-import org.pdks.security.entity.User;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
@@ -38,6 +28,13 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.AramaSecenekleri;
+import org.pdks.entity.HoldingIzin;
+import org.pdks.entity.Personel;
+import org.pdks.entity.Sirket;
+import org.pdks.quartz.IzinBakiyeGuncelleme;
+import org.pdks.security.entity.MenuItemConstant;
+import org.pdks.security.entity.User;
 
 @Name("holdingKalanIzinHome")
 public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Serializable {
@@ -392,24 +389,10 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 
 	public String izinKartiExcelAktar() {
 		try {
-			ByteArrayOutputStream baos = izinKartiExcelAktarDevam();
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=holdingIzinRapor.xlsx");
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
+			ByteArrayOutputStream baosDosya = izinKartiExcelAktarDevam();
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "holdingIzinRapor.xlsx");
+
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();

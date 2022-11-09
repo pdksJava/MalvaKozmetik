@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -183,8 +184,6 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			authenticatedUser.setCalistigiSayfa("");
 		fillEkSahaTanim();
 	}
-
-	 
 
 	private void sayfaGiris(Session session) {
 
@@ -641,14 +640,14 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				response.setHeader("Expires", "0");
 				response.setHeader("Pragma", "cache");
 				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi + ".zip");
+				response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dosyaAdi, "UTF-8") + ".zip");
 				response.setContentLength(bytes.length);
 				sos.write(bytes, 0, bytes.length);
 				sos.flush();
 				sos.close();
 				FacesContext.getCurrentInstance().responseComplete();
 			}
-		} catch (IOException iox) {
+		} catch (Exception iox) {
 			// do stuff with exception
 			iox.printStackTrace();
 		}
@@ -831,7 +830,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				response.setHeader("Expires", "0");
 				response.setHeader("Pragma", "cache");
 				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=tumHareketler.zip");
+				response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("tumHareketler.zip", "UTF-8"));
 
 				response.setContentLength(bos.size());
 				bytes = bos.toByteArray();
@@ -853,25 +852,10 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 	public String excelAktar() {
 		try {
-			ByteArrayOutputStream baos = excelDevam();
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=tumHareketler.xlsx");
+			ByteArrayOutputStream baosDosya = excelDevam();
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "tumHareketler.xlsx");
 
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();

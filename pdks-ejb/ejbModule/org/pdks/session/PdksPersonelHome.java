@@ -18,8 +18,6 @@ import java.util.TreeMap;
 import javax.faces.context.FacesContext;
 import javax.mail.internet.InternetAddress;
 import javax.persistence.EntityManager;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 
 import org.apache.log4j.Logger;
@@ -2909,25 +2907,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public String excelServiceAktar() {
 		try {
-			ByteArrayOutputStream baos = excelServiceAktarDevam(personelList);
-			if (baos != null) {
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=personelWebServisListesi.xlsx");
+			ByteArrayOutputStream baosDosya = excelServiceAktarDevam(personelList);
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "personelWebServisListesi.xlsx");
 
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
@@ -3114,26 +3097,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		try {
 			if (list == null)
 				list = personelList;
-			ByteArrayOutputStream baos = ortakIslemler.personelExcelDevam(Boolean.FALSE, Boolean.TRUE, list, ekSahaTanimMap, authenticatedUser, personelDinamikMap, session);
-			if (baos != null) {
+			ByteArrayOutputStream baosDosya = ortakIslemler.personelExcelDevam(Boolean.FALSE, Boolean.TRUE, list, ekSahaTanimMap, authenticatedUser, personelDinamikMap, session);
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "personelListesi.xlsx");
 
-				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-				ServletOutputStream sos = response.getOutputStream();
-				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Expires", "0");
-				response.setHeader("Pragma", "cache");
-				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=personelListesi.xlsx");
-
-				if (baos != null) {
-					response.setContentLength(baos.size());
-					byte[] bytes = baos.toByteArray();
-					sos.write(bytes, 0, bytes.length);
-					sos.flush();
-					sos.close();
-					FacesContext.getCurrentInstance().responseComplete();
-				}
-			}
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
