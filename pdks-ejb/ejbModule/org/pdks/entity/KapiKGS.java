@@ -105,7 +105,7 @@ public class KapiKGS implements Serializable {
 	}
 
 	@OneToOne(cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "KAPI_ID", nullable = true)
+	@JoinColumn(name = "KAPI_ID", nullable = true, insertable = false, updatable = false)
 	@Fetch(FetchMode.JOIN)
 	public Kapi getKapi() {
 		return kapi;

@@ -5,7 +5,7 @@ package org.pdks.entity;
 
 public enum KatSayiTipi {
 
-	HAREKET_BEKLEME_SURESI(1), SUA_GUNLUK_SAAT_SURESI(2);
+	HAREKET_BEKLEME_SURESI(1), SUA_GUNLUK_SAAT_SURESI(2),  YUVARLAMA_TIPI(3);
 
 	private final Integer value;
 

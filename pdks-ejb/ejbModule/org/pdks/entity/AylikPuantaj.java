@@ -1212,4 +1212,16 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.izinAdetMap = izinAdetMap;
 	}
 
+	public int getYarimYuvarla() {
+		int yuvarlamaKatsayi = PdksUtil.getYarimYuvarlaLast();
+		if (vardiyalar != null) {
+			for (VardiyaGun vardiyaGun : vardiyalar) {
+				if (vardiyaGun.isAyinGunu())
+					yuvarlamaKatsayi = vardiyaGun.getYarimYuvarla();
+
+			}
+		}
+		return yuvarlamaKatsayi;
+	}
+
 }

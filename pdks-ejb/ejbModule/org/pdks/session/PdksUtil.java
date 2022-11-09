@@ -119,6 +119,8 @@ public class PdksUtil implements Serializable {
 
 	private static double odenenFazlaMesaiSaati = 30d;
 
+	private static Integer yarimYuvarlaLast = 1;
+
 	private static boolean sistemDestekVar = false;
 
 	public static String getHtmlAciklama(String aciklama) {
@@ -2119,27 +2121,48 @@ public class PdksUtil implements Serializable {
 
 	/**
 	 * @param deger
+	 * @param yarimYuvarla
 	 * @return
 	 */
-	public static double setSureDoubleRounded(Double deger) {
+	public static double setSureDoubleTypeRounded(Double doubleValue, int yarimYuvarla) {
 		Double yuvarlanmisDeger = null;
-		if (deger != null) {
-			if (deger > 0 && deger.doubleValue() > deger.longValue()) {
-				yuvarlanmisDeger = deger * 2;
-				double fark = yuvarlanmisDeger.doubleValue() - yuvarlanmisDeger.longValue();
-				if (fark > 0) {
-					if (fark > 0.5)
-						yuvarlanmisDeger = yuvarlanmisDeger.longValue() + (1.0d);
-					else
-						yuvarlanmisDeger = yuvarlanmisDeger.longValue() + (0.5d);
+		if (doubleValue != null) {
+			BigDecimal deger = new BigDecimal(doubleValue);
+			if (deger.doubleValue() > 0 && deger.doubleValue() > deger.longValue()) {
+				double fark = 0.0d;
+				switch (yarimYuvarla) {
+				case 1:
+					yuvarlanmisDeger = deger.doubleValue() * 2;
+					fark = yuvarlanmisDeger.doubleValue() - yuvarlanmisDeger.longValue();
+					if (fark > 0) {
+						if (fark > 0.5)
+							yuvarlanmisDeger = yuvarlanmisDeger.longValue() + (1.0d);
+						else
+							yuvarlanmisDeger = yuvarlanmisDeger.longValue() + (0.5d);
+					}
+					yuvarlanmisDeger = yuvarlanmisDeger / 2;
+					break;
+
+				case 2:
+					fark = deger.doubleValue() - deger.longValue();
+					double arti = 0;
+					for (int i = 3; i >= 0; i--) {
+						arti = i * 0.25;
+						if (fark >= arti)
+							break;
+					}
+					yuvarlanmisDeger = deger.longValue() + arti;
+					break;
+
+				default:
+					yuvarlanmisDeger = doubleValue;
+					break;
 				}
 
-				yuvarlanmisDeger = yuvarlanmisDeger / 2;
 			} else
-				yuvarlanmisDeger = deger;
+				yuvarlanmisDeger = doubleValue;
 		}
 
-		// double yuvarlanmisDeger = setDoubleRounded(deger * katSayi, 0, BigDecimal.ROUND_HALF_DOWN) / katSayi;
 		return yuvarlanmisDeger;
 
 	}
@@ -2148,23 +2171,10 @@ public class PdksUtil implements Serializable {
 	 * @param deger
 	 * @return
 	 */
-	public static double setSureDoubleKatsayiRounded(Double deger, double carpan) {
+	public static double setSureDoubleRounded(Double deger) {
 		Double yuvarlanmisDeger = null;
-		if (deger != null) {
-			if (deger > 0 && deger.doubleValue() > deger.longValue()) {
-				yuvarlanmisDeger = deger * carpan;
-				double fark = yuvarlanmisDeger.doubleValue() - yuvarlanmisDeger.longValue();
-				if (fark > 0.5)
-					yuvarlanmisDeger = yuvarlanmisDeger.longValue() + (carpan * 1.0d);
-				else
-					yuvarlanmisDeger = yuvarlanmisDeger.longValue() + (carpan * 0.5d);
-				yuvarlanmisDeger = yuvarlanmisDeger / carpan;
-
-			} else
-				yuvarlanmisDeger = deger;
-		}
-
-		// double yuvarlanmisDeger = setDoubleRounded(deger * katSayi, 0, BigDecimal.ROUND_HALF_DOWN) / katSayi;
+		if (deger != null)
+			yuvarlanmisDeger = setSureDoubleTypeRounded(deger, yarimYuvarlaLast);
 		return yuvarlanmisDeger;
 
 	}
@@ -2176,7 +2186,7 @@ public class PdksUtil implements Serializable {
 	 * @return
 	 */
 	public static double setDoubleRounded(double deger, int digit, int yuvarmaTipi) {
-		double yuvarlanmisDeger = deger;
+		double yuvarlanmisDeger = new BigDecimal(deger).doubleValue();
 		if (deger != 0)
 			try {
 				BigDecimal decimal = new BigDecimal(deger).setScale(digit, yuvarmaTipi);
@@ -2186,7 +2196,6 @@ public class PdksUtil implements Serializable {
 				yuvarlanmisDeger = deger;
 			}
 		return yuvarlanmisDeger;
-
 	}
 
 	public static int getSistemBaslangicYili() {
@@ -3179,6 +3188,14 @@ public class PdksUtil implements Serializable {
 
 	public static void setHelpDeskLastDate(Date helpDeskLastDate) {
 		PdksUtil.helpDeskLastDate = helpDeskLastDate;
+	}
+
+	public static Integer getYarimYuvarlaLast() {
+		return yarimYuvarlaLast;
+	}
+
+	public static void setYarimYuvarlaLast(Integer yarimYuvarlaLast) {
+		PdksUtil.yarimYuvarlaLast = yarimYuvarlaLast;
 	}
 
 }

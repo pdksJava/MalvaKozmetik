@@ -184,7 +184,7 @@ public class PDKSValidator implements Serializable {
 				cal1.set(2999, Integer.parseInt(listValue.get("basAy")), Integer.parseInt(listValue.get("basGun")), 0, 0);
 				pdksTatil.setBasTarih(cal1.getTime());
 				cal2.set(2999, Integer.parseInt(listValue.get("bitisAy")), Integer.parseInt(listValue.get("bitisGun")), 0, 0);
-				pdksTatil.setBitisTarih(cal2.getTime());
+				pdksTatil.setBitTarih(cal2.getTime());
 				pdksTatil.setBasTarih(PdksUtil.setTarih(pdksTatil.getBasTarih(), Calendar.SECOND, 0));
 
 			} catch (Exception e) {
@@ -192,22 +192,22 @@ public class PDKSValidator implements Serializable {
 				e.printStackTrace();
 				logger.error("PDKS hata out : " + e.getMessage());
 				buffer.add("Tarihleri seçiniz");
-				pdksTatil.setBitisTarih(null);
+				pdksTatil.setBitTarih(null);
 				pdksTatil.setBasTarih(null);
 			}
 		} else {
 			pdksTatil.setBasTarih(PdksUtil.convertToJavaDate(listValue.get("basTarihInputDate"), "dd/MM/yyyy"));
-			pdksTatil.setBitisTarih(PdksUtil.convertToJavaDate(listValue.get("bitisTarihInputDate"), "dd/MM/yyyy"));
+			pdksTatil.setBitTarih(PdksUtil.convertToJavaDate(listValue.get("bitisTarihInputDate"), "dd/MM/yyyy"));
 		}
 
 		if (buffer.isEmpty()) {
-			if (PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBasTarih(), pdksTatil.getBitisTarih()) == 1)
+			if (PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBasTarih(), pdksTatil.getBitTarih()) == 1)
 				buffer.add("Başlangıç tarihi bitiş tarihinden büyük olamaz");
 			else if (PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBasTarih(), Calendar.getInstance().getTime()) != 1)
 				buffer.add("Geçmişe ait tatil giremezsiniz");
 			if (durum) {
 				HashMap map = new HashMap();
-				map.put("basTarih<=", pdksTatil.getBitisTarih());
+				map.put("basTarih<=", pdksTatil.getBitTarih());
 				map.put("bitisTarih>=", pdksTatil.getBasTarih());
 				map.put("durum=", Boolean.TRUE);
 				if (pdksTatil.getId() != null)

@@ -13,11 +13,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
-import org.pdks.security.entity.User;
-import org.pdks.session.PdksUtil;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.Min;
+import org.pdks.security.entity.User;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = Vardiya.TABLE_NAME)
 public class Vardiya extends BaseObject {
@@ -49,11 +49,11 @@ public class Vardiya extends BaseObject {
 	public static Date vardiyaKontrolTarih, vardiyaKontrolTarih2, vardiyaKontrolTarih3, vardiyaAySonuKontrolTarih;
 
 	private static Integer fazlaMesaiBasSaati = 2, offFazlaMesaiBasDakika = -60, haftaTatiliFazlaMesaiBasDakika = -60;
-	private String adi, kisaAdi, styleClass;
+	private String adi, kisaAdi, styleClass, vardiyaDateStr;
 	private short basDakika, basSaat, bitDakika, bitSaat, girisErkenToleransDakika, girisGecikmeToleransDakika, cikisErkenToleransDakika, cikisGecikmeToleransDakika;
 	private double calismaSaati;
 	private Double arifeNormalCalismaDakika, arifeCalismaSure;
-	private int calismaGun;
+	private int calismaGun, islemAdet = 0;
 	private Integer ekranSira = 5000, fazlaMesaiBasDakika;
 	private Integer yemekSuresi, cikisMolaSaat = 0;
 	private Departman departman;
@@ -475,45 +475,234 @@ public class Vardiya extends BaseObject {
 
 			tarih = cal.getTime();
 
-			Vardiya vardiyaCalisma = null;
-			if (vardiyaAySonuKontrolTarih != null && tarih.after(vardiyaAySonuKontrolTarih)) {
-				Personel personel = pdksVardiyaGun.getPersonel();
-				if (personel != null && personel.getId() != null) {
-					vardiyaCalisma = pdksVardiyaGun.getIslemVardiya();
-					if (personel.getSskCikisTarihi() != null && personel.getSskCikisTarihi().getTime() <= tarih.getTime()) {
-						ayinSonGunDurum = vardiyaCalisma.isCalisma() == false || vardiyaCalisma.getBitSaat() > vardiyaCalisma.getBasSaat();
-					} else if (pdksVardiyaGun.getVardiya().isCalisma()) {
-						if (vardiyaCalisma.getBitSaat() > vardiyaCalisma.getBasSaat()) {
-							if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null) {
-								// Calendar cal = Calendar.getInstance();
-								// cal.setTime(tarih);
-								// cal.set(Calendar.DATE, 1);
-								// cal.add(Calendar.MONTH, 1);
-								// String key2 = PdksUtil.convertToDateString(cal.getTime(), "yyyyMMdd");
-								// ayinSonGunDurum = pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().getId() != null && key2.equals(pdksVardiyaGun.getSonrakiVardiyaGun().getVardiyaDateStr());
-								ayinSonGunDurum = true;
-							}
-						}
-					}
-				}
-				if (ayinSonGunDurum) {
-					cal.setTime(PdksUtil.tariheGunEkleCikar(tarih, 1));
-					int dakika = vardiyaCalisma.getCikisGecikmeToleransDakika();
-					if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().isCalisma())
-						dakika = pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().getGirisErkenToleransDakika();
-					cal.set(Calendar.MINUTE, -dakika);
-					cal.set(Calendar.MILLISECOND, -100);
-					vardiyaFazlaMesaiBitZaman = cal.getTime();
-					vardiyaCalisma.setVardiyaFazlaMesaiBitZaman(vardiyaFazlaMesaiBitZaman);
-					if (pdksVardiyaGun.getSonrakiVardiya() != null) {
-						pdksVardiyaGun.getSonrakiVardiya().setVardiyaFazlaMesaiBasZaman(vardiyaFazlaMesaiBitZaman);
-
-					}
-				}
+			Date aySonuKontrolTarih = vardiyaAySonuKontrolTarih;
+			if (aySonuKontrolTarih != null && tarih.after(aySonuKontrolTarih)) {
+				if (pdksVardiyaGun.getVardiya() != null && pdksVardiyaGun.getVardiya().getId() != null)
+					gunSonuAyir(pdksVardiyaGun);
 			}
 		}
 		setVardiyaTarih(tarih);
 
+	}
+
+	/**
+	 * @param pdksVardiyaGun
+	 */
+	private void gunSonuAyir(VardiyaGun pdksVardiyaGun) {
+		Date tarih = (Date) pdksVardiyaGun.getVardiyaDate().clone();
+		Vardiya vardiya = pdksVardiyaGun.getVardiya();
+		vardiya.setVardiyaTarih(tarih);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(pdksVardiyaGun.getVardiyaDate());
+		Personel personel = pdksVardiyaGun.getPersonel();
+		if (personel != null && personel.getId() != null) {
+			if (personel.getSskCikisTarihi() != null && personel.getIseGirisTarihi() != null && personel.getIseGirisTarihi().getTime() <= tarih.getTime() && personel.getSskCikisTarihi().getTime() >= tarih.getTime()) {
+				Vardiya sonrakiVardiya = null, oncekiVardiya = null;
+				if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null) {
+					sonrakiVardiya = pdksVardiyaGun.getSonrakiVardiya();
+					if (sonrakiVardiya != null) {
+						if (sonrakiVardiya.getId() == null)
+							sonrakiVardiya = null;
+						else
+							sonrakiVardiya.setOncekiVardiya(pdksVardiyaGun.getIslemVardiya());
+
+					}
+				}
+				if (pdksVardiyaGun.getOncekiVardiyaGun() != null && pdksVardiyaGun.getOncekiVardiyaGun().getVardiya() != null) {
+					oncekiVardiya = pdksVardiyaGun.getOncekiVardiya();
+					if (oncekiVardiya != null) {
+						if (oncekiVardiya.getId() == null)
+							oncekiVardiya = null;
+						else
+							oncekiVardiya.setSonrakiVardiya(pdksVardiyaGun.getIslemVardiya());
+					}
+				}
+				if (vardiya.isCalisma()) {
+					Vardiya vardiyaCalisma = pdksVardiyaGun.getIslemVardiya();
+					vardiyaCalisma.setVardiyaTarih(tarih);
+					cal.setTime(tarih);
+
+					if (vardiya.getBitSaat() > vardiya.getBasSaat()) {
+						
+						if (vardiyaCalisma.getVardiyaTelorans1BasZaman() != null && vardiyaCalisma.getVardiyaTelorans1BasZaman().before(tarih)) {
+							int bosluk = -vardiyaCalisma.getGirisErkenToleransDakika();
+							if (oncekiVardiya != null && oncekiVardiya.isCalisma() == false)
+								bosluk = oncekiVardiya.isHaftaTatil() ? haftaTatiliFazlaMesaiBasDakika : offFazlaMesaiBasDakika;
+							cal.add(Calendar.MINUTE, bosluk);
+							vardiyaCalisma.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+							vardiyaCalisma.setVardiyaTelorans1BasZaman((Date) cal.getTime().clone());
+							if (oncekiVardiya != null) {
+								
+								cal.add(Calendar.MILLISECOND, -100);
+								oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+								if (oncekiVardiya.isCalisma() == false)
+									oncekiVardiya.setVardiyaTelorans2BitZaman(oncekiVardiya.getVardiyaFazlaMesaiBitZaman());
+							}
+						} else {
+							if (oncekiVardiya != null) {
+								if (oncekiVardiya.isCalisma()) {
+									if (oncekiVardiya.isCalisma() && oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
+										vardiyaCalisma.setVardiyaFazlaMesaiBasZaman(PdksUtil.getDate(tarih));
+										cal.add(Calendar.MILLISECOND, -100);
+										oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+										cal.add(Calendar.DATE, 1);
+										vardiyaCalisma.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+									}
+								}
+
+							}
+
+						}
+						if (sonrakiVardiya != null) {
+							if (sonrakiVardiya.isCalisma()) {
+								if (sonrakiVardiya.getBitSaat() > sonrakiVardiya.getBasSaat()) {
+									sonrakiVardiya.setVardiyaFazlaMesaiBasZaman(sonrakiVardiya.getVardiyaTarih());
+									cal.setTime(sonrakiVardiya.getVardiyaTarih());
+									if (sonrakiVardiya.getVardiyaTelorans1BasZaman() != null && sonrakiVardiya.getVardiyaTelorans1BasZaman().before(PdksUtil.tariheGunEkleCikar(tarih, 1))) {
+										int bosluk = -sonrakiVardiya.getGirisErkenToleransDakika();
+										if (sonrakiVardiya.isCalisma() == false)
+											bosluk = sonrakiVardiya.isHaftaTatil() ? haftaTatiliFazlaMesaiBasDakika : offFazlaMesaiBasDakika;
+										cal.add(Calendar.MINUTE, bosluk);
+										sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+									}
+									cal.add(Calendar.MILLISECOND, -100);
+									vardiyaCalisma.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+ 								}
+
+							} else {
+								// todo
+								if (sonrakiVardiya.getVardiyaTarih().before(vardiyaCalisma.getVardiyaTelorans2BitZaman())) {
+									cal.setTime(vardiyaCalisma.getVardiyaTelorans2BitZaman());
+									sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+									vardiyaCalisma.setVardiyaFazlaMesaiBitZaman(vardiyaCalisma.getVardiyaBitZaman());
+									cal.add(Calendar.MILLISECOND, -100);
+									vardiyaCalisma.setVardiyaTelorans2BitZaman((Date) cal.getTime().clone());
+								} else {
+									cal.setTime(sonrakiVardiya.getVardiyaTarih());
+									int bosluk = sonrakiVardiya.isHaftaTatil() ? haftaTatiliFazlaMesaiBasDakika : offFazlaMesaiBasDakika;
+									cal.add(Calendar.MINUTE, bosluk);
+									sonrakiVardiya.setVardiyaTelorans1BasZaman((Date) cal.getTime().clone());
+									sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+									cal.add(Calendar.MILLISECOND, -100);
+									vardiyaCalisma.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+								}
+
+							}
+						}
+					} else {
+						if (sonrakiVardiya != null) {
+							if (sonrakiVardiya.isCalisma() == false) {
+								cal.setTime(vardiyaCalisma.getVardiyaTelorans2BitZaman());
+								sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+								vardiyaCalisma.setVardiyaFazlaMesaiBitZaman(vardiyaCalisma.getVardiyaBitZaman());
+								cal.add(Calendar.MILLISECOND, -100);
+								vardiyaCalisma.setVardiyaTelorans2BitZaman((Date) cal.getTime().clone());
+							} else {
+								Double sureDakika = PdksUtil.getSaatFarki(sonrakiVardiya.getVardiyaBasZaman(), vardiyaCalisma.getVardiyaBitZaman()).doubleValue() * 30.0d;
+								if (sureDakika > 0) {
+									cal.setTime(vardiyaCalisma.getVardiyaBitZaman());
+									cal.add(Calendar.MINUTE, sureDakika.intValue());
+									sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+									cal.add(Calendar.MILLISECOND, -100);
+									vardiyaCalisma.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+									logger.debug(vardiyaDateStr + " " + sureDakika);
+								}
+
+							}
+						}
+					}
+				} else {
+
+					Vardiya offCalisma = pdksVardiyaGun.getIslemVardiya();
+					offCalisma.setVardiyaTarih(tarih);
+					if (oncekiVardiya != null) {
+						if (oncekiVardiya.isCalisma() == false || oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
+							offCalisma.setVardiyaFazlaMesaiBasZaman(PdksUtil.getDate(tarih));
+							cal.setTime(tarih);
+							cal.add(Calendar.MILLISECOND, -100);
+							oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+
+						} else {
+							offCalisma.setVardiyaFazlaMesaiBasZaman((Date) oncekiVardiya.getVardiyaBitZaman().clone());
+							cal.setTime(oncekiVardiya.getVardiyaBitZaman());
+							cal.add(Calendar.MILLISECOND, -100);
+							oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+							oncekiVardiya.setVardiyaTelorans2BitZaman((Date) cal.getTime().clone());
+
+						}
+
+					}
+					if (sonrakiVardiya != null) {
+						Date sonrakiGun = PdksUtil.tariheGunEkleCikar(tarih, 1);
+						cal.setTime(sonrakiGun);
+						sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+						if (sonrakiVardiya.isCalisma() && sonrakiVardiya.getVardiyaTelorans1BasZaman() != null && sonrakiVardiya.getVardiyaTelorans1BasZaman().before(sonrakiGun)) {
+							cal.setTime(sonrakiGun);
+							int bosluk = sonrakiVardiya.isHaftaTatil() ? haftaTatiliFazlaMesaiBasDakika : offFazlaMesaiBasDakika;
+							cal.add(Calendar.MINUTE, bosluk);
+							sonrakiVardiya.setVardiyaTelorans1BasZaman((Date) cal.getTime().clone());
+							sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+						}
+						cal.add(Calendar.MILLISECOND, -100);
+						offCalisma.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+					}
+				}
+				if (sonrakiVardiya == null) {
+					Date sonrakiGun = PdksUtil.tariheGunEkleCikar(tarih, 1);
+					cal.setTime(sonrakiGun);
+					cal.add(Calendar.MILLISECOND, -100);
+					vardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+					if (vardiya.isCalisma() && vardiya.getBitSaat() < vardiya.getBasSaat()) {
+						vardiya.setVardiyaFazlaMesaiBitZaman(vardiya.getVardiyaTelorans2BitZaman());
+					}
+				}
+				if (oncekiVardiya == null && tarih.before(personel.getIseGirisTarihi()))
+					vardiya.setVardiyaFazlaMesaiBasZaman((Date) tarih.clone());
+
+			}
+		}
+		// if (personel != null && personel.getId() != null) {
+		//
+		// if (personel.getSskCikisTarihi() != null && personel.getSskCikisTarihi().getTime() <= tarih.getTime()) {
+		// ayinSonGunDurum = vardiyaCalisma.isCalisma() == false || vardiyaCalisma.getBitSaat() > vardiyaCalisma.getBasSaat();
+		// } else if (pdksVardiyaGun.getVardiya().isCalisma()) {
+		// if (vardiyaCalisma.getBitSaat() > vardiyaCalisma.getBasSaat()) {
+		// if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null) {
+		// ayinSonGunDurum = true;
+		// }
+		// }
+		// }
+		// }
+		// if (ayinSonGunDurum) {
+		// cal.setTime(PdksUtil.tariheGunEkleCikar(tarih, 1));
+		// int dakika = vardiyaCalisma.getCikisGecikmeToleransDakika();
+		// if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().isCalisma())
+		// dakika = pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya().getGirisErkenToleransDakika();
+		// cal.set(Calendar.MINUTE, -dakika);
+		// vardiyaFazlaMesaiBasZaman = (Date) cal.getTime().clone();
+		// cal.set(Calendar.MILLISECOND, -100);
+		// vardiyaFazlaMesaiBitZaman = cal.getTime();
+		// vardiyaCalisma.setVardiyaFazlaMesaiBitZaman((Date) vardiyaFazlaMesaiBitZaman.clone());
+		// if (pdksVardiyaGun.getSonrakiVardiya() != null)
+		// pdksVardiyaGun.getSonrakiVardiya().setVardiyaFazlaMesaiBasZaman((Date) vardiyaFazlaMesaiBasZaman.clone());
+		//
+		// if (pdksVardiyaGun.getOncekiVardiya() != null) {
+		// Vardiya oncekiVardiya = pdksVardiyaGun.getOncekiVardiya();
+		// if (oncekiVardiya != null) {
+		// if (!oncekiVardiya.isCalisma() || oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
+		// dakika = vardiyaCalisma.getGirisErkenToleransDakika();
+		// cal.setTime(tarih);
+		// cal.set(Calendar.MINUTE, -dakika);
+		// vardiyaCalisma.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
+		// cal.set(Calendar.MILLISECOND, -100);
+		// oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
+		//
+		// }
+		// }
+		//
+		// }
+		//
+		// }
 	}
 
 	/**
@@ -1298,8 +1487,15 @@ public class Vardiya extends BaseObject {
 		return vardiyaTelorans2BitZaman;
 	}
 
-	public void setVardiyaTelorans2BitZaman(Date vardiyaTelorans2BitZaman) {
-		this.vardiyaTelorans2BitZaman = vardiyaTelorans2BitZaman;
+	public void setVardiyaTelorans2BitZaman(Date value) {
+		if (value != null) {
+			if (vardiyaDateStr != null && vardiyaDateStr.equals("20221106")) {
+				// ++islemAdet;
+				logger.debug(islemAdet + " " + value);
+			}
+
+		}
+		this.vardiyaTelorans2BitZaman = value;
 	}
 
 	@Transient
@@ -1309,6 +1505,9 @@ public class Vardiya extends BaseObject {
 
 	public void setVardiyaFazlaMesaiBasZaman(Date value) {
 		if (value != null) {
+			if (vardiyaDateStr != null && vardiyaDateStr.equals("20221107")) {
+				logger.debug(islemAdet + " " + value);
+			}
 			this.vardiyaFazlaMesaiBasZaman = value;
 		}
 
@@ -1321,7 +1520,10 @@ public class Vardiya extends BaseObject {
 
 	public void setVardiyaFazlaMesaiBitZaman(Date value) {
 		if (value != null) {
-
+			if (vardiyaDateStr != null && vardiyaDateStr.equals("20221106")) {
+				++islemAdet;
+				logger.debug(islemAdet + " " + value);
+			}
 			this.vardiyaFazlaMesaiBitZaman = value;
 		}
 
@@ -1332,8 +1534,9 @@ public class Vardiya extends BaseObject {
 		return vardiyaTarih;
 	}
 
-	public void setVardiyaTarih(Date vardiyaTarih) {
-		this.vardiyaTarih = vardiyaTarih;
+	public void setVardiyaTarih(Date value) {
+		this.vardiyaTarih = value;
+		this.vardiyaDateStr = value != null ? PdksUtil.convertToDateString(value, "yyyyMMdd") : null;
 	}
 
 	@Transient
@@ -1613,5 +1816,23 @@ public class Vardiya extends BaseObject {
 
 	public void setAyinSonGunDurum(boolean ayinSonGunDurum) {
 		this.ayinSonGunDurum = ayinSonGunDurum;
+	}
+
+	@Transient
+	public String getVardiyaDateStr() {
+		return vardiyaDateStr;
+	}
+
+	public void setVardiyaDateStr(String vardiyaDateStr) {
+		this.vardiyaDateStr = vardiyaDateStr;
+	}
+
+	@Transient
+	public int getIslemAdet() {
+		return islemAdet;
+	}
+
+	public void setIslemAdet(int islemAdet) {
+		this.islemAdet = islemAdet;
 	}
 }

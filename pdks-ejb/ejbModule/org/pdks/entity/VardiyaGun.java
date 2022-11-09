@@ -39,6 +39,8 @@ public class VardiyaGun extends BaseObject {
 	public static final String COLUMN_NAME_VARDIYA_TARIHI = "VARDIYA_TARIHI";
 	public static final String COLUMN_NAME_VARDIYA = "VARDIYA_ID";
 	public static final String COLUMN_NAME_VARDIYA_SAAT = "VARDIYA_SAAT_ID";
+	public static final String COLUMN_NAME_VARDIYA_ACIKLAMA = "VARDIYA_ACIKLAMA";
+	public static final String COLUMN_NAME_PERSONEL_NO = "PERSONEL_NO";
 	public static final String STYLE_CLASS_NORMAL_CALISMA = "calismaAylik";
 	public static final String STYLE_CLASS_NORMAL_CALISMA_EVEN = "calismaAylikEven";
 	public static final String STYLE_CLASS_OZEL_ISTEK = "ozelIstekAylik";
@@ -51,6 +53,7 @@ public class VardiyaGun extends BaseObject {
 	public static final String STYLE_CLASS_EVEN = "even";
 	public static final String STYLE_CLASS_HATA = "hata";
 	public static boolean haftaTatilDurum;
+
 	private Personel personel;
 	private Vardiya vardiya, islemVardiya, oncekiVardiya, sonrakiVardiya, yeniVardiya, eskiVardiya;
 	private Date vardiyaDate;
@@ -64,16 +67,16 @@ public class VardiyaGun extends BaseObject {
 	private IsKurVardiyaGun isKurVardiya;
 	private int beklemeSuresi = 6;
 	private Double calismaSuaSaati = PersonelDenklestirme.getCalismaSaatiSua();
-
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
-	private String tdClass = "", style = "", manuelGirisHTML = "";
+	private String tdClass = "", style = "", manuelGirisHTML = "", vardiyaKisaAciklama, personelNo;
 	private Tatil tatil;
 	private PersonelIzin izin;
 	private VardiyaSablonu vardiyaSablonu;
 	private boolean bitmemisGun = Boolean.TRUE, islendi = Boolean.FALSE, ayrikHareketVar = Boolean.FALSE;
+	private int yarimYuvarla = PdksUtil.getYarimYuvarlaLast();
 	private HareketKGS ilkGiris, sonCikis;
 	private boolean ayinGunu = Boolean.TRUE, onayli = Boolean.TRUE, guncellendi = Boolean.FALSE, fiiliHesapla = Boolean.FALSE, hataliDurum = Boolean.FALSE, donemAcik = Boolean.TRUE;
 	private List<String> linkAdresler;
@@ -144,6 +147,24 @@ public class VardiyaGun extends BaseObject {
 		this.vardiyaSaat = value;
 		if (value != null && this.vardiyaSaatDB == null)
 			this.vardiyaSaatDB = (VardiyaSaat) value.clone();
+	}
+
+	@Column(name = COLUMN_NAME_VARDIYA_ACIKLAMA, insertable = false, updatable = false)
+	public String getVardiyaKisaAciklama() {
+		return vardiyaKisaAciklama;
+	}
+
+	public void setVardiyaKisaAciklama(String vardiyaKisaAciklama) {
+		this.vardiyaKisaAciklama = vardiyaKisaAciklama;
+	}
+
+	@Column(name = COLUMN_NAME_PERSONEL_NO, insertable = false, updatable = false)
+	public String getPersonelNo() {
+		return personelNo;
+	}
+
+	public void setPersonelNo(String personelNo) {
+		this.personelNo = personelNo;
 	}
 
 	// @Column(name = "VARDIYA_BAS_SAAT")
@@ -332,7 +353,7 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public double getCalismaSuresi() {
 		if (calismaSuresi > 0)
-			calismaSuresi = PdksUtil.setSureDoubleRounded(calismaSuresi);
+			calismaSuresi = PdksUtil.setSureDoubleTypeRounded(calismaSuresi, yarimYuvarla);
 		return calismaSuresi;
 	}
 
@@ -1966,4 +1987,14 @@ public class VardiyaGun extends BaseObject {
 	public void setManuelGirisHTML(String manuelGirisHTML) {
 		this.manuelGirisHTML = manuelGirisHTML;
 	}
+
+	@Transient
+	public int getYarimYuvarla() {
+		return yarimYuvarla;
+	}
+
+	public void setYarimYuvarla(int yarimYuvarla) {
+		this.yarimYuvarla = yarimYuvarla;
+	}
+
 }

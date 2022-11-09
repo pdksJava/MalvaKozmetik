@@ -129,12 +129,12 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 
 	public String tarihDegisti() {
 		Tatil pdksTatil = getInstance();
-		if (pdksTatil.getBitisTarih() == null) {
+		if (pdksTatil.getBitTarih() == null) {
 			if (pdksTatil.getBasTarih() != null)
-				pdksTatil.setBitisTarih(PdksUtil.tariheGunEkleCikar(pdksTatil.getBasTarih(), pdksTatil.isYarimGunMu() ? 1 : 0));
+				pdksTatil.setBitTarih(PdksUtil.tariheGunEkleCikar(pdksTatil.getBasTarih(), pdksTatil.isYarimGunMu() ? 1 : 0));
 		} else if (pdksTatil.getBasTarih() == null) {
-			if (pdksTatil.getBitisTarih() != null)
-				pdksTatil.setBasTarih(PdksUtil.tariheGunEkleCikar(pdksTatil.getBitisTarih(), pdksTatil.isYarimGunMu() ? -1 : 0));
+			if (pdksTatil.getBitTarih() != null)
+				pdksTatil.setBasTarih(PdksUtil.tariheGunEkleCikar(pdksTatil.getBitTarih(), pdksTatil.isYarimGunMu() ? -1 : 0));
 
 		}
 
@@ -169,46 +169,46 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 					}
 					bitYil = 2999;
 					if (pdksTatil.getDurum().equals(Boolean.FALSE)) {
-						int bitisYil = PdksUtil.getDateField(pdksTatil.getBitisTarih(), Calendar.YEAR);
+						int bitisYil = PdksUtil.getDateField(pdksTatil.getBitTarih(), Calendar.YEAR);
 						if (bitisYil != bitYil) {
 							bitYil = bitisYil;
 						} else {
 							iptalEdildi = true;
 							bitYil = buYil;
-							long bitisTarihi = (bitYil * 10000) + (Long.parseLong(pdksTatil.getBitisAy().toString()) * 100) + Long.parseLong(pdksTatil.getBitisGun().toString());
+							long bitisTarihi = (bitYil * 10000) + (Long.parseLong(pdksTatil.getBitAy().toString()) * 100) + Long.parseLong(pdksTatil.getBitGun().toString());
 							if (buGunLong < bitisTarihi)
 								--bitYil;
 
 						}
 					}
-					cal2.set(bitYil, Integer.parseInt((String) pdksTatil.getBitisAy()), Integer.parseInt((String) pdksTatil.getBitisGun()));
+					cal2.set(bitYil, Integer.parseInt((String) pdksTatil.getBitAy()), Integer.parseInt((String) pdksTatil.getBitGun()));
 					String pattern = "yyyyMMdd";
 					bs = PdksUtil.convertToDateString(cal2.getTime(), pattern) + " 23:59:59";
-					pdksTatil.setBitisTarih(PdksUtil.convertToJavaDate(bs, pattern + " HH:mm:ss"));
+					pdksTatil.setBitTarih(PdksUtil.convertToJavaDate(bs, pattern + " HH:mm:ss"));
 				} catch (Exception e) {
 					logger.error("PDKS hata in : \n");
 					e.printStackTrace();
 					logger.error("PDKS hata out : " + e.getMessage());
 					buffer.add("Tarihleri seçiniz");
-					pdksTatil.setBitisTarih(null);
+					pdksTatil.setBitTarih(null);
 					pdksTatil.setBasTarih(null);
 				}
 				if (pdksTatil.getId() != null && !pdksTatil.getDurum()) {
-					cal1.setTime(pdksTatil.getBitisTarih());
+					cal1.setTime(pdksTatil.getBitTarih());
 					cal1.set(Calendar.YEAR, buYil);
 					if (cal1.getTime().after(bugun)) {
 						--buYil;
 						cal1.set(Calendar.YEAR, buYil);
 					}
 					Date bitisTarih = cal1.getTime();
-					pdksTatil.setBitisTarih(bitisTarih);
+					pdksTatil.setBitTarih(bitisTarih);
 				}
 			}
 			Date basTarih = null;
 			Date bitTarih = null;
 
 			if (buffer.isEmpty()) {
-				if ((pdksTatil.getId() == null || pdksTatil.isTekSefer()) && PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBasTarih(), pdksTatil.getBitisTarih()) == 1)
+				if ((pdksTatil.getId() == null || pdksTatil.isTekSefer()) && PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBasTarih(), pdksTatil.getBitTarih()) == 1)
 					buffer.add("Başlangıç tarihi bitiş tarihinden büyük olamaz");
 				else if (authenticatedUser.isAdmin() == false && pdksTatil.getDurum() && PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBasTarih(), Calendar.getInstance().getTime()) != 1)
 					buffer.add("Geçmişe ait tatil giremezsiniz");
@@ -216,7 +216,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 
 					cal1 = Calendar.getInstance();
 					basTarih = PdksUtil.getDate((Date) pdksTatil.getBasTarih().clone());
-					bitTarih = PdksUtil.getGunSonu((Date) pdksTatil.getBitisTarih().clone());
+					bitTarih = PdksUtil.getGunSonu((Date) pdksTatil.getBitTarih().clone());
 					if (pdksTatil.isPeriyodik()) {
 						int yil = cal1.get(Calendar.YEAR);
 						basTarih = PdksUtil.setTarih(basTarih, Calendar.YEAR, yil);
@@ -252,7 +252,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 						basTarih = PdksUtil.setTarih(basTarih, Calendar.MINUTE, dakika);
 					}
 					bs = PdksUtil.convertToDateString(bitTarih, "yyyyMMdd HH:mm:ss");
-					if (oldPdksTatil == null || !oldPdksTatil.getDurum().equals(pdksTatil.getDurum()) || (pdksTatil.isTekSefer() && (basTarih.getTime() != oldPdksTatil.getBasTarih().getTime() || !bs.equals(PdksUtil.convertToDateString(oldPdksTatil.getBitisTarih(), "yyyyMMdd HH:mm:ss"))))) {
+					if (oldPdksTatil == null || !oldPdksTatil.getDurum().equals(pdksTatil.getDurum()) || (pdksTatil.isTekSefer() && (basTarih.getTime() != oldPdksTatil.getBasTarih().getTime() || !bs.equals(PdksUtil.convertToDateString(oldPdksTatil.getBitTarih(), "yyyyMMdd HH:mm:ss"))))) {
 						HashMap parametreMap = new HashMap();
 						parametreMap.put("baslangicZamani<=", bitTarih);
 						parametreMap.put("bitisZamani>=", basTarih);
@@ -366,7 +366,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 						bitTarih = PdksUtil.setTarih(bitTarih, Calendar.YEAR, bitYil);
 					}
 					pdksTatil.setBasTarih(basTarih);
-					pdksTatil.setBitisTarih(bitTarih);
+					pdksTatil.setBitTarih(bitTarih);
 				}
 				if (pdksTatil.getId() == null)
 					pdksTatil.setOlusturanUser(authenticatedUser);
@@ -374,7 +374,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 					pdksTatil.setGuncelleyenUser(authenticatedUser);
 					pdksTatil.setGuncellemeTarihi(new Date());
 				}
-				if (pdksTatil.getId() == null || pdksTatil.getBasTarih().before(pdksTatil.getBitisTarih())) {
+				if (pdksTatil.getId() == null || pdksTatil.getBasTarih().before(pdksTatil.getBitTarih())) {
 					if (pdksTatil.getId() != null && pdksTatil.isPeriyodik())
 						pdksTatil.setDurum(Boolean.TRUE);
 					session.saveOrUpdate(pdksTatil);
@@ -408,7 +408,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 		for (Iterator<Tatil> iterator = list.iterator(); iterator.hasNext();) {
 			Tatil pdksTatil = iterator.next();
 
-			if (PdksUtil.tarihKarsilastirNumeric(tarih, pdksTatil.getBitisTarih()) == 1) {
+			if (PdksUtil.tarihKarsilastirNumeric(tarih, pdksTatil.getBitTarih()) == 1) {
 				iterator.remove();
 
 			}
@@ -457,7 +457,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 	public void fillGunBitisList() {
 		Tatil pdksTatil = getInstance();
 		try {
-			String ay = (String) pdksTatil.getBitisAy();
+			String ay = (String) pdksTatil.getBitAy();
 			setBitisGunList(fillGunList(new Integer(ay)));
 
 		} catch (Exception e) {
@@ -509,9 +509,9 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 			cal.setTime(pdksTatil.getBasTarih());
 			pdksTatil.setBasAy(String.valueOf(cal.get(Calendar.MONTH)));
 			pdksTatil.setBasGun(String.valueOf(cal.get(Calendar.DATE)));
-			cal.setTime(pdksTatil.getBitisTarih());
-			pdksTatil.setBitisAy(String.valueOf(cal.get(Calendar.MONTH)));
-			pdksTatil.setBitisGun(String.valueOf(cal.get(Calendar.DATE)));
+			cal.setTime(pdksTatil.getBitTarih());
+			pdksTatil.setBitAy(String.valueOf(cal.get(Calendar.MONTH)));
+			pdksTatil.setBitGun(String.valueOf(cal.get(Calendar.DATE)));
 			fillGunBasList();
 			fillGunBitisList();
 		}

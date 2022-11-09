@@ -308,7 +308,7 @@ public class IseGelmemeUyari implements Serializable {
 												islemVardiya.setBitDakika((short) cal.get(Calendar.MINUTE));
 											}
 										} else {
-											if (arifeGun.getOrjTatil().getBitisTarih().getTime() > islemVardiya.getVardiyaBitZaman().getTime()) {
+											if (arifeGun.getOrjTatil().getBitTarih().getTime() > islemVardiya.getVardiyaBitZaman().getTime()) {
 												iterator.remove();
 												continue;
 
@@ -326,7 +326,7 @@ public class IseGelmemeUyari implements Serializable {
 
 									} else {
 										Tatil tatil = resmiTatilGunleri.get(vardiyaGun).getOrjTatil();
-										if (tatil.getBitisTarih().getTime() > islemVardiya.getVardiyaBitZaman().getTime()) {
+										if (tatil.getBitTarih().getTime() > islemVardiya.getVardiyaBitZaman().getTime()) {
 											iterator.remove();
 											continue;
 										}

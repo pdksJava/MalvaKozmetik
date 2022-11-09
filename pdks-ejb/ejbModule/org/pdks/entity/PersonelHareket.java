@@ -26,12 +26,18 @@ public class PersonelHareket implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -5219058136293602171L;
+
+	public static final String COLUMN_NAME_PER_NO = "PER_NO";
+	public static final String COLUMN_NAME_PERSONEL = "PERSONEL";
+
 	private Long id;
 	private PersonelView personel;
+	private PersonelKGS personelKGS;
 	private KapiView kapiView;
 	private KapiKGS kapiKGS;
 	private Date zaman;
 	private PersonelHareketIslem islem;
+	private String personelNo;
 	private Integer durum = 1;
 	private Long kgsHareket;
 
@@ -47,7 +53,7 @@ public class PersonelHareket implements Serializable {
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "PERSONEL", nullable = false)
+	@JoinColumn(name = COLUMN_NAME_PERSONEL, nullable = false)
 	@Fetch(FetchMode.JOIN)
 	public PersonelView getPersonel() {
 		return personel;
@@ -55,6 +61,17 @@ public class PersonelHareket implements Serializable {
 
 	public void setPersonel(PersonelView personel) {
 		this.personel = personel;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH)
+	@JoinColumn(name = COLUMN_NAME_PERSONEL, nullable = false, insertable = false, updatable = false)
+	@Fetch(FetchMode.JOIN)
+	public PersonelKGS getPersonelKGS() {
+		return personelKGS;
+	}
+
+	public void setPersonelKGS(PersonelKGS personelKGS) {
+		this.personelKGS = personelKGS;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
@@ -109,6 +126,15 @@ public class PersonelHareket implements Serializable {
 		this.kgsHareket = value;
 	}
 
+	@Column(name = COLUMN_NAME_PER_NO, insertable = false, updatable = false)
+	public String getPersonelNo() {
+		return personelNo;
+	}
+
+	public void setPersonelNo(String personelNo) {
+		this.personelNo = personelNo;
+	}
+
 	@Transient
 	public KapiView getKapiView() {
 		return kapiView;
@@ -117,4 +143,5 @@ public class PersonelHareket implements Serializable {
 	public void setKapiView(KapiView kapiView) {
 		this.kapiView = kapiView;
 	}
+
 }

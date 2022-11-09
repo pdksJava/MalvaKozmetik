@@ -232,7 +232,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					try {
 						Date guncellemeTarihi = new Date();
 						Tatil tatil = tatilMap.get(key);
-						String dateStr = PdksUtil.convertToDateString(tatil.getBitisTarih(), "yyyyddMM") + PdksUtil.convertToDateString(yilBasiIzin.getBaslangicZamani(), "HHmm");
+						String dateStr = PdksUtil.convertToDateString(tatil.getBitTarih(), "yyyyddMM") + PdksUtil.convertToDateString(yilBasiIzin.getBaslangicZamani(), "HHmm");
 						Date ortakTarihi = PdksUtil.convertToJavaDate(dateStr, "yyyyddMMHHmm");
 						PersonelIzin izin1 = (PersonelIzin) yilBasiIzin.kopyala();
 						izin1.setId(null);
@@ -3441,7 +3441,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					String key = PdksUtil.convertToDateString(basTarih, "yyyyMMdd");
 					if (tatilMap.containsKey(key)) {
 						Tatil pdksTatil = tatilMap.get(key);
-						Date bitisGun = (Date) pdksTatil.getBitisGun();
+						Date bitisGun = (Date) pdksTatil.getBitGun();
 						if (pdksTatil.getBasTarih().getTime() <= basTarih.getTime() && bitisGun.getTime() > basTarih.getTime()) {
 							tatil = Boolean.TRUE;
 							cal1.add(Calendar.DATE, 1);

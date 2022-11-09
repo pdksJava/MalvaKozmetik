@@ -45,6 +45,7 @@ public class PersonelDenklestirme extends BaseObject {
 	public static final String COLUMN_NAME_CALISMA_MODELI_AY = "CALISMA_MODELI_AY_ID";
 	public static final String COLUMN_NAME_DEVREDEN_SURE = "DEVREDEN_SURE";
 	public static final String COLUMN_NAME_KISMI_ODEME_SAAT = "KISMI_ODEME_SAAT";
+	public static final String COLUMN_NAME_PERSONEL_NO = "PERSONEL_NO";
 
 	public static double calismaSaatiSua = 7.0d, calismaSaatiPartTime = 4.5d;
 
@@ -55,6 +56,8 @@ public class PersonelDenklestirme extends BaseObject {
 	private CalismaModeliAy calismaModeliAy;
 
 	private DenklestirmeAy denklestirmeAy;
+
+	private String personelNo;
 
 	private PersonelDenklestirme personelDenklestirmeGecenAy, personelDenklestirmeDB;
 
@@ -165,6 +168,15 @@ public class PersonelDenklestirme extends BaseObject {
 		}
 
 		this.odenenSure = value;
+	}
+
+	@Column(name = COLUMN_NAME_PERSONEL_NO, insertable = false, updatable = false)
+	public String getPersonelNo() {
+		return personelNo;
+	}
+
+	public void setPersonelNo(String personelNo) {
+		this.personelNo = personelNo;
 	}
 
 	@Column(name = "SURE")

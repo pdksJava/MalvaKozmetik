@@ -153,6 +153,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private Boolean izinCalismayanMailGonder = Boolean.FALSE, hatalariAyikla = Boolean.FALSE, kismiOdemeGoster = Boolean.FALSE;
 	private String manuelGirisGoster = "", kapiGirisSistemAdi = "";
+	private boolean yarimYuvarla = true;
 	private int ay, yil, maxYil, sonDonem, pageSize;
 
 	private List<User> toList, ccList, bccList;
@@ -1741,7 +1742,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (!kesilenSureGoster)
 						kesilenSureGoster = kesilenSure > 0.0d;
 					puantaj.setKesilenSure(kesilenSure);
-					puantaj.setResmiTatilToplami(User.getYuvarla(resmiTatilToplami));
+					int yarimYuvarla = puantaj.getYarimYuvarla();
+					puantaj.setResmiTatilToplami(PdksUtil.setSureDoubleTypeRounded(resmiTatilToplami, yarimYuvarla));
 					if (denklestirmeAyDurum && puantaj.isFazlaMesaiHesapla() && personelDenklestirme.getPersonelDenklestirmeGecenAy() != null && personel.getIseGirisTarihi().before(aylikPuantajSablon.getIlkGun())) {
 						PersonelDenklestirme personelDenklestirmeGecenAy = personelDenklestirme.getPersonelDenklestirmeGecenAy();
 						DenklestirmeAy denklestirmeAyGecen = personelDenklestirmeGecenAy.getDenklestirmeAy();
@@ -2968,7 +2970,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						if (sureAz && tatil != null) {
 							if (vGun.getCikisHareketleri() != null) {
 								HareketKGS cikisHareket = vGun.getCikisHareketleri().get(vGun.getCikisHareketleri().size() - 1);
-								sureAz = !(cikisHareket.getZaman().after(tatil.getBasTarih()) && cikisHareket.getZaman().before(tatil.getBitisTarih()));
+								sureAz = !(cikisHareket.getZaman().after(tatil.getBasTarih()) && cikisHareket.getZaman().before(tatil.getBitTarih()));
 							}
 
 						}
@@ -3167,7 +3169,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 										if (tatilSakli.getOrjTatil() != null && tatilSakli.getOrjTatil().isTekSefer())
 											tatilAksam = (Tatil) tatilSakli.getOrjTatil().clone();
 										Date tatilBas = tatilAksam.getBasTarih();
-										Date tatilBit = tatilAksam.getBitisTarih();
+										Date tatilBit = tatilAksam.getBitTarih();
 										if (tatilBit.getTime() >= girisZaman.getTime() && cikisZaman.getTime() > tatilBas.getTime()) {
 											if (girisZaman.before(tatilBas))
 												cikisZaman = tatilBas;
@@ -3178,7 +3180,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 										}
 									}
 								}
-								double calSure1 = girisZaman.getTime() < cikisZaman.getTime() ? User.getYuvarla(ortakIslemler.getSaatSure(girisZaman, cikisZaman, yemekList, vGun, session)) : 0.0d;
+								double calSure1 = girisZaman.getTime() < cikisZaman.getTime() ? PdksUtil.setSureDoubleTypeRounded(ortakIslemler.getSaatSure(girisZaman, cikisZaman, yemekList, vGun, session), vGun.getYarimYuvarla()) : 0.0d;
 
 								sure += calSure1;
 							}
@@ -3197,7 +3199,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 												girisZaman = aksamVardiyaBaslangicZamani;
 											if (cikisZaman.after(aksamVardiyaBitisZamani))
 												cikisZaman = aksamVardiyaBitisZamani;
-											double calSure1 = User.getYuvarla(ortakIslemler.getSaatSure(girisZaman, cikisZaman, yemekList, vGun, session));
+											double calSure1 = PdksUtil.setSureDoubleTypeRounded(ortakIslemler.getSaatSure(girisZaman, cikisZaman, yemekList, vGun, session), vGun.getYarimYuvarla());
 											if (calSure1 > fazlaMesai.getFazlaMesaiSaati())
 												calSure1 = fazlaMesai.getFazlaMesaiSaati();
 											sureMesai += calSure1;
@@ -5573,6 +5575,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setKapiGirisSistemAdi(String kapiGirisSistemAdi) {
 		this.kapiGirisSistemAdi = kapiGirisSistemAdi;
+	}
+
+	public boolean isYarimYuvarla() {
+		return yarimYuvarla;
+	}
+
+	public void setYarimYuvarla(boolean yarimYuvarla) {
+		this.yarimYuvarla = yarimYuvarla;
 	}
 
 }

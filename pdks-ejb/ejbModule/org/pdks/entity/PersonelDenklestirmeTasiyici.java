@@ -43,8 +43,8 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 	private int denklestirmeHaftasi = 0;
 
 	private Boolean mesaiSapDurum = Boolean.FALSE, partTime = Boolean.FALSE;
-
-	private TreeMap<String, Integer> genelHaftaMap;
+	private int yarimYuvarla = PdksUtil.getYarimYuvarlaLast();
+ 	private TreeMap<String, Integer> genelHaftaMap;
 	private TreeMap<Integer, TreeMap> vardiyaHaftaMap;
 	private TreeMap<String, VardiyaGun> vardiyaGunleriMap;
 	private List<VardiyaGun> vardiyalar;
@@ -280,7 +280,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 	}
 
 	public double getToplamCalisilanZaman() {
-		double toplamCalisilanSure = PdksUtil.setSureDoubleRounded(toplamCalisilanZaman);
+		double toplamCalisilanSure = PdksUtil.setSureDoubleTypeRounded(toplamCalisilanZaman, yarimYuvarla);
 		return toplamCalisilanSure;
 	}
 
@@ -294,7 +294,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 	}
 
 	public double getCalisilanFark() {
-		double calisilanFark = PdksUtil.setSureDoubleRounded(getToplamCalisilanZaman() - toplamCalisilacakZaman);
+		double calisilanFark = PdksUtil.setSureDoubleTypeRounded(getToplamCalisilanZaman() - toplamCalisilacakZaman, yarimYuvarla);
 		return calisilanFark;
 	}
 
@@ -407,6 +407,14 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 
 	public void setCalismaModeli(CalismaModeli calismaModeli) {
 		this.calismaModeli = calismaModeli;
+	}
+
+	public int getYarimYuvarla() {
+		return yarimYuvarla;
+	}
+
+	public void setYarimYuvarla(int yarimYuvarla) {
+		this.yarimYuvarla = yarimYuvarla;
 	}
 
 }

@@ -56,12 +56,13 @@ public class User implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_DEPARTMAN = "DEPARTMAN_ID";
 	public static final String COLUMN_NAME_LAST_LOGIN = "LAST_LOGIN";
 	public static final String COLUMN_NAME_EMAIL = "EMAIL";
-
 	public static final String COLUMN_NAME_SHORT_USER_NAME = "SHORT_USER_NAME";
+	public static final String COLUMN_NAME_PERSONEL_NO = "PER_NO";
 
 	private Long id;
 
 	private String username, shortUsername, passwordHash, newPassword, firstname, lastname, staffId, email, calistigiSayfa, remoteAddr, fullName;
+	private String personelNo;
 
 	private Departman departman;
 
@@ -213,113 +214,14 @@ public class User implements Serializable, Cloneable {
 		this.departman = departman;
 	}
 
-	// @OneToOne(cascade = CascadeType.REFRESH)
-	// @JoinColumn(name = COLUMN_NAME_MAIL_CC_ID)
-	// @Fetch(FetchMode.JOIN)
-	// public MailGrubu getMailGrubuCC() {
-	// return mailGrubuCC;
-	// }
-	//
-	// public void setMailGrubuCC(MailGrubu value) {
-	// this.emailCC = value != null ? value.getEmail() : null;
-	// this.mailGrubuCC = value;
-	// }
-	//
-	// @OneToOne(cascade = CascadeType.REFRESH)
-	// @JoinColumn(name = COLUMN_NAME_MAIL_BCC_ID)
-	// @Fetch(FetchMode.JOIN)
-	// public MailGrubu getMailGrubuBCC() {
-	// return mailGrubuBCC;
-	// }
-	//
-	// public void setMailGrubuBCC(MailGrubu value) {
-	// this.emailBCC = value != null ? value.getEmail() : null;
-	// this.mailGrubuBCC = value;
-	// }
-	//
-	// @OneToOne(cascade = CascadeType.REFRESH)
-	// @JoinColumn(name = COLUMN_NAME_HAREKET_MAIL_ID)
-	// @Fetch(FetchMode.JOIN)
-	// public MailGrubu getHareketMailGrubu() {
-	// return hareketMailGrubu;
-	// }
-	//
-	// public void setHareketMailGrubu(MailGrubu value) {
-	// this.hareketMail = value != null ? value.getEmail() : null;
-	// this.hareketMailGrubu = value;
-	// }
-	//
-	// // @Column(name = "EMAIL_CC")
-	// @Transient
-	// public String getEmailCC() {
-	// if (emailCC == null && mailGrubuCC != null)
-	// emailCC = mailGrubuCC.getEmail();
-	// if (emailCC != null) {
-	// emailCC = emailCC.trim();
-	// }
-	//
-	// return emailCC;
-	// }
+	@Column(name = COLUMN_NAME_PERSONEL_NO, insertable = false, updatable = false)
+	public String getPersonelNo() {
+		return personelNo;
+	}
 
-	// @Transient
-	// public String getHareketMail() {
-	// if (hareketMail == null && hareketMailGrubu != null)
-	// hareketMail = hareketMailGrubu.getEmail();
-	// if (hareketMail != null) {
-	// hareketMail = hareketMail.trim();
-	// }
-	// return hareketMail;
-	// }
-	//
-	// public void setHareketMail(String value) {
-	// this.hareketMail = value;
-	// if (hareketMailGrubu != null)
-	// hareketMailGrubu.setGuncellendi(Boolean.FALSE);
-	// if (value != null && value.indexOf("@") > 1) {
-	// if (hareketMailGrubu == null)
-	// hareketMailGrubu = new MailGrubu(MailGrubu.TIPI_HAREKET, value.trim());
-	// else
-	// hareketMailGrubu.setEmail(value.trim());
-	// hareketMailGrubu.setGuncellendi(Boolean.TRUE);
-	// }
-	// }
-	//
-	// public void setEmailCC(String value) {
-	// this.emailCC = value;
-	// if (mailGrubuCC != null)
-	// mailGrubuCC.setGuncellendi(Boolean.FALSE);
-	// if (value != null && value.indexOf("@") > 1) {
-	// if (mailGrubuCC == null)
-	// mailGrubuCC = new MailGrubu(MailGrubu.TIPI_CC, value.trim());
-	// else
-	// mailGrubuCC.setEmail(value.trim());
-	// mailGrubuCC.setGuncellendi(Boolean.TRUE);
-	// }
-	// }
-	//
-	// // @Column(name = "EMAIL_BCC")
-	// @Transient
-	// public String getEmailBCC() {
-	// if (emailBCC == null && mailGrubuBCC != null)
-	// emailBCC = mailGrubuBCC.getEmail();
-	// if (emailBCC != null)
-	// emailBCC = emailBCC.trim();
-	// return emailBCC;
-	// }
-	//
-	// public void setEmailBCC(String value) {
-	// this.emailBCC = value;
-	// if (mailGrubuBCC != null)
-	// mailGrubuBCC.setGuncellendi(Boolean.FALSE);
-	// if (value != null && value.indexOf("@") > 1) {
-	// if (mailGrubuBCC == null)
-	// mailGrubuBCC = new MailGrubu(MailGrubu.TIPI_BCC, value.trim());
-	// else
-	// mailGrubuBCC.setEmail(value.trim());
-	// mailGrubuBCC.setGuncellendi(Boolean.TRUE);
-	// }
-	//
-	// }
+	public void setPersonelNo(String personelNo) {
+		this.personelNo = personelNo;
+	}
 
 	@Transient
 	public boolean isAdmin() {
@@ -443,7 +345,7 @@ public class User implements Serializable, Cloneable {
 	public void setTesisYonetici(boolean tesisYonetici) {
 		this.tesisYonetici = tesisYonetici;
 	}
-	
+
 	@Transient
 	public boolean isTaseronAdmin() {
 		if (!yetkiSet)
@@ -676,6 +578,25 @@ public class User implements Serializable, Cloneable {
 		if (deger != null) {
 			if (deger > 0 && deger.doubleValue() > deger.longValue()) {
 				yeniDeger = PdksUtil.setSureDoubleRounded(deger);
+			} else
+				yeniDeger = deger;
+		}
+
+		// logger.info(deger + " " + yeniDeger);
+		return yeniDeger;
+	}
+
+	/**
+	 * @param deger
+	 * @param yarimYuvarla
+	 * @return
+	 */
+	@Transient
+	public static Double setSureDoubleTypeRounded(Double deger, int yarimYuvarla) {
+		Double yeniDeger = null;
+		if (deger != null) {
+			if (deger > 0 && deger.doubleValue() > deger.longValue()) {
+				yeniDeger = PdksUtil.setSureDoubleTypeRounded(deger, yarimYuvarla);
 			} else
 				yeniDeger = deger;
 		}
@@ -1143,7 +1064,5 @@ public class User implements Serializable, Cloneable {
 		String dateTimeLongFormat = PdksUtil.getDateTimeLongFormat();
 		return dateTimeLongFormat;
 	}
-
-	
 
 }

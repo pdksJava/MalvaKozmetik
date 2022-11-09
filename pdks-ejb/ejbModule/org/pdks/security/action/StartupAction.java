@@ -330,6 +330,17 @@ public class StartupAction implements Serializable {
 
 		if (parameterMap.containsKey("skin"))
 			SkinBean.setSkinAdi(parameterMap.get("skin"));
+		Integer yarimYuvarlaLast = null;
+		if (parameterMap.containsKey("yarimYuvarlaLast")) {
+			try {
+				yarimYuvarlaLast = Integer.parseInt(parameterMap.get("yarimYuvarlaLast"));
+			} catch (Exception e) {
+				yarimYuvarlaLast = null;
+			}
+		}
+		if (yarimYuvarlaLast == null || yarimYuvarlaLast < 1)
+			yarimYuvarlaLast = 1;
+		PdksUtil.setYarimYuvarlaLast(yarimYuvarlaLast);
 		projeHeaderImage = null;
 		if (parameterMap.containsKey("projeHeaderImageName")) {
 			String projeHeaderImageName = parameterMap.get("projeHeaderImageName");

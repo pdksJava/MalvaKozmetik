@@ -27,12 +27,12 @@ public class Tatil extends BaseObject {
 
 	private Boolean yarimGun = Boolean.FALSE, arifeSonraVardiyaDenklestirmeVar = Boolean.FALSE;
 	private String ad, aciklama;
-	private Date basTarih, bitisTarih;
+	private Date basTarih, bitTarih;
 	private Tanim tatilTipi;
 	private Integer version = 0;
-	private Object basAy, basGun, bitisAy, bitisGun;
+	private Object basAy, basGun, bitAy, bitGun;
 	private Tatil orjTatil;
- 	private Boolean arifeVardiyaYarimHesapla;
+	private Boolean arifeVardiyaYarimHesapla;
 	private HashMap<Long, Vardiya> vardiyaMap;
 
 	public Tatil() {
@@ -82,14 +82,12 @@ public class Tatil extends BaseObject {
 
 	@Temporal(value = TemporalType.TIMESTAMP)
 	@Column(name = "BIT_TARIH", nullable = false)
-	public Date getBitisTarih() {
-		return bitisTarih;
+	public Date getBitTarih() {
+		return bitTarih;
 	}
 
-	public void setBitisTarih(Date bitisTarih) {
-		if (bitisTarih == null)
-			System.out.println("");
-		this.bitisTarih = bitisTarih;
+	public void setBitTarih(Date bitTarih) {
+		this.bitTarih = bitTarih;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
@@ -128,7 +126,7 @@ public class Tatil extends BaseObject {
 
 	@Transient
 	public String getBitisTarihAciklama() {
-		return getTarihAciklama(bitisTarih);
+		return getTarihAciklama(bitTarih);
 	}
 
 	@Transient
@@ -179,21 +177,21 @@ public class Tatil extends BaseObject {
 	}
 
 	@Transient
-	public Object getBitisAy() {
-		return bitisAy;
+	public Object getBitAy() {
+		return bitAy;
 	}
 
-	public void setBitisAy(Object bitisAy) {
-		this.bitisAy = bitisAy;
+	public void setBitAy(Object bitAy) {
+		this.bitAy = bitAy;
 	}
 
 	@Transient
-	public Object getBitisGun() {
-		return bitisGun;
+	public Object getBitGun() {
+		return bitGun;
 	}
 
-	public void setBitisGun(Object bitisGun) {
-		this.bitisGun = bitisGun;
+	public void setBitGun(Object bitGun) {
+		this.bitGun = bitGun;
 	}
 
 	@Transient
@@ -227,5 +225,7 @@ public class Tatil extends BaseObject {
 	public void setArifeSonraVardiyaDenklestirmeVar(Boolean arifeSonraVardiyaDenklestirmeVar) {
 		this.arifeSonraVardiyaDenklestirmeVar = arifeSonraVardiyaDenklestirmeVar;
 	}
+
+
 
 }

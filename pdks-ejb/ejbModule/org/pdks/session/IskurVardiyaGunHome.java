@@ -1693,7 +1693,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 							if (tatilAksam.getOrjTatil().isTekSefer())
 								tatilAksam = (Tatil) tatilAksam.getOrjTatil().clone();
 							Date tatilBas = tatilAksam.getBasTarih();
-							Date tatilBit = tatilAksam.getBitisTarih();
+							Date tatilBit = tatilAksam.getBitTarih();
 							if (tatilBit.getTime() >= girisZaman.getTime() && cikisZaman.getTime() > tatilBas.getTime()) {
 								if (girisZaman.before(tatilBas))
 									cikisZaman = tatilBas;
@@ -2985,9 +2985,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					} else {
 						if (pdksVardiyaGun.getIsKurVardiya() != null && pdksVardiyaGun.getIsKurVardiya().getId() != null) {
 							IsKurVardiyaGun isKurVardiya = pdksVardiyaGun.getIsKurVardiya();
-							 
-								pdksEntityController.deleteObject(session, entityManager, isKurVardiya );
-							 
+
+							pdksEntityController.deleteObject(session, entityManager, isKurVardiya);
+
 							flush = true;
 						}
 
@@ -3107,13 +3107,13 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				vardiyaPlan = null;
 				vardiyaGunMap = null;
 				aylikPuantaj.setVardiyaHaftaList(aylikPuantaj.getVardiyaPlan().getVardiyaHaftaList());
-
+				int yarimYuvarla = aylikPuantaj.getYarimYuvarla();
 				if (!onayDurum)
 					onayDurum = aylikPuantaj.isOnayDurum();
 				if (aylikPuantaj.getResmiTatilToplami() > 0)
-					aylikPuantaj.setResmiTatilToplami(User.getYuvarla(aylikPuantaj.getResmiTatilToplami()));
+					aylikPuantaj.setResmiTatilToplami(PdksUtil.setSureDoubleTypeRounded(aylikPuantaj.getResmiTatilToplami(), yarimYuvarla));
 				if (aylikPuantaj.getHaftaCalismaSuresi() > 0)
-					aylikPuantaj.setHaftaCalismaSuresi(User.getYuvarla(aylikPuantaj.getHaftaCalismaSuresi()));
+					aylikPuantaj.setHaftaCalismaSuresi(PdksUtil.setSureDoubleTypeRounded(aylikPuantaj.getHaftaCalismaSuresi(), yarimYuvarla));
 				if (aylikPuantaj.getVardiyalar() != null) {
 					for (VardiyaGun pdksVardiyaGun : aylikPuantaj.getVardiyalar()) {
 						if (pdksVardiyaGun.isAyinGunu() && pdksVardiyaGun.getVardiya() != null) {
@@ -4255,9 +4255,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 									ex.printStackTrace();
 								}
 							} else if (pdksVardiyaGun.getId() != null) {
-			 					 
-			 						pdksEntityController.deleteObject(session, entityManager, pdksVardiyaGun);
-								 
+
+								pdksEntityController.deleteObject(session, entityManager, pdksVardiyaGun);
+
 							}
 						}
 
@@ -4755,9 +4755,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			boolean calisiyor = planTarih2 >= iseBasTarih && istenAyrilmaTarih >= planTarih1;
 			if (!calisiyor) {
 				if (pdksVardiyaHafta.getId() != null) {
-					 
-						pdksEntityController.deleteObject(session, entityManager, pdksVardiyaHafta );
-					 
+
+					pdksEntityController.deleteObject(session, entityManager, pdksVardiyaHafta);
+
 					pdksVardiyaHafta.setId(null);
 					fiush = true;
 				}

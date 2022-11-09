@@ -32,11 +32,12 @@ public class IsKurVardiyaGun extends BaseObject {
 	public static final String COLUMN_NAME_PERSONEL = "PERSONEL_ID";
 	public static final String COLUMN_NAME_VARDIYA_TARIHI = "VARDIYA_TARIHI";
 	public static final String COLUMN_NAME_VARDIYA = "VARDIYA_ID";
+	public static final String COLUMN_NAME_PERSONEL_NO = "PERSONEL_NO";
 
 	private Personel personel;
 	private Vardiya vardiya;
 	private Date vardiyaDate;
-
+	private String personelNo;
 	private Integer version = 0;
 
 	public IsKurVardiyaGun() {
@@ -91,6 +92,15 @@ public class IsKurVardiyaGun extends BaseObject {
 
 	public void setVardiyaDate(Date vardiyaDate1) {
 		this.vardiyaDate = vardiyaDate1;
+	}
+
+	@Column(name = COLUMN_NAME_PERSONEL_NO, insertable = false, updatable = false)
+	public String getPersonelNo() {
+		return personelNo;
+	}
+
+	public void setPersonelNo(String personelNo) {
+		this.personelNo = personelNo;
 	}
 
 	@Transient

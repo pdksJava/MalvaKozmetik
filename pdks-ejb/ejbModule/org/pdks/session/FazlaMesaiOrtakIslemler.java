@@ -32,6 +32,7 @@ import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
 import org.pdks.entity.IzinTipi;
+import org.pdks.entity.KatSayiTipi;
 import org.pdks.entity.Liste;
 import org.pdks.entity.MenuItem;
 import org.pdks.entity.Personel;
@@ -297,9 +298,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			List<String> list = new ArrayList<String>();
 			try {
 				if (islemVardiya.isCalisma()) {
-					if (islemVardiya.getVardiyaBasZaman() != null && islemVardiya.getVardiyaFazlaMesaiBasZaman() != null && islemVardiya.getVardiyaBasZaman().getTime() != islemVardiya.getVardiyaFazlaMesaiBasZaman().getTime())
+					if (islemVardiya.getVardiyaTelorans1BasZaman() != null && islemVardiya.getVardiyaFazlaMesaiBasZaman() != null && islemVardiya.getVardiyaBasZaman().getTime() > vardiyaGun.getVardiyaDate().getTime()
+							&& islemVardiya.getVardiyaTelorans1BasZaman().getTime() != islemVardiya.getVardiyaFazlaMesaiBasZaman().getTime())
 						list.add(PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaBasZaman(), pattern));
-					if (islemVardiya.getVardiyaBitZaman() != null && islemVardiya.getVardiyaFazlaMesaiBitZaman() != null && islemVardiya.getVardiyaBitZaman().getTime() != islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime())
+					if (islemVardiya.getVardiyaTelorans2BitZaman() != null && islemVardiya.getVardiyaFazlaMesaiBitZaman() != null && islemVardiya.getVardiyaTelorans2BitZaman().getTime() != islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime())
 						list.add(PdksUtil.convertToDateString(islemVardiya.getVardiyaBitZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBitZaman(), pattern));
 				} else if (islemVardiya.getVardiyaFazlaMesaiBasZaman() != null && islemVardiya.getVardiyaFazlaMesaiBitZaman() != null)
 					list.add(PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBitZaman(), pattern));
@@ -1242,6 +1244,59 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			map = null;
 		}
 
+	}
+
+	/**
+	 * @param vgList
+	 * @param session
+	 */
+	public void setVardiyaKatSayiList(List<VardiyaGun> vgList, Session session) {
+		if (vgList != null) {
+			boolean planKatSayiOku = ortakIslemler.getParameterKey("planKatSayiOku").equals("1");
+			boolean yuvarlamaKatSayiOku = ortakIslemler.getParameterKey("yuvarlamaKatSayiOku").equals("1");
+			boolean suaKatSayiOku = false;
+			Date basTarih = null, bitTarih = null;
+			List<Long> personelIdler = new ArrayList<Long>();
+			List<VardiyaGun> vardiyaGunList = new ArrayList<VardiyaGun>();
+
+			for (VardiyaGun vardiyaGun : vgList) {
+				if (vardiyaGun.getVardiya() == null || vardiyaGun.getVardiyaDate() == null || vardiyaGun.getPersonel() == null)
+					continue;
+				if (vardiyaGun.getVardiya().getSua() != null && vardiyaGun.getVardiya().getSua()) {
+					suaKatSayiOku = true;
+					vardiyaGunList.add(vardiyaGun);
+				}
+				if (!personelIdler.contains(vardiyaGun.getPersonel().getId()))
+					personelIdler.add(vardiyaGun.getPersonel().getId());
+				if (basTarih == null || basTarih.before(vardiyaGun.getVardiyaDate()))
+					basTarih = vardiyaGun.getVardiyaDate();
+				if (bitTarih == null || bitTarih.after(vardiyaGun.getVardiyaDate()))
+					bitTarih = vardiyaGun.getVardiyaDate();
+
+			}
+			if (planKatSayiOku || suaKatSayiOku || yuvarlamaKatSayiOku) {
+				TreeMap<String, BigDecimal> sureMap = planKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HAREKET_BEKLEME_SURESI, session) : null;
+				TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.SUA_GUNLUK_SAAT_SURESI, session) : null;
+				TreeMap<String, BigDecimal> yuvarlamaMap = yuvarlamaKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.YUVARLAMA_TIPI, session) : null;
+				// TODO setVardiyaKatSayiList
+				boolean kontrolSureMap = sureMap != null && !sureMap.isEmpty();
+				boolean kontrolSureSuaMap = sureSuaMap != null && !sureSuaMap.isEmpty();
+				boolean kontrolYuvarlamaMap = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
+				for (VardiyaGun vardiyaGun : vardiyaGunList) {
+					String str = vardiyaGun.getVardiyaDateStr();
+					if (kontrolSureMap && sureMap.containsKey(str))
+						vardiyaGun.setBeklemeSuresi(sureMap.get(str).intValue());
+					if (kontrolSureSuaMap && sureSuaMap.containsKey(str))
+						vardiyaGun.setCalismaSuaSaati(sureSuaMap.get(str).doubleValue());
+					if (kontrolYuvarlamaMap && yuvarlamaMap.containsKey(str)) {
+						BigDecimal deger = yuvarlamaMap.get(str);
+						if (deger != null)
+							vardiyaGun.setYarimYuvarla(deger.intValue());
+					}
+				}
+				vardiyaGunList = null;
+			}
+		}
 	}
 
 	/**
