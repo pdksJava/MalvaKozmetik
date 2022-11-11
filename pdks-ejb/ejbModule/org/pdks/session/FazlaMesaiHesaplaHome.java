@@ -822,6 +822,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Date basTarih = new Date();
 		if (testDurum)
 			logger.info("fillPersonelDenklestirmeDevam 0000 " + basTarih);
+		String haftaTatilDurum = ortakIslemler.getParameterKey("haftaTatilDurum");
 		seciliBolum = null;
 		kismiOdemeGoster = Boolean.FALSE;
 		fazlaMesaiVardiyaGun = null;
@@ -951,6 +952,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 			}
 			perList.clear();
+
 			for (Iterator iterator = personelDenklestirmeler.iterator(); iterator.hasNext();) {
 				PersonelDenklestirme personelDenklestirme = (PersonelDenklestirme) iterator.next();
 				if (personelDenklestirme == null || personelDenklestirme.getPersonel() == null) {
@@ -1035,8 +1037,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						list = ortakIslemler.personelDenklestir(denklestirmeDonemi, tatilGunleriMap, searchKey, perList, Boolean.TRUE, Boolean.FALSE, ayBitmedi, session);
 
 					}
-					if (denklestirmeAyDurum && !list.isEmpty())
-						haftaTatilVardiyaGuncelle(list);
+
 				} catch (Exception ex) {
 					list = new ArrayList<PersonelDenklestirmeTasiyici>();
 					logger.equals(ex);
@@ -1148,11 +1149,20 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					}
 				}
 				List<Long> denklestirmeIdList = new ArrayList<Long>();
+				List<PersonelDenklestirmeTasiyici> haftaSonuList = new ArrayList<PersonelDenklestirmeTasiyici>();
 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 					PersonelDenklestirmeTasiyici denklestirme = (PersonelDenklestirmeTasiyici) iterator1.next();
-					if (personelDenklestirmeMap.containsKey(denklestirme.getPersonel().getId()))
-						denklestirmeIdList.add(personelDenklestirmeMap.get(denklestirme.getPersonel().getId()).getId());
+					if (personelDenklestirmeMap.containsKey(denklestirme.getPersonel().getId())) {
+						PersonelDenklestirme personelDenklestirme = personelDenklestirmeMap.get(denklestirme.getPersonel().getId());
+						if (haftaTatilDurum.equals("1") && personelDenklestirme.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu())
+							haftaSonuList.add(denklestirme);
+						denklestirmeIdList.add(personelDenklestirme.getId());
+					}
 				}
+				if (denklestirmeAyDurum && !haftaSonuList.isEmpty())
+					haftaTatilVardiyaGuncelle(haftaSonuList);
+
+				haftaSonuList = null;
 				TreeMap<String, PersonelDenklestirmeDinamikAlan> devamlilikPrimiMap = new TreeMap<String, PersonelDenklestirmeDinamikAlan>();
 				devamlilikPrimi = denklestirmeMantiksalBilgiBul(PersonelDenklestirmeDinamikAlan.TIPI_DENKLESTIRME_DEVAMLILIK_PRIMI);
 				if (devamlilikPrimi != null)
@@ -1545,7 +1555,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						if (personelDenklestirme.getPersonelDenklestirmeGecenAy() != null)
 							puantaj.setDevredenSure(personelDenklestirme.getPersonelDenklestirmeGecenAy().getDevredenSure());
 					}
-
+					if (denklestirmeAyDurum == false && !haftaTatilDurum.equals("1"))
+						haftaCalismaSuresi = 0.0d;
 					puantaj.setHaftaCalismaSuresi(haftaCalismaSuresi);
 					if (!gebeGoster)
 						gebeGoster = puantaj.isGebeDurum();
@@ -2123,6 +2134,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			TreeMap<String, Integer> vgHaftaMap = new TreeMap<String, Integer>();
 			List<PersonelDenklestirmeTasiyici> personelDenklestirmeleri = personelDenklestirmeTasiyici.getPersonelDenklestirmeleri();
 			Calendar cal1 = Calendar.getInstance();
+			Date bugun = PdksUtil.getDate(cal1.getTime());
 			for (PersonelDenklestirmeTasiyici personelDenklestirmeTasiyici2 : personelDenklestirmeleri) {
 				++hafta;
 				List<VardiyaGun> vardiyaGunList = personelDenklestirmeTasiyici2.getVardiyalar();
@@ -2130,13 +2142,13 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					continue;
 				for (VardiyaGun vardiyaGun : vardiyaGunList) {
 					String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
-					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
+					boolean haftaTatil = vardiyaGun.getVardiya().isHaftaTatil();
+					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null && (haftaTatil || bugun.after(vardiyaGun.getVardiyaDate()))) {
 						cal1.setTime(vardiyaGun.getVardiyaDate());
-						boolean haftaTatil = vardiyaGun.getVardiya().isHaftaTatil();
-						if (vardiyaGun.getVersion() < 0 || haftaTatil) {
+						if (haftaTatil || (vardiyaGun.getVardiya().isCalisma() && (vardiyaGun.getVersion() < 0 || vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty()))) {
 							if (haftaTatil)
 								vgHaftaMap.put(key, hafta);
-							else if (vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty()) {
+							else if (haftaTatil == false && (vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty())) {
 								List<VardiyaGun> vList = haftaMap.containsKey(hafta) ? haftaMap.get(hafta) : new ArrayList<VardiyaGun>();
 								if (vList.isEmpty())
 									haftaMap.put(hafta, vList);
@@ -2153,31 +2165,29 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				for (String key : vgHaftaMap.keySet()) {
 					VardiyaGun vardiyaGun = vgMap.get(key);
 					hafta = vgHaftaMap.get(key);
-					if (vardiyaGun.getHareketler() != null && haftaMap.containsKey(hafta)) {
-
+					if ((vardiyaGun.getVardiyaDate().after(bugun) || vardiyaGun.getHareketler() != null) && haftaMap.containsKey(hafta)) {
 						List<VardiyaGun> vList = haftaMap.get(hafta);
 						if (vList.size() == 1) {
 							Vardiya vardiyaHafta = vardiyaGun.getVardiya();
-							for (VardiyaGun vardiyaCalismaGun : vList) {
-								Vardiya vardiyaCalisma = vardiyaCalismaGun.getVardiya();
-								logger.debug(vardiyaCalismaGun.getVardiyaKeyStr() + " " + key);
-								vardiyaGun.setVardiya(vardiyaCalisma);
-								vardiyaGun.setVersion(-1);
-								vardiyaCalismaGun.setVardiya(vardiyaHafta);
-								vardiyaCalismaGun.setVersion(0);
-								session.saveOrUpdate(vardiyaGun);
-								session.saveOrUpdate(vardiyaCalismaGun);
-								break;
-
-							}
-
+							VardiyaGun vardiyaCalismaGun = vList.get(0);
+							Vardiya vardiyaCalisma = vardiyaCalismaGun.getVardiya();
+							logger.debug(vardiyaCalismaGun.getVardiyaKeyStr() + " " + key);
+							vardiyaGun.setVardiya(vardiyaCalisma);
+							vardiyaGun.setVersion(-1);
+							vardiyaCalismaGun.setVardiya(vardiyaHafta);
+							vardiyaCalismaGun.setVersion(0);
+							session.saveOrUpdate(vardiyaGun);
+							session.saveOrUpdate(vardiyaCalismaGun);
+							flush = true;
 						}
-
 					}
 				}
 			}
-			if (flush)
+			if (flush) {
+				PdksUtil.addMessageWarn("Hafta tatilleri güncellendi, 'Fazla Mesai Getir' tekrar çalıştırın.");
 				session.flush();
+			}
+
 		}
 	}
 
@@ -4071,9 +4081,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			String gorevYeriAciklama = getExcelAciklama();
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(gorevYeriAciklama, aylikPuantajList);
 			if (baosDosya != null) {
- 				String dosyaAdi = "FazlaMesai_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
+				String dosyaAdi = "FazlaMesai_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
- 			}
+			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();

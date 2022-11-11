@@ -4283,10 +4283,11 @@ public class OrtakIslemler implements Serializable {
 							for (VardiyaGun vardiyaGun : varList) {
 								Date vd = vardiyaGun.getVardiyaDate();
 								vardiyaGun.setAyinGunu(!(vd.before(donemBas) || vd.after(donemBit)));
-								if ((vardiyaGun.getId() == null || vardiyaGun.getVersion() < 0 || !vardiyaGun.getDurum()) && vardiyaGun.getVardiya() != null && vardiyaGun.isAyinGunu() && vd.before(bugun)) {
-									saveList.add(vardiyaGun);
+								if (vardiyaGun.isIzinli() == false) {
+									if ((vardiyaGun.getId() == null || vardiyaGun.getVersion() < 0 || !vardiyaGun.getDurum()) && vardiyaGun.getVardiya() != null && vardiyaGun.isAyinGunu() && vd.before(bugun)) {
+										saveList.add(vardiyaGun);
+									}
 								}
-
 							}
 							if (!saveList.isEmpty()) {
 								boolean flush = false;
@@ -4499,15 +4500,18 @@ public class OrtakIslemler implements Serializable {
 				if (!vardiyaPerList.isEmpty()) {
 					for (Iterator iterator = varList.iterator(); iterator.hasNext();) {
 						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-						fazlaMesaiSaatiAyarla(vardiyalarMap);
 						vardiyaGun.setGuncellendi(Boolean.FALSE);
+						if (vardiyaGun.isIzinli())
+							continue;
 						String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
 						List<Liste> listeler = new ArrayList<Liste>();
 						for (Vardiya vardiya : vardiyaPerList) {
 							personelHareketList.clear();
 							personelHareketList.addAll(personelHareketMap.get(personelKGSId));
 							VardiyaGun vardiyaGunNew = new VardiyaGun(personelDenklestirmeTasiyici.getPersonel(), vardiya, vardiyaGun.getVardiyaDate());
-							vardiyaGunNew.setVardiyaZamani();
+							vardiyalarMap.put(vardiyaGunNew.getVardiyaKeyStr(), vardiyaGunNew);
+							fazlaMesaiSaatiAyarla(vardiyalarMap);
+							// vardiyaGunNew.setVardiyaZamani();
 							for (Iterator iterator1 = personelHareketList.iterator(); iterator1.hasNext();) {
 								HareketKGS hareket = (HareketKGS) iterator1.next();
 								if (!hareketIdList.contains(hareket.getId()) && vardiyaGunNew.addHareket(hareket, Boolean.TRUE))
@@ -4545,6 +4549,7 @@ public class OrtakIslemler implements Serializable {
 							logger.debug(vg.getVardiyaKeyStr() + " " + vg.getVardiyaAdi());
 
 						}
+						vardiyalarMap.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
 					}
 
 				}
