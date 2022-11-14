@@ -1150,18 +1150,39 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 				List<Long> denklestirmeIdList = new ArrayList<Long>();
 				List<PersonelDenklestirmeTasiyici> haftaSonuList = new ArrayList<PersonelDenklestirmeTasiyici>();
+				List<VardiyaGun> bosCalismaList = new ArrayList<VardiyaGun>();
 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 					PersonelDenklestirmeTasiyici denklestirme = (PersonelDenklestirmeTasiyici) iterator1.next();
 					if (personelDenklestirmeMap.containsKey(denklestirme.getPersonel().getId())) {
 						PersonelDenklestirme personelDenklestirme = personelDenklestirmeMap.get(denklestirme.getPersonel().getId());
-						if (haftaTatilDurum.equals("1") && personelDenklestirme.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu())
+						boolean hareketKaydiVardiyaBulsunmu = personelDenklestirme.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu();
+						if (hareketKaydiVardiyaBulsunmu) {
+							// if (haftaTatilDurum.equals("1"))
 							haftaSonuList.add(denklestirme);
+							TreeMap<String, VardiyaGun> vardiyaGunleriMap = denklestirme.getVardiyaGunleriMap();
+							if (vardiyaGunleriMap != null) {
+								for (String key : vardiyaGunleriMap.keySet()) {
+									VardiyaGun vardiyaGun = vardiyaGunleriMap.get(key);
+									if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().isCalisma() && vardiyaGun.getVersion() < 0) {
+										if (vardiyaGun.getIslemVardiya().getVardiyaBitZaman().before(bugun) && vardiyaGun.getCalismaSuresi() == 0.0d && vardiyaGun.isIzinli() == false && vardiyaGun.getHareketler() == null)
+											bosCalismaList.add(vardiyaGun);
+									}
+								}
+							}
+						}
+
 						denklestirmeIdList.add(personelDenklestirme.getId());
 					}
 				}
-				if (denklestirmeAyDurum && !haftaSonuList.isEmpty())
-					haftaTatilVardiyaGuncelle(haftaSonuList);
-
+				if (!ortakIslemler.getParameterKey("bosCalismaOffGuncelle").equals("1"))
+					bosCalismaList.clear();
+				if (denklestirmeAyDurum && (bosCalismaList.size() + haftaSonuList.size()) > 0) {
+					if (!haftaSonuList.isEmpty())
+						haftaTatilVardiyaGuncelle(haftaSonuList);
+					if (!bosCalismaList.isEmpty())
+						bosCalismaOffGuncelle(bosCalismaList, haftaSonuList.isEmpty());
+				}
+				bosCalismaList = null;
 				haftaSonuList = null;
 				TreeMap<String, PersonelDenklestirmeDinamikAlan> devamlilikPrimiMap = new TreeMap<String, PersonelDenklestirmeDinamikAlan>();
 				devamlilikPrimi = denklestirmeMantiksalBilgiBul(PersonelDenklestirmeDinamikAlan.TIPI_DENKLESTIRME_DEVAMLILIK_PRIMI);
@@ -2122,9 +2143,30 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	}
 
 	/**
+	 * @param bosCalismaList
+	 * @param uyariMesai
+	 */
+	private void bosCalismaOffGuncelle(List<VardiyaGun> bosCalismaList, boolean uyariMesai) {
+		HashMap map = new HashMap();
+		map.put("vardiyaTipi", Vardiya.TIPI_OFF);
+		if (session != null)
+			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+		Vardiya offVardiya = (Vardiya) pdksEntityController.getObjectByInnerObject(map, Vardiya.class);
+		if (offVardiya != null) {
+			for (VardiyaGun vardiyaGun : bosCalismaList) {
+				vardiyaGun.setVardiya(offVardiya);
+				vardiyaGun.setVersion(0);
+				session.saveOrUpdate(vardiyaGun);
+			}
+			session.flush();
+			if (uyariMesai)
+				PdksUtil.addMessageWarn(offVardiya.getAciklama() + " günler güncellendi, 'Fazla Mesai Getir' tekrar çalıştırın.");
+		}
+	}
+
+	/**
 	 * @param list
 	 */
-	// TODO haftaTatilVardiyaGuncelle
 	private void haftaTatilVardiyaGuncelle(List<PersonelDenklestirmeTasiyici> list) {
 		for (PersonelDenklestirmeTasiyici personelDenklestirmeTasiyici : list) {
 			boolean flush = false;
@@ -2518,7 +2560,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					gunAdet++;
 					logger.info(vardiyaGun.getCalismaSuresi() + " " + calismaSuresi + " " + fark);
 					if (fark >= 50) {
-						// TODO Eksik çalışma hesapla
 						adet = 0;
 						break;
 

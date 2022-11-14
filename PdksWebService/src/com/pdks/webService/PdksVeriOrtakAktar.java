@@ -164,7 +164,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			mailMap = mailDataMap;
 		if (!mailDataMap.containsKey("ikMailIptal")) {
 			HashMap fields = new HashMap();
-			sb.append("SELECT  U.* FROM " + Role.TABLE_NAME + " R ");
+			sb.append("SELECT  U.* FROM " + Role.TABLE_NAME + " R WITH(nolock)");
 			sb.append(" INNER JOIN " + UserRoles.TABLE_NAME + " UR ON UR." + UserRoles.COLUMN_NAME_ROLE + "=R.ID ");
 			sb.append(" INNER JOIN " + User.TABLE_NAME + " U ON U.ID=UR." + UserRoles.COLUMN_NAME_USER + " AND U.DURUM=1 ");
 			sb.append(" INNER JOIN " + Departman.TABLE_NAME + " D ON D.ID=U." + User.COLUMN_NAME_DEPARTMAN + " AND D.ADMIN_DURUM=1 AND D.DURUM=1 ");
@@ -765,7 +765,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (perNoList != null && !perNoList.isEmpty()) {
 						HashMap fields = new HashMap();
 						StringBuffer sb = new StringBuffer();
-						sb.append("SELECT D.* FROM " + PersonelDenklestirme.TABLE_NAME + " D ");
+						sb.append("SELECT D.* FROM " + PersonelDenklestirme.TABLE_NAME + " D WITH(nolock)");
 						sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=D." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 						sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :p ");
 						sb.append(" WHERE D." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
@@ -1708,14 +1708,32 @@ public class PdksVeriOrtakAktar implements Serializable {
 					izinERP.setBitZaman(null);
 				}
 			}
+			Integer gecmisIzinKontrolAdet = null;
+			try {
+				if (mailMap.containsKey("gecmisIzinKontrolAdet"))
+					gecmisIzinKontrolAdet = Integer.parseInt((String) mailMap.get("gecmisIzinKontrolAdet"));
+				else {
+					kayitIzinList.clear();
+					gecmisIzinKontrolAdet = kayitIzinList.size() + 1;
+				}
 
-			if (kayitIzinList.size() > 50 && izinlerBasTarih != null && izinlerBitTarih != null && izinlerBasTarih.before(izinlerBitTarih)) {
+			} catch (Exception e) {
+				gecmisIzinKontrolAdet = null;
+			}
+			if (gecmisIzinKontrolAdet == null) {
+				kayitIzinList.clear();
+				gecmisIzinKontrolAdet = kayitIzinList.size() + 1;
+			}
+			if (kayitIzinList.size() >= gecmisIzinKontrolAdet && izinlerBasTarih != null && izinlerBitTarih != null && izinlerBasTarih.before(izinlerBitTarih)) {
 				Date tarih = PdksUtil.tariheAyEkleCikar(bugun, 2);
+				Date bTarih = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(PdksUtil.tariheAyEkleCikar(bugun, -2), "yyyyMM") + "01", "yyyyMMdd");
+				if (izinlerBasTarih.before(bTarih))
+					izinlerBasTarih = bTarih;
 				if (izinlerBitTarih.after(tarih))
 					izinlerBitTarih = tarih;
 				HashMap map = new HashMap();
 				StringBuffer sb = new StringBuffer();
-				sb.append("SELECT  R." + IzinReferansERP.COLUMN_NAME_ID + ",I." + PersonelIzin.COLUMN_NAME_PERSONEL_NO + ",R." + IzinReferansERP.COLUMN_NAME_IZIN_ID + "   FROM  " + PersonelIzin.TABLE_NAME + "  I ");
+				sb.append("SELECT  R." + IzinReferansERP.COLUMN_NAME_ID + ",I." + PersonelIzin.COLUMN_NAME_PERSONEL_NO + ",R." + IzinReferansERP.COLUMN_NAME_IZIN_ID + "   FROM  " + PersonelIzin.TABLE_NAME + "  I WITH(nolock)");
 				sb.append(" INNER JOIN " + IzinReferansERP.TABLE_NAME + " R ON R." + IzinReferansERP.COLUMN_NAME_IZIN_ID + "=I." + PersonelIzin.COLUMN_NAME_ID);
 				sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=I." + PersonelIzin.COLUMN_NAME_PERSONEL);
 				sb.append(" AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:b");
@@ -1741,22 +1759,80 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 				}
 				if (!map.isEmpty()) {
-					List<PersonelIzin> personelIzinList = pdksDAO.getObjectByInnerObjectList("id", new ArrayList<Long>(map.keySet()), PersonelIzin.class);
+					List<IzinReferansERP> personelIzinList = pdksDAO.getObjectByInnerObjectList("izin.id", new ArrayList<Long>(map.keySet()), IzinReferansERP.class);
 					if (!personelIzinList.isEmpty()) {
-						personelIzinList = PdksUtil.sortListByAlanAdi(personelIzinList, "bitisZamani", Boolean.TRUE);
+						if (mailMap.containsKey("acikAyGelmeyenIzinERPIptal")) {
+							List<Long> idList = new ArrayList<Long>();
+							for (IzinReferansERP izinReferansERP : personelIzinList) {
+								PersonelIzin personelIzin = izinReferansERP.getIzin();
+								if (PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyyyMM").equals(PdksUtil.convertToDateString(personelIzin.getBitisZamani(), "yyyyMM")))
+									idList.add(personelIzin.getId());
+							}
+							if (!idList.isEmpty()) {
+								fields.clear();
+								sb = new StringBuffer();
+								sb.append("SELECT I." + PersonelIzin.COLUMN_NAME_ID + ",P." + PersonelDenklestirme.COLUMN_NAME_ID + " AS PD_ID FROM " + PersonelIzin.TABLE_NAME + " I WITH(nolock)");
+								sb.append(" INNER JOIN  " + DenklestirmeAy.TABLE_NAME + " D ON D." + DenklestirmeAy.COLUMN_NAME_YIL + "= YEAR(I." + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + ")");
+								sb.append(" AND D." + DenklestirmeAy.COLUMN_NAME_AY + "= MONTH(I." + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + ") AND D." + DenklestirmeAy.COLUMN_NAME_DURUM + "=1");
+								sb.append(" INNER JOIN  " + PersonelDenklestirme.TABLE_NAME + " P ON P." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=D." + DenklestirmeAy.COLUMN_NAME_ID);
+								sb.append(" AND P." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + "=I." + PersonelIzin.COLUMN_NAME_PERSONEL);
+								sb.append(" WHERE I." + PersonelIzin.COLUMN_NAME_ID + " :p");
+								sb.append(" ORDER BY I." + PersonelIzin.COLUMN_NAME_BITIS_ZAMANI + " DESC");
+								fields.put("p", idList);
+								List<Object[]> izinAcikList = pdksDAO.getNativeSQLList(fields, sb, null);
+								if (!izinAcikList.isEmpty()) {
+									List saveIzinList = new ArrayList();
+									Date guncellemeTarihi = new Date();
+									for (Object[] objects : izinAcikList) {
+										Long izinId = ((BigDecimal) objects[0]).longValue(), pdId = ((BigDecimal) objects[1]).longValue();
+										PersonelDenklestirme personelDenklestirme = (PersonelDenklestirme) pdksDAO.getObjectByInnerObject("id", pdId, PersonelDenklestirme.class);
+										personelDenklestirme.setDurum(Boolean.FALSE);
+										saveIzinList.add(personelDenklestirme);
+										for (Iterator iterator = personelIzinList.iterator(); iterator.hasNext();) {
+											IzinReferansERP izinErp = (IzinReferansERP) iterator.next();
+											PersonelIzin izin = izinErp.getIzin();
+											if (izin.getId().equals(izinId)) {
+												izin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
+												izin.setGuncellemeTarihi(guncellemeTarihi);
+												izin.setGuncelleyenUser(islemYapan);
+												saveIzinList.add(izin);
+												iterator.remove();
+												break;
+											}
+										}
+									}
+									if (!saveIzinList.isEmpty())
+										pdksDAO.saveObjectList(saveIzinList);
+									saveIzinList = null;
+								}
+								izinAcikList = null;
+							}
+							idList = null;
+						}
+
+					}
+					if (!personelIzinList.isEmpty()) {
+						personelIzinList = PdksUtil.sortListByAlanAdi(personelIzinList, "sortAlan", Boolean.TRUE);
 						String uygulamaBordro = mailMap.containsKey("uygulamaBordro") ? (String) mailMap.get("uygulamaBordro") : "Bordro Uygulaması ";
 						mailMap.put("konu", uygulamaBordro + " gelmeyen izinler");
 						sb = new StringBuffer();
 						sb.append("<p><b>" + mailMap.get("konu") + " var!</b></p>");
 						sb.append("<TABLE class=\"mars\" style=\"width: 90%\">");
 						boolean renkUyari = false;
-						sb.append("<THEAD><TR><TH>Personel No</TH><TH>Adı Soyadı</TH><TH>Başlangıç Zamanı</TH><TH>Bitiş Zamanı</TH></TR></THEAD><TBODY>");
-						for (PersonelIzin personelIzin : personelIzinList) {
+						sb.append("<THEAD><TR><TH>" + personelNoAciklama() + "</TH>");
+						sb.append("<TH>Adı Soyadı</TH>");
+						sb.append("<TH>Tipi</TH><TH>Başlangıç Zamanı</TH>");
+						sb.append("<TH>Bitiş Zamanı</TH>");
+						sb.append("<TH>" + uygulamaBordro + " Referans No</TH></TR></THEAD><TBODY>");
+						for (IzinReferansERP personelIzinTum : personelIzinList) {
+							PersonelIzin personelIzin = personelIzinTum.getIzin();
 							sb.append("<TR class=\"" + (renkUyari ? "odd" : "even") + "\">");
 							sb.append("<TD align=\"center\">" + personelIzin.getPersonelNo() + "</TD>");
 							sb.append("<TD>" + personelIzin.getIzinSahibi().getAdSoyad() + "</TD>");
+							sb.append("<TD >" + (personelIzin.getIzinTipi() != null ? personelIzin.getIzinTipi().getIzinTipiTanim().getAciklamatr() : "") + "</TD>");
 							sb.append("<TD align=\"center\">" + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), FORMAT_DATE_TIME) + "</TD>");
-							sb.append("<TD align=\"center\">" + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), FORMAT_DATE_TIME) + "</TD></TR>");
+							sb.append("<TD align=\"center\">" + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), FORMAT_DATE_TIME) + "</TD>");
+							sb.append("<TD >" + (personelIzinTum.getId() != null ? personelIzinTum.getId().trim() : "") + "</TD></TR>");
 							renkUyari = !renkUyari;
 							logger.debug(personelIzin.getPersonelNo() + " | " + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), FORMAT_DATE_TIME) + " | " + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), FORMAT_DATE_TIME) + " | " + personelIzin.getAciklama() + " | "
 									+ PdksUtil.convertToDateString(personelIzin.getOlusturmaTarihi(), FORMAT_DATE_TIME) + " | " + personelIzin.getId());
@@ -2128,7 +2204,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (personelKGS != null && personelKGS.getKimlikNo() != null && personelKGS.getKimlikNo().trim().length() > 0) {
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT  P.*   FROM  " + Personel.TABLE_NAME + "  P ");
+			sb.append("SELECT  P.*   FROM  " + Personel.TABLE_NAME + "  P WITH(nolock) ");
 			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K." + PersonelKGS.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_KGS_PERSONEL);
 			sb.append(" WHERE K." + PersonelKGS.COLUMN_NAME_KIMLIK_NO + "=:k ");
 			sb.append(" ORDER BY P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI);
@@ -2141,24 +2217,17 @@ public class PdksVeriOrtakAktar implements Serializable {
 	}
 
 	public String personelNoAciklama() {
-		String personelNoAciklama = (mailMap.containsKey("personelNoAciklama") ? (String) mailMap.get("personelNoAciklama") : "");
-
-		if (personelNoAciklama.equals(""))
-			personelNoAciklama = "Personel No";
+		String personelNoAciklama = getBaslikAciklama("personelNoAciklama", "Personel No");
 		return personelNoAciklama;
 	}
 
 	private String sirketAciklama() {
-		String yoneticiAciklama = (mailMap.containsKey("sirketAciklama") ? (String) mailMap.get("sirketAciklama") : "");
-		if (yoneticiAciklama.equals(""))
-			yoneticiAciklama = "Şirket";
-		return yoneticiAciklama;
+		String sirketAciklama = getBaslikAciklama("sirketAciklama", "Şirket");
+		return sirketAciklama;
 	}
 
 	private String yoneticiAciklama() {
-		String yoneticiAciklama = (mailMap.containsKey("yoneticiAciklama") ? (String) mailMap.get("yoneticiAciklama") : "");
-		if (yoneticiAciklama.equals(""))
-			yoneticiAciklama = "Yönetici";
+		String yoneticiAciklama = getBaslikAciklama("yoneticiAciklama", "Yönetici");
 		return yoneticiAciklama;
 	}
 
@@ -2908,7 +2977,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 			fields.clear();
 			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT  P.*   FROM  " + Personel.TABLE_NAME + "  P ");
+			sb.append("SELECT  P.*   FROM  " + Personel.TABLE_NAME + "  P WITH(nolock) ");
 			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K." + PersonelKGS.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_KGS_PERSONEL + " AND K.PERSONEL_NO<>P." + Personel.COLUMN_NAME_PDKS_SICIL_NO);
 			sb.append(" WHERE K." + PersonelKGS.COLUMN_NAME_SICIL_NO + " :k");
 			List<String> personelNoList = new ArrayList<String>();
@@ -3141,6 +3210,30 @@ public class PdksVeriOrtakAktar implements Serializable {
 			logger.info("aa");
 		}
 
+	}
+
+	public String getParameterKey(String key) {
+		String parameterKey = null;
+		try {
+			parameterKey = mailMap != null && mailMap.containsKey(key) ? ((String) mailMap.get(key)).trim() : "";
+		} catch (Exception e) {
+			parameterKey = "";
+		}
+		logger.debug(key + "='" + parameterKey + "'");
+		return parameterKey;
+
+	}
+
+	/**
+	 * @param key
+	 * @param defaultBaslik
+	 * @return
+	 */
+	private String getBaslikAciklama(String key, String defaultBaslik) {
+		String aciklama = getParameterKey(key);
+		if (aciklama.equals(""))
+			aciklama = defaultBaslik;
+		return aciklama;
 	}
 
 	public HashMap<String, Object> getMailMap() {

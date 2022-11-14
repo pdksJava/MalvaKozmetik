@@ -669,8 +669,7 @@
 
 		<rich:modalPanel id="topluMesaiTalepPanel" autosized="true" width="900" top="30">
 			<f:facet name="header">
-				<h:outputText
-					value="#{authenticatedUser.getTarihFormatla(vardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMM yyyy')} ( #{vardiyaGunHome.seciliVardiyaGun.vardiyaAdi} ) Fazla Çalışma Talep" />
+				<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMM yyyy')}  Fazla Çalışma Talep" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:panelGroup>
@@ -762,6 +761,69 @@
 											<ui:define name="label">Açıklama</ui:define>
 											<h:inputTextarea value="#{vardiyaGunHome.fazlaMesaiTalep.aciklama}" cols="80" rows="3" />
 										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.hareketPdksList!=null}">
+											<ui:define name="label">Otomatik  Kapı Hareketi Ekle </ui:define>
+											<table>
+												<tr>
+													<td valign="top"><h:selectBooleanCheckbox value="#{vardiyaGunHome.manuelHareketEkle}" /></td>
+													<ui:fragment rendered="#{not empty vardiyaGunHome.hareketPdksList}">
+														<td valign="top">
+															<DIV id="manuelHareketEklex">
+																<SPAN style="font-size: 12px;">#{authenticatedUser.adSoyad} fazla çalışma kapı hareketleri</SPAN> <br /> <br />
+
+																<rich:dataTable rowClasses="acik,koyu" style="background-color: white !important;" value="#{vardiyaGunHome.hareketPdksList}"
+																	var="hareket" rows="20" rowKeyVar="row">
+																	<rich:column rendered="#{vardiyaGunHome.ikRole}" style="text-align:center;">
+																		<f:facet name="header">
+																			<h:outputText value="Hareket No" />
+																		</f:facet>
+																		<h:outputText value="#{hareket.id}" />
+
+																	</rich:column>
+																	<rich:column>
+																		<f:facet name="header">
+																			<h:outputText value="Kapı" />
+																		</f:facet>
+																		<ui:fragment rendered="#{hareket.islem==null}">
+																			<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+																		</ui:fragment>
+																		<ui:fragment rendered="#{hareket.islem!=null}">
+																			<ui:fragment rendered="#{vardiyaGunHome.ikRole==false and vardiyaGunHome.adminRole==false}">
+																				<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+																			</ui:fragment>
+																			<ui:fragment rendered="#{vardiyaGunHome.ikRole or vardiyaGunHome.adminRole}">
+																				<a href="#" id="hareketBilgi#{hareket.id}"> <h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+																				</a>
+
+																			</ui:fragment>
+																		</ui:fragment>
+
+																	</rich:column>
+
+																	<rich:column style="text-align:center;">
+																		<f:facet name="header">
+																			<h:outputText value="Zamanı" />
+																		</f:facet>
+																		<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.orjinalZaman)}" />
+																	</rich:column>
+
+
+																	<f:facet name="footer">
+																		<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+																	</f:facet>
+																</rich:dataTable>
+
+
+															</DIV>
+
+														</td>
+													</ui:fragment>
+												</tr>
+											</table>
+
+										</s:decorate>
+
+
 										<a4j:commandButton value="Mesai Kaydet"
 											rendered="#{vardiyaGunHome.fazlaMesaiTalep.bitisZamani.after(vardiyaGunHome.fazlaMesaiTalep.baslangicZamani)}"
 											onclick="#{rich:component('wait')}.show()" action="#{vardiyaGunHome.mesaiTopluKaydet()}"
@@ -873,8 +935,8 @@
 												<ui:fragment rendered="#{vardiyaGun.ayinGunu and vardiyaGun.vardiya!=null}">
 
 													<a4j:commandButton value="#{vardiyaGun.vardiya.kisaAdi}" id="mesaiVardiya" onclick="#{rich:component('wait')}.show()"
-														action="#{vardiyaGunHome.mesaiGuncelle(vardiyaGun)}" ajaxSingle="true" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide(); "
-														reRender="seciliMesaiGun" />
+														action="#{vardiyaGunHome.mesaiGuncelle(vardiyaGun)}" ajaxSingle="true"
+														oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide(); " reRender="seciliMesaiGun" />
 													<ui:fragment rendered="#{vardiyaGun.fazlaMesaiTalepler==null}">
 
 
@@ -914,7 +976,7 @@
 				<a4j:outputPanel id="seciliMesaiGun">
 					<rich:panel rendered="#{vardiyaGunHome.seciliVardiyaGun!=null}"
 						header="#{authenticatedUser.getTarihFormatla(vardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMM yyyy')} ( #{vardiyaGunHome.seciliVardiyaGun.vardiyaAdi} )">
-						
+
 						<ui:fragment rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.fazlaMesaiTalep!=null}">
 							<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGunHome.seciliVardiyaGun)}"></s:formattedText>
 
@@ -995,6 +1057,69 @@
 									<ui:define name="label">Açıklama</ui:define>
 									<h:inputTextarea value="#{vardiyaGunHome.fazlaMesaiTalep.aciklama}" cols="80" rows="3" />
 								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.hareketPdksList!=null}">
+									<ui:define name="label">Otomatik  Kapı Hareketi Ekle </ui:define>
+									<table>
+										<tr>
+											<td valign="top"><h:selectBooleanCheckbox value="#{vardiyaGunHome.manuelHareketEkle}" /></td>
+											<ui:fragment rendered="#{not empty vardiyaGunHome.hareketPdksList}">
+												<td valign="top">
+													<DIV id="manuelHareketEklex">
+														<SPAN style="font-size: 12px;">#{authenticatedUser.adSoyad} fazla çalışma kapı hareketleri</SPAN> <br /> <br />
+
+														<rich:dataTable rowClasses="acik,koyu" style="background-color: white !important;" value="#{vardiyaGunHome.hareketPdksList}"
+															var="hareket" rows="20" rowKeyVar="row">
+															<rich:column rendered="#{vardiyaGunHome.ikRole}" style="text-align:center;">
+																<f:facet name="header">
+																	<h:outputText value="Hareket No" />
+																</f:facet>
+																<h:outputText value="#{hareket.id}" />
+
+															</rich:column>
+															<rich:column>
+																<f:facet name="header">
+																	<h:outputText value="Kapı" />
+																</f:facet>
+																<ui:fragment rendered="#{hareket.islem==null}">
+																	<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+																</ui:fragment>
+																<ui:fragment rendered="#{hareket.islem!=null}">
+																	<ui:fragment rendered="#{vardiyaGunHome.ikRole==false and vardiyaGunHome.adminRole==false}">
+																		<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+																	</ui:fragment>
+																	<ui:fragment rendered="#{vardiyaGunHome.ikRole or vardiyaGunHome.adminRole}">
+																		<a href="#" id="hareketBilgi#{hareket.id}"> <h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+																		</a>
+
+																	</ui:fragment>
+																</ui:fragment>
+
+															</rich:column>
+
+															<rich:column style="text-align:center;">
+																<f:facet name="header">
+																	<h:outputText value="Zamanı" />
+																</f:facet>
+																<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.orjinalZaman)}" />
+															</rich:column>
+
+
+															<f:facet name="footer">
+																<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+															</f:facet>
+														</rich:dataTable>
+
+
+													</DIV>
+
+												</td>
+											</ui:fragment>
+										</tr>
+									</table>
+
+
+								</s:decorate>
+
 
 								<a4j:commandButton value="Mesai Kaydet"
 									rendered="#{vardiyaGunHome.fazlaMesaiTalep.bitisZamani.after(vardiyaGunHome.fazlaMesaiTalep.baslangicZamani)}"

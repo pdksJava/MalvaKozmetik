@@ -116,7 +116,7 @@
 					<ui:fragment rendered="#{personelFazlaMesaiHome.tatil!=null}">
 						<br />
 						<b><h:outputText
-								value="#{personelFazlaMesaiHome.tatil.ad} #{authenticatedUser.dateTimeFormatla(personelFazlaMesaiHome.tatil.basTarih)} - #{authenticatedUser.dateTimeFormatla(personelFazlaMesaiHome.tatil.bitisTarih)}" />
+								value="#{personelFazlaMesaiHome.tatil.ad} #{authenticatedUser.dateTimeFormatla(personelFazlaMesaiHome.tatil.basTarih)} - #{authenticatedUser.dateTimeFormatla(personelFazlaMesaiHome.tatil.bitTarih)}" />
 						</b>
 					</ui:fragment>
 					<rich:dataTable rowClasses="acik,koyu" value="#{personelFazlaMesaiHome.hareketList}" var="mesai" rows="25" rowKeyVar="row" id="hareketTable">

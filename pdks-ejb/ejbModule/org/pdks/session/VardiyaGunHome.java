@@ -6810,7 +6810,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (session == null)
 			session = PdksUtil.getSession(entityManager, Boolean.FALSE);
 		session.setFlushMode(FlushMode.MANUAL);
-		;
 		if (authenticatedUser != null)
 			adminRoleDurum(authenticatedUser);
 		fazlaMesaiTalepDurum = Boolean.TRUE;

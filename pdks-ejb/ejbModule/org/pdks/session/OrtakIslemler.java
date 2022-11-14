@@ -4503,51 +4503,59 @@ public class OrtakIslemler implements Serializable {
 						vardiyaGun.setGuncellendi(Boolean.FALSE);
 						if (vardiyaGun.isIzinli())
 							continue;
-						String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
-						List<Liste> listeler = new ArrayList<Liste>();
-						for (Vardiya vardiya : vardiyaPerList) {
-							personelHareketList.clear();
-							personelHareketList.addAll(personelHareketMap.get(personelKGSId));
-							VardiyaGun vardiyaGunNew = new VardiyaGun(personelDenklestirmeTasiyici.getPersonel(), vardiya, vardiyaGun.getVardiyaDate());
-							vardiyalarMap.put(vardiyaGunNew.getVardiyaKeyStr(), vardiyaGunNew);
-							fazlaMesaiSaatiAyarla(vardiyalarMap);
-							// vardiyaGunNew.setVardiyaZamani();
-							for (Iterator iterator1 = personelHareketList.iterator(); iterator1.hasNext();) {
-								HareketKGS hareket = (HareketKGS) iterator1.next();
-								if (!hareketIdList.contains(hareket.getId()) && vardiyaGunNew.addHareket(hareket, Boolean.TRUE))
-									iterator1.remove();
-
-							}
-							if (vardiyaGunNew.getHareketler() != null && vardiyaGunNew.getHareketDurum()) {
-								List<HareketKGS> girisler = vardiyaGunNew.getGirisHareketleri(), cikislar = vardiyaGunNew.getCikisHareketleri();
-								if (girisler != null && cikislar != null && cikislar.size() == girisler.size()) {
-									double sure = 0.0d;
-									for (int i = 0; i < girisler.size(); i++) {
-										HareketKGS giris = girisler.get(i), cikis = cikislar.get(i);
-										if (giris != null && cikis != null && giris.getZaman().before(cikis.getZaman()))
-											sure += PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(cikis.getZaman(), giris.getZaman()).doubleValue(), vardiyaGunNew.getYarimYuvarla());
-									}
-									if (sure > 0.0d)
-										listeler.add(new Liste(vardiyaGunNew, sure));
-								}
-							}
-						}
-						if (!listeler.isEmpty()) {
-							if (listeler.size() > 1)
-								listeler = PdksUtil.sortListByAlanAdi(listeler, "value", true);
-							VardiyaGun vg = (VardiyaGun) listeler.get(0).getId();
-							for (HareketKGS hareket : vg.getHareketler()) {
-								hareketIdList.add(hareket.getId());
-							}
-							vardiyaGun.setVardiya(vg.getVardiya());
+						if (vardiyaGun.getVardiya().isCalisma() == false) {
 							vardiyaGun.setVersion(0);
 							session.saveOrUpdate(vardiyaGun);
 							vardiyaGun.setGuncellendi(Boolean.TRUE);
-							personelDenklestirmeTasiyici.getVardiyaGunleriMap().put(key, vardiyaGun);
-							vgMap.put(key, vardiyaGun);
 							flush = true;
-							logger.debug(vg.getVardiyaKeyStr() + " " + vg.getVardiyaAdi());
+						} else {
+							String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
+							List<Liste> listeler = new ArrayList<Liste>();
 
+							for (Vardiya vardiya : vardiyaPerList) {
+								personelHareketList.clear();
+								personelHareketList.addAll(personelHareketMap.get(personelKGSId));
+								VardiyaGun vardiyaGunNew = new VardiyaGun(personelDenklestirmeTasiyici.getPersonel(), vardiya, vardiyaGun.getVardiyaDate());
+								vardiyalarMap.put(vardiyaGunNew.getVardiyaKeyStr(), vardiyaGunNew);
+								fazlaMesaiSaatiAyarla(vardiyalarMap);
+								// vardiyaGunNew.setVardiyaZamani();
+								for (Iterator iterator1 = personelHareketList.iterator(); iterator1.hasNext();) {
+									HareketKGS hareket = (HareketKGS) iterator1.next();
+									if (!hareketIdList.contains(hareket.getId()) && vardiyaGunNew.addHareket(hareket, Boolean.TRUE))
+										iterator1.remove();
+
+								}
+								if (vardiyaGunNew.getHareketler() != null && vardiyaGunNew.getHareketDurum()) {
+									List<HareketKGS> girisler = vardiyaGunNew.getGirisHareketleri(), cikislar = vardiyaGunNew.getCikisHareketleri();
+									if (girisler != null && cikislar != null && cikislar.size() == girisler.size()) {
+										double sure = 0.0d;
+										for (int i = 0; i < girisler.size(); i++) {
+											HareketKGS giris = girisler.get(i), cikis = cikislar.get(i);
+											if (giris != null && cikis != null && giris.getZaman().before(cikis.getZaman()))
+												sure += PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(cikis.getZaman(), giris.getZaman()).doubleValue(), vardiyaGunNew.getYarimYuvarla());
+										}
+										if (sure > 0.0d)
+											listeler.add(new Liste(vardiyaGunNew, sure));
+									}
+								}
+							}
+							if (!listeler.isEmpty()) {
+								if (listeler.size() > 1)
+									listeler = PdksUtil.sortListByAlanAdi(listeler, "value", true);
+								VardiyaGun vg = (VardiyaGun) listeler.get(0).getId();
+								for (HareketKGS hareket : vg.getHareketler()) {
+									hareketIdList.add(hareket.getId());
+								}
+								vardiyaGun.setVardiya(vg.getVardiya());
+								vardiyaGun.setVersion(0);
+								session.saveOrUpdate(vardiyaGun);
+								vardiyaGun.setGuncellendi(Boolean.TRUE);
+								personelDenklestirmeTasiyici.getVardiyaGunleriMap().put(key, vardiyaGun);
+								vgMap.put(key, vardiyaGun);
+								flush = true;
+								logger.debug(vg.getVardiyaKeyStr() + " " + vg.getVardiyaAdi());
+
+							}
 						}
 						vardiyalarMap.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
 					}

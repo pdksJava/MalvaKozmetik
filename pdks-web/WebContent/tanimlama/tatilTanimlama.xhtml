@@ -201,7 +201,7 @@
 
 									<s:decorate template="/layout/edit.xhtml" rendered="#{tatilHome.instance.tekSefer}">
 										<ui:define name="label">Tatil Bitiş Tarihi</ui:define>
-										<rich:calendar id="bitisTarih" datePattern="#{authenticatedUser.dateFormat}" value="#{tatilHome.instance.bitisTarih}" required="true">
+										<rich:calendar id="bitisTarih" datePattern="#{authenticatedUser.dateFormat}" value="#{tatilHome.instance.bitTarih}" required="true">
 											<a4j:support event="onchanged" action="#{tatilHome.tarihDegisti()}" onclick="#{rich:component('wait')}.show()"
 												oncomplete="#{rich:component('wait')}.hide();" ajaxSingle="true" reRender="tatilTipi" />
 										</rich:calendar>
@@ -237,7 +237,7 @@
 											<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
 												<s:decorate template="/layout/edit.xhtml">
 													<ui:define name="label">Bitiş Ay</ui:define>
-													<h:selectOneMenu id="bitisAy" value="#{tatilHome.instance.bitisAy}" disabled="#{tatilHome.instance.id!=null }" required="true"
+													<h:selectOneMenu id="bitAy" value="#{tatilHome.instance.bitAy}" disabled="#{tatilHome.instance.id!=null }" required="true"
 														requiredMessage="Lütfen bitiş ay seçiniz">
 														<f:selectItem itemLabel="Lütfen seçiniz" />
 														<f:selectItems value="#{tatilHome.ayList}" />
@@ -247,7 +247,7 @@
 
 												<s:decorate template="/layout/edit.xhtml" id="bitisGun">
 													<ui:define name="label">Bitiş Gün</ui:define>
-													<h:selectOneMenu id="bitisGunler" value="#{tatilHome.instance.bitisGun}" disabled="#{tatilHome.instance.id!=null }" required="true"
+													<h:selectOneMenu id="bitisGunler" value="#{tatilHome.instance.bitGun}" disabled="#{tatilHome.instance.id!=null }" required="true"
 														requiredMessage="Lütfen bitiş gün seçiniz" rendered="#{not empty tatilHome.bitisGunList}">
 														<f:selectItem itemLabel="Lütfen seçiniz" />
 														<f:selectItems value="#{tatilHome.bitisGunList}" />
