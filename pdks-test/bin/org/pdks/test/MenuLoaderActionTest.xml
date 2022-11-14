@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="MenuLoaderAction Tests" verbose="2" parallel="false">
+   <test name="MenuLoaderAction Test">
+     <classes>
+       <class name="org.domain.abh2.test.MenuLoaderActionTest"/>       
+     </classes>
+   </test>	
+</suite>
