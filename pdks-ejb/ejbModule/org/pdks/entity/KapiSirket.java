@@ -5,6 +5,9 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import org.pdks.session.PdksUtil;
 
 @Entity(name = KapiSirket.TABLE_NAME)
 public class KapiSirket implements Serializable {
@@ -53,6 +56,11 @@ public class KapiSirket implements Serializable {
 
 	public void setDurum(Boolean durum) {
 		this.durum = durum;
+	}
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
 	}
 
 }

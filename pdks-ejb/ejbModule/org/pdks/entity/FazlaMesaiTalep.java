@@ -14,6 +14,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = FazlaMesaiTalep.TABLE_NAME)
 public class FazlaMesaiTalep extends BaseObject {
@@ -237,6 +238,11 @@ public class FazlaMesaiTalep extends BaseObject {
 	public boolean isHatirlatmaMail() {
 		boolean hatirlatmaMail = durum && onayDurumu == ONAY_DURUM_ISLEM_YAPILMADI;
 		return hatirlatmaMail;
+	}
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
 	}
 
 	@Transient

@@ -591,12 +591,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				if (tatil.isTekSefer() && tatil.getBitGun() != null)
 					tatil.setBitTarih((Date) tatil.getBitGun());
 			}
-			fields.clear();
-			fields.put("tipi", Tanim.TIPI_HAREKET_NEDEN);
-			fields.put("kodu", "sys");
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			fazlaMesaiSistemOnayDurum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
+			fazlaMesaiSistemOnayDurum = ortakIslemler.getOtomatikKapGirisiNeden(session);
 		}
 
 		if (personeller != null && !personeller.isEmpty()) {

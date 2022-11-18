@@ -52,6 +52,12 @@
 													<rich:toolTip for="childTanim" value="#{tanim.aciklama} #{tanimHome.genelTanim.childGenelTanim.aciklama}lerini Görüntüle" />
 												</h:panelGrid>
 											</rich:column>
+											<rich:column rendered="#{authenticatedUser.admin}">
+												<f:facet name="header">
+													<h:outputText value="Id" />
+												</f:facet>
+												<h:outputText value="#{tanim.id}" />
+											</rich:column>
 											<rich:column>
 												<f:facet name="header">
 													<h:outputText value="Kodu" />
@@ -131,6 +137,12 @@
 													</h:panelGrid>
 
 
+												</rich:column>
+												<rich:column rendered="#{authenticatedUser.admin}">
+													<f:facet name="header">
+														<h:outputText value="Id" />
+													</f:facet>
+													<h:outputText value="#{childTanim.id}" />
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">

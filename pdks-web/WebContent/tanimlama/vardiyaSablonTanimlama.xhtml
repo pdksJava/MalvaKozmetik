@@ -29,7 +29,12 @@
 							</a4j:commandLink>
 							<rich:toolTip for="editlink" value="Güncelle" />
 						</rich:column>
-
+						<rich:column rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="Id" />
+							</f:facet>
+							<h:outputText value="#{vardiyaSablon.id}" />
+						</rich:column>
 						<rich:column>
 							<f:facet name="header">
 								<h:outputText value="Vardiya Adı" />

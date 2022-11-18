@@ -50,6 +50,12 @@
 								</rich:column>
 								<rich:column rendered="#{authenticatedUser.admin==true}">
 									<f:facet name="header">
+										<h:outputText value="Id" />
+									</f:facet>
+									<h:outputText value="#{parameter.id}" />
+								</rich:column>
+								<rich:column rendered="#{authenticatedUser.admin==true}">
+									<f:facet name="header">
 										<h:outputText value="Adı" />
 									</f:facet>
 									<h:outputText value="#{parameter.name}" id="name" />

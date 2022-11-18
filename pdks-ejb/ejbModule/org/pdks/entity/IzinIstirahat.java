@@ -11,6 +11,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = "IZINISTIRAHAT")
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "PERSONEL_IZIN_ID" }) })
@@ -122,6 +123,11 @@ public class IzinIstirahat extends BaseObject {
 	@Transient
 	public String getRaporKaynagiAciklama() {
 		return "izin.etiket.raporKaynagi" + raporKaynagi;
+	}
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
 	}
 
 	@Transient

@@ -194,8 +194,6 @@ public class CalismaModeli implements Serializable {
 		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
 	}
 
-	
-
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_BAGLI_VARDIYA_SABLON)
 	@Fetch(FetchMode.JOIN)
@@ -276,10 +274,17 @@ public class CalismaModeli implements Serializable {
 		String str = date != null ? PdksUtil.convertToDateString(date, PdksUtil.getDateFormat() + " H:mm:ss") : "";
 		return str;
 	}
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
+	}
+
 	@Transient
 	public boolean isHareketKaydiVardiyaBulsunmu() {
 		return hareketKaydiVardiyaBul != null && hareketKaydiVardiyaBul.booleanValue();
 	}
+
 	@Transient
 	public double getIzinSaat(VardiyaGun pdksVardiyaGun) {
 		double izinSure = izin;

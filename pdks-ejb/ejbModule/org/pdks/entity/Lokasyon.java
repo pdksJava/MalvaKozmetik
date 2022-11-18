@@ -63,6 +63,11 @@ public class Lokasyon extends BaseObject {
 		return aciklama;
 	}
 
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
+	}
+
 	public void setAciklama(String value) {
 		value = PdksUtil.convertUTF8(value);
 

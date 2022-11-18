@@ -22,6 +22,7 @@ import org.jboss.seam.annotations.security.management.RoleConditional;
 import org.jboss.seam.annotations.security.management.RoleGroups;
 import org.jboss.seam.annotations.security.management.RoleName;
 import org.pdks.entity.Departman;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = Role.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { Role.COLUMN_NAME_ROLE_NAME }) })
@@ -142,6 +143,11 @@ public class Role implements Serializable {
 
 	public void setAdminRole(Boolean adminRole) {
 		this.adminRole = adminRole;
+	}
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
 	}
 
 	@Transient

@@ -66,8 +66,9 @@
 
 								</ui:fragment> <ui:fragment rendered="#{vardiyaGunHome.topluFazlaCalismaTalep}">
 									<a4j:commandButton value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}"
-										action="#{vardiyaGunHome.topluTalepOlusturmaKontrol(vardiya)}" reRender="secimlerTopluMesai,hareketTables"
-										oncomplete="if (#{not empty vardiyaGunHome.aylikPuantajMesaiTalepList}) #{rich:component('topluMesaiTalepPanel')}.show();" />
+										action="#{vardiyaGunHome.topluTalepOlusturmaKontrol(vardiya)}" reRender="secimlerTopluMesai,hareketTables,topluMesaiTalepPanel"
+										onclick="#{rich:component('wait')}.show()"
+										oncomplete="#{rich:component('wait')}.hide();if (#{not empty vardiyaGunHome.aylikPuantajMesaiTalepList}) #{rich:component('topluMesaiTalepPanel')}.show();" />
 
 								</ui:fragment> <bR /> <h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" /> <ui:fragment
 									rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.planGirisi  and authenticatedUser.departman.admin}">

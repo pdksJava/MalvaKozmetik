@@ -143,7 +143,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private DenklestirmeAy denklestirmeAy;
 
-	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
+	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepSil = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
 	private Boolean sutIzniGoster = Boolean.FALSE, gebeGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
 	private Boolean kesilenSureGoster = Boolean.FALSE, checkBoxDurum;
 	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
@@ -4775,11 +4775,63 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 			}
 		}
+		fazlaMesaiTalepSil = Boolean.FALSE;
+		if (denklestirmeAyDurum && ikRole && vg.getHareketDurum() == false && vg.getFazlaMesaiOnayla() == null) {
+			if (vg.getFazlaMesaiTalepler() != null) {
+				for (FazlaMesaiTalep fazlaMesaiTalep : vg.getFazlaMesaiTalepler()) {
+					String titleStr = null;
+					for (HareketKGS hareketKGS : vg.getHareketler()) {
+						if (hareketKGS.getIslem() != null) {
+							String aciklama = hareketKGS.getIslem().getAciklama();
+							if (aciklama != null && aciklama.indexOf(":" + fazlaMesaiTalep.getId()) >= 0) {
+								titleStr = aciklama.trim();
+								fazlaMesaiTalepSil = Boolean.TRUE;
+								break;
+							}
+						}
+					}
+					fazlaMesaiTalep.setCheckBoxDurum(titleStr != null);
+					fazlaMesaiTalep.setTitleStr(titleStr);
+
+				}
+			}
+		}
 		if (vg.getTitleStr() == null) {
 			String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vg);
 			vg.setTitleStr(titleStr);
 			vg.addLinkAdresler(titleStr);
 		}
+		return "";
+	}
+
+	/**
+	 * @return
+	 */
+	public String fazlaMesaiOtomatikHareketSil() {
+		boolean secili = false;
+		if (seciliVardiyaGun.getFazlaMesaiTalepler() != null) {
+			for (FazlaMesaiTalep fazlaMesaiTalep : seciliVardiyaGun.getFazlaMesaiTalepler()) {
+				if (fazlaMesaiTalep.isCheckBoxDurum()) {
+					secili = true;
+					Long id = fazlaMesaiOrtakIslemler.fazlaMesaiOtomatikHareketSil(fazlaMesaiTalep.getId(), session);
+					if (id != null && id.equals(fazlaMesaiTalep.getId()))
+						fazlaMesaiTalepSil = Boolean.FALSE;
+				}
+			}
+		}
+		if (!secili)
+			PdksUtil.addMessageAvailableWarn("İşlem yapılacak seçili kayıt yok!");
+		else if (fazlaMesaiTalepSil == false) {
+			try {
+				fillPersonelDenklestirmeList();
+				PdksUtil.addMessageAvailableInfo("Kayıtlar seçili kayıtlar silindi.");
+
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+		}
+
 		return "";
 	}
 
@@ -5600,6 +5652,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setYarimYuvarla(boolean yarimYuvarla) {
 		this.yarimYuvarla = yarimYuvarla;
+	}
+
+	public Boolean getFazlaMesaiTalepSil() {
+		return fazlaMesaiTalepSil;
+	}
+
+	public void setFazlaMesaiTalepSil(Boolean fazlaMesaiTalepSil) {
+		this.fazlaMesaiTalepSil = fazlaMesaiTalepSil;
 	}
 
 }

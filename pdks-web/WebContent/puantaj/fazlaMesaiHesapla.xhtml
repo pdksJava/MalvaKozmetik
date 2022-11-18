@@ -252,21 +252,33 @@
 									<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
 								</ui:fragment>
 								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole or fazlaMesaiHesaplaHome.adminRole}">
-									<a href="#" id="hareketBilgi#{hareket.id}"><h:outputText value="#{hareket.kapiView.kapi.aciklama}" /></a>
-									<rich:toolTip for="hareketBilgi#{hareket.id}">
-										<TABLE>
-											<TR>
-												<TD nowrap="nowrap" align="left"><b>Onaylayan : </b> <h:outputText value="#{hareket.islem.onaylayanUser.adSoyad }" /></TD>
-											</TR>
-											<TR>
-												<TD nowrap="nowrap" align="left"><b>Onay Nedeni : </b> <h:outputText value="#{hareket.islem.neden.aciklama}" /></TD>
-											</TR>
-											<TR>
-												<TD nowrap="nowrap" align="left"><b>Onay Zamanı : </b> <h:outputText
-														value="#{authenticatedUser.dateTimeFormatla(hareket.islem.olusturmaTarihi)}" /></TD>
-											</TR>
+									<DIV id="hareketIslem#{hareket.id}">
+										<a href="#"><h:outputText value="#{hareket.kapiView.kapi.aciklama}" /></a>
+									</DIV>
+									<rich:toolTip for="hareketIslem#{hareket.id}">
+										<DIV>
+											<TABLE>
+												<TR class="acik">
+													<TD nowrap="nowrap" align="left"><b>Onaylayan</b></TD>
+													<TD nowrap="nowrap" align="left"><b> : </b> <h:outputText value="#{hareket.islem.onaylayanUser.adSoyad }" /></TD>
+												</TR>
+												<TR class="koyu">
+													<TD nowrap="nowrap" align="left" valign="top"><b>Onay Nedeni</b></TD>
+													<TD nowrap="nowrap" align="left" valign="top"><b> : </b> <h:outputText value="#{hareket.islem.neden.aciklama}" /> <ui:fragment
+															rendered="#{authenticatedUser.admin and hareket.islem.aciklamaVar}">
+															<br>( <h:outputText value="#{hareket.islem.aciklama}" /> )</br>
 
-										</TABLE>
+														</ui:fragment></TD>
+												</TR>
+												<TR class="acik">
+													<TD nowrap="nowrap" align="left"><b>Onay Zamanı</b></TD>
+													<TD nowrap="nowrap" align="left"><b> : </b> <h:outputText
+															value="#{authenticatedUser.dateTimeFormatla(hareket.islem.olusturmaTarihi)}" /></TD>
+												</TR>
+
+
+											</TABLE>
+										</DIV>
 									</rich:toolTip>
 								</ui:fragment>
 							</ui:fragment>
@@ -294,25 +306,29 @@
 								<A href="#" id="fazlaMesaiSaati#{hareket.personelFazlaMesai.id}"><h:outputText
 										value="#{authenticatedUser.sayiFormatliGoster(hareket.personelFazlaMesai.fazlaMesaiSaati)} " /> </A>
 								<rich:toolTip for="fazlaMesaiSaati#{hareket.personelFazlaMesai.id}">
-									<TABLE>
-										<TR>
-											<TD nowrap="nowrap" align="left"><b>Onaylayan : </b> <h:outputText value="#{hareket.personelFazlaMesai.olusturanUser.adSoyad }" /></TD>
-										</TR>
-										<TR>
-											<TD nowrap="nowrap" align="left"><b>Onay Nedeni : </b> <h:outputText
-													value="#{hareket.personelFazlaMesai.fazlaMesaiOnayDurum.aciklama}" /></TD>
-										</TR>
-										<TR>
-											<TD nowrap="nowrap" align="left"><b>Onay Zamanı : </b> <h:outputText
-													value="#{authenticatedUser.dateTimeFormatla(hareket.personelFazlaMesai.olusturmaTarihi)}" /></TD>
-										</TR>
-										<ui:fragment rendered="#{hareket.personelFazlaMesai.fazlaMesaiTalep!=null}">
-											<TR>
-												<TD nowrap="nowrap" align="left"><b>Mesai Talep Id : </b> <h:outputText value="#{hareket.personelFazlaMesai.fazlaMesaiTalep.id }" /></TD>
+									<DIV>
+										<TABLE>
+											<TR class="acik">
+												<TD nowrap="nowrap" align="left"><b>Onaylayan</b></TD>
+												<TD nowrap="nowrap" align="left"><b> : </b> <h:outputText value="#{hareket.personelFazlaMesai.olusturanUser.adSoyad }" /></TD>
 											</TR>
-										</ui:fragment>
-
-									</TABLE>
+											<TR class="koyu">
+												<TD nowrap="nowrap" align="left"><b>Onay Nedeni</b></TD>
+												<TD nowrap="nowrap" align="left"><b> : </b> <h:outputText value="#{hareket.personelFazlaMesai.fazlaMesaiOnayDurum.aciklama}" /></TD>
+											</TR>
+											<TR class="acik">
+												<TD nowrap="nowrap" align="left"><b>Onay Zamanı</b></TD>
+												<TD nowrap="nowrap" align="left"><b> : </b> <h:outputText
+														value="#{authenticatedUser.dateTimeFormatla(hareket.personelFazlaMesai.olusturmaTarihi)}" /></TD>
+											</TR>
+											<ui:fragment rendered="#{hareket.personelFazlaMesai.fazlaMesaiTalep!=null}">
+												<TR class="koyu">
+													<TD nowrap="nowrap" align="left"><b>Mesai Talep Id</b></TD>
+													<TD nowrap="nowrap" align="left"><b> : </b> <h:outputText value="#{hareket.personelFazlaMesai.fazlaMesaiTalep.id }" /></TD>
+												</TR>
+											</ui:fragment>
+										</TABLE>
+									</DIV>
 								</rich:toolTip>
 								<ui:fragment rendered="#{hareket.personelFazlaMesai.tatilDurum!=null}">
 									<h:outputText title="Resmi Tatil" value="(*)" />
@@ -340,6 +356,14 @@
 							<f:facet name="header">
 								<h:outputText value="Fazla Çalışma Talep Formları" />
 							</f:facet>
+							<rich:column style="text-align:center;" rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiTalepSil}">
+								<f:facet name="header">
+									<a4j:commandButton value="Talep Otomatik Hareket Sil" action="#{fazlaMesaiHesaplaHome.fazlaMesaiOtomatikHareketSil()}"
+										reRender="denklestirmeDonemiTable" onclick="#{rich:component('wait')}.show()"
+										oncomplete="#{rich:component('wait')}.hide();if (#{fazlaMesaiHesaplaHome.fazlaMesaiTalepSil==false}) #{rich:component('hareketDetayPanel')}.hide() ; " />
+								</f:facet>
+								<h:selectBooleanCheckbox value="#{fmt.checkBoxDurum}" />
+							</rich:column>
 							<rich:column style="text-align:center;" rendered="#{fazlaMesaiHesaplaHome.adminRole}">
 								<f:facet name="header">
 									<h:outputText value="Mesai Talep Id" />
@@ -368,10 +392,12 @@
 								<f:facet name="header">
 									<h:outputText value="Mesai Nedeni" />
 								</f:facet>
-								<a href="#"><h:outputText value="#{fmt.mesaiNeden.aciklama}" id="mnd" /></a>
-								<ui:fragment rendered="#{fmt.aciklama!=null and fmt.aciklama!='' }">
-									<rich:toolTip for="mnd" value="Açıklama : #{fmt.aciklama}" />
-								</ui:fragment>
+								<DIV id="mnd#{fmt.id}">
+									<a href="#"><h:outputText value="#{fmt.mesaiNeden.aciklama}" /></a>
+									<ui:fragment rendered="#{fmt.aciklamaVar}">
+										<rich:toolTip for="mnd#{fmt.id}" value="Açıklama : #{fmt.aciklama}" />
+									</ui:fragment>
+								</DIV>
 							</rich:column>
 							<rich:column>
 								<f:facet name="header">

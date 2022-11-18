@@ -28,7 +28,12 @@
 
 
 						</rich:column>
-
+						<rich:column rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="Id" />
+							</f:facet>
+							<h:outputText value="#{departman.id}" />
+						</rich:column>
 
 						<rich:column>
 							<f:facet name="header">

@@ -40,6 +40,12 @@
 										<h:graphicImage value="/img/edit.gif" style="border:0" alt="Edit" />
 									</a4j:commandLink>
 								</rich:column>
+								<rich:column rendered="#{authenticatedUser.admin}" style="text-align: center;width: 30px;">
+							<f:facet name="header">
+								<h:outputText value="Id" />
+							</f:facet>
+							<h:outputText value="#{vardiyaView.id}" />
+						</rich:column>
 								<rich:column style="text-align: center;width: 30px;">
 									<f:facet name="header">Yıl</f:facet>
 									#{vardiyaView.yil}

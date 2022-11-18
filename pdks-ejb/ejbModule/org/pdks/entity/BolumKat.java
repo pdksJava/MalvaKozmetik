@@ -5,9 +5,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = "BOLUM_KAT")
 public class BolumKat extends BaseObject {
@@ -58,6 +60,11 @@ public class BolumKat extends BaseObject {
 
 	public void setKodu(String kodu) {
 		this.kodu = kodu;
+	}
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
 	}
 
 	public boolean equals(BolumKat obj) {

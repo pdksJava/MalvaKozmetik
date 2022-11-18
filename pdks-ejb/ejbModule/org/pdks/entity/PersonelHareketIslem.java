@@ -18,6 +18,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
 import org.pdks.security.entity.User;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = PersonelHareketIslem.TABLE_NAME)
 @Immutable
@@ -130,6 +131,11 @@ public class PersonelHareketIslem implements Serializable {
 
 	public void setNeden(Tanim neden) {
 		this.neden = neden;
+	}
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
 	}
 
 	@Transient

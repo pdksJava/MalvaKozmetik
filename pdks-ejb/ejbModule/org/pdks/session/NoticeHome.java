@@ -109,10 +109,12 @@ public class NoticeHome extends EntityHome<Notice> {
 	public void getNotice() {
 		Notice notice = null;
 		try {
+			session.clear();
 			notice = ortakIslemler.getNotice(duyuruTip, null, session);
 			if (notice == null) {
 				notice = new Notice();
 				notice.setName(duyuruTip);
+				notice.setVersion(0);
 				for (SelectItem selectItem : duyuruTipleri) {
 					if (selectItem.getValue().equals(duyuruTip))
 						notice.setDescription((String) selectItem.getLabel());

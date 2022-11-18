@@ -126,6 +126,19 @@ public class PdksUtil implements Serializable {
 
 	private static boolean sistemDestekVar = false;
 
+	/**
+	 * @param aciklama
+	 * @return
+	 */
+	public static boolean hasStringValue(String aciklama) {
+		boolean strDolu = aciklama != null && aciklama.trim().length() > 0;
+		return strDolu;
+	}
+
+	/**
+	 * @param aciklama
+	 * @return
+	 */
 	public static String getHtmlAciklama(String aciklama) {
 		String str = aciklama;
 		if (aciklama != null) {

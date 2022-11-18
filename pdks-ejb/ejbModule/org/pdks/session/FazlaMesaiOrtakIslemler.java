@@ -2,6 +2,7 @@ package org.pdks.session;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -91,6 +92,32 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	HashMap<String, MenuItem> menuItemMap = new HashMap<String, MenuItem>();
 	@In(required = false)
 	FacesMessages facesMessages;
+
+	/**
+	 * @param talepId
+	 * @param session
+	 */
+	public Long fazlaMesaiOtomatikHareketSil(Long talepId, Session session) {
+		LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
+		Long sonuc = null;
+		try {
+			if (talepId != null) {
+				StringBuffer sp = new StringBuffer("SP_DELETE_FAZLA_MESAI_TALEP_HAREKET_DATA");
+				veriMap.put("talepId", talepId);
+				if (session != null)
+					veriMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List list = pdksEntityController.execSPList(veriMap, sp, null);
+				if (list != null && !list.isEmpty())
+					sonuc = ((BigInteger) list.get(0)).longValue();
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		veriMap = null;
+		return sonuc;
+	}
 
 	/**
 	 * @param yil

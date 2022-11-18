@@ -669,7 +669,8 @@
 
 		<rich:modalPanel id="topluMesaiTalepPanel" autosized="true" width="900" top="30">
 			<f:facet name="header">
-				<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMM yyyy')}  Fazla Çalışma Talep" />
+				<h:outputText
+					value="#{authenticatedUser.getTarihFormatla(vardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMMMM yyyy EEEEE')}  Fazla Çalışma Talep" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:panelGroup>
@@ -750,10 +751,10 @@
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">Fazla Çalışma Nedeni</ui:define>
-											<h:selectOneMenu value="#{vardiyaGunHome.fazlaMesaiTalep.mesaiNeden}" styleClass="size10" required="true" style="width:85px"
+											<h:selectOneMenu value="#{vardiyaGunHome.mesaiNedenId}" styleClass="size10" required="true" style="width:85px"
 												requiredMessage="Fazla Mesai Nedeni Seçiniz">
-												<s:selectItems var="comp" value="#{vardiyaGunHome.mesaiNedenTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
-												<s:convertEntity />
+												<f:selectItem itemLabel="Lütfen seçiniz" />
+												<f:selectItems value="#{vardiyaGunHome.mesaiNedenTanimList}" />
 											</h:selectOneMenu>
 										</s:decorate>
 
@@ -769,7 +770,7 @@
 													<ui:fragment rendered="#{not empty vardiyaGunHome.hareketPdksList}">
 														<td valign="top">
 															<DIV id="manuelHareketEklex">
-																<SPAN style="font-size: 12px;">#{authenticatedUser.adSoyad} fazla çalışma kapı hareketleri</SPAN> <br /> <br />
+																<SPAN style="font-size: 12px;">#{authenticatedUser.adSoyad} kapı hareketleri</SPAN> <br /> <br />
 
 																<rich:dataTable rowClasses="acik,koyu" style="background-color: white !important;" value="#{vardiyaGunHome.hareketPdksList}"
 																	var="hareket" rows="20" rowKeyVar="row">
@@ -841,7 +842,7 @@
 
 											</f:facet>
 											<a4j:commandLink status="ajaxStatus" action="#{vardiyaGunHome.mesaiTalepListeSil(aylikPuantaj.pdksPersonel)}" ajaxSingle="true"
-												id="talepDeletelink" reRender="fmtAylikPuantajTable">
+												id="talepDeletelink" reRender="fmtAylikPuantajTable,secimlerTopluMesai">
 												<h:graphicImage value="/img/delete.gif" style="border:0" alt="Sil" />
 
 											</a4j:commandLink>
@@ -1046,10 +1047,10 @@
 								</s:decorate>
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">Fazla Çalışma Nedeni</ui:define>
-									<h:selectOneMenu value="#{vardiyaGunHome.fazlaMesaiTalep.mesaiNeden}" styleClass="size10" required="true" style="width:85px"
+									<h:selectOneMenu value="#{vardiyaGunHome.mesaiNedenId}" styleClass="size10" required="true" style="width:85px"
 										requiredMessage="Fazla Mesai Nedeni Seçiniz">
-										<s:selectItems var="comp" value="#{vardiyaGunHome.mesaiNedenTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
-										<s:convertEntity />
+										<f:selectItem itemLabel="Lütfen seçiniz" />
+										<f:selectItems value="#{vardiyaGunHome.mesaiNedenTanimList}" />
 									</h:selectOneMenu>
 								</s:decorate>
 
@@ -1065,7 +1066,7 @@
 											<ui:fragment rendered="#{not empty vardiyaGunHome.hareketPdksList}">
 												<td valign="top">
 													<DIV id="manuelHareketEklex">
-														<SPAN style="font-size: 12px;">#{authenticatedUser.adSoyad} fazla çalışma kapı hareketleri</SPAN> <br /> <br />
+														<SPAN style="font-size: 12px;">#{authenticatedUser.adSoyad} kapı hareketleri</SPAN> <br /> <br />
 
 														<rich:dataTable rowClasses="acik,koyu" style="background-color: white !important;" value="#{vardiyaGunHome.hareketPdksList}"
 															var="hareket" rows="20" rowKeyVar="row">
@@ -1289,7 +1290,7 @@
 						<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
 							<ui:define name="label">İptal Nedeni</ui:define>
 							<h:selectOneMenu value="#{vardiyaGunHome.islemFazlaMesaiTalep.redNedeni}" styleClass="size10" required="true" style="width:85px"
-								requiredMessage="Fazla Çalışma Nedeni Seçiniz">
+								requiredMessage="Fazla Çalışma İptal Nedeni Seçiniz">
 								<s:selectItems var="comp" value="#{vardiyaGunHome.mesaiIptalNedenTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
 								<s:convertEntity />
 							</h:selectOneMenu>

@@ -115,6 +115,11 @@ public class Kapi extends BaseObject {
 	}
 
 	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
+	}
+
+	@Transient
 	public KapiView getKapiNewView() {
 		KapiView kapiView = new KapiView();
 		kapiView.setId(kapiKGS != null ? kapiKGS.getId() : 0);

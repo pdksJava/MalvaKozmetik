@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
 
+import org.pdks.session.PdksUtil;
+
 /**
  * 
  */
@@ -44,7 +46,6 @@ public class Dosya implements Serializable {
 		this.id = id;
 	}
 
-	 
 	@Column(name = "VERSION")
 	public Integer getVersion() {
 		return version;
@@ -108,7 +109,12 @@ public class Dosya implements Serializable {
 	public void setAciklama(String aciklama) {
 		this.aciklama = aciklama;
 	}
-	
+
+	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
+	}
+
 	@Transient
 	public String getDisposition() {
 		return FileUpload.getDisposition(icerikTipi);

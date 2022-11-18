@@ -781,6 +781,11 @@ public class PersonelIzin extends BaseObject {
 	}
 
 	@Transient
+	public boolean isAciklamaVar() {
+		return PdksUtil.hasStringValue(aciklama);
+	}
+
+	@Transient
 	public PersonelIzin getOrjIzin() {
 		PersonelIzin izin = orjIzin != null ? orjIzin : this;
 		return izin;
