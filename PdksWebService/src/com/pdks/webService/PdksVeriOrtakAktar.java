@@ -1614,8 +1614,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 								fields.clear();
 								fields.put("izinDurumu<>", PersonelIzin.IZIN_DURUMU_REDEDILDI);
 								fields.put("izinSahibi.id=", izinSahibi.getId());
-								fields.put("baslangicZamani<=", personelIzin.getBitisZamani());
-								fields.put("bitisZamani>=", personelIzin.getBaslangicZamani());
+								fields.put("baslangicZamani<", personelIzin.getBitisZamani());
+								fields.put("bitisZamani>", personelIzin.getBaslangicZamani());
 								if (personelIzin.getId() != null)
 									fields.put("id<>", personelIzin.getId());
 								List<PersonelIzin> kayitList = pdksDAO.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
@@ -1623,7 +1623,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 									PersonelIzin digerIzin = kayitList.get(0);
 									String basStr = PdksUtil.convertToDateString(digerIzin.getBaslangicZamani(), FORMAT_DATE_TIME), bitStr = PdksUtil.convertToDateString(digerIzin.getBitisZamani(), FORMAT_DATE_TIME);
 									if (!basStr.equals(izinERP.getBitZaman()) && !bitStr.equals(izinERP.getBasZaman()))
-										addHatalist(izinERP.getHataList(), PdksUtil.convertToDateString(digerIzin.getBaslangicZamani(), FORMAT_DATE_TIME) + "-" + PdksUtil.convertToDateString(digerIzin.getBitisZamani(), FORMAT_DATE_TIME) + " kayıtlı izin vardır!!");
+										addHatalist(izinERP.getHataList(), basStr + " - " + bitStr + " kayıtlı izin vardır!!");
+									else {
+										IzinReferansERP izinReferansERP2 = (IzinReferansERP) pdksDAO.getObjectByInnerObject("izin.id", digerIzin.getId(), IzinReferansERP.class);
+										if (izinReferansERP2 != null) {
+											digerIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_REDEDILDI);
+											digerIzin.setGuncelleyenUser(islemYapan);
+											digerIzin.setGuncellemeTarihi(new Date());
+											saveList.add(digerIzin);
+										}
+									}
 								}
 							}
 							if (izinERP.getHataList().isEmpty() || donemKapali) {
@@ -1637,7 +1646,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 								} else if (izinDegisti != null && izinDegisti) {
 									personelIzin.setGuncellemeTarihi(new Date());
 									personelIzin.setGuncelleyenUser(islemYapan);
-
 								}
 
 								personelIzin.setIzinTipi(izinTipi);
@@ -1692,12 +1700,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 										addHatalist(izinERP.getHataList(), "Hata oluştu!");
 								}
 
-							}
+							} else if (!izinERP.getHataList().isEmpty())
+								hataList.add((IzinERP) izinERP.clone());
 							kapaliDenklestirmeler = null;
 						} else
 							addHatalist(izinERP.getHataList(), "İptal yeni kayıt sisteme yazılmadı!");
 					}
-				} else {
+				} else if (!izinERP.getHataList().isEmpty()) {
 					hataList.add((IzinERP) izinERP.clone());
 				}
 				izinERP.setAciklama(null);
