@@ -169,6 +169,13 @@ public class MailManager implements Serializable {
 	 */
 	public static void ePostaGonder(HashMap<String, Object> parameterMap) throws Exception {
 		Properties props = null;
+		boolean uyariServisMailGonder = false;
+		if (parameterMap.containsKey("uyariServisMailGonder")) {
+			try {
+				uyariServisMailGonder = ((String) parameterMap.get("uyariServisMailGonder")).equals("1");
+			} catch (Exception e) {
+			}
+		}
 		if (parameterMap.containsKey("mailObject")) {
 			if (parameterMap.containsKey("oddTableRenk")) {
 				String deger = (String) parameterMap.get("oddTableRenk");
@@ -288,10 +295,12 @@ public class MailManager implements Serializable {
 			mp.addBodyPart(messageBodyPart);
 			message.setContent(mp);
 			List<String> mailList = new ArrayList<String>();
-			message.setRecipients(Message.RecipientType.TO, adresleriDuzenle(mailObject.getToList(), mailList));
-			message.setRecipients(Message.RecipientType.CC, adresleriDuzenle(mailObject.getCcList(), mailList));
+			if (uyariServisMailGonder) {
+				message.setRecipients(Message.RecipientType.TO, adresleriDuzenle(mailObject.getToList(), mailList));
+				message.setRecipients(Message.RecipientType.CC, adresleriDuzenle(mailObject.getCcList(), mailList));
+			}
 			message.setRecipients(Message.RecipientType.BCC, adresleriDuzenle(mailObject.getBccList(), mailList));
-			mailList = null;
+
 			for (MailFile mailFile : mailObject.getAttachmentFiles()) {
 				DataSource fds = null;
 				File file = null;
@@ -313,7 +322,8 @@ public class MailManager implements Serializable {
 			}
 			Exception hata = null;
 			try {
-				Transport.send(message);
+				if (!mailList.isEmpty())
+					Transport.send(message);
 			} catch (Exception e) {
 				hata = e;
 				try {
@@ -333,6 +343,7 @@ public class MailManager implements Serializable {
 				}
 
 			}
+			mailList = null;
 
 			for (File file : dosyalar) {
 				if (file.exists())
