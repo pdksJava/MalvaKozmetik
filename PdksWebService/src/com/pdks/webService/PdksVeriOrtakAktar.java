@@ -2625,7 +2625,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							kidemHataList.add(parentDepartman.getAciklamatr() + " bilgisi boş olamaz!");
 					}
 					if (istenAyrilisTarihi != null && istenAyrilisTarihi.after(bugun)) {
-						if (departmanYoneticiRolVar && departman == null && parentDepartman != null)
+						if (departmanYoneticiRolVar && departman == null && parentDepartman != null && departmanYoneticiRolVar)
 							addHatalist(personelERP.getHataList(), parentDepartman.getAciklamatr() + " bilgisi boş olamaz!");
 
 						if (bolum == null && parentBolum != null)
