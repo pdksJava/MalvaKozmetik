@@ -513,7 +513,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 		} else
 			fazlaMesaiTalep.setMesaiSuresi(0.0d);
-
+		if (manuelHareketEkle != null && manuelHareketEkle) {
+			Date simdi = new Date();
+			manuelHareketEkle = bitisZamani.getTime() < simdi.getTime();
+		}
 		return "";
 	}
 
