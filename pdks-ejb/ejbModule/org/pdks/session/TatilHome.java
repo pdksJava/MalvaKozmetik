@@ -495,10 +495,16 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 		pdksTatilYeni.setId(null);
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(pdksTatil.getBasTarih());
-		cal.add(Calendar.DATE, 355);
+		int arti = 355;
+		cal.add(Calendar.DATE, arti);
+		int yil = cal.get(Calendar.YEAR);
+		if (yil % 4 == 0) {
+			--arti;
+			cal.add(Calendar.DATE, -1);
+		}
 		pdksTatilYeni.setBasTarih((Date) cal.getTime().clone());
 		cal.setTime(pdksTatil.getBitTarih());
-		cal.add(Calendar.DATE, 355);
+		cal.add(Calendar.DATE, arti);
 		pdksTatilYeni.setYarimGun(Boolean.TRUE);
 		pdksTatilYeni.setBitTarih((Date) cal.getTime().clone());
 		pdksTatilYeni.setOlusturanUser(null);
@@ -506,7 +512,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 		pdksTatilYeni.setGuncellemeTarihi(null);
 		pdksTatilYeni.setGuncelleyenUser(null);
 		pdksTatilYeni.setAd(pdksTatilYeni.getAd());
-		pdksTatilYeni.setAciklama(pdksTatilYeni.getAciklama() + " kopya");
+		pdksTatilYeni.setAciklama(yil + " Yılı " + pdksTatilYeni.getAd());
 		pdksTatilYeni.setDurum(Boolean.FALSE);
 		kayitGuncelle(pdksTatilYeni);
 		return "";

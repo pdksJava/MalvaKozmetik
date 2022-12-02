@@ -36,7 +36,7 @@
 
 										</a4j:commandLink>
 										<rich:toolTip for="editlink" value="Güncelle" />
-										<ui:fragment rendered="#{authenticatedUser.admin and tatil.periyodik==false}">
+										<ui:fragment rendered="#{authenticatedUser.admin and tatil.periyodik==false and tatil.durum}">
 											<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="copylink" action="#{tatilHome.kayitKopyala(tatil)}"
 												oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
 												<h:graphicImage value="/img/onetomany.gif" style="border:0" />
