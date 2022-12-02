@@ -274,14 +274,18 @@
 												<h:outputText value="#{authenticatedUser.dateTimeLongFormatla(hareketler.zaman)}" />
 											</rich:column>
 
-											<rich:column>
+											<rich:column >
 												<f:facet name="header">
 													<h:outputText value="Neden" />
 												</f:facet>
 												<h:outputText value="#{hareketler.islem.neden.aciklama}" id="aciklama" />
 												<rich:toolTip for="aciklama">
-													<SPAN style="font-size: 14px; font-weight: bold;">#{hareketler.islem.aciklama} - İşlem yapan :
-														#{hareketler.islem.guncelleyenUser.adSoyad}</SPAN>
+													<SPAN style="font-size: 14px; font-weight: bold;">
+													<ui:fragment rendered="#{hareketler.islem.aciklamaVar}">
+													#{hareketler.islem.aciklama} - </ui:fragment>İşlem yapan :
+														#{hareketler.islem.guncelleyenUser.adSoyad} 
+														[#{authenticatedUser.dateTimeLongFormatla(hareketler.islem.olusturmaTarihi)}]
+														</SPAN>
 
 												</rich:toolTip>
 

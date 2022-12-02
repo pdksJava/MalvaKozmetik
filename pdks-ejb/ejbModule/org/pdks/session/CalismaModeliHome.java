@@ -191,7 +191,6 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
 		fillCalismaModeliList();
-
 	}
 
 	@Transactional
@@ -261,8 +260,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		if (!hareketKaydiVardiyaBul) {
 			for (CalismaModeli cm : calismaModeliList) {
 				if (!hareketKaydiVardiyaBul)
-					hareketKaydiVardiyaBul = cm.getHareketKaydiVardiyaBul() && cm.getDurum();
-
+					hareketKaydiVardiyaBul = cm.isHareketKaydiVardiyaBulsunmu() && cm.getDurum();
 			}
 		}
 	}

@@ -14,7 +14,9 @@
 					<h:panelGrid columns="1">
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Tarih</ui:define>
-							<rich:calendar value="#{tatilHome.tarih}" datePattern="#{authenticatedUser.dateFormat}" />
+							<rich:calendar value="#{tatilHome.tarih}" datePattern="#{authenticatedUser.dateFormat}">
+								<a4j:support event="onchanged" ajaxSingle="true" status="ajaxStatus" action="#{tatilHome.fillPdksTatilList}" reRender="tatilData" />
+							</rich:calendar>
 						</s:decorate>
 						<a4j:commandButton status="ajaxStatus" action="#{tatilHome.fillPdksTatilList}" reRender="tatilData" value=" Tatil Getir" />
 						<a4j:outputPanel id="tatilData">
@@ -27,13 +29,21 @@
 									<f:facet name="header">
                         İşlemler
                 </f:facet>
-									<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{tatilHome.kayitGuncelle(tatil)}"
-										oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
-										<h:graphicImage value="/img/edit.gif" style="border:0" />
+									<ui:fragment>
+										<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{tatilHome.kayitGuncelle(tatil)}"
+											oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+											<h:graphicImage value="/img/edit.gif" style="border:0" />
 
-									</a4j:commandLink>
-
-									<rich:toolTip for="editlink" value="Güncelle" />
+										</a4j:commandLink>
+										<rich:toolTip for="editlink" value="Güncelle" />
+										<ui:fragment rendered="#{authenticatedUser.admin and tatil.periyodik==false}">
+											<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="copylink" action="#{tatilHome.kayitKopyala(tatil)}"
+												oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+												<h:graphicImage value="/img/onetomany.gif" style="border:0" />
+											</a4j:commandLink>
+											<rich:toolTip for="copylink" value="Kopyala" />
+										</ui:fragment>
+									</ui:fragment>
 								</rich:column>
 
 
@@ -173,8 +183,9 @@
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" rendered="#{tatilHome.instance.yarimGun}">
 								<ui:define name="label">Arife Vardiya Yarım Hesapla</ui:define>
-								<h:selectBooleanCheckbox value="#{tatilHome.instance.arifeVardiyaYarimHesapla}" disabled="#{tatilHome.instance.id!=null and tatilHome.instance.periyodik}">
-									 
+								<h:selectBooleanCheckbox value="#{tatilHome.instance.arifeVardiyaYarimHesapla}"
+									disabled="#{tatilHome.instance.id!=null and tatilHome.instance.periyodik}">
+
 								</h:selectBooleanCheckbox>
 							</s:decorate>
 						</h:panelGrid>

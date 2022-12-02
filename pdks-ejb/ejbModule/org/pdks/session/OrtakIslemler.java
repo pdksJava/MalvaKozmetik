@@ -7975,6 +7975,7 @@ public class OrtakIslemler implements Serializable {
 				}
 				if (islemVardiya.getVardiyaBitZaman().after(islemVardiya.getVardiyaFazlaMesaiBitZaman())) {
 					islemVardiya.setVardiyaTelorans2BitZaman(PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -20));
+					// if (islemVardiya.isCalisma() == false)
 					islemVardiya.setVardiyaBitZaman(PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -40));
 
 				}

@@ -368,9 +368,10 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 					pdksTatil.setBasTarih(basTarih);
 					pdksTatil.setBitTarih(bitTarih);
 				}
-				if (pdksTatil.getId() == null)
+				if (pdksTatil.getId() == null) {
 					pdksTatil.setOlusturanUser(authenticatedUser);
-				else {
+					pdksTatil.setOlusturmaTarihi(new Date());
+				} else {
 					pdksTatil.setGuncelleyenUser(authenticatedUser);
 					pdksTatil.setGuncellemeTarihi(new Date());
 				}
@@ -483,6 +484,32 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 		}
 		return list;
 
+	}
+
+	/**
+	 * @param pdksTatil
+	 * @return
+	 */
+	public String kayitKopyala(Tatil pdksTatil) {
+		Tatil pdksTatilYeni = (Tatil) pdksTatil.clone();
+		pdksTatilYeni.setId(null);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(pdksTatil.getBasTarih());
+		cal.add(Calendar.DATE, 355);
+		pdksTatilYeni.setBasTarih((Date) cal.getTime().clone());
+		cal.setTime(pdksTatil.getBitTarih());
+		cal.add(Calendar.DATE, 355);
+		pdksTatilYeni.setYarimGun(Boolean.TRUE);
+		pdksTatilYeni.setBitTarih((Date) cal.getTime().clone());
+		pdksTatilYeni.setOlusturanUser(null);
+		pdksTatilYeni.setOlusturmaTarihi(null);
+		pdksTatilYeni.setGuncellemeTarihi(null);
+		pdksTatilYeni.setGuncelleyenUser(null);
+		pdksTatilYeni.setAd(pdksTatilYeni.getAd());
+		pdksTatilYeni.setAciklama(pdksTatilYeni.getAciklama() + " kopya");
+		pdksTatilYeni.setDurum(Boolean.FALSE);
+		kayitGuncelle(pdksTatilYeni);
+		return "";
 	}
 
 	/**

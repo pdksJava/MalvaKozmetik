@@ -451,8 +451,8 @@ public class Vardiya extends BaseObject {
 		return vardiyaBitZaman;
 	}
 
-	public void setVardiyaBitZaman(Date vardiyaBitZaman) {
-		this.vardiyaBitZaman = vardiyaBitZaman;
+	public void setVardiyaBitZaman(Date value) {
+		this.vardiyaBitZaman = value;
 	}
 
 	// TODO Vardiyalar kontrol ediliyor
@@ -523,7 +523,7 @@ public class Vardiya extends BaseObject {
 					cal.setTime(tarih);
 
 					if (vardiya.getBitSaat() > vardiya.getBasSaat()) {
-						
+
 						if (vardiyaCalisma.getVardiyaTelorans1BasZaman() != null && vardiyaCalisma.getVardiyaTelorans1BasZaman().before(tarih)) {
 							int bosluk = -vardiyaCalisma.getGirisErkenToleransDakika();
 							if (oncekiVardiya != null && oncekiVardiya.isCalisma() == false)
@@ -532,7 +532,7 @@ public class Vardiya extends BaseObject {
 							vardiyaCalisma.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
 							vardiyaCalisma.setVardiyaTelorans1BasZaman((Date) cal.getTime().clone());
 							if (oncekiVardiya != null) {
-								
+
 								cal.add(Calendar.MILLISECOND, -100);
 								oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
 								if (oncekiVardiya.isCalisma() == false)
@@ -567,7 +567,7 @@ public class Vardiya extends BaseObject {
 									}
 									cal.add(Calendar.MILLISECOND, -100);
 									vardiyaCalisma.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
- 								}
+								}
 
 							} else {
 								// todo
@@ -591,6 +591,7 @@ public class Vardiya extends BaseObject {
 						}
 					} else {
 						if (sonrakiVardiya != null) {
+
 							if (sonrakiVardiya.isCalisma() == false) {
 								cal.setTime(vardiyaCalisma.getVardiyaTelorans2BitZaman());
 								sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
@@ -612,10 +613,13 @@ public class Vardiya extends BaseObject {
 						}
 					}
 				} else {
-
 					Vardiya offCalisma = pdksVardiyaGun.getIslemVardiya();
 					offCalisma.setVardiyaTarih(tarih);
 					if (oncekiVardiya != null) {
+						if (vardiyaDateStr.equals("20221130"))
+							logger.debug("");
+
+
 						if (oncekiVardiya.isCalisma() == false || oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
 							offCalisma.setVardiyaFazlaMesaiBasZaman(PdksUtil.getDate(tarih));
 							cal.setTime(tarih);
@@ -623,11 +627,16 @@ public class Vardiya extends BaseObject {
 							oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
 
 						} else {
-							offCalisma.setVardiyaFazlaMesaiBasZaman((Date) oncekiVardiya.getVardiyaBitZaman().clone());
+							// Date tarih2 = PdksUtil.addTarih(oncekiVardiya.getVardiyaBitZaman(), Calendar.MILLISECOND, 100);
+							Date tarih2 = (Date) oncekiVardiya.getVardiyaBitZaman().clone();
+							offCalisma.setVardiyaFazlaMesaiBasZaman(tarih2);
+							offCalisma.setVardiyaBasZaman(tarih2);
 							cal.setTime(oncekiVardiya.getVardiyaBitZaman());
 							cal.add(Calendar.MILLISECOND, -100);
-							oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
-							oncekiVardiya.setVardiyaTelorans2BitZaman((Date) cal.getTime().clone());
+							Date tarih1 = (Date) cal.getTime().clone();
+							oncekiVardiya.setVardiyaBitZaman(tarih1);
+							oncekiVardiya.setVardiyaFazlaMesaiBitZaman(tarih1);
+							oncekiVardiya.setVardiyaTelorans2BitZaman(tarih1);
 
 						}
 
@@ -1505,7 +1514,7 @@ public class Vardiya extends BaseObject {
 
 	public void setVardiyaFazlaMesaiBasZaman(Date value) {
 		if (value != null) {
-			if (vardiyaDateStr != null && vardiyaDateStr.equals("20221107")) {
+			if (vardiyaDateStr != null && vardiyaDateStr.equals("20221130")) {
 				logger.debug(islemAdet + " " + value);
 			}
 			this.vardiyaFazlaMesaiBasZaman = value;
