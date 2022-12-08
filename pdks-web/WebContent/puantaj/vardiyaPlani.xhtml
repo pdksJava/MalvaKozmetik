@@ -203,7 +203,7 @@
 												</ui:fragment>
 
 												<ui:fragment rendered="#{vardiya.tatil.yarimGun==true}">
-													<td class="arife" title="#{vardiya.tatil.aciklama}"
+													<td class="arife" title="#{vardiya.tatil.ad}"
 														style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
 															value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}" /><bR /> <h:outputText
 															value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" /> <ui:fragment
@@ -213,7 +213,7 @@
 														</ui:fragment></td>
 												</ui:fragment>
 												<ui:fragment rendered="#{vardiya.tatil.yarimGun==false}">
-													<td class="bayram" title="#{vardiya.tatil.aciklama}"
+													<td class="bayram" title="#{vardiya.tatil.ad}"
 														style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
 															value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}" /><bR /> <h:outputText
 															value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" /> <ui:fragment
@@ -336,12 +336,12 @@
 									</ui:fragment>
 
 									<ui:fragment rendered="#{vardiyaGun.tatil.yarimGun==true}">
-										<td class="arife" title="#{vardiyaGun.tatil.aciklama}"
+										<td class="arife" title="#{vardiyaGun.tatil.ad}"
 											style="width: 90px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
 												value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')}" /></td>
 									</ui:fragment>
 									<ui:fragment rendered="#{vardiyaGun.tatil.yarimGun==false}">
-										<td class="bayram" title="#{vardiyaGun.tatil.aciklama}"
+										<td class="bayram" title="#{vardiyaGun.tatil.ad}"
 											style="width: 90px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
 												value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')}" /></td>
 									</ui:fragment>
@@ -909,12 +909,12 @@
 									</ui:fragment>
 
 									<ui:fragment rendered="#{vardiyaGun.tatil.yarimGun==true}">
-										<td class="arife" title="#{vardiyaGun.tatil.aciklama}"
+										<td class="arife" title="#{vardiyaGun.tatil.ad}"
 											style="width: 90px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
 												value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')}" /></td>
 									</ui:fragment>
 									<ui:fragment rendered="#{vardiyaGun.tatil.yarimGun==false}">
-										<td class="bayram" title="#{vardiyaGun.tatil.aciklama}"
+										<td class="bayram" title="#{vardiyaGun.tatil.ad}"
 											style="width: 90px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
 												value="#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')}" /></td>
 									</ui:fragment>

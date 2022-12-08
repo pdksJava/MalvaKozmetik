@@ -69,7 +69,8 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 	private List<User> userList = new ArrayList<User>();
 	private ArrayList<PersonelIzin> izinListesi;
 	private Date tarih = Calendar.getInstance().getTime();
-	private Boolean kaydetHatali = Boolean.FALSE;
+	private Boolean kaydetHatali = Boolean.FALSE, kopyala = Boolean.FALSE;
+	private int yilSayisi = 1;
 	private Tatil oldPdksTatil;
 	private User islemYapan;
 	private Session session;
@@ -384,7 +385,6 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 				}
 
 				session.flush();
-				session.clear();
 				fillPdksTatilList();
 				cikis = "persist";
 
@@ -400,20 +400,20 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 	}
 
 	public void fillPdksTatilList() {
+		session.clear();
 		List<Tatil> list = new ArrayList<Tatil>();
 		HashMap parametreMap = new HashMap();
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		list = pdksEntityController.getObjectByInnerObjectList(parametreMap, Tatil.class);
+		if (list.size() > 1)
+			list = PdksUtil.sortListByAlanAdi(list, "bitTarih", false);
 
 		for (Iterator<Tatil> iterator = list.iterator(); iterator.hasNext();) {
 			Tatil pdksTatil = iterator.next();
-
 			if (PdksUtil.tarihKarsilastirNumeric(tarih, pdksTatil.getBitTarih()) == 1) {
 				iterator.remove();
-
 			}
-
 		}
 		setTatilList(list);
 	}
@@ -491,31 +491,85 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 	 * @return
 	 */
 	public String kayitKopyala(Tatil pdksTatil) {
-		Tatil pdksTatilYeni = (Tatil) pdksTatil.clone();
-		pdksTatilYeni.setId(null);
+		setInstance(pdksTatil);
+		yilSayisi = 1;
+		kopyala = Boolean.TRUE;
+		if (ortakIslemler.getParameterKey("cokluTatilKopyala").equals(""))
+			kayitKopyalaDevam();
+		return "";
+	}
+
+	public String kayitKopyalaDevam() {
+		Tatil pdksTatil = getInstance();
+		kopyala = yilSayisi > 1;
+		boolean flush = false;
+		Date olusturmaTarihi = kopyala ? new Date() : null;
+		session.clear();
+		for (int i = 0; i < yilSayisi; i++) {
+			pdksTatil = periyodikOlmayanTatilKopyala(pdksTatil);
+			if (kopyala && pdksTatil.getId() == null) {
+				flush = true;
+				pdksTatil.setOlusturmaTarihi(olusturmaTarihi);
+				pdksTatil.setOlusturanUser(authenticatedUser);
+				pdksTatil.setDurum(Boolean.TRUE);
+				session.saveOrUpdate(pdksTatil);
+			}
+		}
+
+		if (!kopyala)
+			kayitGuncelle(pdksTatil);
+		else {
+			if (flush)
+				session.flush();
+			fillPdksTatilList();
+		}
+
+		return "";
+	}
+
+	/**
+	 * @param pdksTatil
+	 * @return
+	 */
+	private Tatil periyodikOlmayanTatilKopyala(Tatil tatil) {
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(pdksTatil.getBasTarih());
-		int arti = 355;
+		cal.setTime(tatil.getBasTarih());
+		int arti = 354;
 		cal.add(Calendar.DATE, arti);
 		int yil = cal.get(Calendar.YEAR);
 		if (yil % 4 == 0) {
-			--arti;
-			cal.add(Calendar.DATE, -1);
+			++arti;
+			cal.setTime(tatil.getBasTarih());
+			cal.add(Calendar.DATE, arti);
 		}
-		pdksTatilYeni.setBasTarih((Date) cal.getTime().clone());
-		cal.setTime(pdksTatil.getBitTarih());
-		cal.add(Calendar.DATE, arti);
-		pdksTatilYeni.setYarimGun(Boolean.TRUE);
-		pdksTatilYeni.setBitTarih((Date) cal.getTime().clone());
-		pdksTatilYeni.setOlusturanUser(null);
-		pdksTatilYeni.setOlusturmaTarihi(null);
-		pdksTatilYeni.setGuncellemeTarihi(null);
-		pdksTatilYeni.setGuncelleyenUser(null);
-		pdksTatilYeni.setAd(pdksTatilYeni.getAd());
-		pdksTatilYeni.setAciklama(yil + " Yılı " + pdksTatilYeni.getAd());
-		pdksTatilYeni.setDurum(Boolean.FALSE);
-		kayitGuncelle(pdksTatilYeni);
-		return "";
+		// logger.info(yil + " " + arti);
+		Date basTarih = (Date) cal.getTime().clone();
+		HashMap parametreMap = new HashMap();
+		parametreMap.put("basTarih", basTarih);
+		parametreMap.put("tatilTipi.id", tatil.getTatilTipi().getId());
+		parametreMap.put("durum", Boolean.TRUE);
+		if (session != null)
+			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<Tatil> tatilList = pdksEntityController.getObjectByInnerObjectList(parametreMap, Tatil.class);
+		Tatil tatilYeni = null;
+		if (tatilList.isEmpty()) {
+			tatilYeni = (Tatil) tatil.clone();
+			tatilYeni.setId(null);
+			tatilYeni.setBasTarih(basTarih);
+			cal.setTime(tatil.getBitTarih());
+			cal.add(Calendar.DATE, arti);
+			tatilYeni.setYarimGun(Boolean.TRUE);
+			tatilYeni.setBitTarih((Date) cal.getTime().clone());
+			tatilYeni.setOlusturanUser(null);
+			tatilYeni.setOlusturmaTarihi(null);
+			tatilYeni.setGuncellemeTarihi(null);
+			tatilYeni.setGuncelleyenUser(null);
+			tatilYeni.setAciklama(yil + " Yılı " + tatil.getAd());
+			tatilYeni.setDurum(Boolean.FALSE);
+		} else
+			tatilYeni = tatilList.get(0);
+
+		return tatilYeni;
 	}
 
 	/**
@@ -523,6 +577,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 	 */
 	public void kayitGuncelle(Tatil pdksTatil) {
 		fillTatilTipiTanimList();
+		kopyala = Boolean.FALSE;
 		if (pdksTatil == null) {
 			pdksTatil = new Tatil();
 			for (Tanim tatilTipi : tatilTanimList) {
@@ -549,6 +604,14 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 			fillGunBitisList();
 		}
 
+		if (pdksTatil.getTatilTipi() != null && tatilTanimList != null) {
+			Long id = pdksTatil.getTatilTipi().getId();
+			for (Tanim tatilTipi : tatilTanimList) {
+				if (tatilTipi.getId().equals(id))
+					pdksTatil.setTatilTipi(tatilTipi);
+
+			}
+		}
 		setInstance(pdksTatil);
 	}
 
@@ -562,8 +625,6 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
-		session.clear();
-
 		setIslemYapan(authenticatedUser);
 		fillPdksTatilList();
 		fillAyList();
@@ -647,6 +708,22 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 
 	public void setIzinListesi(ArrayList<PersonelIzin> izinListesi) {
 		this.izinListesi = izinListesi;
+	}
+
+	public Boolean getKopyala() {
+		return kopyala;
+	}
+
+	public void setKopyala(Boolean kopyala) {
+		this.kopyala = kopyala;
+	}
+
+	public int getYilSayisi() {
+		return yilSayisi;
+	}
+
+	public void setYilSayisi(int yilSayisi) {
+		this.yilSayisi = yilSayisi;
 	}
 
 }

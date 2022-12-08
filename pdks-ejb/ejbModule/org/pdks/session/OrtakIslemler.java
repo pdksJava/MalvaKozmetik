@@ -6922,7 +6922,7 @@ public class OrtakIslemler implements Serializable {
 				String afterDateStr = PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar(PdksUtil.convertToJavaDate(dateStr, pattern), 1), pattern);
 				if (tatilMap.containsKey(afterDateStr)) {
 					Tatil tatil = tatilMap.get(dateStr), sonrakiTatil = tatilMap.get(afterDateStr);
-					if (!sonrakiTatil.isYarimGunMu() && !tatil.getAciklama().equals(sonrakiTatil.getAciklama())) {
+					if (!sonrakiTatil.isYarimGunMu() && !tatil.getAd().equals(sonrakiTatil.getAd())) {
 						tatil.setBitTarih(sonrakiTatil.getBitTarih());
 					}
 				}

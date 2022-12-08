@@ -464,6 +464,7 @@ public class Vardiya extends BaseObject {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(pdksVardiyaGun.getVardiyaDate());
 			tarih = cal.getTime();
+			vardiyaDateStr = PdksUtil.convertToDateString(tarih, "yyyyMMdd");
 			if (vardiyaKontrolTarih3 != null && tarih.after(vardiyaKontrolTarih3))
 				vardiyaKontrol3(pdksVardiyaGun, tarih);
 			else if (vardiyaKontrolTarih2 != null && tarih.after(vardiyaKontrolTarih2))
@@ -593,6 +594,18 @@ public class Vardiya extends BaseObject {
 						if (sonrakiVardiya != null) {
 
 							if (sonrakiVardiya.isCalisma() == false) {
+								try {
+									int bosluk = sonrakiVardiya.isHaftaTatil() ? haftaTatiliFazlaMesaiBasDakika : offFazlaMesaiBasDakika;
+									cal.setTime(vardiyaCalisma.getVardiyaBitZaman());
+									cal.add(Calendar.MINUTE, -bosluk);
+									Date fazlaMesaiBasSaat = cal.getTime();
+									if (fazlaMesaiBasSaat.after(vardiyaCalisma.getVardiyaTelorans2BitZaman()))
+										vardiyaCalisma.setVardiyaTelorans2BitZaman(fazlaMesaiBasSaat);
+								} catch (Exception e) {
+									logger.error(e);
+									e.printStackTrace();
+								}
+
 								cal.setTime(vardiyaCalisma.getVardiyaTelorans2BitZaman());
 								sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
 								vardiyaCalisma.setVardiyaFazlaMesaiBitZaman(vardiyaCalisma.getVardiyaBitZaman());
@@ -616,9 +629,6 @@ public class Vardiya extends BaseObject {
 					Vardiya offCalisma = pdksVardiyaGun.getIslemVardiya();
 					offCalisma.setVardiyaTarih(tarih);
 					if (oncekiVardiya != null) {
-						if (vardiyaDateStr.equals("20221130"))
-							logger.debug("");
-
 
 						if (oncekiVardiya.isCalisma() == false || oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
 							offCalisma.setVardiyaFazlaMesaiBasZaman(PdksUtil.getDate(tarih));
