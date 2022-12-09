@@ -487,19 +487,48 @@ public class PdksEntityController implements Serializable {
 	}
 
 	/**
-	 * @param session
+	 * @param ses
 	 * @param em
-	 * @param del
+	 * @param saveObject
 	 */
-	public void deleteObject(Session session, EntityManager em, Object del) {
+	public void saveOrUpdate(Session ses, EntityManager em, Object saveObject) {
 		try {
-			session.delete(em == null || em.contains(del) ? del : em.merge(del));
+			ses.saveOrUpdate(saveObject);
 		} catch (Exception e) {
-			logger.error(e);
-			e.printStackTrace();
+			ses.saveOrUpdate(getEntityManagerObject(em, saveObject));
 		}
 	}
 
+	/**
+	 * @param ses
+	 * @param em
+	 * @param del
+	 */
+	public void deleteObject(Session ses, EntityManager em, Object del) {
+		try {
+			ses.delete(del);
+		} catch (Exception e) {
+			ses.delete(getEntityManagerObject(em, del));
+
+		}
+	}
+
+	/**
+	 * @param em
+	 * @param saveObject
+	 * @return
+	 */
+	public Object getEntityManagerObject(EntityManager em, Object saveObject) {
+		Object object = em == null || em.contains(saveObject) ? saveObject : em.merge(saveObject);
+		return object;
+	}
+
+	/**
+	 * @param fields
+	 * @param class1
+	 * @param esit
+	 * @return
+	 */
 	public Object getObjectByInnerObject(HashMap fields, Class class1, String esit) {
 		ArrayList<Object> tempObjectList = (ArrayList<Object>) getObjectByInnerObjectList(fields, class1, esit);
 		return (tempObjectList != null && !tempObjectList.isEmpty() ? tempObjectList.get(0) : null);

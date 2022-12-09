@@ -493,7 +493,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					izin.setGuncellemeTarihi(new Date());
 					izin.setGuncelleyenUser(authenticatedUser);
 				}
-				session.saveOrUpdate(izin);
+				pdksEntityController.saveOrUpdate(session, entityManager, izin);
 				session.flush();
 				TempIzin tempIzin = updateTempIzin;
 				tempIzin.setToplamBakiyeIzin(0.0d);
@@ -556,7 +556,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 			if (sureGuncelleme)
 				updateIzin.setIzinSuresi(izinSuresi);
 			updateIzin.setIzinKagidiGeldi(kayitDurum.equals(Boolean.FALSE) || izinSuresi > 0.0d ? null : Boolean.FALSE);
-			session.saveOrUpdate(updateIzin);
+			pdksEntityController.saveOrUpdate(session, entityManager, updateIzin);
 			session.flush();
 			fillIzinList(null);
 
@@ -1151,12 +1151,12 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 											personelIzin.setIzinKagidiGeldi(Boolean.FALSE);
 											personelIzin.setIzinSuresi(0.0d);
 										}
-										session.saveOrUpdate(personelIzin);
+										pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 
 									}
 
 								}
-								session.saveOrUpdate(personel);
+								pdksEntityController.saveOrUpdate(session, entityManager, personel);
 								logger.info(personel.getPdksSicilNo() + " " + personel.getAdSoyad() + " sıfırlandı!");
 								flush = Boolean.TRUE;
 							}
@@ -1515,7 +1515,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					personelIzin.setGuncellemeTarihi(tarih);
 					personelIzin.setGuncelleyenUser(guncelleyenUser);
 				}
-				session.saveOrUpdate(personelIzin);
+				pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 			}
 
 			for (PersonelIzin hakEdisIzin : tempIzin.getYillikIzinler()) {
@@ -1538,7 +1538,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 				hakEdisIzin.setKullanilanIzinSuresi(null);
 				hakEdisIzin.setHesapTipi(PersonelIzin.HESAP_TIPI_GUN);
-				session.saveOrUpdate(hakEdisIzin);
+				pdksEntityController.saveOrUpdate(session, entityManager, hakEdisIzin);
 				for (PersonelIzin personelIzin : hakEdisIzin.getHarcananDigerIzinler()) {
 
 					personelIzin.setHesapTipi(PersonelIzin.HESAP_TIPI_GUN);
@@ -1552,8 +1552,8 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					izinDetay.setPersonelIzin(personelIzin);
 					izinDetay.setHakEdisIzin(hakEdisIzin);
 					izinDetay.setIzinMiktari(personelIzin.getIzinSuresi());
-					session.saveOrUpdate(personelIzin);
-					session.saveOrUpdate(izinDetay);
+					pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
+					pdksEntityController.saveOrUpdate(session, entityManager, izinDetay);
 				}
 				// session.refresh(hakEdisIzin);
 
@@ -1570,7 +1570,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 					personelIzin.setIzinSuresi(0d);
 					personelIzin.setKullanilanIzinSuresi(null);
-					session.saveOrUpdate(personelIzin);
+					pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 				}
 			}
 
@@ -1580,7 +1580,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 				pdksPersonel.setGrubaGirisTarihi(tempIzin.getGrubaGirisTarihi());
 				pdksPersonel.setDogumTarihi(tempIzin.getDogumTarihi());
 			}
-			session.saveOrUpdate(pdksPersonel);
+			pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 			session.flush();
 			bakiyeIzinler = null;
 		}

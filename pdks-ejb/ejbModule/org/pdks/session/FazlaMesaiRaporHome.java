@@ -1796,7 +1796,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 							personelDenklestirmeAy.setGuncellemeTarihi(new Date());
 							personelDenklestirmeAy.setGuncelleyenUser(authenticatedUser);
 						}
-						session.saveOrUpdate(personelDenklestirmeAy);
+						pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeAy);
 						if (mailGonder) {
 							if (calisan != null && !sirketIdList.contains(calisan.getSirket().getId()))
 								sirketIdList.add(calisan.getSirket().getId());

@@ -138,7 +138,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 			if (!sirket.getFazlaMesai()) {
 				sirket.setFazlaMesaiOde(Boolean.FALSE);
 			}
-			session.saveOrUpdate(sirket);
+			pdksEntityController.saveOrUpdate(session, entityManager, sirket);
 			session.flush();
 			fillsirketList();
 

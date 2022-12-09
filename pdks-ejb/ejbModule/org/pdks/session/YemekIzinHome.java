@@ -97,7 +97,7 @@ public class YemekIzinHome extends EntityHome<YemekIzin> implements Serializable
 			} else
 				kayitliVardiyaYemekIzinList = new ArrayList<VardiyaYemekIzin>();
 
-			session.saveOrUpdate(pdksYemek);
+			pdksEntityController.saveOrUpdate(session, entityManager, pdksYemek);
 			for (Iterator iterator = kayitliVardiyaList.iterator(); iterator.hasNext();) {
 				Vardiya kayitliVardiya = (Vardiya) iterator.next();
 				boolean ekle = true;
@@ -112,7 +112,7 @@ public class YemekIzinHome extends EntityHome<YemekIzin> implements Serializable
 				}
 				if (ekle) {
 					VardiyaYemekIzin vyi = new VardiyaYemekIzin(kayitliVardiya, pdksYemek);
-					session.saveOrUpdate(vyi);
+					pdksEntityController.saveOrUpdate(session, entityManager, vyi);
 				}
 			}
 			for (Iterator iterator2 = kayitliVardiyaYemekIzinList.iterator(); iterator2.hasNext();) {

@@ -63,7 +63,7 @@ public class NoticeHome extends EntityHome<Notice> {
 			Notice notice = getHomeNotice();
 			notice.setChangeUser(authenticatedUser);
 			notice.setChangeDate(new Date());
-			session.saveOrUpdate(notice);
+			pdksEntityController.saveOrUpdate(session, entityManager, notice);
 			session.flush();
 
 		} catch (Exception e) {

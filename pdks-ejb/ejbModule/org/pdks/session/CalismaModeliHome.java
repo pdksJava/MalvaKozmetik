@@ -218,7 +218,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 				calismaModeli.setHaftaTatilMesaiOde(Boolean.FALSE);
 			if (calismaModeli.getHaftaTatilMesaiOde().equals(Boolean.FALSE))
 				calismaModeli.setGeceHaftaTatilMesaiParcala(Boolean.FALSE);
-			session.saveOrUpdate(calismaModeli);
+			pdksEntityController.saveOrUpdate(session, entityManager, calismaModeli);
 			for (Iterator iterator = kayitliVardiyaList.iterator(); iterator.hasNext();) {
 				Vardiya kayitliVardiya = (Vardiya) iterator.next();
 				boolean ekle = true;
@@ -233,7 +233,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 				}
 				if (ekle) {
 					CalismaModeliVardiya cmv = new CalismaModeliVardiya(kayitliVardiya, calismaModeli);
-					session.saveOrUpdate(cmv);
+					pdksEntityController.saveOrUpdate(session, entityManager, cmv);
 				}
 			}
 			for (Iterator iterator2 = kayitliCalismaModeliVardiyaList.iterator(); iterator2.hasNext();) {

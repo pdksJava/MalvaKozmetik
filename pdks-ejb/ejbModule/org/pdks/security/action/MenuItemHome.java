@@ -107,10 +107,10 @@ public class MenuItemHome extends EntityHome<MenuItem> implements Serializable {
 			description.setTipi(Tanim.TIPI_MENU_BILESENI);
 			description.setIslemTarihi(new Date());
 			description.setIslemYapan(authenticatedUser);
-			session.saveOrUpdate(description);
+			pdksEntityController.saveOrUpdate(session, entityManager, description);
 		}
 
-		session.saveOrUpdate(item);
+		pdksEntityController.saveOrUpdate(session, entityManager, item);
 		session.flush();
 		PdksUtil.addMessageInfo("İşlem Başarı ile gerçekleştirildi.");
 		startupAction.fillMenuItemList(session);
@@ -153,7 +153,7 @@ public class MenuItemHome extends EntityHome<MenuItem> implements Serializable {
 			item.getDescription().setTipi(Tanim.TIPI_MENU_BILESENI);
 			item.getDescription().setKodu(item.getName());
 
-			session.saveOrUpdate(instance);
+			pdksEntityController.saveOrUpdate(session, entityManager, instance);
 			session.flush();
 			startupAction.fillMenuItemList(session);
 			PdksUtil.addMessageInfo("İşlem Başarı ile gerçekleştirildi.");

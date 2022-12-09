@@ -215,10 +215,10 @@ public class MenuItemTreeTanimlama extends EntityQuery<MenuItem> implements Seri
 					selectedMenuItemFromTree.setChildMenuItemList(tempppp);
 
 				}
-				session.saveOrUpdate(tempMenuItemFromDataTable);
+				pdksEntityController.saveOrUpdate(session, entityManager, tempMenuItemFromDataTable);
 			}
 			if (selectedMenuItemFromTree != null)
-				session.saveOrUpdate(selectedMenuItemFromTree);
+				pdksEntityController.saveOrUpdate(session, entityManager, selectedMenuItemFromTree);
 			session.flush();
 			rootNode = null;
 			startupAction.fillMenuItemList(session);
@@ -269,7 +269,7 @@ public class MenuItemTreeTanimlama extends EntityQuery<MenuItem> implements Seri
 						break;
 					}
 				}
-				session.saveOrUpdate(dataItem);
+				pdksEntityController.saveOrUpdate(session, entityManager, dataItem);
 
 			}
 
@@ -288,10 +288,10 @@ public class MenuItemTreeTanimlama extends EntityQuery<MenuItem> implements Seri
 			for (Iterator iterator = deleteAccountPermissionList.iterator(); iterator.hasNext();) {
 				AccountPermission accountPermission = (AccountPermission) iterator.next();
 				accountPermission.setStatus(Boolean.FALSE);
-				session.saveOrUpdate(accountPermission);
+				pdksEntityController.saveOrUpdate(session, entityManager, accountPermission);
 			}
 			for (MenuItem menuItem : deleteMenuItemList)
-				session.saveOrUpdate(menuItem);
+				pdksEntityController.saveOrUpdate(session, entityManager, menuItem);
 
 			// pdksEntityController.update(deleteAccountPermissionList);
 			// pdksEntityController.update(deleteMenuItemList);

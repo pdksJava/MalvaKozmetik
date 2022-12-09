@@ -437,7 +437,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 				tempGeciciYonetici.setOlusturanUser(authenticatedUser);
 				tempGeciciYonetici.setOlusturmaTarihi(new Date());
 				setInstance(tempGeciciYonetici);
-				session.saveOrUpdate(tempGeciciYonetici);
+				pdksEntityController.saveOrUpdate(session, entityManager, tempGeciciYonetici);
 				mailAciklamaUserList.append(pdksPersonel.getAdSoyad());
 				if (mailAciklamaTarih.equals(""))
 					mailAciklamaTarih = PdksUtil.convertToDateString(tempGeciciYonetici.getBasTarih(), "yyyy") + "-" + PdksUtil.convertToDateString(tempGeciciYonetici.getBitTarih(), "yyyy");
@@ -788,7 +788,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 		} else {
 			if (rotasyon != null) {
 				rotasyon.setDurum(Boolean.FALSE);
-				session.saveOrUpdate(rotasyon);
+				pdksEntityController.saveOrUpdate(session, entityManager, rotasyon);
 			}
 			session.flush();
 			fillMevcutRotasyonList();

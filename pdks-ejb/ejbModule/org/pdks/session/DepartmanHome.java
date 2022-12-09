@@ -104,7 +104,7 @@ public class DepartmanHome extends EntityHome<Departman> implements Serializable
 					pdksDepartman.setGuncelleyenUser(authenticatedUser);
 					pdksDepartman.setGuncellemeTarihi(new Date());
 				}
-				session.saveOrUpdate(pdksDepartman);
+				pdksEntityController.saveOrUpdate(session, entityManager, pdksDepartman);
 				if (pdksDepartman.isFazlaMesaiTalepGirer() == false) {
 					HashMap fields = new HashMap();
 					fields.put("departman.id", pdksDepartman.getId());
@@ -115,7 +115,7 @@ public class DepartmanHome extends EntityHome<Departman> implements Serializable
 					for (Sirket sirket : sirketler) {
 						sirket.setGuncelleyenUser(authenticatedUser);
 						sirket.setGuncellemeTarihi(pdksDepartman.getGuncellemeTarihi());
-						session.saveOrUpdate(sirket);
+						pdksEntityController.saveOrUpdate(session, entityManager, sirket);
 					}
 				}
 

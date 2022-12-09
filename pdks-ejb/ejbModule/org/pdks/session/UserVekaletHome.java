@@ -517,7 +517,7 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 						userVekalet.setGuncelleyenUser(authenticatedUser);
 						userVekalet.setGuncellemeTarihi(new Date());
 					}
-					session.saveOrUpdate(userVekalet);
+					pdksEntityController.saveOrUpdate(session, entityManager, userVekalet);
 
 					session.flush();
 
@@ -618,13 +618,13 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 					if (userVekaletDevir.getId() == null) {
 						userVekaletDevir.setOlusturanUser(authenticatedUser);
 						userVekaletDevir.setOlusturmaTarihi(new Date());
-						session.saveOrUpdate(userVekaletDevir);
+						pdksEntityController.saveOrUpdate(session, entityManager, userVekaletDevir);
 						if (userVekaletDevir2 != null)
-							session.saveOrUpdate(userVekaletDevir2);
+							pdksEntityController.saveOrUpdate(session, entityManager, userVekaletDevir2);
 					} else {
 						userVekaletDevir.setGuncelleyenUser(authenticatedUser);
 						userVekaletDevir.setGuncellemeTarihi(new Date());
-						session.saveOrUpdate(userVekaletDevir);
+						pdksEntityController.saveOrUpdate(session, entityManager, userVekaletDevir);
 					}
 					session.flush();
 					fillUserTotalVekaletList();

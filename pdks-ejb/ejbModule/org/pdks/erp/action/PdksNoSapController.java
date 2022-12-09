@@ -65,7 +65,7 @@ public class PdksNoSapController implements ERPController, Serializable {
 					personelDenklestirme.setOdenenSure(odenecekSure);
 					personelDenklestirme.setGuncelleyenUser(user);
 					personelDenklestirme.setGuncellemeTarihi(guncellemeTarihi);
-					session.saveOrUpdate(personelDenklestirme);
+					pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 					session.flush();
 				}
 

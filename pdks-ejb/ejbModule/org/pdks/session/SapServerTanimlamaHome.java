@@ -81,7 +81,7 @@ public class SapServerTanimlamaHome extends EntityHome<SAPSunucu> implements Ser
 	public String save() {
 
 		try {
-			session.saveOrUpdate(seciliSAPSunucu);
+			pdksEntityController.saveOrUpdate(session, entityManager, seciliSAPSunucu);
 			session.flush();
 			fillSAPSunucuList();
 

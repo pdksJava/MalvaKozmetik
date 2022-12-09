@@ -152,7 +152,7 @@ public class PdksSapController implements ERPController, Serializable {
 									personelDenklestirme.setOdenenSure(odenecekSure);
 									personelDenklestirme.setGuncelleyenUser(user);
 									personelDenklestirme.setGuncellemeTarihi(guncellemeTarihi);
-									session.saveOrUpdate(personelDenklestirme);
+									pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 									session.flush();
 								}
 
@@ -494,7 +494,7 @@ public class PdksSapController implements ERPController, Serializable {
 												sirket.setOlusturanUser(olusturanUser);
 												sirket.setOlusturmaTarihi(new Date());
 												try {
-													session.saveOrUpdate(sirket);
+													pdksEntityController.saveOrUpdate(session, entityManager, sirket);
 													sirketMap.put(sirketKodu, sirket);
 												} catch (Exception e) {
 													sirket = personel.getSirket();
@@ -507,7 +507,7 @@ public class PdksSapController implements ERPController, Serializable {
 													sirket.setErpDurum(Boolean.TRUE);
 													sirket.setGuncellemeTarihi(new Date());
 													sirket.setGuncelleyenUser(olusturanUser);
-													session.saveOrUpdate(sirket);
+													pdksEntityController.saveOrUpdate(session, entityManager, sirket);
 												}
 												sirketMap.put(sirketKodu, sirket);
 											}
@@ -531,7 +531,7 @@ public class PdksSapController implements ERPController, Serializable {
 									if (masrafYeri != null && masrafYeri.isGuncellendi()) {
 										if (yeni)
 											session.clear();
-										session.saveOrUpdate(masrafYeri);
+										pdksEntityController.saveOrUpdate(session, entityManager, masrafYeri);
 										session.flush();
 									}
 
@@ -549,7 +549,7 @@ public class PdksSapController implements ERPController, Serializable {
 									if (bordroAltAlan != null && bordroAltAlan.isGuncellendi()) {
 										if (yeni)
 											session.clear();
-										session.saveOrUpdate(bordroAltAlan);
+										pdksEntityController.saveOrUpdate(session, entityManager, bordroAltAlan);
 										session.flush();
 									}
 

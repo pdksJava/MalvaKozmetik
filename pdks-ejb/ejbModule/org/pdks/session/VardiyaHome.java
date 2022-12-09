@@ -331,7 +331,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 					pdksVardiya.setSua(Boolean.FALSE);
 					pdksVardiya.setGebelik(Boolean.FALSE);
 				}
-				session.saveOrUpdate(pdksVardiya);
+				pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiya);
 				if (calismaModeliList.size() + calismaModeliKayitliList.size() > 0) {
 					parametreMap.clear();
 					parametreMap.put("vardiya.id", pdksVardiya.getId());
@@ -351,7 +351,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 						}
 						if (ekle) {
 							CalismaModeliVardiya vyi = new CalismaModeliVardiya(pdksVardiya, kayitli);
-							session.saveOrUpdate(vyi);
+							pdksEntityController.saveOrUpdate(session, entityManager, vyi);
 						}
 					}
 					for (Iterator iterator2 = kayitliCalismaModeliVardiyaList.iterator(); iterator2.hasNext();) {
@@ -380,7 +380,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 						}
 						if (ekle) {
 							VardiyaYemekIzin vyi = new VardiyaYemekIzin(pdksVardiya, kayitli);
-							session.saveOrUpdate(vyi);
+							pdksEntityController.saveOrUpdate(session, entityManager, vyi);
 						}
 					}
 					for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {

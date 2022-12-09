@@ -96,7 +96,7 @@ public class LokasyonHome extends EntityHome<LokasyonView> implements Serializab
 				lokasyon.setGuncelleyenUser(authenticatedUser);
 				lokasyon.setGuncellemeTarihi(new Date());
 			}
-			session.saveOrUpdate(lokasyon);
+			pdksEntityController.saveOrUpdate(session, entityManager, lokasyon);
 			session.flush();
 
 			fillKGSLokasyonList();

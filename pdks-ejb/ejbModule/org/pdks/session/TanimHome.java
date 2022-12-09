@@ -253,7 +253,7 @@ public class TanimHome extends EntityHome<Tanim> implements Serializable {
 	private void tanimKaydet(Tanim tanim) {
 		tanim.setIslemTarihi(new Date());
 		tanim.setIslemYapan(authenticatedUser);
-		session.saveOrUpdate(tanim);
+		pdksEntityController.saveOrUpdate(session, entityManager, tanim);
 		session.flush();
 	}
 

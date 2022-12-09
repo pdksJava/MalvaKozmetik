@@ -474,7 +474,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 */
 	private void savePersonel(Personel pdksPersonel) {
 		if (pdksPersonel.getId() != null) {
-			session.saveOrUpdate(pdksPersonel);
+			pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 			session.flush();
 		}
 	}
@@ -534,7 +534,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		User kullaniciYeni = pdksPersonel.getKullanici();
 		if ((kullaniciYeni == null || kullaniciYeni.getId() == null) && eskiKullanici != null && pdksPersonel.getId() != null) {
 			eskiKullanici.setPdksPersonel(pdksPersonel);
-			session.saveOrUpdate(eskiKullanici);
+			pdksEntityController.saveOrUpdate(session, entityManager, eskiKullanici);
 			session.flush();
 			fillPersonelKGSList();
 		}
@@ -669,25 +669,25 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						if (pdksPersonel.getFazlaMesaiIzinKullan())
 							pdksPersonel.setFazlaMesaiOde(Boolean.FALSE);
 
-						session.saveOrUpdate(pdksPersonel);
+						pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 						if (mesajList.isEmpty()) {
 							try {
 								for (PersonelDinamikAlan pda : dinamikPersonelDurumList) {
 									if (pda.getId() != null || pda.isDurumSecili()) {
 										pda.setPersonel(pdksPersonel);
-										session.saveOrUpdate(pda);
+										pdksEntityController.saveOrUpdate(session, entityManager, pda);
 									}
 								}
 								for (PersonelDinamikAlan pda : dinamikPersonelAciklamaList) {
 									if (pda.getId() != null || pda.getTanimDeger() != null) {
 										pda.setPersonel(pdksPersonel);
-										session.saveOrUpdate(pda);
+										pdksEntityController.saveOrUpdate(session, entityManager, pda);
 									}
 								}
 								for (PersonelDinamikAlan pda : dinamikPersonelSayisalList) {
 									if (pda.getId() != null || pda.getSayisalDeger() != null) {
 										pda.setPersonel(pdksPersonel);
-										session.saveOrUpdate(pda);
+										pdksEntityController.saveOrUpdate(session, entityManager, pda);
 									}
 								}
 							} catch (Exception epda) {
@@ -696,7 +696,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						}
 
 						if (personelExtra != null)
-							session.saveOrUpdate(personelExtra);
+							pdksEntityController.saveOrUpdate(session, entityManager, personelExtra);
 					}
 				} catch (Exception e) {
 					logger.error("PDKS hata in : \n");
@@ -719,7 +719,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						ortakIslemler.setUserRoller(kullanici, session);
 						if (kullanici.getYetkiliRollerim() != null && kullanici.getYetkiliRollerim().isEmpty())
 							kullanici = ortakIslemler.personelPdksRolAta(kullanici, Boolean.FALSE, session);
-						session.saveOrUpdate(kullanici);
+						pdksEntityController.saveOrUpdate(session, entityManager, kullanici);
 						HashMap<Integer, UserRoles> roller = new HashMap<Integer, UserRoles>();
 						HashMap<Long, UserTesis> tesisler = new HashMap<Long, UserTesis>();
 						HashMap map = new HashMap();
@@ -753,7 +753,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 									UserRoles userRoles = new UserRoles();
 									userRoles.setRole(role);
 									userRoles.setUser(kullanici);
-									session.saveOrUpdate(userRoles);
+									pdksEntityController.saveOrUpdate(session, entityManager, userRoles);
 								}
 
 							}
@@ -769,7 +769,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 									UserTesis userTesis = new UserTesis();
 									userTesis.setTesis(tesis);
 									userTesis.setUser(kullanici);
-									session.saveOrUpdate(userTesis);
+									pdksEntityController.saveOrUpdate(session, entityManager, userTesis);
 								}
 
 							}
@@ -806,7 +806,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 									bakiyeIzin.setGuncellemeTarihi(new Date());
 									// bakiyeIzin = (PersonelIzin)
 									// pdksEntityController.save(bakiyeIzin);
-									session.saveOrUpdate(bakiyeIzin);
+									pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzin);
 								}
 
 							} else if (bakiyeIzinSuresi != null && bakiyeIzinSuresi.doubleValue() != 0.0d) {
@@ -815,7 +815,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 								bakiyeIzin.setOlusturmaTarihi(new Date());
 								bakiyeIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 								// entityManager.persist();
-								session.saveOrUpdate(bakiyeIzin);
+								pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzin);
 							}
 						} else if (bakiyeIzin.getId() != null && bakiyeIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL) {
 							bakiyeIzin.setIzinSuresi(0d);
@@ -823,7 +823,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							bakiyeIzin.setOlusturmaTarihi(new Date());
 							bakiyeIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
 							// entityManager.persist();
-							session.saveOrUpdate(bakiyeIzin);
+							pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzin);
 						}
 					}
 					if (mesajList.isEmpty()) {
@@ -1639,7 +1639,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					}
 
 					if (degisti) {
-						session.saveOrUpdate(pdksPersonel);
+						pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 
 						session.flush();
 						session.refresh(personelView);

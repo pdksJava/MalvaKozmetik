@@ -349,7 +349,7 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 					bakiyeIzinTipi.setOffDahil(izinTipi.getOffDahil());
 					if (!izinTipi.isBakiyeSenelik())
 						bakiyeIzinTipi.setKotaBakiye(null);
-					session.saveOrUpdate(bakiyeIzinTipi);
+					pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzinTipi);
 				}
 			}
 			if (mesaj.equals("")) {
@@ -366,9 +366,9 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 					izinTipi.setHesapTipi(PersonelIzin.HESAP_TIPI_SAAT);
 				else if (izinTipi.getHesapTipi() == 0)
 					izinTipi.setHesapTipi(null);
-				session.saveOrUpdate(izinTipi);
+				pdksEntityController.saveOrUpdate(session, entityManager, izinTipi);
 				if (bakiyeIzinTipi != null)
-					session.saveOrUpdate(bakiyeIzinTipi);
+					pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzinTipi);
 				HashMap fields = new HashMap();
 				fields.put(PdksEntityController.MAP_KEY_MAP, "getAdres");
 				fields.put("izinTipi.id", izinTipi.getId());
@@ -382,11 +382,11 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 						IzinTipiMailAdres tipiMailAdres = mailMap.get(izinTipiMailAdres.getAdres());
 						if (!tipiMailAdres.getTipi().equals(izinTipiMailAdres.getTipi())) {
 							tipiMailAdres.setTipi(izinTipiMailAdres.getTipi());
-							session.saveOrUpdate(tipiMailAdres);
+							pdksEntityController.saveOrUpdate(session, entityManager, tipiMailAdres);
 						}
 						mailMap.remove(izinTipiMailAdres.getAdres());
 					} else
-						session.saveOrUpdate(izinTipiMailAdres);
+						pdksEntityController.saveOrUpdate(session, entityManager, izinTipiMailAdres);
 
 				}
 				if (!mailMap.isEmpty()) {

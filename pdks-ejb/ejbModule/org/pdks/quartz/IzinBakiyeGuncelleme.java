@@ -182,7 +182,7 @@ public class IzinBakiyeGuncelleme {
 					personelIzin.setGuncellemeTarihi(guncellemeTarihi);
 					if (guncelleyenUser != null)
 						personelIzin.setGuncelleyenUser(guncelleyenUser);
-					session.saveOrUpdate(personelIzin);
+					pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 				}
 				session.flush();
 			}

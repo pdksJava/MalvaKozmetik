@@ -382,7 +382,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 							pdksPersonel.setPdksSicilNo(personelView.getSicilNo().trim());
 						pdksPersonel.setGuncelleyenUser(authenticatedUser);
 						pdksPersonel.setGuncellemeTarihi(guncellemeTarihi);
-						session.saveOrUpdate(pdksPersonel);
+						pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 						flush = Boolean.TRUE;
 					} catch (Exception e) {
 						flush = Boolean.FALSE;
@@ -441,8 +441,8 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 					pdksPersonel.setGuncelleyenUser(authenticatedUser);
 					pdksPersonel.setGuncellemeTarihi(guncellemeTarihi);
 					ortakIslemler.personelKaydet(pdksPersonel, session);
-					// session.saveOrUpdate(kullanici);
-					session.saveOrUpdate(pdksPersonel);
+					// pdksEntityController.saveOrUpdate(session, entityManager, kullanici);
+					pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 					flush = Boolean.TRUE;
 				} catch (Exception e) {
 					flush = Boolean.FALSE;

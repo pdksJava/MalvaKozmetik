@@ -626,7 +626,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				// vardiyaGun = (VardiyaGun)
 				// pdksEntityController.save(vardiyaGun);
 
-				session.saveOrUpdate(isKurVardiya);
+				pdksEntityController.saveOrUpdate(session, entityManager, isKurVardiya);
 
 			}
 		}
@@ -878,7 +878,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 						vardiyaGunOncekiAy.setGuncelleyenUser(authenticatedUser);
 						vardiyaGunOncekiAy.setGuncellemeTarihi(new Date());
 						if (vardiyaGunOncekiAy.getIsKurVardiya() != null)
-							session.saveOrUpdate(vardiyaGunOncekiAy.getIsKurVardiya());
+							pdksEntityController.saveOrUpdate(session, entityManager, vardiyaGunOncekiAy.getIsKurVardiya());
 					} else if (haftaTatilAyList.size() == 1 && haftaTatilSonrakiAyList.size() == 1) {
 						VardiyaGun vardiyaGunBuAy = haftaTatilAyList.get(0), vardiyaGunSonrakiAy = haftaTatilSonrakiAyList.get(0);
 						vardiyaGunSonrakiAy.setVardiya(vardiyaGunBuAy.getEskiVardiya());
@@ -886,7 +886,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 						vardiyaGunSonrakiAy.setGuncellemeTarihi(new Date());
 
 						if (vardiyaGunSonrakiAy.getIsKurVardiya() != null)
-							session.saveOrUpdate(vardiyaGunSonrakiAy.getIsKurVardiya());
+							pdksEntityController.saveOrUpdate(session, entityManager, vardiyaGunSonrakiAy.getIsKurVardiya());
 					} else {
 						sb.append(haftaStr + " en fazla bir tatil günü tanımlanmalıdır! ");
 						yaz = Boolean.FALSE;
@@ -1776,7 +1776,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			if (pdksVardiyaGun.isGuncellendi() || isKurVardiya.getId() == null) {
 				try {
 					if (isKurVardiya.getId() == null && isKurVardiya.getVardiya() != null)
-						session.saveOrUpdate(isKurVardiya);
+						pdksEntityController.saveOrUpdate(session, entityManager, isKurVardiya);
 					Long newVardiyaId = pdksVardiyaGun.getVardiya() != null ? pdksVardiyaGun.getVardiya().getId() : null;
 					Long eskiVardiyaId = pdksVardiyaGun.getEskiVardiya() != null ? pdksVardiyaGun.getEskiVardiya().getId() : null;
 					if (isKurVardiya.getId() != null && PdksUtil.isLongDegisti(newVardiyaId, eskiVardiyaId)) {
@@ -1820,7 +1820,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 							if (isKurVardiya.getId() == null || mesaiMap.containsKey(isKurVardiya.getId())) {
 								logger.debug(pdksVardiyaGun.getVardiyaDateStr() + " " + isKurVardiya.getVardiya().getAdi());
-								session.saveOrUpdate(isKurVardiya);
+								pdksEntityController.saveOrUpdate(session, entityManager, isKurVardiya);
 								flush = Boolean.TRUE;
 							}
 
@@ -2561,7 +2561,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			denklestirmeGecenAy.setOlusturanUser(user);
 			denklestirmeGecenAy.setAy(gecenAy);
 			denklestirmeGecenAy.setYil(gecenYil);
-			session.saveOrUpdate(denklestirmeGecenAy);
+			pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeGecenAy);
 			session.flush();
 
 		}
@@ -2582,7 +2582,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			denklestirmeGelecekAy.setOlusturanUser(user);
 			denklestirmeGelecekAy.setAy(gelecekAy);
 			denklestirmeGelecekAy.setYil(gelecekAyYil);
-			session.saveOrUpdate(denklestirmeGelecekAy);
+			pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeGelecekAy);
 			session.flush();
 		}
 
@@ -2598,7 +2598,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			denklestirmeAy.setAy(ay);
 			denklestirmeAy.setYil(yil);
 			denklestirmeAy.setFazlaMesaiMaxSure(ortakIslemler.getFazlaMesaiMaxSure(null));
-			session.saveOrUpdate(denklestirmeAy);
+			pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);
 			session.flush();
 		} else if (denklestirmeAy.getFazlaMesaiMaxSure() == null)
 			fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
@@ -2659,7 +2659,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					if (denklestirmeAy.getToplamIzinSure() == 0.0d)
 						denklestirmeAy.setToplamIzinSure(toplamIzinSure);
 
-					session.saveOrUpdate(denklestirmeAy);
+					pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);
 				}
 
 				if (calismaModeliAy.getSure() == 0.0d || calismaModeliAy.getToplamIzinSure() == 0.0d) {
@@ -2667,7 +2667,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 						calismaModeliAy.setSure(sure);
 					if (calismaModeliAy.getToplamIzinSure() == 0.0d)
 						calismaModeliAy.setToplamIzinSure(toplamIzinSure);
-					session.saveOrUpdate(calismaModeliAy);
+					pdksEntityController.saveOrUpdate(session, entityManager, calismaModeliAy);
 				}
 
 				veriGuncelle = true;
@@ -2950,7 +2950,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 							try {
 								if (personelCalmayaBasladi && pdksVardiyaGunMaster.getVardiyaDate().getTime() <= sonCalismaTarihi.getTime()) {
 									calisiyor = true;
-									session.saveOrUpdate(pdksVardiyaGun.getIsKurVardiya());
+									pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiyaGun.getIsKurVardiya());
 								}
 
 							} catch (Exception ee) {
@@ -4226,7 +4226,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 								pdksVardiyaGun.setIslendi(Boolean.FALSE);
 								pdksVardiyaGun.setIslemVardiya(null);
 								pdksVardiyaGun.setIslemVardiyaZamani();
-								session.saveOrUpdate(pdksVardiyaGun);
+								pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiyaGun);
 								vardiyaGunleri.add(pdksVardiyaGun);
 								try {
 									pdksVardiyaGun.setIslemVardiya(null);
@@ -4750,7 +4750,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					pdksVardiyaHafta.setVardiyaSablonu(sablonu);
 					pdksVardiyaHafta.setOlusturanUser(authenticatedUser);
 					if (pdksVardiyaHaftaSave) {
-						session.saveOrUpdate(pdksVardiyaHafta);
+						pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiyaHafta);
 						fiush = true;
 					}
 				}

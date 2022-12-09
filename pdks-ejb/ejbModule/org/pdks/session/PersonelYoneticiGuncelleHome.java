@@ -86,7 +86,7 @@ public class PersonelYoneticiGuncelleHome extends EntityHome<Personel> implement
 						personel.setGuncellemeTarihi(guncellemeTarihi);
 						personel.setGuncelleyenUser(authenticatedUser);
 						try {
-							session.saveOrUpdate(personel);
+							pdksEntityController.saveOrUpdate(session, entityManager, personel);
 							iterator.remove();
 						} catch (Exception e) {
 							logger.error("PDKS hata in : \n");
@@ -118,7 +118,7 @@ public class PersonelYoneticiGuncelleHome extends EntityHome<Personel> implement
 							User guncelleyenUser = (User) pdksEntityController.getObjectByInnerObject(fields, User.class);
 							for (PersonelIzinOnay personelIzinOnay : onaylanmisIzinler) {
 								personelIzinOnay.setGuncelleyenUser(guncelleyenUser);
-								session.saveOrUpdate(personelIzinOnay);
+								pdksEntityController.saveOrUpdate(session, entityManager, personelIzinOnay);
 							}
 						}
 

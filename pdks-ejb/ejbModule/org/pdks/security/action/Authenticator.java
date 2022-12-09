@@ -137,7 +137,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 						authenticatedUser.setUsername(ldapUser.getUsername());
 						if (!parameterMap.containsKey("emailBozuk"))
 							authenticatedUser.setEmail(ldapUser.getEmail());
-						session.saveOrUpdate(authenticatedUser);
+						pdksEntityController.saveOrUpdate(session, entityManager, authenticatedUser);
 						session.flush();
 						// authenticatedUser = entityManager.merge(authenticatedUser);
 						// entityManager.flush();
@@ -148,7 +148,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 				if (authenticatedUser.getShortUsername() == null || !authenticatedUser.getShortUsername().equals(ldapUser.getShortUsername())) {
 					authenticatedUser.setShortUsername(ldapUser.getShortUsername());
 
-					session.saveOrUpdate(authenticatedUser);
+					pdksEntityController.saveOrUpdate(session, entityManager, authenticatedUser);
 					session.flush();
 				}
 			}
@@ -173,7 +173,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 					if (!parametreMap.containsKey("emailBozuk"))
 						authenticatedUser.setEmail(ldapUser.getEmail());
 
-					session.saveOrUpdate(authenticatedUser);
+					pdksEntityController.saveOrUpdate(session, entityManager, authenticatedUser);
 					session.flush();
 				}
 
@@ -234,7 +234,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 								if (email != null && (authenticatedUser.getEmail() == null || !email.equals(authenticatedUser.getEmail()))) {
 									if (!parameterMap.containsKey("emailBozuk"))
 										authenticatedUser.setEmail(email);
-									session.saveOrUpdate(authenticatedUser);
+									pdksEntityController.saveOrUpdate(session, entityManager, authenticatedUser);
 									session.flush();
 								}
 
@@ -297,7 +297,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 						if (!test || adres.startsWith("surum")) {
 							try {
 								authenticatedUser.setLastLogin(new Date());
-								session.saveOrUpdate(authenticatedUser);
+								pdksEntityController.saveOrUpdate(session, entityManager, authenticatedUser);
 								session.flush();
 							} catch (Exception e) {
 							}

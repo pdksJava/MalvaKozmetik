@@ -148,7 +148,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 						cal.add(Calendar.MONTH, 1);
 						cal.set(Calendar.DATE, otomatikOnayIKGun);
 						da.setOtomatikOnayIKTarih(cal.getTime());
-						session.saveOrUpdate(da);
+						pdksEntityController.saveOrUpdate(session, entityManager, da);
 						flush = true;
 
 					}
@@ -162,7 +162,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 						String key = CalismaModeliAy.getKey(da, cm);
 						if (!modelMap.containsKey(key)) {
 							calismaModeliAy = new CalismaModeliAy(da, cm);
-							session.saveOrUpdate(calismaModeliAy);
+							pdksEntityController.saveOrUpdate(session, entityManager, calismaModeliAy);
 							flush = true;
 						} else
 							calismaModeliAy = (CalismaModeliAy) modelMap.get(key);
@@ -371,7 +371,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 										if (bakiySonrakiMap.containsKey(perSicilNo)) {
 											PersonelDenklestirme personelDenklestirmeYeni = bakiySonrakiMap.get(perSicilNo);
 											personelDenklestirmeYeni.setPersonelDenklestirmeGecenAy(personelDenklestirmeDB);
-											session.saveOrUpdate(personelDenklestirmeYeni);
+											pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeYeni);
 											bakiySonrakiMap.remove(perSicilNo);
 											flush = true;
 										}
@@ -591,7 +591,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 				personelDenklestirmeDB.setOlusturmaTarihi(new Date());
 				personelDenklestirmeDB.setOlusturanUser(authenticatedUser);
 			}
-			session.saveOrUpdate(personelDenklestirmeDB);
+			pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeDB);
 
 		}
 		if (adet == 0)
@@ -621,12 +621,12 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 					personelDenklestirmeDB.setOlusturmaTarihi(new Date());
 					personelDenklestirmeDB.setOlusturanUser(authenticatedUser);
 				}
-				session.saveOrUpdate(personelDenklestirmeDB);
+				pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeDB);
 				String perSicilNo = personelDenklestirmeDB.getPersonel().getPdksSicilNo();
 				if (bakiySonrakiMap.containsKey(perSicilNo)) {
 					PersonelDenklestirme personelDenklestirmeYeni = bakiySonrakiMap.get(perSicilNo);
 					personelDenklestirmeYeni.setPersonelDenklestirmeGecenAy(personelDenklestirmeDB);
-					session.saveOrUpdate(personelDenklestirmeYeni);
+					pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeYeni);
 					bakiySonrakiMap.remove(perSicilNo);
 					flush = true;
 				}
@@ -717,7 +717,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 					denklestirmeAy.setDurum(Boolean.TRUE);
 				}
 				if (flush) {
-					session.saveOrUpdate(denklestirmeAy);
+					pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);
 					session.flush();
 				}
 			}
@@ -757,7 +757,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 		try {
 			denklestirmeAy.setGuncellemeTarihi(new Date());
 			denklestirmeAy.setGuncelleyenUser(authenticatedUser);
-			session.saveOrUpdate(denklestirmeAy);
+			pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);
 			session.flush();
 		} catch (Exception e) {
 			e.printStackTrace();

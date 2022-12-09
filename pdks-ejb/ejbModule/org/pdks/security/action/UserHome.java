@@ -174,7 +174,7 @@ public class UserHome extends EntityHome<User> implements Serializable {
 			else {
 				String newPassword = PdksUtil.encodePassword(newPassword1);
 				user.setPasswordHash(newPassword);
-				session.saveOrUpdate(user);
+				pdksEntityController.saveOrUpdate(session, entityManager, user);
 				session.flush();
 				facesMessages.add("Yeni şifre değiştirilmiştir.", "");
 				ekran = "anaSayfa";

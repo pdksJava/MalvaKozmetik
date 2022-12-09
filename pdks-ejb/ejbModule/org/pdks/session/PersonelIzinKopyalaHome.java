@@ -513,7 +513,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 				hakEdisIzinClone.setOlusturanUser(sistemAdminUser);
 				hakEdisIzinClone.setGuncelleyenUser(null);
 				hakEdisIzinClone.setGuncellemeTarihi(null);
-				session.saveOrUpdate(hakEdisIzinClone); // session.saveOrUpdate
+				pdksEntityController.saveOrUpdate(session, entityManager, hakEdisIzinClone); // session.saveOrUpdate
 				// List<PersonelIzinDetay> hakEdisIzinList = new ArrayList<PersonelIzinDetay>();
 
 				for (Iterator iterator2 = personelHarcananIzinler.iterator(); iterator2.hasNext();) {
@@ -526,11 +526,11 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 						PersonelIzin personelIzinClone = (PersonelIzin) personelIzin.clone();
 						personelIzinClone.setId(null);
 						personelIzinClone.setIzinSahibi(izinSahibiClone);
-						session.saveOrUpdate(personelIzinClone);// session.saveOrUpdate
+						pdksEntityController.saveOrUpdate(session, entityManager, personelIzinClone);// session.saveOrUpdate
 						personelIzinDetayClone.setId(null);
 						personelIzinDetayClone.setHakEdisIzin(hakEdisIzinClone);
 						personelIzinDetayClone.setPersonelIzin(personelIzinClone);
-						session.saveOrUpdate(personelIzinDetayClone);// session.saveOrUpdate
+						pdksEntityController.saveOrUpdate(session, entityManager, personelIzinDetayClone);// session.saveOrUpdate
 						// List<PersonelIzinOnay> onaylayanlar = new ArrayList<PersonelIzinOnay>();
 						for (Iterator iterator3 = onaylar.iterator(); iterator3.hasNext();) {
 							PersonelIzinOnay personelIzinOnay = (PersonelIzinOnay) iterator3.next();
@@ -538,7 +538,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 								PersonelIzinOnay personelIzinOnayClone = (PersonelIzinOnay) personelIzinOnay.clone();
 								personelIzinOnayClone.setId(null);
 								personelIzinOnayClone.setPersonelIzin(personelIzinClone);
-								session.saveOrUpdate(personelIzinOnayClone);// session.saveOrUpdate
+								pdksEntityController.saveOrUpdate(session, entityManager, personelIzinOnayClone);// session.saveOrUpdate
 								// onaylayanlar.add(personelIzinOnayClone);
 								iterator3.remove();
 							}

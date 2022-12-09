@@ -137,7 +137,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 				personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
 				personelIzin.setGuncelleyenUser(authenticatedUser);
 				personelIzin.setGuncellemeTarihi(guncellemeTarihi);
-				session.saveOrUpdate(personelIzin);
+				pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 				flush = Boolean.TRUE;
 				iterator.remove();
 			}
@@ -226,7 +226,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 			if (guncellemeTarihi == null)
 				guncellemeTarihi = new Date();
 			izin.setGuncellemeTarihi(guncellemeTarihi);
-			session.saveOrUpdate(izin);
+			pdksEntityController.saveOrUpdate(session, entityManager, izin);
 		} else if (mesajDurum)
 			PdksUtil.addMessageWarn(mesaj);
 
@@ -263,7 +263,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 						if (mesaj != null && mesaj.equals("")) {
 							izin.setGuncelleyenUser(authenticatedUser);
 							izin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
-							session.saveOrUpdate(izin);
+							pdksEntityController.saveOrUpdate(session, entityManager, izin);
 							list.add(izin);
 							iterator.remove();
 						} else
@@ -301,7 +301,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 		if (izinSapAktar(izin, null)) {
 			izin.setGuncelleyenUser(authenticatedUser);
 			izin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
-			session.saveOrUpdate(izin);
+			pdksEntityController.saveOrUpdate(session, entityManager, izin);
 			session.flush();
 			PdksUtil.addMessageInfo("İzin başarı ile SAP sistemine aktarılmıştır.");
 			fillIzinList();

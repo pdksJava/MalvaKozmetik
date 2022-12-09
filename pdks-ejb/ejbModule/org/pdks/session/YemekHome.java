@@ -168,7 +168,7 @@ public class YemekHome extends EntityHome<YemekOgun> implements Serializable {
 		}
 		try {
 			if (mesaj == null) {
-				session.saveOrUpdate(yemekKartsiz);
+				pdksEntityController.saveOrUpdate(session, entityManager, yemekKartsiz);
 				session.flush();
 				fillKartSizYemek();
 				yemekKartsiz = new YemekKartsiz();
@@ -197,7 +197,7 @@ public class YemekHome extends EntityHome<YemekOgun> implements Serializable {
 				pdksYemek.setGuncelleyenUser(authenticatedUser);
 				pdksYemek.setGuncellemeTarihi(new Date());
 			}
-			session.saveOrUpdate(pdksYemek);
+			pdksEntityController.saveOrUpdate(session, entityManager, pdksYemek);
 			session.flush();
 			fillPdksYemekList();
 

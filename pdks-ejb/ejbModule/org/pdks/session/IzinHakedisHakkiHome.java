@@ -127,7 +127,7 @@ public class IzinHakedisHakkiHome extends EntityHome<IzinHakedisHakki> implement
 					izinHakedisHakki.setDepartman(hakedisHakki.getDepartman());
 					izinHakedisHakki.setYasTipi(hakedisHakki.getYasTipi());
 					izinHakedisHakki.setIzinSuresi((short) izinSure);
-					session.saveOrUpdate(izinHakedisHakki);
+					pdksEntityController.saveOrUpdate(session, entityManager, izinHakedisHakki);
 
 				}
 				session.flush();

@@ -81,7 +81,7 @@ public class PdksPersonelRoleHome extends EntityHome<Role> implements Serializab
 	public String rolSil(Role roleView) {
 		roleView.setStatus(Boolean.FALSE);
 		try {
-			session.saveOrUpdate(roleView);
+			pdksEntityController.saveOrUpdate(session, entityManager, roleView);
 
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
@@ -98,7 +98,7 @@ public class PdksPersonelRoleHome extends EntityHome<Role> implements Serializab
 	@Transactional
 	public String rolKaydet() {
 		try {
-			session.saveOrUpdate(roleView);
+			pdksEntityController.saveOrUpdate(session, entityManager, roleView);
 
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");

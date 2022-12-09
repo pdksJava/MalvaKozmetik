@@ -140,8 +140,10 @@ public class HareketKGS implements Serializable, Cloneable {
 		return this.kapiView;
 	}
 
-	public void setKapiView(KapiView kapiView) {
-		this.kapiView = kapiView;
+	public void setKapiView(KapiView value) {
+		if (value != null && kapiKGS == null)
+			kapiKGS = value.getKapiKGS();
+		this.kapiView = value;
 	}
 
 	@Column(name = COLUMN_NAME_KAPI, nullable = false)

@@ -407,11 +407,11 @@ public class MenuItemPermissionTanimlama extends EntityQuery<MenuItem> implement
 		if (!updateAccountPermissionList.isEmpty() || !saveAccountPermissionList.isEmpty()) {
 			for (Iterator iterator = updateAccountPermissionList.iterator(); iterator.hasNext();) {
 				AccountPermission accountPermission = (AccountPermission) iterator.next();
-				session.saveOrUpdate(accountPermission);
+				pdksEntityController.saveOrUpdate(session, entityManager, accountPermission);
 			}
 			for (Iterator iterator = saveAccountPermissionList.iterator(); iterator.hasNext();) {
 				AccountPermission accountPermission = (AccountPermission) iterator.next();
-				session.saveOrUpdate(accountPermission);
+				pdksEntityController.saveOrUpdate(session, entityManager, accountPermission);
 			}
 			session.flush();
 			donus = "";
@@ -498,7 +498,7 @@ public class MenuItemPermissionTanimlama extends EntityQuery<MenuItem> implement
 		if (!deleteAccountPermissionList.isEmpty()) {
 			for (AccountPermission accountPermission : deleteAccountPermissionList) {
 				accountPermission.setStatus(Boolean.FALSE);
-				session.saveOrUpdate(accountPermission);
+				pdksEntityController.saveOrUpdate(session, entityManager, accountPermission);
 			}
 			session.flush();
 			donus = "";
@@ -728,7 +728,7 @@ public class MenuItemPermissionTanimlama extends EntityQuery<MenuItem> implement
 			for (Iterator iterator = deleteAccountPermissionList.iterator(); iterator.hasNext();) {
 				AccountPermission accountPermission = (AccountPermission) iterator.next();
 				accountPermission.setStatus(Boolean.FALSE);
-				session.saveOrUpdate(accountPermission);
+				pdksEntityController.saveOrUpdate(session, entityManager, accountPermission);
 			}
 			session.flush();
 			startupAction.fillStartMethod(authenticatedUser, session);

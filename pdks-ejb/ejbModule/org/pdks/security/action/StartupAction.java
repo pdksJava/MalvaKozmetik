@@ -559,7 +559,7 @@ public class StartupAction implements Serializable {
 				if (parameter.getValue() == null || !parameter.getValue().equals(helpDeskLastDateStr)) {
 					parameterMap.put(helpDeskLastDateKey, helpDeskLastDateStr);
 					parameter.setValue(helpDeskLastDateStr);
-					session.saveOrUpdate(parameter);
+					pdksEntityController.saveOrUpdate(session, entityManager, parameter);
 					session.flush();
 				}
 			}
@@ -624,7 +624,7 @@ public class StartupAction implements Serializable {
 				if (parameter != null) {
 					parameterMap.put(helpDeskLastDateKey, servisHelpDeskLastDateStr);
 					parameter.setValue(servisHelpDeskLastDateStr);
-					session.saveOrUpdate(parameter);
+					pdksEntityController.saveOrUpdate(session, entityManager, parameter);
 					session.flush();
 				}
 			}
@@ -728,7 +728,7 @@ public class StartupAction implements Serializable {
 			for (Iterator iterator = saveList.iterator(); iterator.hasNext();) {
 				LDAPDomain lu = (LDAPDomain) iterator.next();
 				if (lu.getLdapHost() != null)
-					session.saveOrUpdate(lu);
+					pdksEntityController.saveOrUpdate(session, entityManager, lu);
 			}
 			session.flush();
 		}

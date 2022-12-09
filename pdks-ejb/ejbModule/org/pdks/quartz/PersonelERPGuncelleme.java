@@ -267,7 +267,7 @@ public class PersonelERPGuncelleme {
 								kullanici.setEmail(kisaKullanici.getEmail());
 							try {
 								session.clear();
-								session.saveOrUpdate(kullanici);
+								pdksEntityController.saveOrUpdate(session, entityManager, kullanici);
 								session.flush();
 
 							} catch (Exception ee) {
@@ -379,7 +379,7 @@ public class PersonelERPGuncelleme {
 							personel.setDurum(durum);
 							personel.setGuncellemeTarihi(bugun);
 							personel.setGuncelleyenUser(user);
-							session.saveOrUpdate(personel);
+							pdksEntityController.saveOrUpdate(session, entityManager, personel);
 							logger.error(PdksUtil.setTurkishStr(pdksPersonel.getSicilNo() + " " + pdksPersonel.getAdSoyad() + " SAP'den anaveri bilgisi okunamadı! "));
 						}
 
@@ -556,13 +556,13 @@ public class PersonelERPGuncelleme {
 								for (MailGrubu mailGrubu : saveMailGrubuList) {
 									if (!userUpdate)
 										userUpdate = mailGrubu.getId() == null;
-									session.saveOrUpdate(mailGrubu);
+									pdksEntityController.saveOrUpdate(session, entityManager, mailGrubu);
 								}
 								if (userUpdate)
-									session.saveOrUpdate(user);
+									pdksEntityController.saveOrUpdate(session, entityManager, user);
 							}
 							if (!deleteMailGrubuList.isEmpty()) {
-								session.saveOrUpdate(user);
+								pdksEntityController.saveOrUpdate(session, entityManager, user);
 								for (MailGrubu mailGrubu : deleteMailGrubuList) {
 									try {
 										pdksEntityController.deleteObject(session, entityManager, mailGrubu);

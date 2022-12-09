@@ -1497,7 +1497,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						if (!saveList.isEmpty()) {
 							for (Iterator iterator = saveList.iterator(); iterator.hasNext();) {
 								Object object = (Object) iterator.next();
-								session.saveOrUpdate(object);
+								pdksEntityController.saveOrUpdate(session, entityManager, object);
 							}
 							session.flush();
 						}
@@ -1816,7 +1816,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						if ((bakiyeGuncelle != null && bakiyeGuncelle) || puantaj.isFazlaMesaiHesapla() != personelDenklestirme.getDurum() || (gecenAy != null && gecenAy.getDurum().equals(Boolean.FALSE))) {
 							if (puantaj.isFazlaMesaiHesapla() != personelDenklestirme.getDurum())
 								personelDenklestirme.setDurum(puantaj.isFazlaMesaiHesapla());
-							session.saveOrUpdate(personelDenklestirme);
+ 							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = Boolean.TRUE;
 						}
 					}
@@ -1876,7 +1876,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						puantaj.setFazlaMesaiHesapla(Boolean.FALSE);
 						if (personelDenklestirme.getDurum()) {
 							personelDenklestirme.setDurum(Boolean.FALSE);
-							session.saveOrUpdate(personelDenklestirme);
+							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = true;
 						}
 						if (ikRole)
@@ -1926,7 +1926,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							}
 						}
 						if (savePersonelDenklestirme) {
-							session.saveOrUpdate(personelDenklestirme);
+							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = true;
 						}
 					}
@@ -2005,7 +2005,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				paramsMap = null;
 				if (!saveGenelList.isEmpty()) {
 					for (Object obj : saveGenelList) {
-						session.saveOrUpdate(obj);
+						pdksEntityController.saveOrUpdate(session, entityManager, obj);
 					}
 					flush = true;
 				}
@@ -2156,7 +2156,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			for (VardiyaGun vardiyaGun : bosCalismaList) {
 				vardiyaGun.setVardiya(offVardiya);
 				vardiyaGun.setVersion(0);
-				session.saveOrUpdate(vardiyaGun);
+				pdksEntityController.saveOrUpdate(session, entityManager, vardiyaGun);
 			}
 			session.flush();
 			if (uyariMesai)
@@ -2218,8 +2218,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							vardiyaGun.setVersion(-1);
 							vardiyaCalismaGun.setVardiya(vardiyaHafta);
 							vardiyaCalismaGun.setVersion(0);
-							session.saveOrUpdate(vardiyaGun);
-							session.saveOrUpdate(vardiyaCalismaGun);
+							pdksEntityController.saveOrUpdate(session, entityManager, vardiyaGun);
+							pdksEntityController.saveOrUpdate(session, entityManager, vardiyaCalismaGun);
 							flush = true;
 						}
 					}
@@ -2573,7 +2573,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		logger.debug(PdksUtil.setTurkishStr(aylikPuantaj.getPersonelDenklestirmeAylik().getPersonel().getAdSoyad()) + " " + islemDurum);
 		if (!islemDurum.equals(denklestirmeDinamikAlan.getIslemDurum())) {
 			denklestirmeDinamikAlan.setIslemDurum(islemDurum);
-			session.saveOrUpdate(denklestirmeDinamikAlan);
+			pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeDinamikAlan);
 			flush = Boolean.TRUE;
 		}
 
@@ -3660,7 +3660,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							personelDenklestirmeAy.setGuncelleyenUser(authenticatedUser);
 						}
 						if (guncellendi)
-							session.saveOrUpdate(personelDenklestirmeAy);
+							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeAy);
 						if (mailGonder) {
 							if (calisan != null && !sirketIdList.contains(calisan.getSirket().getId()))
 								sirketIdList.add(calisan.getSirket().getId());

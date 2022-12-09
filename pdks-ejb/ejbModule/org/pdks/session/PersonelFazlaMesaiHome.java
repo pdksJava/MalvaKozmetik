@@ -438,7 +438,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			}
 
 			try {
-				session.saveOrUpdate(fazlaMesai);
+				pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
 				session.flush();
 			} catch (Exception e) {
 				logger.error("Pdks hata in : \n");
@@ -513,7 +513,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				}
 
 				try {
-					session.saveOrUpdate(fazlaMesai);
+					pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
 					session.flush();
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
@@ -1407,7 +1407,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				mesai.setGuncelleyenUser(authenticatedUser);
 				mesai.setGuncellemeTarihi(new Date());
 				mesai.setDurum(Boolean.FALSE);
-				session.saveOrUpdate(mesai);
+				pdksEntityController.saveOrUpdate(session, entityManager, mesai);
 				session.flush();
 				fillHareketMesaiList();
 			} catch (Exception e) {

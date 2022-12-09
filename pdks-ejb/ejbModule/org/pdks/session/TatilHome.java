@@ -379,7 +379,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 				if (pdksTatil.getId() == null || pdksTatil.getBasTarih().before(pdksTatil.getBitTarih())) {
 					if (pdksTatil.getId() != null && pdksTatil.isPeriyodik())
 						pdksTatil.setDurum(Boolean.TRUE);
-					session.saveOrUpdate(pdksTatil);
+					pdksEntityController.saveOrUpdate(session, entityManager, pdksTatil);
 				} else {
 					pdksEntityController.deleteObject(session, entityManager, pdksTatil);
 				}
@@ -512,7 +512,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 				pdksTatil.setOlusturmaTarihi(olusturmaTarihi);
 				pdksTatil.setOlusturanUser(authenticatedUser);
 				pdksTatil.setDurum(Boolean.TRUE);
-				session.saveOrUpdate(pdksTatil);
+				pdksEntityController.saveOrUpdate(session, entityManager, pdksTatil);
 			}
 		}
 

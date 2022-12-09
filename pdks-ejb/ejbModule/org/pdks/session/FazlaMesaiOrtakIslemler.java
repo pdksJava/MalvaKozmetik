@@ -636,7 +636,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 */
 	public void setFazlaMesaiMaxSure(DenklestirmeAy denklestirmeAy, Session session) {
 		denklestirmeAy.setFazlaMesaiMaxSure(ortakIslemler.getFazlaMesaiMaxSure(null));
-		session.saveOrUpdate(denklestirmeAy);
+		pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);
 		session.flush();
 
 	}

@@ -81,7 +81,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 				kapi.setGuncelleyenUser(authenticatedUser);
 				kapi.setGuncellemeTarihi(new Date());
 			}
-			session.saveOrUpdate(kapi);
+			pdksEntityController.saveOrUpdate(session, entityManager, kapi);
 			session.flush();
 			// HashMap parametreMap = new HashMap();
 			// parametreMap.put("kapi.id", kapi.getId());

@@ -119,7 +119,7 @@ public class ParameterHome extends EntityHome<Parameter> implements Serializable
 		parameter.setChangeUser(authenticatedUser);
 		if (parameter.isHelpDeskMi())
 			parameter.setGuncelle(Boolean.FALSE);
-		session.saveOrUpdate(parameter);
+		pdksEntityController.saveOrUpdate(session, entityManager, parameter);
 		session.flush();
 		session.clear();
 		fillParameterList();
@@ -185,7 +185,7 @@ public class ParameterHome extends EntityHome<Parameter> implements Serializable
 						skinParameter.setValue(skin.getLabel());
 						skinParameter.setChangeUser(authenticatedUser);
 						skinParameter.setChangeDate(new Date());
-						session.saveOrUpdate(skinParameter);
+						pdksEntityController.saveOrUpdate(session, entityManager, skinParameter);
 						session.flush();
 						guncelle = true;
 					}
