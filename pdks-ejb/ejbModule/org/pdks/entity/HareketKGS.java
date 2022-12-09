@@ -528,6 +528,22 @@ public class HareketKGS implements Serializable, Cloneable {
 	}
 
 	@Transient
+	public boolean isManuelGiris() {
+		boolean giris = false;
+		if (kapiKGS == null && kapiView != null)
+			kapiKGS = kapiView.getKapiKGS();
+		if (kapiKGS != null && kapiKGS.isManuel()) {
+			try {
+				giris = islem == null || (islem.getNeden() != null && islem.getNeden().getDurum());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+		return giris;
+	}
+
+	@Transient
 	public KapiView getTerminalKapi() {
 		return terminalKapi;
 	}
@@ -535,6 +551,7 @@ public class HareketKGS implements Serializable, Cloneable {
 	public void setTerminalKapi(KapiView terminalKapi) {
 		this.terminalKapi = terminalKapi;
 	}
+
 	@Transient
 	public String getIslemYapan() {
 		return islemYapan;

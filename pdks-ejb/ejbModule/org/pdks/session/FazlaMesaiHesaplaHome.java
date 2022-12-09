@@ -2889,7 +2889,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					String islemYapan = "";
 					if (hareketKGS.getKapiView() != null) {
 						try {
-							if (hareketKGS.getIslem() != null || hareketKGS.getKapiView().getKapiKGS().isManuel()) {
+							if (hareketKGS.isManuelGiris()) {
 								islemYapan = hareketKGS.getIslem() == null ? kapiGirisSistemAdi : (hareketKGS.getIslem().getOnaylayanUser() != null ? hareketKGS.getIslem().getOnaylayanUser().getAdSoyad() : "");
 								if (!goster)
 									goster = islemYapan != null && islemYapan.trim().length() > 0;
