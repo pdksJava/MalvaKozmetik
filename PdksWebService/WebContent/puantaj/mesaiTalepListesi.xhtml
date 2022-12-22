@@ -1,0 +1,298 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('mesaiTalepListesi')}" />
+	</ui:define>
+	<ui:define name="body">
+		<h:form id="planForm">
+			<a4j:outputPanel ajaxRendered="true">
+				<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+			</a4j:outputPanel>
+			<a4j:outputPanel id="girisler">
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(vardiyaGunHome.session,'mesaiTalepListesi')}">
+					<h:panelGrid columns="2" id="vardiyaPanel">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Yıl</ui:define>
+							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{ortakIslemler.getParameterKey('sistemBaslangicYili')}"
+								maxValue="#{vardiyaGunHome.maxYil}" inputSize="1" value="#{vardiyaGunHome.yil}">
+								<a4j:support event="onchange" status="ajaxStatus" action="#{vardiyaGunHome.mesaiDonemDegisti(true)}" ajaxSingle="true" reRender="girisler" />
+							</rich:inputNumberSpinner>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Ay</ui:define>
+							<h:selectOneMenu id="basAy" value="#{vardiyaGunHome.ay}" required="true" requiredMessage="Başlangıç ay seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{vardiyaGunHome.aylar}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{vardiyaGunHome.mesaiDonemDegisti(false)}" ajaxSingle="true" reRender="girisler" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Başlagıç Tarihi</ui:define>
+							<h:selectOneMenu id="basAy" value="#{vardiyaGunHome.basTarihStr}">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{vardiyaGunHome.gunler}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{vardiyaGunHome.aylikFazlaMesaiTalepler.clear()}" ajaxSingle="true"
+									reRender="girisler" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Bitiş Tarihi</ui:define>
+							<h:selectOneMenu id="basAy" value="#{vardiyaGunHome.bitTarihStr}">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{vardiyaGunHome.gunler}" />
+								<a4j:support event="onchange" status="ajaxStatus" action="#{vardiyaGunHome.aylikFazlaMesaiTalepler.clear()}" ajaxSingle="true"
+									reRender="girisler" />
+							</h:selectOneMenu>
+						</s:decorate>
+
+					</h:panelGrid>
+					<a4j:commandButton value="Aylık Fazla Mesai Talep Getir" action="#{vardiyaGunHome.fillAylikMesaiTalepList}" reRender="girisler"
+						onclick="#{rich:component('wait')}.show()" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide()" />
+
+
+					<a4j:commandButton value="Fazla Mesai Onay" action="#{vardiyaGunHome.mesaiOnay}" reRender="girisler" onclick="#{rich:component('wait')}.show()"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide()"
+						rendered="#{vardiyaGunHome.aylikFazlaMesaiTalepler.size()>0 and vardiyaGunHome.islemYapiliyor!=null}" />
+
+					<h:commandLink value="Excel" action="#{vardiyaGunHome.excelAylikMesaiTalepList}" target="blank"
+						rendered="#{vardiyaGunHome.aylikFazlaMesaiTalepler.size()>0}">
+						<a4j:support event="oncomplete" status="ajaxStatus" process="fmtTable" reRender="fmtTable" />
+					</h:commandLink>
+
+					<rich:dataTable rowClasses="acik,koyu" value="#{vardiyaGunHome.aylikFazlaMesaiTalepler}" var="fmt" rows="50" rowKeyVar="row" id="fmtTable"
+						rendered="#{vardiyaGunHome.aylikFazlaMesaiTalepler.size()>0}">
+						<f:facet name="header">
+							<h:outputText value="Fazla Mesai Talep Formları" />
+						</f:facet>
+						<rich:column style="text-align:center;" rendered="#{vardiyaGunHome.denklestirmeAy.durum}">
+							<f:facet name="header">
+								<ui:fragment>
+									İşlemler
+									<ui:fragment rendered="#{vardiyaGunHome.islemYapiliyor!=null}">
+										<br />
+										<h:selectBooleanCheckbox value="#{vardiyaGunHome.islemYapiliyor}">
+											<a4j:support event="onclick" ajaxSingle="true" status="ajaxStatus" action="#{vardiyaGunHome.mesaiOnayDurumDegisti()}"
+												onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide();" reRender="girisler" />
+										</h:selectBooleanCheckbox>
+									</ui:fragment>
+								</ui:fragment>
+
+							</f:facet>
+							<ui:fragment rendered="#{fmt.olusturanUser.id==authenticatedUser.id or authenticatedUser.IK or authenticatedUser.admin }">
+								<TABLE>
+									<tr>
+										<ui:fragment rendered="#{fmt.hatirlatmaMail}">
+											<ui:fragment rendered="#{fmt.islemYapildi==true}">
+												<td><h:selectBooleanCheckbox value="#{fmt.checkBoxDurum}" /></td>
+											</ui:fragment>
+											<ui:fragment rendered="#{fmt.islemYapildi==false}">
+												<td><h:graphicImage value="/img/mail.png" style="border:0" height="24" id="mesaiMailHatirlatmaBilgi">
+														<a4j:support event="onclick" ajaxSingle="true" status="ajaxStatus" action="#{vardiyaGunHome.mesaiMailHatirlatma(fmt)}" />
+													</h:graphicImage> <rich:toolTip for="mesaiMailHatirlatmaBilgi">
+														<B>Fazla mesai talep hatırlatma mail gönder</B>
+													</rich:toolTip></td>
+
+											</ui:fragment>
+										</ui:fragment>
+										<ui:fragment rendered="#{fmt.iptalEdilebilir}">
+
+											<td><h:graphicImage value="/img/delete.png" style="border:0" id="mesaiIptalBilgi">
+													<a4j:support event="onclick" ajaxSingle="true" status="ajaxStatus" action="#{vardiyaGunHome.mesaiIptalSec(fmt)}"
+														onclick="#{rich:component('wait')}.show()"
+														oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('mesaiIptalPanel')}.show();} #{rich:component('wait')}.hide();"
+														reRender="girisler" />
+												</h:graphicImage> <rich:toolTip for="mesaiIptalBilgi">
+													<B>Fazla mesai talep iptal</B>
+												</rich:toolTip></td>
+										</ui:fragment>
+									</tr>
+								</TABLE>
+							</ui:fragment>
+
+
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{fmt.vardiyaGun.personel.pdksSicilNo}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Adı Soyadı" />
+							</f:facet>
+							<h:outputText value="#{fmt.vardiyaGun.personel.adSoyad}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{fmt.vardiyaGun.personel.sirket.ad}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{fmt.vardiyaGun.personel.tesis.aciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{vardiyaGunHome.bolumAciklama}" />
+							</f:facet>
+							<h:outputText value="#{fmt.vardiyaGun.personel.ekSaha3.aciklama}" />
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Mesai Başlangıç Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.baslangicZamani)}" />
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Mesai Bitiş Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.bitisZamani)}" />
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Mesai Süresi (Saat)" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fmt.mesaiSuresi)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Mesai Nedeni" />
+							</f:facet>
+							<h:outputText value="#{fmt.mesaiNeden.aciklama}" id="mnd" />
+							<ui:fragment rendered="#{fmt.aciklama!=null and fmt.aciklama!='' }">
+								<rich:toolTip for="mnd" value="Açıklama : #{fmt.aciklama}" />
+							</ui:fragment>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Onay Durum" />
+							</f:facet>
+							<h:outputText value="#{fmt.onayDurumAciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Onay'a Gönderen" />
+							</f:facet>
+							<h:outputText value="#{fmt.olusturanUser.adSoyad}" />
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Onay'a Gönderme Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.olusturmaTarihi)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Onaylayan" />
+							</f:facet>
+							<h:outputText value="#{fmt.guncelleyenUser.adSoyad}" />
+						</rich:column>
+						<rich:column style="text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="Onaylama Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(fmt.guncellemeTarihi)}" />
+						</rich:column>
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+				</rich:panel>
+			</a4j:outputPanel>
+
+
+		</h:form>
+		<rich:modalPanel id="mesaiIptalPanel" autosized="true" width="900">
+			<f:facet name="header">
+				<h:outputText
+					value="#{vardiyaGunHome.personelAylikPuantaj.pdksPersonel.pdksSicilNo} #{vardiyaGunHome.personelAylikPuantaj.pdksPersonel.adSoyad} Fazla Mesai İptal" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" onclick="#{rich:component('wait')}.show()"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) { #{rich:component('mesaiIptalPanel')}.hide();#{rich:component('wait')}.hide();}"
+								ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+
+				<a4j:outputPanel id="indirimOnay" ajaxRendered="true">
+					<h:panelGrid columns="1" style="width:90%;">
+						<h:panelGrid columns="2" style="width:90%;">
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+								<ui:define name="label">Personel</ui:define>
+								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.adSoyad}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.sirket.ad}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;"
+								rendered="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis!=null}">
+								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis.aciklama}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;"
+								rendered="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.ekSaha3!=null}">
+								<ui:define name="label">#{vardiyaGunHome.bolumAciklama}</ui:define>
+								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.ekSaha3.aciklama}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+								<ui:define name="label">Mesai Başlangıç Zamanı</ui:define>
+								<h:outputText
+									value="#{vardiyaGunHome.islemFazlaMesaiTalep.guncelleyenUser.dateTimeFormatla(vardiyaGunHome.islemFazlaMesaiTalep.baslangicZamani)}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+								<ui:define name="label">Mesai Bitiş Zamanı</ui:define>
+								<h:outputText
+									value="#{vardiyaGunHome.islemFazlaMesaiTalep.guncelleyenUser.dateTimeFormatla(vardiyaGunHome.islemFazlaMesaiTalep.bitisZamani)}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+								<ui:define name="label">Mesai Süre</ui:define>
+								<h:outputText
+									value="#{vardiyaGunHome.islemFazlaMesaiTalep.guncelleyenUser.sayiFormatliGoster(vardiyaGunHome.islemFazlaMesaiTalep.mesaiSuresi)}" />
+							</s:decorate>
+
+							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+								<ui:define name="label">Mesai Nedeni</ui:define>
+								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.mesaiNeden.aciklama}" />
+							</s:decorate>
+						</h:panelGrid>
+						<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+							<ui:define name="label">İptal Nedeni</ui:define>
+							<h:selectOneMenu value="#{vardiyaGunHome.islemFazlaMesaiTalep.redNedeni}" styleClass="size10" required="true" style="width:85px"
+								requiredMessage="Fazla Mesai Nedeni Seçiniz">
+								<s:selectItems var="comp" value="#{vardiyaGunHome.mesaiIptalNedenTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
+								<s:convertEntity />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+							<ui:define name="label">İptal Açıklama</ui:define>
+							<h:inputTextarea value="#{vardiyaGunHome.islemFazlaMesaiTalep.iptalAciklama}" cols="80" rows="3" />
+						</s:decorate>
+						<a4j:commandButton value="İptal Et" action="#{vardiyaGunHome.mesaiIptal}" rendered="#{vardiyaGunHome.mesaiIptalNedenTanimList!=null}"
+							onclick="#{rich:component('wait')}.show()" reRender="girisler"
+							oncomplete="#{rich:component('wait')}.hide();if (#{facesContext.maximumSeverity==null}) #{rich:component('mesaiIptalPanel')}.hide();" />
+
+					</h:panelGrid>
+				</a4j:outputPanel>
+			</h:form>
+
+
+		</rich:modalPanel>
+
+	</ui:define>
+</ui:composition>

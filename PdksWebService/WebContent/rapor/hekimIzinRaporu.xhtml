@@ -1,0 +1,79 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:a4j="http://richfaces.org/a4j" template="/layout/frame.xhtml">
+ 
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(personelIzinGirisiHome.session,'hekimIzinRaporu')}" style="width:800px" >
+
+				<rich:dataTable rowClasses="acik,koyu"  value="#{personelIzinGirisiHome.personelIzinList}" var="izin"  rowKeyVar="row" id="izinTable">
+					<f:facet name="header">
+						<h:outputText value="Hekim İzinleri" />
+					</f:facet>
+
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+						</f:facet>
+						<h:outputText value="#{izin.izinSahibi.sicilNo}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Adı Soyadı" />
+						</f:facet>
+						<h:outputText value="#{izin.izinSahibi.adSoyad}" />
+					</rich:column>
+
+					<rich:column rendered="#{ personelIzinGirisiHome.ekSahaTanimMap.ekSaha1!=null}">
+						<f:facet name="header">
+							<h:outputText value="#{personelIzinGirisiHome.ekSaha1.aciklama}" />
+						</f:facet>
+						<h:outputText value="#{izin.izinSahibi.ekSaha1.aciklama}" />
+					</rich:column>
+					 
+					<rich:column rendered="#{ personelIzinGirisiHome.ekSahaTanimMap.ekSaha3!=null}">
+						<f:facet name="header">
+							<h:outputText value="#{personelIzinGirisiHome.ekSaha3.aciklama}" />
+						</f:facet>
+						<h:outputText value="#{izin.izinSahibi.ekSaha3.aciklama}" />
+					</rich:column>
+					<rich:column rendered="#{personelIzinGirisiHome.ekSahaTanimMap.ekSaha4!=null}">
+						<f:facet name="header">
+							<h:outputText value="#{personelIzinGirisiHome.ekSaha4.aciklama}" />
+						</f:facet>
+						<h:outputText value="#{izin.izinSahibi.ekSaha4.aciklama}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="İzin Tipi" />
+						</f:facet>
+						<h:outputText value="#{izin.izinTipiAciklama}" />
+					</rich:column>
+
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="İşe Başlama Zamanı" />
+						</f:facet>
+						<h:outputText value="#{izin.olusturanUser.dateTimeFormatla(izin.bitisZamani)}" />
+
+					</rich:column>
+					 
+ 
+				</rich:dataTable>
+			</rich:panel>
+
+		</h:form>
+
+
+	</ui:define>
+
+
+</ui:composition>
+
+
+
+
+

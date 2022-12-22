@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<components xmlns="http://jboss.com/products/seam/components" xmlns:document="http://jboss.com/products/seam/document" xmlns:core="http://jboss.com/products/seam/core"
+	xmlns:persistence="http://jboss.com/products/seam/persistence" xmlns:drools="http://jboss.com/products/seam/drools" xmlns:bpm="http://jboss.com/products/seam/bpm"
+	xmlns:security="http://jboss.com/products/seam/security" xmlns:mail="http://jboss.com/products/seam/mail" xmlns:web="http://jboss.com/products/seam/web"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:transaction="http://jboss.com/products/seam/transaction" xmlns:async="http://jboss.com/products/seam/async"
+	xsi:schemaLocation="http://jboss.com/products/seam/core http://jboss.com/products/seam/core-2.1.xsd 
+ http://jboss.com/products/seam/persistence http://jboss.com/products/seam/persistence-2.1.xsd 
+ http://jboss.com/products/seam/drools http://jboss.com/products/seam/drools-2.1.xsd 
+ http://jboss.com/products/seam/bpm http://jboss.com/products/seam/bpm-2.1.xsd 
+ http://jboss.com/products/seam/security http://jboss.com/products/seam/security-2.1.xsd 
+ http://jboss.com/products/seam/transaction http://jboss.com/products/seam/transaction-2.1.xsd 
+ http://jboss.com/products/seam/mail http://jboss.com/products/seam/mail-2.1.xsd 
+ http://jboss.com/products/seam/web http://jboss.com/products/seam/web-2.1.xsd 
+ http://jboss.com/products/seam/document http://jboss.com/products/seam/document-2.1.xsd
+ http://jboss.com/products/seam/components http://jboss.com/products/seam/components-2.1.xsd">
+	<!-- canlı sistem <mail:mail-session host="extrelay.pdks.com.tr" port="25" /> -->
+	<mail:mail-session host="#{startupAction.mailSessionHostAdres}" port="#{startupAction.smtpHostPort}" 
+		username="#{startupAction.smtpUserName}" password="#{startupAction.smtpPassword}" ssl="#{startupAction.smtpSSL}" tls="#{startupAction.smtpTLS}"  />
+
+
+	<web:rewrite-filter />
+	<!-- <core:init debug="@debug@" jndi-pattern="@jndiPattern@"/> jbossta -->
+	<!-- glassfish te -->
+	<core:init jndi-pattern="java:comp/env/pdks/#{ejbName}" />
+	<transaction:ejb-transaction />
+	<!-- jbossta <persistence:managed-persistence-context name="entityManager" auto-create="true" persistence-unit-jndi-name="java:/pdksEntityManagerFactory" 
+		/> -->
+	<core:manager concurrent-request-timeout="50000" conversation-timeout="300000" conversation-id-parameter="cid"
+		parent-conversation-id-parameter="pid" />
+	<web:hot-deploy-filter url-pattern="*.seam" />
+	<!-- glassfish te <persistence:entity-manager-factory name="pdksSQLDatasource" /> <persistence:managed-persistence-context name="entityManager3" auto-create="true" 
+		entity-manager-factory="#{pdksSQLDatasource}" /> <persistence:entity-manager-factory name="pdksMySql" /> <persistence:managed-persistence-context name="entityManager2" 
+		auto-create="true" entity-manager-factory="#{pdksMySql}" /> <persistence:entity-manager-factory name="pdksOracleDatasource" /> <persistence:managed-persistence-context 
+		name="entityManager4" auto-create="true" entity-manager-factory="#{pdksOracleDatasource}" /> -->
+	<persistence:entity-manager-factory name="pdks" />
+	<persistence:managed-persistence-context name="entityManager" auto-create="true" entity-manager-factory="#{pdks}" />
+
+	<!-- glassfish te -->
+
+
+	<!-- jbossta <persistence:managed-persistence-context name="entityManager" auto-create="true" persistence-unit-jndi-name="java:/pdksEntityManagerFactory" 
+		/> -->
+	<security:identity authenticate-method="#{authenticator.authenticate}" remember-me="true" />
+	<event type="org.jboss.seam.security.notLoggedIn">
+		<action execute="#{redirect.captureCurrentView}" />
+	</event>
+	<event type="org.jboss.seam.security.loginSuccessful">
+		<action execute="#{redirect.returnToCapturedView}" />
+	</event>
+
+	<web:multipart-filter create-temp-files="true" max-request-size="1000000" url-pattern="*.seam" />
+
+	<event type="org.jboss.seam.postInitialization">
+		<action execute="#{zamanlayici.scheduleIseGelmemeUyariTimer()}" />
+		<action execute="#{zamanlayici.izinBakiyeGuncellemeTimer()}" />
+		<action execute="#{zamanlayici.schedulePersonelERPGuncellemeTimer()}" />
+		<action execute="#{zamanlayici.scheduleSertifikaSSLKontrolTimer()}" />
+		<!-- 
+		
+		
+		 -->
+	</event>
+	<async:quartz-dispatcher />
+	<document:document-store use-extensions="true" />
+</components>

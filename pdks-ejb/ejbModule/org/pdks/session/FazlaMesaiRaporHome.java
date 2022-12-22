@@ -714,7 +714,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 				aylikPuantajDefault = new AylikPuantaj();
 			aylikPuantajDefault.setIlkGun(basTarih);
 			aylikPuantajDefault.setSonGun(bitTarih);
-			List<Personel> personelList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, aylikPuantajDefault, true, session);
+			List<Personel> personelList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantajDefault, true, session);
 
 			if (!personelList.isEmpty()) {
 				Date bugun = new Date(), sonCikisZamani = null, sonCalismaGunu = aylikPuantajSablon.getIlkGun();

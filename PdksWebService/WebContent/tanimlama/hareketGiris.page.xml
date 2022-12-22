@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page view-id="#{menuItemConstant.hareketGiris}" xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+	<restrict>#{userHome.hasPermission('hareketGiris','view')}</restrict>
+
+	<begin-conversation flush-mode="MANUAL" join="true" />
+	<rewrite pattern="/hareketGiris" />
+	<action execute="#{hareketGirisHome.sayfaGirisAction}" on-postback="false" />
+	<navigation>
+		<rule if-outcome="hareketGiris">
+			<redirect view-id="#{menuItemConstant.hareketGiris}" />
+		</rule>
+	</navigation>
+	<navigation from-action="#{hareketGirisHome.persist}">
+		<rule>
+			<end-conversation />
+			<redirect view-id="#{menuItemConstant.hareketGiris}" />
+		</rule>
+	</navigation>
+	<navigation from-action="#{hareketGirisHome.update}">
+		<rule>
+			<end-conversation />
+			<redirect view-id="#{menuItemConstant.hareketGiris}" />
+		</rule>
+	</navigation>
+	<navigation from-action="#{hareketGirisHome.remove}">
+		<rule>
+			<end-conversation />
+			<redirect view-id="#{menuItemConstant.hareketGiris}" />
+		</rule>
+	</navigation>
+</page>

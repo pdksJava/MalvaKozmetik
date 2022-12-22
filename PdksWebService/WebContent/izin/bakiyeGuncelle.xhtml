@@ -1,0 +1,147 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('bakiyeGuncelle')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(personelKalanIzinHome.session,'bakiyeGuncelle')}">
+				<a4j:outputPanel ajaxRendered="true" id="anaForm">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+
+				<h:panelGrid columns="1">
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">Bakiye İzin Yılı</ui:define>
+						<rich:inputNumberSpinner minValue="#{personelKalanIzinHome.minYil}" maxValue="#{personelKalanIzinHome.maxYil}" inputSize="2" value="#{personelKalanIzinHome.bakiyeYil}" />
+					</s:decorate>
+
+					<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+						<ui:define name="label">Update Sayısı</ui:define>
+						<rich:inputNumberSpinner minValue="5" maxValue="50" inputSize="2" step="5" value="#{personelKalanIzinHome.updateAdet}" />
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml">
+						<a4j:commandButton status="ajaxStatus" value="İzin Listele" action="#{personelKalanIzinHome.bakiyeGetir(null)}" reRender="onayList" />
+						<a4j:commandButton status="ajaxStatus" rendered="false" value="Bakiye İzin Listele" action="#{personelKalanIzinHome.bakiyeGetir(null)}" reRender="onayList" />
+					</s:decorate>
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="1">
+					<a4j:outputPanel id="onayList">
+						<rich:dataTable rowClasses="acik,koyu" value="#{personelKalanIzinHome.personelizinList}" var="izin" rows="20" rowKeyVar="row" id="izinTable">
+							<f:facet name="header">
+								<h:outputText value="Onaylanan İzinler" />
+							</f:facet>
+							<rich:column rendered="#{authenticatedUser.admin}">
+								<f:facet name="header">
+									<h:outputText value="ID" />
+								</f:facet>
+								<h:outputText value="#{izin.id}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{izin.izinSahibi.sicilNo}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Adı Soyadı" />
+								</f:facet>
+								<h:outputText value="#{izin.izinSahibi.adSoyad}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İzin Tipi" />
+								</f:facet>
+								<h:outputText value="#{izin.izinTipiAciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Yılı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getTarihFormatla(izin.baslangicZamani, 'yyyy')}" />
+
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(izin.izinSahibi.izinHakEdisTarihi)}" />
+
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İşe Giriş Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(izin.izinSahibi.iseBaslamaTarihi)}" />
+
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Süresi" />
+								</f:facet>
+								<h:outputText value="#{izin.sureAciklama}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Yapan" />
+								</f:facet>
+								<h:outputText value="#{izin.sonIslemYapan.adSoyad}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Tarihi" />
+								</f:facet>
+								<h:outputText value="#{izin.sonIslemTarihiStr}" />
+							</rich:column>
+
+
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+						<ui:fragment rendered="#{not empty personelKalanIzinHome.personelizinList}">
+							<a4j:commandButton status="ajaxStatus" value="#{personelKalanIzinHome.personelizinList.size()} Güncelle" action="#{personelKalanIzinHome.bakiyeGuncelle}" reRender="onayList" rendered="#{personelKalanIzinHome.geciciBakiye==false}" />
+							<a4j:commandButton status="ajaxStatus" value="#{personelKalanIzinHome.personelizinList.size()} Geçmiş Güncelle" action="#{personelKalanIzinHome.gecmisbakiyeGuncelle}" reRender="onayList" rendered="#{personelKalanIzinHome.geciciBakiye}" />
+						</ui:fragment>
+					</a4j:outputPanel>
+				</h:panelGrid>
+
+			</rich:panel>
+
+		</h:form>
+
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="İzni iptal etmek istediğinizden emin misiniz?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" styleClass="hidelink" id="hidelink4" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink4" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{personelIzinGirisiHome.izinIptal(personelIzinGirisiHome.guncellenecekIzin)}" oncomplete="#{rich:component('deletePanel')}.hide();" reRender="onayList" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Vazgeç" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+</ui:composition>

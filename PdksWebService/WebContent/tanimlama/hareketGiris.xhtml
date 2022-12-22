@@ -1,0 +1,155 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('hareketGiris')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(hareketGirisHome.session,'hareketGiris')}">
+				<h:panelGrid columns="2">
+
+
+
+
+					<h:panelGrid columns="1" width="800" id="hareketForm">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Tarih</ui:define>
+							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{hareketGirisHome.tarih}" required="true" requiredMessage="Tarih giriniz">
+								<a4j:support event="onchanged" ajaxSingle="true" status="ajaxStatus" reRender="dosyaPanel" />
+							</rich:calendar>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Kapı</ui:define>
+
+							<h:selectOneMenu value="#{hareketGirisHome.kapiId}" required="true" requiredMessage="Kapi seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{hareketGirisHome.kapiList}" />
+
+							</h:selectOneMenu>
+
+
+						</s:decorate>
+
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Zaman</ui:define>
+							<TABLE>
+								<TR>
+									<TD><rich:inputNumberSpinner minValue="0" maxValue="23" inputSize="2" value="#{hareketGirisHome.saat}" /></TD>
+									<TD>:</TD>
+									<TD><rich:inputNumberSpinner minValue="0" maxValue="59" inputSize="2" value="#{hareketGirisHome.dakika}" /></TD>
+								</TR>
+							</TABLE>
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İşlem</ui:define>
+							<h:selectOneMenu value="#{hareketGirisHome.instance.islem.neden}" required="true" requiredMessage="Islem seciniz">
+								<s:selectItems var="comp" value="#{hareketGirisHome.hareketIslemList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
+								<s:convertEntity />
+							</h:selectOneMenu>
+						</s:decorate>
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Açıklama</ui:define>
+							<h:inputText value="#{hareketGirisHome.instance.islem.aciklama}" />
+						</s:decorate>
+
+
+
+					</h:panelGrid>
+					<a4j:outputPanel id="dosyaPanel">
+						<rich:fileUpload id="fileUpload" fileUploadListener="#{hareketGirisHome.listener}" listHeight="50px" listWidth="300px"
+							rendered="#{hareketGirisHome.tarih!=null}" sizeErrorLabel="Dosya boyutu büyük" maxFilesQuantity="1" immediateUpload="true"
+							acceptedTypes="xls,xlsx" transferErrorLabel="Dosya  hatalı yüklenmiştir" doneLabel="Bitti" addControlLabel="Dosya Seçin (Excel)"
+							uploadControlLabel="Dosya Kaydet" cancelEntryControlLabel="Temizle" allowFlash="false">
+							<a4j:support event="onuploadcomplete" process="fileUpload" ajaxSingle="true" reRender="dosyaPanel" />
+						</rich:fileUpload>
+
+						<a4j:outputPanel id="personelDosya">
+							<ui:fragment rendered="#{hareketGirisHome.dosya.dosyaIcerik!=null}">
+								<h:panelGrid columns="3">
+									<a4j:commandButton image="/img/delete.gif" title="Dosya Yeniden Yükle" status="ajaxStatus" reRender="dosyaPanel" ajaxSingle="true"
+										action="#{hareketGirisHome.dosyaSifirla}" />
+									<h:outputText value="#{hareketGirisHome.dosya.dosyaAdi}" />
+								</h:panelGrid>
+
+								<a4j:commandButton id="dosyaOku" value="Dosya Oku" status="ajaxStatus" ajaxSingle="true" action="#{hareketGirisHome.dosyaOku}"
+									rendered="#{hareketGirisHome.dosya.dosyaIcerik!=null and hareketGirisHome.tarih!=null and hareketGirisHome.dosyaTamam==false}"
+									reRender="excelPanel,personelDosya"></a4j:commandButton>
+								<a4j:commandButton value="Dosya Aktar" status="ajaxStatus" action="#{hareketGirisHome.save()}" rendered="#{hareketGirisHome.dosyaTamam }"
+									reRender="dosyaPanel,excelPanel" />
+							</ui:fragment>
+						</a4j:outputPanel>
+					</a4j:outputPanel>
+
+				</h:panelGrid>
+
+			</rich:panel>
+			<a4j:outputPanel id="excelPanel">
+				<rich:panel>
+					<rich:dataTable rowClasses="acik,koyu" value="#{hareketGirisHome.vardiyaGunleri}" var="vg" rows="25" rowKeyVar="row">
+						<f:facet name="header">
+							<h:outputText value="Personeller" />
+						</f:facet>
+
+						<rich:column width="100">
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{vg.personel.sicilNo}" />
+						</rich:column>
+
+						<rich:column width="100">
+							<f:facet name="header">
+								<h:outputText value="Personel" />
+							</f:facet>
+							<h:outputText value="#{vg.personel.adSoyad}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{vg.personel.sirket.ad}" id="sirket" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{vg.personel.pdksYonetici.adSoyad}" title="#{vg.personel.asilYonetici1.adSoyad}" />
+						</rich:column>
+
+
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Zaman" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(vg.vardiyaDate)}" />
+						</rich:column>
+
+
+
+
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+				</rich:panel>
+			</a4j:outputPanel>
+
+
+			<!--  <a4j:outputPanel id="islemBitti"></a4j:outputPanel> -->
+		</h:form>
+
+
+
+	</ui:define>
+
+</ui:composition>

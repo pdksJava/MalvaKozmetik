@@ -162,7 +162,7 @@ public class PersonelERPGuncelleme {
 				TreeMap<String, Tanim> tanimMap = (TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap");
 				if (sistemAdminUser != null)
 					sistemAdminUser.setAdmin(Boolean.TRUE);
-				bo = ortakIslemler.personelExcelDevam(Boolean.FALSE, Boolean.TRUE, personelList, tanimMap, sistemAdminUser, null, session);
+				bo = ortakIslemler.personelExcelDevam(Boolean.TRUE, personelList, tanimMap, sistemAdminUser, null, session);
 				if (bo != null) {
 					List<Dosya> fileList = new ArrayList<Dosya>();
 					Dosya dosyaExcel = new Dosya();

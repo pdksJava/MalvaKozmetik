@@ -1,0 +1,186 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('gunlukIzinRapor')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(gunlukIzinRaporHome.session,'gunlukIzinRapor')}">
+				<h:panelGrid columns="2">
+					<s:decorate id="baslangicField" template="/layout/edit.xhtml">
+						<ui:define name="label">Başlangıç Tarihi</ui:define>
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{gunlukIzinRaporHome.basTarih}" required="true" requiredMessage="Başlangıç tarih giriniz" />
+					</s:decorate>
+					<s:decorate id="bitisField" template="/layout/edit.xhtml">
+						<ui:define name="label">Bitiş Tarihi</ui:define>
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{gunlukIzinRaporHome.bitTarih}" required="true" requiredMessage="Bitiş tarih giriniz" />
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">Adı </ui:define>
+						<h:inputText value="#{gunlukIzinRaporHome.ad}" size="35" />
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">Soyadı </ui:define>
+						<h:inputText value="#{gunlukIzinRaporHome.soyad}" size="35" />
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">#{ortakIslemler.personelNoAciklama()} </ui:define>
+						<h:inputText value="#{gunlukIzinRaporHome.sicilNo}" size="10" />
+					</s:decorate>
+
+					<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+						<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+						<h:selectOneMenu value="#{gunlukIzinRaporHome.sirket}">
+							<s:selectItems var="sirket" value="#{gunlukIzinRaporHome.sirketList}" label="#{sirket.ad}" noSelectionLabel="Lütfen seçiniz" />
+							<s:convertEntity />
+						</h:selectOneMenu>
+					</s:decorate>
+					 
+					<s:decorate template="/layout/edit.xhtml"
+						rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and  gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha1')}">
+						<ui:define name="label">#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha1').aciklama}</ui:define>
+						<h:selectOneMenu value="#{gunlukIzinRaporHome.seciliEkSaha1}">
+							<s:selectItems var="comp" value="#{gunlukIzinRaporHome.ekSahaListMap.get('ekSaha1')}" label="#{comp.aciklama}"
+								noSelectionLabel="Lütfen seçiniz" />
+							<s:convertEntity />
+						</h:selectOneMenu>
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml"
+						rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and  gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha2')}">
+						<ui:define name="label">#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha2').aciklama}</ui:define>
+						<h:selectOneMenu value="#{gunlukIzinRaporHome.seciliEkSaha2}">
+							<s:selectItems var="comp" value="#{gunlukIzinRaporHome.ekSahaListMap.get('ekSaha2')}" label="#{comp.aciklama}"
+								noSelectionLabel="Lütfen seçiniz" />
+							<s:convertEntity />
+						</h:selectOneMenu>
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml"
+						rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and  gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha3')}">
+						<ui:define name="label">#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha3').aciklama}</ui:define>
+						<h:selectOneMenu value="#{gunlukIzinRaporHome.seciliEkSaha3}">
+							<s:selectItems var="comp" value="#{gunlukIzinRaporHome.ekSahaListMap.get('ekSaha3')}" label="#{comp.aciklama}"
+								noSelectionLabel="Lütfen seçiniz" />
+							<s:convertEntity />
+						</h:selectOneMenu>
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml"
+						rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and  gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha4')}">
+						<ui:define name="label">#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha4').aciklama}</ui:define>
+						<h:selectOneMenu value="#{gunlukIzinRaporHome.seciliEkSaha4}">
+							<s:selectItems var="comp" value="#{gunlukIzinRaporHome.ekSahaListMap.get('ekSaha4')}" label="#{comp.aciklama}"
+								noSelectionLabel="Lütfen seçiniz" />
+							<s:convertEntity />
+						</h:selectOneMenu>
+					</s:decorate>
+
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">İzin Tipi</ui:define>
+						<h:selectOneMenu value="#{gunlukIzinRaporHome.izinTipiTanim}">
+							<s:selectItems var="comp" value="#{gunlukIzinRaporHome.izinTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+							<s:convertEntity />
+						</h:selectOneMenu>
+					</s:decorate>
+
+
+					<a4j:commandButton status="ajaxStatus" value="Listele" action="#{gunlukIzinRaporHome.fillIzinList}" reRender="izinPanel" />
+				</h:panelGrid>
+
+			</rich:panel>
+
+			<a4j:region>
+				<rich:panel id="izinPanel">
+					<rich:dataTable rowClasses="acik,koyu" value="#{gunlukIzinRaporHome.pdksPersonelList}" var="personel" rows="25" rowKeyVar="row" id="izinTable"
+						rendered="#{not empty gunlukIzinRaporHome.pdksPersonelList}">
+						<f:facet name="header">
+							<h:outputText value="Personeller İzinleri" />
+						</f:facet>
+
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{personel.sirket.ad}" />
+						</rich:column>
+						 
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{personel.tesis.aciklama}" />
+						</rich:column>
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha1')}">
+							<f:facet name="header">
+								<h:outputText value="#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha1').aciklama}" />
+							</f:facet>
+							<h:outputText value="#{personel.ekSaha1.aciklama}" />
+						</rich:column>
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha2')}">
+							<f:facet name="header">
+								<h:outputText value="#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha2').aciklama}" />
+							</f:facet>
+							<h:outputText value="#{personel.ekSaha2.aciklama}" />
+						</rich:column>
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha3')}">
+							<f:facet name="header">
+								<h:outputText value="#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha3').aciklama}" />
+							</f:facet>
+							<h:outputText value="#{personel.ekSaha3.aciklama}" />
+						</rich:column>
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha4')}">
+							<f:facet name="header">
+								<h:outputText value="#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha4').aciklama}" />
+							</f:facet>
+							<h:outputText value="#{personel.ekSaha4.aciklama}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{personel.sicilNo}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Personel" />
+							</f:facet>
+							<h:outputText value="#{personel.adSoyad}" />
+						</rich:column>
+						<ui:repeat value="#{gunlukIzinRaporHome.gunlerList}" var="tarih">
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{tarih}" />
+								</f:facet>
+								<h:outputText value="#{gunlukIzinRaporHome.getIzin(tarih,personel).izinTipi.izinTipiTanim.aciklama}" />
+
+							</rich:column>
+						</ui:repeat>
+
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
+						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:izinTable')}"
+						rendered="#{not empty gunlukIzinRaporHome.pdksPersonelList}" />
+				</rich:panel>
+
+
+			</a4j:region>
+		</h:form>
+
+
+
+	</ui:define>
+
+</ui:composition>
+
+
+

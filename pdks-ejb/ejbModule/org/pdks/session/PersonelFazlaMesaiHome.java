@@ -107,7 +107,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 	private Tanim fazlaMesaiSistemOnayDurum;
 	private User sistemAdminUser;
 	private List<SelectItem> departmanList, pdksSirketList, bolumDepartmanlari;
-	private Long departmanId, sirketId, seciliEkSaha3Id;
+	private Long departmanId, sirketId, seciliEkSaha3Id, seciliEkSaha4Id;
 	private boolean denklestirmeAyDurum = Boolean.FALSE, adminRole, ikRole;
 	private AramaSecenekleri aramaSecenekleri = null;
 	private Session session;
@@ -223,9 +223,21 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				if (personelView != null && personelView.getPdksPersonel() != null) {
 					Personel pdksPersonel = personelView.getPdksPersonel();
 					Sirket pdksSirket = pdksPersonel.getSirket();
+
+					if (pdksPersonel.getEkSaha1() != null) {
+						aramaSecenekleri.setEkSaha1Id(pdksPersonel.getEkSaha1().getId());
+					}
+					if (pdksPersonel.getEkSaha2() != null) {
+						aramaSecenekleri.setEkSaha2Id(pdksPersonel.getEkSaha2().getId());
+					}
 					if (pdksPersonel.getEkSaha3() != null) {
 						seciliEkSaha3Id = pdksPersonel.getEkSaha3().getId();
 						aramaSecenekleri.setEkSaha3Id(seciliEkSaha3Id);
+					}
+
+					if (pdksPersonel.getEkSaha4() != null) {
+						seciliEkSaha4Id = pdksPersonel.getEkSaha4().getId();
+						aramaSecenekleri.setEkSaha4Id(seciliEkSaha4Id);
 					}
 					if (pdksPersonel.getTesis() != null)
 						aramaSecenekleri.setTesisId(pdksPersonel.getTesis().getId());
@@ -543,12 +555,20 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 	public void fillHareketMesaiList() {
 		session.clear();
+		seciliEkSaha3 = null;
 		if (seciliEkSaha3Id != null) {
 			HashMap parametreMap = new HashMap();
 			parametreMap.put("id", seciliEkSaha3Id);
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			seciliEkSaha3 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+		}
+		if (seciliEkSaha4Id != null) {
+			HashMap parametreMap = new HashMap();
+			parametreMap.put("id", seciliEkSaha4Id);
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			seciliEkSaha4 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
 		}
 		List<Tanim> list1 = ortakIslemler.getTanimList(Tanim.TIPI_ONAYLAMAMA_NEDEN, session);
 		setOnaylamamaNedeniList(list1);
@@ -1731,5 +1751,13 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public Long getSeciliEkSaha4Id() {
+		return seciliEkSaha4Id;
+	}
+
+	public void setSeciliEkSaha4Id(Long seciliEkSaha4Id) {
+		this.seciliEkSaha4Id = seciliEkSaha4Id;
 	}
 }

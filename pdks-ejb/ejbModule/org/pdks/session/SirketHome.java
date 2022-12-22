@@ -80,7 +80,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 	public String excelAktar() {
 		try {
 			Sirket sirket = getInstance();
-			ByteArrayOutputStream baosDosya = ortakIslemler.personelExcelDevam(istenAyrilanlariEkle, sirket.isLdap(), personelList, ekSahaTanimMap, authenticatedUser, null, session);
+			ByteArrayOutputStream baosDosya = ortakIslemler.personelExcelDevam(sirket.isLdap(), personelList, ekSahaTanimMap, authenticatedUser, null, session);
 			if (baosDosya != null)
 				PdksUtil.setExcelHttpServletResponse(baosDosya, "personelListesi.xlsx");
 

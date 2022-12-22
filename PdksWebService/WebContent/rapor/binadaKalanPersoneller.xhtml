@@ -1,0 +1,186 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:a4j="http://richfaces.org/a4j"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('binadaKalanPersoneller')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(binadaKalanPersonellerHome.session,'binadaKalanPersoneller')}">
+				<h:panelGrid columns="1">
+
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">Tarih</ui:define>
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{binadaKalanPersonellerHome.date}" required="true"
+							requiredMessage="Tarih giriniz" />
+					</s:decorate>
+					<a4j:commandButton status="ajaxStatus" value="Hareket Listele" action="#{binadaKalanPersonellerHome.fillHareketList}" reRender="hareketPanel" />
+				</h:panelGrid>
+
+			</rich:panel>
+
+			<a4j:region>
+				<rich:panel id="hareketPanel">
+					<rich:dataTable rowClasses="acik,koyu" value="#{binadaKalanPersonellerHome.vardiyaGunList}" var="calismaPlani" rows="25" rowKeyVar="row"
+						id="hareketTable">
+						<f:facet name="header">
+							<h:outputText value="Bina İçinde Kalan Personeller" />
+						</f:facet>
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{calismaPlani.personel.sicilNo}" />
+						</rich:column>
+						<rich:column width="100">
+							<f:facet name="header">
+								<h:outputText value="Personel" />
+							</f:facet>
+							<h:outputText value="#{calismaPlani.personel.adSoyad}" />
+						</rich:column>
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{calismaPlani.personel.yoneticisi.adSoyad}" />
+						</rich:column>
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{calismaPlani.personel.sirket.ad}" />
+						</rich:column>
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{calismaPlani.personel.tesis.aciklama}" />
+						</rich:column>
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="#{binadaKalanPersonellerHome.bolumAciklama}" />
+							</f:facet>
+							<h:outputText value="#{calismaPlani.personel.ekSaha3.aciklama}" />
+						</rich:column>
+						<rich:column width="100">
+							<f:facet name="header">
+								<h:outputText value="Vardiya" />
+
+							</f:facet>
+							<h:outputText value="#{calismaPlani.vardiya.aciklama}">
+
+							</h:outputText>
+
+						</rich:column>
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="İlk Giriş" />
+							</f:facet>
+							<h:outputText title="#{calismaPlani.girisHareket.kapiView.kapi.aciklama}"
+								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.girisHareket.zaman)}" />
+						</rich:column>
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="Son Çıkış" />
+							</f:facet>
+							<h:outputText title="#{calismaPlani.cikisHareket.kapiView.kapi.aciklama}"
+								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.cikisHareket.zaman)}" />
+						</rich:column>
+
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="Son Giriş" />
+							</f:facet>
+							<h:outputText title="#{calismaPlani.sonGirisHareket.kapiView.kapi.aciklama}"
+								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.sonGirisHareket.zaman)}" />
+						</rich:column>
+
+
+
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="Hareketler" />
+							</f:facet>
+							<a4j:commandButton status="ajaxStatus" value="Hareketler" rendered="#{calismaPlani.hareketler!=null}"
+								oncomplete="#{rich:component('hareketDetayPanel')}.show()" action="#{binadaKalanPersonellerHome.hareketGoster(calismaPlani)}"
+								reRender="hareketDetayPanel" />
+
+
+						</rich:column>
+
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
+						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:hareketTable')}"
+						rendered="#{not empty binadaKalanPersonellerHome.vardiyaGunList}" />
+				</rich:panel>
+
+
+
+				<rich:modalPanel id="hareketDetayPanel" autosized="true" width="450">
+					<f:facet name="header">
+						<h:outputText value="#{binadaKalanPersonellerHome.instance.personel.adSoyad} " />
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:graphicImage value="/img/close.png" id="harekethidelink" styleClass="hidelink" />
+							<rich:componentControl for="hareketDetayPanel" attachTo="harekethidelink" operation="hide" event="onclick" />
+						</h:panelGroup>
+					</f:facet>
+
+					<h:panelGrid width="400">
+						<rich:dataTable rowClasses="acik,koyu" value="#{binadaKalanPersonellerHome.hareketList}" var="hareket" rows="20" rowKeyVar="row">
+							<f:facet name="header">
+
+								<h:outputText value="Giris Cikis Hareketleri" />
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Kapı" />
+								</f:facet>
+								<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Kapı Tip" />
+								</f:facet>
+								<h:outputText value="#{hareket.kapiView.kapi.tipi.aciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Zamanı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.zaman)}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+					</h:panelGrid>
+
+				</rich:modalPanel>
+
+
+
+			</a4j:region>
+
+
+		</h:form>
+
+
+	</ui:define>
+
+</ui:composition>
+
+
+
+
+

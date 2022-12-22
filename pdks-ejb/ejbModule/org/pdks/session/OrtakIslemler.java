@@ -200,6 +200,31 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param perId
+	 * @param kodu
+	 * @param session
+	 * @return
+	 */
+	public List<Personel> getIkinciYoneticiOlmazList(Long perId, String kodu, Session session) {
+		List<Personel> list = null;
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		map.put("yoneticiId", perId);
+		map.put("tipi", kodu);
+		if (session != null)
+			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+		StringBuffer sp = new StringBuffer("SP_IKINCI_YONETICI_OLAMAZ");
+		try {
+			list = pdksEntityController.execSPList(map, sp, Personel.class);
+
+		} catch (Exception e) {
+
+		}
+		if (list == null)
+			list = new ArrayList<Personel>();
+		return list;
+	}
+
+	/**
 	 * @param tarih1
 	 * @param tarih2
 	 * @return
@@ -210,6 +235,45 @@ public class OrtakIslemler implements Serializable {
 			esit = PdksUtil.tarihKarsilastirNumeric(tarih1, tarih2) == 0;
 		return esit;
 
+	}
+
+	/**
+	 * @param sirket
+	 * @param sirketId
+	 * @param session
+	 * @return
+	 */
+	public Tanim getEkSaha4(Sirket sirket, Long sirketId, Session session) {
+		Tanim tanim = null;
+		if (PdksUtil.isPuantajSorguAltBolumGir() || authenticatedUser.isAdmin()) {
+			if (sirket == null && sirketId != null) {
+				HashMap parametreMap = new HashMap();
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				try {
+					parametreMap.put("id", sirketId);
+
+					sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
+				} catch (Exception e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
+			}
+			if (sirket != null && sirket.isErp()) {
+				HashMap parametreMap = new HashMap();
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				try {
+					parametreMap.put("tipi", Tanim.TIPI_PERSONEL_EK_SAHA);
+					parametreMap.put("durum", Boolean.TRUE);
+					parametreMap.put("kodu", "ekSaha4");
+					tanim = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+				} catch (Exception e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return tanim;
 	}
 
 	/**
@@ -1684,13 +1748,14 @@ public class OrtakIslemler implements Serializable {
 	 * @param sirket
 	 * @param tesisId
 	 * @param bolumId
+	 * @param altBolumId
 	 * @param aylikPuantaj
 	 * @param tipi
 	 * @param denklestirme
 	 * @param session
 	 * @return
 	 */
-	public List getFazlaMesaiList(User user, Long departmanId, Sirket sirket, String tesisId, Long bolumId, AylikPuantaj aylikPuantaj, String tipi, boolean denklestirme, Session session) {
+	public List getFazlaMesaiList(User user, Long departmanId, Sirket sirket, String tesisId, Long bolumId, Long altBolumId, AylikPuantaj aylikPuantaj, String tipi, boolean denklestirme, Session session) {
 		List list = null;
 
 		if (aylikPuantaj != null) {
@@ -1733,6 +1798,9 @@ public class OrtakIslemler implements Serializable {
 				} else if (tipi.equalsIgnoreCase("B")) {
 					class1 = Tanim.class;
 					order = Tanim.COLUMN_NAME_ACIKLAMATR;
+				} else if (tipi.equalsIgnoreCase("AB")) {
+					class1 = Tanim.class;
+					order = Tanim.COLUMN_NAME_ACIKLAMATR;
 				} else if (tipi.equalsIgnoreCase("T")) {
 					if (sirket == null || (sirket.isErp() && sirket.isDepartmanBolumAynisi() == false)) {
 						class1 = Tanim.class;
@@ -1770,7 +1838,8 @@ public class OrtakIslemler implements Serializable {
 							}
 						}
 					}
-					StringBuffer sp = new StringBuffer("SP_GET_FAZLA_MESAI_DATA");
+					String spAdi = PdksUtil.isPuantajSorguAltBolumGir() || bolumId != null ? "SP_GET_FAZLA_MESAI_DATA_ALT" : "SP_GET_FAZLA_MESAI_DATA";
+					StringBuffer sp = new StringBuffer(spAdi);
 					LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 					Long denklestirmeDeger = 0L;
 					if (denklestirme) {
@@ -1803,20 +1872,23 @@ public class OrtakIslemler implements Serializable {
 					map.put("tesisId", tesisId != null ? tesisId : "");
 					map.put("direktorId", direktorId != null ? direktorId : 0L);
 					map.put("bolumId", bolumId != null ? bolumId : 0L);
+					if (PdksUtil.isPuantajSorguAltBolumGir() || bolumId != null)
+						map.put("altBolumId", altBolumId);
 					map.put("tipi", tipi);
 					map.put("basTarih", PdksUtil.convertToDateString(basTarih, "yyyyMMdd"));
 					map.put("bitTarih", PdksUtil.convertToDateString(bitTarih, "yyyyMMdd"));
 					map.put("format", "112");
 					map.put("order", order != null ? order : "");
 					Gson gson = new Gson();
-					if (tipi.equalsIgnoreCase("P") && authenticatedUser.isAdmin())
-						logger.debug(tipi + "\n" + gson.toJson(map));
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					try {
 						list = pdksEntityController.execSPList(map, sp, class1);
+						if (tipi.equalsIgnoreCase("AB") && authenticatedUser.isAdmin())
+							logger.debug(spAdi + " " + tipi + " " + list.size() + "\n" + gson.toJson(map));
 					} catch (Exception e) {
-						logger.error(e);
+						logger.error(e + "\n" + spAdi + "\n" + gson.toJson(map));
 						e.printStackTrace();
+
 					}
 				}
 			}
@@ -2636,8 +2708,14 @@ public class OrtakIslemler implements Serializable {
 	public HashMap fillEkSahaTanim(Session session, Boolean kendisiBul, Boolean sirketEkle) {
 		HashMap sonucMap = fillEkSahaTanimBul(kendisiBul, sirketEkle, session);
 		TreeMap<String, Tanim> tanimMap = (TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap");
+		String departmanAciklama = tanimMap != null && tanimMap.containsKey("ekSaha1") ? tanimMap.get("ekSaha1").getAciklama() : "Departman";
 		String bolumAciklama = tanimMap != null && tanimMap.containsKey("ekSaha3") ? tanimMap.get("ekSaha3").getAciklama() : "Bölüm";
+		String altBolumAciklama = tanimMap != null && tanimMap.containsKey("ekSaha4") ? tanimMap.get("ekSaha4").getAciklama() : "Alt Bölüm";
+		sonucMap.put("sirketAciklama", sirketAciklama());
+		sonucMap.put("tesisAciklama", tesisAciklama());
 		sonucMap.put("bolumAciklama", bolumAciklama);
+		sonucMap.put("departmanAciklama", departmanAciklama);
+		sonucMap.put("altBolumAciklama", altBolumAciklama);
 		return sonucMap;
 	}
 
@@ -3364,6 +3442,14 @@ public class OrtakIslemler implements Serializable {
 	public String personelNoAciklama() {
 		String personelNoAciklama = getBaslikAciklama("personelNoAciklama", "Personel No");
 		return personelNoAciklama;
+	}
+
+	/**
+	 * @return
+	 */
+	public String kimlikNoAciklama() {
+		String kimlikNoAciklama = getBaslikAciklama("kimlikNoAciklama", "Kimlik No");
+		return kimlikNoAciklama;
 	}
 
 	/**
@@ -8886,9 +8972,9 @@ public class OrtakIslemler implements Serializable {
 	public TreeMap<String, Boolean> mantiksalAlanlariDoldur(List<PersonelView> list) {
 		TreeMap<String, Boolean> map = new TreeMap<String, Boolean>();
 		Boolean fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE;
-		Boolean kullaniciPersonel = Boolean.FALSE, gebeMi = Boolean.FALSE, sutIzni = Boolean.FALSE;
+		Boolean kullaniciPersonel = Boolean.FALSE, gebeMi = Boolean.FALSE, sutIzni = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE;
 		Boolean ustYonetici = Boolean.FALSE, partTimeDurum = Boolean.FALSE, egitimDonemi = Boolean.FALSE, suaOlabilir = Boolean.FALSE;
-		Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE;
+		Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, bordroAltAlani = Boolean.FALSE, kimlikNoGoster = Boolean.FALSE, masrafYeriGoster = Boolean.FALSE;
 		boolean ikRol = authenticatedUser.isSistemYoneticisi() || authenticatedUser.isAdmin();
 		List<Long> depIdList = new ArrayList<Long>();
 		if (list != null) {
@@ -8908,6 +8994,17 @@ public class OrtakIslemler implements Serializable {
 					}
 
 					if (personel != null) {
+						if ((authenticatedUser.isAdmin() || authenticatedUser.isIK())) {
+							if (!istenAyrilmaGoster)
+								istenAyrilmaGoster = !personel.isCalisiyor();
+							if (!bordroAltAlani)
+								bordroAltAlani = personel.getBordroAltAlan() != null;
+							if (!kimlikNoGoster && personel.getPersonelKGS() != null)
+								kimlikNoGoster = PdksUtil.hasStringValue(personel.getPersonelKGS().getKimlikNo());
+							if (!masrafYeriGoster)
+								masrafYeriGoster = personel.getMasrafYeri() != null;
+
+						}
 						if (personel.getIkinciYoneticiIzinOnayla() != null && personel.getIkinciYoneticiIzinOnayla())
 							map.put("ikinciYoneticiIzinOnayla", Boolean.TRUE);
 						if (personel.getOnaysizIzinKullanilir() != null && personel.getOnaysizIzinKullanilir())
@@ -8982,6 +9079,15 @@ public class OrtakIslemler implements Serializable {
 			}
 
 		}
+
+		if (istenAyrilmaGoster)
+			map.put("istenAyrilmaGoster", Boolean.TRUE);
+		if (bordroAltAlani)
+			map.put("bordroAltAlani", Boolean.TRUE);
+		if (masrafYeriGoster)
+			map.put("masrafYeriGoster", Boolean.TRUE);
+		if (kimlikNoGoster)
+			map.put("kimlikNoGoster", Boolean.TRUE);
 		if (depIdList.size() > 1)
 			map.put("departmanGoster", Boolean.TRUE);
 
@@ -9007,7 +9113,6 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param istenAyrilan
 	 * @param ldap
 	 * @param list
 	 * @param tanimMap
@@ -9017,7 +9122,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public ByteArrayOutputStream personelExcelDevam(Boolean istenAyrilan, Boolean ldap, List<PersonelView> list, TreeMap<String, Tanim> tanimMap, User user, TreeMap<String, PersonelDinamikAlan> personelDinamikMap, Session session) throws Exception {
+	public ByteArrayOutputStream personelExcelDevam(Boolean ldap, List<PersonelView> list, TreeMap<String, Tanim> tanimMap, User user, TreeMap<String, PersonelDinamikAlan> personelDinamikMap, Session session) throws Exception {
 		if (tanimMap == null)
 			tanimMap = new TreeMap<String, Tanim>();
 		if (user == null) {
@@ -9037,9 +9142,10 @@ public class OrtakIslemler implements Serializable {
 		boolean izinERPUpdate = str.equals("1"), fazlaMesaiIzinKullan = map.containsKey("fazlaMesaiIzinKullan"), fazlaMesaiOde = map.containsKey("fazlaMesaiOde");
 		boolean sanalPersonel = map.containsKey("sanalPersonel"), icapDurum = map.containsKey("icapDurum"), partTimeDurum = map.containsKey("partTimeDurum");
 		boolean sutIzni = map.containsKey("sutIzni"), gebeMi = map.containsKey("gebeMi"), egitimDonemi = map.containsKey("egitimDonemi"), suaOlabilir = map.containsKey("suaOlabilir");
-		boolean emailCCDurum = map.containsKey("emailCCDurum"), emailBCCDurum = map.containsKey("emailBCCDurum");
+		boolean emailCCDurum = map.containsKey("emailCCDurum"), emailBCCDurum = map.containsKey("emailBCCDurum"), bordroAltAlani = map.containsKey("bordroAltAlani");
+
 		boolean onaysizIzinKullanilir = map.containsKey("onaysizIzinKullanilir"), ikinciYoneticiIzinOnayla = map.containsKey("ikinciYoneticiIzinOnayla");
-		boolean departmanGoster = map.containsKey("departmanGoster");
+		boolean departmanGoster = map.containsKey("departmanGoster"), istenAyrilmaGoster = map.containsKey("istenAyrilmaGoster"), masrafYeriGoster = map.containsKey("masrafYeriGoster"), kimlikNoGoster = map.containsKey("kimlikNoGoster");
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		for (Iterator iter = personelList.iterator(); iter.hasNext();) {
@@ -9071,6 +9177,8 @@ public class OrtakIslemler implements Serializable {
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(sirketAciklama());
 		if (departmanGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("PDKS Departman");
+		if (kimlikNoGoster)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(kimlikNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yoneticiAciklama() + " " + personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yoneticiAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yonetici2Aciklama() + " " + personelNoAciklama());
@@ -9080,7 +9188,7 @@ public class OrtakIslemler implements Serializable {
 		if (!izinERPUpdate)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(kidemBasTarihiAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşe Giriş Tarihi");
-		if (istenAyrilan)
+		if (istenAyrilmaGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşten Ayrılma Tarihi");
 		if (!izinERPUpdate)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Doğum Tarihi");
@@ -9114,8 +9222,10 @@ public class OrtakIslemler implements Serializable {
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha4);
 			}
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Cinsiyet");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bordro Alt Birimi");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Masraf Yeri");
+			if (bordroAltAlani)
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bordro Alt Birimi");
+			if (masrafYeriGoster)
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Masraf Yeri");
 			if (suaOlabilir)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Şua");
 
@@ -9139,8 +9249,7 @@ public class OrtakIslemler implements Serializable {
 			if (fazlaMesaiIzinKullan)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Fazla Mesai İzin Kullandır");
 		}
-		if (sanalPersonel)
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(sanalPersonelAciklama);
+
 		for (Tanim tanim : dinamikDurumList) {
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(tanim.getAciklama());
 		}
@@ -9158,15 +9267,19 @@ public class OrtakIslemler implements Serializable {
 			if (emailBCCDurum)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("E-Posta BCC");
 		}
+		boolean ikRole = authenticatedUser.isAdmin() || authenticatedUser.isIK();
 
 		for (Iterator iter = personelList.iterator(); iter.hasNext();) {
 			PersonelView personelView = (PersonelView) iter.next();
 			Personel personel = personelView.getPdksPersonel();
-			if (personel == null || !personel.isCalisiyor() || personel.getSicilNo() == null || personel.getSicilNo().trim().equals(""))
+			if (personel == null || personel.getSicilNo() == null || personel.getSicilNo().trim().equals(""))
+				continue;
+			if (ikRole == false && !personel.isCalisiyor())
 				continue;
 			Sirket sirket = personel.getSirket();
 			if (!sirket.getPdks())
 				continue;
+			PersonelKGS personelKGS = personel.getPersonelKGS();
 			User kullanici = personelView.getKullanici();
 			row++;
 			col = 0;
@@ -9178,6 +9291,12 @@ public class OrtakIslemler implements Serializable {
 					if (departmanGoster)
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getDepartman().getDepartmanTanim().getAciklama());
 
+				}
+				if (kimlikNoGoster) {
+					String kimlikNo = "";
+					if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo()))
+						kimlikNo = personelKGS.getKimlikNo();
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kimlikNo);
 				}
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getSicilNo() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "");
@@ -9195,11 +9314,11 @@ public class OrtakIslemler implements Serializable {
 					ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getIseBaslamaTarihi());
 				else
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-				if (istenAyrilan) {
-					if (personel.getSonCalismaTarihi() != null)
-						ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getSonCalismaTarihi());
-					else
+				if (istenAyrilmaGoster) {
+					if (personel.isCalisiyor())
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+					else
+						ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getSonCalismaTarihi());
 				}
 				if (!izinERPUpdate) {
 					if (personel.getDogumTarihi() != null)
@@ -9252,7 +9371,8 @@ public class OrtakIslemler implements Serializable {
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getCinsiyet() != null ? personel.getCinsiyet().getAciklama() : "");
 					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getBordroAltAlan() != null ? personel.getBordroAltAlan().getKodu() + " - " + personel.getBordroAltAlan().getAciklama() : "");
+						if (bordroAltAlani)
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getBordroAltAlan() != null ? personel.getBordroAltAlan().getKodu() + " - " + personel.getBordroAltAlan().getAciklama() : "");
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -9260,7 +9380,8 @@ public class OrtakIslemler implements Serializable {
 
 					}
 					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getMasrafYeri() != null ? personel.getMasrafYeri().getKoduLong() + " - " + personel.getMasrafYeri().getAciklama() : "");
+						if (masrafYeriGoster)
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getMasrafYeri() != null ? personel.getMasrafYeri().getKoduLong() + " - " + personel.getMasrafYeri().getAciklama() : "");
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -9369,7 +9490,6 @@ public class OrtakIslemler implements Serializable {
 					}
 
 				}
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getSanalPersonel() != null && personel.getSanalPersonel()));
 				for (Tanim alan : dinamikDurumList) {
 					PersonelDinamikAlan pda = getPersonelDinamikAlan(personelDinamikMap, personel, alan);
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(pda.isDurumSecili()));

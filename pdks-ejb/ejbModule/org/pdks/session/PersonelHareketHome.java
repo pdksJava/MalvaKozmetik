@@ -364,6 +364,14 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 						aramaSecenekleri.setTesisId(pdksPersonel.getTesis().getId());
 						aramaSecenekleriPer.setTesisId(pdksPersonel.getTesis().getId());
 					}
+					if (pdksPersonel.getEkSaha1() != null) {
+						aramaSecenekleri.setEkSaha1Id(pdksPersonel.getEkSaha1().getId());
+						aramaSecenekleriPer.setEkSaha1Id(pdksPersonel.getEkSaha1().getId());
+					}
+					if (pdksPersonel.getEkSaha4() != null) {
+						aramaSecenekleri.setEkSaha4Id(pdksPersonel.getEkSaha4().getId());
+						aramaSecenekleriPer.setEkSaha4Id(pdksPersonel.getEkSaha4().getId());
+					}
 					aramaSecenekleri.setSicilNo(pdksPersonel.getPdksSicilNo());
 					aramaSecenekleri.setAd(pdksPersonel.getAd());
 					aramaSecenekleri.setSoyad(pdksPersonel.getSoyad());

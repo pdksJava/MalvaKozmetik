@@ -26,7 +26,7 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 
 	private List<Tanim> tesisTanimList;
 
-	private List<SelectItem> sirketIdList, departmanIdList, gorevYeriList, tesisList;
+	private List<SelectItem> sirketIdList, departmanIdList, gorevYeriList, tesisList, altBolumIdList;
 
 	private HashMap<String, List<SelectItem>> ekSahaSelectListMap;
 
@@ -328,6 +328,14 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 
 	public void setSirketIzinKontrolYok(Boolean sirketIzinKontrolYok) {
 		this.sirketIzinKontrolYok = sirketIzinKontrolYok;
+	}
+
+	public List<SelectItem> getAltBolumIdList() {
+		return altBolumIdList;
+	}
+
+	public void setAltBolumIdList(List<SelectItem> altBolumIdList) {
+		this.altBolumIdList = altBolumIdList;
 	}
 
 }

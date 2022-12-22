@@ -1,0 +1,17 @@
+<m:message xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://jboss.com/products/seam/mail" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:hx="http://www.ibm.com/jsf/html_extended" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jstl="http://java.sun.com/jsp/jstl"
+	xmlns:rich="http://richfaces.org/rich" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets" charset="UTF-8">
+	<m:from name="#{ortakIslemler.getParameterKey('fromName')}" address="#{ortakIslemler.getParameterKey('fromAdres')}" />
+	<ui:repeat value="#{zamanlayici.adminList}" var="toUser">
+		<m:to address="#{toUser.email}" />
+	</ui:repeat>
+	<m:subject>#{zamanlayici.konu}</m:subject>
+	<ui:fragment rendered="#{zamanlayici.dosya!=null}">
+		<m:attachment fileName="#{zamanlayici.dosya.dosyaAdi}" contentType="#{zamanlayici.dosya.icerikTipi}" value="#{zamanlayici.dosya.dosyaIcerik}" />
+	</ui:fragment>
+	<m:body>
+		<p>
+			<f:verbatim>#{zamanlayici.aciklama}</f:verbatim>
+		</p>
+	</m:body>
+</m:message>

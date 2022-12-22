@@ -1,0 +1,105 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('aylikIzinRapor')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formAylikIzin">
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(izinAylikRaporHome.session,'aylikIzinRapor')}">
+				<h:panelGrid columns="2">
+					<s:decorate id="yil" template="/layout/edit.xhtml">
+						<ui:define name="label">Yıl</ui:define>
+						<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{ortakIslemler.getParameterKey('sistemBaslangicYili')}" maxValue="#{izinAylikRaporHome.maxYil}" inputSize="1" value="#{izinAylikRaporHome.yil}" />
+					</s:decorate>
+					<s:decorate id="ay" template="/layout/edit.xhtml">
+						<ui:define name="label">Ay</ui:define>
+						<h:selectOneMenu id="basAy" value="#{izinAylikRaporHome.ay}" required="true" requiredMessage="Ay seçiniz">
+							<f:selectItem itemLabel="Lütfen seçiniz" />
+							<f:selectItems value="#{izinAylikRaporHome.ayList}" />
+						</h:selectOneMenu>
+					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+						<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+						<h:selectOneMenu value="#{izinAylikRaporHome.sirket}">
+							<s:selectItems var="sirket" value="#{izinAylikRaporHome.sirketList}" label="#{sirket.ad}" noSelectionLabel="Lütfen seçiniz" />
+							<s:convertEntity />
+						</h:selectOneMenu>
+					</s:decorate>
+
+				</h:panelGrid>
+				<a4j:commandButton status="ajaxStatus" value="Listele" action="#{izinAylikRaporHome.fillIzinList}" reRender="izinPanel" />
+
+			</rich:panel>
+			<a4j:region>
+
+				<rich:panel id="izinPanel">
+					<ui:fragment rendered="#{not empty izinAylikRaporHome.pdksPersonelList}">
+						<table class="mars">
+							<thead>
+								<tr>
+									<th><h:outputText value="Adı Soyadı" /></th>
+									<th style="width: 100px;"><h:outputText value="#{ortakIslemler.personelNoAciklama()}" /></th>
+									<ui:fragment rendered="#{izinAylikRaporHome.sirket==null}">
+										<th><h:outputText value="#{ortakIslemler.sirketAciklama()}" /></th>
+									</ui:fragment>
+									 
+									<a4j:repeat value="#{izinAylikRaporHome.gunList}" var="gun">
+										<th><h:outputText value="#{gun}" /></th>
+									</a4j:repeat>
+								</tr>
+							</thead>
+							<tbody>
+								<a4j:repeat value="#{izinAylikRaporHome.pdksPersonelList}" var="personel">
+									<tr class="#{personel.sortAlanAdi}">
+										<td><ui:fragment rendered="#{personel.id==null}">
+											<B><h:outputText value="#{personel.ekSaha.aciklama}" /></B>
+										</ui:fragment> <ui:fragment rendered="#{personel.id!=null}">
+											<h:outputText value="#{personel.adSoyad}" />
+										</ui:fragment></td>
+										<td style="width: 100px;"><h:outputText value="#{personel.sicilNo}" /></td>
+										<ui:fragment rendered="#{not empty izinAylikRaporHome.getData(personel) and izinAylikRaporHome.sirket==null}">
+											<td><h:outputText value="#{personel.sirket.ad}" /></td>
+										</ui:fragment>
+										 
+										<a4j:repeat value="#{izinAylikRaporHome.dataList}" var="data">
+
+											<td class="#{data.value}" title="#{data.description}" style="width: 40px; padding-left: 1px; padding-right: 1px; text-align: center;"><h:outputText value="#{data.label}" /></td>
+										</a4j:repeat>
+									</tr>
+								</a4j:repeat>
+							</tbody>
+						</table>
+						<DIV style="display: none;"><rich:dataTable rowClasses="acik,koyu" value="#{izinAylikRaporHome.pdksPersonelList}" var="per" rows="100" rowKeyVar="row" id="hareketTable">
+							<f:facet name="header">
+								<h:outputText value="Aylık İzin Raporu" />
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Adı Soyadı" />
+								</f:facet>
+								<h:outputText value="#{per.adSoyad}" />
+							</rich:column>
+						</rich:dataTable></DIV>
+					</ui:fragment>
+
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{izinAylikRaporHome.excelAktar}" target="blank" rendered="#{not empty izinAylikRaporHome.pdksPersonelList}">
+						<a4j:support event="oncomplete" status="ajaxStatus" process="hareketTable" reRender="hareketTable" />
+					</h:commandLink>
+				</rich:panel>
+
+
+			</a4j:region>
+		</h:form>
+
+
+
+	</ui:define>
+
+</ui:composition>
+
+
+

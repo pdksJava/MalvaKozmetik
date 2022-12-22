@@ -1,0 +1,37 @@
+<m:message xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://jboss.com/products/seam/mail" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:hx="http://www.ibm.com/jsf/html_extended" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jstl="http://java.sun.com/jsp/jstl"
+	xmlns:ui="http://java.sun.com/jsf/facelets" charset="UTF-8">
+	<m:from name="#{ortakIslemler.getParameterKey('fromName')}" address="#{ortakIslemler.getParameterKey('fromAdres')}" />
+	<ui:repeat value="#{personelIzinGirisiHome.toList}" var="toUser">
+		<m:to name="#{toUser.adSoyad}" address="#{toUser.email}" />
+
+	</ui:repeat>
+	<ui:repeat value="#{personelIzinGirisiHome.ccMailList}" var="ccMail">
+		<m:cc address="#{ccMail}" />
+	</ui:repeat>
+	<ui:repeat value="#{personelIzinGirisiHome.bccMailList}" var="bccMail">
+		<m:bcc address="#{bccMail}" />
+	</ui:repeat>
+
+
+	<m:subject>
+	    #{personelIzinGirisiHome.mailIzin.izinSahibi.adSoyad} 
+		<ui:fragment rendered="#{personelIzinGirisiHome.mailIzin!=null and personelIzinGirisiHome.mailIzin.id!=null}">
+		#{personelIzinGirisiHome.mailIzin.izinTipi.izinTipiTanim.aciklama}
+		</ui:fragment>
+		<ui:fragment rendered="#{personelIzinGirisiHome.mailIzin==null or personelIzinGirisiHome.mailIzin.id==null}">
+		 #{personelIzinGirisiHome.mailIzin.izinTipi.izinTipiTanim.aciklama}
+		</ui:fragment>
+	</m:subject>
+	<m:body>
+
+		<p>#{personelIzinGirisiHome.mailIzin.izinSahibi.adSoyad} ait izin başlangıç tarihi
+			#{authenticatedUser.dateTimeFormatla(personelIzinGirisiHome.mailIzin.baslangicZamani)} işe başlama tarihi
+			#{authenticatedUser.dateTimeFormatla(personelIzinGirisiHome.mailIzin.bitisZamani)}
+			#{personelIzinGirisiHome.mailIzin.izinTipiAciklama} oluşturulmuştur.</p>
+
+
+		<p>Saygılarımızla,</p>
+
+	</m:body>
+</m:message>

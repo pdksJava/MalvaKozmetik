@@ -123,7 +123,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private List<VardiyaSablonu> sablonlar = new ArrayList<VardiyaSablonu>(), sablonIskurList = new ArrayList<VardiyaSablonu>();
 	private List<PersonelKGS> personelKGSList = new ArrayList<PersonelKGS>();
 	private List<PersonelView> tanimsizPersonelList = new ArrayList<PersonelView>();
-	private List<Personel> pdksPersonelList = new ArrayList<Personel>(), yoneticiList, yonetici2List;
+	private List<Personel> pdksPersonelList = new ArrayList<Personel>(), yoneticiList, yonetici2List, ikinciYoneticiHataliList;
 	private List<Sirket> sirketList = new ArrayList<Sirket>();
 	private List<UserMenuItemTime> menuItemTimeList;
 	private List<PersonelView> personelList = new ArrayList<PersonelView>();
@@ -138,10 +138,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	private List<String> ccAdresList = null, bccAdresList = null, hareketAdresList = null;
 	private String adi, soyadi, sicilNo, yoneticiTipi, ccAdres, adresTipi, sanalPersonelAciklama, ePosta, denemeMesaj;
-	private String bolumAciklama, kartNoAciklama, sirketKodu = "";
+	private String bolumAciklama, departmanAciklama, kartNoAciklama, altBolumAciklama, sirketKodu = "";
 	private User user, eskiKullanici;
 	private Date tarih;
-	private Tanim bosDepartman, parentDepartman;
+	private Tanim bosDepartman, parentDepartman, parentBordroTanim;
 	private String oldUserName, bosDepartmanKodu;
 
 	private PersonelIzin bakiyeIzin;
@@ -149,8 +149,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Sirket oldSirket;
 	private Personel asilYonetici1;
 	private String hataMesaj = "", personelERPGuncelleme = "";
-	private Boolean pdks, servisCalisti = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, gebeMi = Boolean.FALSE, tesisYetki = Boolean.FALSE;
-	private Boolean sutIzni = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
+	private Boolean pdks, servisCalisti = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, gebeMi = Boolean.FALSE, tesisYetki = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE;
+	private Boolean sutIzni = Boolean.FALSE, kimlikNoGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
 	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
@@ -827,6 +827,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						}
 					}
 					if (mesajList.isEmpty()) {
+						saveIkinciYoneticiOlmazList();
+
 						session.flush();
 						try {
 							session.refresh(personelView);
@@ -1042,6 +1044,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 * @param pdksDurum
 	 */
 	public void kayitGuncelle(PersonelView personelView, boolean pdksDurum) {
+		parentBordroTanim = null;
 		izinGirisiVar = Boolean.FALSE;
 		HashMap fields = new HashMap();
 		denemeMesaj = "Deneme mesajı gönderilmiştir.";
@@ -1260,8 +1263,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			getPersonelDinamikMap(pdksPersonel.getId());
 		else
 			personelDinamikMap.clear();
-		for (Tanim tanim : dinamikDurumList)
-			dinamikPersonelDurumList.add(getPersonelDinamikAlan(tanim, pdksPersonel));
+		for (Tanim tanim : dinamikDurumList) {
+			PersonelDinamikAlan pda = getPersonelDinamikAlan(tanim, pdksPersonel);
+			if (pda.getAlan().getKodu().equals("ikinciYoneticiOlmaz")) {
+				getIkinciYoneticiOlmazList(pda);
+			}
+			dinamikPersonelDurumList.add(pda);
+		}
 
 		for (Tanim tanim : dinamikSayisalList)
 			dinamikPersonelSayisalList.add(getPersonelDinamikAlan(tanim, pdksPersonel));
@@ -1302,10 +1310,60 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				}
 
 			}
-		} else if (pdksPersonel.getSirket().isErp() == false) {
-			erpSirketleriAyikla(sirketList);
+		}
+
+		else {
+			if (pdksPersonel.getSirket().isErp() == false) {
+				erpSirketleriAyikla(sirketList);
+			} else
+				parentBordroTanim = ortakIslemler.getEkSaha4(pdksPersonel.getSirket(), null, session);
+
 		}
 		izinGirisDurum(pdksPersonel);
+	}
+
+	private void saveIkinciYoneticiOlmazList() {
+		if (ikinciYoneticiHataliList != null) {
+			Date guncellemeTarihi = new Date();
+			for (Personel personel2 : ikinciYoneticiHataliList) {
+				if (personel2.isCheckBoxDurum()) {
+					personel2.setAsilYonetici2(personel2.getYoneticisi());
+					personel2.setGuncellemeTarihi(guncellemeTarihi);
+					personel2.setGuncelleyenUser(authenticatedUser);
+					session.saveOrUpdate(personel2);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param personelDinamikAlan
+	 * @return
+	 */
+	public String getIkinciYoneticiOlmazList(PersonelDinamikAlan personelDinamikAlan) {
+		ikinciYoneticiHataliList = null;
+		if (personelDinamikAlan.getPersonel().getId() != null && personelDinamikAlan.getDurumSecim() != null) {
+			Long perId = personelDinamikAlan.getPersonel().getId();
+			boolean durum = personelDinamikAlan.getDurumSecim() != null && personelDinamikAlan.getDurumSecim();
+			if (durum)
+				ikinciYoneticiHataliList = ortakIslemler.getIkinciYoneticiOlmazList(perId, personelDinamikAlan.getAlan().getKodu(), session);
+			else {
+				ikinciYoneticiHataliList = ortakIslemler.getIkinciYoneticiOlmazList(0L, personelDinamikAlan.getAlan().getKodu(), session);
+				for (Iterator iterator = ikinciYoneticiHataliList.iterator(); iterator.hasNext();) {
+					Personel personel = (Personel) iterator.next();
+					if (!personel.getId().equals(perId) && !(personel.getYoneticisi() != null && personel.getYoneticisi().getId().equals(perId)))
+						iterator.remove();
+
+				}
+			}
+			for (Personel p2 : ikinciYoneticiHataliList) {
+				p2.setCheckBoxDurum(Boolean.TRUE);
+			}
+		}
+		if (ikinciYoneticiHataliList == null)
+			ikinciYoneticiHataliList = new ArrayList<Personel>();
+
+		return "";
 	}
 
 	public String durumIK() {
@@ -1601,7 +1659,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			logger.error("PDKS hata out : " + e.getMessage());
 			PdksUtil.addMessageError("Hata : " + e.getMessage());
 		}
-		mantiksalAlanlariDoldur(list);
+
 		TreeMap<String, Boolean> map = mantiksalAlanlariDoldur(list);
 		for (String key : map.keySet())
 			personelDurumMap.put(key, map.get(key));
@@ -1665,6 +1723,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setEkSahaTanimMap((TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap"));
 		setSirketList((List<Sirket>) sonucMap.get("sirketList"));
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
+		departmanAciklama = (String) sonucMap.get("departmanAciklama");
+		altBolumAciklama = (String) sonucMap.get("altBolumAciklama");
 	}
 
 	/**
@@ -1828,11 +1888,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private TreeMap<String, Boolean> mantiksalAlanlariDoldur(List<PersonelView> list) {
 		TreeMap<String, Boolean> map = ortakIslemler.mantiksalAlanlariDoldur(list);
 		fazlaMesaiIzinKullan = map.containsKey("fazlaMesaiIzinKullan");
+		istenAyrilmaGoster = map.containsKey("istenAyrilmaGoster");
 		fazlaMesaiOde = map.containsKey("fazlaMesaiOde");
 		sanalPersonel = map.containsKey("sanalPersonel");
 		kullaniciPersonel = map.containsKey("kullaniciPersonel");
 		gebeMi = map.containsKey("gebeMi");
 		sutIzni = map.containsKey("sutIzni");
+		kimlikNoGoster = map.containsKey("kimlikNoGoster");
 		ustYonetici = map.containsKey("ustYonetici");
 		icapDurum = map.containsKey("icapDurum");
 		partTimeDurum = map.containsKey("partTimeDurum");
@@ -1910,6 +1972,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		fillEkSahaTanim();
 		Date bugun = PdksUtil.getDate(Calendar.getInstance().getTime());
 		Personel pdksPersonel = getInstance();
+		parentBordroTanim = null;
+		if (pdksPersonel.getSirket().isErp())
+			parentBordroTanim = ortakIslemler.getEkSaha4(pdksPersonel.getSirket(), null, session);
+
 		izinGirisDurum(pdksPersonel);
 		Departman departman = null;
 		Sirket sirket = pdksPersonel.getSirket();
@@ -2420,7 +2486,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (wb != null) {
 				setServisAlanlar();
 				Sheet sheet = wb.getSheetAt(0);
-
+				fillEkSahaTanim();
 				LinkedHashMap<String, TreeMap<String, List<String>>> anaMap = new LinkedHashMap<String, TreeMap<String, List<String>>>();
 				HashMap<String, String> referansMap = new HashMap<String, String>();
 				String REFERANS_SIRKET = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_SIRKET_KODU);
@@ -2730,7 +2796,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 */
 	private HashMap<String, Integer> setServisAlanlar() {
 		HashMap<String, Integer> alanMap = new HashMap<String, Integer>();
-		if (dosyaTanimList.isEmpty())
+		if (authenticatedUser.isAdmin() || dosyaTanimList.isEmpty())
 			servisBilgileriOlustur();
 		String yonetici2ERPKontrolStr = ortakIslemler.getParameterKey("yonetici2ERPKontrol");
 		boolean yonetici2ERPKontrol = yonetici2ERPKontrolStr.equals("1");
@@ -2929,6 +2995,15 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 * @throws Exception
 	 */
 	private ByteArrayOutputStream excelServiceAktarDevam(List<PersonelView> list) throws Exception {
+		HashMap fields = new HashMap();
+		fields.put("tipi", Tanim.TIPI_GENEL_TANIM);
+		fields.put("kodu", Tanim.TIPI_BORDRO_ALT_BIRIMI);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		Tanim parentBordroTanim = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
+		String bordroAltAlanStr = "";
+		if (parentBordroTanim != null && PdksUtil.hasStringValue(parentBordroTanim.getErpKodu()))
+			bordroAltAlanStr = parentBordroTanim.getErpKodu().trim().toLowerCase(PdksUtil.TR_LOCALE);
 		HashMap<String, Integer> alanMap = setServisAlanlar();
 		List<PersonelView> personelList = new ArrayList<PersonelView>(list);
 		for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
@@ -2968,6 +3043,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				Sirket sirket = personel.getSirket();
 				Tanim cinsiyet = personel.getCinsiyet(), gorev = personel.getGorevTipi(), bolum = personel.getEkSaha3();
 				Tanim masrafYeri = personel.getMasrafYeri(), bordroAltAlani = personel.getBordroAltAlan(), departman = personel.getEkSaha1(), tesis = personel.getTesis();
+				if (bordroAltAlanStr.startsWith("eksaha2"))
+					bordroAltAlani = personel.getEkSaha2();
+				else if (bordroAltAlanStr.startsWith("eksaha4"))
+					bordroAltAlani = personel.getEkSaha4();
 				for (int i = 0; i < dosyaTanimList.size(); i++) {
 					Liste liste = dosyaTanimList.get(i);
 					Tanim tanim = (Tanim) liste.getValue();
@@ -3097,7 +3176,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		try {
 			if (list == null)
 				list = personelList;
-			ByteArrayOutputStream baosDosya = ortakIslemler.personelExcelDevam(Boolean.FALSE, Boolean.TRUE, list, ekSahaTanimMap, authenticatedUser, personelDinamikMap, session);
+			ByteArrayOutputStream baosDosya = ortakIslemler.personelExcelDevam(Boolean.TRUE, list, ekSahaTanimMap, authenticatedUser, personelDinamikMap, session);
 			if (baosDosya != null)
 				PdksUtil.setExcelHttpServletResponse(baosDosya, "personelListesi.xlsx");
 
@@ -4349,5 +4428,53 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public Tanim getParentBordroTanim() {
+		return parentBordroTanim;
+	}
+
+	public void setParentBordroTanim(Tanim parentBordroTanim) {
+		this.parentBordroTanim = parentBordroTanim;
+	}
+
+	public Boolean getKimlikNoGoster() {
+		return kimlikNoGoster;
+	}
+
+	public void setKimlikNoGoster(Boolean kimlikNoGoster) {
+		this.kimlikNoGoster = kimlikNoGoster;
+	}
+
+	public String getDepartmanAciklama() {
+		return departmanAciklama;
+	}
+
+	public void setDepartmanAciklama(String departmanAciklama) {
+		this.departmanAciklama = departmanAciklama;
+	}
+
+	public String getAltBolumAciklama() {
+		return altBolumAciklama;
+	}
+
+	public void setAltBolumAciklama(String altBolumAciklama) {
+		this.altBolumAciklama = altBolumAciklama;
+	}
+
+	public List<Personel> getIkinciYoneticiHataliList() {
+		return ikinciYoneticiHataliList;
+	}
+
+	public void setIkinciYoneticiHataliList(List<Personel> ikinciYoneticiHataliList) {
+		this.ikinciYoneticiHataliList = ikinciYoneticiHataliList;
+	}
+
+	public Boolean getIstenAyrilmaGoster() {
+		return istenAyrilmaGoster;
+	}
+
+	public void setIstenAyrilmaGoster(Boolean istenAyrilmaGoster) {
+		this.istenAyrilmaGoster = istenAyrilmaGoster;
 	}
 }
