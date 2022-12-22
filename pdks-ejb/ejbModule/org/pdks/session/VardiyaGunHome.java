@@ -759,8 +759,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		String tesisAciklamasi = getAciklamasi(tesis, tesisAciklama);
 		String bolumAciklamasi = getAciklamasi(bolum, bolumAciklama);
 		String altBolumAciklamasi = altBolum != null ? getAciklamasi(altBolum, altBolumAciklama) : null;
-		String ortakAciklama = sirket.getAd() + " " + ortakIslemler.sirketAciklama().toLowerCase(PdksUtil.TR_LOCALE) + "i " + (tesis != null ? tesis.getAciklama() + " " + tesisAciklamasi + " " : "") + " " + (bolum != null ? bolum.getAciklama() + " " + bolumAciklamasi + " " : "") + " "
-				+ (altBolum != null ? altBolum.getAciklama() + " " + altBolumAciklamasi + " " : "") + " çalışanı " + personel.getAdSoyad();
+		String ortakAciklama = PdksUtil.replaceAll(sirket.getAd() + " " + ortakIslemler.sirketAciklama().toLowerCase(PdksUtil.TR_LOCALE) + "i " + (tesis != null ? tesis.getAciklama() + " " + tesisAciklamasi + " " : "") + " " + (bolum != null ? bolum.getAciklama() + " " + bolumAciklamasi + " " : "")
+				+ " " + (altBolum != null ? altBolum.getAciklama() + " " + altBolumAciklamasi + " " : "") + " çalışanı " + personel.getAdSoyad(), "  ", " ");
 		mailKonu = PdksUtil.replaceAll(ortakAciklama + " fazla mesai talep ", "  ", " ");
 		StringBuffer sb = new StringBuffer();
 		sb.append("<p>Sayın " + fmt.getGuncelleyenUser().getAdSoyad() + ",</p>");
@@ -797,15 +797,17 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		return "";
 	}
 
+	 
 	/**
-	 * @param bolumu
+	 * @param tanim
+	 * @param ozelAciklama
 	 * @return
 	 */
 	private String getAciklamasi(Tanim tanim, String ozelAciklama) {
 		String aciklama = null;
 		if (tanim != null && tanim.getParentTanim() != null)
 			aciklama = tanim.getParentTanim().getAciklama();
-		if (aciklama == null || aciklama.trim().length() == 0)
+		if (ozelAciklama != null && (aciklama == null || aciklama.trim().length() == 0))
 			aciklama = ozelAciklama;
 		if (aciklama != null)
 			aciklama = aciklama.trim().toLowerCase(PdksUtil.TR_LOCALE);
@@ -817,15 +819,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @return
 	 */
 	private Tanim getPersonelAltBolumu(Personel personel) {
-		Tanim bolumu = null, altBolum = null;
+		Tanim bolumu = null, altBolum = personel.getEkSaha4();
+		boolean altBolumVar = false;
 		try {
 			bolumu = (Tanim) personel.getEkSaha3().clone();
-			altBolum = personel.getEkSaha4();
 		} catch (Exception e) {
 		}
 		if (PdksUtil.isPuantajSorguAltBolumGir() && altBolum != null) {
 			if (!bolumu.getAciklama().equals(altBolum.getAciklama()))
-				bolumu = altBolum;
+				altBolumVar = true;
+		}
+		bolumu = null;
+		if (altBolumVar) {
+			bolumu = altBolum;
 		}
 		return bolumu;
 	}
@@ -875,8 +881,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		String tesisAciklamasi = getAciklamasi(tesis, tesisAciklama);
 		String bolumAciklamasi = getAciklamasi(bolum, bolumAciklama);
 		String altBolumAciklamasi = altBolum != null ? getAciklamasi(altBolum, altBolumAciklama) : null;
-		String ortakAciklama = sirket.getAd() + " " + ortakIslemler.sirketAciklama().toLowerCase(PdksUtil.TR_LOCALE) + "i " + (tesis != null ? tesis.getAciklama() + " " + tesisAciklamasi + " " : "") + " " + (bolum != null ? bolum.getAciklama() + " " + bolumAciklamasi + " " : "") + " "
-				+ (altBolum != null ? altBolum.getAciklama() + " " + altBolumAciklamasi + " " : "") + " çalışanı " + personel.getAdSoyad();
+		String ortakAciklama = PdksUtil.replaceAll(sirket.getAd() + " " + ortakIslemler.sirketAciklama().toLowerCase(PdksUtil.TR_LOCALE) + "i " + (tesis != null ? tesis.getAciklama() + " " + tesisAciklamasi + " " : "") + " " + (bolum != null ? bolum.getAciklama() + " " + bolumAciklamasi + " " : "")
+				+ " " + (altBolum != null ? altBolum.getAciklama() + " " + altBolumAciklamasi + " " : "") + " çalışanı " + personel.getAdSoyad(), "  ", " ");
 		mailKonu = PdksUtil.replaceAll(ortakAciklama + " Fazla Mesai Talep " + fmt.getOnayDurumAciklama(), "  ", " ");
 		StringBuffer sb = new StringBuffer();
 		sb.append("<p>Sayın " + fmt.getOlusturanUser().getAdSoyad() + ",</p>");
