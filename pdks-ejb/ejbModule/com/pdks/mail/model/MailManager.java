@@ -218,7 +218,7 @@ public class MailManager implements Serializable {
 				String body = mailObject.getBody();
 				if (mailObject.getToList().size() == 1) {
 					MailPersonel mailPersonel = mailObject.getToList().get(0);
-					if (!body.contains(mailPersonel.getAdiSoyadi())) {
+					if (!body.contains(mailPersonel.getAdiSoyadi()) && body.indexOf("Sayın ") < 0) {
 						body = "<P>Sayın " + mailPersonel.getAdiSoyadi() + ",</P>" + body;
 						mailObject.setBody(body);
 					}
@@ -227,10 +227,8 @@ public class MailManager implements Serializable {
 					body = body + "<P>Saygılarımla</P>";
 					mailObject.setBody(body);
 				}
-
-				if (mailObject.getBccList().size() + mailObject.getCcList().size() + mailObject.getToList().size() > 0) {
-
-					mailStatu.setDurum(Boolean.TRUE);
+ 				if (mailObject.getBccList().size() + mailObject.getCcList().size() + mailObject.getToList().size() > 0) {
+ 					mailStatu.setDurum(Boolean.TRUE);
 					mailStatu.setHataMesai(pasifPersonelSB.toString());
 				} else {
 					mailStatu.setHataMesai("Adres giriniz!");
