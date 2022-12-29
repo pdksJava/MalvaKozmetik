@@ -28,13 +28,17 @@ public class ArifeVardiyaDonem extends BaseObject {
 	public static final String COLUMN_NAME_ARIFE_VARDIYA_HESAPLA = "ARIFE_VARDIYA_HESAPLA";
 	public static final String COLUMN_NAME_ARIFE_SONRA_CAL_VAR_DENK_YOK = "ARIFE_SONRA_CAL_VAR_DENK_YOK";
 	public static final String COLUMN_NAME_VARDIYA_ACIKLAMA = "VARDIYA_ACIKLAMA";
-	
+
 	private Date basTarih, bitTarih;
-	private String tatilBasZaman,vardiyaKisaAciklama;
+	private String tatilBasZaman, vardiyaKisaAciklama;
 	private Boolean arifeVardiyaHesapla = Boolean.FALSE;
 	private Boolean arifeSonraVardiyaDenklestirmeVar = Boolean.FALSE;
 	private Vardiya vardiya;
 	private Integer version = 0;
+
+	public ArifeVardiyaDonem() {
+		super();
+	}
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {
@@ -103,6 +107,7 @@ public class ArifeVardiyaDonem extends BaseObject {
 	public void setArifeSonraVardiyaDenklestirmeVar(Boolean arifeSonraVardiyaDenklestirmeVar) {
 		this.arifeSonraVardiyaDenklestirmeVar = arifeSonraVardiyaDenklestirmeVar;
 	}
+
 	@Column(name = COLUMN_NAME_VARDIYA_ACIKLAMA, insertable = false, updatable = false)
 	public String getVardiyaKisaAciklama() {
 		return vardiyaKisaAciklama;

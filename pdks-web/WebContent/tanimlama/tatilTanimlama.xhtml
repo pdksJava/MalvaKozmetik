@@ -45,6 +45,12 @@
 										</ui:fragment>
 									</ui:fragment>
 								</rich:column>
+								<rich:column rendered="#{authenticatedUser.admin}">
+									<f:facet name="header">
+										<h:outputText value="Id" />
+									</f:facet>
+									<h:outputText value="#{tatil.id}" />
+								</rich:column>
 
 
 								<rich:column>
