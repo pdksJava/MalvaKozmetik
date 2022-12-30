@@ -8242,16 +8242,30 @@ public class OrtakIslemler implements Serializable {
 
 			}
 			boolean planKatSayiOku = getParameterKey("planKatSayiOku").equals("1");
+			boolean haftaTatilFazlaMesaiKatSayiOku = getParameterKey("haftaTatilFazlaMesaiKatSayiOku").equals("1");
+			boolean offFazlaMesaiKatSayiOku = getParameterKey("offFazlaMesaiKatSayiOku").equals("1");
 			boolean yuvarlamaKatSayiOku = getParameterKey("yuvarlamaKatSayiOku").equals("1");
 			TreeMap<String, BigDecimal> sureMap = planKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HAREKET_BEKLEME_SURESI, session) : null;
 			TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.SUA_GUNLUK_SAAT_SURESI, session) : null;
 			TreeMap<String, BigDecimal> yuvarlamaMap = yuvarlamaKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.YUVARLAMA_TIPI, session) : null;
+			TreeMap<String, BigDecimal> haftaTatilFazlaMesaiMap = haftaTatilFazlaMesaiKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HT_FAZLA_MESAI_TIPI, session) : null;
+			TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.OFF_FAZLA_MESAI_TIPI, session) : null;
 			boolean kontrolEt = sureMap != null && !sureMap.isEmpty();
 			HashMap<Long, Date> tarih1Map = new HashMap<Long, Date>(), tarih2Map = new HashMap<Long, Date>();
 			List<VardiyaGun> bosList = new ArrayList<VardiyaGun>();
 			for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 				String str = vardiyaGun.getVardiyaDateStr();
+				if (offFazlaMesaiMap != null && offFazlaMesaiMap.containsKey(str)) {
+					BigDecimal deger = offFazlaMesaiMap.get(str);
+					if (deger != null)
+						vardiyaGun.setOffFazlaMesaiBasDakika(deger.intValue());
+				}
+				if (haftaTatilFazlaMesaiMap != null && haftaTatilFazlaMesaiMap.containsKey(str)) {
+					BigDecimal deger = haftaTatilFazlaMesaiMap.get(str);
+					if (deger != null)
+						vardiyaGun.setHaftaTatiliFazlaMesaiBasDakika(deger.intValue());
+				}
 				if (yuvarlamaMap != null && yuvarlamaMap.containsKey(str)) {
 					BigDecimal deger = yuvarlamaMap.get(str);
 					if (deger != null)

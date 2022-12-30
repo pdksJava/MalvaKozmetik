@@ -460,7 +460,7 @@ public class StartupAction implements Serializable {
 				value = -60;
 			offFazlaMesaiBasDakika = value;
 		}
-		Vardiya.setOffFazlaMesaiBasDakika(offFazlaMesaiBasDakika);
+		Vardiya.setIntOffFazlaMesaiBasDakika(offFazlaMesaiBasDakika);
 		if (parameterMap.containsKey("haftaTatiliFazlaMesaiBasDakika")) {
 			String str = parameterMap.get("haftaTatiliFazlaMesaiBasDakika");
 			Integer value = null;
@@ -473,7 +473,7 @@ public class StartupAction implements Serializable {
 				value = -60;
 			haftaTatiliFazlaMesaiBasDakika = value;
 		}
-		Vardiya.setHaftaTatiliFazlaMesaiBasDakika(haftaTatiliFazlaMesaiBasDakika);
+		Vardiya.setIntHaftaTatiliFazlaMesaiBasDakika(haftaTatiliFazlaMesaiBasDakika);
 		if (parameterMap.containsKey("projeHeaderSize")) {
 			String deger = parameterMap.get("projeHeaderSize");
 			LinkedHashMap<String, String> map = parametreAyikla(deger);

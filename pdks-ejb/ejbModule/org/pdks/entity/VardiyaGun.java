@@ -56,6 +56,7 @@ public class VardiyaGun extends BaseObject {
 
 	private Personel personel;
 	private Vardiya vardiya, islemVardiya, oncekiVardiya, sonrakiVardiya, yeniVardiya, eskiVardiya;
+	private Integer offFazlaMesaiBasDakika = -60, haftaTatiliFazlaMesaiBasDakika = -60;
 	private Date vardiyaDate;
 	private VardiyaGorev vardiyaGorev;
 	private VardiyaSaat vardiyaSaat, vardiyaSaatDB;
@@ -1995,6 +1996,24 @@ public class VardiyaGun extends BaseObject {
 
 	public void setYarimYuvarla(int yarimYuvarla) {
 		this.yarimYuvarla = yarimYuvarla;
+	}
+
+	@Transient
+	public Integer getOffFazlaMesaiBasDakika() {
+		return offFazlaMesaiBasDakika;
+	}
+
+	public void setOffFazlaMesaiBasDakika(Integer offFazlaMesaiBasDakika) {
+		this.offFazlaMesaiBasDakika = offFazlaMesaiBasDakika;
+	}
+
+	@Transient
+	public Integer getHaftaTatiliFazlaMesaiBasDakika() {
+		return haftaTatiliFazlaMesaiBasDakika;
+	}
+
+	public void setHaftaTatiliFazlaMesaiBasDakika(Integer haftaTatiliFazlaMesaiBasDakika) {
+		this.haftaTatiliFazlaMesaiBasDakika = haftaTatiliFazlaMesaiBasDakika;
 	}
 
 }
