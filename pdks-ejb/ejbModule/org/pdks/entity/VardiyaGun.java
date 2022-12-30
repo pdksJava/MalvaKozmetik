@@ -56,7 +56,7 @@ public class VardiyaGun extends BaseObject {
 
 	private Personel personel;
 	private Vardiya vardiya, islemVardiya, oncekiVardiya, sonrakiVardiya, yeniVardiya, eskiVardiya;
-	private Integer offFazlaMesaiBasDakika = -60, haftaTatiliFazlaMesaiBasDakika = -60;
+	private Integer offFazlaMesaiBasDakika, haftaTatiliFazlaMesaiBasDakika;
 	private Date vardiyaDate;
 	private VardiyaGorev vardiyaGorev;
 	private VardiyaSaat vardiyaSaat, vardiyaSaatDB;
