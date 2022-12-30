@@ -160,32 +160,39 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 
 			if (pdksTatil.isPeriyodik()) {
 				try {
-					int yil = pdksTatil.getId() != null ? PdksUtil.getDateField(pdksTatil.getBasTarih(), Calendar.YEAR) : buYil;
-					basYil = yil;
-					cal1.set(yil, Integer.parseInt((String) pdksTatil.getBasAy()), Integer.parseInt((String) pdksTatil.getBasGun()), 0, 0);
-					pdksTatil.setBasTarih(PdksUtil.getDate((Date) cal1.getTime()));
-					if (pdksTatil.getId() == null && pdksTatil.getBasTarih().before(bugun)) {
-						cal1.set(yil + 1, Integer.parseInt((String) pdksTatil.getBasAy()), Integer.parseInt((String) pdksTatil.getBasGun()), 0, 0);
+					int basDonem = Integer.parseInt((String) pdksTatil.getBasAy()) * 100 + 100 + Integer.parseInt((String) pdksTatil.getBasGun());
+					int bitDonem = Integer.parseInt((String) pdksTatil.getBitAy()) * 100 + 100 + Integer.parseInt((String) pdksTatil.getBitGun());
+					if (bitDonem < basDonem)
+						buffer.add("Başlangıç ay/gün bitiş ay/günden büyük olamaz");
+					else {
+						int yil = pdksTatil.getId() != null ? PdksUtil.getDateField(pdksTatil.getBasTarih(), Calendar.YEAR) : buYil;
+						basYil = yil;
+						cal1.set(yil, Integer.parseInt((String) pdksTatil.getBasAy()), Integer.parseInt((String) pdksTatil.getBasGun()), 0, 0);
 						pdksTatil.setBasTarih(PdksUtil.getDate((Date) cal1.getTime()));
-					}
-					bitYil = 2999;
-					if (pdksTatil.getDurum().equals(Boolean.FALSE)) {
-						int bitisYil = PdksUtil.getDateField(pdksTatil.getBitTarih(), Calendar.YEAR);
-						if (bitisYil != bitYil) {
-							bitYil = bitisYil;
-						} else {
-							iptalEdildi = true;
-							bitYil = buYil;
-							long bitisTarihi = (bitYil * 10000) + (Long.parseLong(pdksTatil.getBitAy().toString()) * 100) + Long.parseLong(pdksTatil.getBitGun().toString());
-							if (buGunLong < bitisTarihi)
-								--bitYil;
-
+						if (pdksTatil.getId() == null && pdksTatil.getBasTarih().before(bugun)) {
+							cal1.set(yil + 1, Integer.parseInt((String) pdksTatil.getBasAy()), Integer.parseInt((String) pdksTatil.getBasGun()), 0, 0);
+							pdksTatil.setBasTarih(PdksUtil.getDate((Date) cal1.getTime()));
 						}
+						bitYil = 2999;
+						if (pdksTatil.getDurum().equals(Boolean.FALSE)) {
+							int bitisYil = PdksUtil.getDateField(pdksTatil.getBitTarih(), Calendar.YEAR);
+							if (bitisYil != bitYil) {
+								bitYil = bitisYil;
+							} else {
+								iptalEdildi = true;
+								bitYil = buYil;
+								long bitisTarihi = (bitYil * 10000) + (Long.parseLong(pdksTatil.getBitAy().toString()) * 100) + Long.parseLong(pdksTatil.getBitGun().toString());
+								if (buGunLong < bitisTarihi)
+									--bitYil;
+
+							}
+						}
+						cal2.set(bitYil, Integer.parseInt((String) pdksTatil.getBitAy()), Integer.parseInt((String) pdksTatil.getBitGun()));
+						String pattern = "yyyyMMdd";
+						bs = PdksUtil.convertToDateString(cal2.getTime(), pattern) + " 23:59:59";
+						pdksTatil.setBitTarih(PdksUtil.convertToJavaDate(bs, pattern + " HH:mm:ss"));
+
 					}
-					cal2.set(bitYil, Integer.parseInt((String) pdksTatil.getBitAy()), Integer.parseInt((String) pdksTatil.getBitGun()));
-					String pattern = "yyyyMMdd";
-					bs = PdksUtil.convertToDateString(cal2.getTime(), pattern) + " 23:59:59";
-					pdksTatil.setBitTarih(PdksUtil.convertToJavaDate(bs, pattern + " HH:mm:ss"));
 				} catch (Exception e) {
 					logger.error("PDKS hata in : \n");
 					e.printStackTrace();
