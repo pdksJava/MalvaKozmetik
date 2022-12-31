@@ -1819,8 +1819,9 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public String getSortBolumKey() {
-		String sortKey = (this.getPersonel().getPdksYonetici() != null ? "_" + this.getPersonel().getPdksYonetici().getAdSoyad() : "") + "_" + (this.getPersonel().getEkSaha3() != null ? "_" + this.getPersonel().getEkSaha3().getAciklama() : "") + "_" + this.getPersonel().getAdSoyad() + "_"
-				+ this.getVardiyaKeyStr();
+		Personel yonetici = this.getPersonel().getPdksYonetici();
+		Tanim bolum = this.getPersonel().getEkSaha3(), altBolum = this.getPersonel().getEkSaha4();
+		String sortKey = (yonetici != null ? "_" + yonetici.getAdSoyad() : "") + "_" + (bolum != null ? "_" + bolum.getAciklama() : "") + "_" + (altBolum != null ? "_" + altBolum.getAciklama() : "") + "_" + this.getPersonel().getAdSoyad() + "_" + this.getVardiyaKeyStr();
 		return sortKey;
 	}
 

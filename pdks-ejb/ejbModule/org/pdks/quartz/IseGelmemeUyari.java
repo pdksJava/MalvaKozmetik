@@ -79,7 +79,7 @@ public class IseGelmemeUyari implements Serializable {
 
 	private static boolean calisiyor = Boolean.FALSE;
 
-	private String hataKonum;
+	private String hataKonum, personelNoAciklama, bolumAciklama, altBolumAciklama, yoneticiAciklama;
 
 	private boolean statuGoster = Boolean.FALSE, hariciPersonelVar, yoneticiMailGonderme = Boolean.FALSE, izinVar = Boolean.FALSE, tesisVar = Boolean.FALSE, hataliHareketVar = Boolean.FALSE;
 
@@ -100,6 +100,11 @@ public class IseGelmemeUyari implements Serializable {
 		HashMap sonucMap = ortakIslemler.fillEkSahaTanim(sessionx, Boolean.FALSE, Boolean.FALSE);
 		setEkSahaListMap((HashMap<String, List<Tanim>>) sonucMap.get("ekSahaList"));
 		setEkSahaTanimMap((TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap"));
+		bolumAciklama = (String) sonucMap.get("bolumAciklama");
+		altBolumAciklama = (String) sonucMap.get("altBolumAciklama");
+		personelNoAciklama = ortakIslemler.personelNoAciklama();
+		yoneticiAciklama = ortakIslemler.yoneticiAciklama();
+
 	}
 
 	/**
@@ -896,16 +901,30 @@ public class IseGelmemeUyari implements Serializable {
 				listeler = PdksUtil.sortObjectStringAlanList(listeler, "getSelected", null);
 			for (Liste liste : listeler) {
 				List<VardiyaGun> sirketSubeList = PdksUtil.sortObjectStringAlanList((List<VardiyaGun>) liste.getValue(), "getSortBolumKey", null);
-				boolean hataliHareketGundeVar = Boolean.FALSE, izinGirisVar = Boolean.FALSE, hariciPersonelPlandaVar = Boolean.FALSE;
+				boolean hataliHareketGundeVar = Boolean.FALSE, izinGirisVar = Boolean.FALSE, hariciPersonelPlandaVar = Boolean.FALSE, altBolumVar = Boolean.FALSE, altBolumDurum = PdksUtil.isPuantajSorguAltBolumGir();
+				HashMap<Long, Tanim> bolumMap = new HashMap<Long, Tanim>();
+				HashMap<String, Tanim> altBolumMap = new HashMap<String, Tanim>();
 				for (VardiyaGun vardiya : sirketSubeList) {
-					if (!hariciPersonelPlandaVar) {
+					Personel personel = vardiya.getPersonel();
+					Tanim bolum = personel != null && personel.getEkSaha3() != null ? personel.getEkSaha3() : new Tanim(0L);
+					if (!bolumMap.containsKey(bolum.getId()))
+						bolumMap.put(bolum.getId(), bolum);
+					if (altBolumDurum) {
+						Tanim altBolum = personel != null && personel.getEkSaha4() != null ? personel.getEkSaha4() : new Tanim(0L);
+						String key = bolum.getId() + "_" + altBolum.getId();
+						if (!altBolumMap.containsKey(key))
+							altBolumMap.put(key, altBolum);
+						if (!altBolumVar) {
+							altBolumVar = altBolum.getId() > 0L;
+						}
+					}
+ 					if (!hariciPersonelPlandaVar) {
 						try {
-							hariciPersonelPlandaVar = !user.getPdksPersonel().getId().equals(vardiya.getPersonel().getPdksYonetici().getId());
+							hariciPersonelPlandaVar = !user.getPdksPersonel().getId().equals(personel.getPdksYonetici().getId());
 						} catch (Exception e) {
 
 						}
-
-					}
+ 					}
 					if (!hataliHareketGundeVar)
 						hataliHareketGundeVar = vardiya.isHareketHatali() && vardiya.getHareketler() != null && !vardiya.getHareketler().isEmpty();
 					if (!izinGirisVar) {
@@ -913,15 +932,28 @@ public class IseGelmemeUyari implements Serializable {
 					}
 
 				}
+				if (altBolumMap.size() < 2)
+					altBolumVar = false;
+				boolean bolumVar = bolumMap.size() > 1;
 				mesajGonder = true;
 				Personel sirketPersonel = sirketSubeList.get(0).getPersonel();
-				sb.append("<H3>" + sirketPersonel.getSirket().getAd() + (sirketPersonel.getTesis() != null ? " " + sirketPersonel.getTesis().getAciklama() : "") + "</H3>");
+				Tanim tesis = sirketPersonel.getTesis();
+				Tanim bolum = bolumMap.size() == 1 ? new ArrayList<Tanim>(bolumMap.values()).get(0) : null;
+				Tanim altBolum = altBolumMap.size() == 1 ? new ArrayList<Tanim>(altBolumMap.values()).get(0) : null;
+				if (bolum != null && altBolum != null && !PdksUtil.isStrDegisti(bolum.getAciklama(), altBolum.getAciklama())) {
+					altBolum = null;
+				}
+				String baslik = sirketPersonel.getSirket().getAd() + (tesis != null ? " " + tesis.getAciklama() : "") + (bolum != null && bolum.getId() > 0L ? " " + bolum.getAciklama() : "") + (altBolum != null && altBolum.getId() > 0L ? " " + altBolum.getAciklama() : "");
+				sb.append("<H3>" + PdksUtil.replaceAllManuel(baslik, "  ", " ") + "</H3>");
 				sb.append("<TABLE class=\"mars\" style=\"border: solid 1px\" cellpadding=\"5\" cellspacing=\"0\"><THEAD> <TR>");
 				if (hariciPersonelPlandaVar)
-					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + ortakIslemler.yoneticiAciklama() + "</b></TH>");
-				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Bölüm</b></TH>");
+					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + yoneticiAciklama + "</b></TH>");
+				if (bolumVar)
+					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + bolumAciklama + "</b></TH>");
+				if (altBolumVar)
+					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + altBolumAciklama + "</b></TH>");
 				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Adı Soyadı</b></TH>");
-				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + ortakIslemler.personelNoAciklama() + "</b></TH>");
+				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + personelNoAciklama + "</b></TH>");
 				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Çalışma Zamanı</b></TH>");
 				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Giriş Zamanı</b></TH>");
 				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Çıkış Zamanı</b></TH>");
@@ -939,7 +971,10 @@ public class IseGelmemeUyari implements Serializable {
 					renk = !renk;
 					if (hariciPersonelPlandaVar)
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "") + "</td>");
-					sb.append("<td style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "") + "</td>");
+					if (bolumVar)
+						sb.append("<td style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "") + "</td>");
+					if (altBolumVar)
+						sb.append("<td style=\"border: 1px solid;\">" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "") + "</td>");
 					sb.append("<td nowrap style=\"border: 1px solid;\">" + personel.getAdSoyad() + "</td>");
 					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + personel.getSicilNo() + "</td>");
 					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + vg.getVardiyaZamanAdi() + "</td>");
