@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
+import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
@@ -55,12 +56,13 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 	private List<Departman> departmanList = new ArrayList<Departman>();
 	private List<Sirket> sirketList = new ArrayList<Sirket>();
 	private List<PersonelView> personelList;
-	private Boolean istenAyrilanlariEkle, sirketEklenebilir;
+	private Boolean istenAyrilanlariEkle, sirketEklenebilir, sirketGrupGoster;
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private String bolumAciklama;
-	private Session session;
+	private List<SelectItem> sirketGrupList;
 	private Sirket seciliSirket;
+	private Session session;
 
 	@Override
 	public Object getId() {
@@ -96,6 +98,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 
 	public String guncelle(Sirket sirket) {
 		fillBagliOlduguDepartmanTanimList();
+		sirketGrupList = ortakIslemler.getTanimSelectItem(ortakIslemler.getTanimList(Tanim.TIPI_SIRKET_GRUP, session));
 		if (sirket == null) {
 			for (Iterator iterator = departmanList.iterator(); iterator.hasNext();) {
 				Departman departman = (Departman) iterator.next();
@@ -154,6 +157,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 	}
 
 	public void fillsirketList() {
+		session.clear();
 		List<Sirket> sirketList = new ArrayList<Sirket>();
 		HashMap parametreMap = new HashMap();
 		if (authenticatedUser.isIK() && !authenticatedUser.isIKAdmin())
@@ -166,14 +170,19 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<Sirket> pasifList = new ArrayList<Sirket>(), pdksHaricList = new ArrayList<Sirket>();
+		sirketGrupGoster = false;
 		for (Iterator iterator = sirketList.iterator(); iterator.hasNext();) {
 			Sirket sirket = (Sirket) iterator.next();
 			if (!sirket.getDurum()) {
 				pasifList.add(sirket);
 				iterator.remove();
-			} else if (!sirket.getFazlaMesai()) {
-				pdksHaricList.add(sirket);
-				iterator.remove();
+			} else {
+				if (!sirketGrupGoster)
+					sirketGrupGoster = sirket.getSirketGrupId() != null;
+				if (!sirket.getFazlaMesai()) {
+					pdksHaricList.add(sirket);
+					iterator.remove();
+				}
 			}
 
 		}
@@ -273,7 +282,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
-		session.clear();
+	
 		fillsirketList();
 	}
 
@@ -355,6 +364,22 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public List<SelectItem> getSirketGrupList() {
+		return sirketGrupList;
+	}
+
+	public void setSirketGrupList(List<SelectItem> sirketGrupList) {
+		this.sirketGrupList = sirketGrupList;
+	}
+
+	public Boolean getSirketGrupGoster() {
+		return sirketGrupGoster;
+	}
+
+	public void setSirketGrupGoster(Boolean sirketGrupGoster) {
+		this.sirketGrupGoster = sirketGrupGoster;
 	}
 
 }

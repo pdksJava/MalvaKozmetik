@@ -97,6 +97,14 @@
 
 								</h:inputText>
 							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.ikRole and ortakIslemler.getParameterKey('sadeceFazlaMesaiGetir')=='1'}">
+								<ui:define name="label">Sadece Fazla Mesai Göster</ui:define>
+								<h:selectBooleanCheckbox value="#{fazlaMesaiHesaplaHome.sadeceFazlaMesai}">
+									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.yilAyDegisti(true)}" ajaxSingle="true"
+										reRender="denklestirmeDonemiTable,girisler,hareketTables" />
+								</h:selectBooleanCheckbox>
+							</s:decorate>
+
 							<a4j:outputPanel id="hataliPuantajGoster">
 
 								<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum and fazlaMesaiHesaplaHome.sicilNo==''}">
@@ -141,7 +149,7 @@
 											<TABLE width="85%">
 												<TR>
 													<TD nowrap="nowrap"><SPAN style="font-size: 14;"><h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
-																action="#{fazlaMesaiHesaplaHome.fazlaMesaiExcel}" target="blank">
+																action="#{fazlaMesaiHesaplaHome.fazlaMesaiExcel()}" target="blank">
 																<a4j:support event="oncomplete" status="ajaxStatus" />
 															</h:commandLink></SPAN></TD>
 												</TR>

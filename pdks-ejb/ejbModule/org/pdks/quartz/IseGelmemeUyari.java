@@ -79,7 +79,7 @@ public class IseGelmemeUyari implements Serializable {
 
 	private static boolean calisiyor = Boolean.FALSE;
 
-	private String hataKonum, personelNoAciklama, bolumAciklama, altBolumAciklama, yoneticiAciklama;
+	private String hataKonum, personelNoAciklama, tesisAciklama, bolumAciklama, altBolumAciklama, yoneticiAciklama;
 
 	private boolean statuGoster = Boolean.FALSE, hariciPersonelVar, yoneticiMailGonderme = Boolean.FALSE, izinVar = Boolean.FALSE, tesisVar = Boolean.FALSE, hataliHareketVar = Boolean.FALSE;
 
@@ -100,6 +100,7 @@ public class IseGelmemeUyari implements Serializable {
 		HashMap sonucMap = ortakIslemler.fillEkSahaTanim(sessionx, Boolean.FALSE, Boolean.FALSE);
 		setEkSahaListMap((HashMap<String, List<Tanim>>) sonucMap.get("ekSahaList"));
 		setEkSahaTanimMap((TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap"));
+		tesisAciklama = ortakIslemler.tesisAciklama();
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
 		altBolumAciklama = (String) sonucMap.get("altBolumAciklama");
 		personelNoAciklama = ortakIslemler.personelNoAciklama();
@@ -205,6 +206,8 @@ public class IseGelmemeUyari implements Serializable {
 	 * @throws Exception
 	 */
 	public String iseGelmeDurumu(Date tarih, User islemYapan, boolean manuel, Session session, boolean mailGonder) throws Exception {
+		if (islemYapan != null && session != null)
+			session.clear();
 		logger.info("iseGelmeDurumu in " + new Date());
 		if (!manuel)
 			calisiyor = Boolean.TRUE;
@@ -883,9 +886,11 @@ public class IseGelmemeUyari implements Serializable {
 		}
 		for (VardiyaGun vardiyaGun : list) {
 			Personel personel = vardiyaGun.getPersonel();
-			if (tesisList != null && personel.getTesis() != null && !tesisList.contains(personel.getTesis().getId()))
+			Sirket sirket = personel.getSirket();
+			Tanim tesis = sirket.getSirketGrupId() == null || sirket.getDepartmanBolumAyni() == false ? personel.getTesis() : null;
+			if (tesisList != null && tesis != null && !tesisList.contains(tesis.getId()))
 				continue;
-			String key = personel.getSirket().getAd() + "_" + (personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
+			String key = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? "_" + tesis.getAciklama() : "");
 			List<VardiyaGun> ozelList = sirketParcalaMap.containsKey(key) ? sirketParcalaMap.get(key) : new ArrayList<VardiyaGun>();
 			if (ozelList.isEmpty()) {
 				Liste liste = new Liste(key, ozelList);
@@ -918,13 +923,13 @@ public class IseGelmemeUyari implements Serializable {
 							altBolumVar = altBolum.getId() > 0L;
 						}
 					}
- 					if (!hariciPersonelPlandaVar) {
+					if (!hariciPersonelPlandaVar) {
 						try {
 							hariciPersonelPlandaVar = !user.getPdksPersonel().getId().equals(personel.getPdksYonetici().getId());
 						} catch (Exception e) {
 
 						}
- 					}
+					}
 					if (!hataliHareketGundeVar)
 						hataliHareketGundeVar = vardiya.isHareketHatali() && vardiya.getHareketler() != null && !vardiya.getHareketler().isEmpty();
 					if (!izinGirisVar) {
@@ -937,13 +942,15 @@ public class IseGelmemeUyari implements Serializable {
 				boolean bolumVar = bolumMap.size() > 1;
 				mesajGonder = true;
 				Personel sirketPersonel = sirketSubeList.get(0).getPersonel();
-				Tanim tesis = sirketPersonel.getTesis();
+				Sirket sirket = sirketPersonel.getSirket();
+				Tanim tesis = sirket.getSirketGrupId() == null || sirketPersonel.getSirket().isDepartmanBolumAynisi() == false ? sirketPersonel.getTesis() : null;
 				Tanim bolum = bolumMap.size() == 1 ? new ArrayList<Tanim>(bolumMap.values()).get(0) : null;
 				Tanim altBolum = altBolumMap.size() == 1 ? new ArrayList<Tanim>(altBolumMap.values()).get(0) : null;
-				if (bolum != null && altBolum != null && !PdksUtil.isStrDegisti(bolum.getAciklama(), altBolum.getAciklama())) {
+				if (bolum != null && altBolum != null && !PdksUtil.isStrDegisti(bolum.getAciklama(), altBolum.getAciklama()))
 					altBolum = null;
-				}
-				String baslik = sirketPersonel.getSirket().getAd() + (tesis != null ? " " + tesis.getAciklama() : "") + (bolum != null && bolum.getId() > 0L ? " " + bolum.getAciklama() : "") + (altBolum != null && altBolum.getId() > 0L ? " " + altBolum.getAciklama() : "");
+				String baslik = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? " " + tesis.getAciklama() + " " + tesisAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
+				baslik += (bolum != null && bolum.getId() > 0L ? " " + bolum.getAciklama() + " " + bolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
+				baslik += (altBolum != null && altBolum.getId() > 0L ? " " + altBolum.getAciklama() + " " + altBolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
 				sb.append("<H3>" + PdksUtil.replaceAllManuel(baslik, "  ", " ") + "</H3>");
 				sb.append("<TABLE class=\"mars\" style=\"border: solid 1px\" cellpadding=\"5\" cellspacing=\"0\"><THEAD> <TR>");
 				if (hariciPersonelPlandaVar)
@@ -1228,7 +1235,6 @@ public class IseGelmemeUyari implements Serializable {
 		StringBuffer sb = new StringBuffer();
 		sb.append("İşe gelme durumu kontrolü tamamlandı.");
 		if (userYoneticiList != null && !userYoneticiList.isEmpty()) {
-			// userYoneticiList = (ArrayList<User>) PdksUtil.sortObjectStringAlanList(userYoneticiList, "getAdSoyad", null);
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
 				sb.append("<BR/><BR/>" + user.getAdSoyad() + " - " + user.getPdksPersonel().getSirket().getAd());

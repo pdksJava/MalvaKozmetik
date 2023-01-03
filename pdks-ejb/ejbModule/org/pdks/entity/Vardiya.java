@@ -1,5 +1,6 @@
 package org.pdks.entity;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +62,7 @@ public class Vardiya extends BaseObject {
 	private List<Integer> gunlukList;
 	private Boolean aksamVardiya = Boolean.FALSE, icapVardiya = Boolean.FALSE, gebelik = Boolean.FALSE, genel = Boolean.FALSE, isKur = Boolean.FALSE;
 	private String tipi;
-
+	private VardiyaGun islemVardiyaGun;
 	private char vardiyaTipi;
 	private Date vardiyaBasZaman, vardiyaBitZaman, vardiyaTarih, arifeBaslangicTarihi;
 	private Date vardiyaTelorans1BasZaman, vardiyaTelorans2BasZaman, vardiyaTelorans1BitZaman, vardiyaTelorans2BitZaman;
@@ -459,6 +460,7 @@ public class Vardiya extends BaseObject {
 	// TODO Vardiyalar kontrol ediliyor
 	@Transient
 	public void setVardiyaZamani(VardiyaGun pdksVardiyaGun) {
+		this.setIslemVardiyaGun(pdksVardiyaGun);
 		Date tarih = null;
 		ayinSonGunDurum = false;
 		this.setOffFazlaMesaiBasDakika(intOffFazlaMesaiBasDakika);
@@ -1563,7 +1565,8 @@ public class Vardiya extends BaseObject {
 
 	@Column(name = "GIRISERKENTOLERANSDAKIKA")
 	public short getGirisErkenToleransDakika() {
-		return girisErkenToleransDakika;
+		BigDecimal value = getKatSayi(KatSayiTipi.ERKEN_GIRIS_TIPI.value());
+		return value != null ? value.shortValue() : girisErkenToleransDakika;
 	}
 
 	public void setGirisErkenToleransDakika(short girisErkenToleransDakika) {
@@ -1590,7 +1593,8 @@ public class Vardiya extends BaseObject {
 
 	@Column(name = "CIKISGECIKMETOLERANSDAKIKA")
 	public short getCikisGecikmeToleransDakika() {
-		return cikisGecikmeToleransDakika;
+		BigDecimal value = getKatSayi(KatSayiTipi.GEC_CIKIS_TIPI.value());
+		return value != null ? value.shortValue() : cikisGecikmeToleransDakika;
 	}
 
 	public void setCikisGecikmeToleransDakika(short cikisGecikmeToleransDakika) {
@@ -1826,7 +1830,8 @@ public class Vardiya extends BaseObject {
 
 	@Transient
 	public Integer getOffFazlaMesaiBasDakika() {
-		return offFazlaMesaiBasDakika;
+		BigDecimal value = getKatSayi(KatSayiTipi.OFF_FAZLA_MESAI_TIPI.value());
+		return value != null ? value.intValue() : offFazlaMesaiBasDakika;
 	}
 
 	public void setOffFazlaMesaiBasDakika(Integer offFazlaMesaiBasDakika) {
@@ -1835,10 +1840,35 @@ public class Vardiya extends BaseObject {
 
 	@Transient
 	public Integer getHaftaTatiliFazlaMesaiBasDakika() {
-		return haftaTatiliFazlaMesaiBasDakika;
+		BigDecimal value = getKatSayi(KatSayiTipi.HT_FAZLA_MESAI_TIPI.value());
+		return value != null ? value.intValue() : haftaTatiliFazlaMesaiBasDakika;
 	}
 
 	public void setHaftaTatiliFazlaMesaiBasDakika(Integer haftaTatiliFazlaMesaiBasDakika) {
 		this.haftaTatiliFazlaMesaiBasDakika = haftaTatiliFazlaMesaiBasDakika;
+	}
+
+	@Transient
+	public BigDecimal getKatSayi(Integer tipi) {
+		BigDecimal katSayi = null;
+		try {
+			if (tipi != null && islemVardiyaGun != null && islemVardiyaGun.getKatSayiMap() != null) {
+				if (islemVardiyaGun.getKatSayiMap().containsKey(tipi))
+					katSayi = islemVardiyaGun.getKatSayiMap().get(tipi);
+			}
+		} catch (Exception e) {
+			katSayi = null;
+		}
+
+		return katSayi;
+	}
+
+	@Transient
+	public VardiyaGun getIslemVardiyaGun() {
+		return islemVardiyaGun;
+	}
+
+	public void setIslemVardiyaGun(VardiyaGun islemVardiyaGun) {
+		this.islemVardiyaGun = islemVardiyaGun;
 	}
 }

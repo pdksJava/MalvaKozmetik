@@ -1,5 +1,6 @@
 package org.pdks.entity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -76,6 +77,7 @@ public class VardiyaGun extends BaseObject {
 	private Tatil tatil;
 	private PersonelIzin izin;
 	private VardiyaSablonu vardiyaSablonu;
+	private HashMap<Integer, BigDecimal> katSayiMap;
 	private boolean bitmemisGun = Boolean.TRUE, islendi = Boolean.FALSE, ayrikHareketVar = Boolean.FALSE;
 	private int yarimYuvarla = PdksUtil.getYarimYuvarlaLast();
 	private HareketKGS ilkGiris, sonCikis;
@@ -132,6 +134,8 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	public void setVardiya(Vardiya value) {
+		if (value != null && value.getId() != null)
+			value.setIslemVardiyaGun(this);
 		if (isKurVardiya != null)
 			isKurVardiya.setVardiya(value);
 		this.vardiya = value;
@@ -2015,6 +2019,15 @@ public class VardiyaGun extends BaseObject {
 
 	public void setHaftaTatiliFazlaMesaiBasDakika(Integer haftaTatiliFazlaMesaiBasDakika) {
 		this.haftaTatiliFazlaMesaiBasDakika = haftaTatiliFazlaMesaiBasDakika;
+	}
+
+	@Transient
+	public HashMap<Integer, BigDecimal> getKatSayiMap() {
+		return katSayiMap;
+	}
+
+	public void setKatSayiMap(HashMap<Integer, BigDecimal> katSayiMap) {
+		this.katSayiMap = katSayiMap;
 	}
 
 }

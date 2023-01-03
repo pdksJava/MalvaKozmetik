@@ -22,6 +22,7 @@ public class Sirket extends BaseObject {
 
 	public static final String TABLE_NAME = "SIRKET";
 	public static final String COLUMN_NAME_DEPARTMAN = "DEPARTMAN_ID";
+	public static final String COLUMN_NAME_SIRKET_GRUP = "SIRKET_GRUP_ID";
 	public static final String COLUMN_NAME_PDKS = "PDKS_DURUM";
 	public static final String COLUMN_NAME_FAZLA_MESAI = "FAZLA_MESAI";
 	public static final String COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR = "ISTEN_AYR_TAR_CALISIYOR";
@@ -30,11 +31,12 @@ public class Sirket extends BaseObject {
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
 	public static final String COLUMN_NAME_AD = "AD";
 	public static final String SIRKET_ERP_KODU = "3030";
+	private Long sirketGrupId;
 	private String ad, aciklama, erpKodu = "", lpdapOnEk = "";
 	private Boolean erpDurum = Boolean.FALSE, ldapDurum = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE;
 	private Boolean fazlaMesaiOde = Boolean.FALSE, fazlaMesai = Boolean.FALSE, istenAyrilmaTarihindeCalisiyor = Boolean.FALSE;
 	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, departmanBolumAyni = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE;
-
+	private Tanim sirketGrup;
 	private Departman departman;
 	private Integer version = 0;
 
@@ -96,6 +98,26 @@ public class Sirket extends BaseObject {
 
 	public void setDepartman(Departman departman) {
 		this.departman = departman;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	@JoinColumn(name = COLUMN_NAME_SIRKET_GRUP, insertable = false, updatable = false)
+	@Fetch(FetchMode.JOIN)
+	public Tanim getSirketGrup() {
+		return sirketGrup;
+	}
+
+	public void setSirketGrup(Tanim sirketGrup) {
+		this.sirketGrup = sirketGrup;
+	}
+
+	@Column(name = COLUMN_NAME_SIRKET_GRUP)
+	public Long getSirketGrupId() {
+		return sirketGrupId;
+	}
+
+	public void setSirketGrupId(Long sirketGrupId) {
+		this.sirketGrupId = sirketGrupId;
 	}
 
 	@Column(name = "LDAP_ON_EK")
@@ -221,4 +243,5 @@ public class Sirket extends BaseObject {
 	public boolean isFazlaMesaiTalepGirer() {
 		return fazlaMesaiTalepGirilebilir != null && fazlaMesaiTalepGirilebilir.booleanValue();
 	}
+
 }

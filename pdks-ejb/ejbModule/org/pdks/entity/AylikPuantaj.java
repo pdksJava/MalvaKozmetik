@@ -705,7 +705,9 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public void setFazlaMesaiHesapla(boolean value) {
 		if (value) {
-			if (pdksPersonel != null) {
+			if (personelDenklestirmeAylik == null || personelDenklestirmeAylik.isDenklestirme() == false)
+				value = false;
+			else if (pdksPersonel != null) {
 				Personel yoneticisi = pdksPersonel.getYoneticisi();
 				if (yoneticisi != null && (yonetici == null || yonetici.getId() == null)) {
 					String dateStr = (yil * 100 + ay) + "01";

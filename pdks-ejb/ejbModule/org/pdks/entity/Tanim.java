@@ -64,6 +64,7 @@ public class Tanim implements Serializable, Cloneable {
 	public static final String TIPI_SAP_DEPARTMAN = "SAP_DEPARTMAN";
 	public static final String TIPI_PDKS_DEPARTMAN = "PDKS_DEPARTMAN";
 	public static final String TIPI_TESIS = "TESIS";
+	public static final String TIPI_SIRKET_GRUP = "SIRKET_GRUP";
 	public static final String TIPI_CINSIYET = "CINSIYET";
 	public static final String TIPI_FAZLA_MESAI_IPTAL_NEDEN = "FAZLA_MESAI_IPTAL_NEDEN";
 	public static final String TIPI_HAREKET_NEDEN = "TIPI_HAREKET_NEDEN";

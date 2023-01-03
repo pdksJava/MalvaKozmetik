@@ -675,7 +675,6 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 								vardiyaGun.setYarimYuvarla(deger.intValue());
 						}
 					}
-					logger.debug(vardiyaGun.getVardiyaKeyStr());
 					if (vardiyaGun.getVardiya() == null)
 						continue;
 					List<VardiyaGun> list = perVardiyaMap.containsKey(key) ? perVardiyaMap.get(key) : new ArrayList<VardiyaGun>();

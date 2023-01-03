@@ -46,6 +46,14 @@
 							</f:facet>
 							<h:outputText value="#{sirket.aciklama}" />
 						</rich:column>
+						<rich:column rendered="#{sirketHome.sirketGrupGoster}">
+							<f:facet name="header">
+								<h:outputText value="Grup Adı" />
+							</f:facet>
+							<ui:fragment rendered="#{sirket.sirketGrup!=null}">
+								<h:outputText value="#{sirket.sirketGrup.aciklama}" />
+							</ui:fragment>
+						</rich:column>
 
 						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IKAdmin}">
 							<f:facet name="header">
@@ -165,6 +173,8 @@
 			<h:form>
 				<h:panelGrid columns="1">
 					<a4j:outputPanel ajaxRendered="true">
+					</a4j:outputPanel>
+					<a4j:outputPanel id="sirketGiris">
 						<h:panelGrid columns="1">
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">#{ortakIslemler.sirketAciklama()} adı</ui:define>
@@ -188,31 +198,35 @@
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">ERP</ui:define>
 									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.erpDurum}">
-										<a4j:support event="onclick" reRender="erpKoduDurum" />
+										<a4j:support event="onclick" reRender="sirketGiris" />
 									</h:selectBooleanCheckbox>
 								</s:decorate>
 								<c:if test="#{sirketHome.seciliSirket.erp}">
-									<a4j:region id="erpKoduDurum">
-										<s:decorate template="/layout/edit.xhtml">
-											<ui:define name="label">ERP Kodu</ui:define>
-											<h:inputText value="#{sirketHome.seciliSirket.erpKodu}" size="5" maxlength="5" />
-										</s:decorate>
-									</a4j:region>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">ERP Kodu</ui:define>
+										<h:inputText value="#{sirketHome.seciliSirket.erpKodu}" size="5" maxlength="5" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{not empty sirketHome.sirketGrupList}">
+										<ui:define name="label">Şirket Grup</ui:define>
+										<h:selectOneMenu value="#{sirketHome.seciliSirket.sirketGrupId}">
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{sirketHome.sirketGrupList}" />
+											<a4j:support event="onchange" status="ajaxStatus" />
+										</h:selectOneMenu>
+									</s:decorate>
 								</c:if>
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">LDAP</ui:define>
 									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.ldapDurum}">
-										<a4j:support event="onclick" reRender="ldapKodu" />
+										<a4j:support event="onclick" reRender="sirketGiris" />
 									</h:selectBooleanCheckbox>
 								</s:decorate>
-								<c:if test="#{sirketHome.seciliSirket.ldap}">
-									<a4j:region id="ldapKodu">
-										<s:decorate template="/layout/edit.xhtml">
-											<ui:define name="label">LDAP Ön Ek</ui:define>
-											<h:inputText value="#{sirketHome.seciliSirket.lpdapOnEk}" size="5" maxlength="5" />
-										</s:decorate>
-									</a4j:region>
-								</c:if>
+
+								<s:decorate template="/layout/edit.xhtml" rendered="#{sirketHome.seciliSirket.ldap}">
+									<ui:define name="label">LDAP Ön Ek</ui:define>
+									<h:inputText value="#{sirketHome.seciliSirket.lpdapOnEk}" size="5" maxlength="5" />
+								</s:decorate>
+
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">PDKS Dahil</ui:define>
 									<h:selectBooleanCheckbox value="#{sirketHome.seciliSirket.pdks}" />
@@ -254,8 +268,8 @@
 								</s:decorate>
 							</h:panelGrid>
 						</h:panelGrid>
-
 					</a4j:outputPanel>
+
 					<!--  -->
 
 					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{sirketHome.save}" reRender="sirketTable"
