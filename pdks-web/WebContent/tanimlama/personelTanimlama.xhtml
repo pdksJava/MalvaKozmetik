@@ -1281,7 +1281,7 @@
 
 												</rich:simpleTogglePanel>
 												<c:if test="#{pdksPersonelHome.tesisYetki}">
-													<rich:simpleTogglePanel rendered="#{pdksPersonelHome.instance.kullanici.IK or pdksPersonelHome.instance.kullanici.hastaneSuperVisor}"
+													<rich:simpleTogglePanel rendered="#{pdksPersonelHome.instance.kullanici.IK or pdksPersonelHome.instance.kullanici.direktorSuperVisor}"
 														label="#{ortakIslemler.tesisAciklama()}" height="110" switchType="client" opened="true">
 														<s:decorate>
 															<rich:listShuttle id="shuttle" sourceValue="#{pdksPersonelHome.distinctTesisList}" fastOrderControlsVisible="false"

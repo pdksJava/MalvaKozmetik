@@ -39,6 +39,7 @@ import org.pdks.entity.Tanim;
 import org.pdks.entity.Tatil;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGun;
+import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserVekalet;
 import org.pdks.session.OrtakIslemler;
@@ -1188,7 +1189,7 @@ public class IseGelmemeUyari implements Serializable {
 						// if (!zamanDurum)
 						// zamanDurum = PdksUtil.getTestDurum();
 						if (zamanDurum)
-							iseGelmemeDurumuCalistir(session, null, true);
+							iseGelmemeDurumuCalistir(null, session, null, false, true);
 					}
 				}
 			} catch (Exception e) {
@@ -1214,10 +1215,15 @@ public class IseGelmemeUyari implements Serializable {
 	}
 
 	/**
+	 * @param tarih
 	 * @param session
+	 * @param islemYapan
+	 * @param manuel
+	 * @param mailGonder
+	 * @return
 	 * @throws Exception
 	 */
-	public String iseGelmemeDurumuCalistir(Session session, User islemYapan, boolean mailGonder) throws Exception {
+	public String iseGelmemeDurumuCalistir(Date tarih, Session session, User islemYapan, boolean manuel, boolean mailGonder) throws Exception {
 		uyariNot = null;
 		if (userYoneticiList == null)
 			userYoneticiList = new ArrayList<User>();
@@ -1226,7 +1232,7 @@ public class IseGelmemeUyari implements Serializable {
 		hataKonum = "iseGelmeDurumu basladı ";
 
 		try {
-			iseGelmeDurumu(null, islemYapan, Boolean.FALSE, session, mailGonder);
+			iseGelmeDurumu(tarih, islemYapan, manuel, session, mailGonder);
 		} catch (Exception e) {
 			e.printStackTrace();
 			userYoneticiList = null;
@@ -1235,16 +1241,41 @@ public class IseGelmemeUyari implements Serializable {
 		StringBuffer sb = new StringBuffer();
 		sb.append("İşe gelme durumu kontrolü tamamlandı.");
 		if (userYoneticiList != null && !userYoneticiList.isEmpty()) {
+			HashMap fields = new HashMap();
+			sb = new StringBuffer();
+			sb.append("WITH BUGUN AS ( ");
+			sb.append("		select 1 AS ID ");
+			sb.append("	),");
+			sb.append("	DEP_YONETICI AS (");
+			sb.append("		SELECT R.ROLENAME DEP_YONETICI_ROL_ADI FROM " + Role.TABLE_NAME + " R");
+			sb.append("		WHERE R." + Role.COLUMN_NAME_ROLE_NAME + "='" + Role.TIPI_DEPARTMAN_SUPER_VISOR + "' AND R." + Role.COLUMN_NAME_STATUS + "=1");
+			sb.append("	) ");
+			sb.append("	SELECT COALESCE(DY.DEP_YONETICI_ROL_ADI,'') DEP_YONETICI_ROL_ADI, GETDATE() AS TARIH FROM BUGUN B ");
+			sb.append("	LEFT JOIN DEP_YONETICI DY ON 1=1");
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+ 			List<Object[]> veriList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+			boolean departmanYoneticiRolVar = false;
+			if (!veriList.isEmpty()) {
+				Object[] veri = veriList.get(0);
+				departmanYoneticiRolVar = ((String) veri[0]).length() > 0;
+
+			}
+			sb = new StringBuffer();
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
-				sb.append("<BR/><BR/>" + user.getAdSoyad() + " - " + user.getPdksPersonel().getSirket().getAd());
+				sb.append("<BR/><BR/>" + user.getAdSoyad() + (user.getPdksPersonel().getGorevTipi() != null ? " ( " + user.getPdksPersonel().getGorevTipi().getAciklama() + " ) " : " - ") + user.getPdksPersonel().getSirket().getAd());
 				StringBuilder unvan = new StringBuilder();
-				if (user.getPdksPersonel().getEkSaha1() != null)
+				if (departmanYoneticiRolVar && user.getPdksPersonel().getEkSaha1() != null)
 					unvan.append(user.getPdksPersonel().getEkSaha1().getAciklama());
-				if (user.getPdksPersonel().getEkSaha2() != null)
-					unvan.append((unvan.length() > 0 ? " - " : "") + user.getPdksPersonel().getEkSaha2().getAciklama());
-				if (user.getPdksPersonel().getEkSaha3() != null)
-					unvan.append((unvan.length() > 0 ? " - " : "") + user.getPdksPersonel().getEkSaha3().getAciklama());
+				String bolum = user.getPdksPersonel().getEkSaha3() != null ? user.getPdksPersonel().getEkSaha3().getAciklama() : "";
+				String altBolum = user.getPdksPersonel().getEkSaha4() != null ? user.getPdksPersonel().getEkSaha4().getAciklama() : "";
+				if (!bolum.equals(""))
+					unvan.append((unvan.length() > 0 ? " - " : "") + bolum);
+				if (PdksUtil.isPuantajSorguAltBolumGir()) {
+					if (!altBolum.equals("") && !altBolum.equals(bolum))
+						unvan.append((unvan.length() > 0 ? " - " : "") + altBolum);
+				}
 				if (unvan.length() > 0)
 					sb.append(" [ " + unvan.toString() + " ]");
 				unvan = null;
@@ -1255,8 +1286,15 @@ public class IseGelmemeUyari implements Serializable {
 
 			}
 			sb.append("<br/>");
-			if (mailGonder)
-				zamanlayici.mailGonder(session, "İşe gelme durumu", new String(sb), null, Boolean.TRUE);
+			if (mailGonder) {
+				List<User> userList = null;
+				if (manuel && islemYapan != null) {
+					userList = new ArrayList<User>();
+					userList.add(islemYapan);
+				}
+				zamanlayici.mailGonder(session, "İşe gelme durumu", new String(sb), userList, Boolean.TRUE);
+
+			}
 		}
 		sb = null;
 		return "";

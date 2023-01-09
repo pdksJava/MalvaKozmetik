@@ -391,7 +391,7 @@ public class OrtakIslemler implements Serializable {
 		if (user == null)
 			user = authenticatedUser;
 		if (user != null) {
-			if (user.isHastaneSuperVisor() == false && user.getYetkiliPersonelNoList() != null && user.getYetkiliPersonelNoList().size() == 1) {
+			if (user.isDirektorSuperVisor() == false && user.getYetkiliPersonelNoList() != null && user.getYetkiliPersonelNoList().size() == 1) {
 				try {
 					boolean yoneticiPersonelEngelleDurum = !getParameterKey("yoneticiPersonelEngelleDurum").equals("1");
 					String perNo = user.getYetkiliPersonelNoList().get(0).trim();
@@ -1783,7 +1783,7 @@ public class OrtakIslemler implements Serializable {
 				Departman departman = null;
 				String order = null;
 				HashMap fields = new HashMap();
-				if (tesisYetki && user.getId() != null && (user.isIK() || user.isHastaneSuperVisor()) && (user.getYetkiliTesisler() == null || user.getYetkiliTesisler().isEmpty())) {
+				if (tesisYetki && user.getId() != null && (user.isIK() || user.isDirektorSuperVisor()) && (user.getYetkiliTesisler() == null || user.getYetkiliTesisler().isEmpty())) {
 					setUserTesisler(user, session);
 				}
 				if (tipi.equalsIgnoreCase("S")) {
@@ -1823,12 +1823,12 @@ public class OrtakIslemler implements Serializable {
 					}
 					boolean departmanYonetici = ikRol == false && user.isDepartmentAdmin() && getParameterKey("tesisYetki").equals("1");
 					Long direktorId = null;
-					if ((user.isHastaneSuperVisor() || departmanYonetici) && personel.getEkSaha1() != null)
+					if ((user.isDirektorSuperVisor() || departmanYonetici) && personel.getEkSaha1() != null)
 						direktorId = personel.getEkSaha1().getId();
 					if (sirket != null)
 						departmanId = null;
 					if (tesisYetki) {
-						if ((user.isHastaneSuperVisor() || departman == null || departman.isAdminMi()) && user.getYetkiliTesisler() != null && !user.getYetkiliTesisler().isEmpty()) {
+						if ((user.isDirektorSuperVisor() || departman == null || departman.isAdminMi()) && user.getYetkiliTesisler() != null && !user.getYetkiliTesisler().isEmpty()) {
 							tesisId = "";
 							for (Iterator iterator = user.getYetkiliTesisler().iterator(); iterator.hasNext();) {
 								Tanim tesis = (Tanim) iterator.next();
@@ -2505,7 +2505,7 @@ public class OrtakIslemler implements Serializable {
 		} else
 			fields.put("sirket.id=", 0L);
 
-		if (departmanId == null && authenticatedUser.isHastaneSuperVisor())
+		if (departmanId == null && authenticatedUser.isDirektorSuperVisor())
 			departmanId = authenticatedUser.getPdksPersonel().getEkSaha1().getId();
 		else if (authenticatedUser.isIK_Tesis() && authenticatedUser.getPdksPersonel().getTesis() != null)
 			fields.put("tesis.id=", authenticatedUser.getPdksPersonel().getTesis().getId());
@@ -2522,7 +2522,7 @@ public class OrtakIslemler implements Serializable {
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<Tanim> tanimlar = pdksEntityController.getObjectByInnerObjectListInLogic(fields, Personel.class);
-		if (authenticatedUser.isYonetici() || authenticatedUser.isHastaneSuperVisor() || authenticatedUser.isAdmin() || authenticatedUser.isIK() || tanimlar.size() > 50) {
+		if (authenticatedUser.isYonetici() || authenticatedUser.isDirektorSuperVisor() || authenticatedUser.isAdmin() || authenticatedUser.isIK() || tanimlar.size() > 50) {
 			HashMap<Long, Tanim> tanimMap = new HashMap<Long, Tanim>();
 			for (Tanim tanim : tanimlar)
 				tanimMap.put(tanim.getId(), tanim);
@@ -5114,7 +5114,7 @@ public class OrtakIslemler implements Serializable {
 			} else
 				user.setYetkiliPersonelNoList(new ArrayList(personelMap.keySet()));
 
-			if (!user.isIK() && user.isHastaneSuperVisor())
+			if (!user.isIK() && user.isDirektorSuperVisor())
 				setUserSuperVisorHemsirePersonelNoList(user, session);
 		}
 		if (user.isIK()) {
@@ -5257,7 +5257,7 @@ public class OrtakIslemler implements Serializable {
 		if (!user.getYetkiliPersonelNoList().contains(sicilNo))
 			yetkiEkle(user, sicilNo);
 
-		if (!(user.isIK() || user.isAdmin()) && user.isHastaneSuperVisor())
+		if (!(user.isIK() || user.isAdmin()) && user.isDirektorSuperVisor())
 			superVisorHemsireIslemleri(user, basTarih, bitTarih, session);
 		if (!(user.isSuperVisor() || user.isProjeMuduru())) {
 			if (user.getYetkiTumPersonelNoList() != null && !user.getYetkiTumPersonelNoList().isEmpty()) {
@@ -5544,7 +5544,7 @@ public class OrtakIslemler implements Serializable {
 			String superVisorHemsireSayfalari = getParameterKey("superVisorHemsireSayfalari");
 			List<String> sayfalar = !superVisorHemsireSayfalari.equals("") ? PdksUtil.getListByString(superVisorHemsireSayfalari, null) : null;
 			if (sayfalar != null && sayfalar.contains(calistigiSayfa)) {
-				if (islemYapan.isHastaneSuperVisor())
+				if (islemYapan.isDirektorSuperVisor())
 					perNoList.clear();
 				for (String string : islemYapan.getSuperVisorHemsirePersonelNoList()) {
 					if (string == null || string.trim().length() == 0)
@@ -11377,7 +11377,7 @@ public class OrtakIslemler implements Serializable {
 							puantajData.setPlanlananSure(0.0d);
 						}
 					}
-					if (sablonAylikPuantaj.isFazlaMesaiHesapla()) {
+					if (puantajData.isFazlaMesaiHesapla()) {
 						double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(authenticatedUser);
 						boolean fazlaMesaiOde = puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde();
 						if (!fazlaMesaiOde) {

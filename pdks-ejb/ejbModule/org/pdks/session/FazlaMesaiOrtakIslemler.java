@@ -969,7 +969,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		} else
 			fields.put("sirket.id=", 0L);
 
-		if (departmanId == null && authenticatedUser.isHastaneSuperVisor())
+		if (departmanId == null && authenticatedUser.isDirektorSuperVisor())
 			departmanId = authenticatedUser.getPdksPersonel().getEkSaha1().getId();
 		else if (authenticatedUser.isIK_Tesis() && authenticatedUser.getPdksPersonel().getTesis() != null)
 			fields.put("tesis.id=", authenticatedUser.getPdksPersonel().getTesis().getId());
@@ -1031,7 +1031,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 			}
 		}
-		if (authenticatedUser.isYonetici() || authenticatedUser.isHastaneSuperVisor() || authenticatedUser.isAdmin() || authenticatedUser.isIK() || tanimlar.size() > 50) {
+		if (authenticatedUser.isYonetici() || authenticatedUser.isDirektorSuperVisor() || authenticatedUser.isAdmin() || authenticatedUser.isIK() || tanimlar.size() > 50) {
 			HashMap<Long, Tanim> tanimMap = new HashMap<Long, Tanim>();
 			for (Tanim tanim : tanimlar)
 				tanimMap.put(tanim.getId(), tanim);
@@ -1145,7 +1145,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				fields.put(PdksEntityController.MAP_KEY_SELECT, "ekSaha3");
 
 				fields.put("sirket.id=", sirketId);
-				if (authenticatedUser.isHastaneSuperVisor())
+				if (authenticatedUser.isDirektorSuperVisor())
 					fields.put("ekSaha1.id=", authenticatedUser.getPdksPersonel().getEkSaha1().getId());
 				if (bitTarih != null)
 					fields.put("iseBaslamaTarihi<=", bitTarih);

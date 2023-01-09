@@ -83,7 +83,7 @@ public class User implements Serializable, Cloneable {
 	private boolean durum = Boolean.TRUE, yeniSifre = Boolean.FALSE, admin = Boolean.FALSE, IK = Boolean.FALSE, IK_Tesis = Boolean.FALSE;
 	private boolean sistemYoneticisi = Boolean.FALSE, yonetici = Boolean.FALSE, yoneticiKontratli = Boolean.FALSE, genelMudur = Boolean.FALSE, sekreter = Boolean.FALSE;
 	private boolean projeMuduru = Boolean.FALSE, mudur = Boolean.FALSE, superVisor = Boolean.FALSE, IKDirektor = Boolean.FALSE, personel = Boolean.FALSE;
-	private boolean operatorSSK = Boolean.FALSE, yetkiSet = Boolean.FALSE, hastaneSuperVisor = Boolean.FALSE, taseronAdmin = Boolean.FALSE;
+	private boolean operatorSSK = Boolean.FALSE, yetkiSet = Boolean.FALSE, direktorSuperVisor = Boolean.FALSE, taseronAdmin = Boolean.FALSE;
 	private boolean browserIE, izinGirebilir = Boolean.FALSE, izinSSKGirebilir = Boolean.FALSE, izinOnaylayabilir = Boolean.FALSE, testLogin = Boolean.FALSE;
 	private boolean tesisYonetici;
 	private ArrayList<User> userVekaletList;
@@ -827,14 +827,14 @@ public class User implements Serializable, Cloneable {
 	}
 
 	@Transient
-	public boolean isHastaneSuperVisor() {
+	public boolean isDirektorSuperVisor() {
 		if (!yetkiSet)
 			PdksUtil.setUserYetki(this);
-		return hastaneSuperVisor;
+		return direktorSuperVisor;
 	}
 
-	public void setHastaneSuperVisor(boolean hastaneSuperVisor) {
-		this.hastaneSuperVisor = hastaneSuperVisor;
+	public void setDirektorSuperVisor(boolean direktorSuperVisor) {
+		this.direktorSuperVisor = direktorSuperVisor;
 	}
 
 	@Transient

@@ -2116,7 +2116,7 @@ public class PdksUtil implements Serializable {
 			user.setProjeMuduru(Boolean.FALSE);
 			user.setOperatorSSK(Boolean.FALSE);
 			user.setYoneticiKontratli(Boolean.FALSE);
-			user.setHastaneSuperVisor(Boolean.FALSE);
+			user.setDirektorSuperVisor(Boolean.FALSE);
 			user.setIK_Tesis(Boolean.FALSE);
 			user.setSistemYoneticisi(Boolean.FALSE);
 			user.setPersonel(Boolean.FALSE);
@@ -2153,8 +2153,8 @@ public class PdksUtil implements Serializable {
 					else if (role.getRolename().equals(Role.TIPI_SUPER_VISOR)) {
 						user.setSuperVisor(Boolean.TRUE);
 						user.setYonetici(Boolean.TRUE);
-					} else if (role.getRolename().equals(Role.TIPI_HASTANE_SUPER_VISOR)) {
-						user.setHastaneSuperVisor(pdksPersonel != null && pdksPersonel.getEkSaha1() != null && pdksPersonel.getEkSaha1().getDurum());
+					} else if (role.getRolename().equals(Role.TIPI_DEPARTMAN_SUPER_VISOR)) {
+						user.setDirektorSuperVisor(pdksPersonel != null && pdksPersonel.getEkSaha1() != null && pdksPersonel.getEkSaha1().getDurum());
 						user.setYonetici(Boolean.TRUE);
 					} else if (role.getRolename().equals(Role.TIPI_PROJE_MUDURU))
 						user.setProjeMuduru(Boolean.TRUE);

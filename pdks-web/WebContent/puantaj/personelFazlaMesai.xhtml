@@ -170,7 +170,7 @@
 
 							</f:facet>
 							<h:outputText value="#{mesai.vardiyaGun.vardiya.aciklama}" id="vardiyaAciklama" />
-							<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK  or authenticatedUser.hastaneSuperVisor}">
+							<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK  or authenticatedUser.direktorSuperVisor}">
 								<rich:toolTip for="vardiyaAciklama">
 							Fazla Mesai Aralığı : #{authenticatedUser.dateTimeFormatla(mesai.vardiyaGun.islemVardiya.vardiyaFazlaMesaiBasZaman)} -
 							 #{authenticatedUser.dateTimeFormatla(mesai.vardiyaGun.islemVardiya.vardiyaFazlaMesaiBitZaman)}

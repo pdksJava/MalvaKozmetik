@@ -577,7 +577,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			PdksUtil.setUserYetki(kullanici);
 		List<Role> yeniRoller = kullanici != null && kullanici.getYetkiliRollerim() != null ? new ArrayList<Role>(kullanici.getYetkiliRollerim()) : new ArrayList<Role>();
 		List<Tanim> yeniTesisler = new ArrayList<Tanim>();
-		if (kullanici != null && tesisYetki && (kullanici.isIK() || kullanici.isHastaneSuperVisor()) && kullanici.getYetkiliTesisler() != null)
+		if (kullanici != null && tesisYetki && (kullanici.isIK() || kullanici.isDirektorSuperVisor()) && kullanici.getYetkiliTesisler() != null)
 			yeniTesisler.addAll(kullanici.getYetkiliTesisler());
 		User user = null;
 		String ok = "";
@@ -2912,7 +2912,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (personel.getEkSaha1() == null || personel.getEkSaha1().getKodu().equals(bosDepartmanKodu)) {
 				for (Iterator iterator = allRoles.iterator(); iterator.hasNext();) {
 					Role role = (Role) iterator.next();
-					if (role.getRolename().equals(Role.TIPI_HASTANE_SUPER_VISOR)) {
+					if (role.getRolename().equals(Role.TIPI_DEPARTMAN_SUPER_VISOR)) {
 						iterator.remove();
 					}
 				}

@@ -2724,7 +2724,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				perList.add(personel.getPdksSicilNo().trim());
 		}
 
-		if (!authenticatedUser.isHastaneSuperVisor() && !authenticatedUser.isIK() && (authenticatedUser.isYonetici() || authenticatedUser.isYoneticiKontratli())) {
+		if (!authenticatedUser.isDirektorSuperVisor() && !authenticatedUser.isIK() && (authenticatedUser.isYonetici() || authenticatedUser.isYoneticiKontratli())) {
 			ortakIslemler.sistemeGirisIslemleri(islemYapan, Boolean.TRUE, basTarih, bitTarih, session);
 
 		}
@@ -2792,7 +2792,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			List<VardiyaGun> vardiyaGunList = ortakIslemler.getIskurVardiyalar(perIdler, PdksUtil.tariheGunEkleCikar(basTarih, -7), PdksUtil.tariheGunEkleCikar(bitTarih, 7), session);
 
 			List<Long> idList = null;
-			if ((authenticatedUser.isYonetici() || authenticatedUser.isYoneticiKontratli()) && !authenticatedUser.isHastaneSuperVisor()) {
+			if ((authenticatedUser.isYonetici() || authenticatedUser.isYoneticiKontratli()) && !authenticatedUser.isDirektorSuperVisor()) {
 				idList = new ArrayList<Long>();
 				if (aramaSecenekleri.getGorevYeriList() != null) {
 					for (SelectItem selectItem : aramaSecenekleri.getGorevYeriList())
@@ -3163,7 +3163,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 		List<AylikPuantaj> aylikPuantajAllList = new ArrayList<AylikPuantaj>();
 		Long userId = authenticatedUser.getPdksPersonel().getId();
-		boolean kullaniciYonetici = authenticatedUser.isYonetici() || authenticatedUser.isSuperVisor() || authenticatedUser.isProjeMuduru() || authenticatedUser.isHastaneSuperVisor();
+		boolean kullaniciYonetici = authenticatedUser.isYonetici() || authenticatedUser.isSuperVisor() || authenticatedUser.isProjeMuduru() || authenticatedUser.isDirektorSuperVisor();
 		for (Iterator iterator = aylikPuantajList.iterator(); iterator.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 			if (!kullaniciYonetici || !aylikPuantaj.getPdksPersonel().getId().equals(userId)) {
@@ -3705,7 +3705,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				authenticatedUser.setCalistigiSayfa("isKurVardiyaPlani");
 			setPlanGirisi(Boolean.TRUE);
 			islemYapiliyor = Boolean.FALSE;
-			hastaneSuperVisor = authenticatedUser.isHastaneSuperVisor();
+			hastaneSuperVisor = authenticatedUser.isDirektorSuperVisor();
 
 			aramaSecenekleri.setTesisList(null);
 			aramaSecenekleri.setTesisId(null);

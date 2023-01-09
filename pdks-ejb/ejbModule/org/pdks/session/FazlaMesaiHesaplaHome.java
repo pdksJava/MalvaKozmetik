@@ -1308,7 +1308,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					Boolean tarihGecti = Boolean.TRUE;
 					Boolean gebemi = Boolean.FALSE, calisiyor = Boolean.FALSE;
 					puantaj.setKaydet(Boolean.FALSE);
-					personelFazlaMesaiStr = puantaj.getPersonelDenklestirmeAylik().isDenklestirme() ? personelFazlaMesaiOrjStr : " ";
+					personelFazlaMesaiStr = personelFazlaMesaiOrjStr;
 					puantaj.setSablonAylikPuantaj(aylikPuantajSablon);
 					puantaj.setFazlaMesaiHesapla(Boolean.FALSE);
 

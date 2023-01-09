@@ -34,7 +34,7 @@
 					<a4j:commandButton status="ajaxStatus" value="Devamsızlık Raporu Göster" action="#{devamsizlikRaporuHome.devamsizlikListeOlustur}"
 						reRender="devamsizlikPanel" />
 					<a4j:commandButton id="girisKontrol" status="ajaxStatus" rendered="#{authenticatedUser.admin}"
-						action="#{iseGelmemeUyari.iseGelmeDurumu(devamsizlikRaporuHome.date,authenticatedUser,true,devamsizlikRaporuHome.session,true)}"
+						action="#{iseGelmemeUyari.iseGelmemeDurumuCalistir(devamsizlikRaporuHome.date,devamsizlikRaporuHome.session,authenticatedUser,true,true)}"
 						value="Giriş/Çıkış Kontrol Mail" reRender="girisKontrol" />
 
 				</h:panelGrid>
