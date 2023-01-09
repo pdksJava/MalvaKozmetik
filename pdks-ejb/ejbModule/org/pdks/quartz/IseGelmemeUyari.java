@@ -1254,7 +1254,7 @@ public class IseGelmemeUyari implements Serializable {
 			sb.append("	LEFT JOIN DEP_YONETICI DY ON 1=1");
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
- 			List<Object[]> veriList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+			List<Object[]> veriList = pdksEntityController.getObjectBySQLList(sb, fields, null);
 			boolean departmanYoneticiRolVar = false;
 			if (!veriList.isEmpty()) {
 				Object[] veri = veriList.get(0);
@@ -1264,7 +1264,8 @@ public class IseGelmemeUyari implements Serializable {
 			sb = new StringBuffer();
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
-				sb.append("<BR/><BR/>" + user.getAdSoyad() + (user.getPdksPersonel().getGorevTipi() != null ? " ( " + user.getPdksPersonel().getGorevTipi().getAciklama() + " ) " : " - ") + user.getPdksPersonel().getSirket().getAd());
+				Sirket sirket = user.getPdksPersonel().getSirket();
+				sb.append("<BR/><BR/>" + user.getAdSoyad() + (user.getPdksPersonel().getGorevTipi() != null ? " ( " + user.getPdksPersonel().getGorevTipi().getAciklama() + " ) " : " - ") + "<BR/>" + (sirket.getSirketGrup() != null ? sirket.getSirketGrup().getAciklama() : sirket.getAd()));
 				StringBuilder unvan = new StringBuilder();
 				if (departmanYoneticiRolVar && user.getPdksPersonel().getEkSaha1() != null)
 					unvan.append(user.getPdksPersonel().getEkSaha1().getAciklama());
