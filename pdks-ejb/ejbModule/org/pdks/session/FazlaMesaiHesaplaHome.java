@@ -4814,9 +4814,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				altBolumList.clear();
 			if (seciliEkSaha3Id != null)
 				altBolumDoldur();
-		} else
-
+		} else {
+			seciliEkSaha4Id = null;
 			aylikPuantajList.clear();
+		}
+
 		return "";
 	}
 
@@ -4835,7 +4837,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 			if (!eski)
 				seciliEkSaha4Id = -1L;
-		}
+		} else
+			seciliEkSaha4Id = null;
 		return "";
 	}
 

@@ -327,14 +327,7 @@ public class StartupAction implements Serializable {
 			SSLImport.addCertToKeyStore(null, null, true);
 		} catch (Exception e) {
 		}
-		boolean puantajSorguAltBolumGir = false;
-
-		if (parameterMap.containsKey("puantajSorguAltBolumGir")) {
-			String puantajSorguAltBolumGirStr = parameterMap.get("puantajSorguAltBolumGir");
-			puantajSorguAltBolumGir = puantajSorguAltBolumGirStr != null && puantajSorguAltBolumGirStr.equals("1");
-		}
-
-		PdksUtil.setPuantajSorguAltBolumGir(puantajSorguAltBolumGir);
+	
 		if (parameterMap.containsKey("skin"))
 			SkinBean.setSkinAdi(parameterMap.get("skin"));
 		Integer yarimYuvarlaLast = null;
@@ -410,7 +403,14 @@ public class StartupAction implements Serializable {
 			}
 			Vardiya.setVardiyaAySonuKontrolTarih(vardiyaAySonuKontrolTarih);
 		}
+		boolean puantajSorguAltBolumGir = false;
 
+		if (parameterMap.containsKey("puantajSorguAltBolumGir")) {
+			String puantajSorguAltBolumGirStr = parameterMap.get("puantajSorguAltBolumGir");
+			puantajSorguAltBolumGir = puantajSorguAltBolumGirStr != null && puantajSorguAltBolumGirStr.equals("1");
+		}
+
+		PdksUtil.setPuantajSorguAltBolumGir(puantajSorguAltBolumGir);
 		if (parameterMap.containsKey("vardiyaKontrolTarih3")) {
 			String dateStr = parameterMap.get("vardiyaKontrolTarih3");
 			Date vardiyaKontrolTarih3 = null;

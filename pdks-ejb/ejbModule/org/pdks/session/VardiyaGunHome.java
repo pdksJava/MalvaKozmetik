@@ -7988,6 +7988,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		fileImportKontrol();
 		if (ekSaha4Tanim != null)
 			altBolumDoldur();
+		else
+			aramaSecenekleri.setEkSaha4Id(null);
 	}
 
 	public String altBolumDoldur() {
@@ -8009,7 +8011,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 			if (!eski)
 				seciliEkSaha4Id = -1L;
-		}
+		} else
+			seciliEkSaha4Id = null;
 
 		aramaSecenekleri.setEkSaha4Id(seciliEkSaha4Id);
 		aramaSecenekleri.setAltBolumIdList(altBolumIdList);
