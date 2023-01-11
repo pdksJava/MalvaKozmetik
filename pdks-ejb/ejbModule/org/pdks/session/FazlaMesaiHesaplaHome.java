@@ -2117,7 +2117,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 		if (denklestirmeAyDurum == false)
 			fazlaMesaiOnayDurum = Boolean.FALSE;
-		if (gecenAy != null && gecenAy.getDurum().equals(Boolean.TRUE)) {
+		boolean gecenAyDurum = gecenAy != null && fazlaMesaiOrtakIslemler.getDurum(gecenAy);
+		if (gecenAyDurum) {
 			hataYok = false;
 			PdksUtil.addMessageAvailableError(gecenAy.getAyAdi() + " " + gecenAy.getYil() + " dönemi açıktır!");
 		} else if (kullaniciPersonel.equals(Boolean.FALSE) && authenticatedUser.isIK() && denklestirmeAyDurum && denklestirmeAy.getOtomatikOnayIKTarih() != null) {
