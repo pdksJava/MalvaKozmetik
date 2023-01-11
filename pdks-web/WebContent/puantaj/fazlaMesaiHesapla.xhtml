@@ -128,7 +128,7 @@
 										<TD width="35%" valign="top"><ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
 												<ui:fragment rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum}">
 													<ui:fragment
-														rendered="#{(fazlaMesaiHesaplaHome.denklestirmeAy.durum or fazlaMesaiHesaplaHome.ikRole) and fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.hataYok and (fazlaMesaiHesaplaHome.sicilNo==null or fazlaMesaiHesaplaHome.sicilNo=='')}">
+														rendered="#{(fazlaMesaiHesaplaHome.denklestirmeAyDurum or fazlaMesaiHesaplaHome.ikRole) and fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.hataYok and (fazlaMesaiHesaplaHome.denklestirmeAy.guncelleIK or fazlaMesaiHesaplaHome.sicilNo==null or fazlaMesaiHesaplaHome.sicilNo=='')}">
 														<a4j:commandButton value="Fazla Mesai Onayla" action="#{fazlaMesaiHesaplaHome.fazlaMesaiOnayKontrol()}"
 															onclick="#{rich:component('wait')}.show()" reRender="onayPanel" rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiOnayDurum}"
 															oncomplete="#{rich:component('wait')}.hide();if (#{fazlaMesaiHesaplaHome.onayla}) #{rich:component('onayPanel')}.show() ; " />
