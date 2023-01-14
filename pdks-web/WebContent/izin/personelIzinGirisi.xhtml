@@ -206,8 +206,8 @@
 							<h:panelGrid columns="2">
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">İzin Başlangıç Zamanı</ui:define>
-									<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.instance.baslangicZamani}" showWeekDaysBar="false"
-										showWeeksBar="false" />
+									<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.instance.baslangicZamani}"
+										showWeekDaysBar="false" showWeeksBar="false" />
 								</s:decorate>
 								<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
 									<ui:fragment rendered="#{personelIzinGirisiHome.seciliIzinTipi.saatGosterilecek and personelIzinGirisiHome.saatGosterilecek}">
@@ -222,7 +222,8 @@
 								</s:decorate>
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">İşe Başlama Zamanı</ui:define>
-									<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.instance.bitisZamani}" showWeekDaysBar="false" showWeeksBar="false" />
+									<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.instance.bitisZamani}" showWeekDaysBar="false"
+										showWeeksBar="false" />
 								</s:decorate>
 
 								<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
@@ -329,7 +330,8 @@
 				<h:panelGrid columns="2">
 					<s:decorate id="baslangicField" template="/layout/edit.xhtml">
 						<ui:define name="label">Başlangıç Tarihi</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.filtreBaslangicZamani}" required="true" requiredMessage="Tarih giriniz" />
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.filtreBaslangicZamani}" required="true"
+							requiredMessage="Tarih giriniz" />
 					</s:decorate>
 					<s:decorate id="bitisField" template="/layout/edit.xhtml">
 						<ui:define name="label">Bitiş Tarihi</ui:define>
@@ -415,11 +417,12 @@
 									<a4j:commandButton image="/img/edit.gif" title="Güncelle" status="ajaxStatus" id="editlink"
 										rendered="#{izin.isEditEdilebilir(authenticatedUser)}" action="#{personelIzinGirisiHome.guncelle(izin)}"
 										oncomplete="if (#{personelIzinGirisiHome.izinIptalGoster}) #{rich:component('editPanel')}.show()" reRender="editPanel">
- 									</a4j:commandButton>
+									</a4j:commandButton>
 								</ui:fragment>
 								<ui:fragment rendered="#{izin.isIptalEdilirmi(authenticatedUser)}">
 									<a4j:commandButton image="/img/delete.gif" title="İptal" rendered="#{izin.girilen}" status="ajaxStatus" id="iptallink" reRender="deletePanel"
-										action="#{personelIzinGirisiHome.izinKontrol(izin)}" oncomplete="if (#{personelIzinGirisiHome.izinIptalGoster}) #{rich:component('deletePanel')}.show()">
+										action="#{personelIzinGirisiHome.izinKontrol(izin)}"
+										oncomplete="if (#{personelIzinGirisiHome.izinIptalGoster}) #{rich:component('deletePanel')}.show()">
 
 									</a4j:commandButton>
 
@@ -444,6 +447,12 @@
 
 									</a4j:commandButton>
 								</ui:fragment>
+							</rich:column>
+							<rich:column style="text-align:center" rendered="#{authenticatedUser.admin}">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{izin.id}" />
 							</rich:column>
 							<rich:column style="text-align:center">
 								<f:facet name="header">
@@ -883,8 +892,8 @@
 						<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">İzin Başlangıç Zamanı</ui:define>
-								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.guncellenecekIzin.baslangicZamani}" showWeekDaysBar="false"
-									showWeeksBar="false" />
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.guncellenecekIzin.baslangicZamani}"
+									showWeekDaysBar="false" showWeeksBar="false" />
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
 								<ui:fragment rendered="#{personelIzinGirisiHome.guncellenecekIzin.izinTipi.saatGosterilecek and personelIzinGirisiHome.saatGosterilecek}">
@@ -900,8 +909,8 @@
 
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">İşe Başlama Zamanı</ui:define>
-								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.guncellenecekIzin.bitisZamani}" showWeekDaysBar="false"
-									showWeeksBar="false" />
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.guncellenecekIzin.bitisZamani}"
+									showWeekDaysBar="false" showWeeksBar="false" />
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
 								<ui:fragment rendered="#{personelIzinGirisiHome.guncellenecekIzin.izinTipi.saatGosterilecek and personelIzinGirisiHome.saatGosterilecek}">
@@ -1012,7 +1021,8 @@
 				<table width="100%">
 					<tbody>
 						<tr>
-							<td align="center" width="20%"><a4j:commandButton status="ajaxStatus" value="Evet" rendered="#{personelIzinGirisiHome.guncellenecekIzin!=null}"
+							<td align="center" width="20%"><a4j:commandButton status="ajaxStatus" value="Evet"
+									rendered="#{personelIzinGirisiHome.guncellenecekIzin!=null}"
 									action="#{personelIzinGirisiHome.izinERPIptal(personelIzinGirisiHome.guncellenecekIzin)}"
 									oncomplete="if (#{personelIzinGirisiHome.izinIptalGoster==false}) #{rich:component('deleteERPPanel')}.hide();"
 									reRender="izinListPanel,izinTable,pgrowl" /> <a4j:commandButton status="ajaxStatus" value="Vazgeç"

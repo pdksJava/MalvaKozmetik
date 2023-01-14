@@ -98,6 +98,8 @@ public class VardiyaGun extends BaseObject {
 		this.personel = personel;
 		this.vardiya = vardiya;
 		this.vardiyaDate = vardiyaDate;
+		if (vardiya != null)
+			this.durum = !vardiya.isCalisma();
 	}
 
 	private List<FazlaMesaiTalep> fazlaMesaiTalepler;

@@ -351,10 +351,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 	 * @return
 	 */
 	public VardiyaGun getVardiyaGun(Personel personel, Date tarih, Vardiya vardiya) {
-		VardiyaGun pdksVardiyaGun = new VardiyaGun();
-		pdksVardiyaGun.setPersonel(personel);
-		pdksVardiyaGun.setVardiya(vardiya);
-		pdksVardiyaGun.setVardiyaDate(tarih);
+		VardiyaGun pdksVardiyaGun = new VardiyaGun(personel, vardiya, tarih);
 		return pdksVardiyaGun;
 	}
 
@@ -1172,9 +1169,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			String gorevYeriAciklama = getExcelAciklama();
 			baosDosya = aylikVardiyaExcelDevam(gorevYeriAciklama, aylikPuantajList);
 			if (baosDosya != null) {
- 				dosyaAdi = "AylıkÇalışmaPlanı_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
+				dosyaAdi = "AylıkÇalışmaPlanı_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
- 			}
+			}
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();
@@ -1506,7 +1503,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 	private void puantajYetkilendir(TreeMap<String, VardiyaGun> vardiyaMap, AylikPuantaj aylikPuantaj, AylikPuantaj aylikPuantajToplam, VardiyaGun toplamVardiyaGun) {
 		if (toplamVardiyaGun == null) {
 			toplamVardiyaGun = new VardiyaGun();
-
 			Vardiya toplamVardiya = new Vardiya();
 			toplamVardiya.setKisaAdi("Toplam");
 			toplamVardiya.setId(0L);
@@ -2895,10 +2891,8 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				boolean personelCalmayaBasladi = false, calisiyor = false;
 				for (Iterator iterator2 = sablonVardiyalar.iterator(); iterator2.hasNext();) {
 					VardiyaGun pdksVardiyaGunMaster = (VardiyaGun) iterator2.next();
+					VardiyaGun pdksVardiyaGun = new VardiyaGun(personel, null, pdksVardiyaGunMaster.getVardiyaDate());
 
-					VardiyaGun pdksVardiyaGun = new VardiyaGun();
-					pdksVardiyaGun.setVardiyaDate(pdksVardiyaGunMaster.getVardiyaDate());
-					pdksVardiyaGun.setPersonel(personel);
 					if (!personelCalmayaBasladi)
 						personelCalmayaBasladi = pdksVardiyaGunMaster.getVardiyaDate().getTime() >= iseBaslamaTarihi.getTime();
 					if (vardiyalarMap.containsKey(pdksVardiyaGun.getVardiyaKey()))
@@ -3006,10 +3000,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					List<VardiyaGun> vardiyaGunleri = new ArrayList<VardiyaGun>();
 					vardiyaGunleri.addAll(pdksVardiyaHaftaMaster.getVardiyaGunler());
 					for (VardiyaGun pdksVardiyaGunMaster : vardiyaGunleri) {
-						VardiyaGun pdksVardiyaGun2 = new VardiyaGun();
-						pdksVardiyaGun2.setVardiyaDate(pdksVardiyaGunMaster.getVardiyaDate());
-						pdksVardiyaGun2.setPersonel(personel);
-						pdksVardiyaGun2.setVardiya(null);
+						VardiyaGun pdksVardiyaGun2 = new VardiyaGun(personel, null, pdksVardiyaGunMaster.getVardiyaDate());
 						haftaVardiyaGunleri.add(pdksVardiyaGun2);
 					}
 					vardiyaGunleri = null;
@@ -4574,9 +4565,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 									for (Iterator iterator2 = sablonVardiyalar.iterator(); iterator2.hasNext();) {
 										VardiyaGun pdksVardiyaGunMaster = (VardiyaGun) iterator2.next();
-										VardiyaGun pdksVardiyaGun = new VardiyaGun();
-										pdksVardiyaGun.setVardiyaDate(pdksVardiyaGunMaster.getVardiyaDate());
-										pdksVardiyaGun.setPersonel(personel);
+										VardiyaGun pdksVardiyaGun = new VardiyaGun(personel, null, pdksVardiyaGunMaster.getVardiyaDate());
 										pdksVardiyaGun.setAyinGunu(Boolean.FALSE);
 										if (vardiyalarMap.containsKey(pdksVardiyaGun.getVardiyaKey()))
 											pdksVardiyaGun = vardiyalarMap.get(pdksVardiyaGun.getVardiyaKey());
@@ -4727,10 +4716,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			vardiyaHaftaList.add(pdksVardiyaHafta);
 			List<VardiyaGun> haftaVardiyaGunleri = pdksVardiyaHafta.getVardiyaGunler();
 			for (VardiyaGun pdksVardiyaGunMaster : pdksVardiyaHaftaMaster.getVardiyaGunler()) {
-				VardiyaGun pdksVardiyaGun2 = new VardiyaGun();
-				pdksVardiyaGun2.setVardiyaDate(pdksVardiyaGunMaster.getVardiyaDate());
-				pdksVardiyaGun2.setPersonel(personel);
-				pdksVardiyaGun2.setVardiya(null);
+				VardiyaGun pdksVardiyaGun2 = new VardiyaGun(personel, null, pdksVardiyaGunMaster.getVardiyaDate());
 				haftaVardiyaGunleri.add(pdksVardiyaGun2);
 			}
 

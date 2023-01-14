@@ -338,9 +338,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(tarih);
 		for (int i = 0; i < gunSayisi; i++) {
-			VardiyaGun pdksVardiyaGun = new VardiyaGun();
-			pdksVardiyaGun.setVardiyaDate(cal.getTime());
-			pdksVardiyaGun.setPersonel(pdksPersonel);
+			VardiyaGun pdksVardiyaGun = new VardiyaGun(pdksPersonel, null, cal.getTime());
 			String key = PdksUtil.convertToDateString(pdksVardiyaGun.getVardiyaDate(), "yyyyMMdd");
 			map.put(key, pdksVardiyaGun);
 			cal.add(Calendar.DATE, 1);

@@ -2106,42 +2106,6 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		return gorevYeriAciklama;
 	}
 
-	public String setVardiyaGunHafta(VardiyaHafta vardiyaHafta, Date tarih, int deger) {
-		VardiyaGun vardiyaGun = new VardiyaGun();
-		vardiyaGun.setVardiyaDate(PdksUtil.tariheGunEkleCikar(tarih, deger));
-		String tarihStr = vardiyaGun.getVardiyaDateStr();
-		vardiyaHafta.getVardiyaPlan().getVardiyaGunMap().put(tarihStr, vardiyaGun);
-		switch (deger) {
-		case 0:
-			vardiyaHafta.setVardiyaGun1(vardiyaGun);
-			break;
-		case 1:
-			vardiyaHafta.setVardiyaGun2(vardiyaGun);
-			break;
-		case 2:
-			vardiyaHafta.setVardiyaGun3(vardiyaGun);
-			break;
-		case 3:
-			vardiyaHafta.setVardiyaGun4(vardiyaGun);
-			break;
-		case 4:
-			vardiyaHafta.setVardiyaGun5(vardiyaGun);
-			break;
-		case 5:
-			vardiyaHafta.setVardiyaGun6(vardiyaGun);
-			break;
-		case 6:
-			vardiyaHafta.setVardiyaGun7(vardiyaGun);
-			break;
-
-		default:
-			break;
-		}
-		vardiyaHafta.getVardiyaGunler().add(vardiyaGun);
-		return tarihStr;
-
-	}
-
 	public String fazlaMesaiExcel() {
 		try {
 			String gorevYeriAciklama = getExcelAciklama();

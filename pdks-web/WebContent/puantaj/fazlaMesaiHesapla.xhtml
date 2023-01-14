@@ -97,7 +97,8 @@
 
 								</h:inputText>
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.ikRole and ortakIslemler.getParameterKey('sadeceFazlaMesaiGetir')=='1'}">
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{fazlaMesaiHesaplaHome.ikRole and ortakIslemler.getParameterKey('sadeceFazlaMesaiGetir')=='1'}">
 								<ui:define name="label">Sadece Fazla Mesai Göster</ui:define>
 								<h:selectBooleanCheckbox value="#{fazlaMesaiHesaplaHome.sadeceFazlaMesai}">
 									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiHesaplaHome.yilAyDegisti(true)}" ajaxSingle="true"
@@ -126,7 +127,7 @@
 												value="Fazla Mesai Getir" rendered="#{not empty fazlaMesaiHesaplaHome.pdksSirketList}" reRender="denklestirmeDonemiTable,hareketTables"
 												onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide()" /></TD>
 										<TD width="35%" valign="top"><ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
-												<ui:fragment rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum}">
+												<ui:fragment rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum and fazlaMesaiHesaplaHome.gecenAyDurum==false}">
 													<ui:fragment
 														rendered="#{(fazlaMesaiHesaplaHome.denklestirmeAyDurum or fazlaMesaiHesaplaHome.ikRole) and fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.hataYok and (fazlaMesaiHesaplaHome.denklestirmeAy.guncelleIK or fazlaMesaiHesaplaHome.sicilNo==null or fazlaMesaiHesaplaHome.sicilNo=='')}">
 														<a4j:commandButton value="Fazla Mesai Onayla" action="#{fazlaMesaiHesaplaHome.fazlaMesaiOnayKontrol()}"

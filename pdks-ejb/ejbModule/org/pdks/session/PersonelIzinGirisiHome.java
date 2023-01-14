@@ -1202,16 +1202,18 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		fillGirisEkSahaTanim();
 	}
 
+	/**
+	 * @param session
+	 * @param personelIzin
+	 * @throws Exception
+	 */
 	private void izinSureleriAyarla(Session session, PersonelIzin personelIzin) throws Exception {
 		List<Personel> personeller = new ArrayList<Personel>();
 		personeller.add(izinliSahibi);
 		TreeMap<String, VardiyaGun> vardiyalar = ortakIslemler.getIslemVardiyalar(personeller, personelIzin.getBaslangicZamani(), personelIzin.getBitisZamani(), Boolean.FALSE, session, Boolean.TRUE);
 		if (!vardiyalar.isEmpty()) {
-			VardiyaGun pdksVardiyaGun1 = new VardiyaGun(), pdksVardiyaGun2 = new VardiyaGun();
-			pdksVardiyaGun1.setPersonel(izinliSahibi);
-			pdksVardiyaGun2.setPersonel(izinliSahibi);
-			pdksVardiyaGun1.setVardiyaDate(personelIzin.getBaslangicZamani());
-			pdksVardiyaGun2.setVardiyaDate(personelIzin.getBitisZamani());
+			VardiyaGun pdksVardiyaGun1 = new VardiyaGun(izinliSahibi, null, personelIzin.getBaslangicZamani());
+			VardiyaGun pdksVardiyaGun2 = new VardiyaGun(izinliSahibi, null, personelIzin.getBitisZamani());
 			if (vardiyalar.containsKey(pdksVardiyaGun1.getVardiyaKey())) {
 				try {
 					pdksVardiyaGun1 = vardiyalar.get(pdksVardiyaGun1.getVardiyaKey());
@@ -2911,11 +2913,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		personeller.add(personelIzin.getIzinSahibi());
 		TreeMap<String, VardiyaGun> vardiyaMap = ortakIslemler.getIslemVardiyalar(personeller, PdksUtil.tariheGunEkleCikar(personelIzin.getBaslangicZamani(), -7), PdksUtil.tariheGunEkleCikar(personelIzin.getBitisZamani(), 1), Boolean.FALSE, session, Boolean.TRUE);
 
-		VardiyaGun pdksVardiyaGun1 = new VardiyaGun(), pdksVardiyaGun2 = new VardiyaGun();
-		pdksVardiyaGun1.setPersonel(izinSahibi);
-		pdksVardiyaGun2.setPersonel(izinSahibi);
-		pdksVardiyaGun1.setVardiyaDate(personelIzin.getBaslangicZamani());
-		pdksVardiyaGun2.setVardiyaDate(personelIzin.getBitisZamani());
+		VardiyaGun pdksVardiyaGun1 = new VardiyaGun(izinliSahibi, null, personelIzin.getBaslangicZamani());
+		VardiyaGun pdksVardiyaGun2 = new VardiyaGun(izinliSahibi, null, personelIzin.getBitisZamani());
+
 		if (personelIzin.getIzinTipi() == null) {
 			durum = "";
 			PdksUtil.addMessageWarn("İzin Tipi Seçiniz!");
@@ -4274,9 +4274,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		// iznin ilk haftasi- ilk gun icin vardiya var mi diye bakilir
 		if (!personelIzin.getIzinTipi().getTakvimGunumu() || hesapTipiMethod == PersonelIzin.HESAP_TIPI_SAAT) {
 			Date vardiyaDate = (Date) personelIzin.getBaslangicZamani().clone();
-			VardiyaGun pdksVardiyaGun = new VardiyaGun();
-			pdksVardiyaGun.setVardiyaDate(vardiyaDate);
-			pdksVardiyaGun.setPersonel(personelIzin.getIzinSahibi());
+			VardiyaGun pdksVardiyaGun = new VardiyaGun(personelIzin.getIzinSahibi(), null, vardiyaDate);
 			String vardiyaKey = pdksVardiyaGun.getVardiyaKeyStr();
 			IzinTipi izinTipi = personelIzin.getIzinTipi();
 			if (hesapTipiMethod == PersonelIzin.HESAP_TIPI_SAAT)
@@ -4455,10 +4453,15 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		return izinSuresiSaatGun;
 	}
 
+	/**
+	 * @param vardiyalar
+	 * @param vardiyaDate
+	 * @param personelIzin
+	 * @param duzelt
+	 * @return
+	 */
 	private Date oncekiVardiyami(TreeMap<String, VardiyaGun> vardiyalar, Date vardiyaDate, PersonelIzin personelIzin, boolean duzelt) {
-		VardiyaGun pdksVardiyaGun = new VardiyaGun();
-		pdksVardiyaGun.setPersonel(personelIzin.getIzinSahibi());
-		pdksVardiyaGun.setVardiyaDate(vardiyaDate);
+		VardiyaGun pdksVardiyaGun = new VardiyaGun(personelIzin.getIzinSahibi(), null, vardiyaDate);
 		String vardiyaKey = pdksVardiyaGun.getVardiyaKeyStr();
 		IzinTipi izinTipi = personelIzin.getIzinTipi();
 		if (vardiyalar.containsKey(vardiyaKey)) {

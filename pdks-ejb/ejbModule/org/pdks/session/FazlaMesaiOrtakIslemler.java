@@ -340,6 +340,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 			if (!list.isEmpty()) {
 				sb.append("<p align=\"left\">");
+				if (islemVardiya.isCalisma() && (authenticatedUser.isAdmin() || authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi()))
+					sb.append("<B>Telorans Aralık : <B>" + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans1BasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans2BitZaman(), pattern) + "</BR>");
+
 				sb.append("<B>Fazla Çalışma Saat : </B>");
 				if (list.size() > 1) {
 					sb.append("<OL>");
@@ -1343,7 +1346,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				boolean kontrolYuvarlamaMap = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
 				boolean erkenGirisKontrolEt = erkenGirisMap != null && !erkenGirisMap.isEmpty();
 				boolean gecKontrolEt = gecCikisMap != null && !gecCikisMap.isEmpty();
- 				for (VardiyaGun vardiyaGun : vardiyaGunList) {
+				for (VardiyaGun vardiyaGun : vardiyaGunList) {
 					String str = vardiyaGun.getVardiyaDateStr();
 					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
 					if (vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().isCalisma()) {

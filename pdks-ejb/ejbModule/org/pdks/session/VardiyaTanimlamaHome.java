@@ -656,6 +656,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 	}
 
 	public String yilAyKontrol() {
+		session.clear();
 		fillCalismaModeller();
 		int buYil = PdksUtil.getDateField(new Date(), Calendar.YEAR);
 		HashMap map = new HashMap();
@@ -664,7 +665,6 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 		if (session != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
 		TreeMap<Integer, DenklestirmeAy> ayMap = pdksEntityController.getObjectByInnerObjectMap(map, DenklestirmeAy.class, false);
-		session.clear();
 		Integer denklestirmeKesintiDurum = null;
 		KesintiTipi kesintiTipi = null;
 		try {
@@ -678,8 +678,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 			kesintiTipi = KesintiTipi.KESINTI_YOK;
 		denklestirmeKesintiDurum = kesintiTipi.value();
 		try {
-
-			denklestirmeKesintiYap = Boolean.FALSE;
+ 			denklestirmeKesintiYap = Boolean.FALSE;
 			Double fazlaMesaiMaxSure = ortakIslemler.getFazlaMesaiMaxSure(null);
 			Double yemekMolasiYuzdesi = ortakIslemler.getYemekMolasiYuzdesi(null, session) * 100.0d;
 			User user = ortakIslemler.getSistemAdminUser(session);

@@ -242,10 +242,7 @@ public class VardiyaHafta extends BaseObject {
 
 	@Transient
 	public VardiyaGun getVardiyaGun(Vardiya vardiya, int gunu) {
-		VardiyaGun pdksVardiyaGun = new VardiyaGun();
-		pdksVardiyaGun.setVardiyaDate(PdksUtil.tariheGunEkleCikar(basTarih, gunu - 1));
-		pdksVardiyaGun.setPersonel(personel);
-		pdksVardiyaGun.setVardiya(vardiya);
+		VardiyaGun pdksVardiyaGun = new VardiyaGun(personel, vardiya, PdksUtil.tariheGunEkleCikar(basTarih, gunu - 1));
 		return pdksVardiyaGun;
 	}
 

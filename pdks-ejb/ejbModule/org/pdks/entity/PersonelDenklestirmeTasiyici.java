@@ -44,7 +44,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 
 	private Boolean mesaiSapDurum = Boolean.FALSE, partTime = Boolean.FALSE;
 	private int yarimYuvarla = PdksUtil.getYarimYuvarlaLast();
- 	private TreeMap<String, Integer> genelHaftaMap;
+	private TreeMap<String, Integer> genelHaftaMap;
 	private TreeMap<Integer, TreeMap> vardiyaHaftaMap;
 	private TreeMap<String, VardiyaGun> vardiyaGunleriMap;
 	private List<VardiyaGun> vardiyalar;
@@ -189,9 +189,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 				TreeMap vardiyaMap = vardiyaHaftaMap.containsKey(hafta) ? vardiyaHaftaMap.get(hafta) : new TreeMap();
 				if (!vardiyaHaftaMap.containsKey(hafta))
 					vardiyaHaftaMap.put(hafta, vardiyaMap);
-				VardiyaGun pdksVardiyaGun = new VardiyaGun();
-				pdksVardiyaGun.setVardiyaDate(vardiyaDate);
-				pdksVardiyaGun.setPersonel(personel);
+				VardiyaGun pdksVardiyaGun = new VardiyaGun(personel, null, vardiyaDate);
 				if (tatilGunleriMap.containsKey(gun))
 					pdksVardiyaGun.setTatil(tatilGunleriMap.get(gun));
 
