@@ -843,7 +843,7 @@ public class IseGelmemeUyari implements Serializable {
 				sb.append("<p>Aşağıdaki personel giriş çıkışlarında problem vardır.</p>");
 				sb.append("<p></p>");
 				sb.append("<p>Saygılarımla,</p>");
-				if (mesajIcerikOlustur(userYonetici, sb, list, session)) {
+				if (mesajIcerikOlustur(userYonetici, sb, list, null, session)) {
 					if (uyariNot != null)
 						sb.append(uyariNot.getValue());
 					mail.setBody(sb.toString());
@@ -869,7 +869,9 @@ public class IseGelmemeUyari implements Serializable {
 	 * @param list
 	 * @param session
 	 */
-	private boolean mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, Session session) {
+	private boolean mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, TreeMap<String, String> map1, Session session) {
+//		if (user == null || user.getPdksPersonel() == null || user.getPersonelId().longValue() != 1517)
+//			return false;
 		boolean mesajGonder = false;
 		TreeMap<String, List<VardiyaGun>> sirketParcalaMap = new TreeMap<String, List<VardiyaGun>>();
 		List<Liste> listeler = new ArrayList<Liste>();
@@ -885,8 +887,16 @@ public class IseGelmemeUyari implements Serializable {
 			}
 
 		}
+
 		for (VardiyaGun vardiyaGun : list) {
 			Personel personel = vardiyaGun.getPersonel();
+			if (map1 != null) {
+				String vardiyaKey = user.getId() + "_" + vardiyaGun.getVardiyaKeyStr();
+				if (map1.containsKey(vardiyaKey))
+					continue;
+				map1.put(vardiyaKey, vardiyaKey);
+			}
+
 			Sirket sirket = personel.getSirket();
 			Tanim tesis = sirket.getSirketGrupId() == null || sirket.getDepartmanBolumAyni() == false ? personel.getTesis() : null;
 			if (tesisList != null && tesis != null && !tesisList.contains(tesis.getId()))
@@ -1262,10 +1272,12 @@ public class IseGelmemeUyari implements Serializable {
 
 			}
 			sb = new StringBuffer();
+			TreeMap<String, String> map1 = new TreeMap<String, String>();
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
+				StringBuffer sbUser = new StringBuffer();
 				Sirket sirket = user.getPdksPersonel().getSirket();
-				sb.append("<BR/><BR/>" + user.getAdSoyad() + (user.getPdksPersonel().getGorevTipi() != null ? " ( " + user.getPdksPersonel().getGorevTipi().getAciklama() + " ) " : " - ") + "<BR/>" + (sirket.getSirketGrup() != null ? sirket.getSirketGrup().getAciklama() : sirket.getAd()));
+				sbUser.append("<BR/><BR/>" + user.getAdSoyad() + (user.getPdksPersonel().getGorevTipi() != null ? " ( " + user.getPdksPersonel().getGorevTipi().getAciklama() + " ) " : " - ") + "<BR/>" + (sirket.getSirketGrup() != null ? sirket.getSirketGrup().getAciklama() : sirket.getAd()));
 				StringBuilder unvan = new StringBuilder();
 				if (departmanYoneticiRolVar && user.getPdksPersonel().getEkSaha1() != null)
 					unvan.append(user.getPdksPersonel().getEkSaha1().getAciklama());
@@ -1278,12 +1290,16 @@ public class IseGelmemeUyari implements Serializable {
 						unvan.append((unvan.length() > 0 ? " - " : "") + altBolum);
 				}
 				if (unvan.length() > 0)
-					sb.append(" [ " + unvan.toString() + " ]");
+					sbUser.append(" [ " + unvan.toString() + " ]");
 				unvan = null;
 				if (user.getPdksPersonel() != null && user.getPdksPersonel().getPersonelVardiyalari() != null && !user.getPdksPersonel().getPersonelVardiyalari().isEmpty()) {
 					List<VardiyaGun> list = user.getPdksPersonel().getPersonelVardiyalari();
-					mesajIcerikOlustur(user, sb, list, session);
+					if (mesajIcerikOlustur(user, sbUser, list, map1, session)) {
+						sb.append(sbUser.toString());
+					} else
+						iterator.remove();
 				}
+				sbUser = null;
 
 			}
 			sb.append("<br/>");
