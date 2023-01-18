@@ -470,9 +470,8 @@ public class Vardiya extends BaseObject {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(vardiyaTarih);
 			tarih = cal.getTime();
-			vardiyaDateStr = PdksUtil.convertToDateString(tarih, "yyyyMMdd");
-			pdksVardiyaGun.setVardiyaDateStr(vardiyaDateStr);
-			if (pdksVardiyaGun.getOffFazlaMesaiBasDakika() != null)
+			vardiyaDateStr = pdksVardiyaGun.getVardiyaDateStr();
+ 			if (pdksVardiyaGun.getOffFazlaMesaiBasDakika() != null)
 				this.setOffFazlaMesaiBasDakika(pdksVardiyaGun.getOffFazlaMesaiBasDakika());
 			if (pdksVardiyaGun.getHaftaTatiliFazlaMesaiBasDakika() != null)
 				this.setHaftaTatiliFazlaMesaiBasDakika(pdksVardiyaGun.getHaftaTatiliFazlaMesaiBasDakika());
