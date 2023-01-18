@@ -183,7 +183,7 @@
 															rendered="#{vardiyaGunHome.kullaniciPersonel==false and (aylikPuantaj.yonetici.id!=null or aylikPuantaj.pdksPersonel.sanalPersonel)}">
 															<a4j:commandLink id="editAylikLink" ajaxSingle="true" action="#{vardiyaGunHome.aylikPuantajSec(aylikPuantaj,'P')}"
 																onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide();#{rich:component('editAylikPanel')}.show()"
-																reRender="editAylikPanel">
+																reRender="editAylikPanel,secimler">
 																<h:graphicImage value="/img/clock_16.png" style="border:0" />
 															</a4j:commandLink>
 															<rich:toolTip for="editAylikLink" value="Plan Güncelle" />
@@ -193,7 +193,7 @@
 														<TD><ui:fragment rendered="#{aylikPuantaj.fazlaMesaiTalepVar}">
 																<a4j:commandLink id="mesaiAylikLink" ajaxSingle="true" disabled="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi==false}"
 																	action="#{vardiyaGunHome.aylikPuantajSec(aylikPuantaj,'M')}" onclick="#{rich:component('wait')}.show()"
-																	oncomplete="#{rich:component('wait')}.hide(); #{rich:component('mesaiAylikPanel')}.show()" reRender="mesaiAylikPanel">
+																	oncomplete="#{rich:component('wait')}.hide(); #{rich:component('mesaiAylikPanel')}.show()" reRender="mesaiAylikPanel,secimlerMesai">
 																	<h:graphicImage value="/img/home_32.png" style="border:0" height="16" />
 																</a4j:commandLink>
 																<rich:toolTip for="mesaiAylikLink">
@@ -288,8 +288,8 @@
 																<br /> [ #{vardiyaGun.vardiya.kisaAdi} ]</ui:fragment> <rich:toolTip for="vardiya#{vardiyaGun.vardiyaKeyStr}">
 																<SPAN style="font-size: 12px; font-weight: normal;"> #{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')} -->
 																	#{vardiyaGun.title} <ui:fragment rendered="#{vardiyaGun.resmiTatilSure>0}">
-													RT : #{authenticatedUser.sayiFormatliGoster(vardiyaGun.resmiTatilSure)}
-												</ui:fragment>
+												          	RT : #{authenticatedUser.sayiFormatliGoster(vardiyaGun.resmiTatilSure)}
+												          </ui:fragment>
 
 																</SPAN>
 																<ui:fragment
@@ -299,11 +299,12 @@
 																		#{authenticatedUser.dateTimeFormatla(vardiyaGun.guncellemeTarihi)} </SPAN>
 																</ui:fragment>
 															</rich:toolTip></TD>
-														<ui:fragment rendered="#{(authenticatedUser.admin) and vardiyaGunHome.isVardiyaFazlaMesailer(vardiyaGun)}">
-															<TD id="fmt#{vardiyaGun.vardiyaKeyStr}"><a4j:commandButton image="/img/plus.gif"
-																	action="#{vardiyaGunHome.getVardiyaFazlaMesailer(vardiyaGun)}" ajaxSingle="true"
-																	oncomplete="#{rich:component('fmtDetayPanel')}.show()" reRender="fmtDetayPanel" /> <rich:toolTip
-																	for="fmt#{vardiyaGun.vardiyaKeyStr}">
+														<ui:fragment rendered="#{vardiyaGunHome.vardiyaFazlaMesaiTalepGoster and vardiyaGunHome.isVardiyaFazlaMesailer(vardiyaGun)   }">
+															<TD id="fmt#{vardiyaGun.vardiyaKeyStr}"><a4j:commandLink action="#{vardiyaGunHome.getVardiyaFazlaMesailer(vardiyaGun)}"
+																	onclick="#{rich:component('wait')}.show()" ajaxSingle="true"
+																	oncomplete="#{rich:component('wait')}.hide();#{rich:component('fmtDetayPanel')}.show()" reRender="fmtDetayPanel,secimlerGunMesai">
+																	<img src="/img/left_16.png" height="8px" />
+																</a4j:commandLink> <rich:toolTip for="fmt#{vardiyaGun.vardiyaKeyStr}">
 																Fazla Mesai Talep Göster
 																</rich:toolTip></TD>
 														</ui:fragment>

@@ -73,7 +73,7 @@ public class VardiyaGun extends BaseObject {
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
-	private String tdClass = "", style = "", manuelGirisHTML = "", vardiyaKisaAciklama, personelNo;
+	private String tdClass = "", style = "", manuelGirisHTML = "", vardiyaKisaAciklama, personelNo, vardiyaDateStr, donemStr;
 	private Tatil tatil;
 	private PersonelIzin izin;
 	private VardiyaSablonu vardiyaSablonu;
@@ -87,6 +87,7 @@ public class VardiyaGun extends BaseObject {
 	private CalismaModeli calismaModeli = null;
 	private Boolean fazlaMesaiOnayla;
 	private Integer version = 0;
+	private List<FazlaMesaiTalep> fazlaMesaiTalepler;
 
 	public VardiyaGun() {
 		super();
@@ -95,14 +96,12 @@ public class VardiyaGun extends BaseObject {
 
 	public VardiyaGun(Personel personel, Vardiya vardiya, Date vardiyaDate) {
 		super();
-		this.personel = personel;
-		this.vardiya = vardiya;
-		this.vardiyaDate = vardiyaDate;
+		this.setPersonel(personel);
+		this.setVardiya(vardiya);
+		this.setVardiyaDate(vardiyaDate);
 		if (vardiya != null)
 			this.durum = !vardiya.isCalisma();
 	}
-
-	private List<FazlaMesaiTalep> fazlaMesaiTalepler;
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {
@@ -230,8 +229,14 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public String getVardiyaDateStr() {
-		return vardiyaDate != null ? PdksUtil.convertToDateString(vardiyaDate, "yyyyMMdd") : "";
+		if (vardiyaDateStr == null)
+			vardiyaDateStr = vardiyaDate != null ? PdksUtil.convertToDateString(vardiyaDate, "yyyyMMdd") : "";
+		return vardiyaDateStr;
 
+	}
+
+	public void setVardiyaDateStr(String vardiyaDateStr) {
+		this.vardiyaDateStr = vardiyaDateStr;
 	}
 
 	@Transient
@@ -243,17 +248,20 @@ public class VardiyaGun extends BaseObject {
 
 	}
 
-	public void setVardiyaDate(Date vardiyaDate1) {
+	public void setVardiyaDate(Date value) {
 		boolean gunDurum = Boolean.TRUE;
-		if (vardiyaDate1 != null)
-			gunDurum = PdksUtil.tarihKarsilastirNumeric(Calendar.getInstance().getTime(), vardiyaDate1) != 1;
+		this.setVardiyaDateStr(null);
+		if (value != null) {
+			gunDurum = PdksUtil.tarihKarsilastirNumeric(Calendar.getInstance().getTime(), value) != 1;
+			this.setVardiyaDateStr(PdksUtil.convertToDateString(value, "yyyyMMdd"));
+		}
 		setBitmemisGun(gunDurum);
-		this.vardiyaDate = vardiyaDate1;
+		this.vardiyaDate = value;
 	}
 
 	@Transient
 	public String getTarihStr() {
-		return vardiyaDate != null ? PdksUtil.convertToDateString(vardiyaDate, "yyyyMMdd") : "";
+		return this.getVardiyaDateStr();
 	}
 
 	@Transient
@@ -2024,12 +2032,41 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	@Transient
+	public String getStyleGun() {
+		String style = "";
+		if (vardiya != null && vardiya.getId() != null) {
+			if (ayinGunu)
+				style = ";font-weight: bold;";
+			else {
+				style = ";color:red;";
+				if (donemStr != null && vardiyaDateStr != null) {
+					if (vardiyaDateStr.compareTo(donemStr + "01") == 1) {
+						style = ";color:orange;";
+					}
+				}
+			}
+
+		}
+
+		return style;
+	}
+
+	@Transient
 	public HashMap<Integer, BigDecimal> getKatSayiMap() {
 		return katSayiMap;
 	}
 
 	public void setKatSayiMap(HashMap<Integer, BigDecimal> katSayiMap) {
 		this.katSayiMap = katSayiMap;
+	}
+
+	@Transient
+	public String getDonemStr() {
+		return donemStr;
+	}
+
+	public void setDonemStr(String donemStr) {
+		this.donemStr = donemStr;
 	}
 
 }

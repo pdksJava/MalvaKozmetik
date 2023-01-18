@@ -28,6 +28,16 @@ public class VardiyaPlan extends BaseObject {
 
 	private double hesaplananSure = 0;
 
+	public VardiyaPlan() {
+		super();
+
+	}
+
+	public VardiyaPlan(Personel personel) {
+		super();
+		this.personel = personel;
+	}
+
 	public void planVardiyaPlanSifirla() {
 		personelDenklestirmeList = new ArrayList<PersonelDenklestirmeTasiyici>();
 		for (int i = 0; i < 3; i++)

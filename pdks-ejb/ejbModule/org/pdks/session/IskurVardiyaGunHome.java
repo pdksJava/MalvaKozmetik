@@ -2879,7 +2879,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				gecenAylikPuantaj.setPdksPersonel(personel);
 
 				aylikPuantaj.setPdksPersonel(personel);
-				aylikPuantaj.setVardiyaPlan(new VardiyaPlan());
+				aylikPuantaj.setVardiyaPlan(new VardiyaPlan(personel));
 				aylikPuantaj.getVardiyaPlan().getVardiyaHaftaList().clear();
 				List<VardiyaGun> puantajVardiyaGunler = new ArrayList<VardiyaGun>();
 				aylikPuantaj.setVardiyalar(puantajVardiyaGunler);
@@ -3069,9 +3069,8 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					aylikPuantaj.setGecenAylikPuantaj(null);
 				ortakIslemler.puantajHaftalikPlanOlustur(Boolean.FALSE, vardiyaGunMap, vardiyalarMap, aylikPuantajSablon, aylikPuantaj);
 				aylikPuantaj.setVardiyalar(vardiyaGunler);
-				VardiyaPlan plan = new VardiyaPlan();
-				plan.setPersonel(personel);
-				plan.setVardiyaGunMap(vardiyaGunMap);
+				VardiyaPlan plan = new VardiyaPlan(personel);
+ 				plan.setVardiyaGunMap(vardiyaGunMap);
 
 				List<VardiyaGun> list = PdksUtil.sortListByAlanAdi(new ArrayList(vardiyalarMap.values()), "vardiyaDate", Boolean.FALSE);
 

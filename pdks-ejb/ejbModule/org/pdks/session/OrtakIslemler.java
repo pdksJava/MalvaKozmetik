@@ -116,6 +116,7 @@ import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGorev;
 import org.pdks.entity.VardiyaGun;
 import org.pdks.entity.VardiyaHafta;
+import org.pdks.entity.VardiyaPlan;
 import org.pdks.entity.VardiyaSaat;
 import org.pdks.entity.VardiyaSablonu;
 import org.pdks.entity.VardiyaYemekIzin;
@@ -11590,14 +11591,21 @@ public class OrtakIslemler implements Serializable {
 		Personel personel = aylikPuantaj.getPdksPersonel();
 		aylikPuantaj.setSablonAylikPuantaj(sablonAylikPuantaj);
 		List<VardiyaGun> puantajVardiyaGunleri = new ArrayList();
+		aylikPuantaj.setVardiyaPlan(new VardiyaPlan(personel));
+		VardiyaPlan vardiyaPlan = aylikPuantaj.getVardiyaPlan();
+		vardiyaPlan.setVardiyaHaftaList(vardiyaHaftaList);
 		aylikPuantaj.setVardiyaHaftaList(vardiyaHaftaList);
 		for (Iterator iterator = sablonAylikPuantaj.getVardiyaHaftaList().iterator(); iterator.hasNext();) {
-			VardiyaHafta vardiyaHaftaSablon = (VardiyaHafta) iterator.next();
+			VardiyaHafta vardiyaHaftaMaster = (VardiyaHafta) iterator.next();
 			VardiyaHafta vardiyaHafta = new VardiyaHafta();
+			vardiyaHafta.setVardiyaPlan(vardiyaPlan);
+			vardiyaHafta.setPersonel(personel);
+			vardiyaHafta.setBasTarih(vardiyaHaftaMaster.getBasTarih());
+			vardiyaHafta.setBitTarih(vardiyaHaftaMaster.getBitTarih());
 			vardiyaHaftaList.add(vardiyaHafta);
 			List<VardiyaGun> vardiyaHaftaGunleri = new ArrayList<VardiyaGun>();
 			vardiyaHafta.setVardiyaGunler(vardiyaHaftaGunleri);
-			for (Iterator iterator2 = vardiyaHaftaSablon.getVardiyaGunler().iterator(); iterator2.hasNext();) {
+			for (Iterator iterator2 = vardiyaHaftaMaster.getVardiyaGunler().iterator(); iterator2.hasNext();) {
 				VardiyaGun vardiyaGunSablon = (VardiyaGun) iterator2.next();
 				VardiyaGun vardiyaGun = new VardiyaGun(personel, null, vardiyaGunSablon.getVardiyaDate());
 				String vardiyaKey = vardiyaGun.getVardiyaKeyStr();
