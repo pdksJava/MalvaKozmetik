@@ -1964,21 +1964,29 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 					} else
 						puantaj.setAyrikHareketVar(false);
-					if (denklestirmeAyDurum == false && personelDenklestirme != null && personelDenklestirme.getDurum()) {
+					if (denklestirmeAyDurum == false && personelDenklestirme != null) {
 						boolean savePersonelDenklestirme = false;
+						if (personelDenklestirme.getDurum()) {
 
-						if (ikRole) {
-							boolean odemeVar = personelDenklestirme.getOdenenSure() > 0.0d;
-							if (personelDenklestirme.getHesaplananSure().equals(0.0D) && (odemeVar || puantaj.getSaatToplami() > 0.0d)) {
-								personelDenklestirme.setHesaplananSure(puantaj.getSaatToplami());
-								savePersonelDenklestirme = true;
+							if (ikRole) {
+								boolean odemeVar = personelDenklestirme.getOdenenSure() > 0.0d;
+								if (personelDenklestirme.getHesaplananSure().equals(0.0D) && (odemeVar || puantaj.getSaatToplami() > 0.0d)) {
+									personelDenklestirme.setHesaplananSure(puantaj.getSaatToplami());
+									savePersonelDenklestirme = true;
+								}
+								if (personelDenklestirme.getPlanlanSure().equals(0.0D) && (odemeVar || puantaj.getPlanlananSure() > 0.0d)) {
+									personelDenklestirme.setPlanlanSure(puantaj.getPlanlananSure());
+									savePersonelDenklestirme = true;
+								}
 							}
-							if (personelDenklestirme.getPlanlanSure().equals(0.0D) && (odemeVar || puantaj.getPlanlananSure() > 0.0d)) {
-								personelDenklestirme.setPlanlanSure(puantaj.getPlanlananSure());
-								savePersonelDenklestirme = true;
-							}
+
+						} else if (puantaj.isFazlaMesaiHesapla()) {
+							personelDenklestirme.setDurum(Boolean.TRUE);
+							savePersonelDenklestirme = true;
 						}
+
 						if (savePersonelDenklestirme) {
+							
 							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = true;
 						}
