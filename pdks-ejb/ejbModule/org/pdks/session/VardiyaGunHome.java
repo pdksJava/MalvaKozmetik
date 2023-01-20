@@ -8021,6 +8021,25 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		session.clear();
 		aylikHareketKaydiVardiyaBul = Boolean.FALSE;
 		fillEkSahaTanim();
+		Calendar cal = Calendar.getInstance();
+		yil = cal.get(Calendar.YEAR);
+		ay = cal.get(Calendar.MONTH) + 1;
+		cal.add(Calendar.MONTH, 1);
+		maxYil = cal.get(Calendar.YEAR);
+		HashMap fields = new HashMap();
+		fields.put("ay", ay);
+		fields.put("yil", yil);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+		if (denklestirmeAy == null) {
+			try {
+				ortakIslemler.yilAyKontrol(yil, null, session);
+			} catch (Exception e) {
+			}
+
+		}
+
 		donusAdres = "";
 		denklestirmeAyDurum = Boolean.FALSE;
 		modelList = new ArrayList<CalismaModeliAy>();
@@ -8067,16 +8086,11 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				planDepartman = null;
 
 			aylar = PdksUtil.getAyListesi(Boolean.TRUE);
-
-			if (aylikPuantajList != null)
+ 			if (aylikPuantajList != null)
 				aylikPuantajList.clear();
 			else
 				aylikPuantajList = new ArrayList<AylikPuantaj>();
-			Calendar cal = Calendar.getInstance();
-			ay = cal.get(Calendar.MONTH) + 1;
-			yil = cal.get(Calendar.YEAR);
-			cal.add(Calendar.MONTH, 1);
-			maxYil = cal.get(Calendar.YEAR);
+
 			sonDonem = (maxYil * 100) + cal.get(Calendar.MONTH) + 1;
 			if (basTarih == null) {
 				cal = Calendar.getInstance();

@@ -90,6 +90,7 @@ import org.pdks.entity.KapiKGS;
 import org.pdks.entity.KapiView;
 import org.pdks.entity.KatSayi;
 import org.pdks.entity.KatSayiTipi;
+import org.pdks.entity.KesintiTipi;
 import org.pdks.entity.Liste;
 import org.pdks.entity.MailGrubu;
 import org.pdks.entity.MenuItem;
@@ -199,6 +200,81 @@ public class OrtakIslemler implements Serializable {
 	HashMap<String, MenuItem> menuItemMap = new HashMap<String, MenuItem>();
 	@In(required = false)
 	FacesMessages facesMessages;
+
+ 
+	/**
+	 * @param yil
+	 * @param ayMap
+	 * @param xSession
+	 * @return
+	 */
+	public Boolean yilAyKontrol(int yil, TreeMap<Integer, DenklestirmeAy> ayMap, Session xSession) {
+		Boolean denklestirmeKesintiYap = Boolean.FALSE;
+		if (ayMap == null) {
+			HashMap map = new HashMap();
+			map.put(PdksEntityController.MAP_KEY_MAP, "getAy");
+			map.put("yil", yil);
+			if (xSession != null)
+				map.put(PdksEntityController.MAP_KEY_SESSION, xSession);
+			ayMap = pdksEntityController.getObjectByInnerObjectMap(map, DenklestirmeAy.class, false);
+		}
+		Integer denklestirmeKesintiDurum = null;
+		KesintiTipi kesintiTipi = null;
+		try {
+			denklestirmeKesintiDurum = Integer.parseInt(getParameterKey("denklestirmeKesintiYap"));
+		} catch (Exception e) {
+			denklestirmeKesintiDurum = null;
+		}
+		if (denklestirmeKesintiDurum != null)
+			kesintiTipi = KesintiTipi.fromValue(denklestirmeKesintiDurum);
+		if (kesintiTipi == null)
+			kesintiTipi = KesintiTipi.KESINTI_YOK;
+		denklestirmeKesintiDurum = kesintiTipi.value();
+		Double fazlaMesaiMaxSure = getFazlaMesaiMaxSure(null);
+		Double yemekMolasiYuzdesi = getYemekMolasiYuzdesi(null, xSession) * 100.0d;
+		User user = getSistemAdminUser(xSession);
+		if (user == null)
+			user = authenticatedUser;
+		int buYil = PdksUtil.getDateField(new Date(), Calendar.YEAR);
+		for (int i = 1; i <= 12; i++) {
+			DenklestirmeAy denklestirmeAy = null;
+			boolean flush = false;
+			if (ayMap.containsKey(i)) {
+				denklestirmeAy = ayMap.get(i);
+				if (!denklestirmeKesintiYap)
+					denklestirmeKesintiYap = !denklestirmeAy.getDenklestirmeKesintiYap().equals(KesintiTipi.KESINTI_YOK.value());
+				if (denklestirmeAy.getYemekMolasiYuzdesi() == null) {
+					denklestirmeAy.setYemekMolasiYuzdesi(yemekMolasiYuzdesi);
+					flush = true;
+				}
+				if (denklestirmeAy.getFazlaMesaiMaxSure() == null) {
+					denklestirmeAy.setFazlaMesaiMaxSure(fazlaMesaiMaxSure);
+					flush = true;
+				}
+			} else {
+				if (buYil > yil)
+					continue;
+				flush = true;
+				denklestirmeAy = new DenklestirmeAy();
+				denklestirmeAy.setDenklestirmeKesintiYap(denklestirmeKesintiDurum);
+				denklestirmeAy.setOlusturmaTarihi(new Date());
+				denklestirmeAy.setOlusturanUser(user);
+				denklestirmeAy.setAy(i);
+				denklestirmeAy.setYil(yil);
+				denklestirmeAy.setSure(0d);
+				denklestirmeAy.setYemekMolasiYuzdesi(yemekMolasiYuzdesi);
+				denklestirmeAy.setFazlaMesaiMaxSure(fazlaMesaiMaxSure);
+				denklestirmeAy.setDurum(Boolean.TRUE);
+			}
+			if (flush) {
+				pdksEntityController.saveOrUpdate(xSession, entityManager, denklestirmeAy);
+				xSession.flush();
+			}
+		}
+		if (!denklestirmeKesintiYap)
+			denklestirmeKesintiYap = !denklestirmeKesintiDurum.equals(KesintiTipi.KESINTI_YOK.value());
+		return denklestirmeKesintiYap;
+	}
 
 	/**
 	 * @param perId

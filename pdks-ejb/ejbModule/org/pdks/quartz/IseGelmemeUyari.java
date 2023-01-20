@@ -34,6 +34,7 @@ import org.pdks.entity.Parameter;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelGeciciYonetici;
 import org.pdks.entity.PersonelIzin;
+import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Tatil;
@@ -168,6 +169,7 @@ public class IseGelmemeUyari implements Serializable {
 			for (Personel per : personelList) {
 				if (per == null || per.getHareketMailGrubu() == null)
 					continue;
+
 				String sicillNo = per.getPdksSicilNo();
 				List<String> mailList = PdksUtil.getListFromString(per.getHareketMailGrubu().getEmail(), null), perBilgiList = new ArrayList<String>();
 				for (String mail : mailList) {
@@ -240,18 +242,20 @@ public class IseGelmemeUyari implements Serializable {
 			map.put("durum=", Boolean.TRUE);
 			map.put("mailTakip=", Boolean.TRUE);
 			map.put("yoneticisi<>", null);
-			// if (islemYapan != null)
-			// map.put("yoneticisi.id=", 4659L);
 			if (islemYapan != null && !islemYapan.isAdmin())
 				map.put("sirket.departman.id=", islemYapan.getDepartman().getId());
 			List<Personel> personeller = pdksEntityController.getObjectByInnerObjectListInLogic(map, Personel.class);
 			if (!personeller.isEmpty()) {
-
-				HashMap<Long, Long> yoneticiler = new HashMap<Long, Long>();
+ 				HashMap<Long, Long> yoneticiler = new HashMap<Long, Long>();
 				HashMap<Long, Personel> kgsPerMap = new HashMap<Long, Personel>();
 				for (Iterator iterator = personeller.iterator(); iterator.hasNext();) {
 					Personel per = (Personel) iterator.next();
-					Sirket pdksSirket = per.getSirket();
+					PersonelKGS personelKGS = per.getPersonelKGS();
+					if (personelKGS == null || personelKGS.getDurum() == null || personelKGS.getDurum().equals(Boolean.FALSE)) {
+						iterator.remove();
+						continue;
+					}
+ 					Sirket pdksSirket = per.getSirket();
 					Personel yonetici = per.getYoneticisi();
 					boolean islemDevam = true;
 					if (yonetici == null || per.getSicilNo().trim().length() == 0 || per.getSirket() == null)
@@ -870,8 +874,8 @@ public class IseGelmemeUyari implements Serializable {
 	 * @param session
 	 */
 	private boolean mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, TreeMap<String, String> map1, Session session) {
-//		if (user == null || user.getPdksPersonel() == null || user.getPersonelId().longValue() != 1517)
-//			return false;
+		// if (user == null || user.getPdksPersonel() == null || user.getPersonelId().longValue() != 1517)
+		// return false;
 		boolean mesajGonder = false;
 		TreeMap<String, List<VardiyaGun>> sirketParcalaMap = new TreeMap<String, List<VardiyaGun>>();
 		List<Liste> listeler = new ArrayList<Liste>();

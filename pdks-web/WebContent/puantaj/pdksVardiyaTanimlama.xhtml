@@ -19,7 +19,7 @@
 							<rich:inputNumberSpinner id="yil" styleClass="size10" inputStyle="width:20px"
 								minValue="#{ortakIslemler.getParameterKey('sistemBaslangicYili')}" maxValue="#{vardiyaTanimlaHome.maxYil}" inputSize="1"
 								value="#{vardiyaTanimlaHome.yil}">
-								<a4j:support event="onchange" action="#{vardiyaTanimlaHome.yilAyKontrol()}" reRender="vardiyaPanel,vardiyaTable" />
+								<a4j:support event="onchange" action="#{vardiyaTanimlaHome.yilAyKontrol(vardiyaTanimlaHome.session)}" reRender="vardiyaPanel,vardiyaTable" />
 							</rich:inputNumberSpinner>
 						</s:decorate>
 					</h:panelGrid>
