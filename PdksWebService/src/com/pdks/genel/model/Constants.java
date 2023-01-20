@@ -16,7 +16,7 @@ public class Constants implements Serializable {
 	 */
 	private static final long serialVersionUID = -6098113295381802911L;
 
-	public static final String UYGULAMA_VERSION = "PdksWebService_20221215_1450_1.0.0.ear";
+	public static final String UYGULAMA_VERSION = "PdksWebService_20230120_1510_1.0.0.ear";
 	public static final Locale TR_LOCALE = new Locale("tr", "TR");
 	public static final Locale RU_LOCALE = new Locale("ru", "RU");
 	public static final Locale EN_LOCALE = new Locale("en", "EN");

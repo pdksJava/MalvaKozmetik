@@ -1333,8 +1333,27 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (pdksDAO != null && izinList != null && !izinList.isEmpty()) {
 			sistemVerileriniYukle(pdksDAO);
 			IzinERP erp = null;
-			for (IzinERP izinERP : izinList)
+			HashMap<String, List<String>> izinPersonelERPMap = new HashMap<String, List<String>>();
+			boolean izinCok = izinList.size() > 1;
+			for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
+				IzinERP izinERP = (IzinERP) iterator.next();
+				if (izinCok) {
+					String personelNo = izinERP.getPersonelNo();
+					if (personelNo != null && personelNo.trim().length() > 0) {
+						String referansNoERP = izinERP.getReferansNoERP();
+						if (referansNoERP != null && referansNoERP.trim().length() > 0) {
+							List<String> list = izinPersonelERPMap.containsKey(personelNo) ? izinPersonelERPMap.get(personelNo) : new ArrayList<String>();
+							if (list.isEmpty())
+								izinPersonelERPMap.put(personelNo, list);
+							if (!list.contains(referansNoERP))
+								list.add(referansNoERP);
+						}
+					}
+				}
+
 				izinERP.veriSifirla();
+			}
+
 			if (izinList.size() == 1) {
 				erp = izinList.get(0);
 				if (erp != null)
@@ -1645,18 +1664,42 @@ public class PdksVeriOrtakAktar implements Serializable {
 								addHatalist(izinERP.getHataList(), PdksUtil.convertToDateString(personelIzin.getBitisZamani(), FORMAT_DATE_TIME) + " tarihinde çalışmıyor!!");
 							if (izinERP.getDurum().booleanValue() || donemKapali) {
 								fields.clear();
-								fields.put("izinDurumu<>", PersonelIzin.IZIN_DURUMU_REDEDILDI);
-								fields.put("izinSahibi.id=", izinSahibi.getId());
-								fields.put("baslangicZamani<", personelIzin.getBitisZamani());
-								fields.put("bitisZamani>", personelIzin.getBaslangicZamani());
+								StringBuffer sb = new StringBuffer();
+								sb.append(" SELECT R." + IzinReferansERP.COLUMN_NAME_ID + ",I." + PersonelIzin.COLUMN_NAME_ID + " AS " + IzinReferansERP.COLUMN_NAME_IZIN_ID + " FROM " + PersonelIzin.TABLE_NAME + " I WITH(nolock) ");
+								sb.append(" LEFT JOIN  " + IzinReferansERP.TABLE_NAME + " R ON I." + PersonelIzin.COLUMN_NAME_ID + " =R." + IzinReferansERP.COLUMN_NAME_IZIN_ID);
+								sb.append(" WHERE I." + PersonelIzin.COLUMN_NAME_PERSONEL + " = " + izinSahibi.getId() + " AND I." + PersonelIzin.COLUMN_NAME_IZIN_DURUMU + " <> " + PersonelIzin.IZIN_DURUMU_REDEDILDI);
+								sb.append(" AND I." + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + " < :b2 AND I." + PersonelIzin.COLUMN_NAME_BITIS_ZAMANI + " > :b1");
 								if (personelIzin.getId() != null)
-									fields.put("id<>", personelIzin.getId());
-								List<PersonelIzin> kayitList = pdksDAO.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+									sb.append(" AND I." + PersonelIzin.COLUMN_NAME_ID + " <> " + personelIzin.getId());
+								fields.put("b1", personelIzin.getBaslangicZamani());
+								fields.put("b2", personelIzin.getBitisZamani());
+								// fields.put("izinDurumu<>", PersonelIzin.IZIN_DURUMU_REDEDILDI);
+								// fields.put("izinSahibi.id=", izinSahibi.getId());
+								// fields.put("baslangicZamani<", personelIzin.getBitisZamani());
+								// fields.put("bitisZamani>", personelIzin.getBaslangicZamani());
+								// if (personelIzin.getId() != null)
+								// fields.put("id<>", personelIzin.getId());
+								// List<IzinReferansERP> kayitList = pdksDAO.getObjectByInnerObjectListInLogic(fields, IzinReferansERP.class);
+								List<IzinReferansERP> kayitList = pdksDAO.getNativeSQLList(fields, sb, IzinReferansERP.class);
 								if (!kayitList.isEmpty()) {
-									PersonelIzin digerIzin = kayitList.get(0);
+									IzinReferansERP izinReferansErp = kayitList.get(0);
+									PersonelIzin digerIzin = izinReferansErp.getIzin();
 									String basStr = PdksUtil.convertToDateString(digerIzin.getBaslangicZamani(), FORMAT_DATE_TIME), bitStr = PdksUtil.convertToDateString(digerIzin.getBitisZamani(), FORMAT_DATE_TIME);
-									if (!basStr.equals(izinERP.getBitZaman()) && !bitStr.equals(izinERP.getBasZaman()))
-										addHatalist(izinERP.getHataList(), basStr + " - " + bitStr + " kayıtlı izin vardır!!");
+									if (!basStr.equals(izinERP.getBitZaman()) && !bitStr.equals(izinERP.getBasZaman())) {
+										boolean hataVar = !(basStr.equals(izinERP.getBasZaman()) && bitStr.equals(izinERP.getBitZaman())) || !izinPersonelERPMap.containsKey(izinERP.getPersonelNo());
+										if (hataVar)
+											addHatalist(izinERP.getHataList(), basStr + " - " + bitStr + " kayıtlı izin vardır!!");
+										else {
+											personelIzin = digerIzin;
+											izinDegisti = true;
+											if (izinReferansERP.getId() == null || !izinReferansERP.getId().equals(izinERP.getReferansNoERP())) {
+												izinReferansERP.setId(izinERP.getReferansNoERP());
+												saveList.add(izinReferansERP);
+											}
+
+										}
+									}
+
 									else {
 										IzinReferansERP izinReferansERP2 = (IzinReferansERP) pdksDAO.getObjectByInnerObject("izin.id", digerIzin.getId(), IzinReferansERP.class);
 										if (izinReferansERP2 != null) {

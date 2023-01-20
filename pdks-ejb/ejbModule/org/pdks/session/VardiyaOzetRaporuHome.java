@@ -38,6 +38,7 @@ import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Liste;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelIzin;
+import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Vardiya;
@@ -261,6 +262,13 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			Personel pdksPersonel = (Personel) iterator.next();
 			if (pdksPersonel.getPdks() == null || !pdksPersonel.getPdks())
 				iterator.remove();
+			else {
+				PersonelKGS personelKGS = pdksPersonel.getPersonelKGS();
+				if (personelKGS == null || personelKGS.getDurum() == null || personelKGS.getDurum().equals(Boolean.FALSE)) {
+					iterator.remove();
+					continue;
+				}
+			}
 
 		}
 		if (!tumPersoneller.isEmpty()) {
