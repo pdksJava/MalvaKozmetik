@@ -1700,12 +1700,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 										else {
 											personelIzin = digerIzin;
 											izinDegisti = true;
-											if (izinReferansErp.getId() != null && !izinReferansErp.getId().equals(izinERP.getReferansNoERP())) {
-												deleteList.add(izinReferansErp);
+											if (izinReferansErp.getId() == null || !izinReferansErp.getId().equals(izinERP.getReferansNoERP())) {
+												if (izinReferansErp.getId() != null)
+													deleteList.add(izinReferansErp);
 												izinReferansERP.setIzin(personelIzin);
 												saveList.add(izinReferansERP);
 											}
-												
+
 										}
 									} else {
 										IzinReferansERP izinReferansERP2 = (IzinReferansERP) pdksDAO.getObjectByInnerObject("izin.id", digerIzin.getId(), IzinReferansERP.class);
