@@ -1333,13 +1333,23 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (pdksDAO != null && izinList != null && !izinList.isEmpty()) {
 			sistemVerileriniYukle(pdksDAO);
 			IzinERP erp = null;
-			HashMap<String, List<String>> izinPersonelERPMap = new HashMap<String, List<String>>();
 			boolean izinCok = izinList.size() > 1;
+			HashMap<String, List<String>> izinPersonelERPMap = new HashMap<String, List<String>>();
+			HashMap<String, Integer> referansNoMap = new HashMap<String, Integer>();
+			TreeMap<Integer, IzinERP> referansSiraMap = new TreeMap<Integer, IzinERP>();
 			for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
 				IzinERP izinERP = (IzinERP) iterator.next();
 				if (izinCok) {
 					String personelNo = izinERP.getPersonelNo();
 					if (personelNo != null && personelNo.trim().length() > 0) {
+						String key = personelNo.trim() + "_" + (izinERP.getBasZaman() != null ? izinERP.getBasZaman().trim() : "") + "_" + (izinERP.getBitZaman() != null ? izinERP.getBitZaman().trim() : "");
+						int size = referansNoMap.size() + 1;
+						if (!referansNoMap.containsKey(key)) {
+							referansNoMap.put(key, size);
+						} else {
+							size = referansNoMap.get(key);
+						}
+						referansSiraMap.put(size, izinERP);
 						String referansNoERP = izinERP.getReferansNoERP();
 						if (referansNoERP != null && referansNoERP.trim().length() > 0) {
 							List<String> list = izinPersonelERPMap.containsKey(personelNo) ? izinPersonelERPMap.get(personelNo) : new ArrayList<String>();
@@ -1353,8 +1363,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				izinERP.veriSifirla();
 			}
-
+			if (!referansSiraMap.isEmpty())
+				izinList = new ArrayList<IzinERP>(referansSiraMap.values());
+			referansNoMap = null;
+			referansSiraMap = null;
 			if (izinList.size() == 1) {
+
 				erp = izinList.get(0);
 				if (erp != null)
 					dosyaEkAdi = erp.getPersonelNo();
@@ -1436,7 +1450,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			} else
 				izinTipiTanimMap = new TreeMap<String, Tanim>();
 
-			List saveList = new ArrayList();
+			List saveList = new ArrayList(), deleteList = new ArrayList();
 			List<IzinERP> hataList = new ArrayList<IzinERP>();
 			HashMap<String, PersonelIzin> izinMap = new HashMap<String, PersonelIzin>();
 			String kapiGiris = mailMap.containsKey("kapiGirisUygulama") ? (String) mailMap.get("kapiGirisUygulama") : "kapı giriş";
@@ -1527,7 +1541,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						izinTipi.setMinSaat(0d);
 						izinTipi.setMesaj(aciklama);
 						String kisaAciklama = "";
-						if (aciklama.trim().length() > 0) {
+						if (aciklama != null && aciklama.trim().length() > 0) {
 							StringTokenizer st = new StringTokenizer(aciklama, " ");
 							while (st.hasMoreTokens()) {
 								String tk = st.nextToken();
@@ -1673,34 +1687,27 @@ public class PdksVeriOrtakAktar implements Serializable {
 									sb.append(" AND I." + PersonelIzin.COLUMN_NAME_ID + " <> " + personelIzin.getId());
 								fields.put("b1", personelIzin.getBaslangicZamani());
 								fields.put("b2", personelIzin.getBitisZamani());
-								// fields.put("izinDurumu<>", PersonelIzin.IZIN_DURUMU_REDEDILDI);
-								// fields.put("izinSahibi.id=", izinSahibi.getId());
-								// fields.put("baslangicZamani<", personelIzin.getBitisZamani());
-								// fields.put("bitisZamani>", personelIzin.getBaslangicZamani());
-								// if (personelIzin.getId() != null)
-								// fields.put("id<>", personelIzin.getId());
-								// List<IzinReferansERP> kayitList = pdksDAO.getObjectByInnerObjectListInLogic(fields, IzinReferansERP.class);
 								List<IzinReferansERP> kayitList = pdksDAO.getNativeSQLList(fields, sb, IzinReferansERP.class);
 								if (!kayitList.isEmpty()) {
 									IzinReferansERP izinReferansErp = kayitList.get(0);
+									logger.error(izinERP.getPersonelNo() + " " + izinERP.getReferansNoERP() + " [ " + izinERP.getBasZaman() + " - " + izinERP.getBitZaman() + " ]");
 									PersonelIzin digerIzin = izinReferansErp.getIzin();
 									String basStr = PdksUtil.convertToDateString(digerIzin.getBaslangicZamani(), FORMAT_DATE_TIME), bitStr = PdksUtil.convertToDateString(digerIzin.getBitisZamani(), FORMAT_DATE_TIME);
 									if (!basStr.equals(izinERP.getBitZaman()) && !bitStr.equals(izinERP.getBasZaman())) {
-										boolean hataVar = !(basStr.equals(izinERP.getBasZaman()) && bitStr.equals(izinERP.getBitZaman())) || !izinPersonelERPMap.containsKey(izinERP.getPersonelNo());
+										boolean hataVar = !(izinERP.getBasZaman().compareTo(basStr) != 1 && izinERP.getBitZaman().compareTo(bitStr) != -1) || !izinPersonelERPMap.containsKey(izinERP.getPersonelNo());
 										if (hataVar)
 											addHatalist(izinERP.getHataList(), basStr + " - " + bitStr + " kayıtlı izin vardır!!");
 										else {
 											personelIzin = digerIzin;
 											izinDegisti = true;
-											if (izinReferansERP.getId() == null || !izinReferansERP.getId().equals(izinERP.getReferansNoERP())) {
-												izinReferansERP.setId(izinERP.getReferansNoERP());
+											if (izinReferansErp.getId() != null && !izinReferansErp.getId().equals(izinERP.getReferansNoERP())) {
+												deleteList.add(izinReferansErp);
+												izinReferansERP.setIzin(personelIzin);
 												saveList.add(izinReferansERP);
 											}
-
+												
 										}
-									}
-
-									else {
+									} else {
 										IzinReferansERP izinReferansERP2 = (IzinReferansERP) pdksDAO.getObjectByInnerObject("izin.id", digerIzin.getId(), IzinReferansERP.class);
 										if (izinReferansERP2 != null) {
 											digerIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_REDEDILDI);
@@ -1759,7 +1766,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 									}
 								}
 								try {
-									if (listeKaydet(izinERP.getReferansNoERP(), saveList)) {
+									if (listeKaydet(izinERP.getReferansNoERP(), saveList, deleteList)) {
 										if (personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_REDEDILDI && personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL) {
 											kayitIzinList.add(izinERP.getReferansNoERP());
 										}
@@ -2844,7 +2851,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 										personel.setGuncelleyenUser(islemYapan);
 										try {
 											saveList.add(personel);
-											listeKaydet(personelNo, saveList);
+											listeKaydet(personelNo, saveList, null);
 										} catch (Exception e) {
 											logger.error(e);
 										}
@@ -2912,7 +2919,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				if (!saveList.isEmpty()) {
 					try {
-						if (listeKaydet(personelNo, saveList)) {
+						if (listeKaydet(personelNo, saveList, null)) {
 							if (yoneticiIdList != null && personelSecili != null && personelSecili.getYoneticisi() != null && personelSecili.getId() != null) {
 								if (!yoneticiIdList.contains(personelSecili.getId()))
 									yoneticiIdList.add(personelSecili.getId());
@@ -2957,7 +2964,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 			if (!saveList.isEmpty()) {
 				try {
-					listeKaydet("", saveList);
+					listeKaydet("", saveList, null);
 				} catch (Exception e) {
 
 				}
@@ -3007,16 +3014,36 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 	/**
 	 * @param key
-	 * @param list
+	 * @param saveList
+	 * @param deleteList
 	 * @return
+	 * @throws Exception
 	 */
-	private boolean listeKaydet(String key, List list) throws Exception {
+	private boolean listeKaydet(String key, List saveList, List deleteList) throws Exception {
 		Boolean durum = Boolean.FALSE;
-		if (list != null) {
-			logger.debug(key + " " + list.size());
-			pdksDAO.saveObjectList(list);
+		if (saveList != null || deleteList != null) {
+			Object[] saveObjectArray = null;
+			if (saveList != null && !saveList.isEmpty()) {
+				logger.debug(key + " " + saveList.size());
+				saveObjectArray = new Object[saveList.size()];
+				for (int i = 0; i < saveObjectArray.length; i++) {
+					saveObjectArray[i] = saveList.get(i);
+				}
+			}
+			Object[] deleteObjectArray = null;
+			if (deleteList != null && !deleteList.isEmpty()) {
+				deleteObjectArray = new Object[deleteList.size()];
+				for (int i = 0; i < deleteObjectArray.length; i++) {
+					deleteObjectArray[i] = deleteList.get(i);
+				}
+			}
+
+			pdksDAO.deleteAndSaveObject(saveObjectArray, deleteObjectArray);
+			if (saveList != null)
+				saveList.clear();
+			if (deleteList != null)
+				deleteList.clear();
 			durum = Boolean.TRUE;
-			list.clear();
 		}
 		return durum;
 
