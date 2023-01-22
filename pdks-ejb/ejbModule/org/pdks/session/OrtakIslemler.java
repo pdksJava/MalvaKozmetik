@@ -8328,33 +8328,37 @@ public class OrtakIslemler implements Serializable {
 			boolean haftaTatilFazlaMesaiKatSayiOku = getParameterKey("haftaTatilFazlaMesaiKatSayiOku").equals("1");
 			boolean offFazlaMesaiKatSayiOku = getParameterKey("offFazlaMesaiKatSayiOku").equals("1");
 			boolean yuvarlamaKatSayiOku = getParameterKey("yuvarlamaKatSayiOku").equals("1");
-			TreeMap<String, BigDecimal> sureMap = planKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HAREKET_BEKLEME_SURESI, session) : null;
-			TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.SUA_GUNLUK_SAAT_SURESI, session) : null;
-			TreeMap<String, BigDecimal> yuvarlamaMap = yuvarlamaKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.YUVARLAMA_TIPI, session) : null;
-			TreeMap<String, BigDecimal> haftaTatilFazlaMesaiMap = haftaTatilFazlaMesaiKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HT_FAZLA_MESAI_TIPI, session) : null;
-			TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku ? getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.OFF_FAZLA_MESAI_TIPI, session) : null;
-			TreeMap<String, BigDecimal> erkenGirisMap = getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.ERKEN_GIRIS_TIPI, session);
-			TreeMap<String, BigDecimal> gecCikisMap = getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.GEC_CIKIS_TIPI, session);
-			TreeMap<String, BigDecimal> fmtDurumMap = getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.FMT_DURUM, session);
-			boolean kontrolEt = sureMap != null && !sureMap.isEmpty();
+			HashMap<KatSayiTipi, TreeMap<String, BigDecimal>> allMap = getPlanKatSayiAllMap(personelIdler, basTarih, bitTarih, session);
+			TreeMap<String, BigDecimal> sureMap = planKatSayiOku && allMap.containsKey(KatSayiTipi.HAREKET_BEKLEME_SURESI) ? allMap.get(KatSayiTipi.HAREKET_BEKLEME_SURESI) : null;
+			TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku && allMap.containsKey(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI) ? allMap.get(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI) : null;
+			TreeMap<String, BigDecimal> yuvarlamaMap = yuvarlamaKatSayiOku && allMap.containsKey(KatSayiTipi.YUVARLAMA_TIPI) ? allMap.get(KatSayiTipi.YUVARLAMA_TIPI) : null;
+			TreeMap<String, BigDecimal> haftaTatilFazlaMesaiMap = haftaTatilFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.HT_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.HT_FAZLA_MESAI_TIPI) : null;
+			TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) : null;
+			TreeMap<String, BigDecimal> erkenGirisMap = allMap.containsKey(KatSayiTipi.ERKEN_GIRIS_TIPI) ? allMap.get(KatSayiTipi.ERKEN_GIRIS_TIPI) : null;
+			TreeMap<String, BigDecimal> gecCikisMap = allMap.containsKey(KatSayiTipi.GEC_CIKIS_TIPI) ? allMap.get(KatSayiTipi.GEC_CIKIS_TIPI) : null;
+			TreeMap<String, BigDecimal> fmtDurumMap = allMap.containsKey(KatSayiTipi.FMT_DURUM) ? allMap.get(KatSayiTipi.FMT_DURUM) : null;
 			boolean erkenGirisKontrolEt = erkenGirisMap != null && !erkenGirisMap.isEmpty();
 			boolean gecKontrolEt = gecCikisMap != null && !gecCikisMap.isEmpty();
+			boolean offFazlaMesaiKontrolEt = offFazlaMesaiMap != null && !offFazlaMesaiMap.isEmpty();
+			boolean haftaTatilFazlaMesaiKontrolEt = haftaTatilFazlaMesaiMap != null && !haftaTatilFazlaMesaiMap.isEmpty();
 			boolean fmtDurumEt = fmtDurumMap != null && !fmtDurumMap.isEmpty();
+			yuvarlamaKatSayiOku = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
+			suaKatSayiOku = sureSuaMap != null && !sureSuaMap.isEmpty();
+			planKatSayiOku = sureMap != null && !sureMap.isEmpty();
 			HashMap<Long, Date> tarih1Map = new HashMap<Long, Date>(), tarih2Map = new HashMap<Long, Date>();
 			List<VardiyaGun> bosList = new ArrayList<VardiyaGun>();
 			for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-				HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
-				String str = vardiyaGun.getVardiyaDateStr();
 				Vardiya vardiya = vardiyaGun.getVardiya();
-				if (vardiya != null) {
-					if (fmtDurumEt) {
-						if (fmtDurumMap.containsKey(str)) {
-							BigDecimal deger = fmtDurumMap.get(str);
-							if (deger != null)
-								katSayiMap.put(KatSayiTipi.FMT_DURUM.value(), deger);
-						}
+				if (vardiya != null && vardiya.getId() != null) {
+					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
+					String str = vardiyaGun.getVardiyaDateStr();
+					if (fmtDurumEt && fmtDurumMap.containsKey(str)) {
+						BigDecimal deger = fmtDurumMap.get(str);
+						if (deger != null)
+							katSayiMap.put(KatSayiTipi.FMT_DURUM.value(), deger);
 					}
+
 					if (vardiya.isCalisma()) {
 						if (erkenGirisKontrolEt && erkenGirisMap.containsKey(str)) {
 							BigDecimal deger = erkenGirisMap.get(str);
@@ -8367,78 +8371,134 @@ public class OrtakIslemler implements Serializable {
 								katSayiMap.put(KatSayiTipi.GEC_CIKIS_TIPI.value(), deger);
 						}
 					}
-				}
-				if (offFazlaMesaiMap != null && offFazlaMesaiMap.containsKey(str)) {
-					BigDecimal deger = offFazlaMesaiMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.OFF_FAZLA_MESAI_TIPI.value(), deger);
-						vardiyaGun.setOffFazlaMesaiBasDakika(deger.intValue());
-					}
-				}
-				if (haftaTatilFazlaMesaiMap != null && haftaTatilFazlaMesaiMap.containsKey(str)) {
-					BigDecimal deger = haftaTatilFazlaMesaiMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.HT_FAZLA_MESAI_TIPI.value(), deger);
-						vardiyaGun.setHaftaTatiliFazlaMesaiBasDakika(deger.intValue());
-					}
-				}
-				if (yuvarlamaMap != null && yuvarlamaMap.containsKey(str)) {
-					BigDecimal deger = yuvarlamaMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.YUVARLAMA_TIPI.value(), deger);
-						vardiyaGun.setYarimYuvarla(deger.intValue());
-					}
-				}
-				if (sureSuaMap != null && sureSuaMap.containsKey(str)) {
-					BigDecimal deger = sureSuaMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI.value(), deger);
-						vardiyaGun.setCalismaSuaSaati(deger.doubleValue());
-					}
-				}
 
-				if (kontrolEt) {
-					if (sureMap.containsKey(str)) {
+					if (offFazlaMesaiKontrolEt && offFazlaMesaiMap.containsKey(str)) {
+						BigDecimal deger = offFazlaMesaiMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.OFF_FAZLA_MESAI_TIPI.value(), deger);
+							vardiyaGun.setOffFazlaMesaiBasDakika(deger.intValue());
+						}
+					}
+					if (haftaTatilFazlaMesaiKontrolEt && haftaTatilFazlaMesaiMap.containsKey(str)) {
+						BigDecimal deger = haftaTatilFazlaMesaiMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.HT_FAZLA_MESAI_TIPI.value(), deger);
+							vardiyaGun.setHaftaTatiliFazlaMesaiBasDakika(deger.intValue());
+						}
+					}
+					if (yuvarlamaKatSayiOku && yuvarlamaMap.containsKey(str)) {
+						BigDecimal deger = yuvarlamaMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.YUVARLAMA_TIPI.value(), deger);
+							vardiyaGun.setYarimYuvarla(deger.intValue());
+						}
+					}
+					if (suaKatSayiOku && sureSuaMap.containsKey(str)) {
+						BigDecimal deger = sureSuaMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI.value(), deger);
+							vardiyaGun.setCalismaSuaSaati(deger.doubleValue());
+						}
+					}
+
+					if (planKatSayiOku && sureMap.containsKey(str)) {
 						BigDecimal deger = sureMap.get(str);
 						if (deger != null) {
 							katSayiMap.put(KatSayiTipi.HAREKET_BEKLEME_SURESI.value(), deger);
 							vardiyaGun.setBeklemeSuresi(deger.intValue());
 						}
 					}
-				}
-				Date tarih1 = null, tarih2 = null;
-				Long key = vardiyaGun.getPersonel().getId();
-				if (tarih1Map.containsKey(key))
-					tarih1 = tarih1Map.get(key);
-				else {
-					tarih1 = vardiyaGun.getPersonel().getIseGirisTarihi();
-					tarih1Map.put(key, tarih1);
-				}
-				if (tarih2Map.containsKey(key))
-					tarih2 = tarih2Map.get(key);
-				else {
-					tarih2 = vardiyaGun.getPersonel().getSonCalismaTarihi();
-					tarih2Map.put(key, tarih2);
-				}
-				if (tarih1 == null || tarih2 == null || vardiyaGun.getVardiyaDate().after(tarih2) || vardiyaGun.getVardiyaDate().before(tarih1)) {
-					if (hepsi == null || hepsi.booleanValue() == false) {
-						iterator.remove();
+					Date tarih1 = null, tarih2 = null;
+					Long key = vardiyaGun.getPersonel().getId();
+					if (tarih1Map.containsKey(key))
+						tarih1 = tarih1Map.get(key);
+					else {
+						tarih1 = vardiyaGun.getPersonel().getIseGirisTarihi();
+						tarih1Map.put(key, tarih1);
 					}
+					if (tarih2Map.containsKey(key))
+						tarih2 = tarih2Map.get(key);
+					else {
+						tarih2 = vardiyaGun.getPersonel().getSonCalismaTarihi();
+						tarih2Map.put(key, tarih2);
+					}
+					if (tarih1 == null || tarih2 == null || vardiyaGun.getVardiyaDate().after(tarih2) || vardiyaGun.getVardiyaDate().before(tarih1)) {
+						if (hepsi == null || hepsi.booleanValue() == false) {
+							iterator.remove();
+						}
+					}
+					if (!katSayiMap.isEmpty()) {
+						vardiya.setIslemVardiyaGun(vardiyaGun);
+						vardiyaGun.setKatSayiMap(katSayiMap);
+					} else
+						katSayiMap = null;
 				}
-				if (!katSayiMap.isEmpty()) {
-					vardiya.setIslemVardiyaGun(vardiyaGun);
-					vardiyaGun.setKatSayiMap(katSayiMap);
-				} else
-					katSayiMap = null;
 			}
 			if (!bosList.isEmpty())
 				vardiyaGunList.addAll(bosList);
 			bosList = null;
+			allMap = null;
 			sureMap = null;
+			sureSuaMap = null;
+			yuvarlamaMap = null;
+			haftaTatilFazlaMesaiMap = null;
+			offFazlaMesaiMap = null;
+			erkenGirisMap = null;
+			gecCikisMap = null;
+			fmtDurumMap = null;
 		}
 		map = null;
 		return vardiyaGunList;
 
+	}
+
+	/**
+	 * @param personelIdler
+	 * @param basTarih
+	 * @param bitTarih
+	 * @param session
+	 * @return
+	 */
+	public HashMap<KatSayiTipi, TreeMap<String, BigDecimal>> getPlanKatSayiAllMap(List<Long> personelIdler, Date basTarih, Date bitTarih, Session session) {
+		HashMap<KatSayiTipi, TreeMap<String, BigDecimal>> allMap = new HashMap<KatSayiTipi, TreeMap<String, BigDecimal>>();
+		HashMap map = new HashMap();
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT B." + KatSayi.COLUMN_NAME_TIPI + ",V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ",MAX(B." + KatSayi.COLUMN_NAME_DEGER + ") DEGER  FROM " + VardiyaGun.TABLE_NAME + " V WITH(nolock) ");
+		sb.append(" INNER JOIN  " + KatSayi.TABLE_NAME + " B ON B." + KatSayi.COLUMN_NAME_BAS_TARIH + "<=V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI);
+		sb.append(" AND B." + KatSayi.COLUMN_NAME_BIT_TARIH + ">=V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " AND B." + KatSayi.COLUMN_NAME_DURUM + "=1 ");
+		sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_PERSONEL);
+		sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn());
+		sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
+		sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<= :bitTarih AND V." + VardiyaGun.COLUMN_NAME_PERSONEL + ":pId ");
+		sb.append(" GROUP BY B." + KatSayi.COLUMN_NAME_TIPI + ",V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI);
+		map.put("pId", personelIdler);
+		map.put("basTarih", basTarih);
+		map.put("bitTarih", bitTarih);
+		if (session != null)
+			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<Object[]> list = pdksEntityController.getObjectBySQLList(sb, map, null);
+		for (Object[] objects : list) {
+			if (objects[0] == null || objects[1] == null)
+				continue;
+			try {
+				Integer kaySayi = (Integer) objects[0];
+				KatSayiTipi key = KatSayiTipi.fromValue(kaySayi);
+				if (key != null) {
+					TreeMap<String, BigDecimal> degerMap = allMap.containsKey(key) ? allMap.get(key) : new TreeMap<String, BigDecimal>();
+					if (degerMap.isEmpty())
+						allMap.put(key, degerMap);
+					Date date = new Date(((java.sql.Timestamp) objects[1]).getTime());
+					BigDecimal deger = new BigDecimal((Double) objects[2]);
+					degerMap.put(PdksUtil.convertToDateString(date, "yyyyMMdd"), deger);
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+
+		}
+
+		map = null;
+		return allMap;
 	}
 
 	/**

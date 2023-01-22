@@ -33,7 +33,6 @@ import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
 import org.pdks.entity.IzinTipi;
-import org.pdks.entity.KatSayiTipi;
 import org.pdks.entity.Liste;
 import org.pdks.entity.MenuItem;
 import org.pdks.entity.Personel;
@@ -1300,110 +1299,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			map = null;
 		}
 
-	}
-
-	/**
-	 * @param vgList
-	 * @param session
-	 */
-	public void setVardiyaKatSayiList(List<VardiyaGun> vgList, Session session) {
-		if (vgList != null) {
-			boolean planKatSayiOku = ortakIslemler.getParameterKey("planKatSayiOku").equals("1");
-			boolean yuvarlamaKatSayiOku = ortakIslemler.getParameterKey("yuvarlamaKatSayiOku").equals("1");
-			boolean suaKatSayiOku = false;
-			Date basTarih = null, bitTarih = null;
-			List<Long> personelIdler = new ArrayList<Long>();
-			List<VardiyaGun> vardiyaGunList = new ArrayList<VardiyaGun>();
-
-			for (VardiyaGun vardiyaGun : vgList) {
-				if (vardiyaGun.getVardiya() == null || vardiyaGun.getVardiyaDate() == null || vardiyaGun.getPersonel() == null)
-					continue;
-				if (vardiyaGun.getVardiya().getSua() != null && vardiyaGun.getVardiya().getSua()) {
-					suaKatSayiOku = true;
-					vardiyaGunList.add(vardiyaGun);
-				}
-				if (!personelIdler.contains(vardiyaGun.getPersonel().getId()))
-					personelIdler.add(vardiyaGun.getPersonel().getId());
-				if (basTarih == null || basTarih.before(vardiyaGun.getVardiyaDate()))
-					basTarih = vardiyaGun.getVardiyaDate();
-				if (bitTarih == null || bitTarih.after(vardiyaGun.getVardiyaDate()))
-					bitTarih = vardiyaGun.getVardiyaDate();
-
-			}
-			if (planKatSayiOku || suaKatSayiOku || yuvarlamaKatSayiOku) {
-				boolean haftaTatilFazlaMesaiKatSayiOku = ortakIslemler.getParameterKey("haftaTatilFazlaMesaiKatSayiOku").equals("1");
-				boolean offFazlaMesaiKatSayiOku = ortakIslemler.getParameterKey("offFazlaMesaiKatSayiOku").equals("1");
-				TreeMap<String, BigDecimal> sureMap = planKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HAREKET_BEKLEME_SURESI, session) : null;
-				TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.SUA_GUNLUK_SAAT_SURESI, session) : null;
-				TreeMap<String, BigDecimal> yuvarlamaMap = yuvarlamaKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.YUVARLAMA_TIPI, session) : null;
-				TreeMap<String, BigDecimal> haftaTatilFazlaMesaiMap = haftaTatilFazlaMesaiKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.HT_FAZLA_MESAI_TIPI, session) : null;
-				TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.OFF_FAZLA_MESAI_TIPI, session) : null;
-				TreeMap<String, BigDecimal> erkenGirisMap = ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.ERKEN_GIRIS_TIPI, session);
-				TreeMap<String, BigDecimal> gecCikisMap = ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.GEC_CIKIS_TIPI, session);
-				TreeMap<String, BigDecimal> fmtDurumMap = ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.FMT_DURUM, session);
-				// TODO setVardiyaKatSayiList
-				boolean kontrolSureMap = sureMap != null && !sureMap.isEmpty();
-				boolean kontrolSureSuaMap = sureSuaMap != null && !sureSuaMap.isEmpty();
-				boolean kontrolYuvarlamaMap = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
-				boolean erkenGirisKontrolEt = erkenGirisMap != null && !erkenGirisMap.isEmpty();
-				boolean gecKontrolEt = gecCikisMap != null && !gecCikisMap.isEmpty();
-				boolean fmtDurumEt = fmtDurumMap != null && !fmtDurumMap.isEmpty();
-				for (VardiyaGun vardiyaGun : vardiyaGunList) {
-					String str = vardiyaGun.getVardiyaDateStr();
-					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
-					if (vardiyaGun.getVardiya() != null) {
-						if (fmtDurumEt) {
-							if (fmtDurumMap.containsKey(str)) {
-								BigDecimal deger = fmtDurumMap.get(str);
-								if (deger != null)
-									katSayiMap.put(KatSayiTipi.FMT_DURUM.value(), deger);
-							}
-						}
-
-						if (vardiyaGun.getVardiya().isCalisma()) {
-							if (erkenGirisKontrolEt && erkenGirisMap.containsKey(str)) {
-								BigDecimal deger = erkenGirisMap.get(str);
-								if (deger != null)
-									katSayiMap.put(KatSayiTipi.ERKEN_GIRIS_TIPI.value(), deger);
-							}
-							if (gecKontrolEt && gecCikisMap.containsKey(str)) {
-								BigDecimal deger = gecCikisMap.get(str);
-								if (deger != null)
-									katSayiMap.put(KatSayiTipi.GEC_CIKIS_TIPI.value(), deger);
-							}
-						}
-					}
-					if (offFazlaMesaiMap != null && offFazlaMesaiMap.containsKey(str)) {
-						BigDecimal deger = offFazlaMesaiMap.get(str);
-						if (deger != null) {
-							katSayiMap.put(KatSayiTipi.OFF_FAZLA_MESAI_TIPI.value(), deger);
-							vardiyaGun.setOffFazlaMesaiBasDakika(deger.intValue());
-						}
-					}
-					if (haftaTatilFazlaMesaiMap != null && haftaTatilFazlaMesaiMap.containsKey(str)) {
-						BigDecimal deger = haftaTatilFazlaMesaiMap.get(str);
-						if (deger != null) {
-							katSayiMap.put(KatSayiTipi.HT_FAZLA_MESAI_TIPI.value(), deger);
-							vardiyaGun.setHaftaTatiliFazlaMesaiBasDakika(deger.intValue());
-						}
-					}
-					if (kontrolSureMap && sureMap.containsKey(str))
-						vardiyaGun.setBeklemeSuresi(sureMap.get(str).intValue());
-					if (kontrolSureSuaMap && sureSuaMap.containsKey(str))
-						vardiyaGun.setCalismaSuaSaati(sureSuaMap.get(str).doubleValue());
-					if (kontrolYuvarlamaMap && yuvarlamaMap.containsKey(str)) {
-						BigDecimal deger = yuvarlamaMap.get(str);
-						if (deger != null)
-							vardiyaGun.setYarimYuvarla(deger.intValue());
-					}
-					if (!katSayiMap.isEmpty())
-						vardiyaGun.setKatSayiMap(katSayiMap);
-					else
-						katSayiMap = null;
-				}
-				vardiyaGunList = null;
-			}
-		}
 	}
 
 	/**
