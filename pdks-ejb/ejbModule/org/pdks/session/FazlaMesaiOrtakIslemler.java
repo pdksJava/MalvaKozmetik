@@ -1340,25 +1340,37 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku ? ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.OFF_FAZLA_MESAI_TIPI, session) : null;
 				TreeMap<String, BigDecimal> erkenGirisMap = ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.ERKEN_GIRIS_TIPI, session);
 				TreeMap<String, BigDecimal> gecCikisMap = ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.GEC_CIKIS_TIPI, session);
+				TreeMap<String, BigDecimal> fmtDurumMap = ortakIslemler.getPlanKatSayiMap(personelIdler, basTarih, bitTarih, KatSayiTipi.FMT_DURUM, session);
 				// TODO setVardiyaKatSayiList
 				boolean kontrolSureMap = sureMap != null && !sureMap.isEmpty();
 				boolean kontrolSureSuaMap = sureSuaMap != null && !sureSuaMap.isEmpty();
 				boolean kontrolYuvarlamaMap = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
 				boolean erkenGirisKontrolEt = erkenGirisMap != null && !erkenGirisMap.isEmpty();
 				boolean gecKontrolEt = gecCikisMap != null && !gecCikisMap.isEmpty();
+				boolean fmtDurumEt = fmtDurumMap != null && !fmtDurumMap.isEmpty();
 				for (VardiyaGun vardiyaGun : vardiyaGunList) {
 					String str = vardiyaGun.getVardiyaDateStr();
 					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
-					if (vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().isCalisma()) {
-						if (erkenGirisKontrolEt && erkenGirisMap.containsKey(str)) {
-							BigDecimal deger = erkenGirisMap.get(str);
-							if (deger != null)
-								katSayiMap.put(KatSayiTipi.ERKEN_GIRIS_TIPI.value(), deger);
+					if (vardiyaGun.getVardiya() != null) {
+						if (fmtDurumEt) {
+							if (fmtDurumMap.containsKey(str)) {
+								BigDecimal deger = fmtDurumMap.get(str);
+								if (deger != null)
+									katSayiMap.put(KatSayiTipi.FMT_DURUM.value(), deger);
+							}
 						}
-						if (gecKontrolEt && gecCikisMap.containsKey(str)) {
-							BigDecimal deger = gecCikisMap.get(str);
-							if (deger != null)
-								katSayiMap.put(KatSayiTipi.GEC_CIKIS_TIPI.value(), deger);
+
+						if (vardiyaGun.getVardiya().isCalisma()) {
+							if (erkenGirisKontrolEt && erkenGirisMap.containsKey(str)) {
+								BigDecimal deger = erkenGirisMap.get(str);
+								if (deger != null)
+									katSayiMap.put(KatSayiTipi.ERKEN_GIRIS_TIPI.value(), deger);
+							}
+							if (gecKontrolEt && gecCikisMap.containsKey(str)) {
+								BigDecimal deger = gecCikisMap.get(str);
+								if (deger != null)
+									katSayiMap.put(KatSayiTipi.GEC_CIKIS_TIPI.value(), deger);
+							}
 						}
 					}
 					if (offFazlaMesaiMap != null && offFazlaMesaiMap.containsKey(str)) {

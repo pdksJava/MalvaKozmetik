@@ -65,10 +65,11 @@
 							<ui:repeat value="#{vardiyaGunHome.aylikPuantajDefault.ayinVardiyalari}" var="vardiya">
 								<td class="#{vardiya.headerClass}" id="tatil#{vardiya.vardiyaDateStr}"
 									style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><ui:fragment
-										rendered="#{vardiyaGunHome.topluFazlaCalismaTalep==false}">
+										rendered="#{vardiyaGunHome.topluFazlaCalismaTalep==false or vardiya.fazlaMesaiTalepDurum==false}">
 										<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}" />
 
-									</ui:fragment> <ui:fragment rendered="#{vardiyaGunHome.topluFazlaCalismaTalep}">
+									</ui:fragment> 
+									<ui:fragment rendered="#{vardiyaGunHome.topluFazlaCalismaTalep and vardiya.fazlaMesaiTalepDurum}">
 										<a4j:commandButton value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}"
 											action="#{vardiyaGunHome.topluTalepOlusturmaKontrol(vardiya)}" reRender="secimlerTopluMesai,hareketTables,topluMesaiTalepPanel"
 											onclick="#{rich:component('wait')}.show()"
@@ -190,7 +191,7 @@
 														</ui:fragment></TD>
 
 													<ui:fragment rendered="#{vardiyaGunHome.fazlaMesaiTalepVar }">
-														<TD><ui:fragment rendered="#{aylikPuantaj.fazlaMesaiTalepVar}">
+														<TD><ui:fragment rendered="#{aylikPuantaj.fazlaMesaiDurum}">
 																<a4j:commandLink id="mesaiAylikLink" ajaxSingle="true" disabled="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi==false}"
 																	action="#{vardiyaGunHome.aylikPuantajSec(aylikPuantaj,'M')}" onclick="#{rich:component('wait')}.show()"
 																	oncomplete="#{rich:component('wait')}.hide(); #{rich:component('mesaiAylikPanel')}.show()" reRender="mesaiAylikPanel,secimlerMesai">

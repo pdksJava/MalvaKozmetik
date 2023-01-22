@@ -60,7 +60,7 @@ public class Vardiya extends BaseObject {
 	private Integer yemekSuresi, cikisMolaSaat = 0;
 	private Departman departman;
 	private List<Integer> gunlukList;
-	private Boolean aksamVardiya = Boolean.FALSE, icapVardiya = Boolean.FALSE, gebelik = Boolean.FALSE, genel = Boolean.FALSE, isKur = Boolean.FALSE;
+	private Boolean aksamVardiya = Boolean.FALSE, icapVardiya = Boolean.FALSE, gebelik = Boolean.FALSE, kopya = Boolean.FALSE, genel = Boolean.FALSE, isKur = Boolean.FALSE;
 	private String tipi;
 	private VardiyaGun islemVardiyaGun;
 	private char vardiyaTipi;
@@ -471,7 +471,7 @@ public class Vardiya extends BaseObject {
 			cal.setTime(vardiyaTarih);
 			tarih = cal.getTime();
 			vardiyaDateStr = pdksVardiyaGun.getVardiyaDateStr();
- 			if (pdksVardiyaGun.getOffFazlaMesaiBasDakika() != null)
+			if (pdksVardiyaGun.getOffFazlaMesaiBasDakika() != null)
 				this.setOffFazlaMesaiBasDakika(pdksVardiyaGun.getOffFazlaMesaiBasDakika());
 			if (pdksVardiyaGun.getHaftaTatiliFazlaMesaiBasDakika() != null)
 				this.setHaftaTatiliFazlaMesaiBasDakika(pdksVardiyaGun.getHaftaTatiliFazlaMesaiBasDakika());
@@ -1716,9 +1716,11 @@ public class Vardiya extends BaseObject {
 	public BigDecimal getKatSayi(Integer tipi) {
 		BigDecimal katSayi = null;
 		try {
-			if (tipi != null && islemVardiyaGun != null && islemVardiyaGun.getKatSayiMap() != null) {
-				if (islemVardiyaGun.getKatSayiMap().containsKey(tipi))
-					katSayi = islemVardiyaGun.getKatSayiMap().get(tipi);
+			if (kopya) {
+				if (tipi != null && islemVardiyaGun != null && islemVardiyaGun.getKatSayiMap() != null) {
+					if (islemVardiyaGun.getKatSayiMap().containsKey(tipi))
+						katSayi = islemVardiyaGun.getKatSayiMap().get(tipi);
+				}
 			}
 		} catch (Exception e) {
 			katSayi = null;
@@ -1738,5 +1740,14 @@ public class Vardiya extends BaseObject {
 				setVardiyaTarih(value.getVardiyaDate());
 		}
 		this.islemVardiyaGun = value;
+	}
+
+	@Transient
+	public Boolean getKopya() {
+		return kopya;
+	}
+
+	public void setKopya(Boolean kopya) {
+		this.kopya = kopya;
 	}
 }

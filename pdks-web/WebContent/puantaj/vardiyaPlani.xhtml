@@ -943,14 +943,16 @@
 							</tr>
 							<tr>
 								<a4j:repeat value="#{vardiyaHafta.vardiyaGunler}" var="vardiyaGun">
-									<td style="width: 90px; height: 25px;" class="#{vardiyaGun.getAylikClassAdi(aylikPuantaj.trClass)}" align="center"><ui:fragment
-											rendered="#{vardiyaGun.ayinGunu==false or vardiyaGun.vardiya==null or vardiyaGun.aylikGirisYap==false or vardiyaGun.izin!=null or vardiyaGun.kullaniciYetkili==false}">
+									<td style="width: 90px; height: 25px;" class="#{vardiyaGun.getAylikClassAdi(aylikPuantaj.trClass)}" align="center">
+									   <ui:fragment
+											rendered="#{vardiyaGun.ayinGunu==false or vardiyaGun.fazlaMesaiTalepDurum==false or vardiyaGun.vardiya==null   or vardiyaGun.izin!=null or vardiyaGun.kullaniciYetkili==false}">
 											<h:panelGrid id="veriDigerAy">
 												<h:outputText style="font-size: 11px;#{vardiyaGun.styleGun}" value="#{vardiyaGun.aciklama}" />
 											</h:panelGrid>
 
 											<rich:toolTip for="veriDigerAy" rendered="#{vardiyaGun.title!=''}"> #{vardiyaGun.title} </rich:toolTip>
-										</ui:fragment> <ui:fragment rendered="#{vardiyaGun.vardiyalar!=null and vardiyaGun.aylikGirisYap==true}">
+										</ui:fragment> 
+										<ui:fragment rendered="#{vardiyaGun.vardiyalar!=null and  vardiyaGun.fazlaMesaiTalepDurum}">
 											<DIV id="bilgiMesaiVardiya#{vardiyaGun.vardiyaKeyStr}">
 												<ui:fragment rendered="#{vardiyaGun.ayinGunu and vardiyaGun.vardiya!=null}">
 

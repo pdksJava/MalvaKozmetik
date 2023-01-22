@@ -70,7 +70,7 @@ public class VardiyaGun extends BaseObject {
 	private int beklemeSuresi = 6;
 	private Double calismaSuaSaati = PersonelDenklestirme.getCalismaSaatiSua();
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
-	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
+	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE, fazlaMesaiTalepDurum = Boolean.FALSE;
 	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
 	private String tdClass = "", style = "", manuelGirisHTML = "", vardiyaKisaAciklama, personelNo, vardiyaDateStr, donemStr;
@@ -275,7 +275,9 @@ public class VardiyaGun extends BaseObject {
 			if (islemVardiya == null) {
 				setVardiyaZamani();
 				if (islemVardiya == null) {
-					setIslemVardiya((Vardiya) vardiya.clone());
+					Vardiya vardiyaKopya = (Vardiya) vardiya.clone();
+					vardiyaKopya.setKopya(Boolean.TRUE);
+					setIslemVardiya(vardiyaKopya);
 					if (islemVardiya != null) {
 						if (oncekiVardiyaGun != null && oncekiVardiyaGun.getIslemVardiya() != null)
 							islemVardiya.setOncekiVardiya(oncekiVardiyaGun.getIslemVardiya());
@@ -783,8 +785,11 @@ public class VardiyaGun extends BaseObject {
 		if (vardiya != null && vardiyaDate != null) {
 			if (!islendi || islemVardiya == null) {
 				setIslendi(Boolean.TRUE);
-				if ((sonrakiVardiya == null && oncekiVardiyaGun == null) || islemVardiya == null)
-					setIslemVardiya((Vardiya) vardiya.clone());
+				if ((sonrakiVardiya == null && oncekiVardiyaGun == null) || islemVardiya == null) {
+					Vardiya vardiyaKopya = (Vardiya) vardiya.clone();
+					vardiyaKopya.setKopya(Boolean.TRUE);
+					setIslemVardiya(vardiyaKopya);
+				}
 				if (islemVardiya != null) {
 					if (oncekiVardiyaGun != null && oncekiVardiyaGun.getIslemVardiya() != null)
 						islemVardiya.setOncekiVardiya(oncekiVardiyaGun.getIslemVardiya());
@@ -801,7 +806,9 @@ public class VardiyaGun extends BaseObject {
 	public Vardiya setIslemVardiyaZamani() {
 		if (vardiya != null && vardiyaDate != null && !islendi && islemVardiya == null) {
 			setIslendi(Boolean.TRUE);
-			setIslemVardiya((Vardiya) vardiya.clone());
+			Vardiya vardiyaKopya = (Vardiya) vardiya.clone();
+			vardiyaKopya.setKopya(Boolean.TRUE);
+			setIslemVardiya(vardiyaKopya);
 			islemVardiya.setVardiyaTarih(vardiyaDate);
 			islemVardiya.setVardiyaZamani(this);
 		}
@@ -1872,7 +1879,13 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public void saklaVardiya() {
-		this.eskiVardiya = vardiya != null ? (Vardiya) vardiya.clone() : null;
+		Vardiya vardiyaKopya = null;
+		if (vardiya != null) {
+			vardiyaKopya = (Vardiya) vardiya.clone();
+			vardiyaKopya.setKopya(Boolean.TRUE);
+		}
+
+		this.eskiVardiya = vardiyaKopya;
 	}
 
 	@Transient
@@ -2057,6 +2070,20 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	@Transient
+	public BigDecimal getKatSayi(Integer tipi) {
+		BigDecimal katSayi = null;
+		try {
+			if (tipi != null && katSayiMap != null) {
+				if (katSayiMap.containsKey(tipi))
+					katSayi = katSayiMap.get(tipi);
+			}
+		} catch (Exception e) {
+			katSayi = null;
+		}
+		return katSayi;
+	}
+
+	@Transient
 	public HashMap<Integer, BigDecimal> getKatSayiMap() {
 		return katSayiMap;
 	}
@@ -2072,6 +2099,19 @@ public class VardiyaGun extends BaseObject {
 
 	public void setDonemStr(String donemStr) {
 		this.donemStr = donemStr;
+	}
+
+	@Transient
+	public boolean isFazlaMesaiTalepDurum() {
+		if (!fazlaMesaiTalepDurum && izin == null && ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.FMT_DURUM.value());
+			fazlaMesaiTalepDurum = decimal != null && decimal.intValue() > 0;
+		}
+		return fazlaMesaiTalepDurum;
+	}
+
+	public void setFazlaMesaiTalepDurum(boolean fazlaMesaiTalepDurum) {
+		this.fazlaMesaiTalepDurum = fazlaMesaiTalepDurum;
 	}
 
 }
