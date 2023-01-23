@@ -1361,7 +1361,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								sonVardiyaBitZaman = islemVardiya.getVardiyaTelorans1BitZaman();
 						}
 						personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
-						planOnayDurum = denklestirmeAyDurum && personelDenklestirme.isOnaylandi();
+						planOnayDurum = denklestirmeAyDurum && (ikRole || personelDenklestirme.isOnaylandi());
 						if (personelDenklestirme.getDurum()) {
 							if (sonVardiyaBitZaman != null)
 								fazlaMesaiOnayla = bugun.after(sonVardiyaBitZaman);
@@ -1987,7 +1987,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 
 						if (savePersonelDenklestirme) {
- 							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
+							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = true;
 						}
 					}
@@ -3030,7 +3030,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Personel personel = vGun.getPersonel();
 		vGun.setAksamVardiyaSaatSayisi(0d);
 		vGun.setLinkAdresler(null);
-		String vardiyaPlanKey = vGun.getPlanKey(); 
+		String vardiyaPlanKey = vGun.getPlanKey();
 		if (planOnayDurum == false)
 			vardiyaPlaniGetir(vGun, vardiyaPlanKey);
 
