@@ -4050,24 +4050,26 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<PersonelFazlaMesai> denklestirmeFazlaMesaileriGetir(DenklestirmeAy denklestirmeAy, List<VardiyaGun> vardiyalar, Session session) {
-		HashMap parametreMap = new HashMap();
-		List<Long> vardiyaIdler = new ArrayList<Long>();
+		TreeMap<Long, VardiyaGun> vardiyaMap = new TreeMap<Long, VardiyaGun>();
+		String donemKodu = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
 		List<PersonelFazlaMesai> fazlaMesailer = null;
-
+		boolean iptalDurum = denklestirmeAy != null && (denklestirmeAy.getDurum() || ((authenticatedUser.isIK() || authenticatedUser.isAdmin()) && denklestirmeAy.getGuncelleIK()));
 		if (vardiyalar != null) {
 			for (Iterator iterator = vardiyalar.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 				if (vardiyaGun.getId() != null) {
-					vardiyaIdler.add(vardiyaGun.getId());
+					if (donemKodu != null)
+						vardiyaGun.setAyinGunu(vardiyaGun.getVardiyaDateStr().startsWith(donemKodu));
+					vardiyaMap.put(vardiyaGun.getId(), vardiyaGun);
 				}
-
 			}
 		}
+		HashMap parametreMap = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT I.* FROM " + PersonelFazlaMesai.TABLE_NAME + " I  WITH(nolock) ");
-		if (!vardiyaIdler.isEmpty()) {
+		if (!vardiyaMap.isEmpty()) {
 			sb.append(" WHERE I." + PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN + " :v");
-			parametreMap.put("v", vardiyaIdler);
+			parametreMap.put("v", new ArrayList(vardiyaMap.keySet()));
 			sb.append(" AND I." + PersonelFazlaMesai.COLUMN_NAME_DURUM + "=1");
 		} else {
 			if (denklestirmeAy != null) {
@@ -4092,17 +4094,32 @@ public class OrtakIslemler implements Serializable {
 		fazlaMesailer = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelFazlaMesai.class);
 		if (fazlaMesailer == null)
 			fazlaMesailer = new ArrayList<PersonelFazlaMesai>();
-		vardiyaIdler = null;
+
 		if (!fazlaMesailer.isEmpty()) {
 			boolean flush = false;
 			boolean kaydet = denklestirmeAy != null && denklestirmeAy.getDurum().equals(Boolean.TRUE);
 			for (Iterator iterator = fazlaMesailer.iterator(); iterator.hasNext();) {
 				PersonelFazlaMesai fazlaMesai = (PersonelFazlaMesai) iterator.next();
 				if (fazlaMesai.isOnaylandi() && fazlaMesai.isBayram() == false) {
-					VardiyaGun vardiyaGun = fazlaMesai.getVardiyaGun();
+					VardiyaGun vardiyaGun = vardiyaMap.get(fazlaMesai.getVardiyaGun().getId());
 					if (vardiyaGun.getVardiya() == null || vardiyaGun.getVardiya().isCalisma() == false)
 						continue;
-					Vardiya islemVardiya = vardiyaGun.setVardiyaZamani();
+					Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+//					if (iptalDurum && vardiyaGun.isAyinGunu() && islemVardiya.isCalisma()) {
+//						boolean durum1 = islemVardiya.getVardiyaTelorans1BasZaman().before(fazlaMesai.getBasZaman()) && islemVardiya.getVardiyaTelorans2BasZaman().after(fazlaMesai.getBitZaman());
+//						if (durum1) {
+//							logger.info(vardiyaGun.getVardiyaKeyStr() + " " + fazlaMesai.getId() + " " + fazlaMesai.getBasZaman() + " " + fazlaMesai.getBitZaman());
+//							fazlaMesai.setDurum(Boolean.FALSE);
+//							if (!authenticatedUser.isAdmin()) {
+//								fazlaMesai.setGuncelleyenUser(authenticatedUser);
+//								fazlaMesai.setGuncellemeTarihi(new Date());
+//							}
+//							pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
+//							iterator.remove();
+//							flush = Boolean.TRUE;
+//							continue;
+//						}
+//					}
 					String str = "Hatali fazla mesai : " + vardiyaGun.getVardiyaKeyStr() + " (" + authenticatedUser.timeFormatla(islemVardiya.getVardiyaBasZaman()) + "-" + authenticatedUser.timeFormatla(islemVardiya.getVardiyaBitZaman()) + " --> "
 							+ authenticatedUser.timeFormatla(fazlaMesai.getBasZaman()) + "-" + authenticatedUser.timeFormatla(fazlaMesai.getBitZaman()) + " )";
 					if (islemVardiya.getVardiyaTelorans2BasZaman().getTime() >= fazlaMesai.getBitZaman().getTime() || islemVardiya.getVardiyaTelorans1BitZaman().getTime() <= fazlaMesai.getBasZaman().getTime())
@@ -4127,12 +4144,16 @@ public class OrtakIslemler implements Serializable {
 								logger.info(str + " Geç çıkma");
 							else
 								logger.info(str + " Erken gelme");
-							fazlaMesai.setDurum(Boolean.FALSE);
-							fazlaMesai.setGuncelleyenUser(authenticatedUser);
-							fazlaMesai.setGuncellemeTarihi(new Date());
-							pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
-							iterator.remove();
-							flush = Boolean.TRUE;
+							if (iptalDurum) {
+								fazlaMesai.setDurum(Boolean.FALSE);
+								if (!authenticatedUser.isAdmin()) {
+									fazlaMesai.setGuncelleyenUser(authenticatedUser);
+									fazlaMesai.setGuncellemeTarihi(new Date());
+								}
+								pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
+								iterator.remove();
+								flush = Boolean.TRUE;
+							}
 						}
 
 					}
@@ -4144,6 +4165,7 @@ public class OrtakIslemler implements Serializable {
 			} catch (Exception e) {
 			}
 		}
+		vardiyaMap = null;
 
 		return fazlaMesailer;
 	}

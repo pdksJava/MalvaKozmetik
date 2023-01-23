@@ -151,7 +151,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private Boolean izinCalismayanMailGonder = Boolean.FALSE, hatalariAyikla = Boolean.FALSE, kismiOdemeGoster = Boolean.FALSE;
 	private String manuelGirisGoster = "", kapiGirisSistemAdi = "";
-	private boolean yarimYuvarla = true, sadeceFazlaMesai = true;
+	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, planOnayDurum;
 	private int ay, yil, maxYil, sonDonem, pageSize;
 
 	private List<User> toList, ccList, bccList;
@@ -1361,6 +1361,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								sonVardiyaBitZaman = islemVardiya.getVardiyaTelorans1BitZaman();
 						}
 						personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
+						planOnayDurum = denklestirmeAyDurum && personelDenklestirme.isOnaylandi();
 						if (personelDenklestirme.getDurum()) {
 							if (sonVardiyaBitZaman != null)
 								fazlaMesaiOnayla = bugun.after(sonVardiyaBitZaman);
@@ -1986,8 +1987,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 
 						if (savePersonelDenklestirme) {
-							
-							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
+ 							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = true;
 						}
 					}
@@ -2917,7 +2917,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Date aksamVardiyaBitisZamani = null, aksamVardiyaBaslangicZamani = null;
 		Vardiya vardiya = vGun.getVardiya();
 		String key1 = vGun.getVardiyaDateStr(), vardiyaKey = vGun.getVardiyaKeyStr();
-
 		if (!izinGoster)
 			izinGoster = vardiya.isIzin();
 		// boolean aksamVardiyasi = vardiya.isAksamVardiyasi();
@@ -3031,7 +3030,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Personel personel = vGun.getPersonel();
 		vGun.setAksamVardiyaSaatSayisi(0d);
 		vGun.setLinkAdresler(null);
-		String vardiyaPlanKey = vGun.getPlanKey();
+		String vardiyaPlanKey = vGun.getPlanKey(); 
+		if (planOnayDurum == false)
+			vardiyaPlaniGetir(vGun, vardiyaPlanKey);
+
 		boolean izinDurum = false;
 		if (hareketler == null && vGun.getIslemVardiya() != null) {
 			vGun.setHataliDurum(vGun.getIzin() == null && vGun.getIslemVardiya().isCalisma());
@@ -3106,6 +3108,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								boolean hatali = Boolean.TRUE;
 								if (vGun.getFazlaMesailer() != null) {
 									for (PersonelFazlaMesai personelFazlaMesai : vGun.getFazlaMesailer()) {
+										if (vGun.isAyinGunu() && islemVardiya.isCalisma()) {
+											if (personelFazlaMesai.getBasZaman().after(islemVardiya.getVardiyaTelorans1BasZaman()))
+												logger.info(vGun.getVardiyaKeyStr() + " " + personelFazlaMesai.getId() + " " + personelFazlaMesai.getBasZaman() + " " + personelFazlaMesai.getBitZaman());
+										}
 										if (personelFazlaMesai.getHareketId().equals(girisHareket.getId()) || personelFazlaMesai.getHareketId().equals(cikisHareket.getId())) {
 											hatali = Boolean.FALSE;
 										}
@@ -3468,8 +3474,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
 					}
 					if (personelFazlaMesaiDurum) {
-						String link = "<a href='http://" + adres + "/personelFazlaMesai?planKey=" + vardiyaPlanKey + "'>" + personelFazlaMesaiStr + "</a>";
-						vGun.addLinkAdresler(link);
+						personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
+						// String link = "<a href='http://" + adres + "/personelFazlaMesai?planKey=" + vardiyaPlanKey + "'>" + personelFazlaMesaiStr + "</a>";
+						// vGun.addLinkAdresler(link);
 					}
 					break;
 
@@ -3603,7 +3610,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param vardiyaPlanKey
 	 */
 	private void kapiGirisGetir(VardiyaGun vardiyaGun, String vardiyaPlanKey) {
-		if (denklestirmeAyDurum && personelHareketDurum) {
+		if (planOnayDurum && personelHareketDurum) {
 			String link = "<a href='http://" + adres + "/personelHareket?planKey=" + vardiyaPlanKey + "'>" + personelHareketStr + "</a>";
 			vardiyaGun.addLinkAdresler(link);
 		}
@@ -3626,7 +3633,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param vardiyaPlanKey
 	 */
 	private void personelFazlaMesaiEkle(VardiyaGun vardiyaGun, String vardiyaPlanKey) {
-		if (denklestirmeAyDurum) {
+		if (planOnayDurum) {
 			if (vardiyaGun.getFazlaMesaiOnayla() != null && personelFazlaMesaiDurum) {
 				String link = "<a href='http://" + adres + "/personelFazlaMesai?planKey=" + vardiyaPlanKey + "'>" + personelFazlaMesaiStr + "</a>";
 				if (vardiyaGun.getFazlaMesaiOnayla())
@@ -3635,8 +3642,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				logger.debug(vardiyaGun.getVardiyaKeyStr());
 			} else
 				kapiGirisGetir(vardiyaGun, vardiyaPlanKey);
-			vardiyaPlaniGetir(vardiyaGun, vardiyaPlanKey);
+
 		}
+		if (denklestirmeAyDurum)
+			vardiyaPlaniGetir(vardiyaGun, vardiyaPlanKey);
 	}
 
 	/**
