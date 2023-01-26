@@ -421,11 +421,11 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		seciliVardiyaGun = vg;
 		hareketPdksList = null;
 		mesaiNedenId = null;
-		PersonelDenklestirme personelDenklestirme = personelAylikPuantaj.getPersonelDenklestirmeAylik();
 		boolean kullaniciYetkili = denklestirmeAyDurum;
-		if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu()) {
-			kullaniciYetkili = vg.getVersion() >= 0;
-		}
+		// PersonelDenklestirme personelDenklestirme = personelAylikPuantaj.getPersonelDenklestirmeAylik();
+		// if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu()) {
+		// kullaniciYetkili = vg.getVersion() >= 0;
+		// }
 		vg.setKullaniciYetkili(kullaniciYetkili);
 		setFazlaMesaiTalep(null);
 		if (kullaniciYetkili == false) {
@@ -965,20 +965,22 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				Date bitisZamani = cal.getTime();
 				fazlaMesaiTalep.setBaslangicZamani(baslangicZamani);
 				fazlaMesaiTalep.setBitisZamani(bitisZamani);
-				if (islemVardiya.isCalisma()) {
-					boolean o1 = islemVardiya.getVardiyaFazlaMesaiBasZaman() == null || islemVardiya.getVardiyaFazlaMesaiBasZaman().getTime() <= baslangicZamani.getTime();
-					boolean o2 = islemVardiya.getVardiyaBasZaman().getTime() >= bitisZamani.getTime();
-					boolean oncekiVardiyaSinirda = o1 && o2;
-					boolean s1 = islemVardiya.getVardiyaFazlaMesaiBitZaman() == null || islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime() > bitisZamani.getTime();
-					boolean s2 = baslangicZamani.getTime() >= islemVardiya.getVardiyaBitZaman().getTime();
-					boolean sonrakiVardiyaSinirda = s1 && s2;
-					if (!oncekiVardiyaSinirda && !sonrakiVardiyaSinirda) {
+				if (seciliVardiyaGun.getVersion() >= 0) {
+ 					if (islemVardiya.isCalisma()) {
+						boolean o1 = islemVardiya.getVardiyaFazlaMesaiBasZaman() == null || islemVardiya.getVardiyaFazlaMesaiBasZaman().getTime() <= baslangicZamani.getTime();
+						boolean o2 = islemVardiya.getVardiyaBasZaman().getTime() >= bitisZamani.getTime();
+						boolean oncekiVardiyaSinirda = o1 && o2;
+						boolean s1 = islemVardiya.getVardiyaFazlaMesaiBitZaman() == null || islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime() > bitisZamani.getTime();
+						boolean s2 = baslangicZamani.getTime() >= islemVardiya.getVardiyaBitZaman().getTime();
+						boolean sonrakiVardiyaSinirda = s1 && s2;
+						if (!oncekiVardiyaSinirda && !sonrakiVardiyaSinirda) {
+							PdksUtil.addMessageAvailableWarn(anaMesaj + " mesai başlangıç ve bitiş zamanı hatalıdır");
+							devam = false;
+						}
+					} else if (baslangicZamani.before(islemVardiya.getVardiyaFazlaMesaiBasZaman()) || bitisZamani.after(islemVardiya.getVardiyaFazlaMesaiBitZaman())) {
 						PdksUtil.addMessageAvailableWarn(anaMesaj + " mesai başlangıç ve bitiş zamanı hatalıdır");
 						devam = false;
 					}
-				} else if (baslangicZamani.before(islemVardiya.getVardiyaFazlaMesaiBasZaman()) || bitisZamani.after(islemVardiya.getVardiyaFazlaMesaiBitZaman())) {
-					PdksUtil.addMessageAvailableWarn(anaMesaj + " mesai başlangıç ve bitiş zamanı hatalıdır");
-					devam = false;
 				}
 			}
 			if (authenticatedUser.isAdmin())
@@ -6119,7 +6121,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				vardiyaGun.setFazlaMesaiTalepDurum(talepGunList.contains(vardiyaGun.getVardiyaDateStr()));
 			}
 		}
-			
+
 		aylikHareketKaydiVardiyaBul = Boolean.FALSE;
 		if (denklestirmeAyDurum)
 			aylikHareketKaydiVardiyalariBul();

@@ -246,7 +246,7 @@ public class IseGelmemeUyari implements Serializable {
 				map.put("sirket.departman.id=", islemYapan.getDepartman().getId());
 			List<Personel> personeller = pdksEntityController.getObjectByInnerObjectListInLogic(map, Personel.class);
 			if (!personeller.isEmpty()) {
- 				HashMap<Long, Long> yoneticiler = new HashMap<Long, Long>();
+				HashMap<Long, Long> yoneticiler = new HashMap<Long, Long>();
 				HashMap<Long, Personel> kgsPerMap = new HashMap<Long, Personel>();
 				for (Iterator iterator = personeller.iterator(); iterator.hasNext();) {
 					Personel per = (Personel) iterator.next();
@@ -255,7 +255,7 @@ public class IseGelmemeUyari implements Serializable {
 						iterator.remove();
 						continue;
 					}
- 					Sirket pdksSirket = per.getSirket();
+					Sirket pdksSirket = per.getSirket();
 					Personel yonetici = per.getYoneticisi();
 					boolean islemDevam = true;
 					if (yonetici == null || per.getSicilNo().trim().length() == 0 || per.getSirket() == null)
@@ -292,7 +292,7 @@ public class IseGelmemeUyari implements Serializable {
 					HashMap<Long, List<User>> depMail = new HashMap<Long, List<User>>();
 					for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 						VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
-						if (pdksVardiyaGun.getVardiyaDate().before(oncekiGun) || pdksVardiyaGun.getVardiyaDate().after(sonrakiGun) || pdksVardiyaGun.getSonrakiVardiyaGun() == null) {
+						if (pdksVardiyaGun.getVersion() <= 0 || pdksVardiyaGun.getVardiyaDate().before(oncekiGun) || pdksVardiyaGun.getVardiyaDate().after(sonrakiGun) || pdksVardiyaGun.getSonrakiVardiyaGun() == null) {
 							iterator.remove();
 							continue;
 						}

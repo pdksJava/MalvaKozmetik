@@ -318,7 +318,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 */
 	public String getFazlaMesaiSaatleri(VardiyaGun vardiyaGun) {
 		StringBuffer sb = new StringBuffer();
-		if (vardiyaGun != null && vardiyaGun.getIslemVardiya() != null) {
+		if (vardiyaGun != null && vardiyaGun.getIslemVardiya() != null && vardiyaGun.getVersion() >= 0) {
 			String pattern = PdksUtil.getDateTimeFormat();
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 			List<String> list = new ArrayList<String>();

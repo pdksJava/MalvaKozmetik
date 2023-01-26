@@ -228,8 +228,10 @@
 						#{fazlaMesaiHesaplaHome.seciliVardiyaGun.personel.pdksSicilNo} #{fazlaMesaiHesaplaHome.seciliVardiyaGun.personel.adSoyad}
 						#{fazlaMesaiHesaplaHome.seciliVardiyaGun.title}</DIV>
 					<rich:toolTip for="vardiyaAciklama" rendered="#{authenticatedUser.admin}">
-						<span style="color: black;"> <h:outputText value="Vardiya Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya.id}"
-								rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya!=null}" /></span>
+						<span style="color: black;"> <ui:fragment rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya!=null}">
+								<h:outputText value="Plan Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.id}" /><br/>
+								<h:outputText value="Vardiya Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya.id}" /><br/>
+							</ui:fragment></span>
 					</rich:toolTip>
 				</ui:fragment>
 			</f:facet>
