@@ -3081,7 +3081,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							if (pdksVardiyaGorev.isShiftGorevli() || !pdksVardiyaGorev.isOzelDurumYok() || pdksVardiyaGorev.getYeniGorevYeri() != null || pdksVardiyaGorev.getBolumKat() != null) {
 								if (pdksVardiyaGun.getId() == null)
 									tekrarOku = true;
-								pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiyaGorev);
+								if (gorevYeriGirisDurum)
+									pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiyaGorev);
 								logger.debug("Gorev " + pdksVardiyaGun.getVardiyaKeyStr());
 								flush = Boolean.TRUE;
 							}
@@ -5328,8 +5329,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						if (!map1.isEmpty()) {
 							session.clear();
 							vardiyaGunList = ortakIslemler.getAllPersonelIdVardiyalar(perIdler, PdksUtil.tariheGunEkleCikar(basTarih, -7), PdksUtil.tariheGunEkleCikar(bitTarih, 7), Boolean.FALSE, session);
-							tekrarOku = perIdler.size() < 25;
 						}
+
 					}
 				} catch (Exception e) {
 					vardiyaGunList = ortakIslemler.getAllPersonelIdVardiyalar(perIdler, PdksUtil.tariheGunEkleCikar(basTarih, -7), PdksUtil.tariheGunEkleCikar(bitTarih, 7), Boolean.FALSE, session);
@@ -5409,7 +5410,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						pdksVardiyaGorev = new VardiyaGorev();
 						pdksVardiyaGorev.setVardiyaGun(pdksVardiyaGun);
 						flush = true;
-					} else {
+					} else if (gorevYeriGirisDurum) {
 						pdksVardiyaGorev.setYeniGorevYeri(null);
 						pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiyaGorev);
 						flush = true;
@@ -5979,6 +5980,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				if (vardiyaCalisiyor)
 					aylikPuantajList.add(aylikPuantaj);
 			}
+			if (tekrarOku)
+				tekrarOku = denklestirmeAyDurum && !aylikPuantajList.isEmpty() && personelList.size() < 25;
 
 		}
 		setTatilMap(tatilGunleriMap);
@@ -6637,8 +6640,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		haftaTatilMesaiDurum = Boolean.FALSE;
 		if (!islemYapiliyor) {
 			islemYapiliyor = Boolean.TRUE;
-			// if (aylikPuantajOlusturuluyor() && authenticatedUser.isAdmin() == false)
-			aylikPuantajOlusturuluyor();
+			if (aylikPuantajOlusturuluyor())
+				aylikPuantajOlusturuluyor();
 			islemYapiliyor = Boolean.FALSE;
 		}
 		if (!(ikRole))
