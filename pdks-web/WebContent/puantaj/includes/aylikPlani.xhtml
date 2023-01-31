@@ -288,7 +288,7 @@
 														<TD id="vardiya#{vardiyaGun.vardiyaKeyStr}"><h:outputText value="#{vardiyaGun.aciklama}" /> <ui:fragment
 																rendered="#{vardiyaGunHome.ikRole and vardiyaGun.izin!=null and vardiyaGun.vardiya!=null}">
 																<br /> [ #{vardiyaGun.vardiya.kisaAdi} ]</ui:fragment> <rich:toolTip for="vardiya#{vardiyaGun.vardiyaKeyStr}">
-																<SPAN style="font-size: 12px; font-weight: normal;"> #{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')} -->
+																<SPAN style="font-size: 12px; font-weight: normal;color:black;"> #{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')} -->
 																	#{vardiyaGun.title} <ui:fragment rendered="#{vardiyaGun.resmiTatilSure>0}">
 												          	RT : #{authenticatedUser.sayiFormatliGoster(vardiyaGun.resmiTatilSure)}
 												          </ui:fragment>

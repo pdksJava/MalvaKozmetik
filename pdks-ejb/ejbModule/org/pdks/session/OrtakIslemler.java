@@ -4721,6 +4721,7 @@ public class OrtakIslemler implements Serializable {
 								personelHareketList.clear();
 								personelHareketList.addAll(personelHareketMap.get(personelKGSId));
 								VardiyaGun vardiyaGunNew = new VardiyaGun(personelDenklestirmeTasiyici.getPersonel(), vardiya, vardiyaGun.getVardiyaDate());
+								vardiyaGunNew.setVersion(-1);
 								vardiyalarMap.put(vardiyaGunNew.getVardiyaKeyStr(), vardiyaGunNew);
 								fazlaMesaiSaatiAyarla(vardiyalarMap);
 								// vardiyaGunNew.setVardiyaZamani();
