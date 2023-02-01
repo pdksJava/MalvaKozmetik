@@ -229,8 +229,10 @@
 						#{fazlaMesaiHesaplaHome.seciliVardiyaGun.title}</DIV>
 					<rich:toolTip for="vardiyaAciklama" rendered="#{authenticatedUser.admin}">
 						<span style="color: black;"> <ui:fragment rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya!=null}">
-								<h:outputText value="Plan Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.id}" /><br/>
-								<h:outputText value="Vardiya Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya.id}" /><br/>
+								<h:outputText value="Plan Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.id}" />
+								<br />
+								<h:outputText value="Vardiya Id : #{fazlaMesaiHesaplaHome.seciliVardiyaGun.vardiya.id}" />
+								<br />
 							</ui:fragment></span>
 					</rich:toolTip>
 				</ui:fragment>
@@ -367,9 +369,18 @@
 						<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesaiHesaplaHome.toplamFazlamMesai)} Saat" />
 
 					</ui:fragment>
+
 					<ui:fragment
 						rendered="#{fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.denklestirmeAyDurum and fazlaMesaiHesaplaHome.seciliVardiyaGun.linkAdresler!=null and not empty fazlaMesaiHesaplaHome.seciliVardiyaGun.linkAdresler}">
 						<f:verbatim>#{fazlaMesaiHesaplaHome.seciliVardiyaGun.linkAdresHtml}</f:verbatim>
+
+					</ui:fragment>
+					<ui:fragment
+						rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum and fazlaMesaiHesaplaHome.seciliAylikPuantaj!=null and  fazlaMesaiHesaplaHome.seciliAylikPuantaj.personelDenklestirmeAylik.onaylandi==false}">
+						<H2>
+							<SPAN style="color: red; font-size: 16px; font-weight: bold;">Aylık plan onaylanmamıştır.</SPAN>
+						</H2>
+						<BR />
 
 					</ui:fragment>
 					<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fmtList!=null}">

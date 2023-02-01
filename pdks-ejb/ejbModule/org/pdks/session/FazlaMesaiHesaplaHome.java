@@ -129,6 +129,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private List<AylikPuantaj> aylikPuantajList;
 
+	private AylikPuantaj seciliAylikPuantaj;
+
 	private List<DepartmanDenklestirmeDonemi> denklestirmeDonemiList;
 
 	private List<PersonelDenklestirme> baslikDenklestirmeDonemiList;
@@ -162,7 +164,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private List<SelectItem> aylar;
 
-	private AylikPuantaj aylikPuantajDefault, seciliAylikPuantaj;
+	private AylikPuantaj aylikPuantajDefault;
 
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 
@@ -1363,7 +1365,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								sonVardiyaBitZaman = islemVardiya.getVardiyaTelorans1BitZaman();
 						}
 						personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
-						planOnayDurum = denklestirmeAyDurum && (ikRole || personelDenklestirme.isOnaylandi());
+						planOnayDurum = denklestirmeAyDurum && (personelDenklestirme.isOnaylandi() /** || ikRole **/
+						);
 						if (personelDenklestirme.getDurum()) {
 							if (sonVardiyaBitZaman != null)
 								fazlaMesaiOnayla = bugun.after(sonVardiyaBitZaman);
@@ -3115,8 +3118,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			// fazlaMesaiHesapla = Boolean.FALSE;
 			vGun.setHataliDurum(Boolean.TRUE);
 			if (vardiyaPlaniDurum) {
-				String link = "<a href='http://" + adres + "/vardiyaPlani?planKey=" + vardiyaPlanKey + "'>" + vardiyaPlaniStr + "</a>";
-				vGun.addLinkAdresler(link);
+				vardiyaPlaniGetir(vGun, vardiyaPlanKey);
 			}
 		} else if (vGun.getHareketDurum()) {
 			try {
@@ -3449,8 +3451,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			String link = null;
 
 			if (personelHareketDurum) {
-				link = "<a href='http://" + adres + "/personelHareket?planKey=" + vardiyaPlanKey + "'>" + personelHareketStr + "</a>";
-				vGun.addLinkAdresler(link);
+				kapiGirisGetir(vGun, vardiyaPlanKey);
 			}
 			if (personelIzin != null && personelIzinGirisiDurum) {
 				link = "<a href='http://" + adres + "/personelIzinGirisi?izinKey="
@@ -4936,6 +4937,18 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param vg
 	 */
 	public String vardiyaGoster(VardiyaGun vg) {
+		seciliAylikPuantaj = aylikPuantajList != null && aylikPuantajList.size() == 1 ? aylikPuantajList.get(0) : null;
+		if (seciliAylikPuantaj == null && vg != null) {
+			Long perId = vg.getPersonel().getId();
+			for (AylikPuantaj aylikPuantaj : aylikPuantajList) {
+				if (aylikPuantaj.getPdksPersonel().getId().equals(perId)) {
+					seciliAylikPuantaj = aylikPuantaj;
+					break;
+				}
+
+			}
+		}
+
 		setSeciliVardiyaGun(vg);
 		fazlaMesaiVardiyaGun = vg;
 		toplamFazlamMesai = 0D;
