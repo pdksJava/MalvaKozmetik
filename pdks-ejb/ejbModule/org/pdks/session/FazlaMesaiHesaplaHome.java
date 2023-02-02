@@ -4197,6 +4197,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			sheet.autoSizeColumn(i);
 	}
 
+	/**
+	 * @param veriMap
+	 * @return
+	 */
 	private String getExcelAciklama(LinkedHashMap<String, Object> veriMap) {
 		if (veriMap == null)
 			veriMap = ortakIslemler.getListPersonelOzetVeriMap(aylikPuantajList, tesisId, " ");
@@ -4223,7 +4227,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 
 			if (tesis != null)
-				gorevYeriAciklama = tesis.getAciklama() + "_";
+				gorevYeriAciklama += tesis.getAciklama() + "_";
 			if (ekSaha3 != null)
 				gorevYeriAciklama += ekSaha3.getAciklama() + "_";
 			if (ekSaha4 != null)

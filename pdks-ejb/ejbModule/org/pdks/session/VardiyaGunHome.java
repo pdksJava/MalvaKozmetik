@@ -2095,7 +2095,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 
 			if (tesis != null)
-				gorevYeriAciklama = tesis.getAciklama() + "_";
+				gorevYeriAciklama += tesis.getAciklama() + "_";
 			if (ekSaha3 != null)
 				gorevYeriAciklama += ekSaha3.getAciklama() + "_";
 			if (ekSaha4 != null)
