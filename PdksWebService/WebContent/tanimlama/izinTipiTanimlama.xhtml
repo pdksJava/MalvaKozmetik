@@ -1,0 +1,540 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('izinTipiTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(izinTipiHome.session,'izinTipiTanimlama')}">
+				<a4j:outputPanel ajaxRendered="false" id="izinPanel">
+					<rich:dataTable rowClasses="acik,koyu" value="#{izinTipiHome.izinTipiList}" var="izinTipi" rows="20" rowKeyVar="row" id="izinTable">
+						<f:facet name="header">
+							<h:outputText value="İzin Tipleri" />
+						</f:facet>
+						<rich:column>
+							<f:facet name="header">
+                        İşlemler
+              	 </f:facet>
+							<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{izinTipiHome.izinTipiGuncelle(izinTipi)}"
+								oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+								<h:graphicImage value="/img/edit.gif" style="border:0" />
+							</a4j:commandLink>
+							<rich:toolTip for="editlink" value="Güncelle" />
+
+						</rich:column>
+
+						<rich:column rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="Id" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.id}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Açıklama" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.izinTipiTanim.aciklama}" id="izinTipi" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Kısa Açıklama" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.kisaAciklama}" id="kisaAciklama" />
+						</rich:column>
+
+						<rich:column rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="PDKS Departman" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.departman.departmanTanim.aciklama}" id="departman" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Max Gün" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.maxGun}" id="maxGun" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Max Saat" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.maxSaat}" id="maxSaat" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Min Gün" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.minGun}" id="minGun" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Min Saat" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.minSaat}" id="minSaat" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Gün Sigorta Günü Dahil" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.gunSigortaDahil)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Döküm alma" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.dokumAlmaDurum)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Takvim Gunu mu?" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.takvimGunumu)}" id="takvim" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="OFF Dahil" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.offDahilMi)}" rendered="#{izinTipi.takvimGunumu==false}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="HT Dahil" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.htDahil)}" rendered="#{izinTipi.takvimGunumu==false}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Saatlik Girilecek mi?" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.saatGosterilecek)}" id="saat" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Günlük Girilecek mi?" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.gunGosterilecek)}" id="gun" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Hesap Tipi" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.hesapTipiAciklama}" />
+						</rich:column>
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin)}">
+							<f:facet name="header">
+								<h:outputText value="ERP Aktarılacak mı?" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.erpAktarim)}" />
+							<ui:fragment rendered="#{izinTipi.erpAktarim}">
+								--> ERP Kodu : #{izinTipi.izinTipiTanim.erpKodu} 
+							</ui:fragment>
+
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Bilgi Tipi" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.izinTipiTanim.parentTanim.aciklama}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Giriş Tipi" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.personelGirisTipiAciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Onay Tipi" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.onaylayanTipiAciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Bakiye Devir Tipi" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.bakiyeDevirTipiAciklama}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="İzin Kağıdı Getirilecek mi?" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.izinKagidiGeldi)}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="ÇGS Durum" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.durumCGSAciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Dosya Ekle" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.dosyaEkle)}" rendered="#{izinTipi.dosyaEkle!=null}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Denkleştirme Dahil mi?" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.denklestirmeDahil)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Aktif" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.durum)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Mail Gönderim Durumu" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.mailGonderimDurumAciklama}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Ekran Sıra" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.listeSira}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Yapan" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.sonIslemYapan.adSoyad}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Tarihi" />
+							</f:facet>
+							<h:outputText value="#{izinTipi.sonIslemTarihiStr}" />
+						</rich:column>
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+
+					<a4j:commandButton status="ajaxStatus" value="İzin Tipi Ekle" action="#{izinTipiHome.izinTipiEkle}"
+						oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
+					<rich:toolTip for="addlink" value="Add" />
+				</a4j:outputPanel>
+			</rich:panel>
+
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="800">
+			<f:facet name="header">
+				<h:outputText value="İzin Tipi Ekle / Düzenle" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{izinTipiHome.instanceRefresh}" reRender="izinPanel"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+
+				<h:panelGrid columns="1">
+
+					<h:panelGrid columns="2">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and izinTipiHome.departmanList.size()>1}">
+							<ui:define name="label">PDKS Departman</ui:define>
+							<h:selectOneMenu value="#{izinTipiHome.instance.departman}">
+								<s:selectItems var="comp" value="#{izinTipiHome.departmanList}" label="#{comp.departmanTanim.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+								<a4j:support event="onchange" action="#{izinTipiHome.fillIzinTipiTanimList}" reRender="izinTipi" status="ajaxStatus" ajaxSingle="true" />
+								<s:convertEntity />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{izinTipiHome.bilgiTipiList.size()>0}">
+							<ui:define name="label">Bilgi Tipi</ui:define>
+							<h:selectOneMenu value="#{izinTipiHome.bilgiTipi}" required="true" requiredMessage="Bilgi tipi giriniz">
+								<s:selectItems var="comp" value="#{izinTipiHome.bilgiTipiList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+								<a4j:support event="onchange" action="#{izinTipiHome.fillIzinTipiTanimList}" reRender="izinTipi" status="ajaxStatus" ajaxSingle="true" />
+								<s:convertEntity />
+							</h:selectOneMenu>
+						</s:decorate>
+						<a4j:outputPanel id="izinTipi" ajaxRendered="false">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">İzin Tipi Tanımı</ui:define>
+								<h:selectOneMenu value="#{izinTipiHome.instance.izinTipiTanim}" required="true" requiredMessage="İzin tipi giriniz">
+									<s:selectItems var="comp" value="#{izinTipiHome.izinTipiTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+							</s:decorate>
+						</a4j:outputPanel>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Kısa Açıklama</ui:define>
+							<h:inputText value="#{izinTipiHome.instance.kisaAciklama}" maxlength="8" />
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Giriş Yetki</ui:define>
+							<h:selectOneMenu value="#{izinTipiHome.instance.personelGirisTipi}" required="true" requiredMessage="Giriş yetkisi seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{izinTipiHome.personelGirisTipiList}" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Bakiye Devir Tipi</ui:define>
+							<h:selectOneMenu value="#{izinTipiHome.instance.bakiyeDevirTipi}" required="true" requiredMessage="Bakiye devir tipi seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{izinTipiHome.bakiyeDevirTipiList}" />
+								<a4j:support event="onchange" action="#{izinTipiHome.fillBakiyeIzinTipiTanimList(izinTipiHome.instance.izinTipiTanim)}" ajaxSingle="true"
+									reRender="devir1,devir2" status="ajaxStatus" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<a4j:outputPanel id="devir1">
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{izinTipiHome.instance.bakiyeDevirTipi!='0' and not empty izinTipiHome.bakiyeIzinTipiTanimList}">
+								<ui:define name="label">Bakiye İzin Tipi</ui:define>
+								<h:selectOneMenu value="#{izinTipiHome.bakiyeIzinTipi.izinTipiTanim}">
+									<s:selectItems var="comp" value="#{izinTipiHome.bakiyeIzinTipiTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+									<s:convertEntity />
+									<a4j:support event="onchange" ajaxSingle="true" reRender="devir2" status="ajaxStatus" />
+
+								</h:selectOneMenu>
+							</s:decorate>
+						</a4j:outputPanel>
+						<a4j:outputPanel id="devir2" ajaxRendered="false">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{izinTipiHome.instance.bakiyeDevirTipi!='0' and izinTipiHome.instance.bakiyeSenelik}">
+								<ui:define name="label">Kotası</ui:define>
+								<h:inputText value="#{izinTipiHome.bakiyeIzinTipi.kotaBakiye}" size="5" />
+							</s:decorate>
+						</a4j:outputPanel>
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Onaylayanlar</ui:define>
+							<h:selectOneMenu value="#{izinTipiHome.instance.onaylayanTipi}" required="true" requiredMessage="Onaylayanlar seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{izinTipiHome.onaylayanTipiList}" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Max gün</ui:define>
+							<h:inputText required="true" value="#{izinTipiHome.instance.maxGun}" size="5" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Max saat</ui:define>
+							<h:inputText required="true" value="#{izinTipiHome.instance.maxSaat}" size="5" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Min gün</ui:define>
+							<h:inputText required="true" value="#{izinTipiHome.instance.minGun}" size="5" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Min saat</ui:define>
+							<h:inputText required="true" value="#{izinTipiHome.instance.minSaat}" size="5" />
+						</s:decorate>
+
+						<s:decorate template="/layout/edit.xhtml" rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin)}">
+							<ui:define name="label">ERP Aktarılacak mı?</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.erpAktarim}" size="5" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Dosya Ekle</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.dosyaEkle}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Gün Sigorta Günü Dahil</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.gunSigortaDahil}" />
+						</s:decorate>
+						
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Döküm Alma Durumu</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.dokumAlmaDurum}" />
+						</s:decorate>
+
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Günlük Girilecek mi?</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.gunGosterilecek}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Saatlik Girilecek mi?</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.saatGosterilecek}">
+								<a4j:support event="onclick" ajaxSingle="true" reRender="artikIzinGun" status="ajaxStatus" />
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Hesap Tipi</ui:define>
+							<h:selectOneMenu required="true" value="#{izinTipiHome.instance.hesapTipi}" requiredMessage="Hesap tipi seçiniz">
+								<f:selectItem itemValue="Lütfen seçiniz" />
+								<f:selectItems value="#{izinTipiHome.hesapTipiList}" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">ÇGS Durum</ui:define>
+							<h:selectOneMenu required="true" value="#{izinTipiHome.instance.durumCGS}" requiredMessage="ÇGS durumu seçiniz">
+								<f:selectItem itemValue="Lütfen seçiniz" />
+								<f:selectItems value="#{izinTipiHome.durumCGSList}" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İzin Kağıdı Kontrol</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.izinKagidiGeldi}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Denkleştirme Dahil mi?</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.denklestirmeDahil}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Ekran Sıra</ui:define>
+							<h:inputText value="#{izinTipiHome.instance.listeSira}" size="5" />
+						</s:decorate>
+						<a4j:outputPanel id="artikIzinGun" ajaxRendered="false" rendered="#{authenticatedUser.admin or izinTipiHome.instance.departman.admin }">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{izinTipiHome.instance.saatGosterilecek==false and izinTipiHome.instance.senelikIzin}">
+								<ui:define name="label">Artık İzin Gün</ui:define>
+								<h:inputText required="true" value="#{izinTipiHome.instance.artikIzinGun}" size="5">
+									<f:validateDoubleRange minimum="0.0" maximum="0.5" />
+								</h:inputText>
+							</s:decorate>
+						</a4j:outputPanel>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Aktif</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.durum}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Takvim Günü mü?</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.takvimGunumu}">
+								<a4j:support event="onclick" ajaxSingle="true" status="ajaxStatus" reRender="offDahil,htDahil" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<a4j:outputPanel id="offDahil">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{izinTipiHome.instance.takvimGunumu==false}">
+								<ui:define name="label">OFF Dahil</ui:define>
+								<h:selectBooleanCheckbox value="#{izinTipiHome.instance.offDahil}" />
+							</s:decorate>
+						</a4j:outputPanel>
+						<a4j:outputPanel id="htDahil">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{izinTipiHome.instance.takvimGunumu==false}">
+								<ui:define name="label">HT Dahil</ui:define>
+								<h:selectBooleanCheckbox value="#{izinTipiHome.instance.htDahil}" />
+							</s:decorate>
+						</a4j:outputPanel>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{izinTipiHome.mailGonderimDurumlari!=null}">
+							<ui:define name="label">Mail Gönderim Durumu</ui:define>
+							<h:selectOneMenu value="#{izinTipiHome.instance.mailGonderimDurumu}">
+								<f:selectItem itemLabel="Yok" />
+								<f:selectItems value="#{izinTipiHome.mailGonderimDurumlari}" />
+								<a4j:support event="onchange" ajaxSingle="true" status="ajaxStatus" reRender="mailAdreslerGiris" />
+							</h:selectOneMenu>
+						</s:decorate>
+					</h:panelGrid>
+
+					<s:decorate template="/layout/edit.xhtml">
+						<ui:define name="label">Uyarı Mesaj</ui:define>
+						<h:inputTextarea value="#{izinTipiHome.instance.mesaj}" required="true" requiredMessage="Lütfen uyarı mesajı giriniz" cols="100" rows="8" />
+
+					</s:decorate>
+					<a4j:outputPanel id="mailAdreslerGiris">
+						<h:panelGrid columns="1" width="100%" rendered="#{izinTipiHome.mailTipiList!=null and izinTipiHome.instance.mailGonderimDurumu!=null}">
+
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Mail Adres</ui:define>
+								<h:inputText value="#{izinTipiHome.mailAdres}" maxlength="128" style="width:350px" />
+							</s:decorate>
+
+							<h:panelGrid columns="2" width="100%">
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Mail Tipi</ui:define>
+									<h:selectOneRadio value="#{izinTipiHome.mailTipi}">
+										<f:selectItems value="#{izinTipiHome.mailTipiList}" />
+									</h:selectOneRadio>
+								</s:decorate>
+								<a4j:commandButton status="ajaxStatus" value="Adres Ekle" action="#{izinTipiHome.addMailAdres()}" reRender="mailAdreslerGiris" />
+							</h:panelGrid>
+
+							<a4j:outputPanel id="mailAdresler">
+								<TABLE width="100%">
+									<TR>
+										<TD valign="top" width="50%"><rich:dataTable rowClasses="acik,koyu" value="#{izinTipiHome.mailCCAdresList}" var="adresCC" rows="20"
+												rowKeyVar="row" id="izinCCTable">
+												<f:facet name="header">
+													<h:outputText value="CC Mail Adresleri" />
+												</f:facet>
+												<rich:column>
+													<f:facet name="header">
+                        					İşlemler
+              							 </f:facet>
+													<a4j:commandLink status="ajaxStatus" ajaxSingle="true" action="#{izinTipiHome.deleteMailAdres(adresCC)}" reRender="mailAdresler">
+														<h:graphicImage value="/img/delete.gif" style="border:0" />
+													</a4j:commandLink>
+													<rich:toolTip for="deletelink" value="Sil" />
+
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
+                        					CC Mail Adres
+              							 </f:facet>
+													<h:outputText value="#{adresCC.adres}" />
+
+												</rich:column>
+											</rich:dataTable></TD>
+										<TD valign="top" width="50%"><rich:dataTable rowClasses="acik,koyu" value="#{izinTipiHome.mailBCCAdresList}" var="adresBCC" rows="20"
+												rowKeyVar="row" id="izinBCCTable">
+												<f:facet name="header">
+													<h:outputText value="BCC Mail Adresleri" />
+												</f:facet>
+												<rich:column>
+													<f:facet name="header">
+                        					İşlemler
+              							 </f:facet>
+													<a4j:commandLink status="ajaxStatus" ajaxSingle="true" action="#{izinTipiHome.deleteMailAdres(adresBCC)}" reRender="mailAdresler">
+														<h:graphicImage value="/img/delete.gif" style="border:0" />
+													</a4j:commandLink>
+													<rich:toolTip for="deletelink" value="Sil" />
+
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
+                        					BCC Mail Adres
+              							 </f:facet>
+													<h:outputText value="#{adresBCC.adres}" />
+
+												</rich:column>
+											</rich:dataTable></TD>
+									</TR>
+								</TABLE>
+							</a4j:outputPanel>
+
+						</h:panelGrid>
+					</a4j:outputPanel>
+					<!--  -->
+
+
+
+
+				</h:panelGrid>
+
+				<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{izinTipiHome.save}" process="izinTable" reRender="izinTable"
+					oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+</ui:composition>

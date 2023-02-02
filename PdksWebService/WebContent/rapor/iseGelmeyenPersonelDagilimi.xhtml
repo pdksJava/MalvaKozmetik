@@ -1,0 +1,126 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:a4j="http://richfaces.org/a4j"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('iseGelmeyenPersonelDagilimi')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(iseGelmeyenPersonelHome.session,'iseGelmeyenPersonelDagilimi')}">
+				<h:panelGrid columns="2">
+
+					<s:decorate template="/layout/edit.xhtml">
+
+						<ui:define name="label">Tarih</ui:define>
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{iseGelmeyenPersonelHome.date}" id="dateFilter">
+							<f:validator validatorId="dateValidator" />
+						</rich:calendar>
+					</s:decorate>
+
+					<a4j:commandButton status="ajaxStatus" value="İşe Gelmeyen Personel Sayısı Göster" action="#{iseGelmeyenPersonelHome.iseGelmeyenListOlustur}"
+						reRender="isGelmeyenPanel" />
+				</h:panelGrid>
+
+			</rich:panel>
+
+			<a4j:region>
+				<rich:panel id="isGelmeyenPanel">
+					<rich:dataTable rowClasses="acik,koyu" value="#{iseGelmeyenPersonelHome.iseGelmeyenList}" var="iseGelmeyenDisplay" rows="25" rowKeyVar="row"
+						id="hareketTable">
+						<f:facet name="header">
+							<h:outputText value="İşe Gelmeyen Personellerin İzin Dağılım Raporu" />
+						</f:facet>
+						<rich:column width="100">
+							<f:facet name="header">
+								<h:outputText value="İzin Tipi" />
+							</f:facet>
+							<h:outputText value="#{iseGelmeyenDisplay.izinTipi.izinTipiTanim.aciklama}" />
+						</rich:column>
+
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="Personel Sayısı" />
+							</f:facet>
+							<h:outputText value="#{iseGelmeyenDisplay.personelSayisi}" />
+						</rich:column>
+
+						<rich:column width="100">
+							<f:facet name="header">
+								<h:outputText value="Tarih" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateTimeFormatla(iseGelmeyenDisplay.date)}" />
+
+						</rich:column>
+
+						<rich:column width="60">
+							<f:facet name="header">
+								<h:outputText value="Personeller" />
+							</f:facet>
+							<a4j:commandButton status="ajaxStatus" value="Personeller" rendered="#{iseGelmeyenDisplay.personelList!=null}"
+								oncomplete="#{rich:component('personelDetayPanel')}.show()" action="#{iseGelmeyenPersonelHome.personelGoster(iseGelmeyenDisplay)}"
+								reRender="personelDetayPanel" />
+
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+				</rich:panel>
+
+				<rich:modalPanel id="personelDetayPanel" autosized="true" width="450">
+
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:graphicImage value="/img/close.png" id="harekethidelink" styleClass="hidelink" />
+							<rich:componentControl for="personelDetayPanel" attachTo="harekethidelink" operation="hide" event="onclick" />
+						</h:panelGroup>
+					</f:facet>
+
+					<h:panelGrid width="400">
+						<rich:dataTable rowClasses="acik,koyu" value="#{iseGelmeyenPersonelHome.personelList}" var="personel" rows="20" rowKeyVar="row">
+							<f:facet name="header">
+
+								<h:outputText value="Personel Listesi" />
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Adı Soyadı" />
+								</f:facet>
+								<h:outputText value="#{personel.adSoyad}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personel.personelKGS.sicilNo}" />
+							</rich:column>
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+					</h:panelGrid>
+
+				</rich:modalPanel>
+
+
+
+			</a4j:region>
+
+
+		</h:form>
+
+
+	</ui:define>
+
+</ui:composition>
+
+
+
+
+

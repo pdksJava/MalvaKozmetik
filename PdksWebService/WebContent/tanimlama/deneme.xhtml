@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<p:document xmlns:p="http://jboss.com/products/seam/pdf"
+	xmlns:ui="http://java.sun.com/jsf/facelets" title="Hello"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<p:chapter number="1">
+	
+	<p:image value="/img/ASM_logo.png" alignment="center"/>
+		<p:paragraph>
+			
+			<p:table columns="2" headerRows="1">
+				<p:cell>PERSONEL : </p:cell>
+				<p:cell>#{personelFazlaMesaiHome.instance.hareket.personel.pdksPersonel.adSoyad}</p:cell>
+				<p:cell>#{ortakIslemler.personelNoAciklama()} : </p:cell>
+				<p:cell>#{personelFazlaMesaiHome.instance.hareket.personel.pdksPersonel.sicilNo}</p:cell>
+				<p:cell>VARDIYA : </p:cell>
+				<p:cell>#{personelFazlaMesaiHome.instance.hareket.vardiyaGun.vardiya.aciklama}</p:cell>
+				<p:cell>VARDIYA TARIHI: </p:cell>
+				<p:cell>#{personelFazlaMesaiHome.instance.hareket.vardiyaGun.vardiyaDate}</p:cell>
+				<p:cell>KAPI : </p:cell>
+				<p:cell>#{personelFazlaMesaiHome.instance.hareket.kapiView.kapi.aciklama}</p:cell>
+				<p:cell>MESAI SAATI : </p:cell>
+				<p:cell>#{personelFazlaMesaiHome.instance.hareket.fazlaMesai}</p:cell>
+
+			</p:table>
+
+		</p:paragraph>
+	</p:chapter>
+
+
+
+</p:document>

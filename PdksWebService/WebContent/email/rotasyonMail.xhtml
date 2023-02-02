@@ -1,0 +1,17 @@
+<m:message xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://jboss.com/products/seam/mail" xmlns:h="http://java.sun.com/jsf/html" xmlns:hx="http://www.ibm.com/jsf/html_extended" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jstl="http://java.sun.com/jsp/jstl"
+	xmlns:ui="http://java.sun.com/jsf/facelets" charset="UTF-8">
+	<m:from name="#{ortakIslemler.getParameterKey('fromName')}" address="#{ortakIslemler.getParameterKey('fromAdres')}" />
+
+	<ui:repeat value="#{personelGeciciYoneticiHome.toList}" var="toUser">
+		<m:to name="#{toUser.adSoyad}" address="#{toUser.email}" />
+	</ui:repeat>
+
+	<m:subject>Rotasyon Bilgisi</m:subject>
+	<m:body>
+
+		<p>#{personelGeciciYoneticiHome.mailAciklamaTarih} tarihleri arasında #{personelGeciciYoneticiHome.mailAciklamaUserList} adlı personel/personeller #{personelGeciciYoneticiHome.instance.yeniYonetici.adSoyad} 'ya bağlı çalışacak şekilde personel rotasyonu yapılmıştır.</p>
+
+		<p>Saygılarımızla,</p>
+
+	</m:body>
+</m:message>

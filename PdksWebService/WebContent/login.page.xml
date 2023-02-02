@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+	<rewrite pattern="/login" />
+	<navigation from-action="#{identity.login}">
+		<rule if="#{identity.loggedIn}">
+			<redirect view-id="#{menuItemConstant.home}" />
+		</rule>
+	</navigation>
+	<navigation from-action="#{identity.logout}">
+		<rule if="#{not identity.loggedIn}">
+			<redirect view-id="#{menuItemConstant.login}" />
+		</rule>
+	</navigation>
+	<navigation>
+		<rule if-outcome="login">
+			<redirect view-id="#{menuItemConstant.login}" />
+		</rule>
+
+	</navigation>
+</page>

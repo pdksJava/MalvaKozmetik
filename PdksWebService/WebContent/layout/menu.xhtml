@@ -1,0 +1,45 @@
+<rich:toolBar xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:rich="http://richfaces.org/rich">
+	<h:form id="menuIslemleri" rendered="#{userHome.hasPermission('menuIslemleri','view')}">
+		<rich:dropDownMenu binding="#{menuLoaderAction.menuIslemleri}" />
+	</h:form>
+	<h:form id="admin" rendered="#{userHome.hasPermission('admin','view')}">
+		<rich:dropDownMenu binding="#{menuLoaderAction.adminMenu}" />
+	</h:form>
+	<h:form id="guestMenu">
+		<rich:dropDownMenu binding="#{menuLoaderAction.guestMenu}" />
+	</h:form>
+	<h:form id="kullaniciIslemleri" rendered="#{userHome.hasPermission('kullaniciIslemleri','view')}">
+		<rich:dropDownMenu binding="#{menuLoaderAction.kullaniciIslemleri}" />
+	</h:form>
+	<h:form id="izinIslemleri"
+		rendered="#{userHome.hasPermission('izinIslemleri','view') and ( authenticatedUser.izinGirebilir  or authenticatedUser.IK or authenticatedUser.admin or ortakIslemler.getParameterKey('izinERPUpdate')!='1')}">
+		<rich:dropDownMenu binding="#{menuLoaderAction.izinIslemleri}" />
+	</h:form>
+	<h:form id="puantajIslemleri" rendered="#{userHome.hasPermission('puantajIslemleri','view')}">
+		<rich:dropDownMenu binding="#{menuLoaderAction.puantajIslemleri}" />
+	</h:form>
+	<h:form id="raporIslemleri" rendered="#{userHome.hasPermission('raporIslemleri','view')}">
+		<rich:dropDownMenu binding="#{menuLoaderAction.raporIslemleri}" />
+	</h:form>
+
+	<rich:toolBarGroup location="right">
+
+		<h:outputText value="Seçili #{ortakIslemler.yoneticiAciklama()} : #{authenticatedUser.seciliSuperVisor.adSoyad}"
+			rendered="#{identity.loggedIn and authenticatedUser.mudur and authenticatedUser.seciliSuperVisor!=null}" />
+		<h:outputText value="Seçili Super Visör : #{authenticatedUser.seciliSuperVisor.adSoyad}"
+			rendered="#{identity.loggedIn and authenticatedUser.superVisor and authenticatedUser.seciliSuperVisor!=null}" />
+		<ui:fragment rendered="#{identity.loggedIn}">
+			<SPAN id="userInfo"> <h:outputText title="Kısa Kullanıcı : #{authenticatedUser.shortUsername}" value="#{authenticatedUser.adSoyad}"
+					rendered="#{authenticatedUser.shortUsername!=null and authenticatedUser.shortUsername!=''}" /> <h:outputText
+					value="#{authenticatedUser.adSoyad}" rendered="#{authenticatedUser.shortUsername==null or authenticatedUser.shortUsername==''}" />
+			</SPAN>
+			
+		</ui:fragment>
+		<s:link view="#{menuItemConstant.home}" value="Ana Sayfa" propagation="none" rendered="#{identity.loggedIn}" />
+
+		<s:link view="#{menuItemConstant.login}" action="#{identity.logout}" value="Çıkış" rendered="#{identity.loggedIn}" propagation="none" />
+
+	</rich:toolBarGroup>
+</rich:toolBar>
+

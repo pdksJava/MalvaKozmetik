@@ -2070,45 +2070,40 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @return
 	 */
 	private String getExcelAciklama() {
+
+		LinkedHashMap<String, Object> veriMap = ortakIslemler.getListPersonelOzetVeriMap(aylikPuantajList, aramaSecenekleri.getTesisId(), " ");
 		String gorevYeriAciklama = "";
-		Long sirketId = aramaSecenekleri.getSirketId();
-		HashMap parametreMap = new HashMap();
-		if (gorevYeri != null)
-			gorevYeriAciklama = gorevYeri.getAciklama() + "_";
-		else if (aramaSecenekleri.getEkSaha3Id() != null || aramaSecenekleri.getTesisId() != null) {
-			Tanim ekSaha3 = null, tesis = null;
+		if (veriMap.containsKey("sirketGrup")) {
+			Tanim sirketGrup = (Tanim) veriMap.get("sirketGrup");
+			gorevYeriAciklama = sirketGrup.getAciklama() + "_";
+		} else if (veriMap.containsKey("sirket")) {
+			Sirket sirket = (Sirket) veriMap.get("sirket");
+			gorevYeriAciklama = sirket.getAd() + "_";
+		}
+
+		if (aramaSecenekleri.getEkSaha3Id() != null || aramaSecenekleri.getTesisId() != null || aramaSecenekleri.getEkSaha4Id() != null) {
+			Tanim ekSaha3 = null, ekSaha4 = null, tesis = null;
 			if (aramaSecenekleri.getTesisId() != null) {
-				parametreMap.clear();
-				parametreMap.put("id", aramaSecenekleri.getTesisId());
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				tesis = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+				if (veriMap.containsKey("tesis"))
+					tesis = (Tanim) veriMap.get("tesis");
 			}
 			if (aramaSecenekleri.getEkSaha3Id() != null) {
-				parametreMap.clear();
-				parametreMap.put("id", aramaSecenekleri.getEkSaha3Id());
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				ekSaha3 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
-			}
-			if (tesis != null)
-				gorevYeriAciklama = tesis.getAciklama() + "_";
-			if (ekSaha3 != null) {
-				gorevYeriAciklama += ekSaha3.getAciklama() + "_";
+				if (veriMap.containsKey("bolum"))
+					ekSaha3 = (Tanim) veriMap.get("bolum");
+				if (veriMap.containsKey("altBolum"))
+					ekSaha4 = (Tanim) veriMap.get("altBolum");
 			}
 
-		} else if (sirketId != null) {
-			parametreMap.clear();
-			parametreMap.put("id", sirketId);
-			if (session != null)
-				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
-			if (sirket != null)
-				gorevYeriAciklama = sirket.getAciklama() + "_";
+			if (tesis != null)
+				gorevYeriAciklama = tesis.getAciklama() + "_";
+			if (ekSaha3 != null)
+				gorevYeriAciklama += ekSaha3.getAciklama() + "_";
+			if (ekSaha4 != null)
+				gorevYeriAciklama += ekSaha4.getAciklama() + "_";
 		}
-		if (aramaSecenekleri.getEkSaha4Id() != null && aramaSecenekleri.getEkSaha4Id().longValue() > 0L) {
-			parametreMap.clear();
-			parametreMap.put("id", aramaSecenekleri.getEkSaha4Id());
+		if (seciliEkSaha4Id != null && seciliEkSaha4Id.longValue() > 0L) {
+			HashMap parametreMap = new HashMap();
+			parametreMap.put("id", seciliEkSaha4Id);
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			Tanim ekSaha4 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
@@ -3985,7 +3980,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				else
 					bccList.clear();
 
-				LinkedHashMap<String, Object> veriMap = ortakIslemler.getListPersonelOzetVeriMap(puantajList, veriAyrac);
+				LinkedHashMap<String, Object> veriMap = ortakIslemler.getListPersonelOzetVeriMap(puantajList, aramaSecenekleri.getTesisId(), veriAyrac);
 				if (veriMap.containsKey("bolum"))
 					bolum = (Tanim) veriMap.get("bolum");
 				aciklama = veriMap.containsKey("aciklama") ? (String) veriMap.get("aciklama") : null;

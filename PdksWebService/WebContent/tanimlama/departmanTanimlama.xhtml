@@ -1,0 +1,327 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jstl/core" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('departmanTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(departmanHome.session,'departmanTanimlama')}">
+					<rich:dataTable rowClasses="acik,koyu" value="#{departmanHome.departmanList}" var="departman" rows="20" rowKeyVar="row" id="departmanTable">
+						<f:facet name="header">
+							<h:outputText value="Departmanlar" />
+						</f:facet>
+						<rich:column>
+							<f:facet name="header">
+                        İşlemler
+                </f:facet>
+							<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{departmanHome.departmanGuncelle(departman)}"
+								oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+								<h:graphicImage value="/img/edit.gif" style="border:0" />
+
+							</a4j:commandLink>
+							<rich:toolTip for="editlink" value="Güncelle" />
+
+
+						</rich:column>
+						<rich:column rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="Id" />
+							</f:facet>
+							<h:outputText value="#{departman.id}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Departman Adı" />
+							</f:facet>
+							<h:outputText value="#{departman.departmanTanim.aciklama}" id="departmanname" />
+						</rich:column>
+						<c:if test="#{authenticatedUser.admin}">
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Çoçuk Üst Yaş Sınırı" />
+								</f:facet>
+								<h:outputText value="#{departman.cocukYasUstSiniri}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Yaşlı Alt Yaş Sınırı" />
+								</f:facet>
+								<h:outputText value="#{departman.yasliYasAltSiniri}" />
+							</rich:column>
+							<rich:column rendered="#{ortakIslemler.getParameterKey('uygulamaTipi')=='H'}">
+								<f:facet name="header">
+									<h:outputText value="İcapçı" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(departman.icapciOlabilir)}" />
+							</rich:column>
+							<rich:column rendered="#{ortakIslemler.getParameterKey('uygulamaTipi')=='H'}">
+								<f:facet name="header">
+									<h:outputText value="Şua Olabilir" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(departman.suaOlabilir)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Fazla Mesai Öde" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(departman.fazlaMesaiOde)}" />
+							</rich:column>
+							<rich:column rendered="#{ortakIslemler.getParameterKey('fazlaMesaiTalepDurum')=='1'}">
+								<f:facet name="header">
+									<h:outputText value="Fazla Mesai Talep" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(departman.fazlaMesaiTalepGirilebilir)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İzin Girebilir" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(departman.izinGirilebilir)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Yeni #{ortakIslemler.sirketAciklama()} Girebilir" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(departman.sirketEklenebilir)}" />
+							</rich:column>
+							<rich:column rendered="#{authenticatedUser.admin}">
+								<f:facet name="header">
+									<h:outputText value="Admin Departman" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(departman.adminMi)}" />
+							</rich:column>
+						</c:if>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Uyarı Mail Box" />
+							</f:facet>
+							<h:outputText value="#{ departman.mailBox}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Aktif" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(departman.durum)}" id="active" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Yapan" />
+							</f:facet>
+							<h:outputText value="#{departman.sonIslemYapan.adSoyad}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Tarihi" />
+							</f:facet>
+							<h:outputText value="#{departman.sonIslemTarihiStr}" />
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+					<h:panelGrid columns="1" id="departmanEkle" rendered="#{authenticatedUser.admin}">
+						<a4j:commandButton status="ajaxStatus" value="Departman Ekle" action="#{departmanHome.departmanGuncelle(null)}"
+							oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+
+						</a4j:commandButton>
+						<rich:toolTip for="addlink" value="Add" />
+					</h:panelGrid>
+				</rich:panel>
+			</a4j:region>
+
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="800">
+			<f:facet name="header">
+				<h:outputText value="Güncelle Departman" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{departmanHome.instanceRefresh}" reRender="departmanTable"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form id="departmanForm">
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+					</a4j:outputPanel>
+					<a4j:outputPanel id="departmanBilgi">
+						<h:panelGrid columns="1">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Departman</ui:define>
+								<h:selectOneMenu rendered="#{authenticatedUser.admin and departmanHome.instance.id==null}" value="#{departmanHome.instance.departmanTanim}"
+									required="true" requiredMessage="Departman seçiniz">
+									<s:selectItems var="comp" value="#{departmanHome.departmanTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+								<h:outputText rendered="#{departmanHome.instance.id!=null}" value="#{departmanHome.instance.departmanTanim.aciklama}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" id="mailBox">
+								<ui:define name="label">Uyarı Mail Box</ui:define>
+								<ui:fragment>
+									<h:inputText value="#{departmanHome.instance.mailBox}" size="60" disabled="true" />
+									<a4j:commandButton title="Güncelle" image="/img/edit.gif" action="#{departmanHome.adresAyarla()}" onclick="#{rich:component('wait')}.show()"
+										oncomplete="#{rich:component('wait')}.hide();#{rich:component('mailPanel')}.show()" reRender="mailPanel">
+									</a4j:commandButton>
+									<rich:toolTip for="mailBox" value="#{departmanHome.instance.mailBox}" />
+								</ui:fragment>
+							</s:decorate>
+							<c:if test="#{authenticatedUser.admin}">
+								<h:panelGrid columns="2">
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Çoçuk Üst Yaş Sınırı</ui:define>
+										<h:inputText id="cocukYasUstSiniri" value="#{departmanHome.instance.cocukYasUstSiniri}" size="2" maxlength="2" required="true"
+											requiredMessage="Çoçuk Üst Yaş Sınırı giriniz" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" id="yasliYasAltSiniri">
+										<ui:define name="label">Yaşlı Alt Yaş Sınırı</ui:define>
+										<h:inputText value="#{departmanHome.instance.yasliYasAltSiniri}" size="2" maxlength="2" required="true"
+											requiredMessage="Yaşlı Alt Yaş Sınırı giriniz">
+
+										</h:inputText>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.getParameterKey('uygulamaTipi')=='H'}">
+										<ui:define name="label">İcapçı</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.icapciOlabilir}" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.getParameterKey('uygulamaTipi')=='H'}">
+										<ui:define name="label">Şua Olur</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.suaOlabilir}" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Fazla Mesai Öde</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.fazlaMesaiOde}" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.getParameterKey('fazlaMesaiTalepDurum')=='1'}">
+										<ui:define name="label">Fazla Mesai Talep</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.fazlaMesaiTalepGirilebilir}" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">İzin Girebilir</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.izinGirilebilir}" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Yeni #{ortakIslemler.sirketAciklama()} Girebilir</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.sirketEklenebilir}" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+										<ui:define name="label">Admin Departman</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.admin}" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+										<ui:define name="label">Aktif</ui:define>
+										<h:selectBooleanCheckbox value="#{departmanHome.instance.durum}" />
+									</s:decorate>
+								</h:panelGrid>
+							</c:if>
+						</h:panelGrid>
+					</a4j:outputPanel>
+
+					<!--  -->
+
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{departmanHome.save}" reRender="departmanTable,departmanEkle"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{departmanHome.remove}"
+									oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="mailPanel" autosized="true" width="650">
+			<f:facet name="header">
+				<a4j:outputPanel ajaxRendered="true">
+					<h:outputText value="#{departmanHome.instance.departmanTanim.aciklama}" />
+				</a4j:outputPanel>
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{departmanHome.adresGuncelle}" reRender="departmanBilgi"
+								oncomplete="#{rich:component('mailPanel')}.hide();" ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form id="mailPanelForm">
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages />
+				</a4j:outputPanel>
+				<a4j:outputPanel>
+					<rich:panel>
+						<h:panelGrid columns="1" id="adresHareketBilgileri">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Mail Adres	</ui:define>
+								<ui:fragment>
+									<h:inputText value="#{departmanHome.mailAdres}" maxlength="55" size="40" required="true" requiredMessage="Hareket mail adresi giriniz!" />
+									<a4j:commandButton image="/img/ok.gif" action="#{departmanHome.adresEkle}" reRender="adresHareketBilgileri" />
+								</ui:fragment>
+							</s:decorate>
+							<a4j:outputPanel ajaxRendered="true">
+								<rich:dataTable rowClasses="acik,koyu" rendered="#{not empty departmanHome.adresler}" value="#{departmanHome.adresler}" var="adres" rows="20"
+									rowKeyVar="row">
+									<f:facet name="header">
+										<h:outputText value="E-Posta Adresleri" />
+									</f:facet>
+									<rich:column>
+										<f:facet name="header">İşlemler</f:facet>
+										<a4j:commandLink status="ajaxStatus" action="#{departmanHome.adresSil(adres)}" ajaxSingle="true" id="hareketMailIptalLink"
+											reRender="adresHareketBilgileri">
+											<h:graphicImage value="/img/delete.gif" style="border:0" />
+										</a4j:commandLink>
+										<rich:toolTip for="hareketMailIptalLink" value="Mail İptal" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="Hareket Mail Adres" />
+										</f:facet>
+										<h:outputText value="#{adres}" />
+									</rich:column>
+								</rich:dataTable>
+							</a4j:outputPanel>
+						</h:panelGrid>
+					</rich:panel>
+				</a4j:outputPanel>
+			</h:form>
+		</rich:modalPanel>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page view-id="#{menuItemConstant.yemekTanimlama}" xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+		<restrict>#{userHome.hasPermission('yemekTanimlama','view')}</restrict>
+	<rewrite pattern="/yemekTanimlama"/>
+	<action execute="#{yemekHome.sayfaGirisAction}" on-postback="false"/>
+	<begin-conversation join="true" flush-mode="manual" />
+	<navigation>
+            <rule if-outcome="yemekTanimlama">
+                <redirect view-id="#{menuItemConstant.yemekTanimlama}"/>
+            </rule>
+              
+        </navigation>
+</page>

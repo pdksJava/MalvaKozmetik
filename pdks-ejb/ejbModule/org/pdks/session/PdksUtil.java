@@ -694,7 +694,9 @@ public class PdksUtil implements Serializable {
 				httpServletResponse.setHeader("Expires", "0");
 				httpServletResponse.setHeader("Pragma", "cache");
 				httpServletResponse.setHeader("Cache-Control", "cache");
-				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+				String dosyaAdi = URLEncoder.encode(fileName, "UTF-8");
+				dosyaAdi = replaceAllManuel(dosyaAdi, "+", " ");
+				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
 				writeByteArrayOutputStream(httpServletResponse, baos);
 			}
 		} catch (Exception e) {

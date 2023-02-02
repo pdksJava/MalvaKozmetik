@@ -3082,14 +3082,15 @@ public class OrtakIslemler implements Serializable {
 
 	/**
 	 * @param list
+	 * @param tesisId
+	 * @param veriAyrac
 	 * @return
-	 * @throws Exception
 	 */
-	public LinkedHashMap<String, Object> getListPersonelOzetVeriMap(List list, String veriAyrac) {
+	public LinkedHashMap<String, Object> getListPersonelOzetVeriMap(List list, Long tesisId, String veriAyrac) {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		if (list != null) {
 			HashMap<Long, Sirket> sirketMap = new HashMap<Long, Sirket>();
-			HashMap<Long, Tanim> tesisMap = new HashMap<Long, Tanim>(), bolumMap = new HashMap<Long, Tanim>();
+			HashMap<Long, Tanim> tesisMap = new HashMap<Long, Tanim>(), bolumMap = new HashMap<Long, Tanim>(), altBolumMap = new HashMap<Long, Tanim>();
 			for (Object object : list) {
 				if (object == null)
 					continue;
@@ -3110,18 +3111,31 @@ public class OrtakIslemler implements Serializable {
 						sirketMap.put(personel.getSirket().getId(), personel.getSirket());
 					if (personel.getEkSaha3() != null && personel.getEkSaha3().getId() != null)
 						bolumMap.put(personel.getEkSaha3().getId(), personel.getEkSaha3());
-					if (personel.getTesis() != null && personel.getTesis().getId() != null)
+					if (personel.getEkSaha4() != null && personel.getEkSaha4().getId() != null)
+						altBolumMap.put(personel.getEkSaha4().getId(), personel.getEkSaha4());
+					if (tesisId != null && personel.getTesis() != null && personel.getTesis().getId() != null)
 						tesisMap.put(personel.getTesis().getId(), personel.getTesis());
 
 				}
 
 			}
 			Sirket sirket = null;
-			Tanim tesis = null, bolum = null;
-			if (sirketMap.size() == 1) {
+			Tanim tesis = null, bolum = null, altBolum = null, sirketGrup = null;
+			String ayrac = "";
+			if (!sirketMap.isEmpty()) {
 				List<Sirket> tempList = new ArrayList<Sirket>(sirketMap.values());
-				sirket = tempList.get(0);
-				map.put("sirket", sirket);
+				for (Sirket sirket2 : tempList) {
+					if (sirket2.getSirketGrup() != null)
+						sirketGrup = sirket2.getSirketGrup();
+				}
+				if (tempList.size() == 1) {
+					sirket = tempList.get(0);
+					map.put("sirket", sirket);
+ 				} else if (sirketGrup != null) {
+					map.put("sirketGrup", sirketGrup);
+ 				}
+					
+
 				tempList = null;
 			}
 			if (tesisMap.size() == 1) {
@@ -3136,10 +3150,19 @@ public class OrtakIslemler implements Serializable {
 				map.put("bolum", bolum);
 				tempList = null;
 			}
+			if (altBolumMap.size() == 1) {
+				List<Tanim> tempList = new ArrayList<Tanim>(altBolumMap.values());
+				altBolum = tempList.get(0);
+				map.put("altBolum", altBolum);
+				tempList = null;
+			}
 			if (!map.isEmpty()) {
 				StringBuffer sb = new StringBuffer();
-				String ayrac = "";
-				if (sirket != null) {
+				
+				if (sirketGrup != null) {
+					sb.append(sirketGrup.getAciklama());
+					ayrac = veriAyrac;
+				} else if (sirket != null) {
 					sb.append(sirket.getAd());
 					ayrac = veriAyrac;
 				}
@@ -4105,21 +4128,21 @@ public class OrtakIslemler implements Serializable {
 					if (vardiyaGun.getVardiya() == null || vardiyaGun.getVardiya().isCalisma() == false)
 						continue;
 					Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
-//					if (iptalDurum && vardiyaGun.isAyinGunu() && islemVardiya.isCalisma()) {
-//						boolean durum1 = islemVardiya.getVardiyaTelorans1BasZaman().before(fazlaMesai.getBasZaman()) && islemVardiya.getVardiyaTelorans2BasZaman().after(fazlaMesai.getBitZaman());
-//						if (durum1) {
-//							logger.info(vardiyaGun.getVardiyaKeyStr() + " " + fazlaMesai.getId() + " " + fazlaMesai.getBasZaman() + " " + fazlaMesai.getBitZaman());
-//							fazlaMesai.setDurum(Boolean.FALSE);
-//							if (!authenticatedUser.isAdmin()) {
-//								fazlaMesai.setGuncelleyenUser(authenticatedUser);
-//								fazlaMesai.setGuncellemeTarihi(new Date());
-//							}
-//							pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
-//							iterator.remove();
-//							flush = Boolean.TRUE;
-//							continue;
-//						}
-//					}
+					// if (iptalDurum && vardiyaGun.isAyinGunu() && islemVardiya.isCalisma()) {
+					// boolean durum1 = islemVardiya.getVardiyaTelorans1BasZaman().before(fazlaMesai.getBasZaman()) && islemVardiya.getVardiyaTelorans2BasZaman().after(fazlaMesai.getBitZaman());
+					// if (durum1) {
+					// logger.info(vardiyaGun.getVardiyaKeyStr() + " " + fazlaMesai.getId() + " " + fazlaMesai.getBasZaman() + " " + fazlaMesai.getBitZaman());
+					// fazlaMesai.setDurum(Boolean.FALSE);
+					// if (!authenticatedUser.isAdmin()) {
+					// fazlaMesai.setGuncelleyenUser(authenticatedUser);
+					// fazlaMesai.setGuncellemeTarihi(new Date());
+					// }
+					// pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
+					// iterator.remove();
+					// flush = Boolean.TRUE;
+					// continue;
+					// }
+					// }
 					String str = "Hatali fazla mesai : " + vardiyaGun.getVardiyaKeyStr() + " (" + authenticatedUser.timeFormatla(islemVardiya.getVardiyaBasZaman()) + "-" + authenticatedUser.timeFormatla(islemVardiya.getVardiyaBitZaman()) + " --> "
 							+ authenticatedUser.timeFormatla(fazlaMesai.getBasZaman()) + "-" + authenticatedUser.timeFormatla(fazlaMesai.getBitZaman()) + " )";
 					if (islemVardiya.getVardiyaTelorans2BasZaman().getTime() >= fazlaMesai.getBitZaman().getTime() || islemVardiya.getVardiyaTelorans1BitZaman().getTime() <= fazlaMesai.getBasZaman().getTime())

@@ -3876,7 +3876,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (authenticatedUser.isAdmin())
 						bccList.add(authenticatedUser);
 					String aciklama = null, veriAyrac = "_";
-					LinkedHashMap<String, Object> veriMap = ortakIslemler.getListPersonelOzetVeriMap(aylikPuantajList, veriAyrac);
+					LinkedHashMap<String, Object> veriMap = ortakIslemler.getListPersonelOzetVeriMap(aylikPuantajList, tesisId, veriAyrac);
 					if (veriMap.containsKey("bolum"))
 						bolum = (Tanim) veriMap.get("bolum");
 					aciklama = veriMap.containsKey("aciklama") ? (String) veriMap.get("aciklama") : null;
@@ -3886,7 +3886,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					mailKonu = PdksUtil.replaceAll(PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " " + (aciklama != null ? " " + PdksUtil.replaceAll(aciklama, veriAyrac, " ") : "") + " fazla mesai onayı", "  ", " ");
 					mailIcerik = PdksUtil.replaceAll(PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " " + (aciklama != null ? " " + PdksUtil.replaceAll(aciklama, veriAyrac, " ") : "") + " fazla mesaileri " + authenticatedUser.getAdSoyad()
 							+ " tarafından onaylanmıştır.", "  ", " ");
-					String gorevYeriAciklama = getExcelAciklama();
+					String gorevYeriAciklama = getExcelAciklama(veriMap);
 					excelDosyaAdi = "fazlaMesai" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + (bolum != null ? "_" + bolum.getAciklama() : "") + (seciliAltBolum != null ? "_" + seciliAltBolum.getAciklama() : "") + ".xlsx";
 					for (Long yoneticiId : yoneticiMap.keySet()) {
 						List<AylikPuantaj> list = puantajMap.get(yoneticiId);
@@ -4036,7 +4036,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 			}
 			if (!list.isEmpty()) {
-				String gorevYeriAciklama = getExcelAciklama();
+				String gorevYeriAciklama = getExcelAciklama(null);
 				ByteArrayOutputStream baosDosya = aylikVardiyaHareketExcelDevam(list);
 				if (baosDosya != null) {
 					String dosyaAdi = "AylikCalismaHareket_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
@@ -4197,40 +4197,37 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			sheet.autoSizeColumn(i);
 	}
 
-	private String getExcelAciklama() {
+	private String getExcelAciklama(LinkedHashMap<String, Object> veriMap) {
+		if (veriMap == null)
+			veriMap = ortakIslemler.getListPersonelOzetVeriMap(aylikPuantajList, tesisId, " ");
 		String gorevYeriAciklama = "";
-		if (gorevYeri != null)
-			gorevYeriAciklama = gorevYeri.getAciklama() + "_";
-		else if (seciliEkSaha3Id != null || tesisId != null) {
-			HashMap parametreMap = new HashMap();
-			Tanim ekSaha3 = null, tesis = null;
+		if (veriMap.containsKey("sirketGrup")) {
+			Tanim sirketGrup = (Tanim) veriMap.get("sirketGrup");
+			gorevYeriAciklama = sirketGrup.getAciklama() + "_";
+		} else if (veriMap.containsKey("sirket")) {
+			Sirket sirket = (Sirket) veriMap.get("sirket");
+			gorevYeriAciklama = sirket.getAd() + "_";
+		}
+
+		if (seciliEkSaha3Id != null || tesisId != null || seciliEkSaha4Id != null) {
+			Tanim ekSaha3 = null, ekSaha4 = null, tesis = null;
 			if (tesisId != null) {
-				parametreMap.clear();
-				parametreMap.put("id", tesisId);
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				tesis = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+				if (veriMap.containsKey("tesis"))
+					tesis = (Tanim) veriMap.get("tesis");
+			}
+			if (seciliEkSaha3Id != null) {
+				if (veriMap.containsKey("bolum"))
+					ekSaha3 = (Tanim) veriMap.get("bolum");
+				if (veriMap.containsKey("altBolum"))
+					ekSaha4 = (Tanim) veriMap.get("altBolum");
 			}
 
-			if (seciliEkSaha3Id != null) {
-				parametreMap.clear();
-				parametreMap.put("id", seciliEkSaha3Id);
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				ekSaha3 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
-			}
 			if (tesis != null)
 				gorevYeriAciklama = tesis.getAciklama() + "_";
 			if (ekSaha3 != null)
 				gorevYeriAciklama += ekSaha3.getAciklama() + "_";
-		} else if (sirketId != null && tekSirket) {
-			HashMap parametreMap = new HashMap();
-			parametreMap.put("id", sirketId);
-			if (session != null)
-				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
-			if (sirket != null)
-				gorevYeriAciklama = sirket.getAciklama() + "_";
+			if (ekSaha4 != null)
+				gorevYeriAciklama += ekSaha4.getAciklama() + "_";
 		}
 		if (seciliEkSaha4Id != null && seciliEkSaha4Id.longValue() > 0L) {
 			HashMap parametreMap = new HashMap();
@@ -4250,7 +4247,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
 				aylikPuantaj.setSecili(Boolean.TRUE);
 			}
-			String gorevYeriAciklama = getExcelAciklama();
+			String gorevYeriAciklama = getExcelAciklama(null);
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(gorevYeriAciklama, aylikPuantajList);
 			if (baosDosya != null) {
 				String dosyaAdi = "FazlaMesai_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
