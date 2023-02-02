@@ -3105,7 +3105,6 @@ public class OrtakIslemler implements Serializable {
 					personel = ((PersonelIzin) object).getIzinSahibi();
 				else if (object instanceof Personel)
 					personel = (Personel) object;
-
 				if (personel != null) {
 					if (personel.getSirket() != null && personel.getSirket().getId() != null)
 						sirketMap.put(personel.getSirket().getId(), personel.getSirket());
@@ -3117,7 +3116,6 @@ public class OrtakIslemler implements Serializable {
 						tesisMap.put(personel.getTesis().getId(), personel.getTesis());
 
 				}
-
 			}
 			Sirket sirket = null;
 			Tanim tesis = null, bolum = null, altBolum = null, sirketGrup = null;
@@ -3131,11 +3129,9 @@ public class OrtakIslemler implements Serializable {
 				if (tempList.size() == 1) {
 					sirket = tempList.get(0);
 					map.put("sirket", sirket);
- 				} else if (sirketGrup != null) {
+				} else if (sirketGrup != null) {
 					map.put("sirketGrup", sirketGrup);
- 				}
-					
-
+				}
 				tempList = null;
 			}
 			if (tesisMap.size() == 1) {
@@ -3158,12 +3154,11 @@ public class OrtakIslemler implements Serializable {
 			}
 			if (!map.isEmpty()) {
 				StringBuffer sb = new StringBuffer();
-				
-				if (sirketGrup != null) {
-					sb.append(sirketGrup.getAciklama());
-					ayrac = veriAyrac;
-				} else if (sirket != null) {
+				if (sirket != null) {
 					sb.append(sirket.getAd());
+					ayrac = veriAyrac;
+				} else if (sirketGrup != null) {
+					sb.append(sirketGrup.getAciklama());
 					ayrac = veriAyrac;
 				}
 				if (tesis != null) {

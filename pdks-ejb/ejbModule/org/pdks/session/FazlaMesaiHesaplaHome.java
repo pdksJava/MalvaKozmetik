@@ -3883,11 +3883,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (aciklama == null && bolum != null)
 						aciklama = bolum.getAciklama();
 
+					String gorevYeriAciklama = getExcelAciklama(veriMap);
+					excelDosyaAdi = "fazlaMesai" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
 					mailKonu = PdksUtil.replaceAll(PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " " + (aciklama != null ? " " + PdksUtil.replaceAll(aciklama, veriAyrac, " ") : "") + " fazla mesai onayı", "  ", " ");
 					mailIcerik = PdksUtil.replaceAll(PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " " + (aciklama != null ? " " + PdksUtil.replaceAll(aciklama, veriAyrac, " ") : "") + " fazla mesaileri " + authenticatedUser.getAdSoyad()
 							+ " tarafından onaylanmıştır.", "  ", " ");
-					String gorevYeriAciklama = getExcelAciklama(veriMap);
-					excelDosyaAdi = "fazlaMesai" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + (bolum != null ? "_" + bolum.getAciklama() : "") + (seciliAltBolum != null ? "_" + seciliAltBolum.getAciklama() : "") + ".xlsx";
 					for (Long yoneticiId : yoneticiMap.keySet()) {
 						List<AylikPuantaj> list = puantajMap.get(yoneticiId);
 						Personel personel = yoneticiMap.get(yoneticiId);
