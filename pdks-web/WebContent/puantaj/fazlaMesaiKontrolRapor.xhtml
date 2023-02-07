@@ -60,7 +60,7 @@
 						<c:if test="#{not empty fazlaMesaiKontrolRaporHome.pdksSirketList}">
 
 							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{fazlaMesaiKontrolRaporHome.tesisList!=null and fazlaMesaiKontrolRaporHome.tesisList.size()>0}">
+								rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiKontrolRaporHome.tesisList!=null and fazlaMesaiKontrolRaporHome.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:selectOneMenu value="#{fazlaMesaiKontrolRaporHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
 									disabled="#{fazlaMesaiKontrolRaporHome.tesisList.size()==1}">

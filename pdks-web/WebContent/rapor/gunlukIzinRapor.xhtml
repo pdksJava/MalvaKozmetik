@@ -108,7 +108,7 @@
 							<h:outputText value="#{personel.sirket.ad}" />
 						</rich:column>
 						 
-						<rich:column>
+						<rich:column rendered="#{ortakIslemler.tesisDurumu}">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 							</f:facet>

@@ -36,7 +36,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{vardiyaOzetRaporuHome.aramaSecenekleri.tesisList!=null and vardiyaOzetRaporuHome.aramaSecenekleri.tesisList.size()>0}">
+								rendered="#{ortakIslemler.tesisDurumu and vardiyaOzetRaporuHome.aramaSecenekleri.tesisList!=null and vardiyaOzetRaporuHome.aramaSecenekleri.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:selectOneMenu value="#{vardiyaOzetRaporuHome.aramaSecenekleri.tesisId}"
 									disabled="#{vardiyaOzetRaporuHome.aramaSecenekleri.tesisList.size()==1}">

@@ -22,7 +22,7 @@
 						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{P10P20Home.bitTarih}" required="true" requiredMessage="Tarih giriniz" />
 					</s:decorate>
 					<s:decorate template="/layout/edit.xhtml"
-						rendered="#{P10P20Home.aramaSecenekleri.tesisList!=null and P10P20Home.aramaSecenekleri.tesisList.size()>0}">
+						rendered="#{ortakIslemler.tesisDurumu and P10P20Home.aramaSecenekleri.tesisList!=null and P10P20Home.aramaSecenekleri.tesisList.size()>0}">
 						<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 						<h:selectOneMenu value="#{P10P20Home.aramaSecenekleri.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!"
 							required="#{P10P20Home.aramaSecenekleri.tesisList.size()>1}">

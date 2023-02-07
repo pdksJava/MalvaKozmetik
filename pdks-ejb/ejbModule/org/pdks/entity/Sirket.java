@@ -26,16 +26,17 @@ public class Sirket extends BaseObject {
 	public static final String COLUMN_NAME_PDKS = "PDKS_DURUM";
 	public static final String COLUMN_NAME_FAZLA_MESAI = "FAZLA_MESAI";
 	public static final String COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR = "ISTEN_AYR_TAR_CALISIYOR";
-	public static final String COLUMN_NAME_DEPARTMAN_BOLUM_AYNI = "DEPARTMAN_BOLUM_AYNI";
+
 	public static final String COLUMN_NAME_FAZLA_MESAI_IZIN_KULLAN = "FAZLA_MESAI_IZIN_KULLAN";
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
+	public static final String COLUMN_NAME_TESIS_DURUM = "TESIS_DURUM";
 	public static final String COLUMN_NAME_AD = "AD";
 	public static final String SIRKET_ERP_KODU = "3030";
 	private Long sirketGrupId;
 	private String ad, aciklama, erpKodu = "", lpdapOnEk = "";
-	private Boolean erpDurum = Boolean.FALSE, ldapDurum = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE;
+	private Boolean erpDurum = Boolean.FALSE, ldapDurum = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean fazlaMesaiOde = Boolean.FALSE, fazlaMesai = Boolean.FALSE, istenAyrilmaTarihindeCalisiyor = Boolean.FALSE;
-	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, departmanBolumAyni = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE;
+	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE;
 	private Tanim sirketGrup;
 	private Departman departman;
 	private Integer version = 0;
@@ -192,6 +193,20 @@ public class Sirket extends BaseObject {
 		this.fazlaMesaiTalepGirilebilir = fazlaMesaiTalepGirilebilir;
 	}
 
+	@Column(name = COLUMN_NAME_TESIS_DURUM)
+	public Boolean getTesisDurum() {
+		return tesisDurum;
+	}
+
+	public void setTesisDurum(Boolean tesisDurum) {
+		this.tesisDurum = tesisDurum;
+	}
+
+	@Transient
+	public boolean isTesisDurumu() {
+		return tesisDurum != null && tesisDurum.booleanValue();
+	}
+
 	@Column(name = COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR)
 	public Boolean getIstenAyrilmaTarihindeCalisiyor() {
 		return istenAyrilmaTarihindeCalisiyor;
@@ -210,23 +225,9 @@ public class Sirket extends BaseObject {
 		this.fazlaMesaiIzinKullan = fazlaMesaiIzinKullan;
 	}
 
-	@Column(name = COLUMN_NAME_DEPARTMAN_BOLUM_AYNI)
-	public Boolean getDepartmanBolumAyni() {
-		return departmanBolumAyni;
-	}
-
-	public void setDepartmanBolumAyni(Boolean departmanBolumAyni) {
-		this.departmanBolumAyni = departmanBolumAyni;
-	}
-
 	@Transient
 	public boolean isLdap() {
 		return ldapDurum != null ? ldapDurum.booleanValue() : false;
-	}
-
-	@Transient
-	public boolean isDepartmanBolumAynisi() {
-		return departmanBolumAyni != null ? departmanBolumAyni.booleanValue() : false;
 	}
 
 	@Transient

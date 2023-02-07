@@ -58,7 +58,7 @@
 						</s:decorate>
 						<c:if test="#{not empty fazlaMesaiOzetRaporHome.pdksSirketList}">
 
-							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiOzetRaporHome.tesisList!=null and fazlaMesaiOzetRaporHome.tesisList.size()>0}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiOzetRaporHome.tesisList!=null and fazlaMesaiOzetRaporHome.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:selectOneMenu value="#{fazlaMesaiOzetRaporHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
 									disabled="#{fazlaMesaiOzetRaporHome.tesisList.size()==1}">

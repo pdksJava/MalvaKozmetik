@@ -430,9 +430,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 					if (sirket != null) {
 						long oncekiId = sirket.getId();
-						if (sirket.isErp() && sirket.isDepartmanBolumAynisi() == false)
+						if (sirket.isTesisDurumu())
 							tesisDoldur(false);
-						if (tesisId != null || sirket.isDepartmanBolumAynisi() || seciliEkSaha3Id != null)
+						if (tesisId != null || sirket.isTesisDurumu() == false || seciliEkSaha3Id != null)
 							bolumDoldur();
 						if (altBolumIdStr != null)
 							seciliEkSaha4Id = Long.parseLong(altBolumIdStr);
@@ -675,7 +675,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 			}
 			if (bolumDoldurulmadi) {
-				if (tesisId != null || seciliEkSaha3Id != null || (sirket != null && sirket.isDepartmanBolumAynisi()))
+				if (tesisId != null || seciliEkSaha3Id != null || (sirket != null && sirket.isTesisDurumu() == false))
 					bolumDoldur();
 				if (seciliEkSaha3Id != null && ekSaha4Tanim != null)
 					altBolumDoldur();
@@ -896,7 +896,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			saveGenelList.clear();
 
 		map1 = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
-		departmanBolumAyni = sirket != null && sirket.isDepartmanBolumAynisi();
+		departmanBolumAyni = sirket != null && sirket.isTesisDurumu() == false;
 		adres = map1.containsKey("host") ? map1.get("host") : "";
 		if (sicilNo != null)
 			sicilNo = sicilNo.trim();
@@ -948,7 +948,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 
 			if (sirket != null)
-				departmanBolumAyni = sirket.isDepartmanBolumAynisi();
+				departmanBolumAyni = sirket.isTesisDurumu() == false;
 
 			String searchKey = "sirket.id=";
 			if (sirket == null)
@@ -1294,6 +1294,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				personelHareketDurum = userHome.hasPermission("personelHareket", "view");
 				personelFazlaMesaiDurum = userHome.hasPermission("personelFazlaMesai", "view");
 				vardiyaPlaniDurum = userHome.hasPermission("vardiyaPlani", "view");
+				personelIzinGirisiDurum = userHome.hasPermission("personelIzinGirisi", "view");
 				boolean denklestirilmeyenDevredenVar = Boolean.FALSE;
 				String donemStr = String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy());
 				fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
@@ -1365,8 +1366,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								sonVardiyaBitZaman = islemVardiya.getVardiyaTelorans1BitZaman();
 						}
 						personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
-						planOnayDurum = denklestirmeAyDurum && (personelDenklestirme.isOnaylandi() /** || ikRole **/
-						);
+						planOnayDurum = denklestirmeAyDurum && (personelDenklestirme.isOnaylandi());
 						if (personelDenklestirme.getDurum()) {
 							if (sonVardiyaBitZaman != null)
 								fazlaMesaiOnayla = bugun.after(sonVardiyaBitZaman);
@@ -2834,7 +2834,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				sb.append("<TABLE style=\"width: 80%\">");
 				if (sirketId != null)
 					sb.append("<TR><TD><B>" + ortakIslemler.sirketAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(sirketId, pdksSirketList) + "</TD>");
-				if (tesisId != null)
+				if (ortakIslemler.isTesisDurumu() && tesisId != null)
 					sb.append("<TR><TD><B>" + ortakIslemler.tesisAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(tesisId, tesisList) + "</TD>");
 				if (seciliEkSaha3Id != null)
 					sb.append("<TR><TD><B>Bölüm</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha3Id, gorevYeriList) + "</TD>");
@@ -3138,16 +3138,13 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 
 					}
-					String link = null;
+
 					if (personelFazlaMesaiGiris == null) {
 						vGun.setHareketHatali(Boolean.TRUE);
 						kapiGirisGetir(vGun, vardiyaPlanKey);
-						if (personelIzin != null && personelIzinGirisiDurum && !izinERPUpdateStr.equals("1")) {
-							link = "<a href='http://" + adres + "/personelIzinGirisi?izinKey="
-									+ PdksUtil.getEncodeStringByBase64("perId=" + personel.getId() + "&tarih1=" + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyyyMMdd") + "&tarih2=" + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), "yyyyMMdd")) + "'>"
-									+ personelIzinGirisiStr + "</a>";
-							vGun.addLinkAdresler(link);
-						}
+						if (personelIzin != null && !izinERPUpdateStr.equals("1"))
+							personelIzinGirisiEkle(vGun, personelIzin, null);
+
 					}
 					personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
 
@@ -3165,10 +3162,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						if (sureAz) {
 
 							vGun.setHataliDurum(eksikSaatYuzde != null);
-							if (personelIzinGirisiDurum) {
-								String link = "<a href='http://" + adres + "/personelIzinGirisi?izinKey=" + PdksUtil.getEncodeStringByBase64("perId=" + personel.getId()) + "'>" + personelIzinGirisiStr + "</a>";
-								if (!izinERPUpdateStr.equals("1"))
-									vGun.addLinkAdresler(link);
+							if (!izinERPUpdateStr.equals("1")) {
+								String izinKey = "perId=" + personel.getId();
+								personelIzinGirisiEkle(vGun, null, izinKey);
 							}
 							kapiGirisGetir(vGun, vardiyaPlanKey);
 							if (vGun.getGirisHareketleri() != null) {
@@ -3239,6 +3235,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 								}
 
+								personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
 								list = null;
 
 							}
@@ -3448,17 +3445,13 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 
 		} else {
-			String link = null;
 
-			if (personelHareketDurum) {
+			if (personelHareketDurum)
 				kapiGirisGetir(vGun, vardiyaPlanKey);
-			}
-			if (personelIzin != null && personelIzinGirisiDurum) {
-				link = "<a href='http://" + adres + "/personelIzinGirisi?izinKey="
-						+ PdksUtil.getEncodeStringByBase64("perId=" + personel.getId() + "&tarih1=" + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyyyMMdd") + "&tarih2=" + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), "yyyyMMdd")) + "'>" + personelIzinGirisiStr
-						+ "</a>";
-				vGun.addLinkAdresler(link);
-			}
+
+			if (personelIzin != null && !izinERPUpdateStr.equals("1"))
+				personelIzinGirisiEkle(vGun, personelIzin, null);
+
 			vardiyaPlaniGetir(vGun, vardiyaPlanKey);
 			Boolean hataVar = Boolean.TRUE;
 			if (vGun.getVardiya() != null && vGun.getVardiya().isIcapVardiyasi()) {
@@ -3535,19 +3528,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		cikisHareketleri = null;
 		if (vGun.getFazlaMesailer() != null) {
 			for (PersonelFazlaMesai personelFazlaMesai : vGun.getFazlaMesailer()) {
-				if (personelFazlaMesai.isOnaylandi()) {
-
-					if (fazlaMesaiOnaylaDurum) {
+				if (personelFazlaMesai.getDurum()) {
+					if (personelFazlaMesai.isOnaylandi())
 						vGun.setFazlaMesaiOnayla(false);
-						personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
-					}
-					if (personelFazlaMesaiDurum) {
-						personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
-						// String link = "<a href='http://" + adres + "/personelFazlaMesai?planKey=" + vardiyaPlanKey + "'>" + personelFazlaMesaiStr + "</a>";
-						// vGun.addLinkAdresler(link);
-					}
+					personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
 					break;
-
 				}
 			}
 		}
@@ -3569,10 +3554,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 
 		}
-		if (izinDurum && personelIzinGirisiDurum) {
-			String link = "<a href='http://" + adres + "/personelIzinGirisi?izinKey="
-					+ PdksUtil.getEncodeStringByBase64("perId=" + personel.getId() + "&tarih1=" + PdksUtil.convertToDateString(vGun.getVardiyaDate(), "yyyyMMdd") + "&tarih2=" + PdksUtil.convertToDateString(vGun.getVardiyaDate(), "yyyyMMdd")) + "'>" + personelIzinGirisiStr + "</a>";
-			vGun.addLinkAdresler(link);
+		if (izinDurum && !izinERPUpdateStr.equals("1")) {
+			String izinKey = "perId=" + personel.getId() + "&tarih1=" + PdksUtil.convertToDateString(vGun.getVardiyaDate(), "yyyyMMdd") + "&tarih2=" + PdksUtil.convertToDateString(vGun.getVardiyaDate(), "yyyyMMdd");
+			personelIzinGirisiEkle(vGun, null, izinKey);
 
 		}
 		if (key1.equals("20220202"))
@@ -3592,6 +3576,23 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		paramsMap.put("haftaCalismaSuresi", haftaCalismaSuresi);
 		paramsMap.put("resmiTatilSuresi", resmiTatilSuresi);
 		vGun.setFazlaMesaiTalepOnayliDurum(fazlaMesaiTalepVardiyaOnayliDurum);
+	}
+
+	/**
+	 * @param vGun
+	 * @param personelIzin
+	 * @param izinKey
+	 */
+	private void personelIzinGirisiEkle(VardiyaGun vGun, PersonelIzin personelIzin, String izinKey) {
+		if (denklestirmeAyDurum && personelIzinGirisiDurum) {
+			Personel personel = vGun.getPersonel();
+			if (izinKey == null && personelIzin != null)
+				izinKey = "perId=" + personel.getId() + "&tarih1=" + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyyyMMdd") + "&tarih2=" + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), "yyyyMMdd");
+			if (izinKey != null) {
+				String link = "<a href='http://" + adres + "/personelIzinGirisi?izinKey=" + PdksUtil.getEncodeStringByBase64(izinKey) + "'>" + personelIzinGirisiStr + "</a>";
+				vGun.addLinkAdresler(link);
+			}
+		}
 	}
 
 	/**
@@ -3681,7 +3682,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param vardiyaPlanKey
 	 */
 	private void kapiGirisGetir(VardiyaGun vardiyaGun, String vardiyaPlanKey) {
-		if (planOnayDurum && personelHareketDurum) {
+		if (denklestirmeAyDurum && planOnayDurum && personelHareketDurum) {
 			String link = "<a href='http://" + adres + "/personelHareket?planKey=" + vardiyaPlanKey + "'>" + personelHareketStr + "</a>";
 			vardiyaGun.addLinkAdresler(link);
 		}
@@ -3692,7 +3693,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param vardiyaPlanKey
 	 */
 	private void vardiyaPlaniGetir(VardiyaGun vardiyaGun, String vardiyaPlanKey) {
-		if (denklestirmeAyDurum && vardiyaPlaniDurum) {
+		if (vardiyaPlaniDurum) {
 			String link = "<a href='http://" + adres + "/vardiyaPlani?planKey=" + vardiyaPlanKey + "'>" + vardiyaPlaniStr + "</a>";
 			vardiyaGun.addLinkAdresler(link);
 		}
@@ -3704,19 +3705,18 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param vardiyaPlanKey
 	 */
 	private void personelFazlaMesaiEkle(VardiyaGun vardiyaGun, String vardiyaPlanKey) {
-		if (planOnayDurum) {
-			if (vardiyaGun.getFazlaMesaiOnayla() != null && personelFazlaMesaiDurum) {
-				String link = "<a href='http://" + adres + "/personelFazlaMesai?planKey=" + vardiyaPlanKey + "'>" + personelFazlaMesaiStr + "</a>";
-				if (vardiyaGun.getFazlaMesaiOnayla())
-					vardiyaGun.addLinkAdresler(link);
-
-				logger.debug(vardiyaGun.getVardiyaKeyStr());
-			} else
-				kapiGirisGetir(vardiyaGun, vardiyaPlanKey);
-
+		if (denklestirmeAyDurum) {
+			if (planOnayDurum) {
+				if (vardiyaGun.getFazlaMesaiOnayla() != null && personelFazlaMesaiDurum) {
+					String link = "<a href='http://" + adres + "/personelFazlaMesai?planKey=" + vardiyaPlanKey + "'>" + personelFazlaMesaiStr + "</a>";
+					if (vardiyaGun.getFazlaMesaiOnayla())
+						vardiyaGun.addLinkAdresler(link);
+					logger.debug(vardiyaGun.getVardiyaKeyStr());
+				} else
+					kapiGirisGetir(vardiyaGun, vardiyaPlanKey);
+			}
 		}
-		if (denklestirmeAyDurum)
-			vardiyaPlaniGetir(vardiyaGun, vardiyaPlanKey);
+		vardiyaPlaniGetir(vardiyaGun, vardiyaPlanKey);
 	}
 
 	/**
@@ -3876,7 +3876,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (authenticatedUser.isAdmin())
 						bccList.add(authenticatedUser);
 					String aciklama = null, veriAyrac = "_";
-					LinkedHashMap<String, Object> veriMap = ortakIslemler.getListPersonelOzetVeriMap(aylikPuantajList, tesisId, veriAyrac);
+					LinkedHashMap<String, Object> veriMap = ortakIslemler.getListPersonelOzetVeriMap(aylikPuantajList, tesisId, " ");
 					if (veriMap.containsKey("bolum"))
 						bolum = (Tanim) veriMap.get("bolum");
 					aciklama = veriMap.containsKey("aciklama") ? (String) veriMap.get("aciklama") : null;
@@ -3984,6 +3984,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		MailObject mailObject = new MailObject();
 		mailObject.setSubject(mailKonu);
 		mailObject.setBody(mailIcerik);
+
 		if (toList != null) {
 			for (User user : toList)
 				if (user.getPdksPersonel() == null || user.getPdksPersonel().isCalisiyor())
@@ -3994,6 +3995,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (user.getPdksPersonel() == null || user.getPdksPersonel().isCalisiyor())
 					mailObject.getCcList().add(user.getMailPersonel());
 		}
+
 		if (bccList != null) {
 			for (User user : bccList)
 				if (user.getPdksPersonel() == null || user.getPdksPersonel().isCalisiyor())
@@ -4769,6 +4771,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	}
 
+	/**
+	 * @param bolumDoldurDurum
+	 * @throws Exception
+	 */
 	public void tesisDoldur(boolean bolumDoldurDurum) throws Exception {
 		sirket = null;
 		fazlaMesaiBakiyeGuncelleAyarla();
@@ -4799,7 +4805,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			} else
 				bolumDoldurDurum = true;
 			onceki = tesisId;
-			if (tesisId != null || (sirket != null && (sirket.isErp() == false || sirket.isDepartmanBolumAynisi()))) {
+			if (tesisId != null || (sirket != null && sirket.isTesisDurumu() == false)) {
 				if (bolumDoldurDurum)
 					bolumDoldur();
 				setTesisId(onceki);
@@ -4864,7 +4870,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			setSirket(sirket);
 			if (sirket != null) {
 				setDepartman(sirket.getDepartman());
-				if (departman.isAdminMi() && sirket.getDepartmanBolumAyni() == false) {
+				if (departman.isAdminMi() && sirket.isTesisDurumu()) {
 					gorevYeriList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, sadeceFazlaMesai, session);
 					if (gorevYeriList.size() == 1)
 						seciliEkSaha3Id = (Long) gorevYeriList.get(0).getValue();

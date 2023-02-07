@@ -46,7 +46,7 @@
 					<c:if test="${personelFazlaMesaiHome.departman.admin and (authenticatedUser.admin or authenticatedUser.IKAdmin)}">
 
 
-						<s:decorate template="/layout/edit.xhtml" rendered="#{ personelFazlaMesaiHome.aramaSecenekleri.tesisList!=null}">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu and personelFazlaMesaiHome.aramaSecenekleri.tesisList!=null}">
 							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 							<h:selectOneMenu value="#{personelFazlaMesaiHome.aramaSecenekleri.tesisId}">
 								<f:selectItem itemLabel="Lütfen seçiniz" />

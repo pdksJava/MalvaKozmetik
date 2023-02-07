@@ -436,9 +436,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiTesisList(Sirket sirket, AylikPuantaj aylikPuantaj, boolean denklestirme, Session session) {
-		List<Tanim> list = ortakIslemler.getFazlaMesaiList(authenticatedUser, null, sirket, null, null, null, aylikPuantaj, "T", denklestirme, session);
+		List<Tanim> list = null;
+		if (sirket != null && sirket.isTesisDurumu())
+			list = ortakIslemler.getFazlaMesaiList(authenticatedUser, null, sirket, null, null, null, aylikPuantaj, "T", denklestirme, session);
+
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
-		if (!list.isEmpty()) {
+		if (list != null && !list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 				Tanim veri = (Tanim) iterator.next();
@@ -844,46 +847,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param pdksDepartman
 	 * @param sirket
 	 * @param departmanId
-	 * @param yil
-	 * @param ay
-	 * @param denklestirme
-	 * @param fazlaMesai
-	 * @param session
-	 * @return
-	 */
-	public List<SelectItem> tesisDoldur(Departman pdksDepartman, Sirket sirket, Long departmanId, Integer yil, Integer ay, Boolean denklestirme, Boolean fazlaMesai, Session session) {
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("tip", "tesis");
-		map.put("sirket", sirket);
-		map.put("pdksDepartman", pdksDepartman);
-		map.put("departmanId", departmanId);
-		Calendar cal = Calendar.getInstance();
-		if (yil == null)
-			yil = cal.get(Calendar.YEAR);
-		if (ay == null)
-			ay = cal.get(Calendar.MONTH) + 1;
-		cal.set(Calendar.DATE, 1);
-		cal.set(Calendar.MONTH, ay - 1);
-		cal.set(Calendar.YEAR, yil);
-		Date basTarih = PdksUtil.getDate(cal.getTime());
-		cal.add(Calendar.MONTH, 1);
-		cal.add(Calendar.DATE, -1);
-		Date bitTarih = PdksUtil.getDate(cal.getTime());
-		map.put("basTarih", basTarih);
-		map.put("bitTarih", bitTarih);
-		map.put("denklestirme", denklestirme);
-		if (fazlaMesai) {
-			map.put("yil", yil);
-			map.put("ay", ay);
-		}
-		List<SelectItem> list = bolumTesisMapDoldur(map, session);
-		return list;
-	}
-
-	/**
-	 * @param pdksDepartman
-	 * @param sirket
-	 * @param departmanId
 	 * @param tesisId
 	 * @param yil
 	 * @param ay
@@ -942,7 +905,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			fieldAdi = "ekSaha3";
 		fields.put(PdksEntityController.MAP_KEY_SELECT, fieldAdi);
 		if (sirket != null) {
-			if (sirket.isDepartmanBolumAynisi() == false) {
+			if (sirket.isTesisDurumu()) {
 				boolean tesisYetki = ortakIslemler.getParameterKey("tesisYetki").equals("1");
 				if (tesisYetki && authenticatedUser.getYetkiliTesisler() != null && !authenticatedUser.getYetkiliTesisler().isEmpty()) {
 					List<Long> idler = new ArrayList<Long>();

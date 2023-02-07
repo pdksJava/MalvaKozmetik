@@ -134,7 +134,7 @@
 							<h:outputText value="#{fmt.vardiyaGun.personel.sirket.ad}" />
 						</rich:column>
 						<rich:column>
-							<f:facet name="header">
+							<f:facet name="header" rendered="#{ortakIslemler.tesisDurumu}">
 								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 							</f:facet>
 							<h:outputText value="#{fmt.vardiyaGun.personel.tesis.aciklama}" />
@@ -257,8 +257,7 @@
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
 								<ui:define name="label">Mesai Bitiş Zamanı</ui:define>
-								<h:outputText
-									value="#{vardiyaGunHome.islemFazlaMesaiTalep.guncelleyenUser.dateTimeFormatla(vardiyaGunHome.islemFazlaMesaiTalep.bitisZamani)}" />
+								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.guncelleyenUser.dateTimeFormatla(vardiyaGunHome.islemFazlaMesaiTalep.bitisZamani)}" />
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
 								<ui:define name="label">Mesai Süre</ui:define>

@@ -2289,7 +2289,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		Sirket sirket = aramaSecenekleri.getSirket();
 		List<SelectItem> list = null;
 		String tesisId = null;
-		if (departman.isAdminMi() && sirket.getDepartmanBolumAyni() == false)
+		if (departman.isAdminMi() && sirket.isTesisDurumu())
 			tesisId = aramaSecenekleri.getTesisId() != null ? String.valueOf(aramaSecenekleri.getTesisId()) : null;
 
 		list = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurBolumList(sirket, tesisId, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
@@ -2532,7 +2532,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 			if (sirket != null) {
-				departmanBolumAyni = sirket.isDepartmanBolumAynisi();
+				departmanBolumAyni = sirket.isTesisDurumu() == false;
 			}
 
 		}
@@ -3070,7 +3070,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				ortakIslemler.puantajHaftalikPlanOlustur(Boolean.FALSE, vardiyaGunMap, vardiyalarMap, aylikPuantajSablon, aylikPuantaj);
 				aylikPuantaj.setVardiyalar(vardiyaGunler);
 				VardiyaPlan plan = new VardiyaPlan(personel);
- 				plan.setVardiyaGunMap(vardiyaGunMap);
+				plan.setVardiyaGunMap(vardiyaGunMap);
 
 				List<VardiyaGun> list = PdksUtil.sortListByAlanAdi(new ArrayList(vardiyalarMap.values()), "vardiyaDate", Boolean.FALSE);
 
@@ -3873,7 +3873,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		}
 		if (bolumDoldurDurum) {
 			if (sirket != null) {
-				if (sirket.isErp() == false || sirket.isDepartmanBolumAynisi())
+				if (sirket.isTesisDurumu() == false)
 					aramaSecenekleri.setTesisId(null);
 			}
 			bolumDoldur();
@@ -3909,7 +3909,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		List<SelectItem> list = null;
 		if (sirket != null) {
 			String tesisId = null;
-			if (departman.isAdminMi() && sirket.getDepartmanBolumAyni() == false)
+			if (departman.isAdminMi() && sirket.isTesisDurumu())
 				tesisId = aramaSecenekleri.getTesisId() != null ? String.valueOf(aramaSecenekleri.getTesisId()) : null;
 			list = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), session);
 		} else

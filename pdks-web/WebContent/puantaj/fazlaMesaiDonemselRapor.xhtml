@@ -54,7 +54,7 @@
 									reRender="denklestirmeDonemiTable,girisler" />
 							</h:selectOneMenu>
 						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu}">
 							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 							<h:selectOneMenu value="#{fazlaMesaiDonemselRaporHome.tesisId}" disabled="#{fazlaMesaiDonemselRaporHome.tesisler.size() lt 2}">
 								<f:selectItem itemLabel="Lütfen seçiniz" />

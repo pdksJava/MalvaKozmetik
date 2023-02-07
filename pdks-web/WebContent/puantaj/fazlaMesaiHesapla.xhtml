@@ -56,7 +56,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 
-							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiHesaplaHome.tesisList!=null and fazlaMesaiHesaplaHome.tesisList.size()>0}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiHesaplaHome.tesisList!=null and fazlaMesaiHesaplaHome.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
 									disabled="#{fazlaMesaiHesaplaHome.tesisList.size()==1}">
@@ -146,26 +146,27 @@
 													</ui:fragment>
 												</ui:fragment>
 											</ui:fragment></TD>
-										<td nowrap="nowrap" width="30%">
-											<TABLE width="85%">
-												<TR>
-													<TD nowrap="nowrap"><SPAN style="font-size: 14;"><h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
-																action="#{fazlaMesaiHesaplaHome.fazlaMesaiExcel()}" target="blank">
-																<a4j:support event="oncomplete" status="ajaxStatus" />
-															</h:commandLink></SPAN></TD>
-												</TR>
-
-												<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole}">
+										<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
+											<td nowrap="nowrap" width="30%">
+												<TABLE width="85%">
 													<TR>
-														<TD nowrap="nowrap"><SPAN style="font-size: 14; font-weight: bold;"><h:commandLink value="Kapı Hareketleri Excel"
-																	action="#{fazlaMesaiHesaplaHome.aylikVardiyaHareketExcel}" target="blank">
+														<TD nowrap="nowrap"><SPAN style="font-size: 14;"><h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
+																	action="#{fazlaMesaiHesaplaHome.fazlaMesaiExcel()}" target="blank">
 																	<a4j:support event="oncomplete" status="ajaxStatus" />
 																</h:commandLink></SPAN></TD>
 													</TR>
-												</ui:fragment>
-											</TABLE>
-										</td>
 
+													<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole}">
+														<TR>
+															<TD nowrap="nowrap"><SPAN style="font-size: 14; font-weight: bold;"><h:commandLink value="Kapı Hareketleri Excel"
+																		action="#{fazlaMesaiHesaplaHome.aylikVardiyaHareketExcel}" target="blank">
+																		<a4j:support event="oncomplete" status="ajaxStatus" />
+																	</h:commandLink></SPAN></TD>
+														</TR>
+													</ui:fragment>
+												</TABLE>
+											</td>
+										</ui:fragment>
 
 
 									</TR>

@@ -537,7 +537,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				}
 			}
 			if (bolumDoldurulmadi)
-				if (tesisId != null || seciliEkSaha3Id != null || (sirket != null && sirket.isDepartmanBolumAynisi()))
+				if (tesisId != null || seciliEkSaha3Id != null || (sirket != null && sirket.isTesisDurumu() == false))
 					bolumDoldur();
 		}
 		return "";
@@ -706,7 +706,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		} catch (Exception e) {
 
 		}
-		departmanBolumAyni = sirket != null && sirket.isDepartmanBolumAynisi();
+		departmanBolumAyni = sirket != null && sirket.isTesisDurumu() == false;
 		adres = map1.containsKey("host") ? map1.get("host") : "";
 		if (sicilNo != null)
 			sicilNo = sicilNo.trim();
@@ -802,7 +802,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			}
 
 			if (sirket != null)
-				departmanBolumAyni = sirket.isDepartmanBolumAynisi();
+				departmanBolumAyni = sirket.isTesisDurumu() == false;
 
 			if (pdksHaric || authenticatedUser.isAdmin() || authenticatedUser.isIK() || (sicilNo != null && sicilNo.trim().length() > 0)) {
 				if (sicilNo == null || sicilNo.trim().length() == 0) {
@@ -2779,7 +2779,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			} else
 				bolumDoldurDurum = true;
 			onceki = tesisId;
-			if (tesisId != null || (sirket != null && (sirket.isErp() == false || sirket.isDepartmanBolumAynisi()))) {
+			if (tesisId != null || (sirket != null && sirket.isTesisDurumu() == false)) {
 				if (bolumDoldurDurum)
 					bolumDoldur();
 				setTesisId(onceki);
@@ -2835,7 +2835,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			setSirket(sirket);
 			if (sirket != null) {
 				setDepartman(sirket.getDepartman());
-				if (departman.isAdminMi() && sirket.getDepartmanBolumAyni() == false) {
+				if (departman.isAdminMi() && sirket.isTesisDurumu()) {
 					try {
 						// List<SelectItem> list=fazlaMesaiOrtakIslemler.bolumDoldur(departman, sirket, null, tesisId, yil, ay, Boolean.TRUE, session);
 						List<SelectItem> list = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, Boolean.TRUE, session);

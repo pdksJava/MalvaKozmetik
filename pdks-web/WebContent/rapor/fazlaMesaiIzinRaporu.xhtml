@@ -36,7 +36,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList!=null and fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList.size()>0}">
+								rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList!=null and fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:selectOneMenu value="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisId}"
 									disabled="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList.size()==1}">

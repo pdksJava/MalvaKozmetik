@@ -110,7 +110,7 @@
 										</s:decorate>
 										<c:if test="${authenticatedUser.admin or authenticatedUser.IKAdmin}">
 
-											<s:decorate template="/layout/edit.xhtml" rendered="#{personelHareketHome.aramaSecenekleri.tesisList!=null}">
+											<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu and personelHareketHome.aramaSecenekleri.tesisList!=null}">
 												<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 												<h:selectOneMenu value="#{personelHareketHome.aramaSecenekleri.tesisId}"
 													disabled="#{personelHareketHome.islemVardiyaGun!=null and personelHareketHome.donusAdres!=null}">

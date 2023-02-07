@@ -53,7 +53,7 @@
 						</s:decorate>
 
 						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{vardiyaGunHome.aramaSecenekleri.tesisList!=null and vardiyaGunHome.aramaSecenekleri.tesisList.size()>0}">
+							rendered="#{ortakIslemler.tesisDurumu and vardiyaGunHome.aramaSecenekleri.tesisList!=null and vardiyaGunHome.aramaSecenekleri.tesisList.size()>0}">
 							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 							<h:selectOneMenu value="#{vardiyaGunHome.aramaSecenekleri.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
 								disabled="#{vardiyaGunHome.aramaSecenekleri.tesisList.size()==1}">
@@ -316,7 +316,7 @@
 								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.sirket.ad}" />
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;"
-								rendered="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis!=null}">
+								rendered="#{ortakIslemler.tesisDurumu and vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis!=null}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis.aciklama}" />
 							</s:decorate>

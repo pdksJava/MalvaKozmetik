@@ -25,7 +25,12 @@
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
-								<h:inputText value="#{pdksPersonelHome.sicilNo}" size="10" />
+								<h:inputText value="#{pdksPersonelHome.sicilNo}" size="10">
+									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="pdksPersonelList,aramaSonuc"
+										action="#{pdksPersonelHome.fillPersonelKGSList}" />
+
+
+								</h:inputText>
 							</s:decorate>
 						</h:panelGrid>
 						<s:decorate template="/layout/edit.xhtml">
@@ -214,7 +219,7 @@
 							</rich:column>
 
 
-							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin)}">
+							<rich:column rendered="#{pdksPersonelHome.tesisDurum and (authenticatedUser.admin or authenticatedUser.IKAdmin)}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 								</f:facet>
@@ -548,7 +553,7 @@
 										</f:facet>
 										<h:outputText value="#{personelERP.cinsiyeti}" title="Cinsiyet Kodu : #{personelERP.cinsiyetKodu}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.COL_TESIS_ADI>=0}">
+									<rich:column rendered="#{ortakIslemler.tesisDurumu and pdksPersonelHome.COL_TESIS_ADI>=0}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.tesisAciklama()} Adı" />
 										</f:facet>
@@ -789,7 +794,8 @@
 												<s:convertEntity />
 											</h:selectOneMenu>
 										</s:decorate>
-										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.tesisList!=null and not empty pdksPersonelHome.tesisList}">
+										<s:decorate template="/layout/edit.xhtml"
+											rendered="#{(pdksPersonelHome.instance.sirket.tesisDurum or pdksPersonelHome.instance.tesis!=null) and pdksPersonelHome.tesisList!=null and not empty pdksPersonelHome.tesisList}">
 											<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 											<h:selectOneMenu value="#{pdksPersonelHome.instance.tesis}"
 												disabled="#{authenticatedUser.admin==false and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.personelERPGuncelleme!='M'}">
@@ -1098,14 +1104,14 @@
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 										</f:facet>
-										<h:outputText value="#{p1.pdksSicilNo}"   />
+										<h:outputText value="#{p1.pdksSicilNo}" />
 									</rich:column>
 									<rich:column>
 										<f:facet name="header" filterBy="#{user.firstname}" filterEvent="onkeyup">
 											<h:outputText value="PDKS Adı Soyadı" />
 										</f:facet>
-										<h:outputText   value="#{p1.adSoyad}"  />
-										 
+										<h:outputText value="#{p1.adSoyad}" />
+
 									</rich:column>
 
 									<rich:column>
@@ -1120,7 +1126,7 @@
 										</f:facet>
 										<h:outputText value="#{p1.tesis.aciklama}" />
 									</rich:column>
-									 <rich:column>
+									<rich:column>
 										<f:facet name="header">
 											<h:outputText value="#{pdksPersonelHome.bolumAciklama}" />
 										</f:facet>
@@ -1131,7 +1137,7 @@
 											<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
 										</f:facet>
 										<h:outputText value="#{p1.pdksYonetici.adSoyad}" />
- 									</rich:column>
+									</rich:column>
 									<f:facet name="footer">
 										<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 									</f:facet>
@@ -1280,7 +1286,7 @@
 													</s:decorate>
 
 												</rich:simpleTogglePanel>
-												<c:if test="#{pdksPersonelHome.tesisYetki}">
+												<c:if test="#{ortakIslemler.tesisDurumu and pdksPersonelHome.tesisYetki}">
 													<rich:simpleTogglePanel rendered="#{pdksPersonelHome.instance.kullanici.IK or pdksPersonelHome.instance.kullanici.direktorSuperVisor}"
 														label="#{ortakIslemler.tesisAciklama()}" height="110" switchType="client" opened="true">
 														<s:decorate>

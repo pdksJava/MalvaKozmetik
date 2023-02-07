@@ -213,7 +213,9 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		int row = 0, col = 0;
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
+		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		if (tesisDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kapı");
@@ -227,7 +229,8 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 			++row;
 			col = 0;
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel != null ? personel.getSirket().getAd() : "");
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel != null && personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
+			if (tesisDurum)
+				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel != null && personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personelView.getAdSoyad());
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelView.getSicilNo() != null ? personelView.getSicilNo() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kapiView.getAciklama());

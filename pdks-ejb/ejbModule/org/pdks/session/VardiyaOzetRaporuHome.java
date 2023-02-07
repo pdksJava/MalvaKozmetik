@@ -900,7 +900,9 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Soyadı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
+					boolean tesisDurum = ortakIslemler.isTesisDurumu();
+					if (tesisDurum)
+						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Giriş Saati");
@@ -916,7 +918,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							satirStyle = styleEven;
 							satirCenter = styleEvenCenter;
 						}
-						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip);
+						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurum);
 						renk = !renk;
 					}
 					tip = "G";
@@ -930,7 +932,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							satirStyle = styleEven;
 							satirCenter = styleEvenCenter;
 						}
-						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip);
+						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurum);
 						renk = !renk;
 					}
 					tip = "B";
@@ -944,7 +946,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							satirStyle = styleEven;
 							satirCenter = styleEvenCenter;
 						}
-						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip);
+						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurum);
 						renk = !renk;
 					}
 					++row;
@@ -963,7 +965,9 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Soyadı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
+					boolean tesisDurum = ortakIslemler.isTesisDurumu();
+					if (tesisDurum)
+						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çıkış Saati");
@@ -979,7 +983,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							satirStyle = styleEven;
 							satirCenter = styleEvenCenter;
 						}
-						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip);
+						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurum);
 						renk = !renk;
 					}
 				}
@@ -1008,14 +1012,17 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	 * @param satirCenter
 	 * @param vg
 	 * @param tip
+	 * @param tesisDurum
+	 * @return
 	 */
-	private int vardiyaSatirEkle(Sheet sheet, int col, int row, XSSFCellStyle satirStyle, XSSFCellStyle satirCenter, VardiyaGun vg, String tip) {
+	private int vardiyaSatirEkle(Sheet sheet, int col, int row, XSSFCellStyle satirStyle, XSSFCellStyle satirCenter, VardiyaGun vg, String tip, boolean tesisDurum) {
 		Personel personel = vg.getPersonel();
 		ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(personel.getPdksSicilNo());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getAd());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getSoyad());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getSirket().getAd());
-		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
+		if (tesisDurum)
+			ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 		ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(PdksUtil.convertToDateString(vg.getVardiyaDate(), PdksUtil.getDateFormat()));
 		if (tip.equals("I")) {

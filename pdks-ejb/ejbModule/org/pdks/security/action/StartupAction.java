@@ -37,6 +37,7 @@ import org.pdks.entity.Parameter;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelIzin;
+import org.pdks.entity.Sirket;
 import org.pdks.entity.SkinBean;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Vardiya;
@@ -84,6 +85,9 @@ public class StartupAction implements Serializable {
 
 	@Out(scope = ScopeType.APPLICATION, required = false)
 	HashMap<String, MenuItem> menuItemMap = new HashMap<String, MenuItem>();
+
+	@Out(scope = ScopeType.APPLICATION, required = false)
+	List<Sirket> pdksSirketleri = new ArrayList<Sirket>();
 
 	@Out(scope = ScopeType.APPLICATION, required = false)
 	Map<String, AccountPermission> accountPermissionMap = new HashMap<String, AccountPermission>();
@@ -268,6 +272,28 @@ public class StartupAction implements Serializable {
 	/**
 	 * @param session
 	 */
+	public void fillSirketList(Session session) {
+		pdksSirketleri.clear();
+		HashMap fields = new HashMap();
+		List<Sirket> list = null;
+		try {
+			fields.put("durum", Boolean.TRUE);
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			list = pdksEntityController.getObjectByInnerObjectList(fields, Sirket.class);
+		} catch (Exception e) {
+			logger.error("PDKS hata out : " + e.getMessage());
+			list = new ArrayList<Sirket>();
+		}
+		if (list != null)
+			pdksSirketleri.addAll(list);
+		list = null;
+		fields = null;
+	}
+
+	/**
+	 * @param session
+	 */
 	public void fillParameter(Session session) {
 		HashMap fields = new HashMap();
 		List<Parameter> parameterList = null;
@@ -327,7 +353,7 @@ public class StartupAction implements Serializable {
 			SSLImport.addCertToKeyStore(null, null, true);
 		} catch (Exception e) {
 		}
-	
+
 		if (parameterMap.containsKey("skin"))
 			SkinBean.setSkinAdi(parameterMap.get("skin"));
 		Integer yarimYuvarlaLast = null;
@@ -546,7 +572,7 @@ public class StartupAction implements Serializable {
 				e.printStackTrace();
 				logger.error("PDKS hata out : " + e.getMessage());
 			}
-
+		fillSirketList(session);
 	}
 
 	/**

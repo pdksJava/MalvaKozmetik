@@ -29,6 +29,7 @@ import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelView;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
+import org.pdks.security.action.StartupAction;
 import org.pdks.security.entity.User;
 
 @Name("sirketHome")
@@ -52,6 +53,8 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 	OrtakIslemler ortakIslemler;
 	@In(required = false, create = true)
 	User authenticatedUser;
+	@In(required = false, create = true)
+	StartupAction startupAction;
 
 	private List<Departman> departmanList = new ArrayList<Departman>();
 	private List<Sirket> sirketList = new ArrayList<Sirket>();
@@ -193,6 +196,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 		pasifList = null;
 		pdksHaricList = null;
 		fillBagliOlduguDepartmanTanimList();
+		startupAction.fillSirketList(session);
 		setSirketList(sirketList);
 	}
 
@@ -282,7 +286,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
-	
+
 		fillsirketList();
 	}
 

@@ -147,8 +147,11 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		ClientAnchor anchor = factory.createClientAnchor();
 		int row = 0, col = 0;
 		boolean aciklamaGoster = authenticatedUser.isAdmin() || izinliGoster || gelenGoster;
+
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
+		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		if (tesisDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
@@ -177,7 +180,8 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				row++;
 				col = 0;
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
+				if (tesisDurum)
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 				if (personel.getYoneticisi() != null) {
 					Personel yonetici = personel.getYoneticisi();
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yonetici.getPdksSicilNo() + " - " + yonetici.getAdSoyad());

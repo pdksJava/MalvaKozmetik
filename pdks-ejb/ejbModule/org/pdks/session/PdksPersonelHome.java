@@ -151,7 +151,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private String hataMesaj = "", personelERPGuncelleme = "";
 	private Boolean pdks, servisCalisti = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, gebeMi = Boolean.FALSE, tesisYetki = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE;
 	private Boolean sutIzni = Boolean.FALSE, kimlikNoGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
-	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE;
+	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE,tesisDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
 	private PersonelExtra personelExtra;
@@ -1898,6 +1898,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ustYonetici = map.containsKey("ustYonetici");
 		icapDurum = map.containsKey("icapDurum");
 		partTimeDurum = map.containsKey("partTimeDurum");
+		tesisDurum= map.containsKey("tesisDurum");
 		egitimDonemi = map.containsKey("egitimDonemi");
 		suaOlabilir = map.containsKey("suaOlabilir");
 		emailCCDurum = map.containsKey("emailCCDurum");
@@ -2212,6 +2213,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ustYonetici = Boolean.FALSE;
 		icapDurum = Boolean.FALSE;
 		partTimeDurum = Boolean.FALSE;
+		tesisDurum= Boolean.FALSE;
 		egitimDonemi = Boolean.FALSE;
 		suaOlabilir = Boolean.FALSE;
 		emailCCDurum = Boolean.FALSE;
@@ -2957,7 +2959,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	}
 
 	public void fillDistinctTesisList() {
-		List<Tanim> allTesis = ortakIslemler.getTanimList(Tanim.TIPI_TESIS, session);
+		List<Tanim> allTesis = ortakIslemler.isTesisDurumu() ? ortakIslemler.getTanimList(Tanim.TIPI_TESIS, session) : new ArrayList<Tanim>();
 		Personel seciliPersonel = getInstance();
 		if (seciliPersonel != null) {
 			User seciiliKullanici = seciliPersonel.getKullanici();
@@ -4476,5 +4478,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setIstenAyrilmaGoster(Boolean istenAyrilmaGoster) {
 		this.istenAyrilmaGoster = istenAyrilmaGoster;
+	}
+
+	public Boolean getTesisDurum() {
+		return tesisDurum;
+	}
+
+	public void setTesisDurum(Boolean tesisDurum) {
+		this.tesisDurum = tesisDurum;
 	}
 }

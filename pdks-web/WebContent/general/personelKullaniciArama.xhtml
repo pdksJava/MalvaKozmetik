@@ -31,7 +31,7 @@
 					</s:decorate>
 
 					 
-					<s:decorate template="/layout/edit.xhtml" rendered="#{personelKullaniciAramaHome.aramaSecenekleri.tesisList!=null}">
+					<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu and personelKullaniciAramaHome.aramaSecenekleri.tesisList!=null}">
 						<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 						<h:selectOneMenu value="#{personelKullaniciAramaHome.aramaSecenekleri.tesisId}">
 							<f:selectItem itemLabel="Lütfen seçiniz" />

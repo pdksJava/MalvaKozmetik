@@ -37,7 +37,7 @@
 
 					 
 					<s:decorate template="/layout/edit.xhtml"
-						rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and  bakiyeIzinHome.aramaSecenekleri.tesisList!=null}">
+						rendered="#{ortakIslemler.tesisDurumu and (authenticatedUser.admin or authenticatedUser.IKAdmin) and  bakiyeIzinHome.aramaSecenekleri.tesisList!=null}">
 						<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 						<h:selectOneMenu value="#{bakiyeIzinHome.aramaSecenekleri.tesisId}">
 							<f:selectItem itemLabel="Lütfen seçiniz" />

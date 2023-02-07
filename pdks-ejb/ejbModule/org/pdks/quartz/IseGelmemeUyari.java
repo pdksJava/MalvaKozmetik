@@ -102,7 +102,8 @@ public class IseGelmemeUyari implements Serializable {
 		HashMap sonucMap = ortakIslemler.fillEkSahaTanim(sessionx, Boolean.FALSE, Boolean.FALSE);
 		setEkSahaListMap((HashMap<String, List<Tanim>>) sonucMap.get("ekSahaList"));
 		setEkSahaTanimMap((TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap"));
-		tesisAciklama = ortakIslemler.tesisAciklama();
+		if (ortakIslemler.isTesisDurumu())
+			tesisAciklama = ortakIslemler.tesisAciklama();
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
 		altBolumAciklama = (String) sonucMap.get("altBolumAciklama");
 		personelNoAciklama = ortakIslemler.personelNoAciklama();
@@ -123,7 +124,7 @@ public class IseGelmemeUyari implements Serializable {
 			for (VardiyaGun vardiya : yonetici.getPersonelVardiyalari()) {
 				try {
 					if (!tesisVar)
-						tesisVar = vardiya.getPersonel() != null && vardiya.getPersonel().getTesis() != null;
+						tesisVar = vardiya.getPersonel() != null && vardiya.getPersonel().getSirket().isTesisDurumu() && vardiya.getPersonel().getTesis() != null;
 				} catch (Exception e) {
 
 				}
@@ -902,7 +903,7 @@ public class IseGelmemeUyari implements Serializable {
 			}
 
 			Sirket sirket = personel.getSirket();
-			Tanim tesis = sirket.getSirketGrupId() == null || sirket.getDepartmanBolumAyni() == false ? personel.getTesis() : null;
+			Tanim tesis = sirket.isTesisDurumu() ? personel.getTesis() : null;
 			if (tesisList != null && tesis != null && !tesisList.contains(tesis.getId()))
 				continue;
 			String key = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? "_" + tesis.getAciklama() : "");
@@ -958,7 +959,7 @@ public class IseGelmemeUyari implements Serializable {
 				mesajGonder = true;
 				Personel sirketPersonel = sirketSubeList.get(0).getPersonel();
 				Sirket sirket = sirketPersonel.getSirket();
-				Tanim tesis = sirket.getSirketGrupId() == null || sirketPersonel.getSirket().isDepartmanBolumAynisi() == false ? sirketPersonel.getTesis() : null;
+				Tanim tesis = sirket.isTesisDurumu() ? sirketPersonel.getTesis() : null;
 				Tanim bolum = bolumMap.size() == 1 ? new ArrayList<Tanim>(bolumMap.values()).get(0) : null;
 				Tanim altBolum = altBolumMap.size() == 1 ? new ArrayList<Tanim>(altBolumMap.values()).get(0) : null;
 				if (bolum != null && altBolum != null && !PdksUtil.isStrDegisti(bolum.getAciklama(), altBolum.getAciklama()))
@@ -994,9 +995,9 @@ public class IseGelmemeUyari implements Serializable {
 					if (hariciPersonelPlandaVar)
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "") + "</td>");
 					if (bolumVar)
-						sb.append("<td style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "") + "</td>");
+						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "") + "</td>");
 					if (altBolumVar)
-						sb.append("<td style=\"border: 1px solid;\">" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "") + "</td>");
+						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "") + "</td>");
 					sb.append("<td nowrap style=\"border: 1px solid;\">" + personel.getAdSoyad() + "</td>");
 					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + personel.getSicilNo() + "</td>");
 					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + vg.getVardiyaZamanAdi() + "</td>");

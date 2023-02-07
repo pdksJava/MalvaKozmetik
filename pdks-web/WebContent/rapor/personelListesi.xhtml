@@ -131,7 +131,7 @@
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.onaysizIzinKullanilir)}" />
 							</rich:column>
 
-							<rich:column>
+							<rich:column rendered="#{ortakIslemler.tesisDurumu or pdksPersonelHome.tesisDurum}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 								</f:facet>

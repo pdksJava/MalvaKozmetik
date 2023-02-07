@@ -30,7 +30,7 @@
 										<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.sirket.ad}" />
 									</s:decorate>
 									<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;"
-										rendered="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis!=null}">
+										rendered="#{ortakIslemler.tesisDurumu and vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis!=null}">
 										<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 										<h:outputText value="#{vardiyaGunHome.islemFazlaMesaiTalep.vardiyaGun.personel.tesis.aciklama}" />
 									</s:decorate>

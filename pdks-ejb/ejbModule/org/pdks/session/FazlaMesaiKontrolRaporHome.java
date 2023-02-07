@@ -513,7 +513,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				}
 			}
 			if (bolumDoldurulmadi)
-				if (tesisId != null || seciliEkSaha3Id != null || (sirket != null && sirket.isDepartmanBolumAynisi()))
+				if (tesisId != null || seciliEkSaha3Id != null || (sirket != null && sirket.isTesisDurumu() == false))
 					bolumDoldur();
 		}
 		return "";
@@ -703,7 +703,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		} catch (Exception e) {
 
 		}
-		departmanBolumAyni = sirket != null && sirket.isDepartmanBolumAynisi();
+		departmanBolumAyni = sirket != null && sirket.isTesisDurumu() == false;
 		adres = map1.containsKey("host") ? map1.get("host") : "";
 		if (sicilNo != null)
 			sicilNo = sicilNo.trim();
@@ -799,7 +799,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			}
 
 			if (sirket != null)
-				departmanBolumAyni = sirket.isDepartmanBolumAynisi();
+				departmanBolumAyni = sirket.isTesisDurumu() == false;
 
 			if (pdksHaric || authenticatedUser.isAdmin() || authenticatedUser.isIK() || (sicilNo != null && sicilNo.trim().length() > 0)) {
 				if (sicilNo == null || sicilNo.trim().length() == 0) {
@@ -2153,7 +2153,9 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
+		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		if (tesisDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
 		boolean ardisikDurum = getArdisikDurumu();
@@ -2171,7 +2173,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket() != null ? personel.getSirket().getAd() : ortakIslemler.sirketAciklama() + " tanımsız");
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
+				if (tesisDurum)
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(aylikPuantaj.getYonetici() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
 				if (ardisikDurum)
@@ -2282,7 +2285,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			} else
 				bolumDoldurDurum = true;
 			onceki = tesisId;
-			if (tesisId != null || (sirket != null && (sirket.isErp() == false || sirket.isDepartmanBolumAynisi()))) {
+			if (tesisId != null || (sirket != null && sirket.isTesisDurumu() == false)) {
 				if (bolumDoldurDurum)
 					bolumDoldur();
 				setTesisId(onceki);
@@ -2338,7 +2341,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			setSirket(sirket);
 			if (sirket != null) {
 				setDepartman(sirket.getDepartman());
-				if (departman.isAdminMi() && sirket.getDepartmanBolumAyni() == false) {
+				if (departman.isAdminMi() && sirket.isTesisDurumu()) {
 					try {
 						// List<SelectItem> list=fazlaMesaiOrtakIslemler.bolumDoldur(departman, sirket, null, tesisId, yil, ay, Boolean.TRUE, session);
 						List<SelectItem> list = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, Boolean.TRUE, session);
