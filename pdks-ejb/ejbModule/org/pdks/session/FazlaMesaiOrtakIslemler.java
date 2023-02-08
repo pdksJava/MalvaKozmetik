@@ -732,14 +732,18 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		HashMap<String, Integer> gunHaftaMap = new HashMap<String, Integer>();
 		if (vardiyaHaftaList == null)
 			vardiyaHaftaList = new ArrayList<VardiyaHafta>();
-		long ayinIlkGunu = Long.parseLong(PdksUtil.convertToDateString(aylikPuantaj.getIlkGun(), "yyyyMMdd"));
-		long ayinSonGunu = Long.parseLong(PdksUtil.convertToDateString(aylikPuantaj.getSonGun(), "yyyyMMdd"));
 		VardiyaPlan vardiyaPlanMaster = new VardiyaPlan();
 		vardiyaPlanMaster.setDenklestirmeDonemi(donemi);
 		vardiyaPlanMaster.setCheckBoxDurum(Boolean.FALSE);
 		Date tarih1 = (Date) donemi.getBaslangicTarih().clone();
 		int i = 0;
+		String donem = String.valueOf(aylikPuantaj.getYil() * 100 + aylikPuantaj.getAy());
+		List<String> gunler = new ArrayList<String>();
+		if (sablonVardiyalar != null) {
+			for (VardiyaGun vg : sablonVardiyalar)
+				gunler.add(vg.getVardiyaDateStr());
 
+		}
 		aylikPuantaj.setVardiyaHaftaList(vardiyaHaftaList);
 		boolean devam = Boolean.TRUE;
 		while (devam) {
@@ -776,17 +780,17 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 			for (Iterator iterator = vardiyaHafta.getVardiyaGunler().iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-
-				long ayinGunu = Long.parseLong(PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd"));
-				vardiyaGun.setAyinGunu(ayinGunu >= ayinIlkGunu && ayinSonGunu >= ayinGunu);
-				if (sablonVardiyalar != null)
+				String vardiyaDateStr = vardiyaGun.getVardiyaDateStr();
+				vardiyaGun.setAyinGunu(vardiyaDateStr.startsWith(donem));
+				if (sablonVardiyalar != null && !gunler.contains(vardiyaDateStr)) {
+					gunler.add(vardiyaDateStr);
 					sablonVardiyalar.add(vardiyaGun);
-				String key = String.valueOf(ayinGunu);
-				if (tatillerMap != null && tatillerMap.containsKey(key))
-					vardiyaGun.setTatil(tatillerMap.get(key));
+				}
+				if (tatillerMap != null && tatillerMap.containsKey(vardiyaDateStr))
+					vardiyaGun.setTatil(tatillerMap.get(vardiyaDateStr));
 				else if (vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().isCalisma()) {
 					vardiyaGun.setVardiyaZamani();
-					key = PdksUtil.convertToDateString(vardiyaGun.getIslemVardiya().getVardiyaBitZaman(), "yyyyMMdd");
+					String key = PdksUtil.convertToDateString(vardiyaGun.getIslemVardiya().getVardiyaBitZaman(), "yyyyMMdd");
 					if (tatillerMap.containsKey(key))
 						vardiyaGun.setTatil(tatillerMap.get(key));
 				}
@@ -796,7 +800,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				devam = false;
 
 		}
-
+		gunler = null;
 		vardiyaPlanMaster.getVardiyaHaftaList().addAll(vardiyaHaftaList);
 		return vardiyaPlanMaster;
 	}
