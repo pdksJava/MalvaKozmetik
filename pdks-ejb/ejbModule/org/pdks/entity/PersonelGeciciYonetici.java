@@ -61,4 +61,8 @@ public class PersonelGeciciYonetici extends YetkiBaseObject {
 		return personelGecici != null ? personelGecici.getId() : 0;
 	}
 
+	@Transient
+	public Personel getPdksPersonel() {
+		return personelGecici;
+	}
 }

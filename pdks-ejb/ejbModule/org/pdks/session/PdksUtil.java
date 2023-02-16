@@ -1000,6 +1000,17 @@ public class PdksUtil implements Serializable {
 	 */
 	public static List<String> getListStringTokenizer(String str, String delim) {
 		List<String> list = new ArrayList();
+		if (delim == null) {
+			delim = "";
+			if (str.indexOf(",") > 0)
+				delim = ",";
+			else if (str.indexOf(";") > 0)
+				delim = ";";
+			else if (str.indexOf("|") > 0)
+				delim = "|";
+			else if (str.indexOf(" ") > 0)
+				delim = " ";
+		}
 		StringTokenizer st = new StringTokenizer(str, delim);
 		while (st.hasMoreTokens()) {
 			String part = st.nextToken();

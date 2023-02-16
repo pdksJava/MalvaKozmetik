@@ -79,6 +79,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private String bolumAciklama;
+	private boolean tesisDurum = false, digerTesisDurum = false;
 	private Session session;
 
 	@In(required = false)
@@ -114,6 +115,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			aramaSecenekleri.setDepartman(authenticatedUser.getDepartman());
 			aramaSecenekleri.setDepartmanId(authenticatedUser.getDepartman().getId());
 		}
+		tesisDurum = false;
+		digerTesisDurum = false;
 		fillSirketList();
 	}
 
@@ -151,11 +154,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			Long sirketId = null;
 			list = PdksUtil.sortObjectStringAlanList(new ArrayList<Sirket>(sirketMap.values()), "getAd", null);
 			for (Sirket sirket : list) {
-				if (sirket.getDurum() && sirket.getFazlaMesai()) {
-
+				if (sirket.getDurum() && sirket.getFazlaMesai())
 					aramaSecenekleri.getSirketIdList().add(new SelectItem(sirket.getId(), sirket.getAd()));
-				}
-
 			}
 			aramaSecenekleri.setSirketId(sirketId);
 			fillTesisList();
@@ -175,34 +175,43 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		else
 			aramaSecenekleri.setTesisList(new ArrayList<SelectItem>());
 		clearVardiyaList();
+		Long tesisId = null;
 		if (aramaSecenekleri.getSirketId() != null) {
 			Date bugun = PdksUtil.getDate(date);
 			List<Tanim> list = new ArrayList<Tanim>();
 			HashMap map = new HashMap();
-			map.put(PdksEntityController.MAP_KEY_MAP, "getId");
-			map.put(PdksEntityController.MAP_KEY_SELECT, "tesis");
-			map.put("pdks=", Boolean.TRUE);
-			map.put("durum=", Boolean.TRUE);
-			map.put("sirket.id=", aramaSecenekleri.getSirketId());
-			map.put("sskCikisTarihi>=", bugun);
-			map.put("iseBaslamaTarihi<=", bugun);
+			map.put("id ", aramaSecenekleri.getSirketId());
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
-			TreeMap tesisMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, Personel.class, Boolean.FALSE);
+			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(map, Sirket.class);
 
-			if (!tesisMap.isEmpty()) {
-				Long tesisId = null;
-				list = PdksUtil.sortObjectStringAlanList(new ArrayList<Sirket>(tesisMap.values()), "getAciklama", null);
-				for (Tanim tesis : list) {
-					if (tesisId == null)
-						tesisId = tesis.getId();
-					aramaSecenekleri.getTesisList().add(new SelectItem(tesis.getId(), tesis.getAciklama()));
+			if (sirket.isTesisDurumu()) {
+				map.clear();
+				map.put(PdksEntityController.MAP_KEY_MAP, "getId");
+				map.put(PdksEntityController.MAP_KEY_SELECT, "tesis");
+				map.put("pdks=", Boolean.TRUE);
+				map.put("durum=", Boolean.TRUE);
+				map.put("sirket.id=", aramaSecenekleri.getSirketId());
+				map.put("sskCikisTarihi>=", bugun);
+				map.put("iseBaslamaTarihi<=", bugun);
+				if (session != null)
+					map.put(PdksEntityController.MAP_KEY_SESSION, session);
+				TreeMap tesisMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, Personel.class, Boolean.FALSE);
+
+				if (!tesisMap.isEmpty()) {
+
+					list = PdksUtil.sortObjectStringAlanList(new ArrayList(tesisMap.values()), "getAciklama", null);
+					for (Tanim tesis : list) {
+						if (tesisId == null)
+							tesisId = tesis.getId();
+						aramaSecenekleri.getTesisList().add(new SelectItem(tesis.getId(), tesis.getAciklama()));
+					}
+					aramaSecenekleri.setTesisId(tesisId);
+
 				}
-				aramaSecenekleri.setTesisId(tesisId);
-
 			}
-		} else
-			aramaSecenekleri.setTesisId(null);
+		}
+		aramaSecenekleri.setTesisId(tesisId);
 
 		return "";
 	}
@@ -749,7 +758,21 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				}
 			}
 		}
+		tesisDurumBul();
 
+	}
+
+	private void tesisDurumBul() {
+		List<VardiyaGun> allVardiyaGunList = new ArrayList<VardiyaGun>();
+		if (!izinVardiyaGunList.isEmpty())
+			allVardiyaGunList.addAll(izinVardiyaGunList);
+		if (!gecGelenVardiyaGunList.isEmpty())
+			allVardiyaGunList.addAll(gecGelenVardiyaGunList);
+		if (!gelmeyenVardiyaGunList.isEmpty())
+			allVardiyaGunList.addAll(gelmeyenVardiyaGunList);
+		tesisDurum = ortakIslemler.getListTesisDurum(allVardiyaGunList);
+		digerTesisDurum = ortakIslemler.getListTesisDurum(erkenCikanVardiyaGunList);
+		allVardiyaGunList = null;
 	}
 
 	/**
@@ -900,8 +923,9 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Soyadı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-					boolean tesisDurum = ortakIslemler.isTesisDurumu();
-					if (tesisDurum)
+					boolean tesisDurumu = tesisDurum;
+
+					if (tesisDurumu)
 						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
@@ -918,7 +942,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							satirStyle = styleEven;
 							satirCenter = styleEvenCenter;
 						}
-						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurum);
+						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurumu);
 						renk = !renk;
 					}
 					tip = "G";
@@ -965,8 +989,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Soyadı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-					boolean tesisDurum = ortakIslemler.isTesisDurumu();
-					if (tesisDurum)
+					boolean tesisDurumu = digerTesisDurum;
+					if (tesisDurumu)
 						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
@@ -983,7 +1007,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							satirStyle = styleEven;
 							satirCenter = styleEvenCenter;
 						}
-						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurum);
+						col = vardiyaSatirEkle(sheet, col, row, satirStyle, satirCenter, vg, tip, tesisDurumu);
 						renk = !renk;
 					}
 				}
@@ -1170,5 +1194,21 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public boolean isTesisDurum() {
+		return tesisDurum;
+	}
+
+	public void setTesisDurum(boolean tesisDurum) {
+		this.tesisDurum = tesisDurum;
+	}
+
+	public boolean isDigerTesisDurum() {
+		return digerTesisDurum;
+	}
+
+	public void setDigerTesisDurum(boolean digerTesisDurum) {
+		this.digerTesisDurum = digerTesisDurum;
 	}
 }

@@ -151,7 +151,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private String hataMesaj = "", personelERPGuncelleme = "";
 	private Boolean pdks, servisCalisti = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, gebeMi = Boolean.FALSE, tesisYetki = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE;
 	private Boolean sutIzni = Boolean.FALSE, kimlikNoGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
-	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE,tesisDurum = Boolean.FALSE;
+	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
 	private PersonelExtra personelExtra;
@@ -1898,7 +1898,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ustYonetici = map.containsKey("ustYonetici");
 		icapDurum = map.containsKey("icapDurum");
 		partTimeDurum = map.containsKey("partTimeDurum");
-		tesisDurum= map.containsKey("tesisDurum");
+		tesisDurum = map.containsKey("tesisDurum");
 		egitimDonemi = map.containsKey("egitimDonemi");
 		suaOlabilir = map.containsKey("suaOlabilir");
 		emailCCDurum = map.containsKey("emailCCDurum");
@@ -2213,7 +2213,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ustYonetici = Boolean.FALSE;
 		icapDurum = Boolean.FALSE;
 		partTimeDurum = Boolean.FALSE;
-		tesisDurum= Boolean.FALSE;
+		tesisDurum = Boolean.FALSE;
 		egitimDonemi = Boolean.FALSE;
 		suaOlabilir = Boolean.FALSE;
 		emailCCDurum = Boolean.FALSE;
@@ -3190,266 +3190,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 
 		return "";
-	}
-
-	protected ByteArrayOutputStream excelDevam() throws Exception {
-
-		ByteArrayOutputStream baos = null;
-		// HSSFWorkbook wb = new HSSFWorkbook();
-
-		Workbook wb = new XSSFWorkbook();
-		Sheet sheet = ExcelUtil.createSheet(wb, "Personel Listesi", false);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle cellStyleDate = ExcelUtil.getCellStyleDate(wb);
-		int row = 0;
-		int col = 0;
-		boolean admin = authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin();
-		boolean ik = authenticatedUser.isAdmin() || authenticatedUser.isIK();
-		boolean ikAdminDegil = authenticatedUser.isIK() && !authenticatedUser.isIKAdmin();
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("PDKS Departman");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama() + " " + ortakIslemler.personelNoAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yonetici2Aciklama() + " " + ortakIslemler.personelNoAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yonetici2Aciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya Şablon");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kidemBasTarihiAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşe Giriş Tarihi");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşten Ayrılma Tarihi");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Doğum Tarihi");
-		if (ikAdminDegil)
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onaysız İzin Girebilir");
-
-		String ekSaha1 = null, ekSaha2 = null, ekSaha3 = null, ekSaha4 = null;
-
-		if (admin) {
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İcapçı");
-			if (ekSahaTanimMap.containsKey("ekSaha1")) {
-				ekSaha1 = ekSahaTanimMap.get("ekSaha1").getAciklama();
-				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha1);
-			}
-			if (ekSahaTanimMap.containsKey("ekSaha2")) {
-				ekSaha2 = ekSahaTanimMap.get("ekSaha2").getAciklama();
-				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha2);
-			}
-			if (ekSahaTanimMap.containsKey("ekSaha3")) {
-				ekSaha3 = ekSahaTanimMap.get("ekSaha3").getAciklama();
-				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha3);
-			}
-			if (ekSahaTanimMap.containsKey("ekSaha4")) {
-				ekSaha4 = ekSahaTanimMap.get("ekSaha4").getAciklama();
-				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha4);
-			}
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Şua");
-
-		}
-
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Mail Takip");
-		if (ik) {
-
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süt İzni");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Gebe Mi");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Eğitim Dönemi");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Part Time");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Fazla Mesai Var");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Fazla Mesai Öde");
-		}
-
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kullanici Adı");
-		if (admin) {
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("E-Posta CC");
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("E-Posta BCC");
-		}
-		for (Iterator iter = personelList.iterator(); iter.hasNext();) {
-			PersonelView personelView = (PersonelView) iter.next();
-			Personel personel = personelView.getPdksPersonel();
-
-			if (personel == null || personel.getSicilNo() == null || personel.getSicilNo().trim().equals(""))
-				continue;
-			User kullanici = personelView.getKullanici();
-			row++;
-			col = 0;
-			try {
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSicilNo());
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
-				if (personel.getSirket() != null) {
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getDepartman().getDepartmanTanim().getAciklama());
-
-				}
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getSicilNo() : "");
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "");
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getYonetici2() != null ? personel.getYonetici2().getSicilNo() : "");
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getYonetici2() != null ? personel.getYonetici2().getAdSoyad() : "");
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSablon() != null ? personel.getSablon().getAdi() : "");
-				if (personel.getIzinHakEdisTarihi() != null)
-					ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getIzinHakEdisTarihi());
-				else
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-				if (personel.getIseBaslamaTarihi() != null)
-					ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getIseBaslamaTarihi());
-				else
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-				if (personel.getSonCalismaTarihi() != null)
-					ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getSonCalismaTarihi());
-				else
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-				if (personel.getDogumTarihi() != null)
-					ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getDogumTarihi());
-				else
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-				if (ikAdminDegil) {
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-
-				}
-
-				try {
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getOnaysizIzinKullanilir()));
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-
-				}
-				if (admin) {
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getIcapciOlabilir()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-					if (ekSaha1 != null)
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha1() != null ? personel.getEkSaha1().getAciklama() : "");
-					if (ekSaha2 != null)
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha2() != null ? personel.getEkSaha2().getAciklama() : "");
-					if (ekSaha3 != null)
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-					if (ekSaha4 != null)
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
-
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getSuaOlabilir()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-
-				}
-				try {
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getMailTakip()));
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-
-				}
-				if (ik) {
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getSutIzni()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.isPersonelGebeMi()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getEgitimDonemi()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getPartTime()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getPdks()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(authenticatedUser.getYesNo(personel.getFazlaMesaiOde()));
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-				}
-				try {
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kullanici != null ? kullanici.getUsername() : "");
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-
-				}
-
-				if (admin) {
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEmailCC() != null ? personel.getEmailCC() : "");
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEmailBCC() != null ? personel.getEmailBCC() : "");
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-
-					}
-				}
-
-			} catch (Exception e) {
-				logger.error("PDKS hata in : \n");
-				e.printStackTrace();
-				logger.error("PDKS hata out : " + e.getMessage());
-				logger.info(row + " " + personel.getPdksSicilNo());
-
-			}
-		}
-		try {
-
-			for (int i = 0; i < col; i++)
-				sheet.autoSizeColumn(i);
-			baos = new ByteArrayOutputStream();
-			wb.write(baos);
-		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-			baos = null;
-		}
-		return baos;
 	}
 
 	public List<Role> getDistinctRoleList() {

@@ -415,4 +415,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 		this.yarimYuvarla = yarimYuvarla;
 	}
 
+	public Personel getPdksPersonel() {
+		return personel;
+	}
 }

@@ -613,7 +613,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel");
-		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(onaysizPersonelDenklestirmeList);
 		if (tesisDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
@@ -731,7 +731,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel");
-		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(personelDenklestirmeList);
 		if (tesisDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);

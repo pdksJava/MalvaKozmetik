@@ -149,7 +149,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		boolean aciklamaGoster = authenticatedUser.isAdmin() || izinliGoster || gelenGoster;
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(vardiyaGunList);
 		if (tesisDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());

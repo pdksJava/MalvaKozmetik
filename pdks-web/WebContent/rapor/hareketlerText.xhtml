@@ -48,7 +48,7 @@
 							</f:facet>
 							<h:outputText value="#{hareketler.personel.pdksPersonel.sirket.ad}" />
 						</rich:column>
-						<rich:column>
+						<rich:column rendered="#{ortakIslemler.getListTesisDurum(P10P20Home.hareketList)}">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 							</f:facet>

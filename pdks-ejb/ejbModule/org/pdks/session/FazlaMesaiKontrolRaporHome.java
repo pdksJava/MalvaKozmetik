@@ -2153,7 +2153,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(list);
 		if (tesisDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);

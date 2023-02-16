@@ -55,7 +55,7 @@
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.sirket.ad}" />
 						</rich:column>
-						<rich:column width="60" rendered="#{ortakIslemler.tesisDurumu}">
+						<rich:column width="60" rendered="#{ortakIslemler.getListTesisDurum(girisCikisKontrolHome.vardiyaGunList)}">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 							</f:facet>

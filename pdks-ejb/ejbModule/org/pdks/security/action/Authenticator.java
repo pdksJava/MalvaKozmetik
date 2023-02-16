@@ -73,14 +73,6 @@ public class Authenticator implements IAuthenticator, Serializable {
 	private String adres;
 	private Session session;
 
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
 	public boolean authenticate() {
 		session = PdksUtil.getSession(entityManager, Boolean.FALSE);
 		session.clear();
@@ -282,6 +274,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 								}
 							}
 							authenticatedUser.setTestLogin(test);
+							authenticatedUser.setCalistigiSayfa("anasayfa");
 							ortakIslemler.sistemeGirisIslemleri(authenticatedUser, Boolean.TRUE, null, null, session);
 							logger.info(authenticatedUser.getUsername()
 									+ " "
@@ -375,4 +368,11 @@ public class Authenticator implements IAuthenticator, Serializable {
 		this.adres = adres;
 	}
 
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
 }

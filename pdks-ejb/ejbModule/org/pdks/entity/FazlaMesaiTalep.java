@@ -263,4 +263,8 @@ public class FazlaMesaiTalep extends BaseObject {
 		this.yoneticisi = yoneticisi;
 	}
 
+	@Transient
+	public Personel getPdksPersonel() {
+		return vardiyaGun != null ? vardiyaGun.getPersonel() : null;
+	}
 }

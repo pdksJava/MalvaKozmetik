@@ -146,21 +146,21 @@
 											<h:outputText value="#{userView.pdksPersonel.sirket.ad}" />
 										</rich:column>
 										 
-										<rich:column rendered="#{ortakIslemler.tesisDurumu}">
+										<rich:column rendered="#{ortakIslemler.getListTesisDurum(personelGeciciYoneticiHome.userList)}">
 											<f:facet name="header">
 												<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 											</f:facet>
 											<h:outputText value="#{userView.pdksPersonel.tesis.aciklama}" />
 										</rich:column>
 										<rich:column
-											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha1!=null}">
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha1!=null and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.userList,'1')}">
 											<f:facet name="header">
 												<h:outputText value="#{personelGeciciYoneticiHome.ekSaha1.aciklama}" />
 											</f:facet>
 											<h:outputText value="#{userView.pdksPersonel.ekSaha1.aciklama}" />
 										</rich:column>
 										<rich:column
-											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha2!=null}">
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha2!=null and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.userList,'2')}">
 											<f:facet name="header">
 												<h:outputText value="#{personelGeciciYoneticiHome.ekSaha2.aciklama}" />
 											</f:facet>
@@ -174,7 +174,7 @@
 											<h:outputText value="#{userView.pdksPersonel.ekSaha3.aciklama}" />
 										</rich:column>
 										<rich:column
-											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha4!=null}">
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha4!=null and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.userList,'4')}">
 											<f:facet name="header">
 												<h:outputText value="#{personelGeciciYoneticiHome.ekSaha4.aciklama}" />
 											</f:facet>
@@ -235,21 +235,21 @@
 											<h:outputText value="#{personelView.sirket.ad}" />
 										</rich:column>
 										 
-										<rich:column>
+										<rich:column rendered="#{ortakIslemler.getListTesisDurum(personelGeciciYoneticiHome.personelList)}">
 											<f:facet name="header">
 												<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 											</f:facet>
 											<h:outputText value="#{personelView.tesis.aciklama}" />
 										</rich:column>
 										<rich:column
-											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha1!=null}">
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha1!=null and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.personelList,'1')}">
 											<f:facet name="header">
 												<h:outputText value="#{personelGeciciYoneticiHome.ekSaha1.aciklama}" />
 											</f:facet>
 											<h:outputText value="#{personelView.ekSaha1.aciklama}" />
 										</rich:column>
 										<rich:column
-											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha2!=null}">
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha2!=null and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.personelList,'2')}">
 											<f:facet name="header">
 												<h:outputText value="#{personelGeciciYoneticiHome.ekSaha2.aciklama}" />
 											</f:facet>
@@ -263,7 +263,7 @@
 											<h:outputText value="#{personelView.ekSaha3.aciklama}" />
 										</rich:column>
 										<rich:column
-											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha4!=null}">
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.ekSaha4!=null and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.personelList,'4')}">
 											<f:facet name="header">
 												<h:outputText value="#{personelGeciciYoneticiHome.ekSaha4.aciklama}" />
 											</f:facet>

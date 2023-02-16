@@ -223,5 +223,5 @@ public class PdksPersonelView implements Serializable {
 	public String getKgsSicilNo() {
 		return getPersonelKGS().getSicilNo();
 	}
-
+	 
 }

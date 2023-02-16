@@ -419,7 +419,7 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		styleOff.getFont().setColor(new XSSFColor(new byte[] { (byte) 256, (byte) 256, (byte) 256 }));
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
-		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(personelList);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		if (tesisDurum && tesisVar)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());

@@ -216,4 +216,8 @@ public class TempIzin implements Serializable {
 		this.secim = secim;
 	}
 
+	public Personel getPdksPersonel() {
+		Personel pdksPersonel = personel != null ? personel : yeniPersonel;
+		return pdksPersonel;
+	}
 }

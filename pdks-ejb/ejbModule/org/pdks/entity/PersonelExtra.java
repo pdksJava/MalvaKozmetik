@@ -95,4 +95,8 @@ public class PersonelExtra implements Serializable {
 		return personel != null ? personel.getId() : 0;
 	}
 
+	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
 }

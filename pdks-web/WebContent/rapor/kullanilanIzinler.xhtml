@@ -145,13 +145,13 @@
 						<h:outputText value="#{izin.izinSahibi.sirket.ad}" />
 					</rich:column>
 
-					<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and kullanilanIzinlerHome.aramaSecenekleri.ekSahaTanimMap.containsKey('ekSaha1')}">
+					<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and kullanilanIzinlerHome.aramaSecenekleri.ekSahaTanimMap.containsKey('ekSaha1') and ortakIslemler.getListEkSahaDurum(kullanilanIzinlerHome.personelIzinList,'1')}">
 						<f:facet name="header">
 							<h:outputText value="#{kullanilanIzinlerHome.aramaSecenekleri.ekSaha1.aciklama}" />
 						</f:facet>
 						<h:outputText value="#{izin.izinSahibi.ekSaha1.aciklama}" />
 					</rich:column>
-					<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and kullanilanIzinlerHome.aramaSecenekleri.ekSahaTanimMap.containsKey('ekSaha2')}">
+					<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and kullanilanIzinlerHome.aramaSecenekleri.ekSahaTanimMap.containsKey('ekSaha2') and ortakIslemler.getListEkSahaDurum(kullanilanIzinlerHome.personelIzinList,'2')}">
 						<f:facet name="header">
 							<h:outputText value="#{kullanilanIzinlerHome.aramaSecenekleri.ekSaha2.aciklama}" />
 						</f:facet>
@@ -163,7 +163,7 @@
 						</f:facet>
 						<h:outputText value="#{izin.izinSahibi.ekSaha3.aciklama}" />
 					</rich:column>
-					<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and kullanilanIzinlerHome.aramaSecenekleri.ekSahaTanimMap.containsKey('ekSaha4')}">
+					<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and kullanilanIzinlerHome.aramaSecenekleri.ekSahaTanimMap.containsKey('ekSaha4') and ortakIslemler.getListEkSahaDurum(kullanilanIzinlerHome.personelIzinList,'4')}">
 						<f:facet name="header">
 							<h:outputText value="#{kullanilanIzinlerHome.aramaSecenekleri.ekSaha4.aciklama}" />
 						</f:facet>

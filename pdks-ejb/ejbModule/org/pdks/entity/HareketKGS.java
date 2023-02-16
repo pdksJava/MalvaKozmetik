@@ -546,6 +546,17 @@ public class HareketKGS implements Serializable, Cloneable {
 	}
 
 	@Transient
+	public Personel getPdksPersonel() {
+		Personel pdksPersonel = null;
+		if (personelKGS != null)
+			pdksPersonel = personelKGS.getPdksPersonel();
+		if (pdksPersonel == null && personel != null) {
+			pdksPersonel = personel.getPdksPersonel();
+		}
+		return pdksPersonel;
+	}
+
+	@Transient
 	public KapiView getTerminalKapi() {
 		return terminalKapi;
 	}

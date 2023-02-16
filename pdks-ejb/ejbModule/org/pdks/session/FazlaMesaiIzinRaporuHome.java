@@ -77,6 +77,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private String bolumAciklama;
+	private boolean tesisDurum = false;
 	private Session session;
 
 	@In(required = false)
@@ -112,6 +113,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			aramaSecenekleri.setDepartman(authenticatedUser.getDepartman());
 			aramaSecenekleri.setDepartmanId(authenticatedUser.getDepartman().getId());
 		}
+		tesisDurum = false;
 		fillSirketList();
 	}
 
@@ -474,7 +476,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			}
 
 		}
-
+		tesisDurum = ortakIslemler.getListTesisDurum(izinVardiyaGunList);
 	}
 
 	/**
@@ -569,7 +571,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı");
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Soyadı");
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-				boolean tesisDurum = ortakIslemler.isTesisDurumu();
+				boolean tesisDurum = ortakIslemler.getListTesisDurum(izinVardiyaGunList);
 				if (tesisDurum)
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
@@ -724,5 +726,13 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public boolean isTesisDurum() {
+		return tesisDurum;
+	}
+
+	public void setTesisDurum(boolean tesisDurum) {
+		this.tesisDurum = tesisDurum;
 	}
 }

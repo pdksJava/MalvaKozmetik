@@ -213,7 +213,7 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		int row = 0, col = 0;
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		boolean tesisDurum = ortakIslemler.isTesisDurumu();
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(hareketList);
 		if (tesisDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel");

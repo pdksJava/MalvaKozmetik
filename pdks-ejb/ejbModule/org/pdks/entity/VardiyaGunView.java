@@ -82,8 +82,9 @@ public class VardiyaGunView implements Serializable {
 		return vardiyaGun != null ? vardiyaGun.getPersonel() : null;
 	}
 
-	// public void setPersonel(pdksPersonel personel) {
-	// this.personel = personel;
-	// }
+	@Transient
+	public Personel getPdksPersonel() {
+		return getPersonel();
+	}
 
 }

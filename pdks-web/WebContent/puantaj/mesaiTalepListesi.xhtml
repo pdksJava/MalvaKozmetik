@@ -134,7 +134,7 @@
 							<h:outputText value="#{fmt.vardiyaGun.personel.sirket.ad}" />
 						</rich:column>
 						<rich:column>
-							<f:facet name="header" rendered="#{ortakIslemler.tesisDurumu}">
+							<f:facet name="header" rendered="#{ortakIslemler.getListTesisDurum(vardiyaGunHome.aylikFazlaMesaiTalepler)}">
 								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 							</f:facet>
 							<h:outputText value="#{fmt.vardiyaGun.personel.tesis.aciklama}" />

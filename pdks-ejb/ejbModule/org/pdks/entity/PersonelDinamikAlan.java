@@ -147,4 +147,8 @@ public class PersonelDinamikAlan implements Serializable {
 		return durumSecim != null && durumSecim.booleanValue();
 	}
 
+	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
 }

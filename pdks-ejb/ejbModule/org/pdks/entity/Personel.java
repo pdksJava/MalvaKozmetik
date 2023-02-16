@@ -1004,6 +1004,11 @@ public class Personel extends BaseObject {
 		return tarih;
 	}
 
+	@Transient
+	public Personel getPdksPersonel() {
+		return this;
+	}
+
 	public static String getIseGirisTarihiColumn() {
 		String str = grubaGirisTarihiAlanAdi != null && grubaGirisTarihiAlanAdi.trim().length() > 0 ? grubaGirisTarihiAlanAdi : COLUMN_NAME_ISE_BASLAMA_TARIHI;
 		return str;

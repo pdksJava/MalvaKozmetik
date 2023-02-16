@@ -134,7 +134,9 @@
 								<th style="width: 40px">Adı</th>
 								<th style="width: 40px">Soyadı</th>
 								<th style="width: 100px">#{ortakIslemler.sirketAciklama()}</th>
-								<th style="width: 100px">#{ortakIslemler.tesisAciklama()}</th>
+								<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
+									<th style="width: 100px">#{ortakIslemler.tesisAciklama()}</th>
+								</ui:fragment>
 								<th style="width: 100px">#{vardiyaOzetRaporuHome.bolumAciklama}</th>
 								<th style="width: 40px">Tarih</th>
 								<th style="width: 40px">Giriş Saati</th>
@@ -149,7 +151,9 @@
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.soyad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.sirket.ad}</td>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
+										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									</ui:fragment>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
@@ -163,7 +167,9 @@
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.soyad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.sirket.ad}</td>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
+										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									</ui:fragment>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.timeFormatla(vardiyaGun.ilkGiris.zaman)}</td>
@@ -179,7 +185,9 @@
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.soyad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.sirket.ad}</td>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
+										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									</ui:fragment>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
@@ -204,7 +212,9 @@
 								<th style="width: 40px">Adı</th>
 								<th style="width: 40px">Soyadı</th>
 								<th style="width: 100px">#{ortakIslemler.sirketAciklama()}</th>
-								<th style="width: 100px">#{ortakIslemler.tesisAciklama()}</th>
+								<ui:fragment rendered="#{vardiyaOzetRaporuHome.digerTesisDurum}">
+									<th style="width: 100px">#{ortakIslemler.tesisAciklama()}</th>
+								</ui:fragment>
 								<th style="width: 100px">#{vardiyaOzetRaporuHome.bolumAciklama}</th>
 								<th style="width: 40px">Tarih</th>
 								<th style="width: 40px">Çıkış Saati</th>
@@ -221,7 +231,9 @@
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.soyad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.sirket.ad}</td>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									<ui:fragment rendered="#{vardiyaOzetRaporuHome.digerTesisDurum}">
+										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									</ui:fragment>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.timeFormatla(vardiyaGun.sonCikis.zaman)}</td>

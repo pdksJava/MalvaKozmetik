@@ -597,6 +597,11 @@ public class PersonelDenklestirme extends BaseObject {
 	}
 
 	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
+
+	@Transient
 	public Double getCalismaSuaSaati() {
 		return calismaSuaSaati;
 	}

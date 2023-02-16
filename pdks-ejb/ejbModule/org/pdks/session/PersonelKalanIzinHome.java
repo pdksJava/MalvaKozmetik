@@ -771,11 +771,12 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
 		int row = 0, col = 0;
 		boolean ekSaha1 = false, ekSaha2 = false, ekSaha3 = false, ekSaha4 = false;
+		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(pdksPersonelList, null);
 		if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) {
-			ekSaha1 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha1");
-			ekSaha2 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha2");
-			ekSaha3 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha3");
-			ekSaha4 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha4");
+			ekSaha1 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha1") && map.containsKey("ekSaha1");
+			ekSaha2 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha2") && map.containsKey("ekSaha2");
+			ekSaha3 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha3") && map.containsKey("ekSaha3");
+			ekSaha4 = aramaSecenekleri.getEkSahaListMap().containsKey("ekSaha4") && map.containsKey("ekSaha4");
 		}
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());

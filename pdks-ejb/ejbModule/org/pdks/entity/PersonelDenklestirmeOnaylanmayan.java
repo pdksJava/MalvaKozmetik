@@ -142,6 +142,11 @@ public class PersonelDenklestirmeOnaylanmayan implements Serializable {
 	}
 
 	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
+
+	@Transient
 	public PersonelDenklestirme getPersonelDenklestirmeAy() {
 		PersonelDenklestirme denklestirme = null;
 		if (personelDenklestirme == null) {

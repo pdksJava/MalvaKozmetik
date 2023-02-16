@@ -108,25 +108,25 @@
 							<h:outputText value="#{personel.sirket.ad}" />
 						</rich:column>
 						 
-						<rich:column rendered="#{ortakIslemler.tesisDurumu}">
+						<rich:column rendered="#{ortakIslemler.getListTesisDurum(gunlukIzinRaporHome.pdksPersonelList)}">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 							</f:facet>
 							<h:outputText value="#{personel.tesis.aciklama}" />
 						</rich:column>
-						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha1')}">
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha1') and ortakIslemler.getListEkSahaDurum(gunlukIzinRaporHome.pdksPersonelList,'1')}">
 							<f:facet name="header">
 								<h:outputText value="#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha1').aciklama}" />
 							</f:facet>
 							<h:outputText value="#{personel.ekSaha1.aciklama}" />
 						</rich:column>
-						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha2')}">
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha2') and ortakIslemler.getListEkSahaDurum(gunlukIzinRaporHome.pdksPersonelList,'2')}">
 							<f:facet name="header">
 								<h:outputText value="#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha2').aciklama}" />
 							</f:facet>
 							<h:outputText value="#{personel.ekSaha2.aciklama}" />
 						</rich:column>
-						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha3')}">
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and gunlukIzinRaporHome.ekSahaTanimMap.containsKey('ekSaha3') and ortakIslemler.getListEkSahaDurum(gunlukIzinRaporHome.pdksPersonelList,'4')}">
 							<f:facet name="header">
 								<h:outputText value="#{gunlukIzinRaporHome.ekSahaTanimMap.get('ekSaha3').aciklama}" />
 							</f:facet>

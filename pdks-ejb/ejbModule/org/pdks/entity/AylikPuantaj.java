@@ -73,6 +73,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private PersonelDenklestirme personelDenklestirmeAylik, personelDenklestirmeGelecekAy, personelDenklestirmeGecenAy;
 
+	private PersonelDenklestirmeBordro denklestirmeBordro;
+
 	private DenklestirmeAy denklestirmeAy, denklestirmeGecenAy, denklestirmeGelecekAy;
 
 	private AylikPuantaj gecenAylikPuantaj, sablonAylikPuantaj;
@@ -102,6 +104,15 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	private TreeMap<Long, PersonelDenklestirmeDinamikAlan> dinamikAlanMap;
 
 	private PersonelDenklestirmeDinamikAlan personelDenklestirmeDinamikAlan;
+
+	public AylikPuantaj(PersonelDenklestirmeBordro bordro) {
+		super();
+		if (bordro != null) {
+			this.denklestirmeBordro = bordro;
+			this.setPersonelDenklestirmeAylik(bordro.getPersonelDenklestirme());
+			this.setPdksPersonel(this.getPersonelDenklestirmeAylik().getPdksPersonel());
+		}
+	}
 
 	public AylikPuantaj() {
 		super();
@@ -1240,6 +1251,18 @@ public class AylikPuantaj implements Serializable, Cloneable {
 			}
 		}
 		return fazlaMesaiDurum;
+	}
+
+	public String getAdSoyad() {
+		return pdksPersonel != null ? pdksPersonel.getAdSoyad() : "";
+	}
+
+	public PersonelDenklestirmeBordro getDenklestirmeBordro() {
+		return denklestirmeBordro;
+	}
+
+	public void setDenklestirmeBordro(PersonelDenklestirmeBordro denklestirmeBordro) {
+		this.denklestirmeBordro = denklestirmeBordro;
 	}
 
 }

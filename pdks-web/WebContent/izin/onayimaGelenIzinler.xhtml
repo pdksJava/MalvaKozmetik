@@ -255,7 +255,7 @@
 						<h:outputText value="#{izinler.personel.sirket.ad}" />
 					</rich:column>
 					
-					<rich:column rendered="#{ortakIslemler.tesisDurumu}">
+					<rich:column rendered="#{ortakIslemler.getListTesisDurum(personelIzinGirisiHome.tempIzinList)}">
 						<f:facet name="header">
 							<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 						</f:facet>
@@ -365,7 +365,7 @@
 								<h:outputText value="#{personelIzinGirisiHome.mailIzin.izinSahibi.adSoyad}" />
 							</s:decorate>
 
-							<s:decorate template="/layout/edit.xhtml" rendered="#{personelIzinGirisiHome.mailIzin.izinSahibi.sirket.departman.admin}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{personelIzinGirisiHome.mailIzin.izinSahibi.sirket.departman.admin }">
 								<ui:define name="label">
 									<h:outputText value="#{personelIzinGirisiHome.ekSaha1.aciklama}" />
 								</ui:define>

@@ -129,7 +129,7 @@
 										</f:facet>
 										<h:outputText value="#{mesai.personel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 									</rich:column>
-									<rich:column style="text-align: left;" rendered="#{ortakIslemler.tesisDurumu}">
+									<rich:column style="text-align: left;" rendered="#{ortakIslemler.getListTesisDurum(fazlaMesaiERPAktarimHome.onaysizPersonelDenklestirmeList)}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 										</f:facet>
@@ -215,7 +215,7 @@
 										</f:facet>
 										<h:outputText value="#{mesai.personel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 									</rich:column>
-									<rich:column style="text-align: left;">
+									<rich:column style="text-align: left;" rendered="#{ortakIslemler.getListTesisDurum(fazlaMesaiERPAktarimHome.personelDenklestirmeList)}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 										</f:facet>

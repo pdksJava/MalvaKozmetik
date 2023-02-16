@@ -131,19 +131,19 @@
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.onaysizIzinKullanilir)}" />
 							</rich:column>
 
-							<rich:column rendered="#{ortakIslemler.tesisDurumu or pdksPersonelHome.tesisDurum}">
+							<rich:column rendered="#{ortakIslemler.getListTesisDurum(pdksPersonelHome.personelList)}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.tesis.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha1!=null}">
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha1!=null and ortakIslemler.getListEkSahaDurum(pdksPersonelHome.personelList,'1')}">
 								<f:facet name="header">
 									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.ekSaha1.aciklama}" />
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.ekSaha1.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha2!=null}">
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha2!=null and ortakIslemler.getListEkSahaDurum(pdksPersonelHome.personelList,'2')}">
 								<f:facet name="header">
 									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.ekSaha2.aciklama}" />
 								</f:facet>
@@ -155,7 +155,7 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.ekSaha3.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha4!=null}">
+							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.ekSaha4!=null and ortakIslemler.getListEkSahaDurum(pdksPersonelHome.personelList,'4')}">
 								<f:facet name="header">
 									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.ekSaha4.aciklama}" />
 								</f:facet>

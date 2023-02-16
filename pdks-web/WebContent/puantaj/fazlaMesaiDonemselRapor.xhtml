@@ -113,7 +113,7 @@
 									</f:facet>
 									<h:outputText value="#{pdksPersonel.sirket.ad}" style="width:autostretch ;white-space: nowrap;" />
 								</rich:column>
-								<rich:column style="width: 100px;" rendered="#{fazlaMesaiDonemselRaporHome.tesisId==null and fazlaMesaiDonemselRaporHome.tesisVar}">
+								<rich:column style="width: 100px;" rendered="#{fazlaMesaiDonemselRaporHome.tesisId==null and ortakIslemler.getListTesisDurum(fazlaMesaiDonemselRaporHome.personelList)}">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 									</f:facet>

@@ -1282,9 +1282,25 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					vgList = new ArrayList<VardiyaGun>();
 				for (AylikPuantaj aylikPuantaj : puantajList) {
 					for (VardiyaGun vg : aylikPuantaj.getVardiyalar()) {
-						if (vg.isAyinGunu() && vg.getVardiya() != null && vg.getVardiya().getId() != null) {
-							if (vg.getIzin() != null || vg.getVardiya().isIzin() || (vg.getIzin() == null && vg.getVardiya().isHaftaTatil()))
+						Vardiya vardiya = vg.getVardiya();
+						if (vg.isAyinGunu() && vardiya != null && vardiya.getId() != null && vg.isIzinli()) {
+							boolean ekle = vardiya.isIzin() || (vg.getIzin() != null && !(vardiya.isHaftaTatil() || vardiya.isOff()));
+							if (!ekle && vg.getIzin() != null) {
+								IzinTipi izinTipi = vg.getIzin().getIzinTipi();
+								ekle = izinTipi.isTakvimGunuMu();
+								if (!ekle) {
+									ekle = true;
+									if (vardiya.isOff())
+										ekle = izinTipi.isOffDahilMi();
+									else if (vardiya.isHaftaTatil())
+										ekle = izinTipi.isHTDahil();
+
+								}
+							}
+							if (ekle) {
 								vgList.add(vg);
+							}
+
 						}
 
 					}

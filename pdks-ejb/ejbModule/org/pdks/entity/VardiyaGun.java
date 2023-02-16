@@ -2116,4 +2116,8 @@ public class VardiyaGun extends BaseObject {
 		this.fazlaMesaiTalepDurum = fazlaMesaiTalepDurum;
 	}
 
+	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
 }

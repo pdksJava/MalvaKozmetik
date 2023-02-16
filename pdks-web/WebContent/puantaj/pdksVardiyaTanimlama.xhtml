@@ -70,7 +70,7 @@
 									<f:facet name="header">Otomatik Son Onay Tarihi</f:facet>
 									#{authenticatedUser.dateFormatla(vardiyaView.otomatikOnayIKTarih)}
 								</rich:column>
-								<c:if test="#{authenticatedUser.admin or (ortakIslemler.sistemDestekVar and userHome.hasPermission('pdksVardiyaTanimlama','guncelIK'))}">
+								<c:if test="#{authenticatedUser.admin or (userHome.hasPermission('pdksVardiyaTanimlama','guncelIK'))}">
 									<rich:column style="text-align: center;width: 50px;">
 										<f:facet name="header">İşlem Açık</f:facet>
 									#{authenticatedUser.getYesNo(vardiyaView.guncelleIK)}
@@ -185,7 +185,7 @@
 									</s:decorate>
 
 								</c:if>
-								<c:if test="#{authenticatedUser.admin or (ortakIslemler.sistemDestekVar and userHome.hasPermission('pdksVardiyaTanimlama','guncelIK'))}">
+								<c:if test="#{authenticatedUser.admin or (userHome.hasPermission('pdksVardiyaTanimlama','guncelIK'))}">
 									<s:decorate template="/layout/edit.xhtml">
 										<ui:define name="label">İşlem Açık</ui:define>
 										<h:selectBooleanCheckbox value="#{vardiyaTanimlaHome.denklestirmeAy.guncelleIK}" disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum}">

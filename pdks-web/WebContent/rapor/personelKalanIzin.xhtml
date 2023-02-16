@@ -342,21 +342,21 @@
 									<h:outputText value="#{izinler.personel.sirket.ad}" />
 								</rich:column>
 
-								<rich:column>
+								<rich:column rendered="#{ortakIslemler.getListTesisDurum(personelKalanIzinHome.pdksPersonelList)}">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 									</f:facet>
 									<h:outputText value="#{izinler.personel.tesis.aciklama}" />
 								</rich:column>
 								<rich:column
-									rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha1!=null}">
+									rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha1!=null and ortakIslemler.getListEkSahaDurum(personelKalanIzinHome.pdksPersonelList,'1') }">
 									<f:facet name="header">
 										<h:outputText value="#{personelKalanIzinHome.aramaSecenekleri.ekSaha1.aciklama}" />
 									</f:facet>
 									<h:outputText value="#{izinler.personel.ekSaha1.aciklama}" />
 								</rich:column>
 								<rich:column
-									rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha2!=null}">
+									rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha2!=null and ortakIslemler.getListEkSahaDurum(personelKalanIzinHome.pdksPersonelList,'2') }">
 									<f:facet name="header">
 										<h:outputText value="#{personelKalanIzinHome.aramaSecenekleri.ekSaha2.aciklama}" />
 									</f:facet>
@@ -370,7 +370,7 @@
 									<h:outputText value="#{izinler.personel.ekSaha3.aciklama}" />
 								</rich:column>
 								<rich:column
-									rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha4!=null}">
+									rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha4!=null and ortakIslemler.getListEkSahaDurum(personelKalanIzinHome.pdksPersonelList,'4') }">
 									<f:facet name="header">
 										<h:outputText value="#{personelKalanIzinHome.aramaSecenekleri.ekSaha4.aciklama}" />
 									</f:facet>

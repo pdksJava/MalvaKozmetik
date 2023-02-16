@@ -158,7 +158,7 @@
 								</ui:fragment>
 							</rich:column>
 							
-							<rich:column>
+							<rich:column rendered="#{ortakIslemler.getListTesisDurum(holdingKalanIzinHome.holdingIzinList)}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 								</f:facet>
@@ -174,21 +174,21 @@
 
 
 							<rich:column
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and holdingKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha1!=null and holdingKalanIzinHome.aramaSecenekleri.sirket.departman.admin }">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and holdingKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha1!=null  and ortakIslemler.getListEkSahaDurum(holdingKalanIzinHome.holdingIzinList,'1')}">
 								<f:facet name="header">
 									<h:outputText value="#{holdingKalanIzinHome.aramaSecenekleri.ekSaha1.aciklama}" />
 								</f:facet>
 								<h:outputText value="#{izinler.personel.ekSaha1.aciklama}" />
 							</rich:column>
 							<rich:column
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and holdingKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha2!=null and holdingKalanIzinHome.aramaSecenekleri.sirket.departman.admin}">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and holdingKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha2!=null  and ortakIslemler.getListEkSahaDurum(holdingKalanIzinHome.holdingIzinList,'2')}">
 								<f:facet name="header">
 									<h:outputText value="#{holdingKalanIzinHome.aramaSecenekleri.ekSaha2.aciklama}" />
 								</f:facet>
 								<h:outputText value="#{izinler.personel.ekSaha2.aciklama}" />
 							</rich:column>
 							<rich:column
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and holdingKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha3!=null and holdingKalanIzinHome.aramaSecenekleri.sirket.departman.admin}">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and holdingKalanIzinHome.aramaSecenekleri.ekSahaTanimMap.ekSaha3!=null  and ortakIslemler.getListEkSahaDurum(holdingKalanIzinHome.holdingIzinList,'4')}">
 								<f:facet name="header">
 									<h:outputText value="#{holdingKalanIzinHome.aramaSecenekleri.ekSaha3.aciklama}" />
 								</f:facet>

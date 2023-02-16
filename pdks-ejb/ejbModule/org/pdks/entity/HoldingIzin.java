@@ -15,7 +15,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
 
- 
 @Entity(name = "Z_NOT_USED_TABLE_HOLDING_IZIN")
 @Immutable
 public class HoldingIzin implements Serializable, Cloneable {
@@ -112,6 +111,11 @@ public class HoldingIzin implements Serializable, Cloneable {
 	public Double getBakiye() {
 		double bakiye = gecenYilBakiye + buYilHakedilen - harcananIzin;
 		return bakiye;
+	}
+
+	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
 	}
 
 	@Transient

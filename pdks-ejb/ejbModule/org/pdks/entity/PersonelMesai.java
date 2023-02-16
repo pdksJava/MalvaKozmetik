@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Fetch;
@@ -77,4 +78,8 @@ public class PersonelMesai implements Serializable, Cloneable {
 		this.erpKodu = erpKodu;
 	}
 
+	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
 }

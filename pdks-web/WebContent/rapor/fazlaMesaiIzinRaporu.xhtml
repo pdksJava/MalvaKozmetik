@@ -63,29 +63,29 @@
 
 			<a4j:outputPanel id="vardiyaOzetPanel">
 				<ui:fragment>
-					<a4j:commandButton status="ajaxStatus" value="Raporu Göster" action="#{fazlaMesaiIzinRaporuHome.vardiyaListeOlustur}"
-						reRender="vardiyaOzetPanel" />
+					<a4j:commandButton status="ajaxStatus" value="Raporu Göster" action="#{fazlaMesaiIzinRaporuHome.vardiyaListeOlustur}" reRender="vardiyaOzetPanel" />
 					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiIzinRaporuHome.vardiyaOzetExcel}" target="blank"
 						rendered="#{not empty fazlaMesaiIzinRaporuHome.izinVardiyaGunList}">
 						<a4j:support event="oncomplete" status="ajaxStatus" />
 					</h:commandLink>
 				</ui:fragment>
-			 
-				<ui:fragment
-					rendered="#{not empty fazlaMesaiIzinRaporuHome.izinVardiyaGunList }">
+
+				<ui:fragment rendered="#{not empty fazlaMesaiIzinRaporuHome.izinVardiyaGunList }">
 					<table class="mars" width="500">
 						<thead>
 							<tr>
-								<TH colspan="9">İZİN  TABLOSU</TH>
+								<TH colspan="9">İZİN TABLOSU</TH>
 							</tr>
 							<tr>
 								<th style="width: 30px">#{ortakIslemler.personelNoAciklama()}</th>
 								<th style="width: 40px">Adı</th>
 								<th style="width: 40px">Soyadı</th>
 								<th style="width: 100px">#{ortakIslemler.sirketAciklama()}</th>
-								<th style="width: 100px">#{ortakIslemler.tesisAciklama()}</th>
+								<ui:fragment rendered="#{fazlaMesaiIzinRaporuHome.tesisDurum}">
+									<th style="width: 100px">#{ortakIslemler.tesisAciklama()}</th>
+								</ui:fragment>
 								<th style="width: 100px">#{fazlaMesaiIzinRaporuHome.bolumAciklama}</th>
- 
+
 
 							</tr>
 						</thead>
@@ -96,18 +96,20 @@
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.soyad}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.sirket.ad}</td>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									<ui:fragment rendered="#{fazlaMesaiIzinRaporuHome.tesisDurum}">
+										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									</ui:fragment>
 									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
-							 
+
 								</tr>
 							</a4j:repeat>
-							 
-							 
+
+
 
 						</tbody>
 					</table>
 				</ui:fragment>
-	 
+
 			</a4j:outputPanel>
 
 		</h:form>

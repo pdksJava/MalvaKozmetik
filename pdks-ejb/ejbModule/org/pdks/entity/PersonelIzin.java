@@ -809,4 +809,9 @@ public class PersonelIzin extends BaseObject {
 			calisilanGunler = new ArrayList<VardiyaGun>();
 		calisilanGunler.add(value);
 	}
+
+	@Transient
+	public Personel getPdksPersonel() {
+		return izinSahibi;
+	}
 }

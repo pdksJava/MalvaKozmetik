@@ -972,8 +972,8 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			}
 		}
 		manuelHareketList = new ArrayList<SelectItem>();
-		if (!PdksUtil.isSistemDestekVar())
-			manuelHareketMap.clear();
+//		if (!PdksUtil.isSistemDestekVar())
+//			manuelHareketMap.clear();
 		if (!manuelHareketMap.isEmpty()) {
 			for (String str : manuelHareketMap.keySet())
 				manuelHareketList.add(new SelectItem(str, manuelHareketMap.get(str).getId()));

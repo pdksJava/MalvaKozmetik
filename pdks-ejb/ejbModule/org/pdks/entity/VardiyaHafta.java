@@ -292,4 +292,9 @@ public class VardiyaHafta extends BaseObject {
 	public void setGuncellendi(Boolean guncellendi) {
 		this.guncellendi = guncellendi;
 	}
+
+	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
 }

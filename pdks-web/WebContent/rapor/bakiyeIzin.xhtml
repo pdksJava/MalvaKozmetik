@@ -116,19 +116,19 @@
 							<h:outputText value="#{izinler.personel.sirket.ad}" />
 						</rich:column>
 						 
-						<rich:column>
+						<rich:column rendered="#{ortakIslemler.getListTesisDurum(bakiyeIzinHome.pdksPersonelList)}">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 							</f:facet>
 							<h:outputText value="#{izinler.personel.tesis.aciklama}" />
 						</rich:column>
-						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and bakiyeIzinHome.ekSahaTanimMap.ekSaha1!=null}">
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and bakiyeIzinHome.ekSahaTanimMap.ekSaha1!=null and ortakIslemler.getListEkSahaDurum(bakiyeIzinHome.pdksPersonelList,'1')}">
 							<f:facet name="header">
 								<h:outputText value="#{bakiyeIzinHome.ekSaha1.aciklama}" />
 							</f:facet>
 							<h:outputText value="#{izinler.personel.ekSaha1.aciklama}" />
 						</rich:column>
-						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and bakiyeIzinHome.ekSahaTanimMap.ekSaha2!=null}">
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and bakiyeIzinHome.ekSahaTanimMap.ekSaha2!=null and ortakIslemler.getListEkSahaDurum(bakiyeIzinHome.pdksPersonelList,'2')}">
 							<f:facet name="header">
 								<h:outputText value="#{bakiyeIzinHome.ekSaha2.aciklama}" />
 							</f:facet>
@@ -140,7 +140,7 @@
 							</f:facet>
 							<h:outputText value="#{izinler.personel.ekSaha3.aciklama}" />
 						</rich:column>
-						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and bakiyeIzinHome.ekSahaTanimMap.ekSaha4!=null}">
+						<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and bakiyeIzinHome.ekSahaTanimMap.ekSaha4!=null and ortakIslemler.getListEkSahaDurum(bakiyeIzinHome.pdksPersonelList,'4')}">
 							<f:facet name="header">
 								<h:outputText value="#{bakiyeIzinHome.ekSaha4.aciklama}" />
 							</f:facet>

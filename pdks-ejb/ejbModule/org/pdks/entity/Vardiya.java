@@ -488,7 +488,7 @@ public class Vardiya extends BaseObject {
 
 			Date aySonuKontrolTarih = vardiyaAySonuKontrolTarih;
 			if (aySonuKontrolTarih != null && tarih.after(aySonuKontrolTarih)) {
-				if (pdksVardiyaGun.getVardiya() != null && pdksVardiyaGun.getVardiya().getId() != null)
+				if (pdksVardiyaGun.getVardiya() != null && pdksVardiyaGun.getVardiya().getId() != null && pdksVardiyaGun.getIzin() == null)
 					gunSonuAyir(pdksVardiyaGun);
 			}
 		} else
@@ -507,6 +507,13 @@ public class Vardiya extends BaseObject {
 		cal.setTime(pdksVardiyaGun.getVardiyaDate());
 		Personel personel = pdksVardiyaGun.getPersonel();
 		if (personel != null && personel.getId() != null) {
+			boolean oncekiGunIzinli = false, sonrakiGunIzinli = false;
+//			if (pdksVardiyaGun.getOncekiVardiyaGun() != null)
+//				oncekiGunIzinli = pdksVardiyaGun.getOncekiVardiyaGun().isIzinli();
+//			if (pdksVardiyaGun.getSonrakiVardiyaGun() != null)
+//				sonrakiGunIzinli = pdksVardiyaGun.getSonrakiVardiyaGun().isIzinli();
+//			if (sonrakiGunIzinli || oncekiGunIzinli)
+//				logger.info(pdksVardiyaGun.getVardiyaDateStr() + " " + oncekiGunIzinli + " " + sonrakiGunIzinli);
 			if (personel.getSskCikisTarihi() != null && personel.getIseGirisTarihi() != null && personel.getIseGirisTarihi().getTime() <= tarih.getTime() && personel.getSskCikisTarihi().getTime() >= tarih.getTime()) {
 				Vardiya sonrakiVardiya = null, oncekiVardiya = null;
 				if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null) {
@@ -551,8 +558,8 @@ public class Vardiya extends BaseObject {
 							}
 						} else {
 							if (oncekiVardiya != null) {
-								if (oncekiVardiya.isCalisma()) {
-									if (oncekiVardiya.isCalisma() && oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
+								if (oncekiVardiya.isCalisma() && oncekiGunIzinli == false) {
+									if (oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
 										vardiyaCalisma.setVardiyaFazlaMesaiBasZaman(PdksUtil.getDate(tarih));
 										cal.add(Calendar.MILLISECOND, -100);
 										oncekiVardiya.setVardiyaFazlaMesaiBitZaman((Date) cal.getTime().clone());
@@ -565,7 +572,7 @@ public class Vardiya extends BaseObject {
 
 						}
 						if (sonrakiVardiya != null) {
-							if (sonrakiVardiya.isCalisma()) {
+							if (sonrakiVardiya.isCalisma() && sonrakiGunIzinli == false) {
 								if (sonrakiVardiya.getBitSaat() > sonrakiVardiya.getBasSaat()) {
 									sonrakiVardiya.setVardiyaFazlaMesaiBasZaman(sonrakiVardiya.getVardiyaTarih());
 									cal.setTime(sonrakiVardiya.getVardiyaTarih());
@@ -603,7 +610,7 @@ public class Vardiya extends BaseObject {
 					} else {
 						if (sonrakiVardiya != null) {
 
-							if (sonrakiVardiya.isCalisma() == false) {
+							if (sonrakiVardiya.isCalisma() == false || sonrakiGunIzinli) {
 								try {
 
 									int bosluk = sonrakiVardiya.isHaftaTatil() ? this.getHaftaTatiliFazlaMesaiBasDakika() : this.getOffFazlaMesaiBasDakika();
@@ -643,7 +650,7 @@ public class Vardiya extends BaseObject {
 					offCalisma.setVardiyaTarih(tarih);
 					if (oncekiVardiya != null) {
 
-						if (oncekiVardiya.isCalisma() == false || oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
+						if (oncekiGunIzinli || oncekiVardiya.isCalisma() == false || oncekiVardiya.getBitSaat() > oncekiVardiya.getBasSaat()) {
 							offCalisma.setVardiyaFazlaMesaiBasZaman(PdksUtil.getDate(tarih));
 							cal.setTime(tarih);
 							cal.add(Calendar.MILLISECOND, -100);
@@ -667,7 +674,7 @@ public class Vardiya extends BaseObject {
 						Date sonrakiGun = PdksUtil.tariheGunEkleCikar(tarih, 1);
 						cal.setTime(sonrakiGun);
 						sonrakiVardiya.setVardiyaFazlaMesaiBasZaman((Date) cal.getTime().clone());
-						if (sonrakiVardiya.isCalisma() && sonrakiVardiya.getVardiyaTelorans1BasZaman() != null && sonrakiVardiya.getVardiyaTelorans1BasZaman().before(sonrakiGun)) {
+						if (sonrakiVardiya.isCalisma() && sonrakiGunIzinli == false && sonrakiVardiya.getVardiyaTelorans1BasZaman() != null && sonrakiVardiya.getVardiyaTelorans1BasZaman().before(sonrakiGun)) {
 							cal.setTime(sonrakiGun);
 							int bosluk = sonrakiVardiya.isHaftaTatil() ? this.getHaftaTatiliFazlaMesaiBasDakika() : this.getOffFazlaMesaiBasDakika();
 							cal.add(Calendar.MINUTE, bosluk);

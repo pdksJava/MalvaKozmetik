@@ -176,7 +176,7 @@
 												</f:facet>
 												<h:outputText value="#{fmt.vardiyaGun.personel.adSoyad}" />
 											</rich:column>
-											<rich:column rendered="#{vardiyaGunHome.aramaSecenekleri.tesisId==null}">
+											<rich:column rendered="#{ortakIslemler.getListTesisDurum(vardiyaGunHome.fazlaMesaiTalepler)}">
 												<f:facet name="header">
 													#{ortakIslemler.tesisAciklama()}
 												</f:facet>

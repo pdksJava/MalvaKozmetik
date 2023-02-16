@@ -190,4 +190,7 @@ public class VardiyaPlan extends BaseObject {
 		this.vardiyaHafta6 = vardiyaHafta6;
 	}
 
+	public Personel getPdksPersonel() {
+		return personel;
+	}
 }

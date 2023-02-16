@@ -473,21 +473,21 @@
 								<h:outputText value="#{izin.izinSahibi.sirket.ad}" />
 							</rich:column>
 							<rich:column
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelIzinGirisiHome.aramaListeSecenekleri.departmanIdList.size()==1 and personelIzinGirisiHome.aramaListeSecenekleri.tesisList.size()>1}">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and ortakIslemler.getListTesisDurum(personelIzinGirisiHome.personelIzinList)}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{izin.izinSahibi.tesis.aciklama}" />
 							</rich:column>
 							<rich:column
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelIzinGirisiHome.aramaListeSecenekleri.departmanIdList.size()==1 and personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.containsKey('ekSaha1')}">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelIzinGirisiHome.aramaListeSecenekleri.departmanIdList.size()==1 and personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.containsKey('ekSaha1') and ortakIslemler.getListEkSahaDurum(personelIzinGirisiHome.personelIzinList,'1') }">
 								<f:facet name="header">
 									<h:outputText value="#{personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.get('ekSaha1').aciklama}" />
 								</f:facet>
 								<h:outputText value="#{izin.izinSahibi.ekSaha1.aciklama}" />
 							</rich:column>
 							<rich:column
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelIzinGirisiHome.aramaListeSecenekleri.departmanIdList.size()==1 and personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.containsKey('ekSaha2')}">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelIzinGirisiHome.aramaListeSecenekleri.departmanIdList.size()==1 and personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.containsKey('ekSaha2') and ortakIslemler.getListEkSahaDurum(personelIzinGirisiHome.personelIzinList,'2') }">
 								<f:facet name="header">
 									<h:outputText value="#{personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.get('ekSaha2').aciklama}" />
 								</f:facet>
@@ -501,7 +501,7 @@
 								<h:outputText value="#{izin.izinSahibi.ekSaha3.aciklama}" />
 							</rich:column>
 							<rich:column
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelIzinGirisiHome.aramaListeSecenekleri.departmanIdList.size()==1 and personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.containsKey('ekSaha4')}">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelIzinGirisiHome.aramaListeSecenekleri.departmanIdList.size()==1 and personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.containsKey('ekSaha4') and ortakIslemler.getListEkSahaDurum(personelIzinGirisiHome.personelIzinList,'4') }">
 								<f:facet name="header">
 									<h:outputText value="#{personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.get('ekSaha4').aciklama}" />
 								</f:facet>

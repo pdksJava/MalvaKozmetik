@@ -151,6 +151,7 @@ public class OpenSessionHome extends EntityHome<User> implements Serializable {
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
 		secili = Boolean.FALSE;
+		authenticatedUser.setCalistigiSayfa("openSession");
 		HttpSession mySession = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		setHttpSession(mySession);
 		durumDegistir();

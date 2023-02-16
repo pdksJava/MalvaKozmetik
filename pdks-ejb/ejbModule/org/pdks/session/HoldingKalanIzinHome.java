@@ -295,21 +295,21 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
 		int row = 0, col = 0;
 		boolean ekSaha1 = false, ekSaha2 = false, ekSaha3 = true, ekSaha4 = false;
+		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(holdingIzinList, null);
 		HashMap fields = new HashMap();
 		fields.put("id", aramaSecenekleri.getSirketId());
 		fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 		boolean bolumYok = sirket.getDepartman().isAdminMi();
 		if (bolumYok) {
-			ekSaha1 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && aramaSecenekleri.getEkSahaTanimMap().containsKey("ekSaha1");
-			ekSaha2 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && aramaSecenekleri.getEkSahaTanimMap().containsKey("ekSaha2");
-			ekSaha3 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && aramaSecenekleri.getEkSahaTanimMap().containsKey("ekSaha3");
-			ekSaha4 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && aramaSecenekleri.getEkSahaTanimMap().containsKey("ekSaha4");
+			ekSaha1 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && map.containsKey("ekSaha1");
+			ekSaha2 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && map.containsKey("ekSaha2");
+			ekSaha3 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && map.containsKey("ekSaha3");
+			ekSaha4 = (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) && map.containsKey("ekSaha4");
 		}
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
+ 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kidemBasTarihiAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Doğum Tarihi");

@@ -104,6 +104,11 @@ public class IsKurVardiyaGun extends BaseObject {
 	}
 
 	@Transient
+	public Personel getPdksPersonel() {
+		return personel;
+	}
+
+	@Transient
 	public VardiyaGun getVardiyaGun() {
 		VardiyaGun vardiyaGun = new VardiyaGun(personel, vardiya, vardiyaDate);
 		vardiyaGun.setIsKurVardiya(this);
