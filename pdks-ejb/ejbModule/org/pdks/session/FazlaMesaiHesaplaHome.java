@@ -1491,6 +1491,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								}
 								if (vardiyaGun.isAyrikHareketVar()) {
 									ayrikList.add(PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "d MMMMM EEEEEE"));
+									VardiyaGun sonrakiVardiyaGun = vardiyaGun.getSonrakiVardiyaGun();
+									if (sonrakiVardiyaGun != null && sonrakiVardiyaGun.isAyinGunu() == false && sonrakiVardiyaGun.isAyrikHareketVar())
+										ayrikList.add(PdksUtil.convertToDateString(vardiyaGun.getSonrakiVardiyaGun().getVardiyaDate(), "d MMMMM EEEEEE"));
 								}
 								fazlaMesaiHesapla = (Boolean) paramsMap.get("fazlaMesaiHesapla");
 								aksamVardiyaSayisi = (Integer) paramsMap.get("aksamVardiyaSayisi");
@@ -2363,7 +2366,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									// pdksEntityController.saveOrUpdate(session, entityManager, sonGun);
 									// flush = true;
 									if (adminRole)
-										logger.info(haftaTatilGun.getVardiyaKeyStr() + " " + sonGun.getVardiyaKeyStr());
+										logger.debug(haftaTatilGun.getVardiyaKeyStr() + " " + sonGun.getVardiyaKeyStr());
 								}
 
 							}
@@ -3163,14 +3166,30 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	public String ayrikKayitlariOlustur() {
 		List<AylikPuantaj> list = new ArrayList<AylikPuantaj>(aylikPuantajList);
 		boolean devam = false;
+		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 		for (AylikPuantaj aylikPuantaj : list) {
 			if (aylikPuantaj.isAyrikHareketVar() == false)
 				continue;
-			List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>(aylikPuantaj.getVardiyalar());
+
+			vardiyaList.addAll(aylikPuantaj.getVardiyalar());
 			int ayrikVar = 0;
+			VardiyaGun sonrakiAyrikGun = null;
 			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-				if (vardiyaGun.isAyinGunu() && vardiyaGun.getId() != null) {
+				if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null)
+					sonrakiAyrikGun = vardiyaGun;
+			}
+			if (sonrakiAyrikGun != null && sonrakiAyrikGun.getSonrakiVardiyaGun() != null) {
+				sonrakiAyrikGun = sonrakiAyrikGun.getSonrakiVardiyaGun();
+				if (sonrakiAyrikGun.getVardiya() != null && sonrakiAyrikGun.isAyinGunu() == false && sonrakiAyrikGun.isAyrikHareketVar())
+					vardiyaList.add(sonrakiAyrikGun);
+			}
+			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
+				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+				boolean ayinGunu = vardiyaGun.isAyinGunu();
+				if (!ayinGunu)
+					ayinGunu = vardiyaGun.getOncekiVardiyaGun().isAyinGunu();
+				if (ayinGunu && vardiyaGun.getId() != null) {
 					if (vardiyaGun.isAyrikHareketVar()) {
 						manuelHareketSil(vardiyaGun.getGirisHareketleri());
 						manuelHareketSil(vardiyaGun.getCikisHareketleri());
@@ -3192,8 +3211,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 
 			}
-			vardiyaList = null;
+			vardiyaList.clear();
 		}
+		vardiyaList = null;
 		list = null;
 		if (devam)
 			fillPersonelDenklestirmeList();

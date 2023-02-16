@@ -19,13 +19,18 @@
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Yıl</ui:define>
 							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{denklestirmeBordroRaporuHome.minYil}"
-								maxValue="#{denklestirmeBordroRaporuHome.maxYil}" inputSize="1" value="#{denklestirmeBordroRaporuHome.yil}" />
+								maxValue="#{denklestirmeBordroRaporuHome.maxYil}" inputSize="1" value="#{denklestirmeBordroRaporuHome.yil}">
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillTesisList()}" ajaxSingle="true"
+									reRender="denklestirmeDonemiTable,anaForm" />
+							</rich:inputNumberSpinner>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Ay</ui:define>
 							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.ay}" required="true" requiredMessage="Başlangıç ay seçiniz">
 								<f:selectItem itemLabel="Lütfen seçiniz" />
 								<f:selectItems value="#{denklestirmeBordroRaporuHome.aylar}" />
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillTesisList()}" ajaxSingle="true"
+									reRender="denklestirmeDonemiTable,anaForm" />
 							</h:selectOneMenu>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
@@ -43,17 +48,27 @@
 						<s:decorate template="/layout/edit.xhtml"
 							rendered="#{(authenticatedUser.admin or authenticatedUser.IK) and (not empty denklestirmeBordroRaporuHome.sirketler)}">
 							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
-
 							<h:selectOneMenu id="sirketSec" value="#{denklestirmeBordroRaporuHome.sirketId}" required="true"
 								requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
 								<f:selectItem itemLabel="Lütfen seçiniz" />
 								<f:selectItems value="#{denklestirmeBordroRaporuHome.sirketler}" />
-
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillTesisList()}" ajaxSingle="true"
+									reRender="denklestirmeDonemiTable,anaForm" />
 							</h:selectOneMenu>
 
 
 						</s:decorate>
-
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{ortakIslemler.tesisDurumu and denklestirmeBordroRaporuHome.tesisList!=null and denklestirmeBordroRaporuHome.tesisList.size()>0}">
+							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
+								disabled="#{denklestirmeBordroRaporuHome.tesisList.size()==1}">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{denklestirmeBordroRaporuHome.tesisList}" />
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" ajaxSingle="true"
+									reRender="denklestirmeDonemiTable,anaForm" />
+							</h:selectOneMenu>
+						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
 							<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
@@ -70,7 +85,7 @@
 					<rich:panel>
 
 						<h:panelGrid columns="5">
-							<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Fazla Mesai Getir"
+							<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
 								reRender="denklestirmeDonemiTable" />
 
 							<h:commandLink value="Excel" action="#{denklestirmeBordroRaporuHome.denklestirmeExcelAktar}" target="blank"
@@ -104,7 +119,8 @@
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
-								<rich:column style="text-align: left;" rendered="#{ortakIslemler.getListTesisDurum(denklestirmeBordroRaporuHome.personelDenklestirmeList)}">
+								<rich:column style="text-align: left;"
+									rendered="#{denklestirmeBordroRaporuHome.tesisId==null and ortakIslemler.getListTesisDurum(denklestirmeBordroRaporuHome.personelDenklestirmeList)}">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 									</f:facet>

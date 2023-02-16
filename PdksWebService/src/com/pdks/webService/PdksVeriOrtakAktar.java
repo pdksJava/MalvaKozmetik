@@ -1509,6 +1509,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						String aciklama = izinERP.getIzinTipiAciklama();
 						if (!izinTipiTanimMap.containsKey(izinERP.getIzinTipi())) {
 							izinTipiTanim = new Tanim();
+							izinTipiTanim.setTipi(Tanim.TIPI_IZIN_TIPI);
 							izinTipiTanim.setKodu("E" + izinERP.getIzinTipi());
 							izinTipiTanim.setErpKodu(izinERP.getIzinTipi());
 							izinTipiTanim.setAciklamatr(aciklama);

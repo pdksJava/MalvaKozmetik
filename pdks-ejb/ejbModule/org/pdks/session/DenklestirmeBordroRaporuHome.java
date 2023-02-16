@@ -84,9 +84,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private Sirket sirket;
 
-	private Long sirketId, departmanId;
+	private Long sirketId, departmanId, tesisId;
 
-	private List<SelectItem> sirketler, departmanList;
+	private List<SelectItem> sirketler, departmanList, tesisList;
 
 	private Departman departman;
 	private HashMap<String, List<Tanim>> ekSahaListMap;
@@ -140,6 +140,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
+
 		session.clear();
 		setDepartmanId(null);
 		setDepartman(null);
@@ -152,6 +153,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		sirket = null;
 		sirketId = null;
 		sirketler = null;
+		if (tesisList != null)
+			tesisList.clear();
+		else
+			tesisList = new ArrayList<SelectItem>();
 		if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin())
 			filDepartmanList();
 		if (departmanList.size() == 1)
@@ -183,8 +188,49 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		setDepartmanList(departmanListe);
 	}
 
+	public void fillTesisList() {
+		personelDenklestirmeList.clear();
+		List<SelectItem> selectItems = new ArrayList<SelectItem>();
+		Long onceki = null;
+		if (sirketId != null) {
+			onceki = tesisId;
+			HashMap parametreMap = new HashMap();
+			parametreMap.put("id", sirketId);
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+
+			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
+			if (sirket != null && sirket.isTesisDurumu()) {
+				HashMap fields = new HashMap();
+				fields.put("ay", ay);
+				fields.put("yil", yil);
+
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+				selectItems = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, true, session);
+				if (!selectItems.isEmpty()) {
+					if (selectItems.size() == 1)
+						onceki = (Long) selectItems.get(0).getValue();
+					else {
+						onceki = null;
+						for (SelectItem selectItem : selectItems) {
+							if (selectItem.getValue().equals(tesisId))
+								onceki = tesisId;
+						}
+					}
+				}
+			}
+
+		} else
+			tesisId = null;
+		setTesisId(onceki);
+		setTesisList(selectItems);
+	}
+
 	public void fillSirketList() {
 		List<Sirket> list = null;
+		personelDenklestirmeList.clear();
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("id", departmanId);
 		if (session != null)
@@ -230,6 +276,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		} else {
 			setSirket(authenticatedUser.getPdksPersonel().getSirket());
 		}
+		if (sirketId != null)
+			fillTesisList();
 
 		setPersonelDenklestirmeList(new ArrayList<AylikPuantaj>());
 
@@ -277,6 +325,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
 				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
+				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
 				fields.put("basGun", basGun);
 				fields.put("bitGun", bitGun);
 				if (sirketId != null || (sicilNo != null && sicilNo.length() > 0)) {
@@ -292,6 +341,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo ");
 						fields.put("sicilNo", sicilNo);
 					}
+				}
+				if (tesisId != null) {
+					sb.append(" AND  P." + Personel.COLUMN_NAME_TESIS + "=:t ");
+					fields.put("t", tesisId);
+
 				}
 				sb.append(" INNER JOIN " + PersonelDenklestirmeBordro.TABLE_NAME + " B ON B." + PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME + "=V." + PersonelDenklestirme.COLUMN_NAME_ID);
 				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=:denklestirmeAy AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1  ");
@@ -752,5 +806,21 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setPersonelDenklestirmeList(List<AylikPuantaj> personelDenklestirmeList) {
 		this.personelDenklestirmeList = personelDenklestirmeList;
+	}
+
+	public Long getTesisId() {
+		return tesisId;
+	}
+
+	public void setTesisId(Long tesisId) {
+		this.tesisId = tesisId;
+	}
+
+	public List<SelectItem> getTesisList() {
+		return tesisList;
+	}
+
+	public void setTesisList(List<SelectItem> tesisList) {
+		this.tesisList = tesisList;
 	}
 }
