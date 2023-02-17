@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -162,8 +163,49 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			filDepartmanList();
 		if (departmanList.size() == 1)
 			setDepartmanId((Long) departmanList.get(0).getValue());
+		LinkedHashMap<String, Object> veriLastMap = ortakIslemler.getLastParameter("denklestirmeBordroRaporu", session);
+		String yilStr = null;
+		String ayStr = null;
+		String sirketIdStr = null;
+		String tesisIdStr = null;
+		String departmanIdStr = null;
+
+		departmanId = null;
+		if (veriLastMap != null) {
+			if (veriLastMap.containsKey("yil"))
+				yilStr = (String) veriLastMap.get("yil");
+			if (veriLastMap.containsKey("ay"))
+				ayStr = (String) veriLastMap.get("ay");
+			if (veriLastMap.containsKey("sirketId"))
+				sirketIdStr = (String) veriLastMap.get("sirketId");
+			if (veriLastMap.containsKey("tesisId"))
+				tesisIdStr = (String) veriLastMap.get("tesisId");
+			if (veriLastMap.containsKey("departmanId"))
+				departmanIdStr = (String) veriLastMap.get("departmanId");
+			if (yilStr != null && ayStr != null && sirketIdStr != null) {
+				yil = Integer.parseInt(yilStr);
+				ay = Integer.parseInt(ayStr);
+				sirketId = Long.parseLong(sirketIdStr);
+				if (tesisIdStr != null)
+					tesisId = Long.parseLong(tesisIdStr);
+				if (sirketId != null) {
+					HashMap parametreMap = new HashMap();
+					parametreMap.put("id", sirketId);
+					if (session != null)
+						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+					sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
+					if (sirket != null)
+						departmanId = sirket.getDepartman().getId();
+				}
+				if (departmanId == null && departmanIdStr != null)
+					departmanId = Long.parseLong(departmanIdStr);
+				fillSirketList();
+
+			}
+		}
 		if (!authenticatedUser.isAdmin()) {
-			setDepartmanId(authenticatedUser.getDepartman().getId());
+			if (departmanId == null)
+				setDepartmanId(authenticatedUser.getDepartman().getId());
 			if (authenticatedUser.isIK())
 				fillSirketList();
 		}
@@ -172,6 +214,31 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		fillEkSahaTanim();
 		return "";
 
+	}
+
+	/**
+	 * 
+	 */
+	private void saveLastParameter() {
+		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
+		lastMap.put("yil", "" + yil);
+		lastMap.put("ay", "" + ay);
+		if (departmanId != null)
+			lastMap.put("departmanId", "" + departmanId);
+		if (sirketId != null)
+			lastMap.put("sirketId", "" + sirketId);
+		if (tesisId != null)
+			lastMap.put("tesisId", "" + tesisId);
+
+		if (sicilNo != null && sicilNo.trim().length() > 0)
+			lastMap.put("sicilNo", sicilNo.trim());
+
+		try {
+
+			ortakIslemler.saveLastParameter(lastMap, session);
+		} catch (Exception e) {
+
+		}
 	}
 
 	public void filDepartmanList() {
@@ -243,11 +310,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		HashMap fields = new HashMap();
 		fields.put("ay", ay);
 		fields.put("yil", yil);
- 		if (session != null)
+		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
 		List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, true, session);
- 		Long onceki = null;
+		Long onceki = null;
 		if (!sirketList.isEmpty()) {
 			onceki = sirketId;
 			if (sirketList.size() == 1) {
@@ -311,6 +378,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			basGun = PdksUtil.getYilAyBirinciGun(yil, ay);
 			bitGun = PdksUtil.tariheAyEkleCikar(basGun, 1);
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
+			saveLastParameter();
 			if (yil * 100 + ay >= Integer.parseInt(str)) {
 				fields.clear();
 				StringBuffer sb = new StringBuffer();

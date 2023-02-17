@@ -2276,15 +2276,16 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					sanalDurum.put(ap.getPdksPersonel().getSanalPersonel(), ap.getPdksPersonel().getId());
 			modelGoster = sanalDurum.size() > 1;
 		}
-
-		if (sirket != null && !ortakIslemler.getParameterKey("bordroVeriOlustur").equals("")) {
-			try {
-				String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
-				if (yil * 100 + ay >= Integer.parseInt(str))
-					bordroVeriOlustur(puantajList);
-			} catch (Exception e) {
-				logger.error(e);
-				e.printStackTrace();
+		if (denklestirmeAyDurum || bakiyeGuncelle) {
+ 			if (sirket != null && !ortakIslemler.getParameterKey("bordroVeriOlustur").equals("")) {
+				try {
+					String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
+					if (yil * 100 + ay >= Integer.parseInt(str))
+						bordroVeriOlustur(puantajList);
+				} catch (Exception e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
 			}
 		}
 		setAylikPuantajList(puantajList);
