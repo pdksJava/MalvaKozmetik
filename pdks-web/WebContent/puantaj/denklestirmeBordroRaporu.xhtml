@@ -20,7 +20,7 @@
 							<ui:define name="label">Yıl</ui:define>
 							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{denklestirmeBordroRaporuHome.minYil}"
 								maxValue="#{denklestirmeBordroRaporuHome.maxYil}" inputSize="1" value="#{denklestirmeBordroRaporuHome.yil}">
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillTesisList()}" ajaxSingle="true"
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
 									reRender="denklestirmeDonemiTable,anaForm" />
 							</rich:inputNumberSpinner>
 						</s:decorate>
@@ -29,7 +29,7 @@
 							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.ay}" required="true" requiredMessage="Başlangıç ay seçiniz">
 								<f:selectItem itemLabel="Lütfen seçiniz" />
 								<f:selectItems value="#{denklestirmeBordroRaporuHome.aylar}" />
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillTesisList()}" ajaxSingle="true"
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
 									reRender="denklestirmeDonemiTable,anaForm" />
 							</h:selectOneMenu>
 						</s:decorate>
@@ -81,7 +81,7 @@
 					</h:panelGrid>
 				</a4j:outputPanel>
 				<a4j:outputPanel id="denklestirmeDonemiTable">
-					<rich:panel>
+					<rich:panel rendered="#{not empty denklestirmeBordroRaporuHome.sirketler}">
 
 						<h:panelGrid columns="5">
 							<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
