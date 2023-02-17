@@ -421,7 +421,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			dosyaAdi = "bordroVeri";
 			baosDosya = denklestirmeExcelAktarDevam();
 			if (sirket != null)
-				dosyaAdi += "_" + sirket.getAd() + "_";
+				dosyaAdi += "_" + sirket.getAd();
 			if (baosDosya != null)
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi + PdksUtil.convertToDateString(basGun, "_MMMMM_yyyy") + ".xlsx");
 
