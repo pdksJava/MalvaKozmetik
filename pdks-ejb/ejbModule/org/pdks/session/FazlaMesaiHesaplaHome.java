@@ -2301,10 +2301,34 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<Tanim> list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
 		TreeMap<String, String> izinGrupMap = new TreeMap<String, String>();
+		if (list.isEmpty()) {
+			BordroTipi[] bordroTipileri = new BordroTipi[] { BordroTipi.UCRETLI_IZIN, BordroTipi.UCRETSIZ_IZIN, BordroTipi.RAPORLU_IZIN };
+			for (BordroTipi bordroTipi : bordroTipileri) {
+				Tanim tanim = new Tanim();
+				tanim.setKodu(bordroTipi.value());
+				tanim.setErpKodu("izinGrup" + bordroTipi.value());
+				list.add(tanim);
+			}
+		}
+
 		for (Tanim tanim : list) {
-			List<String> kodList = PdksUtil.getListStringTokenizer(tanim.getErpKodu(), null);
-			for (String key : kodList) {
-				izinGrupMap.put(key, tanim.getKodu());
+			BordroTipi bordroTipi = null;
+			String izinGrupKodu = tanim.getKodu();
+			try {
+				bordroTipi = BordroTipi.fromValue(izinGrupKodu);
+			} catch (Exception e) {
+			}
+			if (bordroTipi != null) {
+				String izinKodlari = tanim.getErpKodu();
+				String izinKey = "izinGrup" + izinGrupKodu;
+				if (!ortakIslemler.getParameterKey(izinKodlari).equals(""))
+					izinKodlari = ortakIslemler.getParameterKey(izinKodlari);
+				else if (!ortakIslemler.getParameterKey(izinKey).equals(""))
+					izinKodlari = ortakIslemler.getParameterKey(izinKey);
+				List<String> kodList = PdksUtil.getListStringTokenizer(izinKodlari, null);
+				for (String key : kodList) {
+					izinGrupMap.put(key, izinGrupKodu);
+				}
 			}
 		}
 		Calendar cal = Calendar.getInstance();
