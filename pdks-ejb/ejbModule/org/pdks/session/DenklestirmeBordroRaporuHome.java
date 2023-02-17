@@ -37,6 +37,7 @@ import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeBordro;
 import org.pdks.entity.PersonelDenklestirmeBordroDetay;
+import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Vardiya;
@@ -441,6 +442,17 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private ByteArrayOutputStream denklestirmeExcelAktarDevam() {
 		ByteArrayOutputStream baos = null;
 		try {
+			boolean kimlikNoGoster = false;
+			for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
+				Personel personel = aylikPuantaj.getPdksPersonel();
+				if (!kimlikNoGoster) {
+					PersonelKGS personelKGS = personel.getPersonelKGS();
+					if (personelKGS != null)
+						kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
+					if (kimlikNoGoster)
+						break;
+				}
+			}
 			Workbook wb = new XSSFWorkbook();
 			Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
 			CellStyle style = ExcelUtil.getStyleData(wb);
@@ -457,6 +469,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Sıra");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel");
+			if (kimlikNoGoster)
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kimlikNoAciklama());
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Normal Gün");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("H.Tatil Gün");
@@ -478,6 +492,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
+				if (kimlikNoGoster) {
+					PersonelKGS personelKGS = personel.getPersonelKGS();
+					String kimlikNo = "";
+					if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo()))
+						kimlikNo = personelKGS.getKimlikNo();
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kimlikNo);
+				}
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 				ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getNormalGunAdet());
 				ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getHaftaTatilAdet());
