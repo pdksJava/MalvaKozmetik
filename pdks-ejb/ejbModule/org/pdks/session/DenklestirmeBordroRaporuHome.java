@@ -373,10 +373,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						personelDenklestirmeList.add(aylikPuantaj);
 					}
 					personelDenklestirmeList = PdksUtil.sortObjectStringAlanList(personelDenklestirmeList, "getAdSoyad", null);
+					boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
 					HashMap<String, Liste> listeMap = new HashMap<String, Liste>();
 					for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
 						Personel personel = aylikPuantaj.getPdksPersonel();
-						String key = personel.getEkSaha3().getAciklama();
+						String key = (tesisGoster && personel.getTesis() != null ? personel.getTesis().getAciklama() + "_" : "") + personel.getEkSaha3().getAciklama();
 						Liste liste = listeMap.containsKey(key) ? listeMap.get(key) : new Liste(key, new ArrayList<AylikPuantaj>());
 						List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
 						if (list.isEmpty())
@@ -423,6 +424,15 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			baosDosya = denklestirmeExcelAktarDevam();
 			if (sirket != null)
 				dosyaAdi += "_" + sirket.getAd();
+			if (tesisId != null) {
+				HashMap parametreMap = new HashMap();
+				parametreMap.put("id", tesisId);
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				Tanim tesis = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+				if (tesis != null)
+					dosyaAdi += "_" + tesis.getAciklama();
+			}
 			if (baosDosya != null)
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi + PdksUtil.convertToDateString(basGun, "_MMMMM_yyyy") + ".xlsx");
 
@@ -453,6 +463,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						break;
 				}
 			}
+			boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
 			Workbook wb = new XSSFWorkbook();
 			Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
 			CellStyle style = ExcelUtil.getStyleData(wb);
@@ -469,6 +480,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Sıra");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel");
+			if (tesisGoster) {
+				String aciklama = ortakIslemler.tesisAciklama();
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(aciklama + " Kodu");
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(aciklama);
+			}
 			if (kimlikNoGoster)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kimlikNoAciklama());
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
@@ -498,6 +514,15 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo()))
 						kimlikNo = personelKGS.getKimlikNo();
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kimlikNo);
+				}
+				if (tesisGoster) {
+					if (personel.getTesis() != null) {
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getTesis().getErpKodu());
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis().getAciklama());
+					} else {
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+					}
 				}
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 				ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getNormalGunAdet());

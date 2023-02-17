@@ -61,8 +61,7 @@
 						<s:decorate template="/layout/edit.xhtml"
 							rendered="#{ortakIslemler.tesisDurumu and denklestirmeBordroRaporuHome.tesisList!=null and denklestirmeBordroRaporuHome.tesisList.size()>0}">
 							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
-							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
-								disabled="#{denklestirmeBordroRaporuHome.tesisList.size()==1}">
+							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.tesisId}" disabled="#{denklestirmeBordroRaporuHome.tesisList.size()==1}">
 								<f:selectItem itemLabel="Lütfen seçiniz" />
 								<f:selectItems value="#{denklestirmeBordroRaporuHome.tesisList}" />
 								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" ajaxSingle="true"
