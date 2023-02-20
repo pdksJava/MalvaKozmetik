@@ -6193,9 +6193,36 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		aylikHareketKaydiVardiyaBul = Boolean.FALSE;
 		if (denklestirmeAyDurum)
 			aylikHareketKaydiVardiyalariBul();
+		if (denklestirmeAyDurum) {
+			fields.clear();
+			fields.put("id", aramaSecenekleri.getSirketId());
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
+			if (sirket != null)
+				bordroVeriOlusturBasla(sirket, aylikPuantajList);
+		}
 		if (!aylikPuantajList.isEmpty())
 			modelGoster = ortakIslemler.getModelGoster(denklestirmeAy, session);
 		return kontrolDurum;
+	}
+
+	/**
+	 * @param sirket
+	 * @param puantajList
+	 */
+	private void bordroVeriOlusturBasla(Sirket sirket, List<AylikPuantaj> puantajList) {
+		if (sirket != null && !ortakIslemler.getParameterKey("bordroVeriOlustur").equals("")) {
+			try {
+				String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
+				int donem = yil * 100 + ay;
+				if (donem >= Integer.parseInt(str))
+					fazlaMesaiOrtakIslemler.bordroVeriOlustur(puantajList, false, String.valueOf(donem), session);
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**

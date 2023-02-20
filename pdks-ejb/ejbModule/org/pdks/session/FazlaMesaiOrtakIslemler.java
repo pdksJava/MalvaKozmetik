@@ -29,6 +29,7 @@ import org.jboss.seam.annotations.Out;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.Identity;
 import org.pdks.entity.AylikPuantaj;
+import org.pdks.entity.BordroTipi;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
@@ -37,6 +38,8 @@ import org.pdks.entity.Liste;
 import org.pdks.entity.MenuItem;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
+import org.pdks.entity.PersonelDenklestirmeBordro;
+import org.pdks.entity.PersonelDenklestirmeBordroDetay;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Tatil;
@@ -91,6 +94,249 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	HashMap<String, MenuItem> menuItemMap = new HashMap<String, MenuItem>();
 	@In(required = false)
 	FacesMessages facesMessages;
+
+	/**
+	 * @param puantajList
+	 * @param fazlaMesaiHesapla
+	 * @param donemStr
+	 * @param session
+	 */
+	public void bordroVeriOlustur(List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, Session session) {
+		HashMap fields = new HashMap();
+		fields.put("tipi", Tanim.TIPI_IZIN_GRUPLARI);
+		fields.put("durum", Boolean.TRUE);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<Tanim> list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
+		TreeMap<String, String> izinGrupMap = new TreeMap<String, String>();
+		if (list.isEmpty()) {
+			BordroTipi[] bordroTipileri = new BordroTipi[] { BordroTipi.UCRETLI_IZIN, BordroTipi.UCRETSIZ_IZIN, BordroTipi.RAPORLU_IZIN };
+			for (BordroTipi bordroTipi : bordroTipileri) {
+				Tanim tanim = new Tanim();
+				tanim.setKodu(bordroTipi.value());
+				tanim.setErpKodu("izinGrup" + bordroTipi.value());
+				list.add(tanim);
+			}
+		}
+
+		for (Tanim tanim : list) {
+			BordroTipi bordroTipi = null;
+			String izinGrupKodu = tanim.getKodu();
+			try {
+				bordroTipi = BordroTipi.fromValue(izinGrupKodu);
+			} catch (Exception e) {
+			}
+			if (bordroTipi != null) {
+				String izinKodlari = tanim.getErpKodu();
+				String izinKey = "izinGrup" + izinGrupKodu;
+				if (!ortakIslemler.getParameterKey(izinKodlari).equals(""))
+					izinKodlari = ortakIslemler.getParameterKey(izinKodlari);
+				else if (!ortakIslemler.getParameterKey(izinKey).equals(""))
+					izinKodlari = ortakIslemler.getParameterKey(izinKey);
+				List<String> kodList = PdksUtil.getListStringTokenizer(izinKodlari, null);
+				for (String key : kodList) {
+					izinGrupMap.put(key, izinGrupKodu);
+				}
+			}
+		}
+		Calendar cal = Calendar.getInstance();
+		Date bugun = PdksUtil.getDate(cal.getTime());
+		Date tarih = PdksUtil.convertToJavaDate(donemStr + "01", "yyyyMMdd");
+		cal.setTime(tarih);
+		int ayGunSayisi = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		List<Long> idList = new ArrayList<Long>();
+		for (AylikPuantaj ap : puantajList) {
+			PersonelDenklestirme personelDenklestirme = ap.getPersonelDenklestirmeAylik();
+			if (personelDenklestirme.getId() != null && ap.isDonemBitti())
+				idList.add(personelDenklestirme.getId());
+		}
+		if (!idList.isEmpty()) {
+			fields.clear();
+			fields.put("personelDenklestirme.id", idList);
+			fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelDenklestirmeId");
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			TreeMap<Long, PersonelDenklestirmeBordro> bordroMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordro.class, false);
+			TreeMap<String, PersonelDenklestirmeBordroDetay> bordroDetayMap = null;
+			idList.clear();
+			if (!bordroMap.isEmpty()) {
+				for (Long key : bordroMap.keySet())
+					idList.add(bordroMap.get(key).getId());
+
+				fields.clear();
+				fields.put("personelDenklestirmeBordro.id", idList);
+				fields.put(PdksEntityController.MAP_KEY_MAP, "getDetayKey");
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				bordroDetayMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordroDetay.class, false);
+			} else
+				bordroDetayMap = new TreeMap<String, PersonelDenklestirmeBordroDetay>();
+
+			for (AylikPuantaj ap : puantajList) {
+				PersonelDenklestirme personelDenklestirme = ap.getPersonelDenklestirmeAylik();
+				if (!(personelDenklestirme.getDurum() || fazlaMesaiHesapla == false) || ap.isDonemBitti() == false)
+					continue;
+				boolean flush = false;
+				try {
+					for (VardiyaHafta vardiyaHafta : ap.getVardiyaHaftaList()) {
+						List<VardiyaGun> gunler = vardiyaHafta.getVardiyaGunler();
+						if (gunler != null) {
+							VardiyaGun sonGun = null, haftaTatilGun = null;
+							for (VardiyaGun vardiyaGun : gunler) {
+								if (vardiyaGun.getVardiya() != null) {
+									sonGun = vardiyaGun;
+									if (vardiyaGun.getVardiya().isHaftaTatil() && vardiyaGun.getCalismaSuresi() == 0.0)
+										haftaTatilGun = vardiyaGun;
+								}
+							}
+							if (haftaTatilGun != null && sonGun != null && sonGun.getIzin() != null && sonGun.getIzin().getIzinTipi().isTakvimGunuMu() == false) {
+								if (sonGun.getCalismaSuresi() == 0.0d && !haftaTatilGun.getId().equals(sonGun.getId())) {
+									// Vardiya htTatil = haftaTatilGun.getVardiya();
+									// Vardiya sonGunVardiya = sonGun.getVardiya();
+									// sonGun.setVardiya(htTatil);
+									// haftaTatilGun.setVardiya(sonGunVardiya);
+									// pdksEntityController.saveOrUpdate(session, entityManager, haftaTatilGun);
+									// pdksEntityController.saveOrUpdate(session, entityManager, sonGun);
+									// flush = true;
+
+								}
+
+							}
+						}
+
+					}
+				} catch (Exception ex) {
+					logger.error(ex);
+					ex.printStackTrace();
+				}
+
+				Integer normalGunAdet = 0, haftaTatilAdet = 0, tatilAdet = 0;
+				// boolean calisiyor = ap.getSaatToplami() > 0.0d;
+				LinkedHashMap<BordroTipi, Double> detayMap = new LinkedHashMap<BordroTipi, Double>();
+				if (fazlaMesaiHesapla) {
+ 					if (personelDenklestirme.getOdenenSure() > 0) {
+						detayMap.put(BordroTipi.UCRETI_ODENEN_MESAI, personelDenklestirme.getOdenenSure());
+					}
+					if (personelDenklestirme.getHaftaCalismaSuresi() > 0) {
+						detayMap.put(BordroTipi.HAFTA_TATIL_MESAI, personelDenklestirme.getHaftaCalismaSuresi());
+					}
+					if (personelDenklestirme.getResmiTatilSure() > 0) {
+						detayMap.put(BordroTipi.RESMI_TATIL_MESAI, personelDenklestirme.getResmiTatilSure());
+					}
+					if (personelDenklestirme.getAksamVardiyaSaatSayisi() > 0) {
+						detayMap.put(BordroTipi.AKSAM_SAAT_MESAI, personelDenklestirme.getAksamVardiyaSaatSayisi());
+					}
+					if (personelDenklestirme.getAksamVardiyaSayisi() > 0) {
+						detayMap.put(BordroTipi.AKSAM_GUN_MESAI, personelDenklestirme.getAksamVardiyaSayisi());
+					}
+				}
+				for (VardiyaGun vardiyaGun : ap.getVardiyalar()) {
+					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
+						if (bugun.before(vardiyaGun.getVardiyaDate()) && fazlaMesaiHesapla)
+							continue;
+						// boolean pazar = vardiyaGun.isPazar();
+						boolean haftaTatil = vardiyaGun.isHaftaTatil();
+						Vardiya vardiya = vardiyaGun.getVardiya();
+						if (!haftaTatil)
+							++normalGunAdet;
+						else
+							++haftaTatilAdet;
+						if (vardiyaGun.isIzinli()) {
+							// calisiyor = true;
+							String izinKodu = null;
+							int artiGun = 1;
+							if (vardiyaGun.getIzin() != null) {
+								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
+								if (izinTipi.getTakvimGunumu() == false) {
+									if (vardiyaGun.getVardiya().isOffGun()) {
+										if (izinTipi.isOffDahilMi() == false)
+											artiGun = 0;
+									} else if (haftaTatil) {
+										if (izinTipi.isHTDahil())
+											artiGun = 0;
+
+									}
+									if (artiGun == 0)
+										logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + izinTipi.getIzinTipiTanim().getAciklama());
+								}
+								izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
+							} else
+								izinKodu = vardiya.getKisaAdi();
+							if (artiGun > 0 && izinKodu != null) {
+								BordroTipi bordroTipi = null;
+								try {
+									bordroTipi = BordroTipi.fromValue(izinGrupMap.get(izinKodu));
+								} catch (Exception e) {
+								}
+								if (bordroTipi != null) {
+									double miktar = (detayMap.containsKey(bordroTipi) ? detayMap.get(bordroTipi) : 0.0d) + artiGun;
+									detayMap.put(bordroTipi, miktar);
+
+								}
+							}
+						}
+					}
+
+				}
+
+				int toplamAdet = normalGunAdet + haftaTatilAdet;
+				if (toplamAdet > 0) {
+					if (ayGunSayisi == toplamAdet)
+						normalGunAdet += 30 - ayGunSayisi;
+					if (toplamAdet > 30) {
+						tatilAdet = 1;
+					}
+
+					PersonelDenklestirmeBordro denklestirmeBordro = bordroMap.containsKey(personelDenklestirme.getId()) ? bordroMap.get(personelDenklestirme.getId()) : null;
+					if (denklestirmeBordro == null) {
+						denklestirmeBordro = new PersonelDenklestirmeBordro();
+						denklestirmeBordro.setPersonelDenklestirme(personelDenklestirme);
+					} else if (fazlaMesaiHesapla == false)
+						continue;
+
+					denklestirmeBordro.setGuncellendi(denklestirmeBordro.getId() == null);
+					denklestirmeBordro.setNormalGunAdet(normalGunAdet);
+					denklestirmeBordro.setHaftaTatilAdet(haftaTatilAdet);
+					denklestirmeBordro.setTatilAdet(tatilAdet);
+					if (denklestirmeBordro.isGuncellendi()) {
+						pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeBordro);
+						flush = true;
+					}
+
+					if (!detayMap.isEmpty()) {
+						for (BordroTipi bordroTipi : detayMap.keySet()) {
+							PersonelDenklestirmeBordroDetay bordroDetay = null;
+							String detayKey = PersonelDenklestirmeBordroDetay.getDetayKey(denklestirmeBordro, bordroTipi.value());
+							if (bordroDetayMap.containsKey(detayKey)) {
+								bordroDetay = bordroDetayMap.get(detayKey);
+								bordroDetayMap.remove(detayKey);
+							} else {
+								bordroDetay = new PersonelDenklestirmeBordroDetay(denklestirmeBordro, bordroTipi);
+							}
+							bordroDetay.setGuncellendi(bordroDetay.getId() == null);
+							bordroDetay.setMiktar(detayMap.get(bordroTipi));
+							if (bordroDetay.isGuncellendi()) {
+								pdksEntityController.saveOrUpdate(session, entityManager, bordroDetay);
+								flush = true;
+							}
+						}
+
+					}
+				}
+				detayMap = null;
+				if (flush)
+					session.flush();
+			}
+			if (!bordroDetayMap.isEmpty()) {
+				for (String key : bordroDetayMap.keySet()) {
+					session.delete(bordroDetayMap.get(key));
+				}
+				session.flush();
+			}
+			bordroDetayMap = null;
+			bordroMap = null;
+		}
+	}
 
 	/**
 	 * @param talepId
