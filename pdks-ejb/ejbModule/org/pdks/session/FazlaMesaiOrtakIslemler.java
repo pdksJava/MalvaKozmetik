@@ -147,7 +147,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		List<Long> idList = new ArrayList<Long>();
 		for (AylikPuantaj ap : puantajList) {
 			PersonelDenklestirme personelDenklestirme = ap.getPersonelDenklestirmeAylik();
-			if (personelDenklestirme.getId() != null && ap.isDonemBitti())
+			if (personelDenklestirme.getId() != null)
 				idList.add(personelDenklestirme.getId());
 		}
 		if (!idList.isEmpty()) {
@@ -174,7 +174,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 			for (AylikPuantaj ap : puantajList) {
 				PersonelDenklestirme personelDenklestirme = ap.getPersonelDenklestirmeAylik();
-				if (!(personelDenklestirme.getDurum() || fazlaMesaiHesapla == false) || ap.isDonemBitti() == false)
+				if (!(personelDenklestirme.getDurum() || fazlaMesaiHesapla == false))
 					continue;
 				boolean flush = false;
 				try {
@@ -214,7 +214,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				// boolean calisiyor = ap.getSaatToplami() > 0.0d;
 				LinkedHashMap<BordroTipi, Double> detayMap = new LinkedHashMap<BordroTipi, Double>();
 				if (fazlaMesaiHesapla) {
- 					if (personelDenklestirme.getOdenenSure() > 0) {
+					if (personelDenklestirme.getOdenenSure() > 0) {
 						detayMap.put(BordroTipi.UCRETI_ODENEN_MESAI, personelDenklestirme.getOdenenSure());
 					}
 					if (personelDenklestirme.getHaftaCalismaSuresi() > 0) {

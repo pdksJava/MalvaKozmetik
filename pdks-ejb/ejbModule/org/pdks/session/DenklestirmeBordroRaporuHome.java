@@ -268,26 +268,29 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 
 			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
-			if (sirket != null && sirket.isTesisDurumu()) {
-				HashMap fields = new HashMap();
-				fields.put("ay", ay);
-				fields.put("yil", yil);
+			if (sirket != null) {
+				if (sirket.isTesisDurumu()) {
+					HashMap fields = new HashMap();
+					fields.put("ay", ay);
+					fields.put("yil", yil);
 
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
-				selectItems = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, true, session);
-				if (!selectItems.isEmpty()) {
-					if (selectItems.size() == 1)
-						onceki = (Long) selectItems.get(0).getValue();
-					else {
-						onceki = null;
-						for (SelectItem selectItem : selectItems) {
-							if (selectItem.getValue().equals(tesisId))
-								onceki = tesisId;
+					if (session != null)
+						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+					DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+					selectItems = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, true, session);
+					if (!selectItems.isEmpty()) {
+						if (selectItems.size() == 1)
+							onceki = (Long) selectItems.get(0).getValue();
+						else {
+							onceki = null;
+							for (SelectItem selectItem : selectItems) {
+								if (selectItem.getValue().equals(tesisId))
+									onceki = tesisId;
+							}
 						}
 					}
-				}
+				} else
+					onceki = null;
 			}
 
 		} else
@@ -328,7 +331,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				}
 			}
 
-		}
+		} else
+			sirketId = onceki;
 		setSirketler(sirketList);
 
 		if (sirketId != null)
@@ -384,8 +388,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
 				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
-				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
-				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
+				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
 				fields.put("basGun", basGun);
 				fields.put("bitGun", bitGun);
 				if (sirketId != null || (sicilNo != null && sicilNo.length() > 0)) {
@@ -403,14 +406,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					}
 				}
 				if (tesisId != null) {
-					sb.append(" AND  P." + Personel.COLUMN_NAME_TESIS + "=:t ");
-					fields.put("t", tesisId);
+					sb.append(" AND  P." + Personel.COLUMN_NAME_TESIS + "= " + tesisId);
 
 				}
 				sb.append(" INNER JOIN " + PersonelDenklestirmeBordro.TABLE_NAME + " B ON B." + PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME + "=V." + PersonelDenklestirme.COLUMN_NAME_ID);
-				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=:denklestirmeAy AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1  ");
+				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1  ");
 				sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1  AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
-				fields.put("denklestirmeAy", denklestirmeAy.getId());
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeBordro.class);
