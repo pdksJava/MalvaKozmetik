@@ -1314,7 +1314,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (ikRole || adminRole) {
 					manuelGirisGoster = ortakIslemler.getParameterKey("manuelGirisGoster");
 					if (manuelGirisGoster.equals("") && authenticatedUser.isAdmin())
-						manuelGirisGoster = "background-color: white;font-style: italic !important;";
+						manuelGirisGoster = "background-color: yellow;font-style: italic !important;";
 					kapiGirisSistemAdi = manuelGirisGoster.equals("") ? "" : ortakIslemler.getParameterKey("kapiGirisSistemAdi");
 				}
 				for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
@@ -2277,7 +2277,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					sanalDurum.put(ap.getPdksPersonel().getSanalPersonel(), ap.getPdksPersonel().getId());
 			modelGoster = sanalDurum.size() > 1;
 		}
-		if (denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle)) {
+		if (adminRole || denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle)) {
 			bordroVeriOlusturBasla(puantajList);
 		}
 		setAylikPuantajList(puantajList);

@@ -159,12 +159,28 @@
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.tatilAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.tatilAdet)>0}" />
 								</rich:column>
+								<rich:column style="text-align: right;">
+									<f:facet name="header">
+										<h:outputText value="Ücretli İzin Gün" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretliIzin))}"
+										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretliIzin)>0}" />
+
+								</rich:column>
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilDurum}">
 									<f:facet name="header">
-										<h:outputText value="Resmi Tatil Mesai" />
+										<h:outputText value="Raporlu (Hasta)" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilMesai))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilMesai)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.raporluIzin))}"
+										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.raporluIzin)>0}" />
+
+								</rich:column>
+								<rich:column style="text-align: right;">
+									<f:facet name="header">
+										<h:outputText value="Ücretsiz İzin Gün" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretsizIzin))}"
+										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretsizIzin)>0}" />
 
 								</rich:column>
 								<rich:column style="text-align: right;">

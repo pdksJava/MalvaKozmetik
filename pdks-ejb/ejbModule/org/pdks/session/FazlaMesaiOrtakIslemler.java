@@ -237,10 +237,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						// boolean pazar = vardiyaGun.isPazar();
 						boolean haftaTatil = vardiyaGun.isHaftaTatil();
 						Vardiya vardiya = vardiyaGun.getVardiya();
-						if (!haftaTatil)
-							++normalGunAdet;
-						else
-							++haftaTatilAdet;
+						int calismaGun = 1;
 						if (vardiyaGun.isIzinli()) {
 							// calisiyor = true;
 							String izinKodu = null;
@@ -271,9 +268,17 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								if (bordroTipi != null) {
 									double miktar = (detayMap.containsKey(bordroTipi) ? detayMap.get(bordroTipi) : 0.0d) + artiGun;
 									detayMap.put(bordroTipi, miktar);
-
+									if (bordroTipi.equals(BordroTipi.RAPORLU_IZIN) || bordroTipi.equals(BordroTipi.UCRETSIZ_IZIN))
+										calismaGun = 0;
 								}
 							}
+
+						}
+						if (calismaGun > 0) {
+							if (!haftaTatil)
+								normalGunAdet += calismaGun;
+							else
+								haftaTatilAdet += calismaGun;
 						}
 					}
 

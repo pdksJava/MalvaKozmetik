@@ -6193,7 +6193,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		aylikHareketKaydiVardiyaBul = Boolean.FALSE;
 		if (denklestirmeAyDurum)
 			aylikHareketKaydiVardiyalariBul();
-		if (denklestirmeAyDurum) {
+		if (adminRole || denklestirmeAyDurum) {
 			fields.clear();
 			fields.put("id", aramaSecenekleri.getSirketId());
 			if (session != null)

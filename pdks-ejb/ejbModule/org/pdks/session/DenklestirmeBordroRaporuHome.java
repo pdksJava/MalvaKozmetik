@@ -513,16 +513,29 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		ByteArrayOutputStream baos = null;
 		try {
 			boolean kimlikNoGoster = false;
+			String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
+			Boolean kartNoAciklamaGoster = null;
+			if (!kartNoAciklama.equals(""))
+				kartNoAciklamaGoster = false;
 			for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
 				Personel personel = aylikPuantaj.getPdksPersonel();
-				if (!kimlikNoGoster) {
-					PersonelKGS personelKGS = personel.getPersonelKGS();
-					if (personelKGS != null)
+				PersonelKGS personelKGS = personel.getPersonelKGS();
+				if (personelKGS != null) {
+					if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
+						kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
+						if (kartNoAciklamaGoster && kimlikNoGoster)
+							break;
+					}
+
+					if (!kimlikNoGoster) {
 						kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
-					if (kimlikNoGoster)
-						break;
+						if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
+							break;
+					}
 				}
 			}
+			if (kartNoAciklamaGoster == null)
+				kartNoAciklamaGoster = false;
 			boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
 			Workbook wb = new XSSFWorkbook();
 			Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
@@ -545,6 +558,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(aciklama + " Kodu");
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(aciklama);
 			}
+			if (kartNoAciklamaGoster)
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(kartNoAciklama);
 			if (kimlikNoGoster)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kimlikNoAciklama());
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
@@ -568,8 +583,15 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
+				PersonelKGS personelKGS = personel.getPersonelKGS();
+				if (kartNoAciklamaGoster) {
+					String kartNo = "";
+					if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKartNo()))
+						kartNo = personelKGS.getKartNo();
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kartNo);
+				}
 				if (kimlikNoGoster) {
-					PersonelKGS personelKGS = personel.getPersonelKGS();
+
 					String kimlikNo = "";
 					if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo()))
 						kimlikNo = personelKGS.getKimlikNo();

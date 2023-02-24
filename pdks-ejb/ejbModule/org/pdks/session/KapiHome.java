@@ -102,6 +102,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 	}
 
 	public String fillkapiList() {
+		session.clear();
 		List<Kapi> kapiList = new ArrayList<Kapi>();
 		HashMap parametreMap = new HashMap();
 		try {
@@ -118,12 +119,13 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 				sb.append(str);
 				sb.append(" AND K." + Kapi.COLUMN_NAME_KAPI_TIPI + " =:t");
 				parametreMap.put("t", kapiView.getKapi().getTipi().getId());
+				str = "";
 			}
 			if (kapiView.getKapiKGSAciklama() != null && kapiView.getKapiKGSAciklama().trim().length() > 0) {
 				sb.append(" WHERE P." + KapiKGS.COLUMN_NAME_ACIKLAMA + " LIKE :ka");
 				parametreMap.put("ka", "%" + kapiView.getKapiKGSAciklama().trim() + "%");
 			}
- 			if (session != null)
+			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<KapiKGS> kapiKGSList = pdksEntityController.getObjectBySQLList(sb, parametreMap, KapiKGS.class);
 
@@ -188,6 +190,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 			logger.error("PDKS hata out : " + e.getMessage());
 			kapiList = new ArrayList<Kapi>();
 		}
+		fillKapiTipleri();
 		setkapiList(kapiList);
 		return "";
 	}
@@ -282,9 +285,9 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
-		session.clear();
 		kapiView = new KapiView();
 		kapiView.setKapi(new Kapi());
+		session.clear();
 		fillKapiTipleri();
 		setkapiList(new ArrayList<Kapi>());
 	}
