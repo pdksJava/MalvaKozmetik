@@ -3330,6 +3330,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						sb.append("<p><b>savePersoneller fonksiyonunda hata veri var!</b></p>");
 						sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
 						boolean renkUyari = false;
+						Sirket bosSirket = new Sirket();
 						for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
 							PersonelERP personelERP = (PersonelERP) iterator.next();
 							String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
@@ -3339,12 +3340,14 @@ public class PdksVeriOrtakAktar implements Serializable {
 								if (personelERP.getSirketAdi() != null)
 									sirketBilgi = personelERP.getSirketAdi();
 								if (personelERP.getTesisAdi() != null) {
-									if (!sirketBilgi.equals(""))
-										sirketBilgi += " - " + personelERP.getTesisAdi();
-									else
-										sirketBilgi = personelERP.getTesisAdi();
+									Sirket sirket = sirketMap != null && sirketMap.containsKey(personelERP.getSirketKodu()) ? sirketMap.get(personelERP.getSirketKodu()) : bosSirket;
+									if (sirket.isTesisDurumu()) {
+										if (!sirketBilgi.equals(""))
+											sirketBilgi += " - " + personelERP.getTesisAdi();
+										else
+											sirketBilgi = personelERP.getTesisAdi();
+									}
 								}
-
 								if (personelERP.getBolumAdi() != null) {
 									if (sirketBilgi.equals(""))
 										sirketBilgi = personelERP.getBolumAdi();
