@@ -2530,13 +2530,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 							personelKGSBos = null;
 					}
 				}
+				String adSoyadERP = (personelERP.getAdi() != null ? personelERP.getAdi().trim() : "Ad tanımsız") + " " + (personelERP.getSoyadi() != null ? personelERP.getSoyadi().trim() : "Soyad tanımsız");
 				if (personelKGSData == null) {
 					boolean kayitYok = true;
 					if (gecmisTarih != null && iseBaslamaTarihi != null && iseBaslamaTarihi.before(gecmisTarih))
 						kayitYok = false;
 					if (kayitYok && (istenAyrilisTarihi == null || !istenAyrilisTarihi.before(ayBasi))) {
-						String mesaj = personelERP.getAdi() + " " + personelERP.getSoyadi() + " personel'in " + kapiGiris + " " + personelNo + " personel no bilgisi bulunamadı!"
-								+ (iseBaslamaTarihi != null ? " [ İşe giriş tarihi : " + PdksUtil.convertToDateString(iseBaslamaTarihi, PdksUtil.getDateFormat()) + " ]" : "");
+						String mesaj = adSoyadERP + " personel'in " + kapiGiris + " " + personelNo + " personel no bilgisi bulunamadı!" + (iseBaslamaTarihi != null ? " [ İşe giriş tarihi : " + PdksUtil.convertToDateString(iseBaslamaTarihi, PdksUtil.getDateFormat()) + " ]" : "");
 						String ek = "";
 						if (istenAyrilisTarihi != null && istenAyrilisTarihi.before(bugun))
 							ek = " (İşten ayrılma tarihi : " + personelERP.getIstenAyrilmaTarihi();
@@ -2596,7 +2596,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 							} else if (!soyadiUyumlu) {
 								mesaj = "soyadı";
 							}
-							addHatalist(personelERP.getHataList(), personelNo + " personel " + mesaj + " uyumsuz! ( " + personelERP.getAdi() + " " + personelERP.getSoyadi() + " <> " + personel.getAdSoyad() + " ) ");
+							mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " <> " + personel.getAdSoyad() + " ) ";
+							addHatalist(personelERP.getHataList(), PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
 						}
 					}
