@@ -2861,10 +2861,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				sb.append("<TABLE style=\"width: 80%\">");
 				if (sirketId != null)
 					sb.append("<TR><TD><B>" + ortakIslemler.sirketAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(sirketId, pdksSirketList) + "</TD>");
-				if (ortakIslemler.isTesisDurumu() && tesisId != null)
+				if (sirket != null && sirket.isTesisDurumu() && tesisId != null)
 					sb.append("<TR><TD><B>" + ortakIslemler.tesisAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(tesisId, tesisList) + "</TD>");
 				if (seciliEkSaha3Id != null)
-					sb.append("<TR><TD><B>Bölüm</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha3Id, gorevYeriList) + "</TD>");
+					sb.append("<TR><TD><B>" + bolumAciklama + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha3Id, gorevYeriList) + "</TD>");
+				if (ekSaha4Tanim != null && seciliEkSaha4Id != null && seciliEkSaha4Id.longValue() > 0L)
+					sb.append("<TR><TD><B>" + ekSaha4Tanim.getAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha4Id, altBolumList) + "</TD>");
 				if (sicilNo != null && !sicilNo.trim().equals(""))
 					sb.append("<TR><TD><B>" + ortakIslemler.personelNoAciklama() + "</B></TD><TD><B> : </B>" + sicilNo.trim() + "</TD>");
 				sb.append("</TABLE>");
