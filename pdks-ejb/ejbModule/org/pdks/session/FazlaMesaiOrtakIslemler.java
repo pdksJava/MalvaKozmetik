@@ -213,23 +213,23 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				Integer normalGunAdet = 0, haftaTatilAdet = 0, tatilAdet = 0;
 				// boolean calisiyor = ap.getSaatToplami() > 0.0d;
 				LinkedHashMap<BordroTipi, Double> detayMap = new LinkedHashMap<BordroTipi, Double>();
-				if (fazlaMesaiHesapla) {
-					if (personelDenklestirme.getOdenenSure() > 0) {
-						detayMap.put(BordroTipi.UCRETI_ODENEN_MESAI, personelDenklestirme.getOdenenSure());
-					}
-					if (personelDenklestirme.getHaftaCalismaSuresi() > 0) {
-						detayMap.put(BordroTipi.HAFTA_TATIL_MESAI, personelDenklestirme.getHaftaCalismaSuresi());
-					}
-					if (personelDenklestirme.getResmiTatilSure() > 0) {
-						detayMap.put(BordroTipi.RESMI_TATIL_MESAI, personelDenklestirme.getResmiTatilSure());
-					}
-					if (personelDenklestirme.getAksamVardiyaSaatSayisi() > 0) {
-						detayMap.put(BordroTipi.AKSAM_SAAT_MESAI, personelDenklestirme.getAksamVardiyaSaatSayisi());
-					}
-					if (personelDenklestirme.getAksamVardiyaSayisi() > 0) {
-						detayMap.put(BordroTipi.AKSAM_GUN_MESAI, personelDenklestirme.getAksamVardiyaSayisi());
-					}
-				}
+//				if (fazlaMesaiHesapla) {
+//					if (personelDenklestirme.getOdenenSure() > 0) {
+//						detayMap.put(BordroTipi.UCRETI_ODENEN_MESAI, personelDenklestirme.getOdenenSure());
+//					}
+//					if (personelDenklestirme.getHaftaCalismaSuresi() > 0) {
+//						detayMap.put(BordroTipi.HAFTA_TATIL_MESAI, personelDenklestirme.getHaftaCalismaSuresi());
+//					}
+//					if (personelDenklestirme.getResmiTatilSure() > 0) {
+//						detayMap.put(BordroTipi.RESMI_TATIL_MESAI, personelDenklestirme.getResmiTatilSure());
+//					}
+//					if (personelDenklestirme.getAksamVardiyaSaatSayisi() > 0) {
+//						detayMap.put(BordroTipi.AKSAM_SAAT_MESAI, personelDenklestirme.getAksamVardiyaSaatSayisi());
+//					}
+//					if (personelDenklestirme.getAksamVardiyaSayisi() > 0) {
+//						detayMap.put(BordroTipi.AKSAM_GUN_MESAI, personelDenklestirme.getAksamVardiyaSayisi());
+//					}
+//				}
 				for (VardiyaGun vardiyaGun : ap.getVardiyalar()) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
 						if (bugun.before(vardiyaGun.getVardiyaDate()) && fazlaMesaiHesapla)

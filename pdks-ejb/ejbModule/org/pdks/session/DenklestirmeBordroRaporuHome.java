@@ -83,6 +83,32 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private String sicilNo = "", bolumAciklama;
 
+	private String COL_SIRA = "sira";
+	private String COL_YIL = "yil";
+	private String COL_AY = "ay";
+	private String COL_AY_ADI = "ayAdi";
+	private String COL_PERSONEL_NO = "personelNo";
+	private String COL_AD = "ad";
+	private String COL_SOYAD = "soyad";
+	private String COL_AD_SOYAD = "adSoyad";
+	private String COL_KART_NO = "kartNo";
+	private String COL_KIMLIK_NO = "kimlikNo";
+	private String COL_SIRKET = "sirket";
+	private String COL_TESIS = "tesis";
+	private String COL_BOLUM = "bolumAdi";
+	private String COL_ALT_BOLUM = "altBolumAdi";
+	private String COL_NORMAL_GUN_ADET = "normalGunAdet";
+	private String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
+	private String COL_TATIL_ADET = "tatilAdet";
+	private String COL_UCRETLI_IZIN = "ucretliIzin";
+	private String COL_RAPORLU_IZIN = "raporluIzin";
+	private String COL_UCRETSIZ_IZIN = "ucretsizIzin";
+	private String COL_RESMI_TATIL_MESAI = "resmiTatilMesai";
+	private String COL_UCRETI_ODENEN_MESAI = "ucretiOdenenMesai";
+	private String COL_HAFTA_TATIL_MESAI = "haftaTatilMesai";
+	private String COL_AKSAM_SAAT_MESAI = "aksamSaatMesai";
+	private String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
+
 	private Date basGun, bitGun;
 
 	private Sirket sirket;
@@ -98,6 +124,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE;
 	private List<Vardiya> izinTipiVardiyaList;
 	private TreeMap<String, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap;
+	private TreeMap<String, Tanim> baslikMap;
 	private TreeMap<Long, Personel> izinTipiPersonelMap;
 	private Session session;
 
@@ -137,6 +164,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+		if (baslikMap == null)
+			baslikMap = new TreeMap<String, Tanim>();
 
 		maxYil = yil + 1;
 		sicilNo = "";
@@ -354,6 +383,18 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
 	}
 
+	/**
+	 * @param kod
+	 * @return
+	 */
+	public String getBaslikAciklama(String kod) {
+		String aciklama = "";
+		if (baslikMap != null && kod != null && baslikMap.containsKey(kod)) {
+			aciklama = baslikMap.get(kod).getAciklama();
+		}
+		return aciklama;
+	}
+
 	public String fillPersonelDenklestirmeList() {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
@@ -470,8 +511,43 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				borDenklestirmeBordroList = null;
 			}
 		}
+		baslikMap.clear();
 		if (personelDenklestirmeList.isEmpty())
 			PdksUtil.addMessageWarn("İlgili döneme ait fazla mesai bulunamadı!");
+		else {
+			List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
+			if (bordroAlanlari.isEmpty()) {
+				boolean kimlikNoGoster = false;
+				String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
+				Boolean kartNoAciklamaGoster = null;
+				if (!kartNoAciklama.equals(""))
+					kartNoAciklamaGoster = false;
+
+				for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
+					Personel personel = aylikPuantaj.getPdksPersonel();
+					PersonelKGS personelKGS = personel.getPersonelKGS();
+					if (personelKGS != null) {
+						if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
+							kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
+							if (kartNoAciklamaGoster && kimlikNoGoster)
+								break;
+						}
+
+						if (!kimlikNoGoster) {
+							kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
+							if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
+								break;
+						}
+					}
+				}
+				if (kartNoAciklamaGoster == null)
+					kartNoAciklamaGoster = false;
+				bordroBilgiAciklamaOlustur(kimlikNoGoster, kartNoAciklama, kartNoAciklamaGoster, bordroAlanlari);
+			}
+			for (Tanim tanim : bordroAlanlari)
+				baslikMap.put(tanim.getKodu(), tanim);
+
+		}
 		setInstance(denklestirmeAy);
 
 		return "";
@@ -529,43 +605,18 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private ByteArrayOutputStream denklestirmeExcelAktarDevam() {
 		ByteArrayOutputStream baos = null;
 		try {
-			Tanim ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
-			boolean kimlikNoGoster = false;
-			String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
-			Boolean kartNoAciklamaGoster = null;
-			if (!kartNoAciklama.equals(""))
-				kartNoAciklamaGoster = false;
+
 			String ayAdi = null;
 			for (SelectItem si : aylar) {
 				if (si.getValue().equals(ay))
 					ayAdi = si.getLabel();
 
 			}
-			String COL_SIRA = "sira";
-			String COL_YIL = "yil";
-			String COL_AY = "ay";
-			String COL_AY_ADI = "ayAdi";
-			String COL_PERSONEL_NO = "personelNo";
-			String COL_AD = "ad";
-			String COL_SOYAD = "soyad";
-			String COL_AD_SOYAD = "adSoyad";
-			String COL_KART_NO = "kartNo";
-			String COL_KIMLIK_NO = "kimlikNo";
-			String COL_SIRKET = "sirket";
-			String COL_TESIS = "tesis";
-			String COL_BOLUM = "bolumAdi";
-			String COL_ALT_BOLUM = "altBolumAdi";
-			String COL_NORMAL_GUN_ADET = "normalGunAdet";
-			String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
-			String COL_TATIL_ADET = "tatilAdet";
-			String COL_UCRETLI_IZIN = "ucretliIzin";
-			String COL_RAPORLU_IZIN = "raporluIzin";
-			String COL_UCRETSIZ_IZIN = "ucretsizIzin";
-			String COL_RESMI_TATIL_MESAI = "resmiTatilMesai";
-			String COL_UCRETI_ODENEN_MESAI = "ucretiOdenenMesai";
-			String COL_HAFTA_TATIL_MESAI = "haftaTatilMesai";
-			String COL_AKSAM_SAAT_MESAI = "aksamSaatMesai";
-			String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
+			boolean kimlikNoGoster = false;
+			String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
+			Boolean kartNoAciklamaGoster = null;
+			if (!kartNoAciklama.equals(""))
+				kartNoAciklamaGoster = false;
 
 			for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
 				Personel personel = aylikPuantaj.getPdksPersonel();
@@ -587,50 +638,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (kartNoAciklamaGoster == null)
 				kartNoAciklamaGoster = false;
 			List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
-			if (bordroAlanlari.isEmpty()) {
-				int sira = 0;
-				bordroAlanlari.add(getBordroAlani(++sira, COL_SIRA, "Sıra"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_YIL, "Yıl"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_AY, "Ay"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_PERSONEL_NO, ortakIslemler.personelNoAciklama()));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_AD_SOYAD, "Personel"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_SIRKET + "Kodu", ortakIslemler.sirketAciklama() + " Kodu"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_SIRKET, ortakIslemler.sirketAciklama()));
-				if (ortakIslemler.isTesisDurumu()) {
-					bordroAlanlari.add(getBordroAlani(++sira, COL_TESIS + "Kodu", ortakIslemler.tesisAciklama() + " Kodu"));
-					bordroAlanlari.add(getBordroAlani(++sira, COL_TESIS, ortakIslemler.tesisAciklama()));
-				}
-				if (kartNoAciklamaGoster)
-					bordroAlanlari.add(getBordroAlani(++sira, COL_KART_NO, kartNoAciklama));
-				if (kimlikNoGoster)
-					bordroAlanlari.add(getBordroAlani(++sira, COL_KIMLIK_NO, ortakIslemler.kimlikNoAciklama()));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_BOLUM, bolumAciklama));
-				if (ekSaha4Tanim != null)
-					bordroAlanlari.add(getBordroAlani(++sira, COL_ALT_BOLUM, ekSaha4Tanim.getAciklama()));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_NORMAL_GUN_ADET, "Normal Gün"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_HAFTA_TATIL_ADET, "H.Tatil Gün"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_TATIL_ADET, "G.Tatil Gün"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETLI_IZIN, "Ücretli İzin Gün"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_RAPORLU_IZIN, "Raporlu (Hasta)"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETSIZ_IZIN, "Ücretsiz İzin Gün"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_RESMI_TATIL_MESAI, "Resmi Tatil Mesai"));
-				bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETI_ODENEN_MESAI, "Ücreti Ödenen Mesai"));
-				if (haftaCalisma)
-					bordroAlanlari.add(getBordroAlani(++sira, COL_HAFTA_TATIL_MESAI, "Hafta Tatil Mesai"));
-				if (aksamSaat)
-					bordroAlanlari.add(getBordroAlani(++sira, COL_AKSAM_SAAT_MESAI, "Gece Saat"));
-				if (aksamGun)
-					bordroAlanlari.add(getBordroAlani(++sira, COL_AKSAM_SAAT_MESAI, "Gece Adet"));
-				Date islemTarihi = new Date();
-				for (Tanim tanim : bordroAlanlari) {
-					tanim.setTipi(Tanim.TIPI_BORDRDO_ALANLARI);
-					tanim.setIslemYapan(authenticatedUser);
-					tanim.setIslemTarihi(islemTarihi);
-					pdksEntityController.saveOrUpdate(session, entityManager, tanim);
-				}
-				session.flush();
-			} else
-				bordroAlanlari = PdksUtil.sortObjectStringAlanList(bordroAlanlari, "getErpKodu", null);
+			Tanim ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
+
+			bordroAlanlari = PdksUtil.sortObjectStringAlanList(bordroAlanlari, "getErpKodu", null);
 
 			boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
 			Workbook wb = new XSSFWorkbook();
@@ -785,6 +795,57 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		}
 
 		return baos;
+	}
+
+	/**
+	 * @param kimlikNoGoster
+	 * @param kartNoAciklama
+	 * @param kartNoAciklamaGoster
+	 * @param bordroAlanlari
+	 */
+	private void bordroBilgiAciklamaOlustur(boolean kimlikNoGoster, String kartNoAciklama, Boolean kartNoAciklamaGoster, List<Tanim> bordroAlanlari) {
+		int sira = 0;
+		Tanim ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
+		bordroAlanlari.add(getBordroAlani(++sira, COL_SIRA, "Sıra"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_YIL, "Yıl"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_AY, "Ay"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_PERSONEL_NO, ortakIslemler.personelNoAciklama()));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_AD_SOYAD, "Personel"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_SIRKET + "Kodu", ortakIslemler.sirketAciklama() + " Kodu"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_SIRKET, ortakIslemler.sirketAciklama()));
+		if (ortakIslemler.isTesisDurumu()) {
+			bordroAlanlari.add(getBordroAlani(++sira, COL_TESIS + "Kodu", ortakIslemler.tesisAciklama() + " Kodu"));
+			bordroAlanlari.add(getBordroAlani(++sira, COL_TESIS, ortakIslemler.tesisAciklama()));
+		}
+		if (kartNoAciklamaGoster)
+			bordroAlanlari.add(getBordroAlani(++sira, COL_KART_NO, kartNoAciklama));
+		if (kimlikNoGoster)
+			bordroAlanlari.add(getBordroAlani(++sira, COL_KIMLIK_NO, ortakIslemler.kimlikNoAciklama()));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_BOLUM, bolumAciklama));
+		if (ekSaha4Tanim != null)
+			bordroAlanlari.add(getBordroAlani(++sira, COL_ALT_BOLUM, ekSaha4Tanim.getAciklama()));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_NORMAL_GUN_ADET, "Normal Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_HAFTA_TATIL_ADET, "H.Tatil Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_TATIL_ADET, "G.Tatil Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETLI_IZIN, "Ücretli İzin Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_RAPORLU_IZIN, "Raporlu (Hasta)"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETSIZ_IZIN, "Ücretsiz İzin Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_RESMI_TATIL_MESAI, "Resmi Tatil Mesai"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETI_ODENEN_MESAI, "Ücreti Ödenen Mesai"));
+		if (haftaCalisma)
+			bordroAlanlari.add(getBordroAlani(++sira, COL_HAFTA_TATIL_MESAI, "Hafta Tatil Mesai"));
+		if (aksamSaat)
+			bordroAlanlari.add(getBordroAlani(++sira, COL_AKSAM_SAAT_MESAI, "Gece Saat"));
+		if (aksamGun)
+			bordroAlanlari.add(getBordroAlani(++sira, COL_AKSAM_SAAT_MESAI, "Gece Adet"));
+		Date islemTarihi = new Date();
+		for (Tanim tanim : bordroAlanlari) {
+			tanim.setTipi(Tanim.TIPI_BORDRDO_ALANLARI);
+			tanim.setIslemYapan(authenticatedUser);
+			tanim.setIslemTarihi(islemTarihi);
+			pdksEntityController.saveOrUpdate(session, entityManager, tanim);
+		}
+		session.flush();
 	}
 
 	public String getSicilNo() {
@@ -1089,5 +1150,213 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setTesisList(List<SelectItem> tesisList) {
 		this.tesisList = tesisList;
+	}
+
+	public String getCOL_SIRA() {
+		return COL_SIRA;
+	}
+
+	public void setCOL_SIRA(String cOL_SIRA) {
+		COL_SIRA = cOL_SIRA;
+	}
+
+	public String getCOL_YIL() {
+		return COL_YIL;
+	}
+
+	public void setCOL_YIL(String cOL_YIL) {
+		COL_YIL = cOL_YIL;
+	}
+
+	public String getCOL_AY() {
+		return COL_AY;
+	}
+
+	public void setCOL_AY(String cOL_AY) {
+		COL_AY = cOL_AY;
+	}
+
+	public String getCOL_AY_ADI() {
+		return COL_AY_ADI;
+	}
+
+	public void setCOL_AY_ADI(String cOL_AY_ADI) {
+		COL_AY_ADI = cOL_AY_ADI;
+	}
+
+	public String getCOL_PERSONEL_NO() {
+		return COL_PERSONEL_NO;
+	}
+
+	public void setCOL_PERSONEL_NO(String cOL_PERSONEL_NO) {
+		COL_PERSONEL_NO = cOL_PERSONEL_NO;
+	}
+
+	public String getCOL_AD() {
+		return COL_AD;
+	}
+
+	public void setCOL_AD(String cOL_AD) {
+		COL_AD = cOL_AD;
+	}
+
+	public String getCOL_SOYAD() {
+		return COL_SOYAD;
+	}
+
+	public void setCOL_SOYAD(String cOL_SOYAD) {
+		COL_SOYAD = cOL_SOYAD;
+	}
+
+	public String getCOL_AD_SOYAD() {
+		return COL_AD_SOYAD;
+	}
+
+	public void setCOL_AD_SOYAD(String cOL_AD_SOYAD) {
+		COL_AD_SOYAD = cOL_AD_SOYAD;
+	}
+
+	public String getCOL_KART_NO() {
+		return COL_KART_NO;
+	}
+
+	public void setCOL_KART_NO(String cOL_KART_NO) {
+		COL_KART_NO = cOL_KART_NO;
+	}
+
+	public String getCOL_KIMLIK_NO() {
+		return COL_KIMLIK_NO;
+	}
+
+	public void setCOL_KIMLIK_NO(String cOL_KIMLIK_NO) {
+		COL_KIMLIK_NO = cOL_KIMLIK_NO;
+	}
+
+	public String getCOL_SIRKET() {
+		return COL_SIRKET;
+	}
+
+	public void setCOL_SIRKET(String cOL_SIRKET) {
+		COL_SIRKET = cOL_SIRKET;
+	}
+
+	public String getCOL_TESIS() {
+		return COL_TESIS;
+	}
+
+	public void setCOL_TESIS(String cOL_TESIS) {
+		COL_TESIS = cOL_TESIS;
+	}
+
+	public String getCOL_BOLUM() {
+		return COL_BOLUM;
+	}
+
+	public void setCOL_BOLUM(String cOL_BOLUM) {
+		COL_BOLUM = cOL_BOLUM;
+	}
+
+	public String getCOL_ALT_BOLUM() {
+		return COL_ALT_BOLUM;
+	}
+
+	public void setCOL_ALT_BOLUM(String cOL_ALT_BOLUM) {
+		COL_ALT_BOLUM = cOL_ALT_BOLUM;
+	}
+
+	public String getCOL_NORMAL_GUN_ADET() {
+		return COL_NORMAL_GUN_ADET;
+	}
+
+	public void setCOL_NORMAL_GUN_ADET(String cOL_NORMAL_GUN_ADET) {
+		COL_NORMAL_GUN_ADET = cOL_NORMAL_GUN_ADET;
+	}
+
+	public String getCOL_HAFTA_TATIL_ADET() {
+		return COL_HAFTA_TATIL_ADET;
+	}
+
+	public void setCOL_HAFTA_TATIL_ADET(String cOL_HAFTA_TATIL_ADET) {
+		COL_HAFTA_TATIL_ADET = cOL_HAFTA_TATIL_ADET;
+	}
+
+	public String getCOL_TATIL_ADET() {
+		return COL_TATIL_ADET;
+	}
+
+	public void setCOL_TATIL_ADET(String cOL_TATIL_ADET) {
+		COL_TATIL_ADET = cOL_TATIL_ADET;
+	}
+
+	public String getCOL_UCRETLI_IZIN() {
+		return COL_UCRETLI_IZIN;
+	}
+
+	public void setCOL_UCRETLI_IZIN(String cOL_UCRETLI_IZIN) {
+		COL_UCRETLI_IZIN = cOL_UCRETLI_IZIN;
+	}
+
+	public String getCOL_RAPORLU_IZIN() {
+		return COL_RAPORLU_IZIN;
+	}
+
+	public void setCOL_RAPORLU_IZIN(String cOL_RAPORLU_IZIN) {
+		COL_RAPORLU_IZIN = cOL_RAPORLU_IZIN;
+	}
+
+	public String getCOL_UCRETSIZ_IZIN() {
+		return COL_UCRETSIZ_IZIN;
+	}
+
+	public void setCOL_UCRETSIZ_IZIN(String cOL_UCRETSIZ_IZIN) {
+		COL_UCRETSIZ_IZIN = cOL_UCRETSIZ_IZIN;
+	}
+
+	public String getCOL_RESMI_TATIL_MESAI() {
+		return COL_RESMI_TATIL_MESAI;
+	}
+
+	public void setCOL_RESMI_TATIL_MESAI(String cOL_RESMI_TATIL_MESAI) {
+		COL_RESMI_TATIL_MESAI = cOL_RESMI_TATIL_MESAI;
+	}
+
+	public String getCOL_UCRETI_ODENEN_MESAI() {
+		return COL_UCRETI_ODENEN_MESAI;
+	}
+
+	public void setCOL_UCRETI_ODENEN_MESAI(String cOL_UCRETI_ODENEN_MESAI) {
+		COL_UCRETI_ODENEN_MESAI = cOL_UCRETI_ODENEN_MESAI;
+	}
+
+	public String getCOL_HAFTA_TATIL_MESAI() {
+		return COL_HAFTA_TATIL_MESAI;
+	}
+
+	public void setCOL_HAFTA_TATIL_MESAI(String cOL_HAFTA_TATIL_MESAI) {
+		COL_HAFTA_TATIL_MESAI = cOL_HAFTA_TATIL_MESAI;
+	}
+
+	public String getCOL_AKSAM_SAAT_MESAI() {
+		return COL_AKSAM_SAAT_MESAI;
+	}
+
+	public void setCOL_AKSAM_SAAT_MESAI(String cOL_AKSAM_SAAT_MESAI) {
+		COL_AKSAM_SAAT_MESAI = cOL_AKSAM_SAAT_MESAI;
+	}
+
+	public String getCOL_AKSAM_GUN_MESAI() {
+		return COL_AKSAM_GUN_MESAI;
+	}
+
+	public void setCOL_AKSAM_GUN_MESAI(String cOL_AKSAM_GUN_MESAI) {
+		COL_AKSAM_GUN_MESAI = cOL_AKSAM_GUN_MESAI;
+	}
+
+	public TreeMap<String, Tanim> getBaslikMap() {
+		return baslikMap;
+	}
+
+	public void setBaslikMap(TreeMap<String, Tanim> baslikMap) {
+		this.baslikMap = baslikMap;
 	}
 }

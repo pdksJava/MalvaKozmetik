@@ -114,7 +114,7 @@
 								</rich:column>
 								<rich:column style="text-align: left;">
 									<f:facet name="header">
-										<h:outputText value="Personel" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AD_SOYAD)}" />
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
@@ -140,36 +140,36 @@
 
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
-										<h:outputText value="Normal Gün" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_ADET)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.normalGunAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.normalGunAdet)>0}" />
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
-										<h:outputText value="Hafta Tatil Gün" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_ADET)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet)>0}" />
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
-										<h:outputText value="Tatil Gün" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_TATIL_ADET)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.tatilAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.tatilAdet)>0}" />
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
-										<h:outputText value="Ücretli İzin Gün" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETLI_IZIN)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretliIzin))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretliIzin)>0}" />
 
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilDurum}">
+								<rich:column style="text-align: right;">
 									<f:facet name="header">
-										<h:outputText value="Raporlu (Hasta)" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RAPORLU_IZIN)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.raporluIzin))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.raporluIzin)>0}" />
@@ -177,7 +177,7 @@
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
-										<h:outputText value="Ücretsiz İzin Gün" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETSIZ_IZIN)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretsizIzin))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretsizIzin)>0}" />
@@ -185,7 +185,7 @@
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
-										<h:outputText value="Ücreti Ödenen Mesai" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETI_ODENEN_MESAI)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretiOdenenMesai))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretiOdenenMesai)>0}" />
@@ -193,7 +193,7 @@
 
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.haftaCalisma}">
 									<f:facet name="header">
-										<h:outputText value="Hafta Tatil Mesai" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_MESAI)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai)>0}" />
@@ -201,14 +201,14 @@
 
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamGun}">
 									<f:facet name="header">
-										<h:outputText value="Akşam Gün Sayısı" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AKSAM_GUN_MESAI)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamGunMesai))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamGunMesai)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamSaat }">
+								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamSaat}">
 									<f:facet name="header">
-										<h:outputText value="Akşam Saat Toplamı" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AKSAM_SAAT_MESAI)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamSaatMesai))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamSaatMesai)>0}" />

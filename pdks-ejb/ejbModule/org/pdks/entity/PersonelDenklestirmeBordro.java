@@ -127,36 +127,37 @@ public class PersonelDenklestirmeBordro implements Serializable {
 
 	@Transient
 	public Double getUcretiOdenenMesai() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.UCRETI_ODENEN_MESAI);
-		Double value = detay != null ? detay.getMiktar().doubleValue() : 0.0d;
+		Double detay = personelDenklestirme != null ? personelDenklestirme.getOdenenSure() : null;
+		Double value = detay != null ? detay.doubleValue() : 0.0d;
 		return value;
 	}
 
 	@Transient
 	public Double getResmiTatilMesai() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.RESMI_TATIL_MESAI);
-		Double value = detay != null ? detay.getMiktar().doubleValue() : 0.0d;
+		Double detay = personelDenklestirme != null ? personelDenklestirme.getResmiTatilSure() : null;
+		Double value = detay != null ? detay.doubleValue() : 0.0d;
 		return value;
 	}
 
 	@Transient
 	public Double getHaftaTatilMesai() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.HAFTA_TATIL_MESAI);
-		Double value = detay != null ? detay.getMiktar().doubleValue() : 0.0d;
-		return value;
+		Double detay = personelDenklestirme != null ? personelDenklestirme.getHaftaCalismaSuresi() : null;
+		Double value = detay != null ? detay.doubleValue() : 0.0d;
+ 		return value;
 	}
 
 	@Transient
-	public Double getAksamGunMesai() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.AKSAM_GUN_MESAI);
-		Double value = detay != null ? detay.getMiktar().doubleValue() : 0.0d;
+	public Integer getAksamGunMesai() {
+		Double detay = personelDenklestirme != null ? personelDenklestirme.getAksamVardiyaSayisi() : null;
+		Integer value = detay != null ? detay.intValue() : 0;
 		return value;
 	}
 
 	@Transient
 	public Double getAksamSaatMesai() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.AKSAM_SAAT_MESAI);
-		Double value = detay != null ? detay.getMiktar().doubleValue() : 0.0d;
+		Double detay = personelDenklestirme != null ? personelDenklestirme.getAksamVardiyaSaatSayisi() : null;
+		Double value = detay != null ? detay.doubleValue() : 0.0d;
+
 		return value;
 	}
 
