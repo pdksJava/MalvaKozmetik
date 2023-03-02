@@ -76,7 +76,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 	private CalismaModeli calismaModeli = null;
 
-	private String mesaj = null, dosyaEkAdi, parentBordroTanimKoduStr = "";
+	private String mesaj = null, dosyaEkAdi, parentBordroTanimKoduStr = "", kapiGiris, uygulamaBordro;
 
 	private Date bugun = null, ayBasi = null, minDate = null;
 
@@ -319,6 +319,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 				} catch (Exception e) {
 				}
 			}
+			kapiGiris = mailMap.containsKey("kapiGirisUygulama") ? (String) mailMap.get("kapiGirisUygulama") : "kapı giriş";
+			uygulamaBordro = mailMap.containsKey("uygulamaBordro") ? (String) mailMap.get("uygulamaBordro") : "Bordro Uygulaması ";
 			if (dateFormat == null)
 				dateFormat = "dd/MM/yyyy";
 			PdksUtil.setDateFormat(dateFormat);
@@ -923,7 +925,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 			}
 			if (!izinKeyPersonelMap.isEmpty()) {
-				String erpGiris = mailMap.containsKey("erpUygulama") ? (String) mailMap.get("erpUygulama") : " ERP uygulama ";
 				TreeMap<String, Personel> personelMap = pdksDAO.getObjectByInnerObjectMap("getPdksSicilNo", "pdksSicilNo", new ArrayList(izinKeyPersonelMap.values()), Personel.class, false);
 				List<String> list = new ArrayList<String>();
 				for (String string : izinKeyAciklamaMap.keySet())
@@ -1099,7 +1100,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 									izinDegisti = izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime() || bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
 								Double izinSuresi = izinERP.getIzinSuresi();
 								aciklama = izinERP.getAciklama() != null ? izinERP.getAciklama() : kullanilanIzinTipi.getMesaj();
-								personelIzin.setAciklama((aciklama != null ? aciklama.trim() : "") + " ( " + erpGiris + " referans no : " + izinERP.getReferansNoERP() + " )");
+								personelIzin.setAciklama((aciklama != null ? aciklama.trim() : "") + " ( " + uygulamaBordro + " referans no : " + izinERP.getReferansNoERP() + " )");
 								Integer hesapTipi = null;
 								if (izinERP.getSureBirimi() != null) {
 									hesapTipi = Integer.parseInt(izinERP.getSureBirimi().value());
@@ -1281,7 +1282,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					sb.append("</TABLE>");
 				}
 				sb.append("</DIV>");
-				mailMap.put("konu", "saveIzinHakedisler servis hatası");
+				mailMap.put("konu", uygulamaBordro + " saveIzinHakedisler servis hatası");
 				mailMap.put("mailIcerik", sb.toString());
 				LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
 				fileMap.put("saveIzinHakedisler.json", jsonStr);
@@ -1453,8 +1454,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 			List saveList = new ArrayList(), deleteList = new ArrayList();
 			List<IzinERP> hataList = new ArrayList<IzinERP>();
 			HashMap<String, PersonelIzin> izinMap = new HashMap<String, PersonelIzin>();
-			String kapiGiris = mailMap.containsKey("kapiGirisUygulama") ? (String) mailMap.get("kapiGirisUygulama") : "kapı giriş";
-			String erpGiris = mailMap.containsKey("erpUygulama") ? (String) mailMap.get("erpUygulama") : " ERP uygulama ";
 			HashMap fields = new HashMap();
 			fields.put("beyazYakaDefault", Boolean.TRUE);
 			fields.put("isKur", Boolean.FALSE);
@@ -1736,7 +1735,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								personelIzin.setIzinTipi(izinTipi);
 								Double izinSuresi = izinERP.getIzinSuresi();
 								String aciklama = izinERP.getAciklama() != null ? izinERP.getAciklama() : izinTipi.getMesaj();
-								personelIzin.setAciklama((aciklama != null ? aciklama.trim() : "") + " ( " + erpGiris + " referans no : " + izinERP.getReferansNoERP() + " )");
+								personelIzin.setAciklama((aciklama != null ? aciklama.trim() : "") + " ( " + uygulamaBordro + " referans no : " + izinERP.getReferansNoERP() + " )");
 								Integer hesapTipi = null;
 								if (izinERP.getSureBirimi() != null) {
 									hesapTipi = Integer.parseInt(izinERP.getSureBirimi().value());
@@ -1907,7 +1906,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 					if (!personelIzinList.isEmpty()) {
 						personelIzinList = PdksUtil.sortListByAlanAdi(personelIzinList, "sortAlan", Boolean.TRUE);
-						String uygulamaBordro = mailMap.containsKey("uygulamaBordro") ? (String) mailMap.get("uygulamaBordro") : "Bordro Uygulaması ";
 						mailMap.put("konu", uygulamaBordro + " gelmeyen izinler");
 						sb = new StringBuffer();
 						sb.append("<p><b>" + mailMap.get("konu") + " var!</b></p>");
@@ -1962,7 +1960,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							jsonStr = null;
 						}
 
-						mailMap.put("konu", "saveIzinler problem");
+						mailMap.put("konu", uygulamaBordro + " saveIzinler problem");
 						StringBuffer sb = new StringBuffer();
 						sb.append("<p><b>saveIzinler fonksiyonunda hata veri var!</b></p>");
 						sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
@@ -2062,7 +2060,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 										}
 									}
 									if (gonder) {
-										mailMap.put("konu", izinSahibi.getAdSoyad() + " izin " + (!izin.isRedmi() ? " girişi" : "iptali"));
+										mailMap.put("konu", uygulamaBordro + " " + izinSahibi.getAdSoyad() + " izin " + (!izin.isRedmi() ? " girişi" : "iptali"));
 										StringBuffer sb = new StringBuffer();
 										sb.append("<p><b>" + izinSahibi.getAdSoyad() + " izin " + (!izin.isRedmi() ? " girişi " : " iptali ") + " yapıldı.</b></p>");
 										sb.append("<p>" + PdksUtil.convertToDateString(izin.getBaslangicZamani(), FORMAT_DATE_TIME) + " - " + PdksUtil.convertToDateString(izin.getBitisZamani(), FORMAT_DATE_TIME) + " arası izinlidir.</p>");
@@ -2377,7 +2375,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 		HashMap<String, Boolean> map1 = new HashMap<String, Boolean>();
 		String genelMudurERPKoduStr = mailMap.containsKey("genelMudurERPKodu") ? (String) mailMap.get("genelMudurERPKodu") : "";
 		List<String> genelMudurERPKodlari = genelMudurERPKoduStr.equals("") ? new ArrayList<String>() : PdksUtil.getListByString(genelMudurERPKoduStr, null);
-		String kapiGiris = mailMap.containsKey("kapiGirisUygulama") ? (String) mailMap.get("kapiGirisUygulama") : "kapı giriş";
 		String calisanIstenAyrilmaTarihi = mailMap.containsKey("calisanIstenAyrilmaTarihi") ? (String) mailMap.get("calisanIstenAyrilmaTarihi") : "";
 		String iskurManuelGirisStr = mailMap.containsKey("iskurManuelGiris") ? (String) mailMap.get("iskurManuelGiris") : "";
 		String yoneticiMailKontrol = mailMap.containsKey("yoneticiMailKontrol") ? (String) mailMap.get("yoneticiMailKontrol") : "1";
@@ -3325,7 +3322,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (!hataList.isEmpty()) {
 						Gson gson = new Gson();
 						String jsonStr = PdksUtil.toPrettyFormat(gson.toJson(hataList));
-						mailMap.put("konu", "savePersoneller problem");
+						mailMap.put("konu", uygulamaBordro + " savePersoneller problem");
 						sb = new StringBuffer();
 						sb.append("<p><b>savePersoneller fonksiyonunda hata veri var!</b></p>");
 						sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
