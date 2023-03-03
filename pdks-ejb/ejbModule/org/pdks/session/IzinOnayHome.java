@@ -217,9 +217,11 @@ public class IzinOnayHome extends EntityHome<PersonelIzin> implements Serializab
 			setUserList(list);
 			MailStatu mailSatu = null;
 			try {
+				String mailPersonelAciklama = personel.getSirket().getAd() + " " + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() + " bölümü " : "") + personel.getAdSoyad();
+
 				MailObject mail = new MailObject();
 				mail.setSubject("İzin Onay");
-				String body = "<p>" + personel.getAdSoyad() + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(izin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(izin.getBitisZamani()) + " " + izin.getIzinTipiAciklama()
+				String body = "<p>" + mailPersonelAciklama + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(izin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(izin.getBitisZamani()) + " " + izin.getIzinTipiAciklama()
 						+ " onayınıza gönderilmiş bulunmaktadır.</p>";
 				mail.setBody(body);
 				ortakIslemler.addMailPersonelUserList(userList, mail.getToList());

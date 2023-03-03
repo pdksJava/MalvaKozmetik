@@ -197,6 +197,10 @@ public class MailManager implements Serializable {
 			MailObject mailObject = (MailObject) parameterMap.get("mailObject");
 			String konu = mailObject.getSubject();
 			String mailIcerik = mailObject.getBody(), mailAdresFROM = null, smtpTLSProtokol = null;
+			if (konu != null && konu.indexOf("  ") >= 0)
+				konu = PdksUtil.replaceAllManuel(konu, "  ", " ");
+			if (mailIcerik != null && mailIcerik.indexOf("  ") >= 0)
+				mailIcerik = PdksUtil.replaceAllManuel(mailIcerik, "  ", " ");
 			List<File> dosyalar = new ArrayList<File>();
 			int port = 25;
 			String username = null, password = null, smtpHostIp = null;

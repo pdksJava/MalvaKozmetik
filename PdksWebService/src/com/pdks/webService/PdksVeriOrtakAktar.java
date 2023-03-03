@@ -827,12 +827,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 					mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 					MailObject mailObject = kullaniciIKYukle(mailMap, pdksDAO);
 					String dosyaAdi = PdksUtil.setTurkishStr("FazlaMesai_" + +denklestirmeAy.getYil() + " " + denklestirmeAy.getAyAdi() + (sirket != null ? "_" + sirket.getAd() : "")) + ".json";
-					String subject = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + (sirket != null ? sirket.getAd() + " " : "") + "fazla mesai yükleme";
+					String subject = uygulamaBordro + " " + denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + (sirket != null ? sirket.getAd() + " " : "") + "fazla mesai yükleme";
 					String body = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " dönemi " + (sirket != null ? sirket.getAd() + " " : "") + " fazla mesai dosyası " + dosyaAdi + " ektedir.";
 					mailObject.setSubject(subject);
 					mailObject.setBody(body);
 					LinkedHashMap dataMap = new LinkedHashMap(), dataInputMap = new LinkedHashMap();
-
 					dataInputMap.put("sirketKodu", sirketKodu);
 					dataInputMap.put("yil", yil);
 					dataInputMap.put("ay", ay);
@@ -1962,7 +1961,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 						mailMap.put("konu", uygulamaBordro + " saveIzinler problem");
 						StringBuffer sb = new StringBuffer();
-						sb.append("<p><b>saveIzinler fonksiyonunda hata veri var!</b></p>");
+						sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi saveIzinler fonksiyonunda hatalı veri var!</b></p>");
 						sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
 						boolean gonder = false, renkUyari = false;
 						for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
@@ -2569,34 +2568,46 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				} else {
 					if (tip.equals("P")) {
-						PersonelKGS personel = personelKGSMap.get(personelNo);
-						String kgsAd = personel.getAd();
-						String ad = PdksUtil.getCutFirstSpaces(personelERP.getAdi());
-						String soyad = PdksUtil.getCutFirstSpaces(personelERP.getSoyadi());
-						if (sistemDestekVar && ad != null && kgsAd != null && !ad.equals(kgsAd)) {
-							if (ad.indexOf(" ") > 0 || kgsAd.indexOf(" ") > 0) {
-								if (ad.indexOf(" ") > 0)
-									ad = PdksUtil.replaceAllManuel(ad, " ", "");
-								if (kgsAd.indexOf(" ") > 0)
-									kgsAd = PdksUtil.replaceAllManuel(kgsAd, " ", "");
-							}
-						}
-
-						boolean adiUyumlu = isBenzer(ad, kgsAd);
-						boolean soyadiUyumlu = isBenzer(personel.getSoyad(), soyad);
-						if (!adiUyumlu || !soyadiUyumlu) {
-							String mesaj = "";
-							if (!adiUyumlu && !soyadiUyumlu)
-								mesaj = "adı ve soyadı";
-							if (!adiUyumlu) {
-								mesaj = "adı";
-							} else if (!soyadiUyumlu) {
+						if (personelERP.getAdi() == null || personelERP.getSoyadi() == null) {
+							String mesaj = "adı ve soyadı";
+							if (personelERP.getAdi() != null)
 								mesaj = "soyadı";
-							}
-							mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " <> " + personel.getAdSoyad() + " ) ";
+							else if (personelERP.getSoyadi() != null)
+								mesaj = "adı";
+							mesaj = personelNo + " personel " + mesaj + " tanımsız!  ";
 							addHatalist(personelERP.getHataList(), PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
+						} else {
+							PersonelKGS personel = personelKGSMap.get(personelNo);
+							String kgsAd = personel.getAd();
+							String ad = PdksUtil.getCutFirstSpaces(personelERP.getAdi());
+							String soyad = PdksUtil.getCutFirstSpaces(personelERP.getSoyadi());
+							if (sistemDestekVar && ad != null && kgsAd != null && !ad.equals(kgsAd)) {
+								if (ad.indexOf(" ") > 0 || kgsAd.indexOf(" ") > 0) {
+									if (ad.indexOf(" ") > 0)
+										ad = PdksUtil.replaceAllManuel(ad, " ", "");
+									if (kgsAd.indexOf(" ") > 0)
+										kgsAd = PdksUtil.replaceAllManuel(kgsAd, " ", "");
+								}
+							}
+
+							boolean adiUyumlu = isBenzer(ad, kgsAd);
+							boolean soyadiUyumlu = isBenzer(personel.getSoyad(), soyad);
+							if (!adiUyumlu || !soyadiUyumlu) {
+								String mesaj = "";
+								if (!adiUyumlu && !soyadiUyumlu)
+									mesaj = "adı ve soyadı";
+								if (!adiUyumlu) {
+									mesaj = "adı";
+								} else if (!soyadiUyumlu) {
+									mesaj = "soyadı";
+								}
+								mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " <> " + personel.getAdSoyad() + " ) ";
+								addHatalist(personelERP.getHataList(), PdksUtil.replaceAllManuel(mesaj, "  ", " "));
+
+							}
 						}
+
 					}
 					if (personelERPHataliMap.containsKey(personelNo)) {
 						ERPPersonel erpPersonel2 = personelERPHataliMap.get(personelNo);
@@ -3324,7 +3335,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						String jsonStr = PdksUtil.toPrettyFormat(gson.toJson(hataList));
 						mailMap.put("konu", uygulamaBordro + " savePersoneller problem");
 						sb = new StringBuffer();
-						sb.append("<p><b>savePersoneller fonksiyonunda hata veri var!</b></p>");
+						sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi savePersoneller fonksiyonunda hatalı veri var!</b></p>");
 						sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
 						boolean renkUyari = false;
 						Sirket bosSirket = new Sirket();

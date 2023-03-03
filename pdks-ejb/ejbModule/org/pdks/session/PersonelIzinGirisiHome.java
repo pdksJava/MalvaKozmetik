@@ -137,7 +137,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	private boolean checkBoxDurum;
 
-	private String reRender;
+	private String reRender, bolumAciklama;
 
 	private Sirket pdksSirket;
 
@@ -782,6 +782,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			List<SelectItem> sirketIdList = ortakIslemler.getIzinSirketItemList(aramaSecenekleri.getSirketList());
 			aramaSecenekleri.setSirketIdList(sirketIdList);
 		}
+		Tanim ekSaha3 = aramaSecenekleri.getEkSahaTanimMap() != null && aramaSecenekleri.getEkSahaTanimMap().containsKey("ekSaha3") ? aramaSecenekleri.getEkSahaTanimMap().get("ekSaha3") : null;
+		bolumAciklama = ekSaha3 != null ? ekSaha3.getAciklama().toLowerCase(PdksUtil.TR_LOCALE) : "bölümü";
 		if (aramaSecenekleri.getSirketIdList().size() == 1)
 			aramaSecenekleri.setSirketId((Long) aramaSecenekleri.getSirketIdList().get(0).getValue());
 	}
@@ -1903,6 +1905,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			personelIzinOnay.setPersonelIzin(personelIzin);
 		}
 		Personel izinSahibi = personelIzinOnay.getPersonelIzin().getIzinSahibi();
+		String mailPersonelAciklama = getMailPersonelAciklama(izinSahibi);
+
 		boolean onaylandi = personelIzinOnay != null && personelIzinOnay.getOnayDurum() == PersonelIzinOnay.ONAY_DURUM_ONAYLANDI;
 		Boolean tekrarOnayla = new Boolean(personelIzinOnay != null && personelIzinOnay.isTekrarOnayla());
 		boolean listeOlustur = onayDurum != null && onayDurum.equals(PersonelIzinOnay.ONAY_DURUM_RED);
@@ -2067,11 +2071,11 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			if (userList != null && !userList.isEmpty()) {
 				if (izinOnaylandi) {
 					if (!ikOnay)
-						izinMailAciklama = mailIzin.getIzinSahibi().getAdSoyad() + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " "
-								+ mailIzin.getIzinTipiAciklama() + " onayınıza gönderilmiş bulunmaktadır.";
+						izinMailAciklama = mailPersonelAciklama + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + mailIzin.getIzinTipiAciklama()
+								+ " onayınıza gönderilmiş bulunmaktadır.";
 					else
-						izinMailAciklama = mailIzin.getIzinSahibi().getAdSoyad() + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " "
-								+ mailIzin.getIzinTipiAciklama() + " yönetici tarafından onaylanmış olup " + mailIzin.getIzinSahibi().getSirket().getDepartman().getDepartmanTanim().getAciklama() + " kayıtları için gönderilmiştir.";
+						izinMailAciklama = mailPersonelAciklama + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + mailPersonelAciklama
+								+ " yönetici tarafından onaylanmış olup " + mailIzin.getIzinSahibi().getSirket().getDepartman().getDepartmanTanim().getAciklama() + " kayıtları için gönderilmiştir.";
 
 				}
 				ccIlebccMailKarsilastir();
@@ -2080,13 +2084,12 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					MailObject mail = new MailObject();
 					String konu = mailKonu, body = null;
 					if (onayAdres) {
-						konu = mailIzin != null && mailIzin.getId() != null ? mailIzin.getIzinSahibi().getAdSoyad() + " İzin Onayı" : "İzin Kaydı";
+						konu = mailIzin != null && mailIzin.getId() != null ? mailPersonelAciklama + " İzin Onayı" : "İzin Kaydı";
 						body = "<p>" + izinMailAciklama + "</p><p>Saygılarımla,</p>";
 						body += "<a href=\"http://" + adres + "/onayimaGelenIzinler" + (mailIzin != null && mailIzin.getId() != null ? "?mId=" + mailIzin.getId() : "") + "\">" + ortakIslemler.getParameterKey("fromName") + " uygulamasına girmek	için buraya tıklayınız.</a>";
 
 					} else {
-						body = "<p>" + mailIzin.getIzinSahibi().getAdSoyad() + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + izinIptal + ".</p>"
-								+ "<p>Saygılarımla,</p>";
+						body = "<p>" + mailPersonelAciklama + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + izinIptal + ".</p>" + "<p>Saygılarımla,</p>";
 					}
 					if (!userList.isEmpty())
 						setToList(userList);
@@ -2134,8 +2137,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					MailObject mail = new MailObject();
 					String body = null;
 
-					body = "<p>" + mailIzin.getIzinSahibi().getAdSoyad() + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " "
-							+ mailIzin.getIzinTipiAciklama() + " " + authenticatedUser.getAdSoyad() + "  tarafından kayıt geçirilmiştir.</p>";
+					body = "<p>" + mailPersonelAciklama + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + mailIzin.getIzinTipiAciklama() + " "
+							+ authenticatedUser.getAdSoyad() + "  tarafından kayıt geçirilmiştir.</p>";
 					body += "<p>Saygılarımızla,</p>";
 
 					body += "<p><a href=\"http://" + adres + "\">" + ortakIslemler.getParameterKey("fromName") + " uygulamasına girmek için buraya tıklayınız.</a></p>";
@@ -2592,9 +2595,11 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		if (!adminUserList.isEmpty())
 			bccList.addAll(adminUserList);
 		mailKonu = "İzin İptal";
+		String mailPersonelAciklama = getMailPersonelAciklama(mailIzin.getIzinSahibi());
+
 		ccIlebccMailKarsilastir();
 		izinIptal = PdksUtil.replaceAll(izin.getIzinTipiAciklama() + " " + authenticatedUser.getAdSoyad() + " tarafından iptal edilmiştir", "  ", " ");
-		body = "<p>" + mailIzin.getIzinSahibi().getAdSoyad() + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + izinIptal + ".</p>" + "<p>Saygılarımla,</p>";
+		body = "<p>" + mailPersonelAciklama + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + izinIptal + ".</p>" + "<p>Saygılarımla,</p>";
 
 		MailStatu mailSatu = null;
 		try {
@@ -2638,6 +2643,15 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		return "";
 	}
 
+	/**
+	 * @param personel
+	 * @return
+	 */
+	private String getMailPersonelAciklama(Personel personel) {
+		String str = personel.getSirket().getAd() + " " + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() + " " + bolumAciklama + " " : "") + personel.getAdSoyad();
+		return str;
+	}
+
 	@Transactional
 	public String izinIptal(PersonelIzin izin) {
 		try {
@@ -2661,11 +2675,12 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				}
 				MailStatu mailSatu = null;
 				try {
+					String mailPersonelAciklama = getMailPersonelAciklama(izin.getIzinSahibi());
 					izinIptal = izin.getIzinTipiAciklama() + " " + authenticatedUser.getAdSoyad() + " tarafından iptal edilmiştir";
 					mailKonu = "İzin İptal";
 					MailObject mail = new MailObject();
 					mail.setSubject(mailKonu);
-					String body = "<p>" + izin.getIzinSahibi().getAdSoyad() + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(izin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(izin.getBitisZamani()) + " " + izinIptal + ".</p>";
+					String body = "<p>" + mailPersonelAciklama + " ait başlangıç tarihi " + authenticatedUser.dateTimeFormatla(izin.getBaslangicZamani()) + " bitiş tarihi " + authenticatedUser.dateTimeFormatla(izin.getBitisZamani()) + " " + izinIptal + ".</p>";
 					mail.setBody(body);
 					if (!userList.isEmpty())
 						setToList(userList);
@@ -3769,6 +3784,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		boolean onayli = Boolean.TRUE;
 		boolean flush = Boolean.FALSE;
 		TreeMap<String, User> mailUserMap = new TreeMap<String, User>();
+		String mailPersonelAciklama = getMailPersonelAciklama(izinSahibi);
+
 		if (personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK)) {
 			onayli = Boolean.FALSE;
 
@@ -3823,6 +3840,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			mailListesineEkle(ccMailList, izinSahibi.getEMailCCList());
 			mailListesineEkle(bccMailList, izinSahibi.getEMailBCCList());
 			List<User> ikUserList = ortakIslemler.IKKullanicilariBul(null, izinSahibi, session);
+
 			if (!ikUserList.isEmpty()) {
 				List<String> ikMail = new ArrayList<String>();
 				for (User user : ikUserList) {
@@ -3896,10 +3914,10 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			setMailIzin(personelIzin);
 			String aciklama = "";
 			if (personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_IK_ONAYINDA) {
-				aciklama = mailIzin.getIzinSahibi().getAdSoyad() + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + mailIzin.getIzinTipiAciklama()
+				aciklama = mailPersonelAciklama + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + mailIzin.getIzinTipiAciklama()
 						+ " yönetici tarafından onaylanmış olup " + mailIzin.getIzinSahibi().getSirket().getDepartman().getDepartmanTanim().getAciklama() + " onayınıza gönderilmiş bulunmaktadır.";
 			} else if (personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA)
-				aciklama = mailIzin.getIzinSahibi().getAdSoyad() + " ait izni onayınıza gönderilmiş bulunmaktadır.";
+				aciklama = mailPersonelAciklama + " ait izni onayınıza gönderilmiş bulunmaktadır.";
 
 			setToList(toList);
 			setIzinMailAciklama(aciklama);
@@ -3927,14 +3945,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				try {
 					String mailKonu = null, body = null;
 					if (onayliIzin) {
-						mailKonu = mailIzin.getIzinSahibi().getAdSoyad() + " " + (mailIzin.getId() == null ? " İzin Onayı" : " İzin Kaydı");
+						mailKonu = mailPersonelAciklama + " " + (mailIzin.getId() == null ? " İzin Onayı" : " İzin Kaydı");
 						body = "<p>" + izinMailAciklama + "</p>	<p>Saygılarımla,</p>";
 						body += "<a href=\"http://" + adres + "/onayimaGelenIzinler" + (mailIzin != null && mailIzin.getId() != null ? "?mId=" + mailIzin.getId() : "") + "\">" + ortakIslemler.getParameterKey("fromName") + " uygulamasına girmek	için buraya tıklayınız.</a>";
 
 					} else {
-						mailKonu = mailIzin.getIzinSahibi().getAdSoyad() + " " + mailIzin.getIzinTipi().getIzinTipiTanim().getAciklama();
-						body = "<p> " + mailIzin.getIzinSahibi().getAdSoyad() + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " "
-								+ mailIzin.getIzinTipiAciklama() + " oluşturulmuştur.</p>";
+						mailKonu = mailPersonelAciklama + " " + mailIzin.getIzinTipi().getIzinTipiTanim().getAciklama();
+						body = "<p> " + mailPersonelAciklama + " ait izin başlangıç tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBaslangicZamani()) + " işe başlama tarihi " + authenticatedUser.dateTimeFormatla(mailIzin.getBitisZamani()) + " " + mailIzin.getIzinTipiAciklama()
+								+ " oluşturulmuştur.</p>";
 
 					}
 					MailObject mail = new MailObject();
@@ -5662,6 +5680,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	public void setIzinERPGiris(boolean izinERPGiris) {
 		this.izinERPGiris = izinERPGiris;
+	}
+
+	public String getBolumAciklama() {
+		return bolumAciklama;
+	}
+
+	public void setBolumAciklama(String bolumAciklama) {
+		this.bolumAciklama = bolumAciklama;
 	}
 
 }

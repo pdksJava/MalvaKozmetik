@@ -227,8 +227,8 @@ public class MailManager implements Serializable {
 					body = body + "<P>Saygılarımla</P>";
 					mailObject.setBody(body);
 				}
- 				if (mailObject.getBccList().size() + mailObject.getCcList().size() + mailObject.getToList().size() > 0) {
- 					mailStatu.setDurum(Boolean.TRUE);
+				if (mailObject.getBccList().size() + mailObject.getCcList().size() + mailObject.getToList().size() > 0) {
+					mailStatu.setDurum(Boolean.TRUE);
 					mailStatu.setHataMesai(pasifPersonelSB.toString());
 				} else {
 					mailStatu.setHataMesai("Adres giriniz!");
@@ -261,6 +261,10 @@ public class MailManager implements Serializable {
 				props = new Properties();
 				String konu = mailObject.getSubject();
 				String mailIcerik = mailObject.getBody(), mailAdresFROM = null;
+				if (konu != null && konu.indexOf("  ") >= 0)
+					konu = PdksUtil.replaceAllManuel(konu, "  ", " ");
+				if (mailIcerik != null && mailIcerik.indexOf("  ") >= 0)
+					mailIcerik = PdksUtil.replaceAllManuel(mailIcerik, "  ", " ");
 				List<File> dosyalar = new ArrayList<File>();
 				int port = 25;
 				String username = mailObject.getSmtpUser(), password = mailObject.getSmtpPassword(), smtpHostIp = null, smtpTLSProtokol = null;
