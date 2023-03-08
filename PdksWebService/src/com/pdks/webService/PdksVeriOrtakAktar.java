@@ -2527,6 +2527,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 				}
 				String adSoyadERP = (personelERP.getAdi() != null ? personelERP.getAdi().trim() : "Ad tanımsız") + " " + (personelERP.getSoyadi() != null ? personelERP.getSoyadi().trim() : "Soyad tanımsız");
+				String ad = PdksUtil.getCutFirstSpaces(personelERP.getAdi());
+				String soyad = PdksUtil.getCutFirstSpaces(personelERP.getSoyadi());
 				if (personelKGSData == null) {
 					boolean kayitYok = true;
 					if (gecmisTarih != null && iseBaslamaTarihi != null && iseBaslamaTarihi.before(gecmisTarih))
@@ -2580,8 +2582,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 						} else {
 							PersonelKGS personel = personelKGSMap.get(personelNo);
 							String kgsAd = personel.getAd();
-							String ad = PdksUtil.getCutFirstSpaces(personelERP.getAdi());
-							String soyad = PdksUtil.getCutFirstSpaces(personelERP.getSoyadi());
 							if (sistemDestekVar && ad != null && kgsAd != null && !ad.equals(kgsAd)) {
 								if (ad.indexOf(" ") > 0 || kgsAd.indexOf(" ") > 0) {
 									if (ad.indexOf(" ") > 0)
@@ -2633,6 +2633,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						personel.setPersonelKGS(personelKGS);
 						personel.setPdksSicilNo(personelNo);
 					}
+
 					if (personel == null) {
 						personel = new Personel();
 						personel.setDurum(Boolean.TRUE);
@@ -2648,8 +2649,25 @@ public class PdksVeriOrtakAktar implements Serializable {
 						personel.setPdksSicilNo(personelNo);
 
 					} else {
-
-						if (!personelNo.equals(personel.getPersonelKGS().getSicilNo())) {
+						PersonelKGS personelKGSKayitli = personel.getPersonelKGS();
+						if (!personelKGSKayitli.getDurum()) {
+							map.clear();
+							map.put("sicilNo", personelNo);
+							map.put("durum", Boolean.TRUE);
+							List<PersonelKGS> list = pdksDAO.getObjectByInnerObjectList(map, PersonelKGS.class);
+							if (!list.isEmpty()) {
+								for (PersonelKGS personelKGSDiger : list) {
+									boolean adiUyumlu = isBenzer(personelKGSDiger.getAd(), ad);
+									boolean soyadiUyumlu = isBenzer(personelKGSDiger.getSoyad(), soyad);
+									if (adiUyumlu && soyadiUyumlu) {
+										personel.setPersonelKGS(personelKGSDiger);
+										personel.setVeriDegisti(Boolean.TRUE);
+										break;
+									}
+								}
+							}
+						}
+						if (!personelNo.equals(personelKGSKayitli.getSicilNo())) {
 							personel.setPersonelKGS(personelKGS);
 						}
 						if (yoneticiBul && !yoneticiMailKontrol.equals("1"))
@@ -3118,7 +3136,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			TreeMap<String, List<String>> veriSorguMap = new TreeMap<String, List<String>>();
 			TreeMap<String, TreeMap> dataMap = new TreeMap<String, TreeMap>();
 			dataMap.put("personelERPMap", perMap);
-			boolean testDurum = !PdksUtil.getCanliSunucuDurum();
+
 			for (PersonelERP personelERP : personelList) {
 				try {
 					personelERP.setYazildi(false);
@@ -3283,8 +3301,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 			if (personelList.size() > 1)
 				saveIkinciYoneticiOlmazList("ikinciYoneticiOlmaz");
-			if (testDurum)
-				hataList.clear();
+
 			if (yoneticiIdList != null && !yoneticiIdList.isEmpty()) {
 				sb = new StringBuffer();
 				sb.append(" WITH VERI AS ( ");
@@ -3314,6 +3331,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					pdksDAO.execSP(map);
 				}
 			}
+			if (!PdksUtil.getCanliSunucuDurum())
+				hataList.clear();
 			if (!hataList.isEmpty()) {
 				try {
 
@@ -3339,6 +3358,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 						sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
 						boolean renkUyari = false;
 						Sirket bosSirket = new Sirket();
+						if (parentBordroTanimKoduStr == null)
+							parentBordroTanimKoduStr = "";
 						for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
 							PersonelERP personelERP = (PersonelERP) iterator.next();
 							String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
@@ -3361,6 +3382,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 										sirketBilgi = personelERP.getBolumAdi();
 									else
 										sirketBilgi += " / " + personelERP.getBolumAdi();
+								}
+								if (parentBordroTanimKoduStr.startsWith("eksaha4") && personelERP.getBordroAltAlanAdi() != null) {
+									if (sirketBilgi.equals(""))
+										sirketBilgi = personelERP.getBordroAltAlanAdi();
+									else
+										sirketBilgi += " - " + personelERP.getBordroAltAlanAdi();
 								}
 								sirketBilgi = "( " + sirketBilgi + " )";
 							}
