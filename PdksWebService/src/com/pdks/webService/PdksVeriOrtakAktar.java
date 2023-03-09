@@ -1689,32 +1689,36 @@ public class PdksVeriOrtakAktar implements Serializable {
 								List<IzinReferansERP> kayitList = pdksDAO.getNativeSQLList(fields, sb, IzinReferansERP.class);
 								if (!kayitList.isEmpty()) {
 									IzinReferansERP izinReferansErp = kayitList.get(0);
-									logger.error(izinERP.getPersonelNo() + " " + izinERP.getReferansNoERP() + " [ " + izinERP.getBasZaman() + " - " + izinERP.getBitZaman() + " ]");
-									PersonelIzin digerIzin = izinReferansErp.getIzin();
-									String basStr = PdksUtil.convertToDateString(digerIzin.getBaslangicZamani(), FORMAT_DATE_TIME), bitStr = PdksUtil.convertToDateString(digerIzin.getBitisZamani(), FORMAT_DATE_TIME);
-									if (!basStr.equals(izinERP.getBitZaman()) && !bitStr.equals(izinERP.getBasZaman())) {
-										boolean hataVar = !(izinERP.getBasZaman().compareTo(basStr) != 1 && izinERP.getBitZaman().compareTo(bitStr) != -1) || !izinPersonelERPMap.containsKey(izinERP.getPersonelNo());
-										if (hataVar)
-											addHatalist(izinERP.getHataList(), basStr + " - " + bitStr + " kayıtlı izin vardır!!");
-										else {
-											personelIzin = digerIzin;
-											izinDegisti = true;
-											if (izinReferansErp.getId() == null || !izinReferansErp.getId().equals(izinERP.getReferansNoERP())) {
-												if (izinReferansErp.getId() != null)
-													deleteList.add(izinReferansErp);
-												izinReferansERP.setIzin(personelIzin);
-												saveList.add(izinReferansERP);
-											}
+									PersonelIzin digerIzin = izinReferansErp != null ? izinReferansErp.getIzin() : null;
+									if (digerIzin != null) {
+										logger.debug(izinERP.getPersonelNo() + " " + izinERP.getReferansNoERP() + " [ " + izinERP.getBasZaman() + " - " + izinERP.getBitZaman() + " ]");
+										String basStr = PdksUtil.convertToDateString(digerIzin.getBaslangicZamani(), FORMAT_DATE_TIME), bitStr = PdksUtil.convertToDateString(digerIzin.getBitisZamani(), FORMAT_DATE_TIME);
+										if (!basStr.equals(izinERP.getBitZaman()) && !bitStr.equals(izinERP.getBasZaman())) {
+											boolean hataVar = !(izinERP.getBasZaman().compareTo(basStr) != 1 && izinERP.getBitZaman().compareTo(bitStr) != -1) || !izinPersonelERPMap.containsKey(izinERP.getPersonelNo());
+											if (hataVar)
+												addHatalist(izinERP.getHataList(), basStr + " - " + bitStr + " kayıtlı izin vardır!!");
+											else {
+												personelIzin = digerIzin;
+												izinDegisti = true;
+												if (izinReferansErp.getId() == null || !izinReferansErp.getId().equals(izinERP.getReferansNoERP())) {
+													if (izinReferansErp.getId() != null)
+														deleteList.add(izinReferansErp);
+													izinReferansERP.setIzin(personelIzin);
+													saveList.add(izinReferansERP);
+												}
 
+											}
+										} else {
+											IzinReferansERP izinReferansERP2 = (IzinReferansERP) pdksDAO.getObjectByInnerObject("izin.id", digerIzin.getId(), IzinReferansERP.class);
+											if (izinReferansERP2 != null) {
+												digerIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_REDEDILDI);
+												digerIzin.setGuncelleyenUser(islemYapan);
+												digerIzin.setGuncellemeTarihi(new Date());
+												saveList.add(digerIzin);
+											}
 										}
 									} else {
-										IzinReferansERP izinReferansERP2 = (IzinReferansERP) pdksDAO.getObjectByInnerObject("izin.id", digerIzin.getId(), IzinReferansERP.class);
-										if (izinReferansERP2 != null) {
-											digerIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_REDEDILDI);
-											digerIzin.setGuncelleyenUser(islemYapan);
-											digerIzin.setGuncellemeTarihi(new Date());
-											saveList.add(digerIzin);
-										}
+										logger.error("hata : " + izinERP.getBasZaman() + " - " + izinERP.getBitZaman() + "\n" + sb.toString());
 									}
 								}
 							}
