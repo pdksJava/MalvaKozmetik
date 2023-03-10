@@ -11,8 +11,9 @@
 		<h:form id="personelTanimlamaForm">
 
 			<rich:panel style="vardiyaGun" header="#{ortakIslemler.getMenuUserAdi(pdksPersonelHome.session,'personelTanimlama')}">
-				<h:panelGroup id="aramaSonuc">
+				<a4j:outputPanel id="aramaSonuc">
 					<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+
 						<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">Adi</ui:define>
@@ -26,13 +27,13 @@
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
 								<h:inputText value="#{pdksPersonelHome.sicilNo}" size="10">
-									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="pdksPersonelList,aramaSonuc"
-										action="#{pdksPersonelHome.fillPersonelKGSList}" />
+									<a4j:support event="onchange" status="ajaxStatus" reRender="pdksPersonelList,aramaSonuc" action="#{pdksPersonelHome.fillPersonelKGSList}" />
 
 
 								</h:inputText>
 							</s:decorate>
 						</h:panelGrid>
+
 						<s:decorate template="/layout/edit.xhtml">
 							<h:panelGrid columns="1">
 								<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.fillPersonelKGSList}" value="PDKS Personel Ara"
@@ -50,7 +51,7 @@
 							</h:panelGrid>
 						</s:decorate>
 					</h:panelGrid>
-				</h:panelGroup>
+				</a4j:outputPanel>
 			</rich:panel>
 			<a4j:outputPanel id="pdksPersonelList">
 				<rich:panel>
@@ -881,8 +882,7 @@
 										<s:decorate template="/layout/edit.xhtml"
 											rendered="#{pdksPersonelHome.instance.sirket.departman.admin and pdksPersonelHome.ekSahaTanimMap.containsKey('ekSaha1')}">
 											<ui:define name="label">#{pdksPersonelHome.ekSahaTanimMap.get('ekSaha1').aciklama}</ui:define>
-											<h:selectOneMenu value="#{pdksPersonelHome.instance.ekSaha1}"
-												disabled="#{authenticatedUser.admin==false and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.personelERPGuncelleme!='M'}">
+											<h:selectOneMenu value="#{pdksPersonelHome.instance.ekSaha1}" disabled="#{pdksPersonelHome.ekSaha1Disable}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.ekSahaListMap.get('ekSaha1')}" label="#{comp.aciklama}"
 													noSelectionLabel="Lütfen seçiniz" />
 												<s:convertEntity />
@@ -891,8 +891,7 @@
 										<s:decorate template="/layout/edit.xhtml"
 											rendered="#{pdksPersonelHome.instance.sirket.departman.admin and pdksPersonelHome.ekSahaTanimMap.containsKey('ekSaha2')}">
 											<ui:define name="label">#{pdksPersonelHome.ekSahaTanimMap.get('ekSaha2').aciklama}</ui:define>
-											<h:selectOneMenu value="#{pdksPersonelHome.instance.ekSaha2}"
-												disabled="#{authenticatedUser.admin==false and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.personelERPGuncelleme!='M'}">
+											<h:selectOneMenu value="#{pdksPersonelHome.instance.ekSaha2}" disabled="#{pdksPersonelHome.ekSaha2Disable}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.ekSahaListMap.get('ekSaha2')}" label="#{comp.aciklama}"
 													noSelectionLabel="Lütfen seçiniz" />
 												<s:convertEntity />
@@ -911,7 +910,7 @@
 										<s:decorate template="/layout/edit.xhtml"
 											rendered="#{pdksPersonelHome.instance.sirket.departman.admin and pdksPersonelHome.ekSahaTanimMap.containsKey('ekSaha4')}">
 											<ui:define name="label">#{pdksPersonelHome.ekSahaTanimMap.get('ekSaha4').aciklama}</ui:define>
-											<h:selectOneMenu value="#{pdksPersonelHome.instance.ekSaha4}">
+											<h:selectOneMenu value="#{pdksPersonelHome.instance.ekSaha4}" disabled="#{pdksPersonelHome.ekSaha4Disable}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.ekSahaListMap.get('ekSaha4')}" label="#{comp.aciklama}"
 													noSelectionLabel="Lütfen seçiniz" />
 												<s:convertEntity />

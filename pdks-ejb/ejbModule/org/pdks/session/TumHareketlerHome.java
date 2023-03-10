@@ -318,6 +318,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			// if (authenticatedUser.isAdmin() || (authenticatedUser.isIK() && authenticatedUser.getDepartman().isAdminMi()) || yetkiTumPersonelNoList.contains(sicilNo)) {
 			HashMap map = new HashMap();
+		 
 			if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
 
 				if (sirketId != null)
@@ -329,9 +330,9 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				map.put("sicilNo=", sicilNo);
 			else {
 				if (adi.trim().length() > 0)
-					map.put("personelKGS.ad like ", "%" + adi.trim() + "%");
+					map.put("pdksPersonel.ad like ", "%" + adi.trim() + "%");
 				if (soyadi.trim().length() > 0)
-					map.put("personelKGS.soyad like ", "%" + soyadi.trim() + "%");
+					map.put("pdksPersonel.soyad like ", "%" + soyadi.trim() + "%");
 			}
 
 			if (!admin && map.isEmpty())
@@ -339,7 +340,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor."));
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<PersonelView> personeller = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectListInLogic(map, PersonelKGS.class));
+			List<PersonelView> personeller = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectListInLogic(map, PersonelView.class));
 			if (!admin) {
 				for (Iterator iterator = personeller.iterator(); iterator.hasNext();) {
 					PersonelView personelView = (PersonelView) iterator.next();

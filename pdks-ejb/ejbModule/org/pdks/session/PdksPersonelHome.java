@@ -154,6 +154,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
+	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable;
 	private PersonelExtra personelExtra;
 	private Session session;
 	private int COL_SICIL_NO, COL_ADI, COL_SOYADI, COL_SIRKET_KODU, COL_SIRKET_ADI, COL_TESIS_KODU, COL_TESIS_ADI, COL_GOREV_KODU, COL_GOREVI, COL_BOLUM_KODU, COL_BOLUM_ADI;
@@ -1320,6 +1321,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 		}
 		izinGirisDurum(pdksPersonel);
+		ekSahaDisable();
 	}
 
 	private void saveIkinciYoneticiOlmazList() {
@@ -2048,6 +2050,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setPdksPersonelList(list);
 		fillPdksVardiyaSablonList();
 		fillPdksCalismaModeliList();
+		ekSahaDisable();
 	}
 
 	/**
@@ -3174,6 +3177,49 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return baos;
 	}
 
+	private void ekSahaDisable() {
+		ekSaha1Disable = false;
+		ekSaha2Disable = false;
+		ekSaha4Disable = false;
+		Personel personel = getInstance();
+		boolean admin = authenticatedUser.isAdmin();
+		if (admin == false && !personelERPGuncelleme.equals("1") && !personelERPGuncelleme.equals("M")) {
+			ekSaha2Disable = true;
+			ekSaha4Disable = true;
+			if (personel != null && personel.getSirket() != null && personel.getSirket().getDepartman().isAdminMi()) {
+				HashMap fields = new HashMap();
+				fields.put("tipi", Tanim.TIPI_GENEL_TANIM);
+				fields.put("kodu", Tanim.TIPI_BORDRO_ALT_BIRIMI);
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				Tanim parentBordroTanim = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
+				String parentBordroTanimKodu = Tanim.TIPI_BORDRO_ALT_BIRIMI;
+				String parentBordroTanimKoduStr = "";
+				if (parentBordroTanim != null) {
+					parentBordroTanimKoduStr = parentBordroTanim.getErpKodu();
+					if (parentBordroTanimKoduStr == null)
+						parentBordroTanimKoduStr = "";
+					else {
+						parentBordroTanimKodu = parentBordroTanimKoduStr.trim();
+					}
+
+				}
+				parentBordroTanimKoduStr = parentBordroTanimKodu.toLowerCase(Constants.TR_LOCALE);
+				ekSaha1Disable = !admin;
+				if (admin == false) {
+					if (!parentBordroTanimKoduStr.equals("")) {
+						if (!parentBordroTanimKoduStr.equals("eksaha2"))
+							ekSaha2Disable = false;
+						if (!parentBordroTanimKoduStr.equals("eksaha4"))
+							ekSaha4Disable = false;
+					}
+				}
+
+			}
+
+		}
+	}
+
 	public String excelAktar(List<PersonelView> list) {
 		try {
 			if (list == null)
@@ -4226,5 +4272,29 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setTesisDurum(Boolean tesisDurum) {
 		this.tesisDurum = tesisDurum;
+	}
+
+	public Boolean getEkSaha1Disable() {
+		return ekSaha1Disable;
+	}
+
+	public void setEkSaha1Disable(Boolean ekSaha1Disable) {
+		this.ekSaha1Disable = ekSaha1Disable;
+	}
+
+	public Boolean getEkSaha2Disable() {
+		return ekSaha2Disable;
+	}
+
+	public void setEkSaha2Disable(Boolean ekSaha2Disable) {
+		this.ekSaha2Disable = ekSaha2Disable;
+	}
+
+	public Boolean getEkSaha4Disable() {
+		return ekSaha4Disable;
+	}
+
+	public void setEkSaha4Disable(Boolean ekSaha4Disable) {
+		this.ekSaha4Disable = ekSaha4Disable;
 	}
 }
