@@ -153,7 +153,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Boolean sutIzni = Boolean.FALSE, kimlikNoGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
 	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
-	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
+	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, kartNoGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
 	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable;
 	private PersonelExtra personelExtra;
 	private Session session;
@@ -1906,6 +1906,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		emailCCDurum = map.containsKey("emailCCDurum");
 		emailBCCDurum = map.containsKey("emailBCCDurum");
 		departmanGoster = map.containsKey("departmanGoster");
+		kartNoGoster = map.containsKey("kartNoGoster");
 		try {
 			if (dinamikPersonelDurumList == null)
 				dinamikPersonelDurumList = new ArrayList<PersonelDinamikAlan>();
@@ -4296,5 +4297,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setEkSaha4Disable(Boolean ekSaha4Disable) {
 		this.ekSaha4Disable = ekSaha4Disable;
+	}
+
+	public Boolean getKartNoGoster() {
+		return kartNoGoster;
+	}
+
+	public void setKartNoGoster(Boolean kartNoGoster) {
+		this.kartNoGoster = kartNoGoster;
 	}
 }

@@ -49,6 +49,12 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.personelKGS.kimlikNo}" />
 							</rich:column>
+							<rich:column rendered="#{pdksPersonelHome.kartNoGoster}">
+								<f:facet name="header"> 
+									<h:outputText value="#{ortakIslemler.getParameterKey('kartNoAciklama')}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.personelKGS.kartNo}" />
+							</rich:column>
 							<rich:column rendered="#{pdksPersonelHome.yoneticiRolVarmi}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
