@@ -72,6 +72,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage.Severity;
 import org.jboss.seam.persistence.HibernateSessionProxy;
+import org.json.JSONObject;
+import org.json.XML;
 import org.pdks.entity.Dosya;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
@@ -125,6 +127,17 @@ public class PdksUtil implements Serializable {
 	private static Integer yarimYuvarlaLast = 1;
 
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
+	
+	/**
+	 * @param jsonStr
+	 * @param rootName
+	 * @return
+	 */
+	public static String getJsonToXML(String jsonStr, String rootName) {
+		JSONObject jsonObject = new JSONObject(jsonStr);
+		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootName + ">" + XML.toString(jsonObject) + "</" + rootName + ">";
+		return xml;
+	}
 
 	/**
 	 * @param aciklama

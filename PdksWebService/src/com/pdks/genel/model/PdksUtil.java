@@ -57,6 +57,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.json.XML;
 import org.w3c.dom.Node;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -100,6 +102,17 @@ public class PdksUtil implements Serializable {
 	private static ServletContext sc;
 
 	private static boolean sistemDestekVar = false;
+
+	/**
+	 * @param jsonStr
+	 * @param rootName
+	 * @return
+	 */
+	public static String getJsonToXML(String jsonStr, String rootName) {
+		JSONObject jsonObject = new JSONObject(jsonStr);
+		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootName + ">" + XML.toString(jsonObject) + "</" + rootName + ">";
+		return xml;
+	}
 
 	/**
 	 * @param value

@@ -826,7 +826,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					sistemVerileriniYukle(pdksDAO);
 					mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 					MailObject mailObject = kullaniciIKYukle(mailMap, pdksDAO);
-					String dosyaAdi = PdksUtil.setTurkishStr("FazlaMesai_" + +denklestirmeAy.getYil() + " " + denklestirmeAy.getAyAdi() + (sirket != null ? "_" + sirket.getAd() : "")) + ".json";
+					String dosyaAdi = PdksUtil.setTurkishStr("FazlaMesai_" + +denklestirmeAy.getYil() + " " + denklestirmeAy.getAyAdi() + (sirket != null ? "_" + sirket.getAd() : "")) + ".xml";
 					String subject = uygulamaBordro + " " + denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + (sirket != null ? sirket.getAd() + " " : "") + "fazla mesai yükleme";
 					String body = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " dönemi " + (sirket != null ? sirket.getAd() + " " : "") + " fazla mesai dosyası " + dosyaAdi + " ektedir.";
 					mailObject.setSubject(subject);
@@ -843,10 +843,10 @@ public class PdksVeriOrtakAktar implements Serializable {
 						dataMap.put("mesaj", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " dönemi " + (denklestirmeAy.getDurum() ? " ait kayıt bulunamadı!" : " kapatılmıştır!"));
 					mailAdresKontrol(mailObject, null);
 					Gson gs = new Gson();
-					String jSonStr = gs.toJson(dataMap);
+					String xml = PdksUtil.getJsonToXML(gs.toJson(dataMap), "getMesaiPDKS");
 					MailFile mailFile = new MailFile();
 					mailFile.setDisplayName(dosyaAdi);
-					mailFile.setIcerik(jSonStr.getBytes());
+					mailFile.setIcerik(xml.getBytes());
 					mailObject.getAttachmentFiles().add(mailFile);
 					mailMap.put("mailObject", mailObject);
 					MailManager.ePostaGonder(mailMap);
@@ -1284,7 +1284,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				mailMap.put("konu", uygulamaBordro + " saveIzinHakedisler servis hatası");
 				mailMap.put("mailIcerik", sb.toString());
 				LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-				fileMap.put("saveIzinHakedisler.json", jsonStr);
+				fileMap.put("saveIzinHakedisler.xml", PdksUtil.getJsonToXML(jsonStr, "saveIzinHakedisler"));
 				mailMap.put("fileMap", fileMap);
 				mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 				kullaniciIKYukle(mailMap, pdksDAO);
@@ -1995,7 +1995,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							mailMap.put("mailIcerik", sb.toString());
 							if (jsonStr != null) {
 								LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-								fileMap.put("saveIzinler.json", jsonStr);
+								fileMap.put("saveIzinler.xml", PdksUtil.getJsonToXML(jsonStr, "saveIzinler"));
 								mailMap.put("fileMap", fileMap);
 							}
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
@@ -3408,7 +3408,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						sb.append("</TABLE>");
 						mailMap.put("mailIcerik", sb.toString());
 						LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-						fileMap.put("savePersoneller.json", jsonStr);
+						fileMap.put("savePersoneller.xml", PdksUtil.getJsonToXML(jsonStr, "savePersoneller"));
 						mailMap.put("fileMap", fileMap);
 						mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 						kullaniciIKYukle(mailMap, pdksDAO);
