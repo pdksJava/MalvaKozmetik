@@ -110,7 +110,13 @@ public class PdksUtil implements Serializable {
 	 */
 	public static String getJsonToXML(String jsonStr, String rootName) {
 		JSONObject jsonObject = new JSONObject(jsonStr);
-		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootName + ">" + XML.toString(jsonObject) + "</" + rootName + ">";
+		String str = "";
+		try {
+			str = XML.toString(jsonObject);
+		} catch (Exception e) {
+			str = jsonStr;
+		}
+		String xml = formatXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootName + ">" + str + "</" + rootName + ">");
 		return xml;
 	}
 
