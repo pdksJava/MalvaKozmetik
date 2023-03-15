@@ -2458,20 +2458,28 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 * @param key
 	 * @param deger
 	 */
-	private void kontrolDosyaYaz(LinkedHashMap<String, TreeMap<String, List<String>>> anaMap, String veriTip, String key, String deger) {
+	private void kontrolDosyaYaz(LinkedHashMap<String, TreeMap<String, LinkedHashMap<String, Liste>>> anaMap, String veriTip, String key, String deger) {
 		if (veriTip != null && veriTip.trim().length() > 0) {
 			if (key != null && key.trim().length() > 0 && deger != null) {
 				veriTip = veriTip.trim();
-				key = (sirketKodu != null ? sirketKodu.trim() + "_" : "") + key.trim();
+
 				deger = deger.trim();
-				TreeMap<String, List<String>> map = anaMap.containsKey(veriTip) ? anaMap.get(veriTip) : new TreeMap<String, List<String>>();
+				TreeMap<String, LinkedHashMap<String, Liste>> map = anaMap.containsKey(veriTip) ? anaMap.get(veriTip) : new TreeMap<String, LinkedHashMap<String, Liste>>();
 				if (map.isEmpty())
 					anaMap.put(veriTip, map);
-				List<String> list = map.containsKey(key) ? map.get(key) : new ArrayList<String>();
-				if (list.isEmpty())
-					map.put(key, list);
-				if (!list.contains(deger))
-					list.add(deger);
+				String key1 = (sirketKodu != null ? sirketKodu.trim() + "_" : "") + deger.trim();
+				LinkedHashMap<String, Liste> mapsDeger = map.containsKey(key1) ? map.get(key1) : new LinkedHashMap<String, Liste>();
+				if (mapsDeger.isEmpty())
+					map.put(key1, mapsDeger);
+				if (!mapsDeger.containsKey(key))
+					mapsDeger.put(key, new Liste(key, deger));
+				String key2 = (sirketKodu != null ? sirketKodu.trim() + "_" : "") + key.trim();
+				LinkedHashMap<String, Liste> mapsKey = map.containsKey(key2) ? map.get(key2) : new LinkedHashMap<String, Liste>();
+				if (mapsKey.isEmpty())
+					map.put(key2, mapsKey);
+				if (!mapsKey.containsKey(deger))
+					mapsKey.put(deger, new Liste(key, deger));
+
 			}
 		}
 
@@ -2493,16 +2501,32 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				setServisAlanlar();
 				Sheet sheet = wb.getSheetAt(0);
 				fillEkSahaTanim();
-				LinkedHashMap<String, TreeMap<String, List<String>>> anaMap = new LinkedHashMap<String, TreeMap<String, List<String>>>();
+				LinkedHashMap<String, TreeMap<String, LinkedHashMap<String, Liste>>> anaMap = new LinkedHashMap<String, TreeMap<String, LinkedHashMap<String, Liste>>>();
 				HashMap<String, String> referansMap = new HashMap<String, String>();
 				String REFERANS_SIRKET = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_SIRKET_KODU);
+				if (REFERANS_SIRKET == null)
+					REFERANS_SIRKET = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_SIRKET_ADI);
 				String REFERANS_TESIS = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_TESIS_KODU);
+				if (REFERANS_TESIS == null)
+					REFERANS_TESIS = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_TESIS_ADI);
 				String REFERANS_CINSIYET = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_CINSIYET_KODU);
+				if (REFERANS_CINSIYET == null)
+					REFERANS_CINSIYET = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_CINSIYET);
 				String REFERANS_BOLUM = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_BOLUM_KODU);
+				if (REFERANS_BOLUM == null)
+					REFERANS_BOLUM = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_BOLUM_ADI);
 				String REFERANS_DEPARTMAN = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_DEPARTMAN_KODU);
+				if (REFERANS_DEPARTMAN == null)
+					REFERANS_DEPARTMAN = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_DEPARTMAN_ADI);
 				String REFERANS_GOREV = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_GOREV_KODU);
+				if (REFERANS_GOREV == null)
+					REFERANS_GOREV = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_GOREVI);
 				String REFERANS_BORDRO_ALT_ALAN = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_BORDRO_ALT_ALAN_KODU);
-				String REFERANS_MASRAF_YERI = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_MASRAF_YERI_ADI);
+				if (REFERANS_BORDRO_ALT_ALAN == null)
+					REFERANS_BORDRO_ALT_ALAN = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_BORDRO_ALT_ALAN_ADI);
+				String REFERANS_MASRAF_YERI = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_MASRAF_YERI_KODU);
+				if (REFERANS_MASRAF_YERI == null)
+					REFERANS_MASRAF_YERI = ExcelUtil.getSheetStringValueTry(sheet, 0, COL_MASRAF_YERI_ADI);
 				if (REFERANS_SIRKET != null)
 					referansMap.put(REFERANS_SIRKET, ExcelUtil.getSheetStringValueTry(sheet, 0, COL_SIRKET_ADI));
 				if (REFERANS_TESIS != null)
@@ -2599,7 +2623,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							kontrolDosyaYaz(anaMap, REFERANS_DEPARTMAN, personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi());
 						}
 					}
-
 					if (COL_BOLUM_ADI >= 0) {
 						personelERP.setBolumAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BOLUM_ADI));
 						if (COL_BOLUM_KODU >= 0) {
@@ -2615,41 +2638,12 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						}
 					}
 
-					if (COL_CINSIYET >= 0) {
-						personelERP.setCinsiyeti(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET));
-						if (COL_CINSIYET_KODU >= 0) {
-							personelERP.setCinsiyetKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti());
-						}
-
-						if (personelERP.getCinsiyetKodu() == null && personelERP.getCinsiyeti() != null && personelERP.getCinsiyeti().indexOf("-") > 0) {
-							setKodAciklama(personelERP.getCinsiyeti(), map);
-							personelERP.setCinsiyetKodu(map.get("kod"));
-							personelERP.setCinsiyeti(map.get("aciklama"));
-
-						}
-					}
-
-					if (COL_GOREVI >= 0) {
-						personelERP.setGorevi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREVI));
-						if (COL_GOREV_KODU >= 0) {
-							personelERP.setGorevKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREV_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
-						}
-
-						if (personelERP.getGorevKodu() == null && personelERP.getGorevi() != null && personelERP.getGorevi().indexOf("-") > 0) {
-							setKodAciklama(personelERP.getGorevi(), map);
-							personelERP.setGorevKodu(map.get("kod"));
-							personelERP.setGorevi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
-						}
-					}
+					sirketKodu = personelERP.getTesisKodu();
 					if (COL_BORDRO_ALT_ALAN_ADI >= 0) {
 						personelERP.setBordroAltAlanAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_ALT_ALAN_ADI));
 						if (COL_BORDRO_ALT_ALAN_KODU >= 0) {
 							personelERP.setBordroAltAlanKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_ALT_ALAN_KODU));
 							kontrolDosyaYaz(anaMap, REFERANS_BORDRO_ALT_ALAN, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi());
-
 						}
 						if (personelERP.getBordroAltAlanKodu() == null && personelERP.getBordroAltAlanAdi() != null && personelERP.getBordroAltAlanAdi().indexOf("-") > 0) {
 							setKodAciklama(personelERP.getBordroAltAlanAdi(), map);
@@ -2670,6 +2664,35 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							personelERP.setMasrafYeriKodu(map.get("kod"));
 							personelERP.setMasrafYeriAdi(map.get("aciklama"));
 							kontrolDosyaYaz(anaMap, REFERANS_MASRAF_YERI, personelERP.getMasrafYeriKodu(), personelERP.getMasrafYeriAdi());
+						}
+					}
+					sirketKodu = null;
+					if (COL_GOREVI >= 0) {
+						personelERP.setGorevi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREVI));
+						if (COL_GOREV_KODU >= 0) {
+							personelERP.setGorevKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREV_KODU));
+							kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
+						}
+
+						if (personelERP.getGorevKodu() == null && personelERP.getGorevi() != null && personelERP.getGorevi().indexOf("-") > 0) {
+							setKodAciklama(personelERP.getGorevi(), map);
+							personelERP.setGorevKodu(map.get("kod"));
+							personelERP.setGorevi(map.get("aciklama"));
+							kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
+						}
+					}
+					if (COL_CINSIYET >= 0) {
+						personelERP.setCinsiyeti(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET));
+						if (COL_CINSIYET_KODU >= 0) {
+							personelERP.setCinsiyetKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET_KODU));
+							kontrolDosyaYaz(anaMap, REFERANS_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti());
+						}
+
+						if (personelERP.getCinsiyetKodu() == null && personelERP.getCinsiyeti() != null && personelERP.getCinsiyeti().indexOf("-") > 0) {
+							setKodAciklama(personelERP.getCinsiyeti(), map);
+							personelERP.setCinsiyetKodu(map.get("kod"));
+							personelERP.setCinsiyeti(map.get("aciklama"));
+
 						}
 					}
 					if (COL_BORDRO_SANAL_PERSONEL >= 0) {
@@ -2750,21 +2773,34 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						if (referansMap.containsKey(veriTip)) {
 							StringBuffer sb = new StringBuffer();
 							String aciklama = referansMap.get(veriTip);
-							TreeMap<String, List<String>> veriMap = anaMap.get(veriTip);
-
+							TreeMap<String, LinkedHashMap<String, Liste>> veriMap = anaMap.get(veriTip);
 							for (String key : veriMap.keySet()) {
-								List<String> list = veriMap.get(key);
-								if (list.size() > 1) {
+								LinkedHashMap<String, Liste> maps = veriMap.get(key);
+								if (maps.size() > 1) {
 									if (sb.length() > 0)
 										sb.append(", ");
-									sb.append(veriTip + " = \"" + key + "\" : [ ");
-									for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-										String deger = (String) iterator.next();
-										sb.append("\"" + deger + "\"");
-										if (iterator.hasNext())
-											sb.append(", ");
+									List<Liste> listeler = new ArrayList<Liste>(maps.values());
+									Liste liste1 = listeler.get(0), liste2 = listeler.get(1);
+									if (liste1.getId().equals(liste2.getId())) {
+										listeler = PdksUtil.sortObjectStringAlanList(listeler, "getValue", null);
+										sb.append(veriTip + " = \"" + liste1.getId() + "\" : [ ");
+										for (Iterator iterator = listeler.iterator(); iterator.hasNext();) {
+											Liste liste = (Liste) iterator.next();
+											sb.append("\"" + liste.getValue() + "\"");
+											if (iterator.hasNext())
+												sb.append(", ");
+										}
+									} else {
+										listeler = PdksUtil.sortObjectStringAlanList(listeler, "getId", null);
+										sb.append(veriTip + " = \"" + liste1.getValue() + "\" : [ ");
+										for (Iterator iterator = listeler.iterator(); iterator.hasNext();) {
+											Liste liste = (Liste) iterator.next();
+											sb.append("\"" + liste.getId() + "\"");
+											if (iterator.hasNext())
+												sb.append(", ");
+										}
 									}
-									sb.append(" ] " + list.size() + " adet ");
+									sb.append(" ] " + maps.size() + " adet ");
 								}
 							}
 							if (sb.length() > 0) {
