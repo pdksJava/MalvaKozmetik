@@ -111,6 +111,7 @@ public class PdksUtil implements Serializable {
 	public static final Locale RU_LOCALE = new Locale("ru", "RU");
 	public static final Locale TR_LOCALE = new Locale("tr", "TR");
 	public static final String SEPARATOR_MAIL = ";";
+	public static final String SEPARATOR_KOD_ACIKLAMA = "_";
 	public static final boolean isUTF8 = Boolean.TRUE;
 	private static HttpServletRequest httpServletRequest;
 

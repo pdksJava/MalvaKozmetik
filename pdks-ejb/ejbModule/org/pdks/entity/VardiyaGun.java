@@ -1550,11 +1550,13 @@ public class VardiyaGun extends BaseObject {
 				aciklama = "ISTIFA";
 		} else if (vardiya != null && istifa == false) {
 			if (izin != null) {
-				if (isPazar())
+				IzinTipi izinTipi = izin.getIzinTipi();
+				boolean girisYok = izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK);
+				if (((girisYok && isPazar()) || (girisYok == false && vardiya.isHaftaTatil())) && izinTipi.isTakvimGunuMu() == false && izinTipi.isHTDahil() == false) {
 					aciklama = ".";
-				else
+				} else
 					try {
-						aciklama = izin.getIzinTipi().getKisaAciklama();
+						aciklama = izinTipi.getKisaAciklama();
 					} catch (Exception e) {
 						logger.error("PDKS hata in : \n");
 						e.printStackTrace();

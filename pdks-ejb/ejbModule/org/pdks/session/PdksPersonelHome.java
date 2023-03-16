@@ -154,7 +154,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, kartNoGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
-	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable;
+	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable, transferAciklamaCiftKontrol;
 	private PersonelExtra personelExtra;
 	private Session session;
 	private int COL_SICIL_NO, COL_ADI, COL_SOYADI, COL_SIRKET_KODU, COL_SIRKET_ADI, COL_TESIS_KODU, COL_TESIS_ADI, COL_GOREV_KODU, COL_GOREVI, COL_BOLUM_KODU, COL_BOLUM_ADI;
@@ -2388,7 +2388,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			map = new LinkedHashMap<String, String>();
 		else
 			map.clear();
-		int yer = deger.indexOf("-");
+		int yer = deger.indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA);
 		if (yer > 0) {
 			String kod = deger.substring(0, yer).trim();
 			String aciklama = deger.substring(yer + 1).trim();
@@ -2467,13 +2467,15 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				TreeMap<String, LinkedHashMap<String, Liste>> map = anaMap.containsKey(veriTip) ? anaMap.get(veriTip) : new TreeMap<String, LinkedHashMap<String, Liste>>();
 				if (map.isEmpty())
 					anaMap.put(veriTip, map);
-				String key1 = (sirketKodu != null ? sirketKodu.trim() + "_" : "") + deger.trim();
-				LinkedHashMap<String, Liste> mapsDeger = map.containsKey(key1) ? map.get(key1) : new LinkedHashMap<String, Liste>();
-				if (mapsDeger.isEmpty())
-					map.put(key1, mapsDeger);
-				if (!mapsDeger.containsKey(key))
-					mapsDeger.put(key, new Liste(key, deger));
-				String key2 = (sirketKodu != null ? sirketKodu.trim() + "_" : "") + key.trim();
+				if (transferAciklamaCiftKontrol) {
+					String key1 = (sirketKodu != null ? sirketKodu.trim() + PdksUtil.SEPARATOR_KOD_ACIKLAMA : "") + deger.trim();
+					LinkedHashMap<String, Liste> mapsDeger = map.containsKey(key1) ? map.get(key1) : new LinkedHashMap<String, Liste>();
+					if (mapsDeger.isEmpty())
+						map.put(key1, mapsDeger);
+					if (!mapsDeger.containsKey(key))
+						mapsDeger.put(key, new Liste(key, deger));
+				}
+				String key2 = (sirketKodu != null ? sirketKodu.trim() + PdksUtil.SEPARATOR_KOD_ACIKLAMA : "") + key.trim();
 				LinkedHashMap<String, Liste> mapsKey = map.containsKey(key2) ? map.get(key2) : new LinkedHashMap<String, Liste>();
 				if (mapsKey.isEmpty())
 					map.put(key2, mapsKey);
@@ -2557,6 +2559,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				}
 				LinkedHashMap<String, PersonelERP> perMap = new LinkedHashMap<String, PersonelERP>();
 				LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+				transferAciklamaCiftKontrol = ortakIslemler.getParameterKey("transferAciklamaCiftKontrol").equals("1");
 				for (int row = 1; COL_SICIL_NO >= 0 && row <= sheet.getLastRowNum(); row++) {
 					try {
 						perSicilNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_SICIL_NO);
@@ -2584,7 +2587,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							kontrolDosyaYaz(anaMap, REFERANS_SIRKET, personelERP.getSirketKodu(), personelERP.getSirketAdi());
 						}
 
-						if (personelERP.getSirketKodu() == null && personelERP.getSirketAdi() != null && personelERP.getSirketAdi().indexOf("-") > 0) {
+						if (personelERP.getSirketKodu() == null && personelERP.getSirketAdi() != null && personelERP.getSirketAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getSirketAdi(), map);
 							personelERP.setSirketKodu(map.get("kod"));
 							personelERP.setSirketAdi(map.get("aciklama"));
@@ -2600,7 +2603,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							kontrolDosyaYaz(anaMap, REFERANS_TESIS, tesisKodu, personelERP.getTesisAdi());
 						}
 
-						if (personelERP.getTesisKodu() == null && personelERP.getTesisAdi() != null && personelERP.getTesisAdi().indexOf("-") > 0) {
+						if (personelERP.getTesisKodu() == null && personelERP.getTesisAdi() != null && personelERP.getTesisAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getTesisAdi(), map);
 							personelERP.setTesisKodu(map.get("kod"));
 							String tesisKodu = personelERP.getTesisKodu();
@@ -2616,7 +2619,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							kontrolDosyaYaz(anaMap, REFERANS_DEPARTMAN, personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi());
 						}
 
-						if (personelERP.getDepartmanKodu() == null && personelERP.getDepartmanAdi() != null && personelERP.getDepartmanAdi().indexOf("-") > 0) {
+						if (personelERP.getDepartmanKodu() == null && personelERP.getDepartmanAdi() != null && personelERP.getDepartmanAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getDepartmanAdi(), map);
 							personelERP.setDepartmanKodu(map.get("kod"));
 							personelERP.setDepartmanAdi(map.get("aciklama"));
@@ -2630,7 +2633,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							kontrolDosyaYaz(anaMap, REFERANS_BOLUM, personelERP.getBolumKodu(), personelERP.getBolumAdi());
 						}
 
-						if (personelERP.getBolumKodu() == null && personelERP.getBolumAdi() != null && personelERP.getBolumAdi().indexOf("-") > 0) {
+						if (personelERP.getBolumKodu() == null && personelERP.getBolumAdi() != null && personelERP.getBolumAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getBolumAdi(), map);
 							personelERP.setBolumKodu(map.get("kod"));
 							personelERP.setBolumAdi(map.get("aciklama"));
@@ -2645,7 +2648,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							personelERP.setBordroAltAlanKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_ALT_ALAN_KODU));
 							kontrolDosyaYaz(anaMap, REFERANS_BORDRO_ALT_ALAN, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi());
 						}
-						if (personelERP.getBordroAltAlanKodu() == null && personelERP.getBordroAltAlanAdi() != null && personelERP.getBordroAltAlanAdi().indexOf("-") > 0) {
+						if (personelERP.getBordroAltAlanKodu() == null && personelERP.getBordroAltAlanAdi() != null && personelERP.getBordroAltAlanAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getBordroAltAlanAdi(), map);
 							personelERP.setBordroAltAlanKodu(map.get("kod"));
 							personelERP.setBordroAltAlanAdi(map.get("aciklama"));
@@ -2659,7 +2662,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							personelERP.setMasrafYeriKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_MASRAF_YERI_KODU));
 							kontrolDosyaYaz(anaMap, REFERANS_MASRAF_YERI, personelERP.getMasrafYeriKodu(), personelERP.getMasrafYeriAdi());
 						}
-						if (personelERP.getMasrafYeriKodu() == null && personelERP.getMasrafYeriAdi() != null && personelERP.getMasrafYeriAdi().indexOf("-") > 0) {
+						if (personelERP.getMasrafYeriKodu() == null && personelERP.getMasrafYeriAdi() != null && personelERP.getMasrafYeriAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getMasrafYeriAdi(), map);
 							personelERP.setMasrafYeriKodu(map.get("kod"));
 							personelERP.setMasrafYeriAdi(map.get("aciklama"));
@@ -2674,7 +2677,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
 						}
 
-						if (personelERP.getGorevKodu() == null && personelERP.getGorevi() != null && personelERP.getGorevi().indexOf("-") > 0) {
+						if (personelERP.getGorevKodu() == null && personelERP.getGorevi() != null && personelERP.getGorevi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getGorevi(), map);
 							personelERP.setGorevKodu(map.get("kod"));
 							personelERP.setGorevi(map.get("aciklama"));
@@ -2688,7 +2691,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							kontrolDosyaYaz(anaMap, REFERANS_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti());
 						}
 
-						if (personelERP.getCinsiyetKodu() == null && personelERP.getCinsiyeti() != null && personelERP.getCinsiyeti().indexOf("-") > 0) {
+						if (personelERP.getCinsiyetKodu() == null && personelERP.getCinsiyeti() != null && personelERP.getCinsiyeti().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
 							setKodAciklama(personelERP.getCinsiyeti(), map);
 							personelERP.setCinsiyetKodu(map.get("kod"));
 							personelERP.setCinsiyeti(map.get("aciklama"));
@@ -3107,56 +3110,56 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							if (COL_SIRKET_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sirket.getAd());
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue((sirket.getErpKodu() != null ? sirket.getErpKodu() + "-" : "") + sirket.getAd());
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue((sirket.getErpKodu() != null ? sirket.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA : "") + sirket.getAd());
 						} else if (kodu.equals("TESIS_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(tesis != null ? tesis.getErpKodu() : "");
 						else if (kodu.equals("TESIS_ADI")) {
 							if (COL_TESIS_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(tesis != null ? tesis.getAciklama() : "");
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(tesis != null ? tesis.getErpKodu() + "-" + tesis.getAciklama() : "");
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(tesis != null ? tesis.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA + tesis.getAciklama() : "");
 						} else if (kodu.equals("GOREV_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(gorev != null ? gorev.getErpKodu() : "");
 						else if (kodu.equals("GOREVI")) {
 							if (COL_GOREV_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(gorev != null ? gorev.getAciklama() : "");
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(gorev != null ? gorev.getErpKodu() + "-" + gorev.getAciklama() : "");
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(gorev != null ? gorev.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA + gorev.getAciklama() : "");
 						} else if (kodu.equals("BOLUM_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(bolum != null ? bolum.getErpKodu() : "");
 						else if (kodu.equals("BOLUM_ADI")) {
 							if (COL_BOLUM_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(bolum != null ? bolum.getAciklama() : "");
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(bolum != null ? bolum.getErpKodu() + "-" + bolum.getAciklama() : "");
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(bolum != null ? bolum.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA + bolum.getAciklama() : "");
 						} else if (kodu.equals("CINSIYET_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(cinsiyet != null ? cinsiyet.getErpKodu() : "");
 						else if (kodu.equals("CINSIYET")) {
 							if (COL_CINSIYET_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(cinsiyet != null ? cinsiyet.getAciklama() : "");
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(cinsiyet != null ? cinsiyet.getErpKodu() + "-" + cinsiyet.getAciklama() : "");
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(cinsiyet != null ? cinsiyet.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA + cinsiyet.getAciklama() : "");
 						} else if (kodu.equals("BORDRO_ALT_ALAN_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(bordroAltAlani != null ? bordroAltAlani.getErpKodu() : "");
 						else if (kodu.equals("BORDRO_ALT_ALAN_ADI")) {
 							if (COL_BORDRO_ALT_ALAN_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(bordroAltAlani != null ? bordroAltAlani.getAciklama() : "");
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(bordroAltAlani != null ? bordroAltAlani.getErpKodu() + "-" + bordroAltAlani.getAciklama() : "");
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(bordroAltAlani != null ? bordroAltAlani.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA + bordroAltAlani.getAciklama() : "");
 						} else if (kodu.equals("DEPARTMAN_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(departman != null ? departman.getErpKodu() : "");
 						else if (kodu.equals("DEPARTMAN_ADI")) {
 							if (COL_DEPARTMAN_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(departman != null ? departman.getAciklama() : "");
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(departman != null ? departman.getErpKodu() + "-" + departman.getAciklama() : "");
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(departman != null ? departman.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA + departman.getAciklama() : "");
 						} else if (kodu.equals("MASRAF_YERI_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(masrafYeri != null ? masrafYeri.getErpKodu() : "");
 						else if (kodu.equals("MASRAF_YERI_ADI")) {
 							if (COL_MASRAF_YERI_KODU >= 0)
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(masrafYeri != null ? masrafYeri.getAciklama() : "");
 							else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(masrafYeri != null ? masrafYeri.getErpKodu() + "-" + masrafYeri.getAciklama() : "");
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(masrafYeri != null ? masrafYeri.getErpKodu() + PdksUtil.SEPARATOR_KOD_ACIKLAMA + masrafYeri.getAciklama() : "");
 						} else if (kodu.equals("YONETICI_KODU"))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getYoneticisi() != null ? personel.getYoneticisi().getPdksSicilNo() : "");
 						else if (kodu.equals("SANAL_PERSONEL"))
@@ -4341,5 +4344,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setKartNoGoster(Boolean kartNoGoster) {
 		this.kartNoGoster = kartNoGoster;
+	}
+
+	public Boolean getTransferAciklamaCiftKontrol() {
+		return transferAciklamaCiftKontrol;
+	}
+
+	public void setTransferAciklamaCiftKontrol(Boolean transferAciklamaCiftKontrol) {
+		this.transferAciklamaCiftKontrol = transferAciklamaCiftKontrol;
 	}
 }
