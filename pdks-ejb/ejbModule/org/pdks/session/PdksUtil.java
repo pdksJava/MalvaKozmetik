@@ -2,6 +2,7 @@ package org.pdks.session;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,13 +12,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -403,7 +404,9 @@ public class PdksUtil implements Serializable {
 	public static String formatXML(String xml) {
 		String formatXML = null;
 		try {
-			final InputSource src = new InputSource(new StringReader(xml));
+			// final InputSource src = new InputSource(new StringReader(xml));
+			InputStream is = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
+			final InputSource src = new InputSource(is);
 			final Node document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src).getDocumentElement();
 			final Boolean keepDeclaration = Boolean.valueOf(xml.startsWith("<?xml"));
 			final DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();

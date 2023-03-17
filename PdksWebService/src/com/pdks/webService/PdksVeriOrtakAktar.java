@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.pdks.dao.PdksDAO;
 import com.pdks.dao.impl.BaseDAOHibernate;
 import com.pdks.entity.CalismaModeli;
@@ -63,6 +64,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 	public static final String LAST_DATE = "9999-12-31";
 	public static final String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
 	public static final String FORMAT_TIME = "HH:mm";
+
+	public static final String[] HAKEDIS_IZIN_PROP_ORDER = { "hakedisList", "kidemBaslangicTarihi", "personelNo" };
+	public static final String[] IZIN_PROP_ORDER = { "aciklama", "basZaman", "bitZaman", "durum", "izinSuresi", "izinTipi", "izinTipiAciklama", "personelNo", "referansNoERP", "sureBirimi" };
+	public static final String[] PERSONEL_PROP_ORDER = { "adi", "bolumAdi", "bolumKodu", "bordroAltAlanAdi", "bordroAltAlanKodu", "cinsiyetKodu", "cinsiyeti", "departmanAdi", "departmanKodu", "dogumTarihi", "gorevKodu", "gorevi", "iseGirisTarihi", "istenAyrilmaTarihi", "kidemTarihi",
+			"masrafYeriAdi", "masrafYeriKodu", "personelNo", "personelTipi", "personelTipiKodu", "sanalPersonel", "sirketAdi", "sirketKodu", "soyadi", "tesisAdi", "tesisKodu", "yoneticiPerNo", "grubaGirisTarihi", "yonetici2PerNo" };
 
 	private PdksDAO pdksDAO = null;
 
@@ -1995,7 +2001,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							mailMap.put("mailIcerik", sb.toString());
 							if (jsonStr != null) {
 								LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-								fileMap.put("saveIzinler.xml", PdksUtil.getJsonToXML(jsonStr, "saveIzinler", "izin"));
+								fileMap.put("saveIzinler.xml", PdksUtil.getJsonToXML(getJsonStr(jsonStr, "personel", IZIN_PROP_ORDER), "saveIzinler", null));
 								mailMap.put("fileMap", fileMap);
 							}
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
@@ -3428,7 +3434,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						sb.append("</TABLE>");
 						mailMap.put("mailIcerik", sb.toString());
 						LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-						fileMap.put("savePersoneller.xml", PdksUtil.getJsonToXML(jsonStr, "savePersoneller", "personel"));
+						fileMap.put("savePersoneller.xml", PdksUtil.getJsonToXML(getJsonStr(jsonStr, "personel", PERSONEL_PROP_ORDER), "savePersoneller", null));
 						mailMap.put("fileMap", fileMap);
 						mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 						kullaniciIKYukle(mailMap, pdksDAO);
@@ -3449,6 +3455,45 @@ public class PdksVeriOrtakAktar implements Serializable {
 			mesajInfoYaz("savePersoneller --> " + mesaj + " out " + new Date());
 		}
 
+	}
+
+	/**
+	 * @param jsonStr
+	 * @param arrayTag
+	 * @param dizi
+	 * @return
+	 */
+	private String getJsonStr(String jsonStr, String arrayTag, String[] dizi) {
+		jsonStr = "{\"" + arrayTag + "\":" + jsonStr + "}";
+		Gson gson = new Gson();
+		LinkedHashMap<String, Object> headerMap = gson.fromJson(jsonStr, LinkedHashMap.class);
+		jsonStr = "";
+		if (headerMap != null) {
+			List<LinkedTreeMap> tableArray = (List<LinkedTreeMap>) headerMap.get(arrayTag);
+			if (tableArray != null) {
+				String hataList = "hataList";
+				StringBuffer sb = new StringBuffer();
+				for (LinkedTreeMap linkedHashMap : tableArray) {
+					sb.append("<" + arrayTag + ">");
+					for (String key : dizi) {
+						if (linkedHashMap.containsKey(key)) {
+							sb.append("<" + key + ">" + linkedHashMap.get(key).toString());
+							sb.append("</" + key + ">");
+						}
+					}
+					if (linkedHashMap.containsKey(hataList)) {
+						List list1 = (List) linkedHashMap.get(hataList);
+						for (Object object : list1) {
+							sb.append("<" + hataList + ">" + object.toString());
+							sb.append("</" + hataList + ">");
+						}
+					}
+					sb.append("</" + arrayTag + ">");
+				}
+				jsonStr = sb.toString();
+			}
+		}
+		return jsonStr;
 	}
 
 	/**
