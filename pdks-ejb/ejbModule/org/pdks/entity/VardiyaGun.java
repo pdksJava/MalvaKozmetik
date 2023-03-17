@@ -1551,8 +1551,8 @@ public class VardiyaGun extends BaseObject {
 		} else if (vardiya != null && istifa == false) {
 			if (izin != null) {
 				IzinTipi izinTipi = izin.getIzinTipi();
-				boolean girisYok = izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK);
-				if (((girisYok && isPazar()) || (girisYok == false && vardiya.isHaftaTatil())) && izinTipi.isTakvimGunuMu() == false && izinTipi.isHTDahil() == false) {
+				// boolean girisYok = izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK);
+				if (vardiya.isHaftaTatil() && izinTipi.isTakvimGunuMu() == false && izinTipi.isHTDahil() == false) {
 					aciklama = ".";
 				} else
 					try {

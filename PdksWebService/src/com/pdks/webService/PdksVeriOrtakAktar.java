@@ -76,7 +76,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 	private CalismaModeli calismaModeli = null;
 
-	private String mesaj = null, dosyaEkAdi, parentBordroTanimKoduStr = "", kapiGiris, uygulamaBordro;
+	private String mesaj = null, dosyaEkAdi, parentBordroTanimKoduStr = "", kapiGiris, uygulamaBordro, ekSahaAdi = "";
 
 	private Date bugun = null, ayBasi = null, minDate = null;
 
@@ -843,7 +843,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						dataMap.put("mesaj", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " dönemi " + (denklestirmeAy.getDurum() ? " ait kayıt bulunamadı!" : " kapatılmıştır!"));
 					mailAdresKontrol(mailObject, null);
 					Gson gs = new Gson();
-					String xml = PdksUtil.getJsonToXML(gs.toJson(dataMap), "getMesaiPDKS");
+					String xml = PdksUtil.getJsonToXML(gs.toJson(dataMap), "getMesaiPDKS", null);
 					MailFile mailFile = new MailFile();
 					mailFile.setDisplayName(dosyaAdi);
 					mailFile.setIcerik(xml.getBytes());
@@ -1284,7 +1284,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				mailMap.put("konu", uygulamaBordro + " saveIzinHakedisler servis hatası");
 				mailMap.put("mailIcerik", sb.toString());
 				LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-				fileMap.put("saveIzinHakedisler.xml", PdksUtil.getJsonToXML(jsonStr, "saveIzinHakedisler"));
+				fileMap.put("saveIzinHakedisler.xml", PdksUtil.getJsonToXML(jsonStr, "saveIzinHakedisler", "izinHakedis"));
 				mailMap.put("fileMap", fileMap);
 				mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 				kullaniciIKYukle(mailMap, pdksDAO);
@@ -1995,7 +1995,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							mailMap.put("mailIcerik", sb.toString());
 							if (jsonStr != null) {
 								LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-								fileMap.put("saveIzinler.xml", PdksUtil.getJsonToXML(jsonStr, "saveIzinler"));
+								fileMap.put("saveIzinler.xml", PdksUtil.getJsonToXML(jsonStr, "saveIzinler", "izin"));
 								mailMap.put("fileMap", fileMap);
 							}
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
@@ -2421,6 +2421,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		Tanim parentBordroTanim = (Tanim) pdksDAO.getObjectByInnerObject(fields, Tanim.class);
 		String parentBordroTanimKodu = Tanim.TIPI_BORDRO_ALT_BIRIMI;
 		parentBordroTanimKoduStr = "";
+		String durumParentBordroTanimKoduStr = "";
 		if (parentBordroTanim != null) {
 			parentBordroTanimKoduStr = parentBordroTanim.getErpKodu();
 			if (parentBordroTanimKoduStr == null)
@@ -2429,11 +2430,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 				parentBordroTanimKodu = parentBordroTanimKoduStr.trim();
 			}
 
-		}
-		parentBordroTanimKoduStr = parentBordroTanimKodu.toLowerCase(Constants.TR_LOCALE);
+		} else
+			parentBordroTanimKoduStr = Tanim.TIPI_BORDRO_ALT_BIRIMI;
+		parentBordroTanimKoduStr = parentBordroTanimKodu;
 		// if (parentBordroTanimKoduStr.startsWith("eksaha"))
 		// parentBordroTanimKodu = Tanim.TIPI_PERSONEL_EK_SAHA_ACIKLAMA;
-		String durumParentBordroTanimKoduStr = "";
+
 		List<String> parentBordroTanimKoduList = PdksUtil.getListByString(parentBordroTanimKoduStr, null);
 		if (parentBordroTanimKoduList.size() <= 2) {
 			switch (parentBordroTanimKoduList.size()) {
@@ -2447,6 +2449,21 @@ public class PdksVeriOrtakAktar implements Serializable {
 			default:
 				break;
 			}
+		}
+		ekSahaAdi = parentBordroTanimKoduStr != null ? parentBordroTanimKoduStr.toLowerCase(Constants.TR_LOCALE) : "";
+		Tanim istenAyrilanEkSaha = null;
+		if (!ekSahaAdi.equals("")) {
+			if (ekSahaAdi.startsWith("eksaha")) {
+				Tanim parentEkSaha = personelEKSahaMap != null && personelEKSahaMap.containsKey(parentBordroTanimKoduStr) ? personelEKSahaMap.get(parentBordroTanimKoduStr) : null;
+				if (parentEkSaha != null) {
+					fields.clear();
+					fields.put("parentTanim.id", parentEkSaha.getId());
+					fields.put("tipi", Tanim.TIPI_PERSONEL_EK_SAHA_ACIKLAMA);
+					fields.put("kodu", "END");
+					istenAyrilanEkSaha = (Tanim) pdksDAO.getObjectByInnerObject(fields, Tanim.class);
+				}
+			}
+
 		}
 		boolean durumParentBordroTanimKodu = durumParentBordroTanimKoduStr.equalsIgnoreCase("true");
 		Tanim parentBolum = personelEKSahaMap != null && personelEKSahaMap.containsKey("ekSaha3") ? personelEKSahaMap.get("ekSaha3") : null;
@@ -2704,7 +2721,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 
 					Tanim bolum = getTanim(null, "ekSaha3", personelERP.getBolumKodu(), personelERP.getBolumAdi(), dataMap, saveList);
-					Tanim bordroAltAlan = getTanim(null, parentBordroTanimKodu, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi(), dataMap, saveList);
+					Tanim bordroAltAlan = getTanim(null, parentBordroTanimKoduStr, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi(), dataMap, saveList);
 					personel.setTesis(getTanim(personelERP.getSirketKodu(), Tanim.TIPI_TESIS, personelERP.getTesisKodu(), personelERP.getTesisAdi(), dataMap, saveList));
 					personel.setCinsiyet(getTanim(null, Tanim.TIPI_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti(), dataMap, saveList));
 					personel.setGorevTipi(getTanim(null, Tanim.TIPI_GOREV_TIPI, personelERP.getGorevKodu(), personelERP.getGorevi(), dataMap, saveList));
@@ -2797,16 +2814,19 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (bordroAltAlan == null && parentBordroTanim != null) {
 							if (durumParentBordroTanimKodu)
 								addHatalist(personelERP.getHataList(), parentBordroTanim.getAciklamatr() + " bilgisi boş olamaz!");
+
 						}
 
-					}
+					} else if (bordroAltAlan == null)
+						bordroAltAlan = istenAyrilanEkSaha;
 					personel.setEkSaha1(departman);
 					personel.setEkSaha3(bolum);
-					if (parentBordroTanimKoduStr.startsWith("eksaha2")) {
+
+					if (ekSahaAdi.startsWith("eksaha2")) {
 						personel.setEkSaha2(bordroAltAlan);
 						if (personel.getBordroAltAlan() != null)
 							personel.setBordroAltAlan(null);
-					} else if (parentBordroTanimKoduStr.startsWith("eksaha4")) {
+					} else if (ekSahaAdi.startsWith("eksaha4")) {
 						personel.setEkSaha4(bordroAltAlan);
 						if (personel.getBordroAltAlan() != null)
 							personel.setBordroAltAlan(null);
@@ -3387,7 +3407,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 									else
 										sirketBilgi += " / " + personelERP.getBolumAdi();
 								}
-								if (parentBordroTanimKoduStr.startsWith("eksaha4") && personelERP.getBordroAltAlanAdi() != null) {
+								if (ekSahaAdi.startsWith("ekSaha4") && personelERP.getBordroAltAlanAdi() != null) {
 									if (sirketBilgi.equals(""))
 										sirketBilgi = personelERP.getBordroAltAlanAdi();
 									else
@@ -3408,7 +3428,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						sb.append("</TABLE>");
 						mailMap.put("mailIcerik", sb.toString());
 						LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-						fileMap.put("savePersoneller.xml", PdksUtil.getJsonToXML(jsonStr, "savePersoneller"));
+						fileMap.put("savePersoneller.xml", PdksUtil.getJsonToXML(jsonStr, "savePersoneller", "personel"));
 						mailMap.put("fileMap", fileMap);
 						mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 						kullaniciIKYukle(mailMap, pdksDAO);
