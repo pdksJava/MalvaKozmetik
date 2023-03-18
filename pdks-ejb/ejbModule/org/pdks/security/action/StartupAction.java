@@ -437,6 +437,14 @@ public class StartupAction implements Serializable {
 		}
 
 		PdksUtil.setPuantajSorguAltBolumGir(puantajSorguAltBolumGir);
+
+		boolean menuKapali = false;
+		if (parameterMap.containsKey("menuKapali")) {
+			String menuKapaliStr = parameterMap.get("menuKapali");
+			menuKapali = !menuKapaliStr.equals("");
+
+		}
+		UserHome.setMenuKapali(menuKapali);
 		if (parameterMap.containsKey("vardiyaKontrolTarih3")) {
 			String dateStr = parameterMap.get("vardiyaKontrolTarih3");
 			Date vardiyaKontrolTarih3 = null;

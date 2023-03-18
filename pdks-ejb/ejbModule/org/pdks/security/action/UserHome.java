@@ -57,41 +57,15 @@ public class UserHome extends EntityHome<User> implements Serializable {
 	@In(required = false, create = true)
 	EntityManager entityManager;
 
+	private static boolean menuKapali = false;
 	private List<String> izinRaporlari = Arrays.asList("aylikIzinRapor", "bakiyeIzin", "fazlaMesaiIzin", "holdingKalanIzin", "iseGelmeyenPersonelDagilimi", "izinKagidi", "izinOnay", "personelKalanIzin");
 	private List<String> izinIslemler = Arrays.asList("izinIslemleri", "izinERPAktarim", "izinHakedisHakkiTanimlama", "onayimaGelenIzinler", "personelIzinKopyala", "sskIzinGirisi", "personelIzinGirisi");
 
 	private User currentUser;
-	private String newPassword1, newPassword2, passwordHash;
-	private String oldUserName;
-
+	private String newPassword1, newPassword2, passwordHash, oldUserName;
 	private String changeUserName = "";
-
 	private List<User> allUserList = new ArrayList<User>();
 	private Session session;
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
-	public String getChangeUserName() {
-		return changeUserName;
-	}
-
-	public void setChangeUserName(String changeUserName) {
-		this.changeUserName = changeUserName;
-	}
-
-	public List<User> getAllUserList() {
-		return allUserList;
-	}
-
-	public void setAllUserList(List<User> allUserList) {
-		this.allUserList = allUserList;
-	}
 
 	@Override
 	public Object getId() {
@@ -100,17 +74,6 @@ public class UserHome extends EntityHome<User> implements Serializable {
 		} else {
 			return userId;
 		}
-	}
-
-	public User getCurrentUser() {
-		if (currentUser == null)
-			currentUser = new User();
-		return currentUser;
-	}
-
-	public void setCurrentUser(User currentUser) {
-		setOldUserName(currentUser != null ? currentUser.getUsername() : null);
-		this.currentUser = currentUser;
 	}
 
 	public void userGuncelle(User currentUser) {
@@ -287,14 +250,14 @@ public class UserHome extends EntityHome<User> implements Serializable {
 		try {
 			if (identity != null && identity.isLoggedIn() && authenticatedUser != null) {
 				String key = action + "-" + target + "-" + authenticatedUser.getUsername() + "-" + AccountPermission.DISCRIMINATOR_USER;
-
+				boolean adminRole = authenticatedUser.isAdmin();
 				if (accountPermissionMap.containsKey(key)) {
 					sonuc = getSonuc(target);
 				} else {
 					if (session == null)
 						session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 					ortakIslemler.setUserRoller(authenticatedUser, session);
-					if (authenticatedUser.isAdmin())
+					if (adminRole)
 						sonuc = getSonuc(target);
 					else if (authenticatedUser.getYetkiliRollerim() != null) {
 						for (Object obj : authenticatedUser.getYetkiliRollerim().toArray()) {
@@ -326,6 +289,12 @@ public class UserHome extends EntityHome<User> implements Serializable {
 					}
 
 				}
+				if (sonuc && adminRole == false && menuKapali) {
+					String menuKapaliStr = ortakIslemler.getParameterKey("menuKapali");
+					if (!(menuKapaliStr.equalsIgnoreCase("ik") && (authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi())))
+						sonuc = !menuKapali;
+				}
+
 			}
 		} catch (Exception e) {
 			logger.error(e);
@@ -412,5 +381,48 @@ public class UserHome extends EntityHome<User> implements Serializable {
 
 	public void setOldUserName(String oldUserName) {
 		this.oldUserName = oldUserName;
+	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public String getChangeUserName() {
+		return changeUserName;
+	}
+
+	public void setChangeUserName(String changeUserName) {
+		this.changeUserName = changeUserName;
+	}
+
+	public List<User> getAllUserList() {
+		return allUserList;
+	}
+
+	public void setAllUserList(List<User> allUserList) {
+		this.allUserList = allUserList;
+	}
+
+	public User getCurrentUser() {
+		if (currentUser == null)
+			currentUser = new User();
+		return currentUser;
+	}
+
+	public void setCurrentUser(User currentUser) {
+		setOldUserName(currentUser != null ? currentUser.getUsername() : null);
+		this.currentUser = currentUser;
+	}
+
+	public static boolean isMenuKapali() {
+		return menuKapali;
+	}
+
+	public static void setMenuKapali(boolean menuKapali) {
+		UserHome.menuKapali = menuKapali;
 	}
 }
