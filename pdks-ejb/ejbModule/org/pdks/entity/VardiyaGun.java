@@ -69,6 +69,7 @@ public class VardiyaGun extends BaseObject {
 	private IsKurVardiyaGun isKurVardiya;
 	private int beklemeSuresi = 6;
 	private Double calismaSuaSaati = PersonelDenklestirme.getCalismaSaatiSua();
+	private Boolean izinHaftaTatilDurum;
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE, fazlaMesaiTalepDurum = Boolean.FALSE;
 	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
@@ -1551,8 +1552,14 @@ public class VardiyaGun extends BaseObject {
 		} else if (vardiya != null && istifa == false) {
 			if (izin != null) {
 				IzinTipi izinTipi = izin.getIzinTipi();
-				// boolean girisYok = izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK);
-				if (vardiya.isHaftaTatil() && izinTipi.isTakvimGunuMu() == false && izinTipi.isHTDahil() == false) {
+				boolean haftaTatilDurum = false;
+				if (izinHaftaTatilDurum != null) {
+					if (izinHaftaTatilDurum)
+						haftaTatilDurum = true;
+					else if (izinTipi.isTakvimGunuMu() == false && izinTipi.isHTDahil() == false)
+						haftaTatilDurum = true;
+				}
+				if (haftaTatilDurum) {
 					aciklama = ".";
 				} else
 					try {
@@ -2121,5 +2128,14 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public Personel getPdksPersonel() {
 		return personel;
+	}
+
+	@Transient
+	public Boolean getIzinHaftaTatilDurum() {
+		return izinHaftaTatilDurum;
+	}
+
+	public void setIzinHaftaTatilDurum(Boolean izinHaftaTatilDurum) {
+		this.izinHaftaTatilDurum = izinHaftaTatilDurum;
 	}
 }

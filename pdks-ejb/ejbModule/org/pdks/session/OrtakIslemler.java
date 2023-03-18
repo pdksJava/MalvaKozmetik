@@ -8609,13 +8609,15 @@ public class OrtakIslemler implements Serializable {
 			TreeMap<String, BigDecimal> haftaTatilFazlaMesaiMap = haftaTatilFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.HT_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.HT_FAZLA_MESAI_TIPI) : null;
 			TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) : null;
 			TreeMap<String, BigDecimal> erkenGirisMap = allMap.containsKey(KatSayiTipi.ERKEN_GIRIS_TIPI) ? allMap.get(KatSayiTipi.ERKEN_GIRIS_TIPI) : null;
+			TreeMap<String, BigDecimal> izinHaftaTatilDurumMap = allMap.containsKey(KatSayiTipi.IZIN_HAFTA_TATIL_DURUM) ? allMap.get(KatSayiTipi.IZIN_HAFTA_TATIL_DURUM) : null;
 			TreeMap<String, BigDecimal> gecCikisMap = allMap.containsKey(KatSayiTipi.GEC_CIKIS_TIPI) ? allMap.get(KatSayiTipi.GEC_CIKIS_TIPI) : null;
 			TreeMap<String, BigDecimal> fmtDurumMap = allMap.containsKey(KatSayiTipi.FMT_DURUM) ? allMap.get(KatSayiTipi.FMT_DURUM) : null;
 			boolean erkenGirisKontrolEt = erkenGirisMap != null && !erkenGirisMap.isEmpty();
 			boolean gecKontrolEt = gecCikisMap != null && !gecCikisMap.isEmpty();
 			boolean offFazlaMesaiKontrolEt = offFazlaMesaiMap != null && !offFazlaMesaiMap.isEmpty();
 			boolean haftaTatilFazlaMesaiKontrolEt = haftaTatilFazlaMesaiMap != null && !haftaTatilFazlaMesaiMap.isEmpty();
-			boolean fmtDurumEt = fmtDurumMap != null && !fmtDurumMap.isEmpty();
+			boolean fmtDurumKontrolEt = fmtDurumMap != null && !fmtDurumMap.isEmpty();
+			boolean izinHaftaTatilDurumKontrolEt = izinHaftaTatilDurumMap != null && !izinHaftaTatilDurumMap.isEmpty();
 			yuvarlamaKatSayiOku = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
 			suaKatSayiOku = sureSuaMap != null && !sureSuaMap.isEmpty();
 			planKatSayiOku = sureMap != null && !sureMap.isEmpty();
@@ -8627,7 +8629,13 @@ public class OrtakIslemler implements Serializable {
 				if (vardiya != null && vardiya.getId() != null) {
 					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
 					String str = vardiyaGun.getVardiyaDateStr();
-					if (fmtDurumEt && fmtDurumMap.containsKey(str)) {
+					if (izinHaftaTatilDurumKontrolEt && izinHaftaTatilDurumMap.containsKey(str)) {
+						if (vardiya.isHaftaTatil())
+							vardiyaGun.setIzinHaftaTatilDurum(Boolean.FALSE);
+
+					} else if (vardiyaGun.isPazar())
+						vardiyaGun.setIzinHaftaTatilDurum(Boolean.TRUE);
+					if (fmtDurumKontrolEt && fmtDurumMap.containsKey(str)) {
 						BigDecimal deger = fmtDurumMap.get(str);
 						if (deger != null)
 							katSayiMap.put(KatSayiTipi.FMT_DURUM.value(), deger);
