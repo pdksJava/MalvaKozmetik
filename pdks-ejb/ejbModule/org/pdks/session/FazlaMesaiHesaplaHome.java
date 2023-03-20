@@ -153,7 +153,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private Boolean izinCalismayanMailGonder = Boolean.FALSE, hatalariAyikla = Boolean.FALSE, kismiOdemeGoster = Boolean.FALSE;
 	private String manuelGirisGoster = "", kapiGirisSistemAdi = "";
-	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, planOnayDurum;
+	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, planOnayDurum, eksikCalismaGoster;
 	private int ay, yil, maxYil, sonDonem, pageSize;
 
 	private List<User> toList, ccList, bccList;
@@ -1311,6 +1311,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				kismiOdemeGoster = Boolean.FALSE;
 				manuelGirisGoster = "";
 				kapiGirisSistemAdi = "";
+				String eksikCalismaGosterStr = ortakIslemler.getParameterKey("eksikCalismaGoster");
+				eksikCalismaGoster = authenticatedUser.isAdmin() || eksikCalismaGosterStr.equals("1") || (adminRole && eksikCalismaGosterStr.equalsIgnoreCase("ik"));
 				if (ikRole || adminRole) {
 					manuelGirisGoster = ortakIslemler.getParameterKey("manuelGirisGoster");
 					if (manuelGirisGoster.equals("") && authenticatedUser.isAdmin())
@@ -1588,12 +1590,25 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 							vardiyaGun.setTitleStr(null);
 							if (islemVardiya != null) {
-								if (authenticatedUser.isAdmin()) {
-									String titleSte = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGun);
-									vardiyaGun.setTitleStr(titleSte);
-									vardiyaGun.addLinkAdresler(titleSte);
+								boolean eksikCalismaDurum = false;
+								if (vardiyaGun.getVardiya() != null) {
+									Double netSure = vardiyaGun.getVardiya().getNetCalismaSuresi();
+									if (vardiyaGun.getHareketDurum() && vardiyaGun.isIzinli() == false && netSure > 0.0d) {
+										if ((calismaSuresi(vardiyaGun) * 100) / netSure < 80.0d) {
+											eksikCalismaDurum = denklestirmeAyDurum && eksikCalismaGoster;
+											if (!vardiyaGun.isHataliDurum())
+												vardiyaGun.setHataliDurum(eksikCalismaDurum);
+										}
+									}
 								}
+								if (authenticatedUser.isAdmin()) {
+									String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGun);
+									if (eksikCalismaDurum)
+										titleStr += "<br/>" + getEksikCalismaHTML(vardiyaGun);
 
+									vardiyaGun.setTitleStr(titleStr);
+									vardiyaGun.addLinkAdresler(titleStr);
+								}
 							}
 
 							if (vardiyaGun.isZamanGelmedi() && vardiyaGun.getHareketler() != null) {
@@ -3622,6 +3637,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		paramsMap.put("haftaCalismaSuresi", haftaCalismaSuresi);
 		paramsMap.put("resmiTatilSuresi", resmiTatilSuresi);
 		vGun.setFazlaMesaiTalepOnayliDurum(fazlaMesaiTalepVardiyaOnayliDurum);
+
 	}
 
 	/**
@@ -5062,10 +5078,54 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		}
 		if (vg.getTitleStr() == null) {
 			String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vg);
+			if (denklestirmeAyDurum && eksikCalismaGoster) {
+				Double netSure = vg.getVardiya().getNetCalismaSuresi();
+				if (vg.getHareketDurum() && vg.getVardiya() != null && vg.isIzinli() == false && netSure > 0.0d) {
+					if ((calismaSuresi(vg) * 100) / netSure < 80.0d) {
+						titleStr += "<br/>" + getEksikCalismaHTML(vg);
+
+					}
+				}
+			}
 			vg.setTitleStr(titleStr);
+
 			vg.addLinkAdresler(titleStr);
 		}
 		return "";
+	}
+
+	/**
+	 * @param vg
+	 * @return
+	 */
+	private Double calismaSuresi(VardiyaGun vg) {
+		Double sure = vg.getCalismaSuresi();
+		if (sure == null)
+			sure = 0.0d;
+		return sure;
+	}
+
+	/**
+	 * @return
+	 */
+	private String getEksikCalismaHTML(VardiyaGun vg) {
+		Double calSure = calismaSuresi(vg);
+		String str1 = "";
+		if (calSure >= 0.0d) {
+			String str = "";
+			try {
+				Double sure = new Double((vg.getVardiya().getNetCalismaSuresi() - calSure));
+				if (sure < 1.0d)
+					str = PdksUtil.numericValueFormatStr(sure * 60.0d, null) + " dakika ";
+				else
+					str = PdksUtil.numericValueFormatStr(sure, null) + " saat ";
+
+			} catch (Exception e) {
+				str = null;
+			}
+			str1 = "<SPAN style=\"color: " + (calSure > 0.0d ? "black" : "red") + "; font-size: 12px; font-weight: bold;\">Eksik çalışma var!" + (str != null ? " ( " + str + " ) " : "") + "</SPAN><br/><br/>";
+		}
+		return str1;
 	}
 
 	/**
