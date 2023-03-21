@@ -8595,8 +8595,11 @@ public class OrtakIslemler implements Serializable {
 				}
 
 			}
-			for (Long perId : izinMap.keySet())
-				vardiyaIzinleriGuncelle(izinMap.get(perId), vMap.get(perId));
+
+			for (Long perId : izinMap.keySet()) {
+				if (vMap != null && vMap.containsKey(perId))
+					vardiyaIzinleriGuncelle(izinMap.get(perId), vMap.get(perId));
+			}
 
 			boolean planKatSayiOku = getParameterKey("planKatSayiOku").equals("1");
 			boolean haftaTatilFazlaMesaiKatSayiOku = getParameterKey("haftaTatilFazlaMesaiKatSayiOku").equals("1");
@@ -11761,7 +11764,7 @@ public class OrtakIslemler implements Serializable {
 										if (pdksVardiyaGun.getIzin() != null) {
 											haftalikIzinSuresi += sure;
 										}
-										if (pdksVardiyaGun.getVardiya() != null && pdksVardiyaGun.getIzin() == null && !pdksVardiyaGun.getVardiya().isCalisma()) {
+										if (pdksVardiyaGun.getVardiya() != null && pdksVardiyaGun.isIzinli() == false && !pdksVardiyaGun.getVardiya().isCalisma()) {
 											// logger.info(pdksVardiyaGun.getVardiyaKeyStr());
 											calisilmayanSuresi += sure;
 										}
@@ -13754,38 +13757,39 @@ public class OrtakIslemler implements Serializable {
 	 * @param vardiyaGunList
 	 */
 	public void vardiyaIzinleriGuncelle(List<PersonelIzin> izinler, List<VardiyaGun> vardiyaGunList) {
-		boolean izinVar = false;
-		for (Iterator<VardiyaGun> iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
-			VardiyaGun vardiyaGun = iterator.next();
-			vardiyaGun.setIzinler(null);
-			vardiyaGun.setIzin(null);
-			// Personel izinleri vardiya gününe ekleniyor
-			if (izinler != null) {
-				for (Iterator<PersonelIzin> iterator3 = izinler.iterator(); iterator3.hasNext();) {
-					PersonelIzin personelIzin = iterator3.next();
-					setIzinDurum(vardiyaGun, personelIzin);
-				}
-				if (vardiyaGun.getIzin() != null && vardiyaGun.getVardiya().isHaftaTatil()) {
-					if (!vardiyaGun.getIzin().getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
-						izinVar = true;
+		if (izinler != null && vardiyaGunList != null) {
+			boolean izinVar = false;
+			for (Iterator<VardiyaGun> iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
+				VardiyaGun vardiyaGun = iterator.next();
+				vardiyaGun.setIzinler(null);
+				vardiyaGun.setIzin(null);
+				// Personel izinleri vardiya gününe ekleniyor
+				if (izinler != null) {
+					for (Iterator<PersonelIzin> iterator3 = izinler.iterator(); iterator3.hasNext();) {
+						PersonelIzin personelIzin = iterator3.next();
+						setIzinDurum(vardiyaGun, personelIzin);
+					}
+					if (vardiyaGun.getIzin() != null && vardiyaGun.getVardiya().isHaftaTatil()) {
+						if (!vardiyaGun.getIzin().getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
+							izinVar = true;
+					}
 				}
 			}
-		}
 
-		if (izinVar) {
-			Collections.reverse(vardiyaGunList);
-			for (VardiyaGun vardiyaGun : vardiyaGunList) {
-				VardiyaGun oncekiVardiyaGun = vardiyaGun.getOncekiVardiyaGun();
-				if (vardiyaGun.getIzin() != null || oncekiVardiyaGun == null || oncekiVardiyaGun.getIzin() == null)
-					continue;
-				if (oncekiVardiyaGun.getVardiya().isHaftaTatil()) {
-					oncekiVardiyaGun.setIzin(null);
+			if (izinVar) {
+				Collections.reverse(vardiyaGunList);
+				for (VardiyaGun vardiyaGun : vardiyaGunList) {
+					VardiyaGun oncekiVardiyaGun = vardiyaGun.getOncekiVardiyaGun();
+					if (vardiyaGun.getIzin() != null || oncekiVardiyaGun == null || oncekiVardiyaGun.getIzin() == null)
+						continue;
+					if (oncekiVardiyaGun.getVardiya().isHaftaTatil()) {
+						oncekiVardiyaGun.setIzin(null);
+					}
+
 				}
-
+				Collections.reverse(vardiyaGunList);
 			}
-			Collections.reverse(vardiyaGunList);
 		}
-
 	}
 
 	/**

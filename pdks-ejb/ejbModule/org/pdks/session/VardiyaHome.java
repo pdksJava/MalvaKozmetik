@@ -356,7 +356,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 					}
 					for (Iterator iterator2 = kayitliCalismaModeliVardiyaList.iterator(); iterator2.hasNext();) {
 						CalismaModeliVardiya vyi = (CalismaModeliVardiya) iterator2.next();
-						pdksEntityController.deleteObject(session, entityManager,vyi );
+						pdksEntityController.deleteObject(session, entityManager, vyi);
 					}
 					kayitliCalismaModeliVardiyaList = null;
 				}
@@ -385,7 +385,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 					}
 					for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {
 						VardiyaYemekIzin vyi = (VardiyaYemekIzin) iterator2.next();
-						pdksEntityController.deleteObject(session, entityManager,vyi );
+						pdksEntityController.deleteObject(session, entityManager, vyi);
 					}
 					list = null;
 				}
@@ -646,7 +646,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			if (authenticatedUser.isAdmin()) {
 				if (ortakIslemler.getParameterKey("fazlaMesaiIzinKullan").equals("1"))
 					list.add(new SelectItem(String.valueOf(Vardiya.TIPI_FMI), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_FMI, "Fazla Mesai İzin")));
- 				if (manuelVardiyaIzinGir) {
+				if (manuelVardiyaIzinGir || PdksUtil.getCanliSunucuDurum() == false) {
 					list.add(new SelectItem(String.valueOf(Vardiya.TIPI_IZIN), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_IZIN, "İzin Tatil Hariç")));
 					list.add(new SelectItem(String.valueOf(Vardiya.TIPI_HASTALIK_RAPOR), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_HASTALIK_RAPOR, "İzin Tatil Dahil")));
 

@@ -129,7 +129,7 @@ public class VardiyaSablonuHome extends EntityHome<VardiyaSablonu> implements Se
 				int vardiyaGunAdet = 0, haftaTatilGunAdet = 0, offGunAdet = 0;
 				for (Iterator<Vardiya> iterator = pdksVardiyaSablon.getVardiyaList().iterator(); iterator.hasNext();) {
 					Vardiya pdksVardiya = iterator.next();
-					if (pdksVardiya.isCalisma())
+					if (pdksVardiya.isCalisma() || pdksVardiya.isIzin())
 						++vardiyaGunAdet;
 					else if (pdksVardiya.isHaftaTatil())
 						++haftaTatilGunAdet;

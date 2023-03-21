@@ -271,7 +271,6 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 		for (Iterator iterator = tumPersoneller.iterator(); iterator.hasNext();) {
 			Personel pdksPersonel = (Personel) iterator.next();
-
 			if (pdksPersonel.getPdks() == null || !pdksPersonel.getPdks())
 				iterator.remove();
 			else {
@@ -310,6 +309,10 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					iterator.remove();
 					continue;
 
+				} else if (vardiya.isIzin() && PdksUtil.tarihKarsilastirNumeric(pdksVardiyaGun.getVardiyaDate(), date) != 0) {
+					iterator.remove();
+					continue;
+
 				}
 				if (vardiya.isCalisma()) {
 					if (tarih1 == null || pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans1BasZaman().getTime() < tarih1.getTime())
@@ -317,6 +320,12 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 					if (tarih2 == null || pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman().getTime() > tarih2.getTime())
 						tarih2 = pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman();
+				} else if (vardiya.isIzin()) {
+					if (tarih1 == null)
+						tarih1 = date;
+
+					if (tarih2 == null)
+						tarih2 = PdksUtil.tariheGunEkleCikar(date, 1);
 				}
 			}
 			if (!vardiyaGunList.isEmpty()) {
@@ -397,7 +406,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							VardiyaGun vardiyaGun = (VardiyaGun) pdksVardiyaGun.clone();
 							Vardiya vardiya = vardiyaGun.getIslemVardiya();
 							if (vardiya.isCalisma() == false) {
-								if (vardiya.isFMI())
+								if (vardiya.isFMI() || vardiya.isIzin())
 									logger.debug("");
 								else if (vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty())
 									continue;
@@ -426,11 +435,12 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									iterator1.remove();
 
 							}
-							if (izinMap.containsKey(perId)) {
-								List<PersonelIzin> perIzinList = izinMap.get(perId);
-								for (Iterator iterator2 = perIzinList.iterator(); iterator2.hasNext();) {
-									PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-									if (vardiya.isCalisma()) {
+							if (vardiya.isCalisma()) {
+								if (izinMap.containsKey(perId)) {
+									List<PersonelIzin> perIzinList = izinMap.get(perId);
+									for (Iterator iterator2 = perIzinList.iterator(); iterator2.hasNext();) {
+										PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
+
 										ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
 										if (vardiyaGun.getIzin() != null) {
 											iterator2.remove();
@@ -499,7 +509,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									}
 								}
 							}
-							if (vardiyaGun.getIzin() != null) {
+							if (vardiyaGun.isIzinli()) {
 								izinVardiyaGunList.add(vardiyaGun);
 								gelmedi = false;
 								gecGeldi = false;

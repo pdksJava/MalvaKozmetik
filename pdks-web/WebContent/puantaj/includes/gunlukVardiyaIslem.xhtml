@@ -152,7 +152,7 @@
 								</ui:fragment>
 							</ui:fragment>
 						</ui:fragment>
-						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole and vardiyaGun.izin!=null and vardiyaGun.vardiya!=null}">
+						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole and vardiyaGun.izin!=null and vardiyaGun.vardiya.izin==false}">
 							<SPAN style="#{vardiyaGun.style}"><br />[#{vardiyaGun.vardiya.kisaAdi}]</SPAN>
 						</ui:fragment>
 					</ui:fragment>

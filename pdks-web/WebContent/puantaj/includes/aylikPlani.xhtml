@@ -1,7 +1,7 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:a4j="http://richfaces.org/a4j">
 
 	<a4j:region id="hareketTables">
@@ -286,8 +286,8 @@
 												<TABLE>
 													<TR>
 														<TD id="vardiya#{vardiyaGun.vardiyaKeyStr}"><h:outputText value="#{vardiyaGun.aciklama}" /> <ui:fragment
-																rendered="#{vardiyaGunHome.ikRole and vardiyaGun.izin!=null and vardiyaGun.vardiya!=null}">
-																<br /> [ #{vardiyaGun.vardiya.kisaAdi} ]</ui:fragment> <rich:toolTip for="vardiya#{vardiyaGun.vardiyaKeyStr}">
+																rendered="#{vardiyaGunHome.ikRole and vardiyaGun.izin!=null and vardiyaGun.vardiya.izin==false}">
+																<br />[ #{vardiyaGun.vardiya.kisaAdi} ] </ui:fragment> <rich:toolTip for="vardiya#{vardiyaGun.vardiyaKeyStr}">
 																<SPAN style="font-size: 12px; font-weight: normal;color:black;"> #{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')} -->
 																	#{vardiyaGun.title} <ui:fragment rendered="#{vardiyaGun.resmiTatilSure>0}">
 												          	RT : #{authenticatedUser.sayiFormatliGoster(vardiyaGun.resmiTatilSure)}
