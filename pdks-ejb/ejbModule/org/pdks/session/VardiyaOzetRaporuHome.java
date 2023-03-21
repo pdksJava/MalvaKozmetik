@@ -269,6 +269,9 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 		for (Iterator iterator = tumPersoneller.iterator(); iterator.hasNext();) {
 			Personel pdksPersonel = (Personel) iterator.next();
+			// if (pdksPersonel.getMailTakip() == null || !pdksPersonel.getMailTakip())
+			// iterator.remove();
+			// else
 			if (pdksPersonel.getPdks() == null || !pdksPersonel.getPdks())
 				iterator.remove();
 			else {
@@ -405,7 +408,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							Date gecGelmeZamani = vardiya.getVardiyaTelorans2BasZaman();
 							vardiyaDataMap.put(vardiya.getId(), vardiya);
 							Long perId = vardiyaGun.getPersonel().getId();
-							List<HareketKGS> list = hMap.containsKey(perId) ? hMap.get(perId) : new ArrayList<HareketKGS>();
+							Long perKGSId = vardiyaGun.getPersonel().getPersonelKGS().getId();
+							List<HareketKGS> list = hMap.containsKey(perKGSId) ? hMap.get(perKGSId) : new ArrayList<HareketKGS>();
 							for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 								HareketKGS kgsHareket = (HareketKGS) iterator1.next();
 								if (vardiyaGun.addHareket(kgsHareket, Boolean.FALSE))
@@ -415,7 +419,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 							for (Iterator iterator2 = izinList.iterator(); iterator2.hasNext();) {
 								PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-								if (vardiya.isCalisma() && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
+								if (vardiya.isCalisma() && perId.equals(personelIzin.getIzinSahibi().getId())) {
 									ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
 									if (vardiyaGun.getIzin() != null) {
 										iterator2.remove();

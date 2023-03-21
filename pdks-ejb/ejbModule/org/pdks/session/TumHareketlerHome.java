@@ -327,7 +327,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					map.put("pdksPersonel.sirket.departman.id=", departmanId);
 			}
 			if (sicilNo.trim().length() > 0)
-				map.put("sicilNo=", sicilNo);
+				map.put("pdksPersonel.pdksSicilNo=", sicilNo);
 			else {
 				if (adi.trim().length() > 0)
 					map.put("pdksPersonel.ad like ", "%" + adi.trim() + "%");
@@ -336,7 +336,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			}
 
 			if (!admin && map.isEmpty())
-				map.put("sicilNo", yetkiTumPersonelNoList);
+				map.put("pdksPersonel.pdksSicilNo", yetkiTumPersonelNoList);
 			logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor."));
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
