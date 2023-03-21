@@ -60,7 +60,9 @@
 					</h:panelGrid>
 				</a4j:outputPanel>
 			</rich:panel>
-
+			<a4j:outputPanel ajaxRendered="true">
+				<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+			</a4j:outputPanel>
 			<a4j:outputPanel id="vardiyaOzetPanel">
 				<ui:fragment>
 					<a4j:commandButton status="ajaxStatus" value="Özet Raporu Göster" action="#{vardiyaOzetRaporuHome.vardiyaListeOlustur}"
@@ -180,6 +182,7 @@
 								</tr>
 							</a4j:repeat>
 							<a4j:repeat value="#{vardiyaOzetRaporuHome.gelmeyenVardiyaGunList}" var="vardiyaGun">
+
 								<tr>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 30px">#{vardiyaGun.personel.pdksSicilNo}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
@@ -192,7 +195,15 @@
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 200px"><b> <ui:fragment rendered="#{vardiyaGun.vardiya.FMI}">#{vardiyaGun.vardiya.adi}</ui:fragment>
-											<ui:fragment rendered="#{vardiyaGun.vardiya.FMI==false}">DEVAMSIZLIK</ui:fragment>
+											<ui:fragment rendered="#{vardiyaGun.vardiya.FMI==false}">
+												<ui:fragment rendered="#{vardiyaGun.personel.mailTakip}">DEVAMSIZLIK
+											 </ui:fragment>
+												<ui:fragment rendered="#{vardiyaGun.personel.mailTakip==null or vardiyaGun.personel.mailTakip==false}">
+													<SPAN style="color: red;">DEVAMSIZLIK</SPAN>
+												</ui:fragment>
+
+
+											</ui:fragment>
 
 									</b></td>
 								</tr>

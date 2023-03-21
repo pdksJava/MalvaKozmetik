@@ -1424,7 +1424,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							vardiyaGun.setStyle("");
 							boolean saatEkle = false;
 							vardiyaGun.addResmiTatilSure(vardiyaGun.getGecenAyResmiTatilSure());
-							String key = vardiyaGun.getVardiyaDateStr();
 							if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate()))
 								vardiyaGun.setZamanGelmedi(!bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
 
@@ -1457,8 +1456,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							vardiyaGun.setHataliDurum(Boolean.FALSE);
 							vardiyaGun.setPersonel(puantaj.getPdksPersonel());
 							vardiyaGun.setFiiliHesapla(fazlaMesaiHesapla);
-							if (key.equals("20220103"))
-								logger.debug(vardiyaGun.getVardiyaKeyStr());
+
 							if (vardiyaGun.getVardiya() != null && vardiyaGun.getVardiyaDate().getTime() >= puantaj.getIlkGun().getTime() && vardiyaGun.getVardiyaDate().getTime() <= puantaj.getSonGun().getTime()) {
 								paramsMap.put("fazlaMesaiHesapla", fazlaMesaiHesapla);
 								paramsMap.put("aksamVardiyaSayisi", aksamVardiyaSayisi);
@@ -1594,7 +1592,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								if (vardiyaGun.getVardiya() != null) {
 									Double netSure = vardiyaGun.getVardiya().getNetCalismaSuresi();
 									if (vardiyaGun.getHareketDurum() && vardiyaGun.isIzinli() == false && netSure > 0.0d) {
-										if ((calismaSuresi(vardiyaGun) * 100) / netSure < 80.0d) {
+										if ((calismaSuresi(vardiyaGun) * 100) / netSure < denklestirmeAy.getYemekMolasiYuzdesi()) {
 											eksikCalismaDurum = denklestirmeAyDurum && eksikCalismaGoster;
 											if (!vardiyaGun.isHataliDurum())
 												vardiyaGun.setHataliDurum(eksikCalismaDurum);
@@ -5076,12 +5074,13 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 			}
 		}
-		if (vg.getTitleStr() == null) {
+ 		if (vg.getTitleStr() == null) {
 			String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vg);
 			if (denklestirmeAyDurum && eksikCalismaGoster) {
 				Double netSure = vg.getVardiya().getNetCalismaSuresi();
 				if (vg.getHareketDurum() && vg.getVardiya() != null && vg.isIzinli() == false && netSure > 0.0d) {
-					if ((calismaSuresi(vg) * 100) / netSure < 80.0d) {
+					Double calSure = calismaSuresi(vg);
+					if ((calSure * 100) / netSure < denklestirmeAy.getYemekMolasiYuzdesi()) {
 						titleStr += "<br/>" + getEksikCalismaHTML(vg);
 
 					}
@@ -5102,6 +5101,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Double sure = vg.getCalismaSuresi();
 		if (sure == null)
 			sure = 0.0d;
+		else if (vg.getHaftaCalismaSuresi() > 0.0d)
+			sure -= vg.getHaftaCalismaSuresi();
 		return sure;
 	}
 

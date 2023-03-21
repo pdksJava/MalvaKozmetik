@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -78,6 +79,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>();
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
+	private Font fontRed;
 	private String bolumAciklama;
 	private boolean tesisDurum = false, digerTesisDurum = false;
 	private Session session;
@@ -269,9 +271,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 		for (Iterator iterator = tumPersoneller.iterator(); iterator.hasNext();) {
 			Personel pdksPersonel = (Personel) iterator.next();
-			// if (pdksPersonel.getMailTakip() == null || !pdksPersonel.getMailTakip())
-			// iterator.remove();
-			// else
+
 			if (pdksPersonel.getPdks() == null || !pdksPersonel.getPdks())
 				iterator.remove();
 			else {
@@ -331,12 +331,14 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 				}
 				if (tarih1 != null && tarih2 != null && !vardiyaGunList.isEmpty()) {
+					HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
 					try {
 						HashMap parametreMap = new HashMap();
 						parametreMap.put("bakiyeIzinTipi", null);
 						if (session != null)
 							parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 						List<IzinTipi> izinler = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinTipi.class);
+
 						if (!izinler.isEmpty()) {
 							HashMap parametreMap2 = new HashMap();
 							parametreMap2.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar(tarih2, 1));
@@ -349,6 +351,13 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							parametreMap2 = null;
 						} else
 							izinList = new ArrayList<PersonelIzin>();
+						for (PersonelIzin izin : izinList) {
+							Long perId = izin.getIzinSahibi().getId();
+							List<PersonelIzin> list = izinMap.containsKey(perId) ? izinMap.get(perId) : new ArrayList<PersonelIzin>();
+							if (list.isEmpty())
+								izinMap.put(perId, list);
+							list.add(izin);
+						}
 						izinler = null;
 					} catch (Exception e) {
 						logger.error("PDKS hata in : \n");
@@ -382,6 +391,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 						TreeMap<String, VardiyaGun> vardiyaGunDataMap = new TreeMap<String, VardiyaGun>();
 						List<VardiyaGun> fmiList = new ArrayList<VardiyaGun>();
 						boolean fmiVardiyaOzetRapor = ortakIslemler.getParameterKey("fmiVardiyaOzetRapor").equals("1") || authenticatedUser.isAdmin();
+						List<VardiyaGun> kartBastMayanList = new ArrayList<VardiyaGun>();
 						for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 							VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
 							VardiyaGun vardiyaGun = (VardiyaGun) pdksVardiyaGun.clone();
@@ -416,18 +426,20 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									iterator1.remove();
 
 							}
+							if (izinMap.containsKey(perId)) {
+								List<PersonelIzin> perIzinList = izinMap.get(perId);
+								for (Iterator iterator2 = perIzinList.iterator(); iterator2.hasNext();) {
+									PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
+									if (vardiya.isCalisma()) {
+										ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
+										if (vardiyaGun.getIzin() != null) {
+											iterator2.remove();
+											break;
+										}
 
-							for (Iterator iterator2 = izinList.iterator(); iterator2.hasNext();) {
-								PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-								if (vardiya.isCalisma() && perId.equals(personelIzin.getIzinSahibi().getId())) {
-									ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
-									if (vardiyaGun.getIzin() != null) {
-										iterator2.remove();
-										break;
 									}
 
 								}
-
 							}
 
 							boolean gecGeldi = vardiya.isCalisma(), erkenCikti = vardiya.isCalisma();
@@ -535,8 +547,14 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 									}
 								}
-							} else if (vardiya.isCalisma())
+							} else if (vardiya.isCalisma()) {
 								gelmeyenVardiyaGunList.add(vardiyaGun);
+								if (personel.getMailTakip() == null || !personel.getMailTakip())
+
+									kartBastMayanList.add(vardiyaGun);
+
+							}
+
 							if (gecGeldi) {
 								vardiyaGun.setIlkGiris(ilkGiris);
 								if (ilkGiris != null)
@@ -752,7 +770,15 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 								renk = !renk;
 							}
 						}
+						if (!kartBastMayanList.isEmpty()) {
+							PdksUtil.addMessageAvailableInfo("Aşağıdaki personel" + (kartBastMayanList.size() > 1 ? "ler" : "") + " mail takibi yapılmamakktadır.");
+							for (VardiyaGun vardiyaGun : kartBastMayanList) {
+								Personel personel = vardiyaGun.getPdksPersonel();
+								PdksUtil.addMessageAvailableWarn(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
+							}
 
+						}
+						kartBastMayanList = null;
 					} catch (Exception e) {
 						logger.error("PDKS hata in : \n");
 						e.printStackTrace();
@@ -1045,6 +1071,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	 */
 	private int vardiyaSatirEkle(Sheet sheet, int col, int row, XSSFCellStyle satirStyle, XSSFCellStyle satirCenter, VardiyaGun vg, String tip, boolean tesisDurum) {
 		Personel personel = vg.getPersonel();
+
 		ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(personel.getPdksSicilNo());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getAd());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getSoyad());
@@ -1066,7 +1093,17 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 		} else if (tip.equals("B")) {
 			ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue("");
-			ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(!vg.getVardiya().isFMI() ? "DEVAMSIZLIK" : vg.getVardiya().getAdi());
+			XSSFCellStyle satirCenterRenk = (XSSFCellStyle) satirCenter.clone();
+			if (!vg.getVardiya().isFMI()) {
+				if (personel.getMailTakip() == null || personel.getMailTakip().equals(Boolean.FALSE)) {
+					if (fontRed == null)
+						fontRed = ExcelUtil.createFont(sheet.getWorkbook(), (short) 8, "Arial", Font.BOLDWEIGHT_BOLD);
+					fontRed.setColor(IndexedColors.RED.getIndex());
+					satirCenterRenk.setFont(fontRed);
+
+				}
+			}
+			ExcelUtil.getCell(sheet, row, col++, satirCenterRenk).setCellValue(!vg.getVardiya().isFMI() ? "DEVAMSIZLIK" : vg.getVardiya().getAdi());
 
 		} else if (tip.equals("E")) {
 			ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(vg.getSonCikis() != null ? authenticatedUser.timeFormatla(vg.getSonCikis().getZaman()) : "");
