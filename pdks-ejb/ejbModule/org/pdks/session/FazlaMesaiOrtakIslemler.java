@@ -248,7 +248,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							if (artiGun > 0 && izinKodu != null) {
 								BordroTipi bordroTipi = null;
 								try {
-									bordroTipi = BordroTipi.fromValue(izinKodu);
+									if (izinKodu.trim().length() > 0)
+										bordroTipi = BordroTipi.fromValue(izinKodu);
 								} catch (Exception e) {
 								}
 								if (bordroTipi != null) {
