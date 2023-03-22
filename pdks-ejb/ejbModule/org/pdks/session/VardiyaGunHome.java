@@ -6913,8 +6913,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			vardiyaList = pdksEntityController.getObjectBySQLList(sb, map, Vardiya.class);
+	
 			if (!vardiyaList.isEmpty()) {
-
 				for (Iterator<Vardiya> iterator = vardiyaList.iterator(); iterator.hasNext();) {
 					Vardiya pdksVardiya = iterator.next();
 
@@ -6953,6 +6953,32 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 				vardiyaList = pdksEntityController.getObjectBySQLList(sb, map, Vardiya.class);
 			}
+			VardiyaSablonu vardiyaSablonu = personel.getSablon();
+			vardiyaSablonu.setVardiyaList(null);
+			List<Vardiya> list = new ArrayList<Vardiya>(vardiyaSablonu.getVardiyaList());
+			List<Long> idList = new ArrayList<Long>();
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Vardiya vardiyaS = (Vardiya) iterator.next();
+				if (vardiyaS == null || idList.contains(vardiyaS.getId())) {
+					iterator.remove();
+					continue;
+				}
+				idList.add(vardiyaS.getId());
+				boolean ekle = true;
+				for (Iterator iterator2 = vardiyaList.iterator(); iterator2.hasNext();) {
+					Vardiya vardiya = (Vardiya) iterator2.next();
+					if (vardiyaS.getId().equals(vardiya.getId())) {
+						iterator.remove();
+						ekle = false;
+						break;
+					}
+
+				}
+				if (ekle)
+					vardiyaList.add(vardiyaS);
+			}
+			list = null;
+			idList = null;
 			if (vardiyaList.size() > 1)
 				vardiyaList = PdksUtil.sortObjectStringAlanList(vardiyaList, "getKisaAdiSort", null);
 			if (!ortakIslemler.getParameterKey("donemVardiyalariSiralama").equals("1"))

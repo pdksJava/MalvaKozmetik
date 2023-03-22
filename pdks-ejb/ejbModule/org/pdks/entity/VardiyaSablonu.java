@@ -204,6 +204,8 @@ public class VardiyaSablonu extends BaseObject {
 
 	@Transient
 	public ArrayList<Vardiya> getVardiyaList() {
+		if (vardiyaList == null)
+			vardiyaBul();
 		return vardiyaList;
 	}
 
