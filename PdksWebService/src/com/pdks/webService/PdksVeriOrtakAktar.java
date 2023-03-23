@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.pdks.dao.PdksDAO;
 import com.pdks.dao.impl.BaseDAOHibernate;
+import com.pdks.entity.BordroIzinGrubu;
 import com.pdks.entity.CalismaModeli;
 import com.pdks.entity.DenklestirmeAy;
 import com.pdks.entity.Departman;
@@ -1444,6 +1445,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 			if (izinTipiMap == null)
 				izinTipiMap = new TreeMap<String, IzinTipi>();
+
 			TreeMap<String, Tanim> izinTipiTanimMap = null;
 			if (erpIzinTipiOlustur) {
 				fields.clear();
@@ -1455,8 +1457,23 @@ public class PdksVeriOrtakAktar implements Serializable {
 				izinTipiTanimMap = pdksDAO.getObjectByInnerObjectMapInLogic(fields, Tanim.class, false);
 			} else
 				izinTipiTanimMap = new TreeMap<String, Tanim>();
-
+			TreeMap<String, Tanim> izinGrupTanimMap = null;
 			List saveList = new ArrayList(), deleteList = new ArrayList();
+			if (!izinTipiTanimMap.isEmpty()) {
+				fields.clear();
+				fields.put("Map", "getErpKodu");
+				fields.put("tipi=", Tanim.TIPI_IZIN_KODU_GRUPLARI);
+				for (String key : izinTipiTanimMap.keySet()) {
+					saveList.add("'" + key + "'");
+				}
+				fields.put("erpKodu", saveList);
+				izinGrupTanimMap = pdksDAO.getObjectByInnerObjectMapInLogic(fields, Tanim.class, false);
+				saveList.clear();
+			} else
+				izinGrupTanimMap = new TreeMap<String, Tanim>();
+			if (!saveList.isEmpty())
+				pdksDAO.saveObjectList(saveList);
+			saveList.clear();
 			List<IzinERP> hataList = new ArrayList<IzinERP>();
 			HashMap<String, PersonelIzin> izinMap = new HashMap<String, PersonelIzin>();
 			HashMap fields = new HashMap();
@@ -1562,6 +1579,17 @@ public class PdksVeriOrtakAktar implements Serializable {
 						izinTipi.setDurumCGS(1);
 						izinTipi.setKotaBakiye(null);
 						izinTipi.setOlusturanUser(islemYapan);
+						if (!izinGrupTanimMap.containsKey(izinTipiTanim.getErpKodu())) {
+							Tanim tanim2 = new Tanim();
+							tanim2.setTipi(Tanim.TIPI_IZIN_KODU_GRUPLARI);
+							tanim2.setKodu(BordroIzinGrubu.TANIMSIZ.value());
+							tanim2.setErpKodu(izinTipiTanim.getErpKodu());
+							tanim2.setIslemYapan(islemYapan);
+							tanim2.setIslemTarihi(new Date());
+							izinGrupTanimMap.put(izinTipiTanim.getErpKodu(), tanim2);
+							saveList.add(tanim2);
+						}
+
 						saveList.add(izinTipi);
 						izinTipiMap.put(izinERP.getIzinTipi(), izinTipi);
 					} else

@@ -29,7 +29,7 @@ import org.jboss.seam.annotations.Out;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.Identity;
 import org.pdks.entity.AylikPuantaj;
-import org.pdks.entity.BordroTipi;
+import org.pdks.entity.BordroIzinGrubu;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
@@ -110,9 +110,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		List<Tanim> list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
 		TreeMap<String, String> izinGrupMap = new TreeMap<String, String>();
 		if (list.isEmpty()) {
-			BordroTipi[] bordroTipileri = new BordroTipi[] { BordroTipi.UCRETLI_IZIN, BordroTipi.UCRETSIZ_IZIN, BordroTipi.RAPORLU_IZIN };
-			for (BordroTipi bordroTipi : bordroTipileri) {
+			BordroIzinGrubu[] bordroTipileri = new BordroIzinGrubu[] { BordroIzinGrubu.UCRETLI_IZIN, BordroIzinGrubu.UCRETSIZ_IZIN, BordroIzinGrubu.RAPORLU_IZIN };
+			for (BordroIzinGrubu bordroTipi : bordroTipileri) {
 				Tanim tanim = new Tanim();
+				tanim.setTipi(Tanim.TIPI_IZIN_GRUPLARI);
 				tanim.setKodu(bordroTipi.value());
 				tanim.setErpKodu("izinGrup" + bordroTipi.value());
 				list.add(tanim);
@@ -120,13 +121,13 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		}
 
 		for (Tanim tanim : list) {
-			BordroTipi bordroTipi = null;
+			BordroIzinGrubu bordroIzinGrubu = null;
 			String izinGrupKodu = tanim.getKodu();
 			try {
-				bordroTipi = BordroTipi.fromValue(izinGrupKodu);
+				bordroIzinGrubu = BordroIzinGrubu.fromValue(izinGrupKodu);
 			} catch (Exception e) {
 			}
-			if (bordroTipi != null) {
+			if (bordroIzinGrubu != null) {
 				String izinKodlari = tanim.getErpKodu();
 				String izinKey = "izinGrup" + izinGrupKodu;
 				if (!ortakIslemler.getParameterKey(izinKodlari).equals(""))
@@ -137,6 +138,19 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				for (String key : kodList) {
 					izinGrupMap.put(key, izinGrupKodu);
 				}
+			}
+		}
+		fields.clear();
+		fields.put("tipi", Tanim.TIPI_IZIN_KODU_GRUPLARI);
+		fields.put("durum", Boolean.TRUE);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+ 		list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
+		if (!list.isEmpty()) {
+			izinGrupMap.clear();
+			for (Tanim tanim : list) {
+				if (tanim.getKodu().equals(BordroIzinGrubu.TANIMSIZ.value()))
+					izinGrupMap.put(tanim.getErpKodu(), tanim.getKodu());
 			}
 		}
 		Calendar cal = Calendar.getInstance();
@@ -212,7 +226,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				Integer normalGunAdet = 0, haftaTatilAdet = 0, tatilAdet = 0;
 				// boolean calisiyor = ap.getSaatToplami() > 0.0d;
-				LinkedHashMap<BordroTipi, Double> detayMap = new LinkedHashMap<BordroTipi, Double>();
+				LinkedHashMap<BordroIzinGrubu, Double> detayMap = new LinkedHashMap<BordroIzinGrubu, Double>();
 
 				for (VardiyaGun vardiyaGun : ap.getVardiyalar()) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
@@ -246,16 +260,16 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							} else
 								izinKodu = vardiya.getStyleClass();
 							if (artiGun > 0 && izinKodu != null) {
-								BordroTipi bordroTipi = null;
+								BordroIzinGrubu bordroTipi = null;
 								try {
 									if (izinKodu.trim().length() > 0)
-										bordroTipi = BordroTipi.fromValue(izinKodu);
+										bordroTipi = BordroIzinGrubu.fromValue(izinKodu);
 								} catch (Exception e) {
 								}
 								if (bordroTipi != null) {
 									double miktar = (detayMap.containsKey(bordroTipi) ? detayMap.get(bordroTipi) : 0.0d) + artiGun;
 									detayMap.put(bordroTipi, miktar);
-									if (bordroTipi.equals(BordroTipi.RAPORLU_IZIN) || bordroTipi.equals(BordroTipi.UCRETSIZ_IZIN))
+									if (bordroTipi.equals(BordroIzinGrubu.RAPORLU_IZIN) || bordroTipi.equals(BordroIzinGrubu.UCRETSIZ_IZIN))
 										calismaGun = 0;
 								}
 							}
@@ -296,17 +310,17 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					}
 
 					if (!detayMap.isEmpty()) {
-						for (BordroTipi bordroTipi : detayMap.keySet()) {
+						for (BordroIzinGrubu bordroIzinGrubu : detayMap.keySet()) {
 							PersonelDenklestirmeBordroDetay bordroDetay = null;
-							String detayKey = PersonelDenklestirmeBordroDetay.getDetayKey(denklestirmeBordro, bordroTipi.value());
+							String detayKey = PersonelDenklestirmeBordroDetay.getDetayKey(denklestirmeBordro, bordroIzinGrubu.value());
 							if (bordroDetayMap.containsKey(detayKey)) {
 								bordroDetay = bordroDetayMap.get(detayKey);
 								bordroDetayMap.remove(detayKey);
 							} else {
-								bordroDetay = new PersonelDenklestirmeBordroDetay(denklestirmeBordro, bordroTipi);
+								bordroDetay = new PersonelDenklestirmeBordroDetay(denklestirmeBordro, bordroIzinGrubu);
 							}
 							bordroDetay.setGuncellendi(bordroDetay.getId() == null);
-							bordroDetay.setMiktar(detayMap.get(bordroTipi));
+							bordroDetay.setMiktar(detayMap.get(bordroIzinGrubu));
 							if (bordroDetay.isGuncellendi()) {
 								pdksEntityController.saveOrUpdate(session, entityManager, bordroDetay);
 								flush = true;

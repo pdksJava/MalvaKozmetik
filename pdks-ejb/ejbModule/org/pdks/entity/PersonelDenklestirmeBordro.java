@@ -44,7 +44,7 @@ public class PersonelDenklestirmeBordro implements Serializable {
 
 	private boolean guncellendi = false;
 
-	private HashMap<BordroTipi, PersonelDenklestirmeBordroDetay> detayMap;
+	private HashMap<BordroIzinGrubu, PersonelDenklestirmeBordroDetay> detayMap;
 
 	public PersonelDenklestirmeBordro() {
 		super();
@@ -163,30 +163,30 @@ public class PersonelDenklestirmeBordro implements Serializable {
 
 	@Transient
 	public Integer getUcretliIzin() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.UCRETLI_IZIN);
+		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroIzinGrubu.UCRETLI_IZIN);
 		Integer value = detay != null ? detay.getMiktar().intValue() : 0;
 		return value;
 	}
 
 	@Transient
 	public Integer getUcretsizIzin() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.UCRETSIZ_IZIN);
+		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroIzinGrubu.UCRETSIZ_IZIN);
 		Integer value = detay != null ? detay.getMiktar().intValue() : 0;
 		return value;
 	}
 
 	@Transient
 	public Integer getRaporluIzin() {
-		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroTipi.RAPORLU_IZIN);
+		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroIzinGrubu.RAPORLU_IZIN);
 		Integer value = detay != null ? detay.getMiktar().intValue() : 0;
 		return value;
 	}
 
 	@Transient
-	public PersonelDenklestirmeBordroDetay getBordroDetay(BordroTipi bordroTipi) {
+	public PersonelDenklestirmeBordroDetay getBordroDetay(BordroIzinGrubu bordroIzinGrubu) {
 		PersonelDenklestirmeBordroDetay bordroDetay = null;
-		if (bordroTipi != null && detayMap != null && detayMap.containsKey(bordroTipi))
-			bordroDetay = detayMap.get(bordroTipi);
+		if (bordroIzinGrubu != null && detayMap != null && detayMap.containsKey(bordroIzinGrubu))
+			bordroDetay = detayMap.get(bordroIzinGrubu);
 		return bordroDetay;
 	}
 
@@ -196,11 +196,11 @@ public class PersonelDenklestirmeBordro implements Serializable {
 	}
 
 	@Transient
-	public HashMap<BordroTipi, PersonelDenklestirmeBordroDetay> getDetayMap() {
+	public HashMap<BordroIzinGrubu, PersonelDenklestirmeBordroDetay> getDetayMap() {
 		return detayMap;
 	}
 
-	public void setDetayMap(HashMap<BordroTipi, PersonelDenklestirmeBordroDetay> detayMap) {
+	public void setDetayMap(HashMap<BordroIzinGrubu, PersonelDenklestirmeBordroDetay> detayMap) {
 		this.detayMap = detayMap;
 	}
 

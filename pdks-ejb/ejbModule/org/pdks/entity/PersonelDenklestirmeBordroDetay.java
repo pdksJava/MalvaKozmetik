@@ -40,7 +40,7 @@ public class PersonelDenklestirmeBordroDetay implements Serializable {
 
 	private String tipi;
 
-	private BordroTipi bordroTipi;
+	private BordroIzinGrubu bordroIzinGrubu;
 
 	private Double miktar = 0.0d;
 
@@ -51,10 +51,10 @@ public class PersonelDenklestirmeBordroDetay implements Serializable {
 
 	}
 
-	public PersonelDenklestirmeBordroDetay(PersonelDenklestirmeBordro personelDenklestirmeBordro, BordroTipi bordroTipi) {
+	public PersonelDenklestirmeBordroDetay(PersonelDenklestirmeBordro personelDenklestirmeBordro, BordroIzinGrubu bordroIzinGrubu) {
 		super();
 		this.personelDenklestirmeBordro = personelDenklestirmeBordro;
-		this.tipi = bordroTipi.value();
+		this.tipi = bordroIzinGrubu.value();
 	}
 
 	@Id
@@ -86,7 +86,7 @@ public class PersonelDenklestirmeBordroDetay implements Serializable {
 
 	public void setTipi(String value) {
 		if (value != null)
-			this.bordroTipi = BordroTipi.fromValue(value);
+			this.bordroIzinGrubu = BordroIzinGrubu.fromValue(value);
 		this.tipi = value;
 	}
 
@@ -102,12 +102,12 @@ public class PersonelDenklestirmeBordroDetay implements Serializable {
 	}
 
 	@Transient
-	public BordroTipi getBordroTipi() {
-		return bordroTipi;
+	public BordroIzinGrubu getBordroIzinGrubu() {
+		return bordroIzinGrubu;
 	}
 
-	public void setBordroTipi(BordroTipi bordroTipi) {
-		this.bordroTipi = bordroTipi;
+	public void setBordroIzinGrubu(BordroIzinGrubu bordroIzinGrubu) {
+		this.bordroIzinGrubu = bordroIzinGrubu;
 	}
 
 	@Transient

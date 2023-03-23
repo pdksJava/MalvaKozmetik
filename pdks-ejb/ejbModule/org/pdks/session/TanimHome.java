@@ -291,6 +291,12 @@ public class TanimHome extends EntityHome<Tanim> implements Serializable {
 				bagliOlmayanGenelTanimMap.get(childGenelTanim.getParentTanim().getId()).setChildGenelTanim(childGenelTanim);
 		}
 		list = PdksUtil.sortObjectStringAlanList(new ArrayList<Tanim>(bagliOlmayanGenelTanimMap.values()), "getAciklama", null);
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			Tanim tanim = (Tanim) iterator.next();
+			if (tanim.getDurum().equals(Boolean.FALSE)) {
+				iterator.remove();
+			}
+		}
 		setGenelTanimList(list);
 	}
 

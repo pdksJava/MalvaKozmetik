@@ -114,6 +114,10 @@ public class IzinTipi extends BaseObject {
 
 	private Integer version = 0;
 
+	public IzinTipi() {
+		super();
+	}
+
 	@Column(name = "VERSION")
 	public Integer getVersion() {
 		return version;
