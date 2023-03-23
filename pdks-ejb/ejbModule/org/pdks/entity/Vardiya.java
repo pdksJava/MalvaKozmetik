@@ -508,12 +508,12 @@ public class Vardiya extends BaseObject {
 		Personel personel = pdksVardiyaGun.getPersonel();
 		if (personel != null && personel.getId() != null) {
 			boolean oncekiGunIzinli = false, sonrakiGunIzinli = false;
-//			if (pdksVardiyaGun.getOncekiVardiyaGun() != null)
-//				oncekiGunIzinli = pdksVardiyaGun.getOncekiVardiyaGun().isIzinli();
-//			if (pdksVardiyaGun.getSonrakiVardiyaGun() != null)
-//				sonrakiGunIzinli = pdksVardiyaGun.getSonrakiVardiyaGun().isIzinli();
-//			if (sonrakiGunIzinli || oncekiGunIzinli)
-//				logger.info(pdksVardiyaGun.getVardiyaDateStr() + " " + oncekiGunIzinli + " " + sonrakiGunIzinli);
+			// if (pdksVardiyaGun.getOncekiVardiyaGun() != null)
+			// oncekiGunIzinli = pdksVardiyaGun.getOncekiVardiyaGun().isIzinli();
+			// if (pdksVardiyaGun.getSonrakiVardiyaGun() != null)
+			// sonrakiGunIzinli = pdksVardiyaGun.getSonrakiVardiyaGun().isIzinli();
+			// if (sonrakiGunIzinli || oncekiGunIzinli)
+			// logger.info(pdksVardiyaGun.getVardiyaDateStr() + " " + oncekiGunIzinli + " " + sonrakiGunIzinli);
 			if (personel.getSskCikisTarihi() != null && personel.getIseGirisTarihi() != null && personel.getIseGirisTarihi().getTime() <= tarih.getTime() && personel.getSskCikisTarihi().getTime() >= tarih.getTime()) {
 				Vardiya sonrakiVardiya = null, oncekiVardiya = null;
 				if (pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null) {
@@ -1747,6 +1747,11 @@ public class Vardiya extends BaseObject {
 				setVardiyaTarih(value.getVardiyaDate());
 		}
 		this.islemVardiyaGun = value;
+	}
+
+	@Transient
+	public boolean isGecerliIzin() {
+		return isIzin() && PdksUtil.textAlanGecerliMi(styleClass);
 	}
 
 	@Transient

@@ -1364,7 +1364,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							if (vardiyaGun.isAyinGunu() == false || vardiyaGun.getVardiya() == null)
 								continue;
 							gunAdet++;
-							if ((vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty()) && (vardiyaGun.getIzin() != null || vardiyaGun.getVardiya().isIzin() || vardiyaGun.getVardiya().isCalisma() == false))
+							if ((vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty()) && (vardiyaGun.isIzinli() || vardiyaGun.getVardiya().isCalisma() == false))
 								continue;
 							puantaj.setSonGun(vardiyaGun.getVardiyaDate());
 							Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
@@ -3154,7 +3154,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Vardiya islemVardiya = vGun.getIslemVardiya();
 		Tatil tatil = vGun.getTatil() != null ? vGun.getTatil().getOrjTatil() : null;
 		PersonelIzin personelIzin = vGun.getIzin();
-		Boolean izinli = personelIzin != null || islemVardiya.isIzin();
+		Boolean izinli = vGun.isIzinli();
 
 		Personel personel = vGun.getPersonel();
 		vGun.setAksamVardiyaSaatSayisi(0d);
@@ -5074,7 +5074,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 			}
 		}
- 		if (vg.getTitleStr() == null) {
+		if (vg.getTitleStr() == null) {
 			String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vg);
 			if (denklestirmeAyDurum && eksikCalismaGoster) {
 				Double netSure = vg.getVardiya().getNetCalismaSuresi();

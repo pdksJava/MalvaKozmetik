@@ -1522,7 +1522,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					for (VardiyaGun vg : aylikPuantaj.getVardiyalar()) {
 						Vardiya vardiya = vg.getVardiya();
 						if (vg.isAyinGunu() && vardiya != null && vardiya.getId() != null && vg.isIzinli()) {
-							boolean ekle = vardiya.isIzin() || (vg.getIzin() != null && !(vardiya.isHaftaTatil() || vardiya.isOff()));
+							boolean ekle = vardiya.isGecerliIzin() || (vg.getIzin() != null && !(vardiya.isHaftaTatil() || vardiya.isOff()));
 							if (!ekle && vg.getIzin() != null) {
 								IzinTipi izinTipi = vg.getIzin().getIzinTipi();
 								ekle = izinTipi.isTakvimGunuMu();
@@ -1571,7 +1571,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 									continue;
 							}
 							vardiyaIzin = izinTipi.getIzinVardiya(izinTipi.isRaporIzin() == false ? Vardiya.TIPI_IZIN : Vardiya.TIPI_HASTALIK_RAPOR);
-						} else if (vg.getVardiya().isIzin()) {
+						} else if (vg.getVardiya().isGecerliIzin()) {
 							htToplamiGuncelle = true;
 							vardiyaIzin = vg.getVardiya();
 						}

@@ -12056,7 +12056,7 @@ public class OrtakIslemler implements Serializable {
 	private boolean isNormalGunMu(VardiyaGun vardiyaGun) {
 		boolean raporIzni = getVardiyaIzniEkle(vardiyaGun);
 
-		boolean normalGun = (vardiyaGun.isIzinli() == false && vardiyaGun.getVardiya().isIzin() == false) || (raporIzni || (vardiyaGun.isSutIzni()));
+		boolean normalGun = (vardiyaGun.isIzinli() == false) || (raporIzni || (vardiyaGun.isSutIzni()));
 
 		return normalGun;
 	}
