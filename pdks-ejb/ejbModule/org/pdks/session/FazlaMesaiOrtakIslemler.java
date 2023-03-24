@@ -114,43 +114,55 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			for (BordroIzinGrubu bordroTipi : bordroTipileri) {
 				Tanim tanim = new Tanim();
 				tanim.setTipi(Tanim.TIPI_IZIN_GRUPLARI);
+				tanim.setAciklamatr(bordroTipi.name());
+				tanim.setAciklamaen(bordroTipi.name());
 				tanim.setKodu(bordroTipi.value());
 				tanim.setErpKodu("izinGrup" + bordroTipi.value());
+				pdksEntityController.saveOrUpdate(session, entityManager, tanim);
+
 				list.add(tanim);
 			}
+			session.flush();
 		}
 
-		for (Tanim tanim : list) {
-			BordroIzinGrubu bordroIzinGrubu = null;
-			String izinGrupKodu = tanim.getKodu();
-			try {
-				bordroIzinGrubu = BordroIzinGrubu.fromValue(izinGrupKodu);
-			} catch (Exception e) {
-			}
-			if (bordroIzinGrubu != null) {
-				String izinKodlari = tanim.getErpKodu();
-				String izinKey = "izinGrup" + izinGrupKodu;
-				if (!ortakIslemler.getParameterKey(izinKodlari).equals(""))
-					izinKodlari = ortakIslemler.getParameterKey(izinKodlari);
-				else if (!ortakIslemler.getParameterKey(izinKey).equals(""))
-					izinKodlari = ortakIslemler.getParameterKey(izinKey);
-				List<String> kodList = PdksUtil.getListStringTokenizer(izinKodlari, null);
-				for (String key : kodList) {
-					izinGrupMap.put(key, izinGrupKodu);
-				}
-			}
-		}
+		// for (Tanim tanim : list) {
+		// BordroIzinGrubu bordroIzinGrubu = null;
+		// String izinGrupKodu = tanim.getKodu();
+		// try {
+		// bordroIzinGrubu = BordroIzinGrubu.fromValue(izinGrupKodu);
+		// } catch (Exception e) {
+		// }
+		// if (bordroIzinGrubu != null) {
+		// String izinKodlari = tanim.getErpKodu();
+		// String izinKey = "izinGrup" + izinGrupKodu;
+		// if (!ortakIslemler.getParameterKey(izinKodlari).equals(""))
+		// izinKodlari = ortakIslemler.getParameterKey(izinKodlari);
+		// else if (!ortakIslemler.getParameterKey(izinKey).equals(""))
+		// izinKodlari = ortakIslemler.getParameterKey(izinKey);
+		// List<String> kodList = PdksUtil.getListStringTokenizer(izinKodlari, null);
+		// for (String key : kodList) {
+		// izinGrupMap.put(key, izinGrupKodu);
+		// }
+		// }
+		// }
 		fields.clear();
 		fields.put("tipi", Tanim.TIPI_IZIN_KODU_GRUPLARI);
 		fields.put("durum", Boolean.TRUE);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
- 		list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
+		list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
 		if (!list.isEmpty()) {
-			izinGrupMap.clear();
 			for (Tanim tanim : list) {
-				if (tanim.getKodu().equals(BordroIzinGrubu.TANIMSIZ.value()))
-					izinGrupMap.put(tanim.getErpKodu(), tanim.getKodu());
+				if (!tanim.getKodu().equals(BordroIzinGrubu.TANIMSIZ.value())) {
+					BordroIzinGrubu bordroTipi = null;
+					try {
+						if (tanim.getKodu().trim().length() > 0)
+							bordroTipi = BordroIzinGrubu.fromValue(tanim.getKodu().trim());
+					} catch (Exception e) {
+					}
+					if (bordroTipi != null)
+						izinGrupMap.put(tanim.getErpKodu(), bordroTipi.value());
+				}
 			}
 		}
 		Calendar cal = Calendar.getInstance();

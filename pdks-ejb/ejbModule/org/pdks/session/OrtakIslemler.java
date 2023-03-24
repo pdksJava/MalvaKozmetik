@@ -11342,7 +11342,7 @@ public class OrtakIslemler implements Serializable {
 						calBit = null;
 						tatilBas = null;
 						tatilBit = null;
-						if (vardiyaGun.getIzin() == null && !raporIzni && fazlaMesaiSure > 0) {
+						if (vardiyaGun.isIzinli() == false && !raporIzni && fazlaMesaiSure > 0) {
 							vardiyaGun.setResmiTatilSure(fazlaMesaiSure);
 							puantaj.addResmiTatilToplami(fazlaMesaiSure);
 							logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + fazlaMesaiSure + " " + puantaj.getResmiTatilToplami());
@@ -11706,10 +11706,14 @@ public class OrtakIslemler implements Serializable {
 												gun.setVardiya(islemVardiya);
 											gun.setFiiliHesapla(Boolean.FALSE);
 											PersonelIzin personelIzin = pdksVardiyaGun.getIzin();
-											if (tatil2 != null && personelIzin != null) {
+											if (tatil2 != null && pdksVardiyaGun.isIzinli()) {
 												List<HareketKGS> hareketler = pdksVardiyaGun.getHareketler();
-												if (hareketler == null || hareketler.isEmpty())
-													gun.setIzin(personelIzin);
+												if (hareketler == null || hareketler.isEmpty()) {
+													if (personelIzin != null)
+														gun.setIzin(personelIzin);
+													else
+														gun.setVardiya(pdksVardiyaGun.getVardiya());
+												}
 											}
 
 											double sure = getSaatToplami(puantajData, gun, yemekList, session);

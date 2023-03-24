@@ -535,7 +535,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		User kullaniciYeni = pdksPersonel.getKullanici();
 		if ((kullaniciYeni == null || kullaniciYeni.getId() == null) && eskiKullanici != null && pdksPersonel.getId() != null) {
 			eskiKullanici.setPdksPersonel(pdksPersonel);
+			eskiKullanici.setDurum(pdksPersonel.isCalisiyor());
 			pdksEntityController.saveOrUpdate(session, entityManager, eskiKullanici);
+			if (eskiKullanici.isDurum()) {
+				pdksPersonel.setGuncellemeTarihi(new Date());
+				pdksPersonel.setGuncelleyenUser(authenticatedUser);
+				pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
+			}
 			session.flush();
 			fillPersonelKGSList();
 		}

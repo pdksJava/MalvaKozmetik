@@ -303,7 +303,7 @@ public class VardiyaSablonu extends BaseObject {
 		vardiyaList.add(vardiya7);
 		for (Iterator<Vardiya> iterator = vardiyaList.iterator(); iterator.hasNext();) {
 			Vardiya pdksVardiya = (Vardiya) iterator.next();
-			if (pdksVardiya != null && pdksVardiya.isCalisma()) {
+			if (pdksVardiya != null && (pdksVardiya.isIzin() || pdksVardiya.isCalisma())) {
 				this.setToplamSaat(pdksVardiya.getCalismaSaati());
 				this.setCalismaGunSayisi(pdksVardiya.getCalismaGun());
 				break;
