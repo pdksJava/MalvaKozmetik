@@ -303,9 +303,10 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 				pdksVardiya.setGirisGecikmeToleransDakika((short) 0);
 				pdksVardiya.setCikisErkenToleransDakika((short) 0);
 				pdksVardiya.setCikisGecikmeToleransDakika((short) 0);
-				pdksVardiya.setCalismaGun(0);
-				pdksVardiya.setCalismaSaati(0);
-
+				if (!pdksVardiya.isIzin()) {
+					pdksVardiya.setCalismaGun(0);
+					pdksVardiya.setCalismaSaati(0);
+				}
 			}
 			if (yaz) {
 				HashMap parametreMap = new HashMap();
