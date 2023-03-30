@@ -538,7 +538,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									aylikPuantaj.setPdksPersonel(pdksPersonel);
 									veriMap.put(bolumId, liste);
 								}
-								if (vardiyaGun.getIzin() != null)
+								if (vardiyaGun.isIzinli())
 									aylikPuantaj.setIzinSuresi(1.0d + aylikPuantaj.getIzinSuresi());
 								if (vardiyaGunDataMap.containsKey(key)) {
 									VardiyaGun vardiyaGun2 = vardiyaGunDataMap.get(key);
@@ -588,7 +588,9 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							List<Vardiya> vardiyaCalismayanList = new ArrayList<Vardiya>();
 							for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 								Vardiya vardiya = (Vardiya) iterator.next();
-								if (vardiya.isCalisma() == false) {
+								if (vardiya.isIzin()) {
+									iterator.remove();
+								} else if (vardiya.isCalisma() == false) {
 									vardiyaCalismayanList.add(vardiya);
 									iterator.remove();
 								}
@@ -602,6 +604,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							Long toplamCalismaSekliId = null;
 							List<VardiyaGun> vardiyalar = null;
 							List<AylikPuantaj> toplamList = new ArrayList<AylikPuantaj>();
+
 							for (Liste liste : list) {
 								AylikPuantaj aylikPuantaj = (AylikPuantaj) liste.getValue();
 								aylikPuantaj.setTrClass(VardiyaGun.STYLE_CLASS_ODD);
@@ -1081,8 +1084,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	 */
 	private int vardiyaSatirEkle(Sheet sheet, int col, int row, XSSFCellStyle satirStyle, XSSFCellStyle satirCenter, VardiyaGun vg, String tip, boolean tesisDurum) {
 		Personel personel = vg.getPersonel();
-
-		ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(personel.getPdksSicilNo());
+ 		ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(personel.getPdksSicilNo());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getAd());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getSoyad());
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getSirket().getAd());
@@ -1092,9 +1094,13 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(PdksUtil.convertToDateString(vg.getVardiyaDate(), PdksUtil.getDateFormat()));
 		if (tip.equals("I")) {
 			ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue("");
-			if (!vg.getVardiya().isFMI())
-				ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(vg.getIzin() != null ? vg.getIzin().getIzinTipi().getIzinTipiTanim().getAciklama() : "");
-			else
+			if (!vg.getVardiya().isFMI()) {
+				String aciklama = "";
+				if (vg.isIzinli())  
+					aciklama = vg.getIzin() != null ? vg.getIzin().getIzinTipi().getIzinTipiTanim().getAciklama() : vg.getVardiya().getAciklama();
+ 				ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(aciklama);
+
+			} else
 				ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(vg.getVardiya().getAdi());
 
 		} else if (tip.equals("G")) {
