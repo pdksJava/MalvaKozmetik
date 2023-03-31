@@ -131,6 +131,21 @@ public class PdksUtil implements Serializable {
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
 
 	/**
+	 * @param ad
+	 * @param soyad
+	 * @return
+	 */
+	public static String getAdSoyad(String ad, String soyad) {
+		String str = (ad != null ? ad.trim() + " " : "") + (soyad != null ? soyad.trim() + " " : "");
+		if (str.indexOf("  ") >= 0)
+			str = replaceAllManuel(str, "  ", " ");
+		while (str.startsWith(" ")) {
+			str = str.substring(1);
+		}
+		return str.trim();
+	}
+
+	/**
 	 * @param jsonStr
 	 * @param rootName
 	 * @param arrayTag

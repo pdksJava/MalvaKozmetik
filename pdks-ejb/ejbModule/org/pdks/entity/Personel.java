@@ -160,16 +160,7 @@ public class Personel extends BaseObject {
 
 	@Transient
 	public String getAdSoyad() {
-		String adSoyad = "";
-		try {
-			adSoyad = ((ad != null ? ad.trim() : "") + " " + (soyad != null ? soyad : "")).trim();
-		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-			adSoyad = "";
-		}
-
+		String adSoyad = PdksUtil.getAdSoyad(ad, soyad);
 		return adSoyad;
 	}
 

@@ -12,6 +12,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Immutable;
 
+import com.pdks.genel.model.PdksUtil;
+
 @Entity(name = ERPPersonel.TABLE_NAME)
 @Immutable
 public class ERPPersonel implements Serializable {
@@ -86,7 +88,8 @@ public class ERPPersonel implements Serializable {
 
 	@Transient
 	public String getAdSoyad() {
-		return (ad.trim() + " " + soyad).trim();
+		String adSoyad = PdksUtil.getAdSoyad(ad, soyad);
+		return adSoyad;
 	}
 
 }

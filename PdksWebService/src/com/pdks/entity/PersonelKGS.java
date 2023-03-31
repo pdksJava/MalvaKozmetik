@@ -95,7 +95,8 @@ public class PersonelKGS implements Serializable {
 
 	@Transient
 	public String getAdSoyad() {
-		return (ad.trim() + " " + soyad).trim();
+		String adSoyad = PdksUtil.getAdSoyad(ad, soyad);
+		return adSoyad;
 	}
 
 }
