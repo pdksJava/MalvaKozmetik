@@ -2625,9 +2625,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				} else {
 					if (tip.equals("P")) {
-						String erpAdSoyad = PdksUtil.getAdSoyad(personelERP.getAdi(), personelERP.getSoyadi());
-						String kgsAdSoyad = PdksUtil.getAdSoyad(personelKGSData.getAd(), personelKGSData.getSoyad());
-						if (!kgsAdSoyad.equals(erpAdSoyad)) {
+						String erpAdSoyad = PdksUtil.setTurkishStr(PdksUtil.getAdSoyad(personelERP.getAdi(), personelERP.getSoyadi()));
+						String kgsAdSoyad = PdksUtil.setTurkishStr(PdksUtil.getAdSoyad(personelKGSData.getAd(), personelKGSData.getSoyad()));
+						if (!kgsAdSoyad.equalsIgnoreCase(erpAdSoyad)) {
 							if (personelERP.getAdi() == null || personelERP.getSoyadi() == null) {
 								String mesaj = "adı ve soyadı";
 								if (personelERP.getAdi() != null)
