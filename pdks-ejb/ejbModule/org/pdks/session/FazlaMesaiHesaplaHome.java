@@ -1379,7 +1379,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 						negatifBakiyeDenkSaat = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeliAy().getNegatifBakiyeDenkSaat() : 0.0d;
 						boolean ekle = (denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle));
-						fazlaMesaiHesapla = puantaj.getPdksPersonel().getPdks();
+						fazlaMesaiHesapla = personelDenklestirme.isDenklestirme();
 						CalismaModeli calismaModeli = puantaj.getCalismaModeli();
 						boolean cumartesiCalisiyor = calismaModeli != null && calismaModeli.getHaftaSonu() > 0.0d;
 						HashMap<Long, List<VardiyaGun>> bosGunMap = new HashMap<Long, List<VardiyaGun>>();
@@ -1470,6 +1470,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								vardiyaGunKontrol(puantaj, vardiyaGun, paramsMap);
 								if (izinCalismaUyariDurum.equals("1") && vardiyaGun.getIzin() != null) {
 									PersonelIzin izin = vardiyaGun.getIzin();
+									IzinTipi it = izin.getIzinTipi();
 									if (vardiyaGun.isHareketHatali()) {
 										if (ikRole && izin.getOrjIzin() != null) {
 											Long izinId = izin.getOrjIzin().getId();
@@ -1481,11 +1482,13 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 											orjIzin.addCalisilanGunler(vardiyaGun);
 
 										}
-									} else if (vardiyaGun.getTatil() == null && vardiyaGun.getVardiya().isOffGun()) {
-										int haftaGunu = vardiyaGun.getHaftaninGunu();
-										if ((vardiyaGun.isHaftaIci()) || (cumartesiCalisiyor && haftaGunu == Calendar.SATURDAY)) {
-											vardiyaGun.setStyle("color:red;");
-											offIzinliGunler.add(vardiyaGun);
+									} else if (vardiyaGun.getTatil() == null && vardiyaGun.getVardiya().isOffGun() && it.isRaporIzin() == false) {
+										if (it.getTakvimGunumu() == null || it.getTakvimGunumu().equals(Boolean.FALSE)) {
+											int haftaGunu = vardiyaGun.getHaftaninGunu();
+											if ((vardiyaGun.isHaftaIci()) || (cumartesiCalisiyor && haftaGunu == Calendar.SATURDAY)) {
+												vardiyaGun.setStyle("color:red;");
+												offIzinliGunler.add(vardiyaGun);
+											}
 										}
 
 									}
