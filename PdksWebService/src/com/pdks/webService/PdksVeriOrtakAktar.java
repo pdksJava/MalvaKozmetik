@@ -2,6 +2,7 @@ package com.pdks.webService;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -62,7 +63,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 	public Logger logger = Logger.getLogger(PdksVeriOrtakAktar.class);
 
 	public static final String FORMAT_DATE = "yyyy-MM-dd";
-	public static final String LAST_DATE = "9999-12-31";
 	public static final String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
 	public static final String FORMAT_TIME = "HH:mm";
 
@@ -70,6 +70,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 	public static final String[] IZIN_PROP_ORDER = { "aciklama", "basZaman", "bitZaman", "durum", "izinSuresi", "izinTipi", "izinTipiAciklama", "personelNo", "referansNoERP", "sureBirimi" };
 	public static final String[] PERSONEL_PROP_ORDER = { "adi", "bolumAdi", "bolumKodu", "bordroAltAlanAdi", "bordroAltAlanKodu", "cinsiyetKodu", "cinsiyeti", "departmanAdi", "departmanKodu", "dogumTarihi", "gorevKodu", "gorevi", "iseGirisTarihi", "istenAyrilmaTarihi", "kidemTarihi",
 			"masrafYeriAdi", "masrafYeriKodu", "personelNo", "personelTipi", "personelTipiKodu", "sanalPersonel", "sirketAdi", "sirketKodu", "soyadi", "tesisAdi", "tesisKodu", "yoneticiPerNo", "grubaGirisTarihi", "yonetici2PerNo" };
+
+	private static final String LAST_DATE = "9999-12-31";
 
 	private PdksDAO pdksDAO = null;
 
@@ -236,7 +238,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				MailFile mailFile = new MailFile();
 				mailFile.setDisplayName(fileName);
 				String str = (String) fileMap.get(fileName);
-				mailFile.setIcerik(str.getBytes());
+				mailFile.setIcerik(str.getBytes(StandardCharsets.UTF_8));
 				mailObject.getAttachmentFiles().add(mailFile);
 			}
 		}
@@ -853,7 +855,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					String xml = PdksUtil.getJsonToXML(gs.toJson(dataMap), "getMesaiPDKS", null);
 					MailFile mailFile = new MailFile();
 					mailFile.setDisplayName(dosyaAdi);
-					mailFile.setIcerik(xml.getBytes());
+					mailFile.setIcerik(xml.getBytes(StandardCharsets.UTF_8));
 					mailObject.getAttachmentFiles().add(mailFile);
 					mailMap.put("mailObject", mailObject);
 					MailManager.ePostaGonder(mailMap);
@@ -2511,6 +2513,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			fields.put("durum", Boolean.FALSE);
 			bosDepartman = (Tanim) pdksDAO.getObjectByInnerObject(fields, Tanim.class);
 		}
+		Date lastDate = getTarih(LAST_DATE, FORMAT_DATE);
 		for (String personelNo : personelList) {
 			kidemHataList.clear();
 			boolean calisiyor = false;
@@ -2849,7 +2852,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (bosDepartman != null && calisiyor)
 							kidemHataList.add(parentDepartman.getAciklamatr() + " bilgisi boş olamaz!");
 					}
-					if (istenAyrilisTarihi != null && istenAyrilisTarihi.after(bugun)) {
+					if (istenAyrilisTarihi != null && istenAyrilisTarihi.after(bugun) && istenAyrilisTarihi.getTime() == lastDate.getTime()) {
 						if (departmanYoneticiRolVar && departman == null && parentDepartman != null && departmanYoneticiRolVar)
 							addHatalist(personelERP.getHataList(), parentDepartman.getAciklamatr() + " bilgisi boş olamaz!");
 						if (bolum == null && parentBolum != null)
@@ -3398,8 +3401,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					pdksDAO.execSP(map);
 				}
 			}
-			if (!PdksUtil.getCanliSunucuDurum())
-				hataList.clear();
+			// if (!PdksUtil.getCanliSunucuDurum())
+			// hataList.clear();
 			if (!hataList.isEmpty()) {
 				try {
 

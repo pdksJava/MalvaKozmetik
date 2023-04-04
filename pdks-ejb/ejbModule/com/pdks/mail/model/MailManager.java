@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -375,8 +374,9 @@ public class MailManager implements Serializable {
 						if (mailFile.getFile() != null)
 							file = (File) mailFile.getFile();
 						else if (mailFile.getIcerik() != null) {
-							String icerikStr = new String(mailFile.getIcerik());
-							file = getFileByInputStream(new ByteArrayInputStream(icerikStr.getBytes(StandardCharsets.UTF_8)), fileName);
+							// String icerikStr = new String(mailFile.getIcerik());
+							// file = getFileByInputStream(new ByteArrayInputStream(icerikStr.getBytes(StandardCharsets.UTF_8)), fileName);
+							file = getFileByInputStream(new ByteArrayInputStream(mailFile.getIcerik()), fileName);
 						}
 						if (file != null && file.exists()) {
 							fds = new FileDataSource(fileName);

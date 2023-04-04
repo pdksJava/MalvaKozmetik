@@ -2644,7 +2644,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		String aksamBordroAltBirim = ortakIslemler.getParameterKey("sapAksamBordroAltBirim");
 		String aksamBordroVardiyaKontrol = ortakIslemler.getParameterKey("aksamBordroVardiyaKontrol");
 		List<String> aksamBordroAltBirimleri = Arrays.asList(aksamBordroAltBirim.split(","));
-		String haftaTatilDurum = ortakIslemler.getParameterKey("haftaTatilDurum");
+		boolean haftaTatilDurum = ortakIslemler.getParameterKey("haftaTatilDurum").equals("1");
 		double aksamVardiyaSaatSayisi = 0d, haftaCalismaSuresi = 0d;
 		int aksamVardiyaSayisi = 0;
 		VardiyaGun vardiyaGun = null;
@@ -2726,7 +2726,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							if (!gorevli && islemVardiya.getBasSaat() >= islemVardiya.getBitSaat()) {
 								if (pdksVardiyaGun.getSonrakiVardiyaGun() != null) {
 									try {
-										if (pdksVardiyaGun.getSonrakiVardiya().isHaftaTatil() && (haftaTatilDurum.equals("1"))) {
+										if (haftaTatilDurum && pdksVardiyaGun.getSonrakiVardiya() != null && pdksVardiyaGun.getSonrakiVardiya().isHaftaTatil()) {
 											double calismaToplamSuresi = islemVardiya.getNetCalismaSuresi();
 											Date haftaTatil = PdksUtil.tariheGunEkleCikar(pdksVardiyaGun.getVardiyaDate(), 1);
 											String haftaGunStr = PdksUtil.convertToDateString(haftaTatil, "yyyyMMdd").substring(6);
@@ -2747,7 +2747,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 											// aksamVardiyaSaatSayisi += pdksVardiyaGun.getCalismaSuresi();
 										}
 									} catch (Exception eh) {
-										logger.error(eh);
+										logger.error(pdksVardiyaGun.getVardiyaKeyStr() + "\n" + eh);
 										eh.printStackTrace();
 									}
 
@@ -6913,7 +6913,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			vardiyaList = pdksEntityController.getObjectBySQLList(sb, map, Vardiya.class);
-	
+
 			if (!vardiyaList.isEmpty()) {
 				for (Iterator<Vardiya> iterator = vardiyaList.iterator(); iterator.hasNext();) {
 					Vardiya pdksVardiya = iterator.next();
