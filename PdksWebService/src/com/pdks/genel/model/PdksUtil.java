@@ -103,6 +103,15 @@ public class PdksUtil implements Serializable {
 	private static boolean sistemDestekVar = false;
 
 	/**
+	 * @param str
+	 * @return
+	 */
+	public static byte[] getBytesUTF8(String str) {
+		byte[] bs = str != null ? str.getBytes(StandardCharsets.UTF_8) : null;
+		return bs;
+	}
+
+	/**
 	 * @param ad
 	 * @param soyad
 	 * @return

@@ -2,7 +2,6 @@ package com.pdks.webService;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -238,7 +237,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				MailFile mailFile = new MailFile();
 				mailFile.setDisplayName(fileName);
 				String str = (String) fileMap.get(fileName);
-				mailFile.setIcerik(str.getBytes(StandardCharsets.UTF_8));
+				mailFile.setIcerik(PdksUtil.getBytesUTF8(str));
 				mailObject.getAttachmentFiles().add(mailFile);
 			}
 		}
@@ -855,7 +854,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					String xml = PdksUtil.getJsonToXML(gs.toJson(dataMap), "getMesaiPDKS", null);
 					MailFile mailFile = new MailFile();
 					mailFile.setDisplayName(dosyaAdi);
-					mailFile.setIcerik(xml.getBytes(StandardCharsets.UTF_8));
+					mailFile.setIcerik(PdksUtil.getBytesUTF8(xml));
 					mailObject.getAttachmentFiles().add(mailFile);
 					mailMap.put("mailObject", mailObject);
 					MailManager.ePostaGonder(mailMap);
