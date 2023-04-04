@@ -11492,7 +11492,7 @@ public class OrtakIslemler implements Serializable {
 
 						for (VardiyaGun pdksVardiyaGun : haftaVardiyaGunler) {
 							String key = pdksVardiyaGun.getVardiyaDateStr();
-							if (key.equals("20221028") || key.equals("20220721"))
+							if (key.equals("20230420") || key.equals("20220721"))
 								logger.debug(key);
 							if (pdksVardiyaGun.isFiiliHesapla() == false) {
 								if (ilkGiris)
@@ -11506,7 +11506,7 @@ public class OrtakIslemler implements Serializable {
 							if (tatilGunleriMap.containsKey(key))
 								pdksVardiyaGun.setTatil(tatilGunleriMap.get(key));
 							boolean arifeGunu = false;
-
+							Vardiya vardiyaIzin = pdksVardiyaGun.getVardiya();
 							if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null) {
 								CalismaModeli calismaModeliAy = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
 								izinSaat = calismaModeliAy.getIzinSaat(pdksVardiyaGun);
@@ -11516,7 +11516,7 @@ public class OrtakIslemler implements Serializable {
 								Tatil tatil = pdksVardiyaGun.getTatil();
 								if (tatil != null && tatil.isYarimGunMu()) {
 									izinSaat = calismaModeliAy.getArife();
-									if (tatil.getArifeVardiyaYarimHesapla() != null && !tatil.getArifeVardiyaYarimHesapla())
+									if (vardiyaIzin.isIzin() == false && tatil.getArifeVardiyaYarimHesapla() != null && !tatil.getArifeVardiyaYarimHesapla())
 										izinSaat = 0.0d;
 									arifeGunu = true;
 
@@ -11563,7 +11563,7 @@ public class OrtakIslemler implements Serializable {
 							if (ayinGunleri.containsKey(key)) {
 								boolean normalGun = Boolean.FALSE;
 								if (pdksVardiyaGun.getVardiya() != null) {
-									if (haftaTatiliFarkHesapla && pdksVardiyaGun.getIzin() == null) {
+									if (haftaTatiliFarkHesapla && !pdksVardiyaGun.isIzinli()) {
 										cal.setTime(pdksVardiyaGun.getVardiyaDate());
 										boolean pazarGunu = cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY, cumartesiGunu = cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
 										if (pdksVardiyaGun.getVardiya().isHaftaTatil()) {
