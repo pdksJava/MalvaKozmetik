@@ -81,7 +81,7 @@ public class PersonelIzin extends BaseObject {
 
 	private int izinDurumu = IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA;
 
-	private String aciklama, mesaj, personelNo;
+	private String aciklama, mesaj, personelNo,referansERP;
 
 	private Personel izinSahibi;
 
@@ -813,5 +813,13 @@ public class PersonelIzin extends BaseObject {
 	@Transient
 	public Personel getPdksPersonel() {
 		return izinSahibi;
+	}
+	@Transient
+	public String getReferansERP() {
+		return referansERP;
+	}
+
+	public void setReferansERP(String referansERP) {
+		this.referansERP = referansERP;
 	}
 }

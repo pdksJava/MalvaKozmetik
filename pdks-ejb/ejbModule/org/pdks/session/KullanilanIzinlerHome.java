@@ -29,7 +29,9 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AramaSecenekleri;
+import org.pdks.entity.Dosya;
 import org.pdks.entity.IzinIstirahat;
+import org.pdks.entity.IzinReferansERP;
 import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelIzin;
@@ -37,6 +39,11 @@ import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.TempIzin;
 import org.pdks.security.entity.User;
+import org.richfaces.event.UploadEvent;
+import org.richfaces.model.UploadItem;
+
+import com.pdks.webservice.IzinERP;
+import com.pdks.webservice.PdksSoapVeriAktar;
 
 @Name("kullanilanIzinlerHome")
 public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements Serializable {
@@ -67,16 +74,17 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 	private PersonelIzin updateIzin;
 
 	private List<String> yilList = new ArrayList<String>();
-
+	private List<IzinERP> izinERPList = new ArrayList<IzinERP>(), izinERPReturnList;
 	private TreeMap<Long, IzinIstirahat> izinIstirahatMap;
 	private String islemTipi;
 	private List<SelectItem> islemTipleri;
+	private Dosya izinDosya = new Dosya();
 
 	private Date basTarih, bitTarih;
 
 	private Integer yil;
 
-	private boolean tumIzinler = Boolean.FALSE, istenAyrilanEkle = Boolean.FALSE;
+	private boolean tumIzinler = Boolean.FALSE, istenAyrilanEkle = Boolean.FALSE, servisAktarDurum, dosyaGuncellemeYetki, servisCalisti;
 	private Session session;
 	private AramaSecenekleri aramaSecenekleri = null;
 	private List<SelectItem> izinTanimIdList;
@@ -240,7 +248,7 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 			istenAyrilanEkle = Boolean.FALSE;
 			aramaSecenekleri.setSirketId(authenticatedUser.getPdksPersonel().getSirket().getId());
 		}
-
+		dosyaGuncelleDurum();
 		setPersonelIzinList(new ArrayList<PersonelIzin>());
 	}
 
@@ -275,7 +283,7 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 
 	public void fillIzinList() {
 		setInstance(null);
-
+		servisAktarDurum = Boolean.FALSE;
 		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		// ArrayList<String> sicilNoList = ortakIslemler.getPersonelSicilNo(ad, soyad, sicilNo, sirket, seciliEkSaha1, seciliEkSaha2, seciliEkSaha3, seciliEkSaha4, Boolean.TRUE, istenAyrilanEkle, session);
 		ArrayList<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.TRUE, istenAyrilanEkle, session);
@@ -351,6 +359,35 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 				izinList = PdksUtil.sortListByAlanAdi(izinList, "baslangicZamani", Boolean.TRUE);
 
 		}
+		if (islemTipi != null && islemTipi.equalsIgnoreCase("K") && !PdksUtil.getTestSunucuDurum()) {
+			TreeMap<Long, PersonelIzin> idMap = new TreeMap<Long, PersonelIzin>();
+			for (PersonelIzin personelIzin : izinList) {
+				personelIzin.setReferansERP(null);
+				if (personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_REDEDILDI && personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL) {
+					servisAktarDurum = true;
+					idMap.put(personelIzin.getId(), personelIzin);
+				}
+
+			}
+			if (!idMap.isEmpty()) {
+				HashMap parametreMap = new HashMap();
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "izin.id,id");
+				parametreMap.put("izin.id", new ArrayList(idMap.keySet()));
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<Object[]> list = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinReferansERP.class);
+				for (Object[] objects : list) {
+					Long key = (Long) objects[0];
+					if (idMap.containsKey(key)) {
+						servisAktarDurum = true;
+						idMap.get(key).setReferansERP((String) objects[1]);
+					}
+
+				}
+			}
+		}
+
 		setPersonelIzinList(izinList);
 
 	}
@@ -544,6 +581,217 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 
 	}
 
+	/**
+	 * @param izinList
+	 * @return
+	 * @throws Exception
+	 */
+	private ByteArrayOutputStream excelServiceAktarDevam(List<PersonelIzin> izinList) throws Exception {
+		ByteArrayOutputStream baos = null;
+		Workbook wb = new XSSFWorkbook();
+		Sheet sheet = ExcelUtil.createSheet(wb, "Izin WebService Listesi", false);
+		CellStyle style = ExcelUtil.getStyleData(wb);
+		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
+		styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		int row = 0;
+		int col = 0;
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Açıklama");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Başlangıç Zaman");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bitiş Zaman");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Durum");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Süresi");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Tipi");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Tipi Açıklama");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel No");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Referans ERP No");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süre Birimi");
+		String pattern = "yyyy-MM-dd HH:mm";
+		for (PersonelIzin personelIzin : izinList) {
+			if (personelIzin.getReferansERP() == null)
+				continue;
+			++row;
+			col = 0;
+			String aciklama = personelIzin.getAciklama();
+			int index = aciklama.lastIndexOf("(");
+			if (index > 0)
+				aciklama = aciklama.substring(0, index);
+			Tanim izinTipi = personelIzin.getIzinTipi().getIzinTipiTanim();
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(aciklama.trim());
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), pattern));
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(PdksUtil.convertToDateString(personelIzin.getBitisZamani(), pattern));
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(new Boolean(personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_REDEDILDI && personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL).toString());
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personelIzin.getIzinSuresi());
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(izinTipi.getErpKodu());
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izinTipi.getAciklama());
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelIzin.getIzinSahibi().getPdksSicilNo());
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personelIzin.getReferansERP());
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelIzin.getHesapTipi() != null ? personelIzin.getHesapTipi() : PersonelIzin.HESAP_TIPI_GUN);
+		}
+
+		try {
+
+			for (int i = 0; i < col; i++)
+				sheet.autoSizeColumn(i);
+			baos = new ByteArrayOutputStream();
+			wb.write(baos);
+		} catch (Exception e) {
+			logger.error("Pdks hata in : \n");
+			e.printStackTrace();
+			logger.error("Pdks hata out : " + e.getMessage());
+			baos = null;
+		}
+		return baos;
+	}
+
+	public String personelDosyaOkuBasla() throws Exception {
+		izinERPList.clear();
+		return "";
+
+	}
+
+	public String excelServiceAktar() {
+		try {
+			ByteArrayOutputStream baosDosya = excelServiceAktarDevam(personelIzinList);
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "personelIzinWebServisListesi.xlsx");
+
+		} catch (Exception e) {
+			logger.error("PDKS hata in : \n");
+			e.printStackTrace();
+			logger.error("PDKS hata out : " + e.getMessage());
+
+		}
+
+		return "";
+	}
+
+	public void listenerizinDosya(UploadEvent event) throws Exception {
+		servisCalisti = Boolean.FALSE;
+		UploadItem item = event.getUploadItem();
+		PdksUtil.getDosya(item, izinDosya);
+		if (izinERPList == null)
+			izinERPList = new ArrayList<IzinERP>();
+		else
+			izinERPList.clear();
+
+	}
+
+	public String listenerizinDosya() throws Exception {
+		return "";
+	}
+
+	public String izinDosyaOkuBasla() throws Exception {
+		izinDosyaSifirla();
+		dosyaGuncelleDurum();
+		return "";
+	}
+
+	public String izinDosyaSifirla() throws Exception {
+		servisCalisti = Boolean.FALSE;
+		izinERPList.clear();
+		izinDosya.setDosyaIcerik(null);
+		if (izinERPReturnList == null)
+			izinERPReturnList = new ArrayList<IzinERP>();
+		else
+			izinERPReturnList.clear();
+
+		return "";
+	}
+
+	public String izinDosyaOku() throws Exception {
+		servisCalisti = Boolean.FALSE;
+		if (izinERPList == null)
+			izinERPList = new ArrayList<IzinERP>();
+		else
+			izinERPList.clear();
+		Workbook wb = ortakIslemler.getWorkbook(izinDosya);
+		if (wb != null) {
+			Sheet sheet = wb.getSheetAt(0);
+			int col = 0;
+			for (int row = 1; row <= sheet.getLastRowNum(); row++) {
+				col = 0;
+				IzinERP izinERP = new IzinERP();
+				try {
+					izinERP.setAciklama(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+					izinERP.setBasZaman(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+					izinERP.setBitZaman(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+					izinERP.setDurum(new Boolean(ExcelUtil.getSheetStringValueTry(sheet, row, col++)));
+					izinERP.setIzinSuresi(ExcelUtil.getSheetDoubleValue(sheet, row, col++));
+					izinERP.setIzinTipi(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+					izinERP.setIzinTipiAciklama(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+					izinERP.setPersonelNo(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+					izinERP.setReferansNoERP(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+					izinERP.setSureBirimi(ExcelUtil.getSheetStringValueTry(sheet, row, col++));
+				} catch (Exception e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
+				if (col > 0)
+					izinERPList.add(izinERP);
+			}
+		}
+		return "";
+	}
+
+	public String izinDosyaYaz() throws Exception {
+		TreeMap<String, IzinERP> izinMap = new TreeMap<String, IzinERP>();
+		for (IzinERP izinERP : izinERPList) {
+			izinMap.put(izinERP.getReferansNoERP(), izinERP);
+			izinERP.setYazildi(null);
+		}
+		servisCalisti = Boolean.FALSE;
+		try {
+			izinERPReturnList = null;
+			PdksSoapVeriAktar service = ortakIslemler.getPdksSoapVeriAktar();
+			izinERPReturnList = service.saveIzinler(izinERPList);
+			if (izinERPReturnList != null) {
+				izinERPList.clear();
+				for (Iterator iterator = izinERPReturnList.iterator(); iterator.hasNext();) {
+					IzinERP returnERP = (IzinERP) iterator.next();
+					if (izinMap.containsKey(returnERP.getReferansNoERP())) {
+						IzinERP izinERP = izinMap.get(returnERP.getReferansNoERP());
+						izinERP.setYazildi(returnERP.getYazildi());
+						if (returnERP.getYazildi()) {
+							izinERPList.add(returnERP);
+							iterator.remove();
+						} else {
+							izinERP.getHataList().addAll(returnERP.getHataList());
+						}
+					} else
+						returnERP.getHataList().add("İşlem yapılmadı!");
+				}
+				if (!izinERPReturnList.isEmpty()) {
+					PdksUtil.addMessageWarn("Hata oluştu!");
+				} else
+					PdksUtil.addMessageInfo("Güncelleme  başarılı tamamlandı.");
+
+			}
+
+			servisCalisti = Boolean.TRUE;
+		} catch (Exception e) {
+			izinERPReturnList = null;
+			logger.error(e);
+		}
+
+		return "";
+
+	}
+
+	/**
+	 * 
+	 */
+	private void dosyaGuncelleDurum() {
+		dosyaGuncellemeYetki = ortakIslemler.getTestDurum() && (authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIK());
+		if (dosyaGuncellemeYetki) {
+			if (authenticatedUser.isIK()) {
+				String dosyaGuncellemeYetkiStr = ortakIslemler.getParameterKey("dosyaGuncellemeYetki");
+				dosyaGuncellemeYetki = dosyaGuncellemeYetkiStr.equals("1");
+			}
+
+		}
+	}
+
 	public IzinIstirahat getIzinIstirahat(Long personelIzinId) {
 		IzinIstirahat izinIstirahat = null;
 		if (izinIstirahatMap != null && izinIstirahatMap.containsKey(personelIzinId)) {
@@ -688,6 +936,54 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 
 	public void setIzinTipiId(Long izinTipiId) {
 		this.izinTipiId = izinTipiId;
+	}
+
+	public boolean isServisAktarDurum() {
+		return servisAktarDurum;
+	}
+
+	public void setServisAktarDurum(boolean servisAktarDurum) {
+		this.servisAktarDurum = servisAktarDurum;
+	}
+
+	public boolean isDosyaGuncellemeYetki() {
+		return dosyaGuncellemeYetki;
+	}
+
+	public void setDosyaGuncellemeYetki(boolean dosyaGuncellemeYetki) {
+		this.dosyaGuncellemeYetki = dosyaGuncellemeYetki;
+	}
+
+	public List<IzinERP> getIzinERPList() {
+		return izinERPList;
+	}
+
+	public void setIzinERPList(List<IzinERP> izinERPList) {
+		this.izinERPList = izinERPList;
+	}
+
+	public Dosya getIzinDosya() {
+		return izinDosya;
+	}
+
+	public void setIzinDosya(Dosya izinDosya) {
+		this.izinDosya = izinDosya;
+	}
+
+	public boolean isServisCalisti() {
+		return servisCalisti;
+	}
+
+	public void setServisCalisti(boolean servisCalisti) {
+		this.servisCalisti = servisCalisti;
+	}
+
+	public List<IzinERP> getIzinERPReturnList() {
+		return izinERPReturnList;
+	}
+
+	public void setIzinERPReturnList(List<IzinERP> izinERPReturnList) {
+		this.izinERPReturnList = izinERPReturnList;
 	}
 
 }

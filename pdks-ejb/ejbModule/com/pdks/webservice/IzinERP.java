@@ -118,7 +118,7 @@ public class IzinERP extends BaseERPObject {
 	 * @return possible object is {@link Boolean }
 	 * 
 	 */
-	public Boolean isDurum() {
+	public Boolean getDurum() {
 		return durum;
 	}
 
