@@ -753,7 +753,8 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 						IzinERP izinERP = izinMap.get(returnERP.getReferansNoERP());
 						izinERP.setYazildi(returnERP.getYazildi());
 						if (returnERP.getYazildi()) {
-							izinERPList.add(returnERP);
+							izinERP.setId(returnERP.getId());
+							izinERPList.add(izinERP);
 							iterator.remove();
 						} else {
 							izinERP.getHataList().addAll(returnERP.getHataList());
@@ -762,6 +763,7 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 						returnERP.getHataList().add("İşlem yapılmadı!");
 				}
 				if (!izinERPReturnList.isEmpty()) {
+					izinERPList.clear();
 					PdksUtil.addMessageWarn("Hata oluştu!");
 				} else
 					PdksUtil.addMessageInfo("Güncelleme  başarılı tamamlandı.");
