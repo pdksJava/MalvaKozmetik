@@ -2586,42 +2586,63 @@ public class PdksVeriOrtakAktar implements Serializable {
 				String adSoyadERP = (personelERP.getAdi() != null ? personelERP.getAdi().trim() : "Ad tanımsız") + " " + (personelERP.getSoyadi() != null ? personelERP.getSoyadi().trim() : "Soyad tanımsız");
 				String ad = PdksUtil.getCutFirstSpaces(personelERP.getAdi());
 				String soyad = PdksUtil.getCutFirstSpaces(personelERP.getSoyadi());
-				if (personelKGSData == null) {
+				if (personelKGSData == null || personelKGSData.getId() < 0L) {
 					boolean kayitYok = true;
-					if (gecmisTarih != null && iseBaslamaTarihi != null && iseBaslamaTarihi.before(gecmisTarih))
-						kayitYok = false;
-					if (kayitYok && (istenAyrilisTarihi == null || !istenAyrilisTarihi.before(ayBasi))) {
-						String mesaj = adSoyadERP + " personel'in " + kapiGiris + " " + personelNo + " personel no bilgisi bulunamadı!" + (iseBaslamaTarihi != null ? " [ İşe giriş tarihi : " + PdksUtil.convertToDateString(iseBaslamaTarihi, PdksUtil.getDateFormat()) + " ]" : "");
-						String ek = "";
-						if (istenAyrilisTarihi != null && istenAyrilisTarihi.before(bugun))
-							ek = " (İşten ayrılma tarihi : " + personelERP.getIstenAyrilmaTarihi();
-
-						if (personelKGSBos != null && personelKGSBos.getSicilNo() != null && personelKGSBos.getSicilNo().trim().length() > 0) {
-							if (ek.equals(""))
-								ek += "(";
-							else
-								ek += " - ";
-							ek += kapiGiris + " personel no " + personelKGSBos.getSicilNo().trim();
-
+					if (personelKGSData == null && mailMap.containsKey("personelKGSDataOlustur") && personelERP.getAdi() != null && personelERP.getSoyadi() != null && personelERP.getPersonelNo() != null) {
+						LinkedHashMap<String, Object> map2 = new LinkedHashMap<String, Object>();
+						map2.put("ad", personelERP.getAdi());
+						map2.put("soyad", personelERP.getSoyadi());
+						map2.put("perNo", personelERP.getPersonelNo());
+						map2.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_ADD_PERSONEL_KGS");
+						try {
+							List<PersonelKGS> list2 = pdksDAO.execSPList(map2, PersonelKGS.class);
+							if (!list2.isEmpty())
+								personelKGSData = list2.get(0);
+						} catch (Exception e) {
 						}
-						if (!ek.equals(""))
-							ek += ")";
-						mesaj += ek;
+					}
+					if (personelKGSData != null && personelKGSData.getId() > 0L)
+						personelKGSMap.put(personelNo, personelKGSData);
+					else {
 
-						addHatalist(personelERP.getHataList(), mesaj);
-						if (!personelERPHataliMap.containsKey(personelNo)) {
-							erpPersonel = new ERPPersonel();
-							erpPersonel.setSicilNo(personelNo);
-							personelERPHataliMap.put(personelNo, erpPersonel);
-						} else {
-							erpPersonel = personelERPHataliMap.get(personelNo);
-							if (erpPersonel.getDurum())
-								erpPersonel.setIslemZamani(new Date());
-						}
-						if (erpPersonel.getDurum()) {
-							erpPersonel.setAd(PdksUtil.getCutFirstSpaces(personelERP.getAdi()));
-							erpPersonel.setSoyad(PdksUtil.getCutFirstSpaces(personelERP.getSoyadi()));
-							saveList.add(erpPersonel);
+						if (gecmisTarih != null && iseBaslamaTarihi != null && iseBaslamaTarihi.before(gecmisTarih))
+							kayitYok = false;
+
+						if (kayitYok && (istenAyrilisTarihi == null || !istenAyrilisTarihi.before(ayBasi))) {
+
+							String mesaj = adSoyadERP + " personel'in " + kapiGiris + " " + personelNo + " personel no bilgisi bulunamadı!" + (iseBaslamaTarihi != null ? " [ İşe giriş tarihi : " + PdksUtil.convertToDateString(iseBaslamaTarihi, PdksUtil.getDateFormat()) + " ]" : "");
+							String ek = "";
+							if (istenAyrilisTarihi != null && istenAyrilisTarihi.before(bugun))
+								ek = " (İşten ayrılma tarihi : " + personelERP.getIstenAyrilmaTarihi();
+
+							if (personelKGSBos != null && personelKGSBos.getSicilNo() != null && personelKGSBos.getSicilNo().trim().length() > 0) {
+								if (ek.equals(""))
+									ek += "(";
+								else
+									ek += " - ";
+								ek += kapiGiris + " personel no " + personelKGSBos.getSicilNo().trim();
+
+							}
+							if (!ek.equals(""))
+								ek += ")";
+							mesaj += ek;
+
+							addHatalist(personelERP.getHataList(), mesaj);
+							if (!personelERPHataliMap.containsKey(personelNo)) {
+								erpPersonel = new ERPPersonel();
+								erpPersonel.setSicilNo(personelNo);
+								personelERPHataliMap.put(personelNo, erpPersonel);
+							} else {
+								erpPersonel = personelERPHataliMap.get(personelNo);
+								if (erpPersonel.getDurum())
+									erpPersonel.setIslemZamani(new Date());
+							}
+							if (erpPersonel.getDurum()) {
+								erpPersonel.setAd(PdksUtil.getCutFirstSpaces(personelERP.getAdi()));
+								erpPersonel.setSoyad(PdksUtil.getCutFirstSpaces(personelERP.getSoyadi()));
+								saveList.add(erpPersonel);
+							}
+
 						}
 					}
 
