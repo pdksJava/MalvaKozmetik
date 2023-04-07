@@ -131,7 +131,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	private boolean visibled = Boolean.FALSE;
 
-	private boolean personelArama = Boolean.TRUE;
+	private boolean personelArama = Boolean.TRUE, servisAktarDurum = Boolean.FALSE;
 
 	private boolean checkBox, izinERPGiris = Boolean.FALSE;
 
@@ -1006,7 +1006,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public void sayfaGirisAction() throws Exception {
-
+		servisAktarDurum = Boolean.FALSE;
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals("personelIzinGirisi");
 		try {
 			if (session == null)
@@ -2202,6 +2202,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	}
 
 	public void izinListele(Boolean sessionClear, Personel izinSahibi) {
+		servisAktarDurum = Boolean.FALSE;
 		izinERPGiris = authenticatedUser.isIzinGirebilir() || !ortakIslemler.getParameterKey("izinERPUpdate").equals("1");
 		sistemTarihi = PdksUtil.buGun();
 		Date startDatedt = PdksUtil.getDate(getFiltreBaslangicZamani());
@@ -2393,8 +2394,15 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		}
 		if (izinList == null)
 			izinList = new ArrayList<PersonelIzin>();
+		servisAktarDurum = ortakIslemler.erpIzinDoldur(izinList, session);
 		setPersonelIzinList(izinList);
 
+	}
+
+	public String excelServiceAktar() {
+		ortakIslemler.excelServiceAktar(personelIzinList);
+
+		return "";
 	}
 
 	private void izinDosyalariOlustur(List<PersonelIzin> izinList) {
@@ -5688,6 +5696,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public boolean isServisAktarDurum() {
+		return servisAktarDurum;
+	}
+
+	public void setServisAktarDurum(boolean servisAktarDurum) {
+		this.servisAktarDurum = servisAktarDurum;
 	}
 
 }

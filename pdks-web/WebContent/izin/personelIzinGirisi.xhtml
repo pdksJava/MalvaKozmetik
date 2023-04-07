@@ -403,7 +403,18 @@
 				</h:panelGrid>
 				<h:panelGrid columns="1" id="izinListPanel">
 					<a4j:outputPanel>
+						<ui:fragment rendered="#{not empty personelIzinGirisiHome.personelIzinList}">
 
+
+							<h:commandLink title="Excel Servis" action="#{personelIzinGirisiHome.excelServiceAktar}" target="blank"
+								rendered="#{personelIzinGirisiHome.servisAktarDurum and authenticatedUser.admin}">
+								<h:graphicImage value="/img/down.gif" style="border:0" />
+								<a4j:support event="oncomplete" status="ajaxStatus" process="hareketTable" reRender="hareketTable" />
+
+							</h:commandLink>
+
+
+						</ui:fragment>
 						<rich:dataTable rowClasses="acik,koyu" value="#{personelIzinGirisiHome.personelIzinList}" var="izin" rows="20" rowKeyVar="row" id="izinTable">
 							<f:facet name="header">
 								<h:outputText value="İzinlerim" />

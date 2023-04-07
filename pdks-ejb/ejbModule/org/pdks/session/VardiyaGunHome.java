@@ -502,7 +502,33 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 			}
 			int yarimYuvarla = seciliVardiyaGun != null ? seciliVardiyaGun.getYarimYuvarla() : PdksUtil.getYarimYuvarlaLast();
-			fazlaMesaiTalep.setMesaiSuresi(PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(bitisZamani, baslangicZamani).doubleValue(), yarimYuvarla));
+			double toplamSure = PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(bitisZamani, baslangicZamani).doubleValue(), yarimYuvarla);
+			double farkSure = 0;
+			Vardiya islemVardiya = seciliVardiyaGun.getIslemVardiya();
+			if (islemVardiya != null && islemVardiya.isCalisma() && islemVardiya.getVardiyaFazlaMesaiBasZaman().getTime() <= baslangicZamani.getTime() && islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime() >= bitisZamani.getTime()) {
+				if (bitisZamani.getTime() < islemVardiya.getVardiyaTelorans2BitZaman().getTime() && baslangicZamani.getTime() > islemVardiya.getVardiyaTelorans1BasZaman().getTime()) {
+					farkSure = toplamSure;
+				} else if (bitisZamani.getTime() < islemVardiya.getVardiyaTelorans1BitZaman().getTime() && bitisZamani.getTime() > islemVardiya.getVardiyaTelorans1BasZaman().getTime()) {
+					Date bit1 = bitisZamani;
+					Date bas1 = islemVardiya.getVardiyaBasZaman();
+					farkSure = PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(bit1, bas1).doubleValue(), yarimYuvarla);
+					if (farkSure < 0.0d)
+						farkSure = 0.0d;
+				} else if (baslangicZamani.getTime() > islemVardiya.getVardiyaTelorans1BasZaman().getTime() && baslangicZamani.getTime() < islemVardiya.getVardiyaTelorans2BitZaman().getTime()) {
+					Date bit1 = islemVardiya.getVardiyaBitZaman();
+					Date bas1 = baslangicZamani;
+					farkSure = PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(bit1, bas1).doubleValue(), yarimYuvarla);
+					if (farkSure < 0.0d)
+						farkSure = 0.0d;
+				} else if (baslangicZamani.getTime() < islemVardiya.getVardiyaTelorans1BasZaman().getTime() && bitisZamani.getTime() > islemVardiya.getVardiyaTelorans2BitZaman().getTime()) {
+					Date bit1 = islemVardiya.getVardiyaBitZaman();
+					Date bas1 = islemVardiya.getVardiyaBasZaman();
+					farkSure = PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(bit1, bas1).doubleValue(), yarimYuvarla);
+					if (farkSure < 0.0d)
+						farkSure = 0.0d;
+				}
+			}
+			fazlaMesaiTalep.setMesaiSuresi(toplamSure - farkSure);
 			if (kendiGirisYapiyor) {
 				if (adet < 2) {
 					if (manuelHareketEkle == null || !manuelHareketEkle)

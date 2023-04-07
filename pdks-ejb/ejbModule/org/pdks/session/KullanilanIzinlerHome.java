@@ -31,7 +31,6 @@ import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AramaSecenekleri;
 import org.pdks.entity.Dosya;
 import org.pdks.entity.IzinIstirahat;
-import org.pdks.entity.IzinReferansERP;
 import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelIzin;
@@ -359,35 +358,8 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 				izinList = PdksUtil.sortListByAlanAdi(izinList, "baslangicZamani", Boolean.TRUE);
 
 		}
-		if (islemTipi != null && islemTipi.equalsIgnoreCase("K") && !PdksUtil.getTestSunucuDurum()) {
-			TreeMap<Long, PersonelIzin> idMap = new TreeMap<Long, PersonelIzin>();
-			for (PersonelIzin personelIzin : izinList) {
-				personelIzin.setReferansERP(null);
-				if (personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_REDEDILDI && personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL) {
-					servisAktarDurum = true;
-					idMap.put(personelIzin.getId(), personelIzin);
-				}
-
-			}
-			if (!idMap.isEmpty()) {
-				HashMap parametreMap = new HashMap();
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "izin.id,id");
-				parametreMap.put("izin.id", new ArrayList(idMap.keySet()));
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<Object[]> list = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinReferansERP.class);
-				for (Object[] objects : list) {
-					Long key = (Long) objects[0];
-					if (idMap.containsKey(key)) {
-						servisAktarDurum = true;
-						idMap.get(key).setReferansERP((String) objects[1]);
-					}
-
-				}
-			}
-		}
-
+		if (islemTipi != null && islemTipi.equalsIgnoreCase("K"))
+			servisAktarDurum = ortakIslemler.erpIzinDoldur(izinList, session);
 		setPersonelIzinList(izinList);
 
 	}
@@ -581,69 +553,6 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 
 	}
 
-	/**
-	 * @param izinList
-	 * @return
-	 * @throws Exception
-	 */
-	private ByteArrayOutputStream excelServiceAktarDevam(List<PersonelIzin> izinList) throws Exception {
-		ByteArrayOutputStream baos = null;
-		Workbook wb = new XSSFWorkbook();
-		Sheet sheet = ExcelUtil.createSheet(wb, "Izin WebService Listesi", false);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		int row = 0;
-		int col = 0;
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Açıklama");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Başlangıç Zaman");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bitiş Zaman");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Durum");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Süresi");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Tipi");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Tipi Açıklama");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel No");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Referans ERP No");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süre Birimi");
-		String pattern = "yyyy-MM-dd HH:mm";
-		for (PersonelIzin personelIzin : izinList) {
-			if (personelIzin.getReferansERP() == null)
-				continue;
-			++row;
-			col = 0;
-			String aciklama = personelIzin.getAciklama();
-			int index = aciklama.lastIndexOf("(");
-			if (index > 0)
-				aciklama = aciklama.substring(0, index);
-			Tanim izinTipi = personelIzin.getIzinTipi().getIzinTipiTanim();
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(aciklama.trim());
-			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), pattern));
-			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(PdksUtil.convertToDateString(personelIzin.getBitisZamani(), pattern));
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(new Boolean(personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_REDEDILDI && personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL).toString());
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personelIzin.getIzinSuresi());
-			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(izinTipi.getErpKodu());
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izinTipi.getAciklama());
-			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelIzin.getIzinSahibi().getPdksSicilNo());
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personelIzin.getReferansERP());
-			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelIzin.getHesapTipi() != null ? personelIzin.getHesapTipi() : PersonelIzin.HESAP_TIPI_GUN);
-		}
-
-		try {
-
-			for (int i = 0; i < col; i++)
-				sheet.autoSizeColumn(i);
-			baos = new ByteArrayOutputStream();
-			wb.write(baos);
-		} catch (Exception e) {
-			logger.error("Pdks hata in : \n");
-			e.printStackTrace();
-			logger.error("Pdks hata out : " + e.getMessage());
-			baos = null;
-		}
-		return baos;
-	}
-
 	public String personelDosyaOkuBasla() throws Exception {
 		izinERPList.clear();
 		return "";
@@ -651,18 +560,7 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 	}
 
 	public String excelServiceAktar() {
-		try {
-			ByteArrayOutputStream baosDosya = excelServiceAktarDevam(personelIzinList);
-			if (baosDosya != null)
-				PdksUtil.setExcelHttpServletResponse(baosDosya, "personelIzinWebServisListesi.xlsx");
-
-		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-
-		}
-
+		ortakIslemler.excelServiceAktar(personelIzinList);
 		return "";
 	}
 
