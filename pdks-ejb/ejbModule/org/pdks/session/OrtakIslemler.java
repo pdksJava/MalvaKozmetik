@@ -13390,9 +13390,10 @@ public class OrtakIslemler implements Serializable {
 		boolean izinVardiyaKontrol = !izinVardiyaKontrolStr.equals(""), izinERPUpdate = getParameterKey("izinERPUpdate").equals("1");
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
 		try {
+			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 			if (personelIzin != null && vardiyaGun != null && vardiyaGun.getVardiya() != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
 				boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
-				if (vardiyaIzin == false) {
+				if (vardiyaIzin == false || !(islemVardiya.isOff() || islemVardiya.isHaftaTatil())) {
 					Date vardiyaDate = vardiyaGun.getVardiyaDate();
 					if (!personelIzin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
 						izinERPUpdate = false;
@@ -13404,7 +13405,6 @@ public class OrtakIslemler implements Serializable {
 
 					}
 
-					Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 					boolean kontrol = false;
 					if (izinERPUpdate == false) {
 						kontrol = PdksUtil.getDate(bitisZamani).getTime() > islemVardiya.getVardiyaBasZaman().getTime() && baslangicZamani.getTime() <= islemVardiya.getVardiyaBitZaman().getTime();
