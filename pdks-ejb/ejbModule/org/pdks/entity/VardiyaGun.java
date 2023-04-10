@@ -763,13 +763,6 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	public void setIzin(PersonelIzin value) {
-		if (value != null) {
-			if (vardiya != null && vardiya.isIzin())
-				value = null;
-			else
-				logger.debug(value.getAciklama());
-		}
-
 		this.izin = value;
 	}
 

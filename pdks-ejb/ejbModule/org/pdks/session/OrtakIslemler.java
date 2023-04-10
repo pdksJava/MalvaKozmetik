@@ -293,7 +293,7 @@ public class OrtakIslemler implements Serializable {
 	public boolean erpIzinDoldur(List<PersonelIzin> izinList, Session xSession) {
 		boolean servisAktarDurum = false;
 		if (!PdksUtil.getTestSunucuDurum()) {
- 			TreeMap<Long, PersonelIzin> idMap = new TreeMap<Long, PersonelIzin>();
+			TreeMap<Long, PersonelIzin> idMap = new TreeMap<Long, PersonelIzin>();
 			for (PersonelIzin personelIzin : izinList) {
 				personelIzin.setReferansERP(null);
 				idMap.put(personelIzin.getId(), personelIzin);
@@ -11628,12 +11628,11 @@ public class OrtakIslemler implements Serializable {
 									izinSaat = 0.0d;
 								}
 								Tatil tatil = pdksVardiyaGun.getTatil();
-								if (tatil != null && tatil.isYarimGunMu()) {
+								if (tatil != null && tatil.isYarimGunMu() && vardiyaIzin != null) {
 									izinSaat = calismaModeliAy.getArife();
 									if (vardiyaIzin.isIzin() == false && tatil.getArifeVardiyaYarimHesapla() != null && !tatil.getArifeVardiyaYarimHesapla())
 										izinSaat = 0.0d;
 									arifeGunu = true;
-
 								}
 							}
 

@@ -760,6 +760,44 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param tarih
+	 * @param list
+	 * @param sirketId
+	 * @param tesisId
+	 * @param ekSaha3Id
+	 * @param ekSaha4Id
+	 * @param session
+	 */
+	public void setFazlaMesaiPersonel(Date tarih, List<String> list, Long sirketId, Long tesisId, Long ekSaha3Id, Long ekSaha4Id, Session session) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(tarih);
+		HashMap parametreMap = new HashMap();
+		parametreMap.put("yil", cal.get(Calendar.YEAR));
+		parametreMap.put("ay", cal.get(Calendar.MONTH) + 1);
+		if (session != null)
+			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+		DenklestirmeAy denklestirmeAyDonem = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(parametreMap, DenklestirmeAy.class);
+		Sirket sirket = null;
+		if (sirketId != null) {
+			parametreMap.clear();
+			parametreMap.put("id", sirketId);
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
+		}
+		List<Personel> donemPerList = getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, ekSaha3Id, ekSaha4Id, denklestirmeAyDonem != null ? new AylikPuantaj(denklestirmeAyDonem) : null, true, session);
+		List<String> searchSicilNoList = new ArrayList<String>(list);
+		list.clear();
+		if (donemPerList != null) {
+			for (Personel personel : donemPerList) {
+				if (searchSicilNoList.contains(personel.getPdksSicilNo()) && personel.isCalisiyorGun(tarih))
+					list.add(personel.getPdksSicilNo());
+			}
+		}
+		searchSicilNoList = null;
+	}
+
+	/**
 	 * @param sirket
 	 * @param tesisId
 	 * @param bolumId

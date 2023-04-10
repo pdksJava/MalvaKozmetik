@@ -123,13 +123,15 @@
 							<h:outputText value="Mesailer" />
 						</f:facet>
 						<c:if test="${personelFazlaMesaiHome.departman.admin and (authenticatedUser.admin or authenticatedUser.IKAdmin)}">
-							<rich:column rendered="#{personelFazlaMesaiHome.aramaSecenekleri.ekSahaTanimMap.ekSaha1!=null and ortakIslemler.getListEkSahaDurum(personelFazlaMesaiHome.hareketList,'1')}">
+							<rich:column
+								rendered="#{personelFazlaMesaiHome.aramaSecenekleri.ekSahaTanimMap.ekSaha1!=null and ortakIslemler.getListEkSahaDurum(personelFazlaMesaiHome.hareketList,'1')}">
 								<f:facet name="header">
 									<h:outputText value="#{personelFazlaMesaiHome.aramaSecenekleri.ekSaha1.aciklama}" />
 								</f:facet>
 								<h:outputText value="#{mesai.personel.pdksPersonel.ekSaha1.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{personelFazlaMesaiHome.aramaSecenekleri.ekSahaTanimMap.ekSaha2!=null and ortakIslemler.getListEkSahaDurum(personelFazlaMesaiHome.hareketList,'1')}">
+							<rich:column
+								rendered="#{personelFazlaMesaiHome.aramaSecenekleri.ekSahaTanimMap.ekSaha2!=null and ortakIslemler.getListEkSahaDurum(personelFazlaMesaiHome.hareketList,'1')}">
 								<f:facet name="header">
 									<h:outputText value="#{personelFazlaMesaiHome.aramaSecenekleri.ekSaha2.aciklama}" />
 								</f:facet>
@@ -141,7 +143,8 @@
 								</f:facet>
 								<h:outputText value="#{mesai.personel.pdksPersonel.ekSaha3.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{personelFazlaMesaiHome.aramaSecenekleri.ekSahaTanimMap.ekSaha4!=null and ortakIslemler.getListEkSahaDurum(personelFazlaMesaiHome.hareketList,'1')}">
+							<rich:column
+								rendered="#{personelFazlaMesaiHome.aramaSecenekleri.ekSahaTanimMap.ekSaha4!=null and ortakIslemler.getListEkSahaDurum(personelFazlaMesaiHome.hareketList,'1')}">
 								<f:facet name="header">
 									<h:outputText value="#{personelFazlaMesaiHome.aramaSecenekleri.ekSaha4.aciklama}" />
 								</f:facet>
@@ -163,7 +166,12 @@
 							</f:facet>
 							<h:outputText value="#{mesai.personel.sicilNo}" />
 						</rich:column>
-
+						<rich:column rendered="#{personelFazlaMesaiHome.aramaSecenekleri.sirketIdList==null} ">
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{mesai.personel.pdksPersonel.sirket.ad}" />
+						</rich:column>
 						<rich:column>
 							<f:facet name="header">
 								<h:outputText value="Vardiya" />

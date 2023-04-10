@@ -176,11 +176,15 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		sirketId = null;
 		setDepartman(authenticatedUser.getDepartman());
 		departmanId = departman != null ? departman.getId() : null;
-		if (!authenticatedUser.isIK() && !authenticatedUser.isAdmin()) {
-			setSirket(authenticatedUser.getPdksPersonel().getSirket());
-			sirketId = sirket != null && sirket.getDepartman().getId().equals(departmanId) ? sirket.getId() : null;
-		}
+		if (ikRole == false) {
+			if (fazlaMesaiVardiyaGun != null) {
+				setSirket(authenticatedUser.getPdksPersonel().getSirket());
+				sirketId = sirket != null && sirket.getDepartman().getId().equals(departmanId) ? sirket.getId() : null;
 
+			} else
+				aramaSecenekleri.setSirketIdList(null);
+		}
+		aramaSecenekleri.setSirketId(sirketId);
 		if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin())
 			filDepartmanList();
 		if (departmanList != null && departmanList.size() == 1)
@@ -200,9 +204,11 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			}
 
 		} else if (veriLastMap != null) {
-			ortakIslemler.setAramaSecenekleriFromVeriLast(aramaSecenekleri, veriLastMap);
-			if (veriLastMap.containsKey("date"))
-				date = PdksUtil.convertToJavaDate((String) veriLastMap.get("date"), "yyyy-MM-dd");
+			if (fazlaMesaiVardiyaGun == null && ikRole) {
+				ortakIslemler.setAramaSecenekleriFromVeriLast(aramaSecenekleri, veriLastMap);
+				if (veriLastMap.containsKey("date"))
+					date = PdksUtil.convertToJavaDate((String) veriLastMap.get("date"), "yyyy-MM-dd");
+			}
 
 		}
 
@@ -585,11 +591,13 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		pdksDenklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+		if (ikRole == false && authenticatedUser.isDirektorSuperVisor() == false) {
+			Long sirketId = aramaSecenekleri.getSirketId(), tesisId = aramaSecenekleri.getTesisId(), ekSaha3Id = aramaSecenekleri.getEkSaha3Id(), ekSaha4Id = aramaSecenekleri.getEkSaha4Id();
+			fazlaMesaiOrtakIslemler.setFazlaMesaiPersonel(date, sicilNoList, sirketId, tesisId, ekSaha3Id, ekSaha4Id, session);
+		}
 		denklestirmeAyDurum = fazlaMesaiOrtakIslemler.getDurum(pdksDenklestirmeAy);
 		ArrayList<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
-
 		List<PersonelFazlaMesai> mesaiList = new ArrayList<PersonelFazlaMesai>();
-
 		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList1 = new ArrayList<HareketKGS>();
 		ArrayList<Personel> personeller = null;

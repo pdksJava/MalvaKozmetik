@@ -502,9 +502,20 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 			}
 			int yarimYuvarla = seciliVardiyaGun != null ? seciliVardiyaGun.getYarimYuvarla() : PdksUtil.getYarimYuvarlaLast();
+			Vardiya islemVardiya = seciliVardiyaGun.getIslemVardiya();
+			if (islemVardiya != null && islemVardiya.isCalisma()) {
+				if (bitisZamani.getTime() >= islemVardiya.getVardiyaTelorans1BasZaman().getTime() && bitisZamani.getTime() <= islemVardiya.getVardiyaTelorans2BasZaman().getTime())
+					bitisZamani = islemVardiya.getVardiyaBasZaman();
+				if (bitisZamani.getTime() >= islemVardiya.getVardiyaTelorans1BitZaman().getTime() && bitisZamani.getTime() <= islemVardiya.getVardiyaTelorans2BitZaman().getTime())
+					bitisZamani = islemVardiya.getVardiyaBitZaman();
+				if (baslangicZamani.getTime() >= islemVardiya.getVardiyaTelorans1BasZaman().getTime() && baslangicZamani.getTime() <= islemVardiya.getVardiyaTelorans2BasZaman().getTime())
+					baslangicZamani = islemVardiya.getVardiyaBasZaman();
+				if (baslangicZamani.getTime() >= islemVardiya.getVardiyaTelorans1BitZaman().getTime() && baslangicZamani.getTime() <= islemVardiya.getVardiyaTelorans2BitZaman().getTime())
+					baslangicZamani = islemVardiya.getVardiyaBitZaman();
+			}
 			double toplamSure = PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(bitisZamani, baslangicZamani).doubleValue(), yarimYuvarla);
 			double farkSure = 0;
-			Vardiya islemVardiya = seciliVardiyaGun.getIslemVardiya();
+
 			if (islemVardiya != null && islemVardiya.isCalisma() && islemVardiya.getVardiyaFazlaMesaiBasZaman().getTime() <= baslangicZamani.getTime() && islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime() >= bitisZamani.getTime()) {
 				if (bitisZamani.getTime() < islemVardiya.getVardiyaTelorans2BitZaman().getTime() && baslangicZamani.getTime() > islemVardiya.getVardiyaTelorans1BasZaman().getTime()) {
 					farkSure = toplamSure;

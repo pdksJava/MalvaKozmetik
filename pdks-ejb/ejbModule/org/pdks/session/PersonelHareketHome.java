@@ -99,7 +99,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	private DenklestirmeAy pdksDenklestirmeAy = null;
 	private VardiyaGun islemVardiyaGun;
 	private String islemTipi, donusAdres = "", planKey;
-	private boolean denklestirmeAyDurum;
+	private boolean denklestirmeAyDurum, ikRole, adminRole;
 
 	private List<String> roller;
 	private Date tarih;
@@ -271,10 +271,22 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			session.refresh(getInstance());
 	}
 
+	/**
+	 * 
+	 */
+	private void adminRoleDurum() {
+		adminRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIKAdmin();
+		ikRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIK();
+	}
+
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public String sayfaGirisAction() {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
+		adminRoleDurum();
+		donusAdres = null;
+		if (linkAdres == null && ikRole == false && authenticatedUser.isDirektorSuperVisor() == false)
+			donusAdres = "";
 		terminalDegistir = false;
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
@@ -334,6 +346,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			aramaSecenekleri.setSirket(authenticatedUser.getPdksPersonel().getSirket());
 		if (dateStr != null) {
 			donusAdres = linkAdres;
+
 			Date vardiyaDate = PdksUtil.convertToJavaDate(dateStr, "yyyyMMdd");
 			setTarih(vardiyaDate);
 			if (perKGSId != null) {
@@ -691,17 +704,25 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		List<HareketKGS> hareket1List = new ArrayList<HareketKGS>();
 		String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo());
 		if (sicilNo.trim().equals("") && aramaSecenekleri.getSirketId() == null) {
-			PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
+			if (ikRole)
+				PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		} else {
 			saveLastParameter();
 			// ArrayList<String> sicilNoList = ortakIslemler.getPersonelSicilNo(ad, soyad, sicilNo, sirket, seciliEkSaha1, seciliEkSaha2, seciliEkSaha3, seciliEkSaha4, Boolean.FALSE, session);
 			ArrayList<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.FALSE, session);
+
 			terminalDegistir = false;
-			if (linkAdres != null && sicilNo != null && !sicilNo.equals("") && !sicilNoList.contains(sicilNo))
+			if (fazlaMesaiVardiyaGun != null && !sicilNo.equals("") && !sicilNoList.contains(sicilNo))
 				sicilNoList.add(sicilNo);
+			if (ikRole == false && authenticatedUser.isDirektorSuperVisor() == false) {
+				Long sirketId = aramaSecenekleri.getSirketId(), tesisId = aramaSecenekleri.getTesisId(), ekSaha3Id = aramaSecenekleri.getEkSaha3Id(), ekSaha4Id = aramaSecenekleri.getEkSaha4Id();
+ 				fazlaMesaiOrtakIslemler.setFazlaMesaiPersonel(tarih, sicilNoList, sirketId, tesisId, ekSaha3Id, ekSaha4Id, session);
+				if (sicilNoList.isEmpty())
+					fazlaMesaiPersonel = null;
+			}
+			hareket1List.clear();
 			if (sicilNoList != null && !sicilNoList.isEmpty()) {
 				HashMap parametreMap = new HashMap();
-
 				parametreMap.put("pdksSicilNo", sicilNoList);
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -972,8 +993,8 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			}
 		}
 		manuelHareketList = new ArrayList<SelectItem>();
-//		if (!PdksUtil.isSistemDestekVar())
-//			manuelHareketMap.clear();
+		// if (!PdksUtil.isSistemDestekVar())
+		// manuelHareketMap.clear();
 		if (!manuelHareketMap.isEmpty()) {
 			for (String str : manuelHareketMap.keySet())
 				manuelHareketList.add(new SelectItem(str, manuelHareketMap.get(str).getId()));
@@ -1240,5 +1261,21 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 
 	public void setDenklestirmeAyDurum(boolean denklestirmeAyDurum) {
 		this.denklestirmeAyDurum = denklestirmeAyDurum;
+	}
+
+	public boolean isIkRole() {
+		return ikRole;
+	}
+
+	public void setIkRole(boolean ikRole) {
+		this.ikRole = ikRole;
+	}
+
+	public boolean isAdminRole() {
+		return adminRole;
+	}
+
+	public void setAdminRole(boolean adminRole) {
+		this.adminRole = adminRole;
 	}
 }
