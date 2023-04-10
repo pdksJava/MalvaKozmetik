@@ -71,6 +71,7 @@ import org.pdks.entity.ArifeVardiyaDonem;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BaseObject;
 import org.pdks.entity.BasitHareket;
+import org.pdks.entity.BordroIzinGrubu;
 import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.CalismaModeliAy;
 import org.pdks.entity.CalismaModeliVardiya;
@@ -13391,9 +13392,12 @@ public class OrtakIslemler implements Serializable {
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
 		try {
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
-			if (personelIzin != null && vardiyaGun != null && vardiyaGun.getVardiya() != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
+			if (personelIzin != null && vardiyaGun != null && islemVardiya != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
 				boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
-				if (vardiyaIzin == false || !(islemVardiya.isOff() || islemVardiya.isHaftaTatil())) {
+				BordroIzinGrubu izinGrubu = null;
+				if (vardiyaIzin && PdksUtil.hasStringValue(islemVardiya.getStyleClass()))
+					izinGrubu = BordroIzinGrubu.fromValue(islemVardiya.getStyleClass());
+				if (vardiyaIzin == false || izinGrubu == null) {
 					Date vardiyaDate = vardiyaGun.getVardiyaDate();
 					if (!personelIzin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
 						izinERPUpdate = false;

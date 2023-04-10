@@ -18,12 +18,14 @@ public enum BordroIzinGrubu {
 	}
 
 	public static BordroIzinGrubu fromValue(String v) {
+		BordroIzinGrubu izinGrubu = null;
 		for (BordroIzinGrubu c : BordroIzinGrubu.values()) {
-			if (c.value.equals(v)) {
-				return c;
+			if (c.value.trim().equals(v.trim())) {
+				izinGrubu = c;
+				break;
 			}
 		}
-		throw new IllegalArgumentException();
+		return izinGrubu;
 	}
 
 }
