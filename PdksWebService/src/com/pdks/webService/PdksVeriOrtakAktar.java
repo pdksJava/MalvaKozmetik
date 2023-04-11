@@ -92,7 +92,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 	private ServiceData serviceData = null;
 
-	private boolean sistemDestekVar = false, izinGirisiVar = false, departmanYoneticiRolVar = false, yoneticiRolVarmi = false, updateYonetici2;
+	private boolean sistemDestekVar = false, izinGirisiVar = false, departmanYoneticiRolVar = false, yoneticiRolVarmi = false, updateYonetici2, altBolumDurum = false;
 
 	private Tanim bosDepartman, ikinciYoneticiOlmaz;
 
@@ -2428,6 +2428,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			izinERPUpdate = str.equals("1");
 		}
 		Date gecmisTarih = null;
+
 		int personelERPGecmisTarihKontrol = -1;
 		try {
 			personelERPGecmisTarihKontrol = Integer.parseInt(personelERPGecmisTarihKontrolStr);
@@ -2500,6 +2501,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 
 		}
+		altBolumDurum = ekSahaAdi.startsWith("eksaha4");
 		boolean durumParentBordroTanimKodu = durumParentBordroTanimKoduStr.equalsIgnoreCase("true");
 		Tanim parentBolum = personelEKSahaMap != null && personelEKSahaMap.containsKey("ekSaha3") ? personelEKSahaMap.get("ekSaha3") : null;
 		HashMap map = new HashMap();
@@ -3176,7 +3178,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 		if (pdksDAO != null && personelList != null && !personelList.isEmpty()) {
 			sistemVerileriniYukle(pdksDAO);
-
+			altBolumDurum = false;
 			HashMap fields = new HashMap();
 			fields.put("tipi", Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
 			fields.put("kodu", Tanim.IKINCI_YONETICI_ONAYLAMAZ);
@@ -3354,19 +3356,27 @@ public class PdksVeriOrtakAktar implements Serializable {
 					pdksDAO.saveObjectList(yoneticiList);
 			}
 			List<PersonelERP> hataList = new ArrayList<PersonelERP>();
+
 			for (PersonelERP personelERP : personelList) {
 				if (personelERP.getPersonelNo() != null && personelPDKSMap.containsKey(personelERP.getPersonelNo())) {
 					Personel personel = personelPDKSMap.get(personelERP.getPersonelNo());
 					if (personel != null)
 						personelERP.setId(personel.getId());
 				}
+				PersonelERP hataPersonelERP  = null;
 				if (personelERP.getHataList() != null && !personelERP.getHataList().isEmpty()) {
 					personelERP.setId(null);
-					hataList.add((PersonelERP) personelERP.clone());
-				}
-				personelERP.setSanalPersonel(null);
+					hataPersonelERP = (PersonelERP) personelERP.clone();
+					hataList.add(hataPersonelERP);
+ 				}
 				personelERP.setBolumAdi(null);
 				personelERP.setBolumKodu(null);
+				if (altBolumDurum) {
+					personelERP.setBordroAltAlanKodu(null);
+					personelERP.setBordroAltAlanAdi(null);
+
+				}
+				personelERP.setSanalPersonel(null);
 				personelERP.setCinsiyeti(null);
 				personelERP.setCinsiyetKodu(null);
 				personelERP.setDepartmanAdi(null);
@@ -3386,8 +3396,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				personelERP.setYoneticiPerNo(null);
 				personelERP.setYonetici2PerNo(null);
 				personelERP.setGrubaGirisTarihi(null);
-				personelERP.setBordroAltAlanAdi(null);
-				personelERP.setBordroAltAlanKodu(null);
+
 			}
 			if (personelList.size() > 1)
 				saveIkinciYoneticiOlmazList("ikinciYoneticiOlmaz");
@@ -3450,11 +3459,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 						Sirket bosSirket = new Sirket();
 						if (parentBordroTanimKoduStr == null)
 							parentBordroTanimKoduStr = "";
+
 						for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
 							PersonelERP personelERP = (PersonelERP) iterator.next();
 							String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
 							String sirketBilgi = "";
-							if (personelERP.getSirketAdi() != null || personelERP.getBolumAdi() != null) {
+							boolean altBolumVar = altBolumDurum && personelERP.getBordroAltAlanAdi() != null;
+							if (personelERP.getSirketAdi() != null || personelERP.getBolumAdi() != null || altBolumVar) {
 								sirketBilgi += "";
 								if (personelERP.getSirketAdi() != null)
 									sirketBilgi = personelERP.getSirketAdi();
@@ -3467,18 +3478,22 @@ public class PdksVeriOrtakAktar implements Serializable {
 											sirketBilgi = personelERP.getTesisAdi();
 									}
 								}
-								if (personelERP.getBolumAdi() != null) {
-									if (sirketBilgi.equals(""))
-										sirketBilgi = personelERP.getBolumAdi();
-									else
-										sirketBilgi += " / " + personelERP.getBolumAdi();
+
+								if (personelERP.getBolumAdi() != null || altBolumVar) {
+									if (personelERP.getBolumAdi() != null) {
+										if (sirketBilgi.equals(""))
+											sirketBilgi = personelERP.getBolumAdi();
+										else
+											sirketBilgi += " / " + personelERP.getBolumAdi();
+									}
+									if (altBolumVar && sirketBilgi.indexOf(personelERP.getBordroAltAlanAdi()) < 0) {
+										if (sirketBilgi.equals(""))
+											sirketBilgi = personelERP.getBordroAltAlanAdi();
+										else
+											sirketBilgi += (personelERP.getBolumAdi() != null ? " - " : " / ") + personelERP.getBordroAltAlanAdi();
+									}
 								}
-								if (ekSahaAdi.startsWith("ekSaha4") && personelERP.getBordroAltAlanAdi() != null) {
-									if (sirketBilgi.equals(""))
-										sirketBilgi = personelERP.getBordroAltAlanAdi();
-									else
-										sirketBilgi += " - " + personelERP.getBordroAltAlanAdi();
-								}
+
 								sirketBilgi = "( " + sirketBilgi + " )";
 							}
 							sb.append("<TR class=\"" + (renkUyari ? "odd" : "even") + "\"><TD colspan=2 nowrap><b>" + (personelERP.getPersonelNo() != null ? personelERP.getPersonelNo() + " " : "") + adSoyad + " " + sirketBilgi + "</b></TD></TR>");
