@@ -85,8 +85,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	static Logger logger = Logger.getLogger(PdksPersonelHome.class);
 	@RequestParameter
 	Long kapiId;
-	@In(required = true, create = true)
-	PersonelKullaniciAramaHome personelKullaniciAramaHome;
+
 	@In(required = false, create = true)
 	EntityManager entityManager;
 	@In(required = false, create = true)

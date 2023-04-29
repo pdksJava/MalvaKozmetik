@@ -785,13 +785,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
 		}
-		List<Personel> donemPerList = getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, ekSaha3Id, ekSaha4Id, denklestirmeAyDonem != null ? new AylikPuantaj(denklestirmeAyDonem) : null, true, session);
+		List<Personel> donemPerList = getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, ekSaha3Id, ekSaha4Id, denklestirmeAyDonem != null ? new AylikPuantaj(denklestirmeAyDonem) : null, false, session);
 		List<String> searchSicilNoList = new ArrayList<String>(list);
 		list.clear();
 		if (donemPerList != null) {
 			for (Personel personel : donemPerList) {
-				if (searchSicilNoList.contains(personel.getPdksSicilNo()) && personel.isCalisiyorGun(tarih))
-					list.add(personel.getPdksSicilNo());
+				if (searchSicilNoList.contains(personel.getPdksSicilNo()))
+					if (personel.isCalisiyorGun(tarih))
+						list.add(personel.getPdksSicilNo());
 			}
 		}
 		searchSicilNoList = null;

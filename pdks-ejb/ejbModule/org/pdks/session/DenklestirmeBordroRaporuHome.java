@@ -162,7 +162,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (str.length() > 5)
 				minYil = Integer.parseInt(str.substring(0, 4));
 		} catch (Exception e) {
-			// TODO: handle exception
+			 
 		}
 		if (baslikMap == null)
 			baslikMap = new TreeMap<String, Tanim>();

@@ -44,8 +44,29 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 
 	private Departman departman;
 
+	private boolean yetkiliPersoneller = false;
+
 	public AramaSecenekleri() {
 		super();
+
+	}
+
+	public AramaSecenekleri(User user, boolean yetki) {
+		super();
+		this.user = user;
+		this.yetkiliPersoneller = yetki;
+		if (user != null) {
+			if (!(user.isAdmin() || user.isIKAdmin())) {
+				departmanId = user.getDepartman().getId();
+				if (!user.isIK())
+					sirketId = user.getPdksPersonel().getSirket().getId();
+
+			}
+			if (user.isYoneticiKontratli()) {
+				if (!(user.isIK() || user.isAdmin()))
+					sirketId = null;
+			}
+		}
 
 	}
 
@@ -336,6 +357,14 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 
 	public void setAltBolumIdList(List<SelectItem> altBolumIdList) {
 		this.altBolumIdList = altBolumIdList;
+	}
+
+	public boolean isYetkiliPersoneller() {
+		return yetkiliPersoneller;
+	}
+
+	public void setYetkiliPersoneller(boolean yetkiliPersoneller) {
+		this.yetkiliPersoneller = yetkiliPersoneller;
 	}
 
 }

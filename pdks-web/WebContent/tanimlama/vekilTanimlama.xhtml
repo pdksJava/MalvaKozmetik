@@ -87,8 +87,10 @@
 					</a4j:region>
 
 				</h:panelGrid>
-
-				<a4j:commandButton status="ajaxStatus" action="#{userVekaletHome.save}" value="Kaydet" reRender="izinListPanel,personelBilgisi" />
+				<a4j:region cellpadding="0" cellspacing="0">
+					<a4j:commandButton status="ajaxStatus" action="#{userVekaletHome.save}" id="btnKaydet" value="Kaydet"
+						disabled="#{userVekaletHome.vekaletVerenUser==null or userVekaletHome.vekilUser==null}" reRender="izinListPanel,personelBilgisi" />
+				</a4j:region>
 			</rich:panel>
 		</h:form>
 		<h:form>
@@ -253,7 +255,7 @@
                        		Vekil İşlemleri
                			 </f:facet>
 							<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="seclink" action="#{userVekaletHome.kullaniciSec(user)}"
-								oncomplete="#{rich:component('editPanel')}.hide()" reRender="personelBilgisiVekil,personelBilgisiVekaletVeren">
+								oncomplete="#{rich:component('editPanel')}.hide()" reRender="personelBilgisiVekil,personelBilgisiVekaletVeren,btnKaydet">
 								<h:graphicImage value="/img/ok.gif" style="border:0" />
 
 							</a4j:commandLink>

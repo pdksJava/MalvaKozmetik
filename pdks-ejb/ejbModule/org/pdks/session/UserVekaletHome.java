@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
+import org.pdks.entity.Personel;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserRoles;
@@ -222,7 +224,8 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 		cal.add(Calendar.DATE, 1);
 		userVekalet.setBasTarih(cal.getTime());
 		userVekalet.setBitTarih(cal.getTime());
-		if (authenticatedUser.isYonetici() || authenticatedUser.isMudur()) {
+		boolean adminRole = ortakIslemler.getAdminRole(authenticatedUser);
+		if (adminRole == false && (authenticatedUser.isYonetici() || authenticatedUser.isMudur())) {
 			setVekaletVerenAdi(authenticatedUser.getPdksPersonel().getAd());
 			setVekaletVerenSoyadi(authenticatedUser.getPdksPersonel().getSoyad());
 			setVekaletVerenSicilNo(authenticatedUser.getStaffId());
@@ -267,23 +270,23 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 	}
 
 	public String fillPdksUserList() {
-		kullaniciAra(vekilAdi, vekilSoyadi, vekilSicilNo, "Vekil");
+		kullaniciAra(vekilAdi, vekilSoyadi, vekilSicilNo, "Vekil", false);
 		return "";
 
 	}
 
 	public String fillPdksUserList2() {
-		kullaniciAra(vekaletVerenAdi, vekaletVerenSoyadi, vekaletVerenSicilNo, "Vekalet Veren");
+		kullaniciAra(vekaletVerenAdi, vekaletVerenSoyadi, vekaletVerenSicilNo, "Vekalet Veren", true);
 		return "";
 	}
 
 	public String fillPdksUserList3() {
 		setInstance(devirUserVekalet);
-		kullaniciAra(devirVekilAdi, devirVekilSoyadi, devirVekilSicilNo, "devirVekilVeren");
+		kullaniciAra(devirVekilAdi, devirVekilSoyadi, devirVekilSicilNo, "devirVekilVeren", false);
 		return "";
 	}
 
-	private void kullaniciAra(String adi, String soyadi, String sicilNo, String tipi) {
+	private void kullaniciAra(String adi, String soyadi, String sicilNo, String tipi, Boolean personelYonetici) {
 		setAramaTipi(tipi);
 		List<User> list = null;
 		HashMap parametreMap = new HashMap();
@@ -294,28 +297,53 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 		Date bugun = PdksUtil.getDate(Calendar.getInstance().getTime());
 		if ((authenticatedUser.isYonetici() && !authenticatedUser.isIK()) || authenticatedUser.isMudur())
 			parametreMap.put("user<>", authenticatedUser);
-		UserVekalet userVekalet = getInstance();
-		if (userVekalet.getId() != null)
-			parametreMap.put("user<>", userVekalet.getYeniYonetici());
 		parametreMap.put("user.pdksPersonel.sskCikisTarihi>=", bugun);
 		parametreMap.put("user.pdksPersonel.iseBaslamaTarihi<=", bugun);
-		if (!sicilNo.equals(""))
+		if (PdksUtil.hasStringValue(sicilNo))
 			parametreMap.put("user.pdksPersonel.pdksSicilNo=", sicilNo);
 		else {
-			if (!adi.equals(""))
+			if (PdksUtil.hasStringValue(adi))
 				parametreMap.put("user.pdksPersonel.ad like", adi + "%");
-			if (!soyadi.equals(""))
+			if (PdksUtil.hasStringValue(soyadi))
 				parametreMap.put("user.pdksPersonel.soyad like", soyadi + "%");
 		}
+		UserVekalet userVekalet = getInstance();
+		if (userVekalet.getId() != null)
+			parametreMap.put("user.id<>", userVekalet.getYeniYonetici().getId());
 
-		if (!authenticatedUser.isAdmin())
-			parametreMap.put("user.pdksPersonel.sirket.departman=", authenticatedUser.getDepartman());
+		if (!ortakIslemler.getAdminRole(authenticatedUser))
+			parametreMap.put("user.pdksPersonel.sirket.departman.id=", authenticatedUser.getDepartman().getId());
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		try {
 			if (parametreMap.size() > 0)
 				list = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, UserRoles.class);
+			if (personelYonetici && !list.isEmpty()) {
+				TreeMap<Long, User> userMap = new TreeMap<Long, User>();
+				for (User user : list) {
+					if (user.isDurum() && user.getPdksPersonel().isCalisiyor())
+						userMap.put(user.getPdksPersonel().getId(), user);
+				}
+				list.clear();
+				parametreMap.clear();
+				parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getId");
+				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "yoneticisi");
+				parametreMap.put("yoneticisi.id", new ArrayList(userMap.keySet()));
+				parametreMap.put("sskCikisTarihi>=", bugun);
+				parametreMap.put("iseBaslamaTarihi<=", bugun);
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				TreeMap<Long, Personel> yoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(parametreMap, Personel.class, false);
+				for (Long ld : yoneticiMap.keySet()) {
+					if (userMap.containsKey(ld))
+						list.add(userMap.get(ld));
 
+				}
+				userMap = null;
+				if (!list.isEmpty())
+					list = PdksUtil.sortObjectStringAlanList(null, list, "getAdSoyad", null);
+
+			}
 			if (!list.isEmpty()) {
 				List<User> userList = PdksUtil.sortObjectStringAlanList(null, list, "getAdSoyad", null);
 				if (tipi.equals("Vekil") || tipi.equals("Vekalet Veren")) {
@@ -450,84 +478,90 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 
 	@Transactional
 	public String save() {
-		UserVekalet userVekalet = getInstance();
-		userVekalet.setYeniYonetici(getVekilUser());
-		userVekalet.setVekaletVeren(getVekaletVerenUser());
 		ArrayList<String> mesajList = new ArrayList<String>();
-		if (userVekalet.getYeniYonetici() == null)
-			mesajList.add("Vekil yöneticiyi seçiniz");
-		if (userVekalet.getVekaletVeren() == null)
-			mesajList.add("Vekalet veren yöneticiyi seçiniz");
-		if (PdksUtil.tarihKarsilastirNumeric(userVekalet.getBasTarih(), userVekalet.getBitTarih()) == 1)
-			mesajList.add("Başlangıç tarihi bitiş tarihinden büyük olamaz");
-		if (mesajList.isEmpty() && userVekalet.getVekaletVeren().getId().equals(userVekalet.getYeniYonetici().getId()))
-			mesajList.add("Vekil ve vekalet veren aynı yönetici olamaz");
+		UserVekalet userVekalet = getInstance();
+		if (userVekalet != null) {
+			userVekalet.setYeniYonetici(getVekilUser());
+			userVekalet.setVekaletVeren(getVekaletVerenUser());
+			if (userVekalet.getYeniYonetici() == null)
+				mesajList.add("Vekil yöneticiyi seçiniz");
+			if (userVekalet.getVekaletVeren() == null)
+				mesajList.add("Vekalet veren yöneticiyi seçiniz");
+			if (PdksUtil.tarihKarsilastirNumeric(userVekalet.getBasTarih(), userVekalet.getBitTarih()) == 1)
+				mesajList.add("Başlangıç tarihi bitiş tarihinden büyük olamaz");
+			if (mesajList.isEmpty() && userVekalet.getVekaletVeren().getId().equals(userVekalet.getYeniYonetici().getId()))
+				mesajList.add("Vekil ve vekalet veren aynı yönetici olamaz");
+		} else
+			mesajList.add("Hata oluştu.");
+		if (mesajList.isEmpty()) {
 
-		// vekalet veren uzerinde vekalet varsa o kullanici icin de yeni yoneticide vekalet
-		// insert edilmeli
-		HashMap parametreMap = new HashMap();
-		parametreMap.put("durum=", Boolean.TRUE);
+			// vekalet veren uzerinde vekalet varsa o kullanici icin de yeni yoneticide vekalet
+			// insert edilmeli
+			HashMap parametreMap = new HashMap();
+			parametreMap.put("durum=", Boolean.TRUE);
 
-		parametreMap.put("vekaletVeren=", vekaletVerenUser);
-		parametreMap.put("basTarih<=", userVekalet.getBasTarih());
-		parametreMap.put("bitTarih>=", userVekalet.getBitTarih());
-		if (session != null)
-			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<UserVekalet> list = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, UserVekalet.class);
-		boolean kesisenTarihteVekaletVar = Boolean.FALSE;
-		if (list != null && !list.isEmpty()) { // bu durumda vekil transfer gibi islem yapiacak
-			Date oldBas, oldBit;
-			Date newBas = userVekalet.getBasTarih();
-			Date newBit = userVekalet.getBitTarih();
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				UserVekalet tempVekalet = (UserVekalet) iterator.next();
-				oldBas = tempVekalet.getBasTarih();
-				oldBit = tempVekalet.getBitTarih();
-				if (!kesisenTarihteVekaletVar) {
-					if ((newBas.compareTo(oldBas) <= 0 && newBit.compareTo(oldBas) > 0) || (newBas.compareTo(oldBas) >= 0 && newBas.compareTo(oldBit) < 0))
-						kesisenTarihteVekaletVar = Boolean.TRUE;
-				} else
-					break;
+			parametreMap.put("vekaletVeren=", vekaletVerenUser);
+			parametreMap.put("basTarih<=", userVekalet.getBasTarih());
+			parametreMap.put("bitTarih>=", userVekalet.getBitTarih());
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List<UserVekalet> list = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, UserVekalet.class);
+			boolean kesisenTarihteVekaletVar = Boolean.FALSE;
+			if (list != null && !list.isEmpty()) { // bu durumda vekil transfer gibi islem yapiacak
+				Date oldBas, oldBit;
+				Date newBas = userVekalet.getBasTarih();
+				Date newBit = userVekalet.getBitTarih();
+				for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+					UserVekalet tempVekalet = (UserVekalet) iterator.next();
+					oldBas = tempVekalet.getBasTarih();
+					oldBit = tempVekalet.getBitTarih();
+					if (!kesisenTarihteVekaletVar) {
+						if ((newBas.compareTo(oldBas) <= 0 && newBit.compareTo(oldBas) > 0) || (newBas.compareTo(oldBas) >= 0 && newBas.compareTo(oldBit) < 0))
+							kesisenTarihteVekaletVar = Boolean.TRUE;
+					} else
+						break;
+
+				}
+				if (kesisenTarihteVekaletVar)
+					mesajList.add("Verilen tarih aralığında kesişen vekalet bulunmaktadır. Önce devir işlemlerini yapınız.");
 
 			}
-			if (kesisenTarihteVekaletVar)
-				mesajList.add("Verilen tarih aralığında kesişen vekalet bulunmaktadır. Önce devir işlemlerini yapınız.");
+			if ((userVekalet.getVekaletVeren().isMudur() && userVekalet.getYeniYonetici().isYonetici()) || (userVekalet.getVekaletVeren().isYonetici() && userVekalet.getYeniYonetici().isMudur())) {
+				mesajList.add("Vekalet veren ve vekil aynı rolde olamalıdır.");
 
-		}
-		if ((userVekalet.getVekaletVeren().isMudur() && userVekalet.getYeniYonetici().isYonetici()) || (userVekalet.getVekaletVeren().isYonetici() && userVekalet.getYeniYonetici().isMudur())) {
-			mesajList.add("Vekalet veren ve vekil aynı rolde olamalıdır.");
-
-		}
-		if (mesajList.isEmpty()) {
-			if (PdksUtil.tarihKarsilastirNumeric(new Date(), userVekalet.getBasTarih()) == 1 || PdksUtil.tarihKarsilastirNumeric(userVekalet.getBasTarih(), userVekalet.getBitTarih()) == 1)
-				mesajList.add("Başlangıç bitiş tarihlerini kontrol ediniz. Geçmişe yönelik kayıt giremezsiniz.");
-			else {
-				try {
-					userVekalet.setVekaletVeren(vekaletVerenUser);
-					if ((authenticatedUser.isYonetici() || authenticatedUser.isMudur()) && !authenticatedUser.isIK())
-						userVekalet.setVekaletVeren(authenticatedUser);
-
-					if (authenticatedUser.isIK()) {
+			}
+			if (mesajList.isEmpty()) {
+				if (PdksUtil.tarihKarsilastirNumeric(new Date(), userVekalet.getBasTarih()) == 1 || PdksUtil.tarihKarsilastirNumeric(userVekalet.getBasTarih(), userVekalet.getBitTarih()) == 1)
+					mesajList.add("Başlangıç bitiş tarihlerini kontrol ediniz. Geçmişe yönelik kayıt giremezsiniz.");
+				else {
+					try {
 						userVekalet.setVekaletVeren(vekaletVerenUser);
+						if ((authenticatedUser.isYonetici() || authenticatedUser.isMudur()) && !authenticatedUser.isIK())
+							userVekalet.setVekaletVeren(authenticatedUser);
+
+						if (authenticatedUser.isIK()) {
+							userVekalet.setVekaletVeren(vekaletVerenUser);
+						}
+						if (userVekalet.getId() == null) {
+							userVekalet.setOlusturanUser(authenticatedUser);
+
+						} else {
+							userVekalet.setGuncelleyenUser(authenticatedUser);
+							userVekalet.setGuncellemeTarihi(new Date());
+						}
+						pdksEntityController.saveOrUpdate(session, entityManager, userVekalet);
+
+						session.flush();
+						girisSifirla();
+						setInstance(new UserVekalet());
+						fillUserTotalVekaletList();
+					} catch (Exception e) {
+						logger.error("PDKS hata in : \n");
+						e.printStackTrace();
+						logger.error("PDKS hata out : " + e.getMessage());
+						mesajList.add("Hata : " + e.getMessage());
+						logger.error("Hata : " + e.getMessage());
 					}
-					if (userVekalet.getId() == null) {
-						userVekalet.setOlusturanUser(authenticatedUser);
-
-					} else {
-						userVekalet.setGuncelleyenUser(authenticatedUser);
-						userVekalet.setGuncellemeTarihi(new Date());
-					}
-					pdksEntityController.saveOrUpdate(session, entityManager, userVekalet);
-
-					session.flush();
-
-					fillUserTotalVekaletList();
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					mesajList.add("Hata : " + e.getMessage());
-					logger.error("Hata : " + e.getMessage());
 				}
 			}
 		}

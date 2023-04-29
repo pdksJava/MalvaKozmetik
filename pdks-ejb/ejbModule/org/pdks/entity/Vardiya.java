@@ -71,8 +71,9 @@ public class Vardiya extends BaseObject {
 	private Boolean mesaiOde, sua = Boolean.FALSE;
 	private Vardiya sonrakiVardiya, oncekiVardiya;
 	private CalismaSekli calismaSekli;
-	private Integer version = 0;
 	private List<YemekIzin> yemekIzinList;
+	private VardiyaIzin vardiyaIzin;
+	private Integer version = 0;
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {
@@ -1761,5 +1762,13 @@ public class Vardiya extends BaseObject {
 
 	public void setKopya(Boolean kopya) {
 		this.kopya = kopya;
+	}
+	@Transient
+	public VardiyaIzin getVardiyaIzin() {
+		return vardiyaIzin;
+	}
+
+	public void setVardiyaIzin(VardiyaIzin vardiyaIzin) {
+		this.vardiyaIzin = vardiyaIzin;
 	}
 }

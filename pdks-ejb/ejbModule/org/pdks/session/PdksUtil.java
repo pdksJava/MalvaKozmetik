@@ -2255,7 +2255,8 @@ public class PdksUtil implements Serializable {
 	public static double setSureDoubleTypeRounded(Double doubleValue, int yarimYuvarla) {
 		Double yuvarlanmisDeger = null;
 		if (doubleValue != null) {
-			BigDecimal deger = new BigDecimal(doubleValue);
+			double d = doubleValue.doubleValue();
+			BigDecimal deger = new BigDecimal(d);
 			if (deger.doubleValue() > 0 && deger.doubleValue() > deger.longValue()) {
 				double fark = 0.0d;
 				switch (yarimYuvarla) {

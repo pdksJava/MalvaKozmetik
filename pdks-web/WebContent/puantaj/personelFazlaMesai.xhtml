@@ -102,9 +102,9 @@
 							requiredMessage="Tarih giriniz" />
 					</s:decorate>
 					<a4j:commandButton status="ajaxStatus" value="Listele" action="#{personelFazlaMesaiHome.fillHareketMesaiList()}" reRender="hareketPanel" />
-					<ui:fragment rendered="#{personelFazlaMesaiHome.donusAdres!=''}">
+					<ui:fragment rendered="#{personelFazlaMesaiHome.donusAdres!=null}">
 						<br />
-						<f:verbatim>#{personelFazlaMesaiHome.donusAdres}</f:verbatim>
+						<f:verbatim>#{linkAdres}</f:verbatim>
 					</ui:fragment>
 				</h:panelGrid>
 
@@ -166,7 +166,7 @@
 							</f:facet>
 							<h:outputText value="#{mesai.personel.sicilNo}" />
 						</rich:column>
-						<rich:column rendered="#{personelFazlaMesaiHome.aramaSecenekleri.sirketIdList==null} ">
+						<rich:column>
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
 							</f:facet>

@@ -230,7 +230,7 @@ public class User implements Serializable, Cloneable {
 		return admin;
 	}
 
-	public void setAdmin(boolean admin) {
+	public void setAdmin(Boolean admin) {
 		this.admin = admin;
 	}
 
@@ -241,7 +241,7 @@ public class User implements Serializable, Cloneable {
 		return mudur;
 	}
 
-	public void setMudur(boolean mudur) {
+	public void setMudur(Boolean mudur) {
 		this.mudur = mudur;
 	}
 
@@ -259,7 +259,7 @@ public class User implements Serializable, Cloneable {
 		return IK_Tesis;
 	}
 
-	public void setIK_Tesis(boolean iK_Tesis) {
+	public void setIK_Tesis(Boolean iK_Tesis) {
 		IK_Tesis = iK_Tesis;
 	}
 
@@ -268,7 +268,7 @@ public class User implements Serializable, Cloneable {
 		return pdksPersonel != null && pdksPersonel.getSirket() != null && pdksPersonel.getSirket().isErp();
 	}
 
-	public void setIK(boolean ik) {
+	public void setIK(Boolean ik) {
 		IK = ik;
 	}
 
@@ -280,7 +280,7 @@ public class User implements Serializable, Cloneable {
 		return yoneticiDurum;
 	}
 
-	public void setYonetici(boolean yonetici) {
+	public void setYonetici(Boolean yonetici) {
 		this.yonetici = yonetici;
 	}
 
@@ -291,7 +291,7 @@ public class User implements Serializable, Cloneable {
 		return genelMudur;
 	}
 
-	public void setGenelMudur(boolean genelMudur) {
+	public void setGenelMudur(Boolean genelMudur) {
 		this.genelMudur = genelMudur;
 	}
 
@@ -320,7 +320,7 @@ public class User implements Serializable, Cloneable {
 		return sekreter;
 	}
 
-	public void setSekreter(boolean sekreter) {
+	public void setSekreter(Boolean sekreter) {
 		this.sekreter = sekreter;
 	}
 
@@ -331,7 +331,7 @@ public class User implements Serializable, Cloneable {
 		return projeMuduru;
 	}
 
-	public void setProjeMuduru(boolean projeMuduru) {
+	public void setProjeMuduru(Boolean projeMuduru) {
 		this.projeMuduru = projeMuduru;
 	}
 
@@ -342,7 +342,7 @@ public class User implements Serializable, Cloneable {
 		return tesisYonetici;
 	}
 
-	public void setTesisYonetici(boolean tesisYonetici) {
+	public void setTesisYonetici(Boolean tesisYonetici) {
 		this.tesisYonetici = tesisYonetici;
 	}
 
@@ -353,7 +353,7 @@ public class User implements Serializable, Cloneable {
 		return taseronAdmin;
 	}
 
-	public void setTaseronAdmin(boolean taseronAdmin) {
+	public void setTaseronAdmin(Boolean taseronAdmin) {
 		this.taseronAdmin = taseronAdmin;
 	}
 
@@ -364,7 +364,7 @@ public class User implements Serializable, Cloneable {
 		return personel;
 	}
 
-	public void setPersonel(boolean personel) {
+	public void setPersonel(Boolean personel) {
 		this.personel = personel;
 	}
 
@@ -375,7 +375,7 @@ public class User implements Serializable, Cloneable {
 		return superVisor;
 	}
 
-	public void setSuperVisor(boolean superVisor) {
+	public void setSuperVisor(Boolean superVisor) {
 		this.superVisor = superVisor;
 	}
 
@@ -630,7 +630,7 @@ public class User implements Serializable, Cloneable {
 		return IKDirektor;
 	}
 
-	public void setIKDirektor(boolean direktor) {
+	public void setIKDirektor(Boolean direktor) {
 		IKDirektor = direktor;
 	}
 
@@ -738,7 +738,7 @@ public class User implements Serializable, Cloneable {
 		return operatorSSK;
 	}
 
-	public void setOperatorSSK(boolean operatorSSK) {
+	public void setOperatorSSK(Boolean operatorSSK) {
 		this.operatorSSK = operatorSSK;
 	}
 
@@ -822,7 +822,7 @@ public class User implements Serializable, Cloneable {
 		return yoneticiKontratli;
 	}
 
-	public void setYoneticiKontratli(boolean yoneticiKontratli) {
+	public void setYoneticiKontratli(Boolean yoneticiKontratli) {
 		this.yoneticiKontratli = yoneticiKontratli;
 	}
 
@@ -833,7 +833,7 @@ public class User implements Serializable, Cloneable {
 		return direktorSuperVisor;
 	}
 
-	public void setDirektorSuperVisor(boolean direktorSuperVisor) {
+	public void setDirektorSuperVisor(Boolean direktorSuperVisor) {
 		this.direktorSuperVisor = direktorSuperVisor;
 	}
 
@@ -1016,7 +1016,7 @@ public class User implements Serializable, Cloneable {
 		return sistemYoneticisi;
 	}
 
-	public void setSistemYoneticisi(boolean sistemYoneticisi) {
+	public void setSistemYoneticisi(Boolean sistemYoneticisi) {
 		this.sistemYoneticisi = sistemYoneticisi;
 	}
 

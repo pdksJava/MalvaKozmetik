@@ -25,6 +25,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.AramaSecenekleri;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelGeciciYonetici;
 import org.pdks.entity.Sirket;
@@ -47,8 +48,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 
 	@RequestParameter
 	Long personelGeciciYoneticiId;
-	@In(required = true, create = true)
-	PersonelKullaniciAramaHome personelKullaniciAramaHome;
+
 	@In(required = false, create = true)
 	EntityManager entityManager;
 	@In(required = false, create = true)
@@ -105,75 +105,6 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 
 	private Sirket sirket;
 	private Session session;
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
-	String kullaniciIslemleriMailAciklama = "PDKS Sistemi";
-	String kullaniciIslemleriMailAdres = "pdks@anadolusaglik.org";
-
-	public User getYeniYonetici() {
-		return yeniYonetici;
-	}
-
-	public void setYeniYonetici(User yeniYonetici) {
-		this.yeniYonetici = yeniYonetici;
-	}
-
-	public String getMailAciklamaTarih() {
-		return mailAciklamaTarih;
-	}
-
-	public void setMailAciklamaTarih(String mailAciklamaTarih) {
-		this.mailAciklamaTarih = mailAciklamaTarih;
-	}
-
-	public String getMailAciklamaUserList() {
-		return mailAciklamaUserList;
-	}
-
-	public void setMailAciklamaUserList(String mailAciklamaUserList) {
-		this.mailAciklamaUserList = mailAciklamaUserList;
-	}
-
-	public String getKullaniciIslemleriMailAciklama() {
-		return kullaniciIslemleriMailAciklama;
-	}
-
-	public void setKullaniciIslemleriMailAciklama(String kullaniciIslemleriMailAciklama) {
-		this.kullaniciIslemleriMailAciklama = kullaniciIslemleriMailAciklama;
-	}
-
-	public String getKullaniciIslemleriMailAdres() {
-		return kullaniciIslemleriMailAdres;
-	}
-
-	public void setKullaniciIslemleriMailAdres(String kullaniciIslemleriMailAdres) {
-		this.kullaniciIslemleriMailAdres = kullaniciIslemleriMailAdres;
-	}
-
-	public List<User> getToList() {
-		return toList;
-	}
-
-	public void setToList(List<User> toList) {
-		this.toList = toList;
-	}
-
-	public boolean isYonetici() {
-		if (seciliUser != null && seciliUser.isYonetici())
-			yonetici = Boolean.TRUE;
-		return yonetici;
-	}
-
-	public void setYonetici(boolean yonetici) {
-		this.yonetici = yonetici;
-	}
 
 	public List<Personel> getArananPersonelList() {
 		List<Personel> list = getPersonelList();
@@ -266,14 +197,6 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 		}
 	}
 
-	public void userSecimIslemi(User user, PersonelKullaniciAramaHome personelKullaniciAramaHome) {
-
-		// this.ortakIslemler = getOrtakIslemler();
-		fillPersonelList(user);
-
-		logger.debug(user.toString() + " " + new Date());
-	}
-
 	public void fillMevcutRotasyonList() {
 
 		List<PersonelGeciciYonetici> rotasyonList = new ArrayList<PersonelGeciciYonetici>();
@@ -286,11 +209,13 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 			if (seciliUser != null && seciliUser.getId() != null) {
 				parammap.put("bagliYonetici.id=", seciliUser.getId());
 				rotasyonList = pdksEntityController.getObjectByInnerObjectListInLogic(parammap, PersonelGeciciYonetici.class);
-			} else if (authenticatedUser.isYonetici()) {
+
+			} else if (ortakIslemler.getAdminRole(authenticatedUser))
+				rotasyonList = pdksEntityController.getObjectByInnerObjectListInLogic(parammap, PersonelGeciciYonetici.class);
+			else if (authenticatedUser.isYonetici()) {
 				parammap.put("bagliYonetici.id=", authenticatedUser.getId());
 				rotasyonList = pdksEntityController.getObjectByInnerObjectListInLogic(parammap, PersonelGeciciYonetici.class);
-			} else if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin())
-				rotasyonList = pdksEntityController.getObjectByInnerObjectListInLogic(parammap, PersonelGeciciYonetici.class);
+			}
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
@@ -302,31 +227,29 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 	}
 
 	public void fillPersonelList(User user) {
-
 		List<Personel> list = null;
 		try {
 			ortakIslemler.setUserRoller(user, session);
-			ortakIslemler.yoneticiIslemleri(user, 1, null, null, session);
-			if (user.getYetkiliPersonelNoList() != null && !user.getYetkiliPersonelNoList().isEmpty()) {
-				list = personelBul(user.getYetkiliPersonelNoList());
-				if (!list.isEmpty()) {
+			AramaSecenekleri as = new AramaSecenekleri(null, true);
+			list = ortakIslemler.getAramaSecenekleriPersonelList(user, null, as, session);
+			if (!list.isEmpty()) {
 
-					Personel yoneticiPersonel = user.getPdksPersonel();
-					for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-						Personel pdksPersonel = (Personel) iterator.next();
-						if (pdksPersonel.getId().equals(yoneticiPersonel.getId())) {
-							iterator.remove();
-						} else
-							pdksPersonel.setCheckBoxDurum(Boolean.FALSE);
+				Personel yoneticiPersonel = user.getPdksPersonel();
+				for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+					Personel pdksPersonel = (Personel) iterator.next();
+					if (pdksPersonel.getId().equals(yoneticiPersonel.getId())) {
+						iterator.remove();
+					} else
+						pdksPersonel.setCheckBoxDurum(Boolean.FALSE);
 
-					}
-					if (!list.isEmpty()) {
-						if (list.size() == 1)
-							list.get(0).setCheckBoxDurum(Boolean.TRUE);
-						else
-							list = PdksUtil.sortObjectStringAlanList(list, "getAdSoyad", null);
-					}
 				}
+				if (!list.isEmpty()) {
+					if (list.size() == 1)
+						list.get(0).setCheckBoxDurum(Boolean.TRUE);
+					else
+						list = PdksUtil.sortObjectStringAlanList(list, "getAdSoyad", null);
+				}
+
 			}
 
 		} catch (Exception e) {
@@ -576,6 +499,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 		fillPersonelList(bagliYonetici);
 		PersonelGeciciYonetici geciciYonetici = new PersonelGeciciYonetici();
 		geciciYonetici.setBagliYonetici(bagliYonetici);
+		userList.clear();
 		setInstance(geciciYonetici);
 	}
 
@@ -603,13 +527,13 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 
 		ArrayList<String> departmanIdList = new ArrayList<String>();
 		List<String> perNoList = ortakIslemler.getYetkiTumPersonelNoList();
-		if (adi.trim().length() > 0)
+		if (PdksUtil.hasStringValue(adi))
 			parametreMap.put(onEk + "pdksPersonel.ad like", adi.trim() + "%");
-		if (soyadi.trim().length() > 0)
+		if (PdksUtil.hasStringValue(soyadi))
 			parametreMap.put(onEk + "pdksPersonel.soyad like", soyadi.trim() + "%");
-		if (username.trim().length() > 0)
+		if (PdksUtil.hasStringValue(username))
 			parametreMap.put(onEk + "username like", username.trim() + "%");
-		if (sicilNo.trim().length() > 0)
+		if (PdksUtil.hasStringValue(sicilNo))
 			parametreMap.put(onEk + "pdksPersonel.pdksSicilNo=", sicilNo.trim());
 		else {
 			for (Tanim departman : departmanList)
@@ -641,8 +565,8 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 				logger.debug(e.getMessage());
 			}
 
-		boolean admin = authenticatedUser.isAdmin() || authenticatedUser.isIK();
-
+		boolean admin = ortakIslemler.getAdminRole(authenticatedUser);
+		TreeMap<Long, User> userMap = new TreeMap<Long, User>();
 		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 			User user = (User) iterator.next();
 			if (!user.getPdksPersonel().isCalisiyor()) {
@@ -653,10 +577,31 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 			Personel pdksPersonel = user.getPdksPersonel();
 			if (!admin && !perNoList.contains(pdksPersonel.getSicilNo()))
 				iterator.remove();
-		}
+			else
+				userMap.put(pdksPersonel.getId(), user);
 
-		if (!list.isEmpty())
-			list = PdksUtil.sortObjectStringAlanList(null, list, "getAdSoyad", null);
+		}
+		list.clear();
+		if (!userMap.isEmpty()) {
+			Date bugun = PdksUtil.getDate(Calendar.getInstance().getTime());
+			parametreMap.clear();
+			parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getId");
+			parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "yoneticisi");
+			parametreMap.put("yoneticisi.id", new ArrayList(userMap.keySet()));
+			parametreMap.put("sskCikisTarihi>=", bugun);
+			parametreMap.put("iseBaslamaTarihi<=", bugun);
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			TreeMap<Long, Personel> yoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(parametreMap, Personel.class, false);
+			for (Long ld : yoneticiMap.keySet()) {
+				if (userMap.containsKey(ld))
+					list.add(userMap.get(ld));
+
+			}
+			if (!list.isEmpty())
+				list = PdksUtil.sortObjectStringAlanList(null, list, "getAdSoyad", null);
+		}
+		userMap = null;
 
 		setUserList(list);
 		return "";
@@ -1012,4 +957,72 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 		this.yeniYoneticiId = yeniYoneticiId;
 	}
 
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	String kullaniciIslemleriMailAciklama = "PDKS Sistemi";
+	String kullaniciIslemleriMailAdres = "pdks@anadolusaglik.org";
+
+	public User getYeniYonetici() {
+		return yeniYonetici;
+	}
+
+	public void setYeniYonetici(User yeniYonetici) {
+		this.yeniYonetici = yeniYonetici;
+	}
+
+	public String getMailAciklamaTarih() {
+		return mailAciklamaTarih;
+	}
+
+	public void setMailAciklamaTarih(String mailAciklamaTarih) {
+		this.mailAciklamaTarih = mailAciklamaTarih;
+	}
+
+	public String getMailAciklamaUserList() {
+		return mailAciklamaUserList;
+	}
+
+	public void setMailAciklamaUserList(String mailAciklamaUserList) {
+		this.mailAciklamaUserList = mailAciklamaUserList;
+	}
+
+	public String getKullaniciIslemleriMailAciklama() {
+		return kullaniciIslemleriMailAciklama;
+	}
+
+	public void setKullaniciIslemleriMailAciklama(String kullaniciIslemleriMailAciklama) {
+		this.kullaniciIslemleriMailAciklama = kullaniciIslemleriMailAciklama;
+	}
+
+	public String getKullaniciIslemleriMailAdres() {
+		return kullaniciIslemleriMailAdres;
+	}
+
+	public void setKullaniciIslemleriMailAdres(String kullaniciIslemleriMailAdres) {
+		this.kullaniciIslemleriMailAdres = kullaniciIslemleriMailAdres;
+	}
+
+	public List<User> getToList() {
+		return toList;
+	}
+
+	public void setToList(List<User> toList) {
+		this.toList = toList;
+	}
+
+	public boolean isYonetici() {
+		if (seciliUser != null && seciliUser.isYonetici())
+			yonetici = Boolean.TRUE;
+		return yonetici;
+	}
+
+	public void setYonetici(boolean yonetici) {
+		this.yonetici = yonetici;
+	}
 }

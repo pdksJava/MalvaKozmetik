@@ -30,6 +30,7 @@ import org.pdks.entity.CalismaSekli;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGun;
+import org.pdks.entity.VardiyaIzin;
 import org.pdks.entity.VardiyaSablonu;
 import org.pdks.entity.VardiyaYemekIzin;
 import org.pdks.entity.YemekIzin;
@@ -63,7 +64,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 	private List<String> dakikaList = new ArrayList<String>();
 	private List<String> toleransDakikaList = new ArrayList<String>();
 	private List<SelectItem> vardiyaTipiList = new ArrayList<SelectItem>();
-	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>();
+	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>(), izinCalismaVardiyaList = new ArrayList<Vardiya>();
 	private List<VardiyaSablonu> sablonList = new ArrayList<VardiyaSablonu>();
 	private List<Departman> departmanList = new ArrayList<Departman>();
 	private List<CalismaModeli> calismaModeliList = new ArrayList<CalismaModeli>(), calismaModeliKayitliList = new ArrayList<CalismaModeli>();
@@ -268,6 +269,45 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 
 	}
 
+	public void izinVardiyalariGetir(Vardiya izinVardiya) {
+		izinCalismaVardiyaList.clear();
+		VardiyaIzin vardiyaIzin = null;
+		if (izinVardiya.isIzin()) {
+			if (izinVardiya.getId() != null) {
+				HashMap parametreMap = new HashMap();
+				parametreMap.put("izinVardiya.id", izinVardiya.getId());
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				vardiyaIzin = (VardiyaIzin) pdksEntityController.getObjectByInnerObject(parametreMap, VardiyaIzin.class);
+			}
+			if (vardiyaIzin == null)
+				vardiyaIzin = new VardiyaIzin(izinVardiya);
+			izinVardiya.setVardiyaIzin(vardiyaIzin);
+			if (authenticatedUser.isAdmin()) {
+				Boolean ekle = null;
+				if (vardiyaIzin.getCalismaVardiya() != null)
+					ekle = false;
+				Long izinDepartmanId = izinVardiya.getDepartman() != null ? izinVardiya.getDepartman().getId() : null;
+				for (Vardiya vardiya : vardiyaList) {
+					if (vardiya.isCalisma() == false || !vardiya.getGenel())
+						continue;
+					if (vardiyaIzin.getId() == null && vardiya.getDurum().equals(Boolean.FALSE))
+						continue;
+					Long departmanId = vardiya.getDepartman() != null ? vardiya.getDepartman().getId() : null;
+					if (izinDepartmanId != null && PdksUtil.isLongDegisti(izinDepartmanId, departmanId))
+						continue;
+
+					izinCalismaVardiyaList.add(vardiya);
+					if (ekle != null && ekle.equals(Boolean.FALSE))
+						ekle = vardiya.getId().equals(vardiyaIzin.getCalismaVardiya().getId());
+
+				}
+				if (ekle != null && !ekle)
+					vardiyaIzin.setCalismaVardiya(null);
+			}
+		}
+	}
+
 	public void kayitGuncelle(Vardiya pdksVardiya) {
 		if (pdksVardiya == null) {
 			pdksVardiya = new Vardiya();
@@ -279,11 +319,14 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			pdksVardiya.setCikisErkenToleransDakika((short) 0);
 			pdksVardiya.setCikisGecikmeToleransDakika((short) 0);
 		}
+
 		fillYemekList(pdksVardiya);
 		fillCalismaModeliList(pdksVardiya);
 		setInstance(pdksVardiya);
 		pdksVardiya.setTipi(String.valueOf(pdksVardiya.getVardiyaTipi()));
 		fillCalismaSekilleri();
+		izinVardiyalariGetir(pdksVardiya);
+		fillVardiyaTipiList();
 	}
 
 	@Transactional
@@ -333,6 +376,8 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 					pdksVardiya.setGebelik(Boolean.FALSE);
 				}
 				pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiya);
+				if (authenticatedUser.isAdmin() && pdksVardiya.isIzin() && pdksVardiya.getVardiyaIzin() != null)
+					pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiya.getVardiyaIzin());
 				if (calismaModeliList.size() + calismaModeliKayitliList.size() > 0) {
 					parametreMap.clear();
 					parametreMap.put("vardiya.id", pdksVardiya.getId());
@@ -631,7 +676,6 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 		fillVardiyalar();
 		fillSablonlar();
 
-		fillVardiyaTipiList();
 		if (authenticatedUser.isAdmin())
 			fillBagliOlduguDepartmanTanimList();
 	}
@@ -641,15 +685,21 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 		list.add(new SelectItem(String.valueOf(Vardiya.TIPI_CALISMA), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_CALISMA, null)));
 		list.add(new SelectItem(String.valueOf(Vardiya.TIPI_HAFTA_TATIL), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_HAFTA_TATIL, "HT")));
 		list.add(new SelectItem(String.valueOf(Vardiya.TIPI_OFF), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_OFF, "OFF")));
-		if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) {
+		Vardiya vardiya = getInstance();
+		boolean adminUser = ortakIslemler.getAdminRole(authenticatedUser);
+		if (adminUser) {
+			String vardiyaTipi = vardiya.getId() != null ? String.valueOf(vardiya.getVardiyaTipi()) : "";
 			if (ortakIslemler.getParameterKey("uygulamaTipi").equals("H"))
 				list.add(new SelectItem(String.valueOf(Vardiya.TIPI_RADYASYON_IZNI), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_RADYASYON_IZNI, null)));
 			if (authenticatedUser.isAdmin()) {
-				if (ortakIslemler.getParameterKey("fazlaMesaiIzinKullan").equals("1"))
+				if (ortakIslemler.getParameterKey("fazlaMesaiIzinKullan").equals("1") || vardiyaTipi.equals(String.valueOf(Vardiya.TIPI_FMI)))
 					list.add(new SelectItem(String.valueOf(Vardiya.TIPI_FMI), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_FMI, "Fazla Mesai İzin")));
-				if (manuelVardiyaIzinGir || PdksUtil.getCanliSunucuDurum() == false) {
-					list.add(new SelectItem(String.valueOf(Vardiya.TIPI_IZIN), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_IZIN, "İzin Tatil Hariç")));
-					list.add(new SelectItem(String.valueOf(Vardiya.TIPI_HASTALIK_RAPOR), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_HASTALIK_RAPOR, "İzin Tatil Dahil")));
+				boolean izinGiris = manuelVardiyaIzinGir || PdksUtil.getCanliSunucuDurum() == false;
+				if (izinGiris || vardiyaTipi.equals(String.valueOf(Vardiya.TIPI_IZIN)) || vardiyaTipi.equals(String.valueOf(Vardiya.TIPI_HASTALIK_RAPOR))) {
+					if (izinGiris || vardiyaTipi.equals(String.valueOf(Vardiya.TIPI_IZIN)))
+						list.add(new SelectItem(String.valueOf(Vardiya.TIPI_IZIN), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_IZIN, "İzin Tatil Hariç")));
+					if (izinGiris || vardiyaTipi.equals(String.valueOf(Vardiya.TIPI_HASTALIK_RAPOR)))
+						list.add(new SelectItem(String.valueOf(Vardiya.TIPI_HASTALIK_RAPOR), Vardiya.getVardiyaTipiAciklama(Vardiya.TIPI_HASTALIK_RAPOR, "İzin Tatil Dahil")));
 
 				}
 			}
@@ -792,5 +842,13 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 
 	public void setManuelVardiyaIzinGir(boolean manuelVardiyaIzinGir) {
 		this.manuelVardiyaIzinGir = manuelVardiyaIzinGir;
+	}
+
+	public List<Vardiya> getIzinCalismaVardiyaList() {
+		return izinCalismaVardiyaList;
+	}
+
+	public void setIzinCalismaVardiyaList(List<Vardiya> izinCalismaVardiyaList) {
+		this.izinCalismaVardiyaList = izinCalismaVardiyaList;
 	}
 }

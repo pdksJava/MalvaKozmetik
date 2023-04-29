@@ -89,6 +89,7 @@ public class VardiyaGun extends BaseObject {
 	private Boolean fazlaMesaiOnayla;
 	private Integer version = 0;
 	private List<FazlaMesaiTalep> fazlaMesaiTalepler;
+	private VardiyaIzin vardiyaIzin;
 
 	public VardiyaGun() {
 		super();
@@ -1402,6 +1403,8 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public String getTitle() {
 		String title = null;
+		if (vardiyaDateStr.equals("20230408"))
+			logger.debug("a");
 		if (vardiya != null && !(this.getVardiyaGorev() != null && this.getVardiyaGorev().isIstifa())) {
 			if (this.getIzin() == null && !vardiya.isRadyasyonIzni()) {
 				if (vardiya.isCalisma()) {
@@ -1430,6 +1433,7 @@ public class VardiyaGun extends BaseObject {
 				}
 
 			} else {
+
 				if (!vardiya.isRadyasyonIzni()) {
 					title = this.getIzin().getIzinTipi().getIzinTipiTanim().getAciklama();
 					try {
@@ -1441,8 +1445,8 @@ public class VardiyaGun extends BaseObject {
 					} catch (Exception e) {
 
 					}
-
-					title += " ( " + this.getVardiyaPlanAdi() + " )";
+					if (this.getIzin() != null && vardiya.isIzin() == false)
+						title += " ( " + this.getVardiyaPlanAdi() + " )";
 				} else
 					title = vardiya.getAciklama();
 
@@ -2130,5 +2134,14 @@ public class VardiyaGun extends BaseObject {
 
 	public void setIzinHaftaTatilDurum(Boolean izinHaftaTatilDurum) {
 		this.izinHaftaTatilDurum = izinHaftaTatilDurum;
+	}
+
+	@Transient
+	public VardiyaIzin getVardiyaIzin() {
+		return vardiyaIzin;
+	}
+
+	public void setVardiyaIzin(VardiyaIzin vardiyaIzin) {
+		this.vardiyaIzin = vardiyaIzin;
 	}
 }

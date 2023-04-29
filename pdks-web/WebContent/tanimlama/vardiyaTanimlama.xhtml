@@ -308,7 +308,8 @@
 									requiredMessage="Vardiya tipini seçiniz">
 									<f:selectItem itemLabel="Lütfen seçiniz" />
 									<f:selectItems value="#{vardiyaHome.vardiyaTipiList}" />
-									<a4j:support event="onchange" reRender="saatler" status="ajaxStatus" ajaxSingle="true" />
+									<a4j:support event="onchange" reRender="saatler" status="ajaxStatus" ajaxSingle="true"
+										action="#{vardiyaHome.izinVardiyalariGetir(vardiyaHome.instance)}" />
 								</h:selectOneMenu>
 								<h:outputText value="#{vardiyaHome.instance.vardiyaTipiAciklama}" rendered="#{authenticatedUser.admin==false}" />
 							</s:decorate>
@@ -323,6 +324,15 @@
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">Gün Sayısı</ui:define>
 											<h:inputText required="true" value="#{vardiyaHome.instance.calismaGun}" size="1" requiredMessage="Gün sayısı giriniz" />
+										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml"
+											rendered="#{authenticatedUser.admin and vardiyaHome.instance.vardiyaIzin!=null and vardiyaHome.izinCalismaVardiyaList.size()>0}">
+											<ui:define name="label">Çalışma Vardiya</ui:define>
+											<h:selectOneMenu value="#{vardiyaHome.instance.vardiyaIzin.calismaVardiya}">
+												<s:selectItems var="comp" value="#{vardiyaHome.izinCalismaVardiyaList}" label="#{comp.kisaAdi} - #{comp.adi}" noSelectionLabel="Lütfen seçiniz" />
+												<s:convertEntity />
+												<a4j:support event="onchange" reRender="saatler" status="ajaxStatus" ajaxSingle="true" />
+											</h:selectOneMenu>
 										</s:decorate>
 										<c:if test="#{vardiyaHome.instance.calisma}">
 											<s:decorate template="/layout/edit.xhtml">
@@ -417,7 +427,8 @@
 											<s:decorate template="/layout/edit.xhtml">
 												<ui:define name="label">Genel</ui:define>
 												<h:selectBooleanCheckbox value="#{vardiyaHome.instance.genel}">
-													<a4j:support event="onclick" reRender="saatler" status="ajaxStatus" ajaxSingle="true" />
+													<a4j:support event="onclick" reRender="saatler" status="ajaxStatus" ajaxSingle="true"
+														action="#{vardiyaHome.izinVardiyalariGetir(vardiyaHome.instance)}" />
 												</h:selectBooleanCheckbox>
 											</s:decorate>
 
@@ -485,6 +496,8 @@
 									<h:selectOneMenu value="#{vardiyaHome.instance.departman}">
 										<s:selectItems var="comp" value="#{vardiyaHome.departmanList}" label="#{comp.departmanTanim.aciklama}" noSelectionLabel="Lütfen seçiniz" />
 										<s:convertEntity />
+										<a4j:support event="onchange" reRender="saatler" status="ajaxStatus" ajaxSingle="true"
+											action="#{vardiyaHome.izinVardiyalariGetir(vardiyaHome.instance)}" />
 									</h:selectOneMenu>
 								</s:decorate>
 

@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * @author Hasan Sayar
  * 
- *        
+ * 
  */
 public class Liste implements Serializable {
 
@@ -25,6 +25,7 @@ public class Liste implements Serializable {
 	private Object value;
 	private String selected = "";
 	private String checked = "";
+	private Object numValue;
 
 	public Liste(Object xId, Object xvalue) {
 		this.setId(xId);
@@ -84,6 +85,14 @@ public class Liste implements Serializable {
 		this.id = id;
 	}
 
+	public Object getNumValue() {
+		return numValue;
+	}
+
+	public void setNumValue(Object numValue) {
+		this.numValue = numValue;
+	}
+
 	@Override
 	public String toString() {
 		return id.toString();
@@ -100,4 +109,5 @@ public class Liste implements Serializable {
 		return rt;
 
 	}
+
 }

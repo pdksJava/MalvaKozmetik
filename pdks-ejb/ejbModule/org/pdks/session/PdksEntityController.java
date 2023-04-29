@@ -495,7 +495,8 @@ public class PdksEntityController implements Serializable {
 		try {
 			ses.saveOrUpdate(saveObject);
 		} catch (Exception e) {
-			ses.saveOrUpdate(getEntityManagerObject(em, saveObject));
+			if (em != null)
+				ses.saveOrUpdate(getEntityManagerObject(em, saveObject));
 		}
 	}
 
@@ -508,7 +509,8 @@ public class PdksEntityController implements Serializable {
 		try {
 			ses.delete(del);
 		} catch (Exception e) {
-			ses.delete(getEntityManagerObject(em, del));
+			if (em != null)
+				ses.delete(getEntityManagerObject(em, del));
 
 		}
 	}
