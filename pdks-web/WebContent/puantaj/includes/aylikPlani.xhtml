@@ -117,6 +117,12 @@
 									<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücreti Ödenen Mesai: </B>Çalışanın bu listenin sonunda ücret olarak ödediğimiz
 										fazla mesai saati </SPAN>
 								</rich:toolTip></th>
+							<ui:fragment rendered="#{vardiyaGunHome.eksikMaasGoster}">
+								<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;" id="baslikROM"><h:outputText
+										value="MASK" /> <rich:toolTip for="baslikEKC">
+										<SPAN style="font-size: 12px; font-weight: normal;"><B>#{ortakIslemler.eksikCalismaAciklama()} : </B>Çalışanın bu listenin sonunda ücretinden kesilecek saati </SPAN>
+									</rich:toolTip></th>
+							</ui:fragment>
 							<ui:fragment rendered="#{vardiyaGunHome.resmiTatilVar}">
 								<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;" id="baslikROM"><h:outputText
 										value="RÖM" /> <rich:toolTip for="baslikROM">
@@ -347,6 +353,17 @@
 											</rich:toolTip>
 										</ui:fragment>
 									</ui:fragment></td>
+									<ui:fragment rendered="#{vardiyaGunHome.eksikMaasGoster}">
+									<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{aylikPuantaj.eksikCalismaSure!=0}">
+											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.erpAktarildi==false}">
+												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.eksikCalismaSure)}" />
+											</ui:fragment>
+											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.erpAktarildi}">
+												<b> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.eksikCalismaSure)}" /></b>
+											</ui:fragment>
+										</ui:fragment></td>
+
+								</ui:fragment>
 								<ui:fragment rendered="#{vardiyaGunHome.resmiTatilVar}">
 									<td class="#{aylikPuantaj.trClass}" style="width: 20px" align="center"><h:outputText
 											value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.resmiTatilToplami)}" rendered="#{aylikPuantaj.resmiTatilToplami!=0}" /></td>
@@ -414,7 +431,7 @@
 										value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}" /> <bR /> <h:outputText
 										value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" /> <ui:fragment
 										rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.planGirisi  and authenticatedUser.departman.admin}">
-										 
+
 									</ui:fragment> <ui:fragment rendered="#{vardiya.tatil!=null}">
 										<rich:toolTip for="tatilFooter#{vardiya.vardiyaDateStr}">
 											<SPAN style="color: green; font-size: 12px;"><B>#{vardiya.tatil.ad}</B></SPAN>

@@ -83,7 +83,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 
 	private List<PersonelDenklestirme> personelDenklestirmeList, onaysizPersonelDenklestirmeList, personelDenklestirmeler;
 
-	private Boolean secimDurum = Boolean.FALSE, sureDurum, fazlaMesaiDurum, haftaTatilDurum, resmiTatilDurum, durumERP, onaylanmayanDurum, personelERP, modelGoster = Boolean.FALSE;
+	private Boolean secimDurum = Boolean.FALSE, sureDurum, fazlaMesaiDurum, haftaTatilDurum, maasKesintiGoster, resmiTatilDurum, durumERP, onaylanmayanDurum, personelERP, modelGoster = Boolean.FALSE;
 
 	private int ay, yil, maxYil, sanalPersonelDurum;
 
@@ -743,6 +743,8 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		if (!sanalPersonelAciklama.equals(""))
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(sanalPersonelAciklama);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Normal Mesai");
+		if (maasKesintiGoster)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.eksikCalismaAciklama());
 		if (haftaCalisma)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Hafta Tatil Mesai");
 		if (resmiTatilDurum)
@@ -774,6 +776,9 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		if (haftaCalisma)
 			sheet.setColumnWidth(col++, (short) (1000 * katsayi));
 		if (resmiTatilDurum)
+			sheet.setColumnWidth(col++, (short) (1000 * katsayi));
+
+		if (maasKesintiGoster)
 			sheet.setColumnWidth(col++, (short) (1000 * katsayi));
 		if (aksamGun) {
 			sheet.setColumnWidth(col++, (short) (1000 * katsayi));
@@ -810,6 +815,10 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 				ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(User.getYuvarla(mesai.getOdenecekSure()));
 			else
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+
+			if (maasKesintiGoster)
+				ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(User.getYuvarla(mesai.getEksikCalismaSure()));
+
 			if (haftaCalisma)
 				ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(User.getYuvarla(mesai.getHaftaCalismaSuresi()));
 			if (resmiTatilDurum)
@@ -1023,6 +1032,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaCalisma = Boolean.FALSE;
+		maasKesintiGoster = Boolean.FALSE;
 		HashMap fields = new HashMap();
 		fields.put("ay", ay);
 		fields.put("yil", yil);
@@ -1072,7 +1082,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=:denklestirmeAy AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1  ");
 			sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1  AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
 			sb.append(" AND (V." + PersonelDenklestirme.COLUMN_NAME_ODENEN_SURE + ">0  OR V." + PersonelDenklestirme.COLUMN_NAME_HAFTA_TATIL_SURE + ">0 OR V." + PersonelDenklestirme.COLUMN_NAME_RESMI_TATIL_SURE + ">0");
-			sb.append("   OR V." + PersonelDenklestirme.COLUMN_NAME_AKSAM_VARDIYA_SAAT + ">0 OR V." + PersonelDenklestirme.COLUMN_NAME_AKSAM_VARDIYA_GUN_ADET + ">0 )");
+			sb.append("  OR V." + PersonelDenklestirme.COLUMN_NAME_EKSIK_CALISMA_SURE + ">0  OR V." + PersonelDenklestirme.COLUMN_NAME_AKSAM_VARDIYA_SAAT + ">0 OR V." + PersonelDenklestirme.COLUMN_NAME_AKSAM_VARDIYA_GUN_ADET + ">0 )");
 
 			fields.put("denklestirmeAy", denklestirmeAy.getId());
 			if (session != null)
@@ -1108,6 +1118,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			secimDurum = Boolean.FALSE;
 			durumERP = Boolean.FALSE;
 			personelERP = Boolean.FALSE;
+			maasKesintiGoster = Boolean.FALSE;
 			List<PersonelDenklestirme> erpAktarilanlar = new ArrayList<PersonelDenklestirme>();
 			for (Iterator iterator = personelDenklestirmeList.iterator(); iterator.hasNext();) {
 				PersonelDenklestirme denklestirme = (PersonelDenklestirme) iterator.next();
@@ -1124,7 +1135,8 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 					double resmiTatilSure = denklestirme.getResmiTatilSure();
 					double odenecekSure = denklestirme.getOdenecekSure();
 					double haftaTatilSure = denklestirme.getHaftaCalismaSuresi();
-					if (!(haftaTatilSure > 0 || resmiTatilSure > 0 || odenecekSure > 0 || denklestirme.getAksamVardiyaSayisi() > 0 || denklestirme.getAksamVardiyaSaatSayisi() > 0))
+					double eksikCalismaSure = denklestirme.getEksikCalismaSure();
+					if (!(eksikCalismaSure > 0 || haftaTatilSure > 0 || resmiTatilSure > 0 || odenecekSure > 0 || denklestirme.getAksamVardiyaSayisi() > 0 || denklestirme.getAksamVardiyaSaatSayisi() > 0))
 						iterator.remove();
 					else {
 						denklestirme.setCheckBoxDurum(Boolean.FALSE);
@@ -1135,6 +1147,8 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 						if (!haftaTatilDurum)
 							haftaTatilDurum = haftaTatilSure > 0;
 					}
+					if (!maasKesintiGoster)
+						maasKesintiGoster = denklestirme.getEksikCalismaSure() != null && denklestirme.getEksikCalismaSure().doubleValue() > 0.0d;
 
 					if (!haftaCalisma)
 						haftaCalisma = denklestirme.getHaftaCalismaSuresi() != null && denklestirme.getHaftaCalismaSuresi().doubleValue() > 0.0d;
@@ -1579,5 +1593,13 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public Boolean getMaasKesintiGoster() {
+		return maasKesintiGoster;
+	}
+
+	public void setMaasKesintiGoster(Boolean maasKesintiGoster) {
+		this.maasKesintiGoster = maasKesintiGoster;
 	}
 }

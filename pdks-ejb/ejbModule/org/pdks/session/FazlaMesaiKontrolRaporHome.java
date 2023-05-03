@@ -117,7 +117,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
 	private Boolean sutIzniGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
 
-	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
+	private Boolean aksamGun = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE;
 	private boolean adminRole, ikRole;
 
@@ -595,6 +595,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
+		maasKesintiGoster = Boolean.FALSE;
 		mailGonder = !(authenticatedUser.isIK() || authenticatedUser.isAdmin());
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 
@@ -675,6 +676,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
+		maasKesintiGoster = Boolean.FALSE;
 		fazlaMesaiIzinKullan = Boolean.FALSE;
 		sirketIzinGirisDurum = Boolean.FALSE;
 		yemekList = null;
@@ -1323,6 +1325,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 						puantaj.setResmiTatilToplami(personelDenklestirme.getResmiTatilSure());
 						puantaj.setHaftaCalismaSuresi(personelDenklestirme.getHaftaCalismaSuresi());
 						puantaj.setDevredenSure(personelDenklestirme.getDevredenSure());
+						puantaj.setEksikCalismaSure(personelDenklestirme.getEksikCalismaSure());
 						puantaj.setOdenenSure(personelDenklestirme.getOdenecekSure());
 						puantaj.setSaatToplami(personelDenklestirme.getHesaplananSure());
 						puantajFazlaMesaiHesapla = personelDenklestirme.getDurum();
@@ -1330,6 +1333,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 						puantaj.setOdenenSure(hesaplananDenklestirmeHesaplanan.getOdenecekSure());
 						puantaj.setSaatToplami(puantajSaatToplami);
 						puantaj.setDevredenSure(hesaplananDenklestirmeHesaplanan.getDevredenSure());
+						puantaj.setEksikCalismaSure(hesaplananDenklestirmeHesaplanan.getEksikCalismaSure());
 						puantaj.setHaftaCalismaSuresi(puantajHaftaTatil);
 						puantaj.setResmiTatilToplami(PdksUtil.setSureDoubleTypeRounded(puantajResmiTatil, yarimYuvarla));
 					}
@@ -1368,6 +1372,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					puantaj.setAksamVardiyaSaatSayisi(aksamVardiyaSaatSayisi);
 					puantaj.setAksamVardiyaSayisi(aksamVardiyaSayisi);
 					puantaj.setHaftaCalismaSuresi(haftaCalismaSuresi);
+					if (!maasKesintiGoster)
+						maasKesintiGoster = puantaj.getEksikCalismaSure() != 0;
 					if (!aksamGun)
 						aksamGun = puantaj.getAksamVardiyaSayisi() != 0;
 					if (!aksamSaat)
@@ -2163,6 +2169,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Ardışık " + ardisik + " Gün Çalışma");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Limit Aşan Gün");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Fazla Çalışma Saat");
+		if (maasKesintiGoster)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.eksikCalismaAciklama());
 		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 			Personel personel = aylikPuantaj.getPdksPersonel();
@@ -2187,7 +2195,12 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(aylikPuantaj.getFazlaMesaiSure());
 				else
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-
+				if (maasKesintiGoster) {
+					if (aylikPuantaj.getEksikCalismaSure() > 0.0)
+						ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(aylikPuantaj.getEksikCalismaSure());
+					else
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+				}
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");
 				e.printStackTrace();
@@ -3055,6 +3068,14 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 
 	public void setArdisik(Integer ardisik) {
 		this.ardisik = ardisik;
+	}
+
+	public Boolean getMaasKesintiGoster() {
+		return maasKesintiGoster;
+	}
+
+	public void setMaasKesintiGoster(Boolean maasKesintiGoster) {
+		this.maasKesintiGoster = maasKesintiGoster;
 	}
 
 }

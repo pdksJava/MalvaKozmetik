@@ -42,18 +42,19 @@ public class CalismaModeli implements Serializable {
 	public static final String COLUMN_NAME_BAGLI_VARDIYA_SABLON = "BAGLI_VARDIYA_SABLON_ID";
 	public static final String COLUMN_NAME_DEPARTMAN = "DEPARTMAN_ID";
 	public static final String COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL = "HAREKET_KAYDI_VARDIYA_BUL";
+	public static final String COLUMN_NAME_MAAS_ODEME_TIPI = "MAAS_ODEME_TIPI";
 
 	private Long id;
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
-	/**
-	 * 
-	 */
+
 	private Boolean toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
+	private Boolean aylikMaas = Boolean.TRUE;
+
 	private User guncelleyenUser, olusturanUser;
 	private Date olusturmaTarihi = new Date(), guncellemeTarihi;
 
@@ -194,6 +195,15 @@ public class CalismaModeli implements Serializable {
 		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
 	}
 
+	@Column(name = COLUMN_NAME_MAAS_ODEME_TIPI)
+	public Boolean getAylikMaas() {
+		return aylikMaas;
+	}
+
+	public void setAylikMaas(Boolean aylikMaas) {
+		this.aylikMaas = aylikMaas;
+	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_BAGLI_VARDIYA_SABLON)
 	@Fetch(FetchMode.JOIN)
@@ -283,6 +293,28 @@ public class CalismaModeli implements Serializable {
 	@Transient
 	public boolean isHareketKaydiVardiyaBulsunmu() {
 		return hareketKaydiVardiyaBul != null && hareketKaydiVardiyaBul.booleanValue();
+	}
+
+	@Transient
+	public boolean isSaatlikOdeme() {
+		return aylikMaas == null || aylikMaas.equals(Boolean.FALSE);
+	}
+
+	@Transient
+	public boolean isAylikOdeme() {
+		return aylikMaas != null && aylikMaas.equals(Boolean.TRUE);
+	}
+
+	@Transient
+	public String getMaasOdemeTipiAciklama() {
+		String str = "";
+		if (aylikMaas != null) {
+			if (isAylikOdeme())
+				str = "Aylık";
+			else if (isSaatlikOdeme())
+				str = "Saatlik";
+		}
+		return str;
 	}
 
 	@Transient

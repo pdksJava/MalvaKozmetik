@@ -27,7 +27,7 @@
 							</a4j:commandLink>
 							<rich:toolTip for="editlink" value="Güncelle" />
 						</rich:column>
-<rich:column rendered="#{authenticatedUser.admin}">
+						<rich:column rendered="#{authenticatedUser.admin}">
 							<f:facet name="header">
 								<h:outputText value="Id" />
 							</f:facet>
@@ -82,6 +82,12 @@
 								<h:outputText value="Bağlı Vardiya Şablonu" />
 							</f:facet>
 							<h:outputText value="#{calismaModeli.bagliVardiyaSablonu.adi}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Maaş Ödeme Tipi" />
+							</f:facet>
+							<h:outputText value="#{calismaModeli.maasOdemeTipiAciklama}" />
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
@@ -190,6 +196,13 @@
 								<s:selectItems var="sablon" value="#{calismaModeliHome.sablonList}" label="#{sablon.adi}" noSelectionLabel="Lütfen seçiniz" />
 								<s:convertEntity />
 							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Aylık Maaş Mı</ui:define>
+
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.aylikMaas}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Hafta İçi (Saati)</ui:define>

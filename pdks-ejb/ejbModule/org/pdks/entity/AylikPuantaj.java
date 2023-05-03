@@ -91,7 +91,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private Double saatToplami = 0d, resmiTatilToplami = 0d, haftaCalismaSuresi = 0d, ucretiOdenenMesaiSure = 0d, fazlaMesaiSure = 0d, odenenSure = 0d, planlananSure = 0d, offSure = 0.0d;
 
-	private Double izinSuresi = 0d, saatlikIzinSuresi = 0d, gecenAyFazlaMesai = 0d, hesaplananSure = 0d, devredenSure = 0d, aksamVardiyaSaatSayisi = 0d, kesilenSure = 0d;
+	private Double izinSuresi = 0d, saatlikIzinSuresi = 0d, eksikCalismaSure = 0d, gecenAyFazlaMesai = 0d, hesaplananSure = 0d, devredenSure = 0d, aksamVardiyaSaatSayisi = 0d, kesilenSure = 0d;
 
 	private boolean fazlaMesaiHesapla = Boolean.FALSE, vardiyaSua = Boolean.FALSE, denklestirilmeyenDevredenVar = Boolean.FALSE;
 
@@ -168,6 +168,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.setAksamVardiyaSaatSayisi(0.0d);
 		this.setAksamVardiyaSayisi(0);
 		this.setDevredenSure(0.0d);
+		this.setEksikCalismaSure(0.0d);
 		this.setFazlaMesaiSure(0.0d);
 		this.setGecenAyFazlaMesai(0.0d);
 		this.setHesaplananSure(0.0d);
@@ -1263,6 +1264,14 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public void setDenklestirmeBordro(PersonelDenklestirmeBordro denklestirmeBordro) {
 		this.denklestirmeBordro = denklestirmeBordro;
+	}
+
+	public Double getEksikCalismaSure() {
+		return eksikCalismaSure;
+	}
+
+	public void setEksikCalismaSure(Double eksikCalismaSure) {
+		this.eksikCalismaSure = eksikCalismaSure;
 	}
 
 }

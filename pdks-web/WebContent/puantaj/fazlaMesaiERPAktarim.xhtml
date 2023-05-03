@@ -46,7 +46,8 @@
 							rendered="#{(authenticatedUser.admin or authenticatedUser.IK) and (not empty fazlaMesaiERPAktarimHome.sirketler)}">
 							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
 
-							<h:selectOneMenu id="sirketSec" value="#{fazlaMesaiERPAktarimHome.sirketId}" required="true" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
+							<h:selectOneMenu id="sirketSec" value="#{fazlaMesaiERPAktarimHome.sirketId}" required="true"
+								requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
 								<f:selectItem itemLabel="Lütfen seçiniz" />
 								<f:selectItems value="#{fazlaMesaiERPAktarimHome.sirketler}" />
 
@@ -129,7 +130,8 @@
 										</f:facet>
 										<h:outputText value="#{mesai.personel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 									</rich:column>
-									<rich:column style="text-align: left;" rendered="#{ortakIslemler.getListTesisDurum(fazlaMesaiERPAktarimHome.onaysizPersonelDenklestirmeList)}">
+									<rich:column style="text-align: left;"
+										rendered="#{ortakIslemler.getListTesisDurum(fazlaMesaiERPAktarimHome.onaysizPersonelDenklestirmeList)}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 										</f:facet>
@@ -261,6 +263,13 @@
 										</f:facet>
 										<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(mesai.odenecekSure))}"
 											rendered="#{authenticatedUser.getYuvarla(mesai.odenecekSure)>0}" />
+									</rich:column>
+									<rich:column style="text-align: right;" rendered="#{fazlaMesaiERPAktarimHome.maasKesintiGoster}">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.eksikCalismaAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(mesai.eksikCalismaSure))}"
+											rendered="#{authenticatedUser.getYuvarla(mesai.eksikCalismaSure)>0}" />
 									</rich:column>
 									<rich:column style="text-align: right;" rendered="#{fazlaMesaiERPAktarimHome.haftaCalisma}">
 										<f:facet name="header">

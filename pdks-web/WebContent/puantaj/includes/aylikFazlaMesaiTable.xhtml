@@ -42,7 +42,8 @@
 
 						</rich:toolTip>
 					</ui:fragment>
-					<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi  and aylikPuantaj.personelDenklestirmeAylik.denklestirme and aylikPuantaj.uyariDurum}">
+					<ui:fragment
+						rendered="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi  and aylikPuantaj.personelDenklestirmeAylik.denklestirme and aylikPuantaj.uyariDurum}">
 						<ui:fragment rendered="#{aylikPuantaj.donemBitti}">
 							<h:selectBooleanCheckbox value="#{aylikPuantaj.kaydet}" />
 						</ui:fragment>
@@ -371,7 +372,26 @@
 						</ui:fragment>
 					</ui:fragment>
 				</rich:column>
-
+				<rich:column styleClass="#{aylikPuantaj.trSonucClass}" rendered="#{fazlaMesaiHesaplaHome.eksikMaasGoster}"
+					style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;">
+					<f:facet name="header">
+						<h:outputText value="MASK" title="#{ortakIslemler.eksikCalismaAciklama()} : Çalışanın bu listenin sonunda ücretinden kesilecek saati" />
+						<ui:fragment>
+							<h:outputText value="MASK" id="baslikEKC" />
+							<rich:toolTip for="baslikEKC">
+								<SPAN style="font-size: 12px; font-weight: normal;"><B>#{ortakIslemler.eksikCalismaAciklama()} : </B>Çalışanın bu listenin sonunda ücretinden kesilecek saati</SPAN>
+							</rich:toolTip>
+						</ui:fragment>
+					</f:facet>
+					<ui:fragment rendered="#{aylikPuantaj.eksikCalismaSure!=0}">
+						<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.erpAktarildi==false}">
+							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.eksikCalismaSure)}" />
+						</ui:fragment>
+						<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.erpAktarildi}">
+							<b> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.eksikCalismaSure)}" /></b>
+						</ui:fragment>
+					</ui:fragment>
+				</rich:column>
 				<rich:column styleClass="#{aylikPuantaj.trSonucClass}" rendered="#{fazlaMesaiHesaplaHome.resmiTatilVar}"
 					style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;">
 					<f:facet name="header">

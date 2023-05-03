@@ -58,7 +58,8 @@
 						</s:decorate>
 						<c:if test="#{not empty fazlaMesaiOzetRaporHome.pdksSirketList}">
 
-							<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiOzetRaporHome.tesisList!=null and fazlaMesaiOzetRaporHome.tesisList.size()>0}">
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiOzetRaporHome.tesisList!=null and fazlaMesaiOzetRaporHome.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:selectOneMenu value="#{fazlaMesaiOzetRaporHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
 									disabled="#{fazlaMesaiOzetRaporHome.tesisList.size()==1}">
@@ -417,6 +418,23 @@
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.fazlaMesaiSure)}"
 										rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.fazlaMesaiSure!=0}" />
+
+								</rich:column>
+
+
+								<rich:column style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
+									styleClass="#{aylikPuantaj.trSonucClass}" rendered="#{fazlaMesaiOzetRaporHome.maasKesintiGoster}">
+									<f:facet name="header">
+										<ui:fragment>
+											<h:outputText value="MASK" id="mask" />
+											<rich:toolTip for="mask">
+												<SPAN class="rich-table-subheadercell"><B>#{ortakIslemler.eksikCalismaAciklama()} : </B>Çalışanın bu listenin sonunda ücretinden
+													kesilecek saati </SPAN>
+											</rich:toolTip>
+										</ui:fragment>
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.eksikCalismaSure)}"
+										rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.eksikCalismaSure!=0}" />
 
 								</rich:column>
 

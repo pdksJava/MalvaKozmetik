@@ -108,6 +108,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private String COL_HAFTA_TATIL_MESAI = "haftaTatilMesai";
 	private String COL_AKSAM_SAAT_MESAI = "aksamSaatMesai";
 	private String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
+	private String COL_EKSIK_CALISMA = "eksikCalisma";
 
 	private Date basGun, bitGun;
 
@@ -121,7 +122,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private Dosya fazlaMesaiDosya = new Dosya();
-	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE;
+	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE;
 	private List<Vardiya> izinTipiVardiyaList;
 	private TreeMap<String, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap;
 	private TreeMap<String, Tanim> baslikMap;
@@ -162,7 +163,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (str.length() > 5)
 				minYil = Integer.parseInt(str.substring(0, 4));
 		} catch (Exception e) {
-			 
+
 		}
 		if (baslikMap == null)
 			baslikMap = new TreeMap<String, Tanim>();
@@ -403,6 +404,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		aksamSaat = Boolean.FALSE;
 		haftaCalisma = Boolean.FALSE;
 		resmiTatilDurum = Boolean.FALSE;
+		maasKesintiGoster = Boolean.FALSE;
 		HashMap fields = new HashMap();
 		fields.put("ay", ay);
 		fields.put("yil", yil);
@@ -469,6 +471,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							setAksamGun(personelDenklestirme.getAksamVardiyaSayisi() != null && personelDenklestirme.getAksamVardiyaSayisi().doubleValue() > 0.0d);
 						if (!aksamSaat)
 							setAksamSaat(personelDenklestirme.getAksamVardiyaSaatSayisi() != null && personelDenklestirme.getAksamVardiyaSaatSayisi().doubleValue() > 0.0d);
+						if (!maasKesintiGoster)
+							setMaasKesintiGoster(personelDenklestirme.getEksikCalismaSure() != null && personelDenklestirme.getEksikCalismaSure().doubleValue() > 0.0d);
+
 						personelDenklestirmeBordro.setDetayMap(new HashMap<BordroIzinGrubu, PersonelDenklestirmeBordroDetay>());
 						AylikPuantaj aylikPuantaj = new AylikPuantaj(personelDenklestirmeBordro);
 						idMap.put(personelDenklestirmeBordro.getId(), personelDenklestirmeBordro);
@@ -679,6 +684,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					iterator.remove();
 					continue;
 				}
+				if (kodu.startsWith(COL_EKSIK_CALISMA) && maasKesintiGoster == false) {
+					iterator.remove();
+					continue;
+				}
+
 				if (kodu.startsWith(COL_AKSAM_GUN_MESAI) && aksamGun == false) {
 					iterator.remove();
 					continue;
@@ -781,6 +791,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						else
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
 
+					} else if (kodu.equals(COL_EKSIK_CALISMA)) {
+						if (denklestirmeBordro.getEksikCalismaSure() > 0)
+							ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getEksikCalismaSure());
+						else
+							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
+
 					}
 				}
 
@@ -830,8 +846,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETLI_IZIN, "Ücretli İzin Gün"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_RAPORLU_IZIN, "Raporlu (Hasta)"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETSIZ_IZIN, "Ücretsiz İzin Gün"));
-		bordroAlanlari.add(getBordroAlani(++sira, COL_RESMI_TATIL_MESAI, "Resmi Tatil Mesai"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETI_ODENEN_MESAI, "Ücreti Ödenen Mesai"));
+		if (maasKesintiGoster)
+			bordroAlanlari.add(getBordroAlani(++sira, COL_EKSIK_CALISMA, ortakIslemler.eksikCalismaAciklama()));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_RESMI_TATIL_MESAI, "Resmi Tatil Mesai"));
 		if (haftaCalisma)
 			bordroAlanlari.add(getBordroAlani(++sira, COL_HAFTA_TATIL_MESAI, "Hafta Tatil Mesai"));
 		if (aksamSaat)
@@ -1358,5 +1376,21 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setBaslikMap(TreeMap<String, Tanim> baslikMap) {
 		this.baslikMap = baslikMap;
+	}
+
+	public Boolean getMaasKesintiGoster() {
+		return maasKesintiGoster;
+	}
+
+	public void setMaasKesintiGoster(Boolean maasKesintiGoster) {
+		this.maasKesintiGoster = maasKesintiGoster;
+	}
+
+	public String getCOL_EKSIK_CALISMA() {
+		return COL_EKSIK_CALISMA;
+	}
+
+	public void setCOL_EKSIK_CALISMA(String cOL_EKSIK_CALISMA) {
+		COL_EKSIK_CALISMA = cOL_EKSIK_CALISMA;
 	}
 }

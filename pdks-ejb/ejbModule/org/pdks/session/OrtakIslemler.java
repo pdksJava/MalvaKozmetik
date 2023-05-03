@@ -2432,7 +2432,7 @@ public class OrtakIslemler implements Serializable {
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					try {
 						list = pdksEntityController.execSPList(map, sp, class1);
-						if (tipi.equalsIgnoreCase("P") && authenticatedUser.isAdmin())
+						if (tipi.equalsIgnoreCase("AB") && authenticatedUser.isAdmin())
 							logger.debug(spAdi + " " + tipi + " " + list.size() + "\n" + gson.toJson(map));
 					} catch (Exception e) {
 						logger.error(e + "\n" + spAdi + "\n" + gson.toJson(map));
@@ -4086,6 +4086,14 @@ public class OrtakIslemler implements Serializable {
 	public String personelNoAciklama() {
 		String personelNoAciklama = getBaslikAciklama("personelNoAciklama", "Personel No");
 		return personelNoAciklama;
+	}
+
+	/**
+	 * @return
+	 */
+	public String eksikCalismaAciklama() {
+		String eksikCalismaAciklama = getBaslikAciklama("eksikCalismaAciklama", "Maaş Kesinti");
+		return eksikCalismaAciklama;
 	}
 
 	/**
@@ -12605,6 +12613,28 @@ public class OrtakIslemler implements Serializable {
 									+ hesaplananDenklestirme.getDevredenSure());
 
 						}
+						puantajData.setEksikCalismaSure(0.0d);
+						if (calismaModeli.isSaatlikOdeme()) {
+ 							if (hesaplananDenklestirme.getDevredenSure() < 0.0d) {
+								Double eksikCalismaSure = -hesaplananDenklestirme.getDevredenSure();
+								if (puantajData.getFazlaMesaiSure() > 0.0d) {
+									double sure = puantajData.getFazlaMesaiSure() - eksikCalismaSure;
+									eksikCalismaSure = 0.0d;
+									puantajData.setFazlaMesaiSure(0.0d);
+									if (sure > 0)
+										puantajData.setFazlaMesaiSure(sure);
+									else
+										eksikCalismaSure = -sure;
+								}
+								puantajData.setEksikCalismaSure(eksikCalismaSure);
+
+							} else if (hesaplananDenklestirme.getDevredenSure() > 0.0d) {
+								Double sure = puantajData.getFazlaMesaiSure() + hesaplananDenklestirme.getDevredenSure();
+								puantajData.setFazlaMesaiSure(sure);
+							}
+							hesaplananDenklestirme.setDevredenSure(0.0d);
+						}
+
 						puantajData.setDevredenSure(hesaplananDenklestirme.getDevredenSure());
 					}
 					if (personelDenklestirme.getFazlaMesaiIzinKullan() && personel.isCalisiyorGun(puantajData.getSonGun())) {

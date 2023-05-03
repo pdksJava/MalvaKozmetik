@@ -10,12 +10,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.pdks.entity.CalismaModeli;
-import org.pdks.entity.CalismaModeliVardiya;
-import org.pdks.entity.Departman;
-import org.pdks.entity.Vardiya;
-import org.pdks.entity.VardiyaSablonu;
-import org.pdks.security.entity.User;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
@@ -26,6 +20,12 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.CalismaModeli;
+import org.pdks.entity.CalismaModeliVardiya;
+import org.pdks.entity.Departman;
+import org.pdks.entity.Vardiya;
+import org.pdks.entity.VardiyaSablonu;
+import org.pdks.security.entity.User;
 
 @Name("calismaModeliHome")
 public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Serializable {
@@ -56,16 +56,10 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	private List<VardiyaSablonu> sablonList;
 	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>(), kayitliVardiyaList = new ArrayList<Vardiya>();
 	private List<Departman> departmanList;
+
 	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE;
+
 	private Session session;
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
 
 	@Override
 	public Object getId() {
@@ -83,8 +77,10 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	}
 
 	public String calismaModeliEkle(CalismaModeli xCalismaModeli) {
+
 		if (xCalismaModeli == null)
 			xCalismaModeli = new CalismaModeli();
+
 		setCalismaModeli(xCalismaModeli);
 
 		if (authenticatedUser.isAdmin())
@@ -190,6 +186,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
+
 		fillCalismaModeliList();
 	}
 
@@ -319,6 +316,14 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 
 	public void setHareketKaydiVardiyaBul(Boolean hareketKaydiVardiyaBul) {
 		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
+	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
 	}
 
 }

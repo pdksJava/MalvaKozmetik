@@ -146,8 +146,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
-		boolean fazlaMesaiGiris = false;
-		fazlaMesaiGirisDurum = false;
+ 		fazlaMesaiGirisDurum = false;
 		adminRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIKAdmin();
 		ikRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || (PdksUtil.isSistemDestekVar() && authenticatedUser.isIK());
 		if (authenticatedUser.isAdmin() == false || aramaSecenekleri == null)
@@ -202,13 +201,11 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		if (planKey != null) {
 			if (fazlaMesaiVardiyaGun != null) {
 				fazlaMesaiGirisDurum = true;
-				fazlaMesaiGiris = !ikRole;
 				dateStr = PdksUtil.convertToDateString(fazlaMesaiVardiyaGun.getVardiyaDate(), "yyyyMMdd");
 				perKGSId = fazlaMesaiVardiyaGun.getPersonel().getPersonelKGS().getId();
 			}
 
 		} else {
-			fazlaMesaiGiris = !ikRole;
 			if (veriLastMap != null) {
 				if (fazlaMesaiVardiyaGun == null && ikRole) {
 					ortakIslemler.setAramaSecenekleriFromVeriLast(aramaSecenekleri, veriLastMap);
@@ -278,7 +275,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			aramaSecenekleri.setAd("");
 			aramaSecenekleri.setSoyad("");
 		}
-		if (!fazlaMesaiGiris)
+		if (!fazlaMesaiGirisDurum)
 			aramaSecenekleri = new AramaSecenekleri();
 
 		if (!ayniSayfa)

@@ -46,6 +46,7 @@ public class PersonelDenklestirme extends BaseObject {
 	public static final String COLUMN_NAME_DEVREDEN_SURE = "DEVREDEN_SURE";
 	public static final String COLUMN_NAME_KISMI_ODEME_SAAT = "KISMI_ODEME_SAAT";
 	public static final String COLUMN_NAME_PERSONEL_NO = "PERSONEL_NO";
+	public static final String COLUMN_NAME_EKSIK_CALISMA_SURE = "EKSIK_CALISMA_SURE";
 
 	public static double calismaSaatiSua = 7.0d, calismaSaatiPartTime = 4.5d;
 
@@ -61,7 +62,7 @@ public class PersonelDenklestirme extends BaseObject {
 
 	private PersonelDenklestirme personelDenklestirmeGecenAy, personelDenklestirmeDB;
 
-	private Double planlanSure = 0d, hesaplananSure = 0d, resmiTatilSure = 0d, haftaCalismaSuresi = 0d, fazlaMesaiSure = 0d, odenenSure = 0d;
+	private Double planlanSure = 0d, eksikCalismaSure = 0d, hesaplananSure = 0d, resmiTatilSure = 0d, haftaCalismaSuresi = 0d, fazlaMesaiSure = 0d, odenenSure = 0d;
 
 	private Double devredenSure, kesilenSure = 0d, calismaSuaSaati = calismaSaatiSua, kismiOdemeSure = 0d, aksamVardiyaSayisi = 0d, aksamVardiyaSaatSayisi = 0d, sutIzniSaatSayisi = 0d;
 
@@ -370,6 +371,20 @@ public class PersonelDenklestirme extends BaseObject {
 				logger.debug(value);
 		}
 		this.aksamVardiyaSayisi = value;
+	}
+
+	@Column(name = COLUMN_NAME_EKSIK_CALISMA_SURE)
+	public Double getEksikCalismaSure() {
+		return eksikCalismaSure;
+	}
+
+	public void setEksikCalismaSure(Double value) {
+		if (guncellendi != null && !guncellendi && value != null) {
+			this.setGuncellendi(this.eksikCalismaSure == null || this.eksikCalismaSure.doubleValue() != value.doubleValue());
+			if (guncellendi)
+				logger.debug(value);
+		}
+		this.eksikCalismaSure = value;
 	}
 
 	@Column(name = COLUMN_NAME_AKSAM_VARDIYA_SAAT)

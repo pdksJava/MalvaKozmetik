@@ -130,7 +130,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
 	private Boolean sutIzniGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
 
-	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
+	private Boolean aksamGun = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE;
 	private boolean adminRole, ikRole;
 
@@ -620,6 +620,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
+		maasKesintiGoster = Boolean.FALSE;
 		mailGonder = !(authenticatedUser.isIK() || authenticatedUser.isAdmin());
 		linkAdres = null;
 		if (session == null)
@@ -678,6 +679,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
+		maasKesintiGoster = Boolean.FALSE;
 		fazlaMesaiIzinKullan = Boolean.FALSE;
 		sirketIzinGirisDurum = Boolean.FALSE;
 		yemekList = null;
@@ -1327,6 +1329,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						puantaj.setResmiTatilToplami(personelDenklestirme.getResmiTatilSure());
 						puantaj.setHaftaCalismaSuresi(personelDenklestirme.getHaftaCalismaSuresi());
 						puantaj.setDevredenSure(personelDenklestirme.getDevredenSure());
+						puantaj.setEksikCalismaSure(personelDenklestirme.getEksikCalismaSure());
 						puantaj.setOdenenSure(personelDenklestirme.getOdenecekSure());
 						puantaj.setSaatToplami(personelDenklestirme.getHesaplananSure());
 						puantajFazlaMesaiHesapla = personelDenklestirme.getDurum();
@@ -1334,6 +1337,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						puantaj.setOdenenSure(hesaplananDenklestirmeHesaplanan.getOdenecekSure());
 						puantaj.setSaatToplami(puantajSaatToplami);
 						puantaj.setDevredenSure(hesaplananDenklestirmeHesaplanan.getDevredenSure());
+						puantaj.setEksikCalismaSure(hesaplananDenklestirmeHesaplanan.getEksikCalismaSure());
 						puantaj.setHaftaCalismaSuresi(puantajHaftaTatil);
 						puantaj.setResmiTatilToplami(PdksUtil.setSureDoubleTypeRounded(puantajResmiTatil, yarimYuvarla));
 					}
@@ -1372,6 +1376,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					puantaj.setAksamVardiyaSaatSayisi(aksamVardiyaSaatSayisi);
 					puantaj.setAksamVardiyaSayisi(aksamVardiyaSayisi);
 					puantaj.setHaftaCalismaSuresi(haftaCalismaSuresi);
+
+					if (!maasKesintiGoster)
+						maasKesintiGoster = puantaj.getEksikCalismaSure() != 0;
 					if (!aksamGun)
 						aksamGun = puantaj.getAksamVardiyaSayisi() != 0;
 					if (!aksamSaat)
@@ -2491,6 +2498,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "DM", "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
 		cell = ExcelUtil.getCell(sheet, row, col++, header);
 		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
+		if (maasKesintiGoster) {
+			cell = ExcelUtil.getCell(sheet, row, col++, header);
+			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "MASK", "Çalışanın bu listenin sonunda ücretinden kesilecek saati");
+		}
 		if (resmiTatilVar) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
@@ -2629,7 +2640,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							}
 						} else
 							ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
-
+						if (maasKesintiGoster) {
+							setCell(sheet, row, col++, styleGenel, aylikPuantaj.getEksikCalismaSure());
+						}
 						if (resmiTatilVar)
 							setCell(sheet, row, col++, styleGenel, aylikPuantaj.getResmiTatilToplami());
 						if (haftaTatilVar)
@@ -3541,6 +3554,14 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public Boolean getMaasKesintiGoster() {
+		return maasKesintiGoster;
+	}
+
+	public void setMaasKesintiGoster(Boolean maasKesintiGoster) {
+		this.maasKesintiGoster = maasKesintiGoster;
 	}
 
 }

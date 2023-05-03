@@ -145,6 +145,7 @@
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.normalGunAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.normalGunAdet)>0}" />
 								</rich:column>
+
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_ADET)}" />
@@ -214,8 +215,16 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamSaatMesai)>0}" />
 
 								</rich:column>
-
-
+								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.maasKesintiGoster}">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_EKSIK_CALISMA)}" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.eksikCalismaSure))}"
+										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.eksikCalismaSure)>0}" />
+								</rich:column>
+								<f:facet name="footer">
+									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+								</f:facet>
 
 							</rich:dataTable>
 						</DIV>

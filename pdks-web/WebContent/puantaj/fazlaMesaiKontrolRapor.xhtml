@@ -194,6 +194,13 @@
 									<ui:fragment rendered="#{aylikPuantaj.fazlaMesaiSure>0}">
 									 #{authenticatedUser.sayiFormatliGoster(aylikPuantaj.fazlaMesaiSure)}</ui:fragment>
 								</rich:column>
+								<rich:column style="text-align: center;width: 60px;" rendered="#{fazlaMesaiKontrolRaporHome.maasKesintiGoster}">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.eksikCalismaAciklama()}" />
+									</f:facet>
+									<ui:fragment rendered="#{aylikPuantaj.eksikCalismaSure>0}">
+									 #{authenticatedUser.sayiFormatliGoster(aylikPuantaj.eksikCalismaSure)}</ui:fragment>
+								</rich:column>
 								<f:facet name="footer">
 									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 								</f:facet>

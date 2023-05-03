@@ -131,7 +131,12 @@ public class PersonelDenklestirmeBordro implements Serializable {
 		Double value = detay != null ? detay.doubleValue() : 0.0d;
 		return value;
 	}
-
+	@Transient
+	public Double getEksikCalismaSure() {
+		Double detay = personelDenklestirme != null ? personelDenklestirme.getEksikCalismaSure() : null;
+		Double value = detay != null ? detay.doubleValue() : 0.0d;
+		return value;
+	}
 	@Transient
 	public Double getResmiTatilMesai() {
 		Double detay = personelDenklestirme != null ? personelDenklestirme.getResmiTatilSure() : null;
