@@ -2915,18 +2915,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 
 					if (grubaGirisTarihi == null) {
-						grubaGirisTarihi = personel.getIseBaslamaTarihi();
+						grubaGirisTarihi = iseBaslamaTarihi;
 						if (personel.getId() != null) {
 							Date tarih = getGrubaGirisTarihi(personel.getPersonelKGS());
 							if (tarih != null)
 								grubaGirisTarihi = tarih;
 						}
-						if (personel.getGrubaGirisTarihi() == null)
+
+						if (grubaGirisTarihi != null)
 							personel.setGrubaGirisTarihi(grubaGirisTarihi);
-						if (personel.getIseBaslamaTarihi() != null) {
-							if (personel.getGrubaGirisTarihi() == null || personel.getGrubaGirisTarihi().after(grubaGirisTarihi))
-								personel.setGrubaGirisTarihi(grubaGirisTarihi);
-						}
+
 					} else {
 						if (dogumTarihi != null && grubaGirisTarihi.before(dogumTarihi))
 							addHatalist(personelERP.getHataList(), "Grubu giriş tarihi doğum tarihinden önce olamaz!");
@@ -2980,9 +2978,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 									}
 									if (yoneticiRolVarmi) {
 										if (yoneticisi == null)
-											addHatalist(personelERP.getHataList(), yoneticiAciklama + " bilgisi boş olamaz!" + (personelERP.getGorevKodu() != null && personelERP.getGorevi() != null ? "[ " + personelERP.getGorevKodu() + " - " + personelERP.getGorevi() + " ]" : ""));
+											kidemHataList.add(yoneticiAciklama + " bilgisi boş olamaz!" + (personelERP.getGorevKodu() != null && personelERP.getGorevi() != null ? "[ " + personelERP.getGorevKodu() + " - " + personelERP.getGorevi() + " ]" : ""));
 										else if (yoneticisi != null)
-											addHatalist(personelERP.getHataList(), yoneticisi.getPdksSicilNo() + " " + yoneticisi.getAdSoyad() + " yönetici çalışmıyor!");
+											kidemHataList.add(yoneticisi.getPdksSicilNo() + " " + yoneticisi.getAdSoyad() + " yönetici çalışmıyor!");
 									}
 								}
 							}
@@ -3001,9 +2999,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 								if (yoneticisi != null && yoneticisi.getYoneticisi() != null && yoneticisi2.getId().equals(yoneticisi.getYoneticisi().getId())) {
 									yoneticisi2 = null;
 								} else if (yoneticiRolVarmi && !yoneticisi2.isCalisiyor())
-									addHatalist(personelERP.getHataList(), "2. yönetici " + personelERP.getYonetici2PerNo().trim() + " " + yoneticisi2.getAdSoyad() + " çalışmıyor!");
+									kidemHataList.add("2. yönetici " + personelERP.getYonetici2PerNo().trim() + " " + yoneticisi2.getAdSoyad() + " çalışmıyor!");
 							} else if (yoneticiRolVarmi && sanalPersonel == false && calisiyor)
-								addHatalist(personelERP.getHataList(), kapiGiris + " 2. yönetici " + personelERP.getYonetici2PerNo().trim() + " personel no bilgisi bulunamadı!");
+								kidemHataList.add(kapiGiris + " 2. yönetici " + personelERP.getYonetici2PerNo().trim() + " personel no bilgisi bulunamadı!");
 						}
 						if (yoneticisi2 != null)
 							logger.debug(yoneticisi2.getId());
@@ -3363,12 +3361,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (personel != null)
 						personelERP.setId(personel.getId());
 				}
-				PersonelERP hataPersonelERP  = null;
+				PersonelERP hataPersonelERP = null;
 				if (personelERP.getHataList() != null && !personelERP.getHataList().isEmpty()) {
 					personelERP.setId(null);
 					hataPersonelERP = (PersonelERP) personelERP.clone();
 					hataList.add(hataPersonelERP);
- 				}
+				}
 				personelERP.setBolumAdi(null);
 				personelERP.setBolumKodu(null);
 				if (altBolumDurum) {
