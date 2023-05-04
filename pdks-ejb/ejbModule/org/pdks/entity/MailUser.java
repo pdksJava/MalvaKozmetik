@@ -3,16 +3,14 @@ package org.pdks.entity;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
-public class MailUser implements Serializable {
+public class MailUser extends BasePDKSObject implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6484652674222959271L;
 	// seam-gen attributes (you should probably edit these)
-	private Long id;
+ 
 	private Integer version;
 
 	private String username;
@@ -25,20 +23,7 @@ public class MailUser implements Serializable {
 
 	private String email;
 
-	// add additional entity attributes
-
-	// seam-gen attribute getters/setters with annotations (you probably should edit)
-
-	@Id
-	@GeneratedValue
-	@Column(name = "ID")
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+ 
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {

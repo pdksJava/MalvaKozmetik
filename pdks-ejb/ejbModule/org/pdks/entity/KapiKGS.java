@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -39,8 +38,7 @@ public class KapiKGS implements Serializable {
 	private Kapi kapi;
 
 	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
+ 	@Column(name = COLUMN_NAME_ID)
 	public Long getId() {
 		return id;
 	}

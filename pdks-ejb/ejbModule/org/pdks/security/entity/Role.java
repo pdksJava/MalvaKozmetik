@@ -6,8 +6,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -21,12 +19,13 @@ import org.hibernate.annotations.FetchMode;
 import org.jboss.seam.annotations.security.management.RoleConditional;
 import org.jboss.seam.annotations.security.management.RoleGroups;
 import org.jboss.seam.annotations.security.management.RoleName;
+import org.pdks.entity.BasePDKSObject;
 import org.pdks.entity.Departman;
 import org.pdks.session.PdksUtil;
 
 @Entity(name = Role.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { Role.COLUMN_NAME_ROLE_NAME }) })
-public class Role implements Serializable {
+public class Role extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -59,23 +58,11 @@ public class Role implements Serializable {
 	public static final String TIPI_YEMEKHANE = "yemekHane";
 	public static final String TIPI_TASERON_ADMIN = "kontratliAdmin";
 
-	private Integer id;
 	private String rolename;
 	private String aciklama;
 	private Set<Role> groups;
 	private Boolean status = Boolean.TRUE, adminRole = Boolean.FALSE;
 	private Departman departman;
-
-	@Id
-	@GeneratedValue
-	@Column(name = "ID")
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
 
 	@RoleName
 	@Column(name = COLUMN_NAME_ROLE_NAME)

@@ -4,17 +4,16 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Transient;
+
+import org.pdks.entity.BasePDKSObject;
 
 /**
  *  
  * 
  */
 @Entity(name = "SAP_SERVER")
-public class SAPSunucu implements Serializable {
+public class SAPSunucu  extends BasePDKSObject  implements Serializable {
 
 	/**
 	 * 
@@ -35,20 +34,11 @@ public class SAPSunucu implements Serializable {
 	public final static String SAP_MESSAGE_ABORT = "A";
 	public final static String SAP_MESSAGE_ERROR = "R";
 
-	private Integer id, sunucuTipi = SUNUCU_TIPI_CANLI, durum = DURUM_AKTIF;
+	private Integer  sunucuTipi = SUNUCU_TIPI_CANLI, durum = DURUM_AKTIF;
 	private String hostName, client, systemNumber, destinationName, dil = "TR", msHostName;
 	private Boolean aktif = Boolean.TRUE;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "ID")
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
+ 
 
 	@Column(name = "HOSTNAME")
 	public String getHostName() {

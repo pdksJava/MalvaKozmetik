@@ -726,7 +726,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						if (kullanici.getYetkiliRollerim() != null && kullanici.getYetkiliRollerim().isEmpty())
 							kullanici = ortakIslemler.personelPdksRolAta(kullanici, Boolean.FALSE, session);
 						pdksEntityController.saveOrUpdate(session, entityManager, kullanici);
-						HashMap<Integer, UserRoles> roller = new HashMap<Integer, UserRoles>();
+						HashMap<Long, UserRoles> roller = new HashMap<Long, UserRoles>();
 						HashMap<Long, UserTesis> tesisler = new HashMap<Long, UserTesis>();
 						HashMap map = new HashMap();
 						map.put("user.id", kullanici.getId());

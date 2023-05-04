@@ -10,8 +10,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -23,23 +21,24 @@ import javax.persistence.UniqueConstraint;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.pdks.entity.Departman;
-import org.pdks.entity.Personel;
-import org.pdks.entity.Tanim;
-import org.pdks.session.LDAPUserManager;
-import org.pdks.session.PdksUtil;
 import org.hibernate.Session;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.Email;
 import org.jboss.seam.annotations.security.management.UserPassword;
 import org.jboss.seam.annotations.security.management.UserPrincipal;
+import org.pdks.entity.BasePDKSObject;
+import org.pdks.entity.Departman;
+import org.pdks.entity.Personel;
+import org.pdks.entity.Tanim;
+import org.pdks.session.LDAPUserManager;
+import org.pdks.session.PdksUtil;
 
 import com.pdks.webservice.MailPersonel;
 
 @Entity(name = User.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { User.COLUMN_NAME_PERSONEL }), @UniqueConstraint(columnNames = { User.COLUMN_NAME_USERNAME }) })
-public class User implements Serializable, Cloneable {
+public class User extends BasePDKSObject implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -58,8 +57,6 @@ public class User implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_EMAIL = "EMAIL";
 	public static final String COLUMN_NAME_SHORT_USER_NAME = "SHORT_USER_NAME";
 	public static final String COLUMN_NAME_PERSONEL_NO = "PER_NO";
-
-	private Long id;
 
 	private String username, shortUsername, passwordHash, newPassword, firstname, lastname, staffId, email, calistigiSayfa, remoteAddr, fullName;
 	private String personelNo;
@@ -105,17 +102,6 @@ public class User implements Serializable, Cloneable {
 		// this.emailCC = null;
 		// this.emailBCC = null;
 		// this.hareketMail = null;
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	@Email

@@ -8,21 +8,19 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
-import org.pdks.security.entity.UserMenuItemTime;
-import org.pdks.session.PdksUtil;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.pdks.security.entity.UserMenuItemTime;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = MenuItem.TABLE_NAME)
-public class MenuItem implements Serializable {
+public class MenuItem extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -31,7 +29,7 @@ public class MenuItem implements Serializable {
 	public static final String TABLE_NAME = "MENUITEM";
 	public static final String COLUMN_NAME_ID = "ID";
 	public static final String COLUMN_NAME_ADI = "NAME";
-	private Long id;
+
 	private String name = "";
 	private List<MenuItem> childMenuItemList = new ArrayList<MenuItem>();;
 	private Tanim description;
@@ -42,24 +40,6 @@ public class MenuItem implements Serializable {
 	private Boolean check = Boolean.FALSE;
 	private MenuItem parentMenuItem;
 	private List<UserMenuItemTime> menuItemTimeList;
-
-	/**
-	 * @return the id
-	 */
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	/**
 	 * @return the name

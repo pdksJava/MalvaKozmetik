@@ -7,8 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -22,7 +20,7 @@ import org.pdks.security.entity.User;
 import org.pdks.session.PdksUtil;
 
 @Entity(name = CalismaSekli.TABLE_NAME)
-public class CalismaSekli implements Serializable {
+public class CalismaSekli extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -40,23 +38,11 @@ public class CalismaSekli implements Serializable {
 	public static final String COLUMN_NAME_OLUSTURMA_TARIHI = "OLUSTURMATARIHI";
 	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEMETARIHI";
 
-	private Long id;
 	private Boolean durum = Boolean.TRUE, checkBoxDurum;
 	private User guncelleyenUser, olusturanUser;
 	private Date olusturmaTarihi = new Date(), guncellemeTarihi;
 	private String adi;
 	private Double arifeNormalCalismaDakika = 240d;
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Column(name = COLUMN_NAME_ADI)
 	public String getAdi() {

@@ -5,8 +5,6 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -18,7 +16,7 @@ import org.hibernate.annotations.FetchMode;
 
 @Entity(name = IzinTipiMailAdres.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { IzinTipiMailAdres.COLUMN_NAME_IZIN_TIPI, IzinTipiMailAdres.COLUMN_NAME_MAIL_ADRES }) })
-public class IzinTipiMailAdres implements Serializable, Cloneable {
+public class IzinTipiMailAdres extends BasePDKSObject implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -32,8 +30,6 @@ public class IzinTipiMailAdres implements Serializable, Cloneable {
 	public static final String TIPI_CC = "CC";
 	public static final String TIPI_BCC = "BC";
 
-	private Long id;
-
 	private IzinTipi izinTipi;
 
 	private String tipi, adres;
@@ -41,17 +37,6 @@ public class IzinTipiMailAdres implements Serializable, Cloneable {
 	private Integer version = 0;
 
 	private int sira = 0;
-
-	@Id
-	@Column(name = COLUMN_NAME_MAIL_ID)
-	@GeneratedValue
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {

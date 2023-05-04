@@ -8,8 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -22,7 +20,7 @@ import org.pdks.security.entity.User;
 import org.pdks.session.PdksUtil;
 
 @Entity(name = CalismaModeli.TABLE_NAME)
-public class CalismaModeli implements Serializable {
+public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -44,8 +42,6 @@ public class CalismaModeli implements Serializable {
 	public static final String COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL = "HAREKET_KAYDI_VARDIYA_BUL";
 	public static final String COLUMN_NAME_MAAS_ODEME_TIPI = "MAAS_ODEME_TIPI";
 
-	private Long id;
-
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
 
@@ -57,17 +53,6 @@ public class CalismaModeli implements Serializable {
 
 	private User guncelleyenUser, olusturanUser;
 	private Date olusturmaTarihi = new Date(), guncellemeTarihi;
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Column(name = "ACIKLAMA")
 	public String getAciklama() {

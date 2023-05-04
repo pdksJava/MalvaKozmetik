@@ -9,8 +9,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -18,15 +16,15 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
-import org.pdks.security.entity.User;
-import org.pdks.session.PdksUtil;
-import org.pdks.session.Constants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.Length;
+import org.pdks.security.entity.User;
+import org.pdks.session.Constants;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = Tanim.TABLE_NAME)
-public class Tanim implements Serializable, Cloneable {
+public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 	/**
 	 * 
 	 */
@@ -64,7 +62,7 @@ public class Tanim implements Serializable, Cloneable {
 	public static final String TIPI_KAPI_TIPI = "KAPI_TIPI";
 	public static final String TIPI_IZIN_GRUPLARI = "IZIN_TIPI_GRUPLARI";
 	public static final String TIPI_IZIN_KODU_GRUPLARI = "IZIN_KODU_GRUBU";
- 	public static final String TIPI_SAP_DEPARTMAN = "SAP_DEPARTMAN";
+	public static final String TIPI_SAP_DEPARTMAN = "SAP_DEPARTMAN";
 	public static final String TIPI_PDKS_DEPARTMAN = "PDKS_DEPARTMAN";
 	public static final String TIPI_TESIS = "TESIS";
 	public static final String TIPI_SIRKET_GRUP = "SIRKET_GRUP";
@@ -103,7 +101,6 @@ public class Tanim implements Serializable, Cloneable {
 	public static final String DEFAULT_DOVIZ_KODU = "TL";
 	public static final String IKINCI_YONETICI_ONAYLAMAZ = "ikinciYoneticiOlmaz";
 
-	private Long id;
 	private String tipi;
 	private Tanim parentTanim;
 	private String kodu = "", erpKodu = "";
@@ -115,9 +112,6 @@ public class Tanim implements Serializable, Cloneable {
 	private User islemYapan;
 	private Date islemTarihi = Calendar.getInstance().getTime();
 
-	// seam-gen attribute getters/setters with annotations (you probably should
-	// edit)
-
 	public Tanim() {
 		super();
 
@@ -125,17 +119,6 @@ public class Tanim implements Serializable, Cloneable {
 
 	public Tanim(Long id) {
 		super();
-		this.id = id;
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
 		this.id = id;
 	}
 

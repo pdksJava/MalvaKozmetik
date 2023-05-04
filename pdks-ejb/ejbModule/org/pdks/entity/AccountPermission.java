@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Generated;
@@ -20,7 +18,7 @@ import org.jboss.seam.annotations.security.permission.PermissionUser;
 import org.pdks.security.entity.Role;
 
 @Entity(name = "ACCOUNTPERMISSION")
-public class AccountPermission implements Serializable {
+public class AccountPermission extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -37,7 +35,7 @@ public class AccountPermission implements Serializable {
 	public static final String ADMIN_ROLE = "admin";
 	public static final String IK_ROLE = "IK";
 	public static final String IK_Tesis_ROLE = "IKTesis";
-	private Long id;
+
 	private String recipient;
 	private String target;
 	private String action;
@@ -48,17 +46,6 @@ public class AccountPermission implements Serializable {
 	private String recipientDescription;
 	private String targetDescription;
 	private List<Role> roleList = new ArrayList<Role>();
-
-	@Id
-	@GeneratedValue
-	@Column(name = "ID")
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@PermissionUser
 	@PermissionRole

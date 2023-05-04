@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity(name = LDAPDomain.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { LDAPDomain.COLUMN_NAME_HOST }) })
-public class LDAPDomain implements Serializable {
+public class LDAPDomain extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -25,8 +23,6 @@ public class LDAPDomain implements Serializable {
 
 	public static final String COLUMN_NAME_ID = "ID";
 	public static final String COLUMN_NAME_HOST = "HOST";
-
-	private Integer id;
 
 	private int sira;
 
@@ -61,17 +57,6 @@ public class LDAPDomain implements Serializable {
 		this.ldapDC = ldapDC;
 		this.sira = 1;
 		this.durum = new Boolean(true);
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	@Column(name = COLUMN_NAME_HOST, length = 64)

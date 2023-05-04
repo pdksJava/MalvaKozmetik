@@ -7,8 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -24,7 +22,7 @@ import org.pdks.session.PdksUtil;
 
 @Entity(name = Parameter.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { Parameter.COLUMN_NAME_ADI }) })
-public class Parameter implements Serializable {
+public class Parameter extends BasePDKSObject implements Serializable {
 	/**
 	 * 
 	 */
@@ -36,8 +34,6 @@ public class Parameter implements Serializable {
 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
 	public static final String COLUMN_NAME_HELP_DESK = "HDSK";
 
-	// seam-gen attributes (you should probably edit these)
-	private Long id;
 	private Integer version = 0;
 	private String name = "";
 	private String value = "";
@@ -46,21 +42,6 @@ public class Parameter implements Serializable {
 	private User changeUser;
 	private Date changeDate;
 	private Boolean guncelle = Boolean.TRUE;
-
-	// add additional entity attributes
-
-	// seam-gen attribute getters/setters with annotations (you probably should edit)
-
-	@Id
-	@GeneratedValue
-	@Column(name = "ID")
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {

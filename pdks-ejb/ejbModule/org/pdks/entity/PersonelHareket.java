@@ -6,8 +6,6 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -20,7 +18,7 @@ import org.hibernate.annotations.Immutable;
 
 @Entity(name = "PDKS_HAREKET")
 @Immutable
-public class PersonelHareket implements Serializable {
+public class PersonelHareket extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -30,7 +28,6 @@ public class PersonelHareket implements Serializable {
 	public static final String COLUMN_NAME_PER_NO = "PER_NO";
 	public static final String COLUMN_NAME_PERSONEL = "PERSONEL";
 
-	private Long id;
 	private PersonelView personel;
 	private PersonelKGS personelKGS;
 	private KapiView kapiView;
@@ -40,17 +37,6 @@ public class PersonelHareket implements Serializable {
 	private String personelNo;
 	private Integer durum = 1;
 	private Long kgsHareket;
-
-	@Id
-	@GeneratedValue
-	@Column(name = "ID", nullable = false)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	@JoinColumn(name = COLUMN_NAME_PERSONEL, nullable = false)

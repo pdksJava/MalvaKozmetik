@@ -4,14 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 
 @Entity(name = MailGrubu.TABLE_NAME)
-public class MailGrubu implements Serializable, Cloneable {
+public class MailGrubu extends BasePDKSObject implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -30,7 +28,6 @@ public class MailGrubu implements Serializable, Cloneable {
 	public static final String TIPI_CC = "CC";
 	public static final String TIPI_BCC = "BCC";
 	public static final String TIPI_HAREKET = "HRK";
-	private Long id;
 
 	private String tipi, email;
 
@@ -46,17 +43,6 @@ public class MailGrubu implements Serializable, Cloneable {
 	public MailGrubu() {
 		super();
 		this.guncellendi = Boolean.FALSE;
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	@Column(name = COLUMN_NAME_TIPI)

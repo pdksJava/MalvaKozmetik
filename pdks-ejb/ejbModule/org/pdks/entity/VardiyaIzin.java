@@ -3,10 +3,7 @@ package org.pdks.entity;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,7 +14,7 @@ import org.hibernate.annotations.FetchMode;
 
 @Entity(name = VardiyaIzin.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { VardiyaIzin.COLUMN_NAME_IZIN_VARDIYA }) })
-public class VardiyaIzin implements Serializable {
+public class VardiyaIzin extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -40,20 +37,7 @@ public class VardiyaIzin implements Serializable {
 		this.izinVardiya = izinVardiya;
 	}
 
-	private Long id;
-
 	private Vardiya izinVardiya, calismaVardiya;
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = COLUMN_NAME_IZIN_VARDIYA, nullable = false)

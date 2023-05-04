@@ -6,8 +6,6 @@ import java.util.HashMap;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -20,7 +18,7 @@ import org.hibernate.annotations.FetchMode;
 
 @Entity(name = PersonelDenklestirmeBordro.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME }) })
-public class PersonelDenklestirmeBordro implements Serializable {
+public class PersonelDenklestirmeBordro  extends BasePDKSObject  implements Serializable {
 
 	/**
 	 * 
@@ -36,7 +34,7 @@ public class PersonelDenklestirmeBordro implements Serializable {
 	public static final String COLUMN_NAME_HAFTA_TATIL = "HAFTA_TATIL_ADET";
 	public static final String COLUMN_NAME_G_HAFTA_TATIL = "TATIL_ADET";
 
-	private Long id;
+ 
 
 	private PersonelDenklestirme personelDenklestirme;
 
@@ -59,16 +57,7 @@ public class PersonelDenklestirmeBordro implements Serializable {
 		this.tatilAdet = tatilAdet;
 	}
 
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+ 
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	@JoinColumn(name = COLUMN_NAME_PERSONEL_DENKLESTIRME, nullable = false)

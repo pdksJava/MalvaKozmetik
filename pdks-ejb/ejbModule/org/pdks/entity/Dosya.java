@@ -7,9 +7,6 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Transient;
 
@@ -20,13 +17,13 @@ import org.pdks.session.PdksUtil;
  */
 
 @Entity(name = "DOSYA")
-public class Dosya implements Serializable {
+public class Dosya extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2908520509292855097L;
-	private Long id;
+
 	private Integer version = 0;
 
 	private byte[] dosyaIcerik;
@@ -34,17 +31,6 @@ public class Dosya implements Serializable {
 
 	private Integer size;
 	private boolean islemYapildi = Boolean.FALSE;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ID")
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {

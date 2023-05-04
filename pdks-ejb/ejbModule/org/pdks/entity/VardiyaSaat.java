@@ -5,8 +5,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -14,7 +12,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 
 @Entity(name = VardiyaSaat.TABLE_NAME)
-public class VardiyaSaat implements Serializable, Cloneable {
+public class VardiyaSaat extends BasePDKSObject implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -31,8 +29,6 @@ public class VardiyaSaat implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_AKSAM_VARDIYA = "AKSAM_VARDIYA_SURESI";
 	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEME_TARIHI";
 
-	private Long id;
-
 	private double normalSure = 0d, calismaSuresi = 0d, resmiTatilSure = 0d, aksamVardiyaSaatSayisi = 0d;
 
 	private Date guncellemeTarihi;
@@ -42,17 +38,6 @@ public class VardiyaSaat implements Serializable, Cloneable {
 	public VardiyaSaat() {
 		super();
 		this.guncellendi = false;
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	@Column(name = COLUMN_NAME_NORMAL_SURE)
