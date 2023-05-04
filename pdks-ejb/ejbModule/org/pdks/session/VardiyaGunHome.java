@@ -3682,6 +3682,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				Long onceki = aramaSecenekleri.getSirketId();
 				if (sirketler.size() == 1) {
 					aramaSecenekleri.setSirketId((Long) sirketler.get(0).getValue());
+					onceki = aramaSecenekleri.getSirketId();
 				} else if (onceki != null) {
 					for (SelectItem st : sirketler) {
 						if (st.getValue().equals(onceki))
@@ -8208,7 +8209,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 		} else
 			aramaSecenekleri.setTesisId(null);
-		if (bolumDoldurDurum) {
+		if (bolumDoldurDurum || sirket.getTesisDurum() == false) {
 			if (sirket != null) {
 				if (sirket.isTesisDurumu() == false)
 					aramaSecenekleri.setTesisId(null);
@@ -8541,6 +8542,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					donusAdres = "";
 			} else {
 				fillSirketList();
+				if (aramaSecenekleri.getSirketId() != null) {
+					tesisDoldur(false);
+				}
 
 			}
 			if (!ayniSayfa)

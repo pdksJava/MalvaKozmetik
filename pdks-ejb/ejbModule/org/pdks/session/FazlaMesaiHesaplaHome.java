@@ -492,8 +492,15 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						gorevYeriList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, sadeceFazlaMesai, session);
 
 					}
-				} else if (sirketId != null)
+				} else if (sirketId != null) {
 					tesisDoldur(false);
+				} else {
+					fillSirketList();
+					if (sirketId != null) {
+						tesisDoldur(false);
+					}
+				}
+
 				if (tesisIdStr != null)
 					setTesisId(Long.parseLong(tesisIdStr));
 				bolumDoldur();
