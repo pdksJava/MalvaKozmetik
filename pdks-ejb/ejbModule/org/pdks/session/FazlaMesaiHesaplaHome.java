@@ -2293,7 +2293,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					mailGonder = Boolean.FALSE;
 					try {
 						if (!authenticatedUser.isAdmin())
-							fazlaMesaiOnaylaDevam(Boolean.TRUE);
+							fazlaMesaiOnaylaDevam(Boolean.TRUE, Boolean.TRUE);
 					} catch (Exception eo) {
 						logger.error(eo);
 						eo.printStackTrace();
@@ -3876,15 +3876,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	@Transactional
 	public String fazlaMesaiOnayla() {
-		fazlaMesaiOnaylaDevam(Boolean.TRUE);
+		fazlaMesaiOnaylaDevam(Boolean.TRUE, Boolean.FALSE);
 		return "";
 	}
 
-	/**
-	 * @param guncellendi
-	 * @return
-	 */
-	private String fazlaMesaiOnaylaDevam(Boolean guncellendi) {
+	 
+	private String fazlaMesaiOnaylaDevam(Boolean guncellendi, Boolean manuelOnay) {
 		try {
 			boolean onaylandi = Boolean.FALSE;
 			TreeMap<Long, List<AylikPuantaj>> puantajMap = new TreeMap<Long, List<AylikPuantaj>>();
@@ -3941,8 +3938,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (onaylandi) {
 				kaydetDurum = false;
 				session.flush();
-			} else if (guncellendi)
-				PdksUtil.addMessageAvailableWarn("Kayıt seçiniz!");
+			} else if (guncellendi) {
+				if (!manuelOnay)
+					PdksUtil.addMessageAvailableWarn("Kayıt seçiniz!");
+			}
+
 			if (mailGonder) {
 				toList = ortakIslemler.IKKullanicilariBul(new ArrayList<User>(), authenticatedUser.getPdksPersonel(), session);
 				if (!toList.isEmpty() || !yoneticiMap.isEmpty()) {
