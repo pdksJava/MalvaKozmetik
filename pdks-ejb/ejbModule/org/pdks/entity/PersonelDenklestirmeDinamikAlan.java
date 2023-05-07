@@ -27,8 +27,7 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	static Logger logger = Logger.getLogger(PersonelDenklestirmeDinamikAlan.class);
 
 	public static final String TABLE_NAME = "PERS_DENK_DINAMIK_ALAN";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
+ 	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
 	public static final String COLUMN_NAME_ALAN = "ALAN_ID";
 	public static final String COLUMN_NAME_DENKLESTIRME_ALAN_DURUM = "ALAN_DURUM";
 	public static final String COLUMN_NAME_DENKLESTIRME_ISLEM_DURUM = "ISLEM_DURUM";

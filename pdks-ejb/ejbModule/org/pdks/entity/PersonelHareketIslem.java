@@ -28,8 +28,7 @@ public class PersonelHareketIslem  extends BasePDKSObject implements Serializabl
 	private static final long serialVersionUID = 2818559653323880265L;
 
 	public static final String TABLE_NAME = "PDKS_ISLEM";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final int ONAY_DURUM_ISLEM_YAPILMADI = 0;
+ 	public static final int ONAY_DURUM_ISLEM_YAPILMADI = 0;
 	public static final int ONAY_DURUM_ONAYLANDI = 1;
 	public static final int ONAY_DURUM_ONAYLANMADI = 2;
  

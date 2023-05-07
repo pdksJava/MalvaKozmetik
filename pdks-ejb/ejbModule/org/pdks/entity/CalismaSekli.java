@@ -28,8 +28,7 @@ public class CalismaSekli extends BasePDKSObject implements Serializable {
 	private static final long serialVersionUID = -6317841082433463763L;
 	static Logger logger = Logger.getLogger(CalismaSekli.class);
 	public static final String TABLE_NAME = "CALISMA_SEKLI";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_ADI = "ADI";
+ 	public static final String COLUMN_NAME_ADI = "ADI";
 	public static final String COLUMN_NAME_ARIFE_NORMAL_CALISMA_DAKIKA = "ARIFE_NORMAL_CALISMA_DAKIKA";
 
 	public static final String COLUMN_NAME_DURUM = "DURUM";

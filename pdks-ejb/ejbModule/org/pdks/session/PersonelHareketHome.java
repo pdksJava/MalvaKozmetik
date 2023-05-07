@@ -608,16 +608,27 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			map1.put(PdksEntityController.MAP_KEY_SESSION, session);
 		Tanim neden = (Tanim) pdksEntityController.getObjectByInnerObject(map1, Tanim.class);
 		if (kgsHareket.getTerminalKapi() != null && neden != null) {
-			Long kgsId = 0L, abhId = 0L;
-			if (kgsHareket.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
-				kgsId = kgsHareket.getHareketTableId();
+			Long kgsId = 0L, pdksId = 0L;
+			// if (kgsHareket.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
+			// kgsId = kgsHareket.getHareketTableId();
+			// else
+			// abhId = kgsHareket.getHareketTableId();
+
+			String str = kgsHareket.getId();
+			Long id = Long.parseLong(str.substring(1));
+			if (str.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
+				kgsId = id;
 			else
-				abhId = kgsHareket.getHareketTableId();
+				pdksId = id;
 			try {
 				String aciklama = kgsHareket.getKapiView().getKapi().getAciklama() + " güncellendi.";
 				KapiView terminalKapi = terminalKapiManuelUpdate(kgsHareket.getTerminalKapi());
-				pdksEntityController.hareketSil(kgsId, abhId, authenticatedUser, neden.getId(), "", session);
-				abhId = pdksEntityController.hareketEkle(terminalKapi, kgsHareket.getPersonel(), kgsHareket.getZaman(), authenticatedUser, neden.getId(), aciklama, session);
+				String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+				String sirketStr = "";
+				if (!birdenFazlaKGSSirketSQL.equals(""))
+					sirketStr = "_SIRKET";
+				pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, neden.getId(), "", kgsHareket.getKgsSirketId(), sirketStr, session);
+				pdksId = pdksEntityController.hareketEkle(terminalKapi, kgsHareket.getPersonel(), kgsHareket.getZaman(), authenticatedUser, neden.getId(), aciklama, session);
 				session.flush();
 				session.clear();
 				fillHareketList();
@@ -711,7 +722,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			}
 			if (authenticatedUser.isAdmin() || !islemTipi.equals("")) {
 				Date bugun = Calendar.getInstance().getTime();
-				long kgsId = 0, abhId = 0;
+				long kgsId = 0, pdksId = 0;
 				if (islemTipi.equals("E")) {
 					if ((kgsHareket.getKapiView() == null || kgsHareket.getKapiView().getId() == null) && kgsHareket.getKapiId() != null) {
 						KapiView kapiView = kgsHareket.getKapiView() == null ? new KapiView() : kgsHareket.getKapiView();
@@ -720,25 +731,35 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					}
 					KapiView terminalKapi = terminalKapiManuelUpdate(kgsHareket.getKapiView());
 					if (bugun.after(zaman))
-						abhId = pdksEntityController.hareketEkle(terminalKapi, kgsHareket.getPersonel(), zaman, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), session);
+						pdksId = pdksEntityController.hareketEkle(terminalKapi, kgsHareket.getPersonel(), zaman, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), session);
 					session.clear();
 				} else {
-
-					if (kgsHareket.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
-						kgsId = kgsHareket.getHareketTableId();
+					String str = kgsHareket.getId();
+					Long id = Long.parseLong(str.substring(1));
+					if (str.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
+						kgsId = id;
 					else
-						abhId = kgsHareket.getHareketTableId();
+						pdksId = id;
+					// if (kgsHareket.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
+					// kgsId = kgsHareket.getHareketTableId();
+					// else
+					// abhId = kgsHareket.getHareketTableId();
+					String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+					String sirketStr = "";
+					if (!birdenFazlaKGSSirketSQL.equals(""))
+						sirketStr = "_SIRKET";
 					if (islemTipi.equals("G")) {
+
 						if (bugun.after(zaman))
-							pdksEntityController.hareketGuncelle(kgsId, abhId, zaman, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), session);
+							pdksEntityController.hareketGuncelle(kgsId, pdksId, zaman, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), kgsHareket.getKgsSirketIdLong(), sirketStr, session);
 					} else
-						pdksEntityController.hareketSil(kgsId, abhId, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), session);
+						pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), kgsHareket.getKgsSirketIdLong(), sirketStr, session);
 
 					parametreMap.clear();
 					if (kgsId != 0)
 						parametreMap.put("hareketTableId", HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS + kgsId);
 					else
-						parametreMap.put("hareketTableId", HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS + abhId);
+						parametreMap.put("hareketTableId", HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS + pdksId);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 

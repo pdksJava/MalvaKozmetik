@@ -1,16 +1,18 @@
 package org.pdks.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.pdks.session.PdksUtil;
 
 @Entity(name = KapiSirket.TABLE_NAME)
-public class KapiSirket implements Serializable {
+public class KapiSirket extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -21,23 +23,34 @@ public class KapiSirket implements Serializable {
 	 */
 
 	public static final String TABLE_NAME = "KAPI_SIRKET";
-	public static final String COLUMN_NAME_ID = "ID";
 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
+	public static final String COLUMN_NAME_BAS_TARIH = "BASLANGIC_TARIHI";
+	public static final String COLUMN_NAME_BIT_TARIH = "BITIS_TARIHI";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 
-	private Long id;
+	private Date basTarih, bitTarih;
 	private String aciklama;
 
 	private Boolean durum = Boolean.TRUE;
 
-	@Id
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
+	@Temporal(TemporalType.DATE)
+	@Column(name = COLUMN_NAME_BAS_TARIH)
+	public Date getBasTarih() {
+		return basTarih;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setBasTarih(Date basTarih) {
+		this.basTarih = basTarih;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = COLUMN_NAME_BIT_TARIH)
+	public Date getBitTarih() {
+		return bitTarih;
+	}
+
+	public void setBitTarih(Date bitTarih) {
+		this.bitTarih = bitTarih;
 	}
 
 	@Column(name = COLUMN_NAME_ACIKLAMA)

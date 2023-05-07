@@ -56,7 +56,8 @@
 								</h:selectOneMenu>
 							</s:decorate>
 
-							<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiHesaplaHome.tesisList!=null and fazlaMesaiHesaplaHome.tesisList.size()>0}">
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiHesaplaHome.tesisList!=null and fazlaMesaiHesaplaHome.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
 								<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
 									disabled="#{fazlaMesaiHesaplaHome.tesisList.size()==1}">
@@ -128,7 +129,7 @@
 												onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide()" /></TD>
 										<TD width="35%" valign="top"><ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
 												<ui:fragment rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum and fazlaMesaiHesaplaHome.gecenAyDurum==false}">
-												 
+
 													<ui:fragment
 														rendered="#{(fazlaMesaiHesaplaHome.denklestirmeAyDurum or fazlaMesaiHesaplaHome.ikRole) and fazlaMesaiHesaplaHome.kullaniciPersonel==false and fazlaMesaiHesaplaHome.hataYok and (fazlaMesaiHesaplaHome.denklestirmeAy.guncelleIK or fazlaMesaiHesaplaHome.sicilNo==null or fazlaMesaiHesaplaHome.sicilNo=='')}">
 														<a4j:commandButton value="Fazla Mesai Onayla" action="#{fazlaMesaiHesaplaHome.fazlaMesaiOnayKontrol()}"
@@ -263,13 +264,15 @@
 							<f:facet name="header">
 								<h:outputText value="Hareket No" />
 							</f:facet>
-							<h:outputText value="#{hareket.id}" />
+							<SPAN id="hareket#{hareket.id}"> <h:outputText value="#{hareket.id}" /></SPAN>
+							 
 
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
 								<h:outputText value="Kapı" />
 							</f:facet>
+
 							<ui:fragment rendered="#{hareket.islem==null}">
 								<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
 							</ui:fragment>
@@ -310,11 +313,19 @@
 							</ui:fragment>
 
 						</rich:column>
-						<rich:column style="text-align:center;">
+						<rich:column style="text-align:center;" rendered="#{fazlaMesaiHesaplaHome.ikRole==false}">
 							<f:facet name="header">
 								<h:outputText value="Kapı Tip" />
 							</f:facet>
 							<h:outputText value="#{hareket.kapiView.kapi.tipi.aciklama}" />
+						</rich:column>
+						<rich:column style="text-align:center;" rendered="#{fazlaMesaiHesaplaHome.ikRole and fazlaMesaiHesaplaHome.birdenFazlaKGSSirketSQL!=''}">
+							<f:facet name="header">
+								<h:outputText value="KGS Şirket" />
+							</f:facet>
+							<ui:fragment rendered="#{hareket.kapiSirket!=null}">
+								<h:outputText value="#{hareket.kapiSirket.aciklama}" />
+							</ui:fragment>
 						</rich:column>
 						<rich:column style="text-align:center;">
 							<f:facet name="header">

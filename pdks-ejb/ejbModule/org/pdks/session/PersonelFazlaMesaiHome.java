@@ -146,7 +146,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
- 		fazlaMesaiGirisDurum = false;
+		fazlaMesaiGirisDurum = false;
 		adminRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIKAdmin();
 		ikRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || (PdksUtil.isSistemDestekVar() && authenticatedUser.isIK());
 		if (authenticatedUser.isAdmin() == false || aramaSecenekleri == null)
@@ -437,7 +437,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			VardiyaGun pdksVardiyaGun = getVardiyaPlan(fazlaMesai);
 			boolean tatil = fazlaMesai.getHareket().isTatil();
 			Double fazlaMesaiSaati = fazlaMesai.getHareket().getFazlaMesai();
-			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareketId(), HareketKGS.class, session);
+			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), session);
 
 			HareketKGS hareket = !list.isEmpty() ? list.get(0) : null;
 			if (hareket == null && fazlaMesai.getHareketId() != null) {
@@ -518,7 +518,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		boolean yeni = fazlaMesai.getId() == null;
 		try {
 			VardiyaGun pdksVardiyaGun = getVardiyaPlan(fazlaMesai);
-			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket().getId(), HareketKGS.class, session);
+			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), session);
 			HareketKGS hareket = !list.isEmpty() ? list.get(0) : null;
 
 			if (hareket != null) {
@@ -643,8 +643,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 		if (personeller != null && !personeller.isEmpty()) {
 			saveLastParameter();
-			HashMap parametreMap = new HashMap();
-			boolean fazlaMesaiYemekHesapla = ortakIslemler.getParameterKey("fazlaMesaiYemekHesapla").equals("1");
+ 			boolean fazlaMesaiYemekHesapla = ortakIslemler.getParameterKey("fazlaMesaiYemekHesapla").equals("1");
 			if (fazlaMesaiYemekHesapla)
 				yemekList = ortakIslemler.getYemekList(session);
 
@@ -1154,6 +1153,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 				}
 				HashMap<String, String> hareketMap = new HashMap<String, String>();
+				List<HareketKGS> idList = new ArrayList<HareketKGS>();
 				for (Iterator iterator2 = kgsList1.iterator(); iterator2.hasNext();) {
 					HareketKGS kgsHareket = (HareketKGS) iterator2.next();
 					if (hareketMap.containsKey(kgsHareket.getId())) {
@@ -1168,6 +1168,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 						if (mesai.getHareketId().equals(kgsHareket.getId())) {
 							mesai.setHareket(kgsHareket);
 							kgsHareket.setPersonelFazlaMesai(mesai);
+							idList.add(kgsHareket);
 							iterator.remove();
 							break;
 						}
@@ -1175,18 +1176,9 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 				}
 				if (!mesaiList.isEmpty()) {
-					List<String> idList = new ArrayList<String>();
-					for (Iterator iterator = mesaiList.iterator(); iterator.hasNext();) {
-						PersonelFazlaMesai mesai = (PersonelFazlaMesai) iterator.next();
-						idList.add(mesai.getHareketId());
-					}
-					parametreMap.clear();
 
-					parametreMap.put("id", idList);
-					if (session != null)
-						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 					try {
-						List<HareketKGS> hareketler = ortakIslemler.getHareketIdBilgileri(idList, null, HareketKGS.class, session);
+						List<HareketKGS> hareketler = ortakIslemler.getHareketIdBilgileri(idList, null, session);
 						for (HareketKGS kgsHareket : hareketler) {
 							for (Iterator iterator = mesaiList.iterator(); iterator.hasNext();) {
 								PersonelFazlaMesai mesai = (PersonelFazlaMesai) iterator.next();
@@ -1401,17 +1393,20 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			}
 			sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
 			HareketKGS cikis = hareket.getCikisHareket() != null ? hareket.getCikisHareket() : hareket;
-			Long abhCikisId = pdksEntityController.hareketEkleReturn(manuelKapiKontrol(cikis.getKapiView()), hareket.getPersonel(), cikisZaman, sistemAdminUser, fazlaMesaiSistemOnayDurum.getId(), "", session);
-			if (abhCikisId != null) {
+			Long hareketTableId = pdksEntityController.hareketEkle(manuelKapiKontrol(cikis.getKapiView()), hareket.getPersonel(), cikisZaman, sistemAdminUser, fazlaMesaiSistemOnayDurum.getId(), "", session);
+			if (hareketTableId != null) {
 				HashMap parametreMap = new HashMap();
 
-				parametreMap.put("hareketTableId", abhCikisId);
+				parametreMap.put("hareketTableId", hareketTableId);
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 
 				List<HareketKGS> list = null;
 				try {
-					list = ortakIslemler.getHareketIdBilgileri(null, HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS + abhCikisId, HareketKGS.class, session);
+					HareketKGS hareketKGS = new HareketKGS();
+					hareketKGS.setId(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS + hareketTableId);
+					hareketKGS.setHareketTableId(hareketTableId);
+					list = ortakIslemler.getHareketIdBilgileri(null, hareketKGS, session);
 				} catch (Exception e) {
 					list = new ArrayList<HareketKGS>();
 					e.printStackTrace();
@@ -1419,7 +1414,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				HareketKGS kgsHareketCikis = !list.isEmpty() ? list.get(0) : null;
 				if (kgsHareketCikis != null) {
 					HareketKGS kgsHareketGiris = hareket.getGirisHareket() != null ? hareket.getGirisHareket() : hareket;
-					pdksEntityController.hareketEkleReturn(manuelKapiKontrol(kgsHareketGiris.getKapiView()), hareket.getPersonel(), girisZaman, sistemAdminUser, fazlaMesaiSistemOnayDurum.getId(), "", session);
+					pdksEntityController.hareketEkle(manuelKapiKontrol(kgsHareketGiris.getKapiView()), hareket.getPersonel(), girisZaman, sistemAdminUser, fazlaMesaiSistemOnayDurum.getId(), "", session);
 					kgsHareketCikis.setVardiyaGun(hareket.getVardiyaGun());
 					double saat = ortakIslemler.getSaatSure(girisZaman, orjCikisZaman, yemekList, hareket.getVardiyaGun(), session);
 					kgsHareketCikis.setGirisZaman(orjGirisZaman);

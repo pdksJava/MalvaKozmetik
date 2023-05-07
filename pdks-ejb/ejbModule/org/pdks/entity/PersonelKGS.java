@@ -5,8 +5,9 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
@@ -17,15 +18,16 @@ import org.pdks.security.entity.User;
 
 @Entity(name = PersonelKGS.TABLE_NAME)
 @Immutable
-public class PersonelKGS implements Serializable {
+public class PersonelKGS extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -258104220283554275L;
-	public static final String TABLE_NAME = "PERSONEL_KGS";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_SICIL_NO = "PERSONEL_NO";
+	// public static final String TABLE_NAME = "PERSONEL_KGS";
+	public static final String TABLE_NAME = "PERSONEL_SIRKET_KGS";
+
+ 	public static final String COLUMN_NAME_SICIL_NO = "PERSONEL_NO";
 	public static final String COLUMN_NAME_KIMLIK_NO = "TC_KIMLIK_NO";
 	public static final String COLUMN_NAME_PERSONEL_ID = "PERSONEL_ID";
 	public static final String COLUMN_NAME_KULLANICI_ID = "KULLANICI_ID";
@@ -33,21 +35,34 @@ public class PersonelKGS implements Serializable {
 	public static final String COLUMN_NAME_SOYAD = "SOYAD";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_ACIKLAMA = "AD_SOYAD";
+	public static final String COLUMN_NAME_KGS_ID = "KGS_ID";
+	public static final String COLUMN_NAME_KGS_SIRKET = "KGS_SIRKET_ID";
 
-	private Long id;
+	private Long kgsId;
+	private KapiSirket kapiSirket;
 	private String ad, soyad, sicilNo, kartNo, kimlikNo, adSoyad;
 	private Boolean durum = Boolean.FALSE;
 	private Personel pdksPersonel;
 	private User kullanici;
 
-	@Id
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
+	@Column(name = COLUMN_NAME_KGS_ID)
+	public Long getKgsId() {
+		return kgsId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setKgsId(Long kgsId) {
+		this.kgsId = kgsId;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = COLUMN_NAME_KGS_SIRKET, nullable = true)
+	@Fetch(FetchMode.JOIN)
+	public KapiSirket getKapiSirket() {
+		return kapiSirket;
+	}
+
+	public void setKapiSirket(KapiSirket kapiSirket) {
+		this.kapiSirket = kapiSirket;
 	}
 
 	@Column(name = COLUMN_NAME_AD)

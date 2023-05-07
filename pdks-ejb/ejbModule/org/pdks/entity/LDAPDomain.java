@@ -21,8 +21,7 @@ public class LDAPDomain extends BasePDKSObject implements Serializable {
 	 */
 	public static final String TABLE_NAME = "LDAP_DOMAIN";
 
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_HOST = "HOST";
+ 	public static final String COLUMN_NAME_HOST = "HOST";
 
 	private int sira;
 

@@ -208,9 +208,9 @@ public class YemekCiftBasanRaporHome extends EntityHome<VardiyaGun> implements S
 	public String excelGunlukAktar() {
 		try {
 			ByteArrayOutputStream baosDosya = excelDevam(hareketList, Boolean.FALSE);
-			if (baosDosya != null)  
+			if (baosDosya != null)
 				PdksUtil.setExcelHttpServletResponse(baosDosya, "gunlukYemekYiyenler.xlsx");
- 			 
+
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
@@ -241,7 +241,7 @@ public class YemekCiftBasanRaporHome extends EntityHome<VardiyaGun> implements S
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		try {
 			List list = pdksEntityController.getObjectBySQLList(qsb, parametreMap, null);
-			kgsList = ortakIslemler.getHareketIdBilgileri(list, null, HareketKGS.class, session);
+			kgsList = ortakIslemler.getHareketIdBilgileri(list, null, session);
 			list = null;
 		} catch (Exception e) {
 			kgsList = new ArrayList<HareketKGS>();

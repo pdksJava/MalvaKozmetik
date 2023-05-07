@@ -23,8 +23,7 @@ public class UserTesis extends BasePDKSObject implements Serializable {
 	 */
 	private static final long serialVersionUID = 6676275523552065087L;
 	public static final String TABLE_NAME = "USER_TESIS";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_USER = "USER_ID";
+ 	public static final String COLUMN_NAME_USER = "USER_ID";
 	public static final String COLUMN_NAME_TESIS = "TESIS_ID";
 
 	private User user;

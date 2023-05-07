@@ -26,8 +26,7 @@ public class DenklestirmeAy extends BaseObject {
 	private static final long serialVersionUID = -4284922207901564192L;
 
 	public static final String TABLE_NAME = "DENKLESTIRMEAY";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_YIL = "YIL";
+ 	public static final String COLUMN_NAME_YIL = "YIL";
 	public static final String COLUMN_NAME_AY = "AY";
 	public static final String COLUMN_NAME_IK_OTOMATIK_ONAY_TARIHI = "IK_OTOMATIK_ONAY_TARIHI";
 	public static final String COLUMN_NAME_FAZLA_MESAI_ONAY_DURUM = "FAZLA_MESAI_ONAY_DURUM";

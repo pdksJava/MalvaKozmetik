@@ -8,8 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -25,7 +23,7 @@ import com.pdks.genel.model.Constants;
 import com.pdks.genel.model.PdksUtil;
 
 @Entity(name = Tanim.TABLE_NAME)
-public class Tanim implements Serializable, Cloneable {
+public class Tanim  extends BasePDKSObject implements Serializable, Cloneable {
 	/**
 	 * 
 	 */
@@ -38,7 +36,7 @@ public class Tanim implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_KODU = "KODU";
 	public static final String COLUMN_NAME_ERP_KODU = "ERP_KODU";
 	public static final String COLUMN_NAME_TIPI = "TIPI";
-	public static final String COLUMN_NAME_ID = "ID";
+ 
 	public static final String COLUMN_NAME_PARENT_ID = "PARENTTANIM_ID";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final int DURUM_PASIF = 0;
@@ -87,7 +85,7 @@ public class Tanim implements Serializable, Cloneable {
 	public static final String IKINCI_YONETICI_ONAYLAMAZ = "ikinciYoneticiOlmaz";
 	public static final String DEFAULT_DOVIZ_KODU = "TL";
 	
-	private Long id;
+	 
 	private String tipi;
 	private Tanim parentTanim;
 	private String kodu = "", erpKodu = "";
@@ -112,16 +110,7 @@ public class Tanim implements Serializable, Cloneable {
 		this.id = id;
 	}
 
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+ 
 
 	@Length(max = 60)
 	@Column(name = "ACIKLAMATR")

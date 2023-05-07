@@ -27,8 +27,7 @@ public class MenuItem extends BasePDKSObject implements Serializable {
 	 */
 	private static final long serialVersionUID = 6647696654599482807L;
 	public static final String TABLE_NAME = "MENUITEM";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_ADI = "NAME";
+ 	public static final String COLUMN_NAME_ADI = "NAME";
 
 	private String name = "";
 	private List<MenuItem> childMenuItemList = new ArrayList<MenuItem>();;

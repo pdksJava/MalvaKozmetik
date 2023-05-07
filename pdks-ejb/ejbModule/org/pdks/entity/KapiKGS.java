@@ -6,8 +6,9 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -19,17 +20,21 @@ import org.hibernate.annotations.Immutable;
 
 @Entity(name = KapiKGS.TABLE_NAME)
 @Immutable
-public class KapiKGS implements Serializable {
+public class KapiKGS extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1510062205167709853L;
 
-	public static final String TABLE_NAME = "KAPI_KGS";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
-	private Long id;
+	// public static final String TABLE_NAME = "KAPI_KGS";
+	public static final String TABLE_NAME = "KAPI_SIRKET_KGS";
+ 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
+	public static final String COLUMN_NAME_KGS_ID = "KGS_ID";
+	public static final String COLUMN_NAME_KGS_SIRKET = "KGS_SIRKET_ID";
+
+	private Long kgsId;
+	private KapiSirket kapiSirket;
 	private String aciklamaKGS;
 	private int kartYonu;
 	private Long terminalNo;
@@ -37,14 +42,24 @@ public class KapiKGS implements Serializable {
 	private Date islemZamani;
 	private Kapi kapi;
 
-	@Id
- 	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
+	@Column(name = COLUMN_NAME_KGS_ID)
+	public Long getKgsId() {
+		return kgsId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setKgsId(Long kgsId) {
+		this.kgsId = kgsId;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = COLUMN_NAME_KGS_SIRKET, nullable = true)
+	@Fetch(FetchMode.JOIN)
+	public KapiSirket getKapiSirket() {
+		return kapiSirket;
+	}
+
+	public void setKapiSirket(KapiSirket kapiSirket) {
+		this.kapiSirket = kapiSirket;
 	}
 
 	@Column(name = COLUMN_NAME_ACIKLAMA)

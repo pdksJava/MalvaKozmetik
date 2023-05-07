@@ -7,7 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -17,37 +16,25 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity(name = CalismaModeli.TABLE_NAME)
-public class CalismaModeli implements Serializable {
+public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4015750209129001721L;
 	public static final String TABLE_NAME = "CALISMA_MODELI";
-	public static final String COLUMN_NAME_ID = "ID";
+
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_OLUSTURAN = "OLUSTURANUSER_ID";
 	public static final String COLUMN_NAME_GUNCELLEYEN = "GUNCELLEYENUSER_ID";
 	public static final String COLUMN_NAME_OLUSTURMA_TARIHI = "OLUSTURMATARIHI";
 	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEMETARIHI";
 
-	private Long id;
-
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, izin = 9.0d;
 	private Boolean durum = Boolean.TRUE;
 	private User guncelleyenUser, olusturanUser;
 	private Date olusturmaTarihi = new Date(), guncellemeTarihi;
-
-	@Id
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Column(name = "ACIKLAMA")
 	public String getAciklama() {

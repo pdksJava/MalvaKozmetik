@@ -318,7 +318,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			// if (authenticatedUser.isAdmin() || (authenticatedUser.isIK() && authenticatedUser.getDepartman().isAdminMi()) || yetkiTumPersonelNoList.contains(sicilNo)) {
 			HashMap map = new HashMap();
-		 
+
 			if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
 
 				if (sirketId != null)
@@ -456,7 +456,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					kgsList = ortakIslemler.getHareketBilgileri(new ArrayList<Long>(kapiMap.keySet()), personelId, basTarih, PdksUtil.tariheGunEkleCikar(PdksUtil.getDate(bitTarih), 1), BasitHareket.class, session);
 				} else {
 					List list = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
-					kgsList = ortakIslemler.getHareketIdBilgileri(list, null, BasitHareket.class, session);
+					kgsList = ortakIslemler.getHareketIdBilgileri(list, null, session);
 					list = null;
 				}
 

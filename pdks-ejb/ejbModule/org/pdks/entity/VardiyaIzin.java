@@ -23,8 +23,7 @@ public class VardiyaIzin extends BasePDKSObject implements Serializable {
 
 	public static final String TABLE_NAME = "VARDIYA_IZIN";
 
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_IZIN_VARDIYA = "IZIN_VARDIYA_ID";
+ 	public static final String COLUMN_NAME_IZIN_VARDIYA = "IZIN_VARDIYA_ID";
 	public static final String COLUMN_NAME_CALISMA_VARDIYA = "CALISMA_VARDIYA_ID";
 
 	public VardiyaIzin() {

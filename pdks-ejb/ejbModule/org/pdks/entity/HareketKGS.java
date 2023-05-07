@@ -29,7 +29,8 @@ public class HareketKGS implements Serializable, Cloneable {
 	private static final long serialVersionUID = -7614576632219960146L;
 	static Logger logger = Logger.getLogger(HareketKGS.class);
 
-	public static final String TABLE_NAME = "KGS_HAREKET_VIEW";
+//	public static final String TABLE_NAME = "KGS_HAREKET_VIEW";
+	public static final String TABLE_NAME = "KGS_HAREKET_SIRKET_VIEW";
 	public static final String COLUMN_NAME_ID = "ID";
 	public static final String COLUMN_NAME_PERSONEL = "USERID";
 	public static final String COLUMN_NAME_KAPI = "KAPIID";
@@ -39,6 +40,7 @@ public class HareketKGS implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_ISLEM = "ISLEM_ID";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_SICIL_NO = "SICIL_NO";
+	public static final String COLUMN_NAME_KGS_SIRKET = "KGS_SIRKET_ID";
 	public static final String COLUMN_NAME_SIRKET = "SIRKET";
 	public static final String COLUMN_NAME_TABLE_ID = "TABLE_ID";
 
@@ -53,9 +55,10 @@ public class HareketKGS implements Serializable, Cloneable {
 
 	private String id;
 	private String sirket;
-	private Long hareketTableId, islemId;
+	private Long hareketTableId, islemId, kgsSirketId;
 	private PersonelView personel;
 	private PersonelKGS personelKGS;
+	private KapiSirket kapiSirket;
 	private KapiKGS kapiKGS;
 	private KapiView kapiView, terminalKapi;
 	private Date zaman, olusturmaZamani, orjinalZaman, girisZaman, cikisZaman, girisOrjinalZaman, cikisOrjinalZaman, yemekTeloreansZamani, oncekiYemekZamani;
@@ -64,6 +67,7 @@ public class HareketKGS implements Serializable, Cloneable {
 	private PersonelFazlaMesai personelFazlaMesai;
 	private VardiyaGun vardiyaGun;
 	private int durum;
+
 	private int yemekYiyenSayisi, gecerliYemekAdet = 0;
 	private int toplam;
 	private Boolean gecerliYemek;
@@ -174,6 +178,15 @@ public class HareketKGS implements Serializable, Cloneable {
 		if (vaue != null && this.orjinalZaman == null)
 			this.orjinalZaman = vaue;
 		this.zaman = vaue;
+	}
+
+	@Column(name = COLUMN_NAME_KGS_SIRKET)
+	public Long getKgsSirketId() {
+		return kgsSirketId;
+	}
+
+	public void setKgsSirketId(Long kgsSirketId) {
+		this.kgsSirketId = kgsSirketId;
 	}
 
 	@Temporal(value = TemporalType.TIMESTAMP)
@@ -572,6 +585,20 @@ public class HareketKGS implements Serializable, Cloneable {
 
 	public void setIslemYapan(String islemYapan) {
 		this.islemYapan = islemYapan;
+	}
+
+	@Transient
+	public long getKgsSirketIdLong() {
+		return kgsSirketId != null ? kgsSirketId.longValue() : 0L;
+	}
+
+	@Transient
+	public KapiSirket getKapiSirket() {
+		return kapiSirket;
+	}
+
+	public void setKapiSirket(KapiSirket kapiSirket) {
+		this.kapiSirket = kapiSirket;
 	}
 
 }

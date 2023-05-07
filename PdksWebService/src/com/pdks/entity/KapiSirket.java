@@ -27,7 +27,7 @@ public class KapiSirket implements Serializable {
 	public static final String COLUMN_NAME_BITIS_TARIHI = "BITIS_TARIHI";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 
-	private Integer id;
+	private Long id;
 	private String aciklama;
 	private Date basTarih, bitTarih;
 
@@ -35,11 +35,11 @@ public class KapiSirket implements Serializable {
 
 	@Id
 	@Column(name = COLUMN_NAME_ID)
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

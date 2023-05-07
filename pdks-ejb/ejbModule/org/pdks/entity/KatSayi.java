@@ -28,8 +28,7 @@ public class KatSayi extends BasePDKSObject implements Serializable {
 	static Logger logger = Logger.getLogger(KatSayi.class);
 
 	public static final String TABLE_NAME = "KAT_SAYI";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_DURUM = "DURUM";
+ 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_TIPI = "TIPI";
 	public static final String COLUMN_NAME_BAS_TARIH = "BAS_TARIH";
 	public static final String COLUMN_NAME_BIT_TARIH = "BIT_TARIH";

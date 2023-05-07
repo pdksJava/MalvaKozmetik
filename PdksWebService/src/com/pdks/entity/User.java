@@ -9,8 +9,6 @@ import javax.management.relation.Role;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -29,7 +27,7 @@ import com.pdks.genel.model.PdksUtil;
 
 @Entity(name = User.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { User.COLUMN_NAME_PERSONEL }), @UniqueConstraint(columnNames = { User.COLUMN_NAME_USERNAME }) })
-public class User implements Serializable, Cloneable {
+public class User extends BasePDKSObject implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -38,7 +36,6 @@ public class User implements Serializable, Cloneable {
 	static Logger logger = Logger.getLogger(User.class);
 
 	public static final String TABLE_NAME = "PDKSUSER";
-	public static final String COLUMN_NAME_ID = "ID";
 
 	public static final String COLUMN_NAME_USERNAME = "KULLANICI_ADI";
 	public static final String COLUMN_NAME_PERSONEL = "PERSONEL_ID";
@@ -48,8 +45,6 @@ public class User implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_EMAIL = "EMAIL";
 
 	public static final String COLUMN_NAME_SHORT_USER_NAME = "SHORT_USER_NAME";
-
-	private Long id;
 
 	private String username, shortUsername, passwordHash, newPassword, firstname, lastname, staffId, email, calistigiSayfa, remoteAddr;
 
@@ -74,17 +69,6 @@ public class User implements Serializable, Cloneable {
 
 	public User() {
 		super();
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	@Email

@@ -30,7 +30,7 @@ public class BasitHareket implements Serializable, Cloneable {
 	public static final int DURUM_PASIF = 0;
 	private String id, sirket;
 	private Date zaman, olusturmaZamani;
-	private Long kapiId, personelId, islemId, hareketTableId;
+	private Long kapiId, personelId, islemId, hareketTableId, kgsSirketId;
 	private int durum;
 	protected boolean checkBoxDurum;
 
@@ -46,6 +46,15 @@ public class BasitHareket implements Serializable, Cloneable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	@Column(name = HareketKGS.COLUMN_NAME_KGS_SIRKET)
+	public Long getKgsSirketId() {
+		return kgsSirketId;
+	}
+
+	public void setKgsSirketId(Long kgsSirketId) {
+		this.kgsSirketId = kgsSirketId;
 	}
 
 	@Column(name = HareketKGS.COLUMN_NAME_KAPI, nullable = false)
@@ -165,6 +174,7 @@ public class BasitHareket implements Serializable, Cloneable {
 		hareket.setOrjinalZaman(zaman);
 		hareket.setIslemId(islemId);
 		hareket.setHareketTableId(hareketTableId);
+		hareket.setKgsSirketId(kgsSirketId);
 		hareket.setSirket(sirket);
 		if (id != null && id.trim().length() > 1) {
 			if (sirket == null)

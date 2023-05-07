@@ -27,6 +27,7 @@ import com.pdks.entity.Departman;
 import com.pdks.entity.ERPPersonel;
 import com.pdks.entity.IzinReferansERP;
 import com.pdks.entity.IzinTipi;
+import com.pdks.entity.KapiSirket;
 import com.pdks.entity.Parameter;
 import com.pdks.entity.Personel;
 import com.pdks.entity.PersonelDenklestirme;
@@ -83,6 +84,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 	private VardiyaSablonu vardiyaSablonu = null, isKurVardiyaSablonu = null;
 
 	private CalismaModeli calismaModeli = null;
+
+	private KapiSirket kapiSirket = null;
 
 	private String mesaj = null, dosyaEkAdi, parentBordroTanimKoduStr = "", kapiGiris, uygulamaBordro, ekSahaAdi = "";
 
@@ -2572,6 +2575,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 				PersonelKGS personelKGSData = personelKGSMap.containsKey(personelNo) ? personelKGSMap.get(personelNo) : null, personelKGSBos = null;
 				if (personelKGSData == null) {
 					map.clear();
+					if (kapiSirket != null)
+						map.put("kapiSirket.id", kapiSirket.getId());
 					map.put("ad", personelERP.getAdi());
 					map.put("soyad", personelERP.getSoyadi());
 					map.put("durum", Boolean.TRUE);
@@ -2592,6 +2597,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					boolean kayitYok = true;
 					if (personelKGSData == null && mailMap.containsKey("personelKGSDataOlustur") && personelERP.getAdi() != null && personelERP.getSoyadi() != null && personelERP.getPersonelNo() != null) {
 						LinkedHashMap<String, Object> map2 = new LinkedHashMap<String, Object>();
+						if (kapiSirket != null)
+							map2.put("kapiSirket.id", kapiSirket.getId());
 						map2.put("ad", personelERP.getAdi());
 						map2.put("soyad", personelERP.getSoyadi());
 						map2.put("perNo", personelERP.getPersonelNo());
@@ -2715,7 +2722,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 					PersonelKGS personelKGS = personelKGSMap.get(personelNo);
 					Personel personel = personelPDKSMap.containsKey(personelNo) ? personelPDKSMap.get(personelNo) : null;
 					if (personel != null) {
+						PersonelKGS personelKGS2 = personel.getPersonelKGS();
 						personel.setVeriDegisti(Boolean.FALSE);
+						if (kapiSirket != null && personelKGS2.getKapiSirket() != null && !personelKGS2.getId().equals(personelKGS.getId()) && !personelKGS2.getKapiSirket().getId().equals(kapiSirket.getId())) {
+							personel.setPersonelKGS(personelKGS);
+						}
+
 					} else if (personelDigerMap.containsKey(personelNo)) {
 						personel = personelDigerMap.get(personelNo);
 						personel.setVeriDegisti(Boolean.FALSE);
@@ -2741,6 +2753,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 						PersonelKGS personelKGSKayitli = personel.getPersonelKGS();
 						if (!personelKGSKayitli.getDurum()) {
 							map.clear();
+							if (kapiSirket != null)
+								map.put("kapiSirket.id", kapiSirket.getId());
 							map.put("sicilNo", personelNo);
 							map.put("durum", Boolean.TRUE);
 							List<PersonelKGS> list = pdksDAO.getObjectByInnerObjectList(map, PersonelKGS.class);
@@ -3176,6 +3190,22 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 		if (pdksDAO != null && personelList != null && !personelList.isEmpty()) {
 			sistemVerileriniYukle(pdksDAO);
+			kapiSirket = null;
+			Date bugun = PdksUtil.getDate(new Date());
+			String birdenFazlaKGSSirketSQL = mailMap.containsKey("birdenFazlaKGSSirketSQL") ? (String) mailMap.get("birdenFazlaKGSSirketSQL") : "";
+			if (!birdenFazlaKGSSirketSQL.equals("")) {
+				HashMap map = new HashMap();
+				map.put("id>", 0L);
+				map.put("basTarih<=", bugun);
+				map.put("bitTarih>=", bugun);
+				List<KapiSirket> list = pdksDAO.getObjectByInnerObjectListInLogic(map, KapiSirket.class);
+				if (list.size() == 1) {
+					kapiSirket = list.get(0);
+					kapiGiris = kapiSirket.getAciklama();
+				}
+
+			}
+
 			altBolumDurum = false;
 			HashMap fields = new HashMap();
 			fields.put("tipi", Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
@@ -3271,7 +3301,14 @@ public class PdksVeriOrtakAktar implements Serializable {
 				fields.put("Map", "getSicilNo");
 				fields.put("sicilNo", veriSorguMap.get("personel"));
 			}
-			TreeMap<String, PersonelKGS> personelKGSMap = !fields.isEmpty() ? pdksDAO.getObjectByInnerObjectMap(fields, PersonelKGS.class, true) : new TreeMap<String, PersonelKGS>();
+			TreeMap<String, PersonelKGS> personelKGSMap = null;
+			if (!fields.isEmpty()) {
+				if (kapiSirket != null)
+					fields.put("kapiSirket.id", kapiSirket.getId());
+				personelKGSMap = pdksDAO.getObjectByInnerObjectMap(fields, PersonelKGS.class, true);
+
+			} else
+				personelKGSMap = new TreeMap<String, PersonelKGS>();
 			fields.clear();
 			if (veriSorguMap.containsKey("personel")) {
 				fields.put("Map", "getSicilNo");

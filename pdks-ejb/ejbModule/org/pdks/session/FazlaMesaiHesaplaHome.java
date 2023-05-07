@@ -152,7 +152,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE, gecenAyDurum = Boolean.FALSE, izinGoster = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
 	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private Boolean izinCalismayanMailGonder = Boolean.FALSE, hatalariAyikla = Boolean.FALSE, kismiOdemeGoster = Boolean.FALSE;
-	private String manuelGirisGoster = "", kapiGirisSistemAdi = "";
+	private String manuelGirisGoster = "", kapiGirisSistemAdi = "", birdenFazlaKGSSirketSQL = "";
 	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, planOnayDurum, eksikCalismaGoster, eksikMaasGoster = false;
 	private int ay, yil, maxYil, sonDonem, pageSize;
 
@@ -2189,9 +2189,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 				}
 
-				else if (flush)
-					session.flush();
-
+				else {
+					if (flush)
+						session.flush();
+					birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+				}
 			} else {
 				if (fazlaMesaiMap == null)
 					fazlaMesaiMap = new TreeMap<String, Tanim>();
@@ -2516,9 +2518,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								kapiView = manuelCikis;
 						}
 					}
-					Long id = pdksEntityController.hareketEkleReturn(kapiView, personelView, hareketKGS.getOrjinalZaman(), authenticatedUser, nedenId, islemAciklama, session);
-					if (id != null)
-						pdksEntityController.hareketSil(Long.parseLong(hareketKGS.getId().substring(1)), pdksId, authenticatedUser, nedenId, seciliAciklama, session);
+					Long id = pdksEntityController.hareketEkle(kapiView, personelView, hareketKGS.getOrjinalZaman(), authenticatedUser, nedenId, islemAciklama, session);
+					if (id != null) {
+						String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+						String sirketStr = "";
+						if (!birdenFazlaKGSSirketSQL.equals(""))
+							sirketStr = "_SIRKET";
+						pdksEntityController.hareketSil(Long.parseLong(hareketKGS.getId().substring(1)), pdksId, authenticatedUser, nedenId, seciliAciklama, hareketKGS.getKgsSirketId(), sirketStr, session);
+					}
 				}
 			}
 		}
@@ -6083,6 +6090,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setEksikMaasGoster(boolean eksikMaasGoster) {
 		this.eksikMaasGoster = eksikMaasGoster;
+	}
+
+	public String getBirdenFazlaKGSSirketSQL() {
+		return birdenFazlaKGSSirketSQL;
+	}
+
+	public void setBirdenFazlaKGSSirketSQL(String birdenFazlaKGSSirketSQL) {
+		this.birdenFazlaKGSSirketSQL = birdenFazlaKGSSirketSQL;
 	}
 
 }

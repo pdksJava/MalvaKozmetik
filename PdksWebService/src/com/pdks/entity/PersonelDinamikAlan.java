@@ -5,19 +5,18 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity(name = PersonelDinamikAlan.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { PersonelDinamikAlan.COLUMN_NAME_PERSONEL, PersonelDinamikAlan.COLUMN_NAME_ALAN }) })
-public class PersonelDinamikAlan implements Serializable {
+public class PersonelDinamikAlan extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -25,7 +24,7 @@ public class PersonelDinamikAlan implements Serializable {
 	private static final long serialVersionUID = -3881392269334061361L;
 
 	public static final String TABLE_NAME = "PERSONEL_DINAMIK_ALAN";
-	public static final String COLUMN_NAME_ID = "ID";
+
 	public static final String COLUMN_NAME_PERSONEL = "PERSONEL_ID";
 	public static final String COLUMN_NAME_ALAN = "ALAN_ID";
 	public static final String COLUMN_NAME_TANIM_DEGER = "TANIM_DEGER_ID";
@@ -47,8 +46,6 @@ public class PersonelDinamikAlan implements Serializable {
 
 	}
 
-	private Long id;
-
 	private Personel personel;
 
 	private Tanim alan, tanimDeger;
@@ -58,17 +55,6 @@ public class PersonelDinamikAlan implements Serializable {
 	private Double sayisalDeger;
 
 	private Integer version = 0;
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {

@@ -5,13 +5,11 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity(name = ServiceData.TABLE_NAME)
-public class ServiceData implements Serializable {
+public class ServiceData extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -19,13 +17,11 @@ public class ServiceData implements Serializable {
 	private static final long serialVersionUID = -6386015906961813899L;
 
 	public static final String TABLE_NAME = "SERVICE_DATA";
-	public static final String COLUMN_NAME_ID = "ID";
+
 	public static final String COLUMN_NAME_OLUSTURMA_TARIHI = "TARIH";
 	public static final String COLUMN_NAME_FONKSIYON_ADI = "FONKSIYON_ADI";
 	public static final String COLUMN_NAME_ICERIK_IN = "ICERIK_IN";
 	public static final String COLUMN_NAME_ICERIK_OUT = "ICERIK_OUT";
-
-	protected Long id;
 
 	protected Date olusturmaTarihi = new Date();
 
@@ -40,17 +36,6 @@ public class ServiceData implements Serializable {
 		super();
 		this.fonksiyonAdi = fonksiyonAdi;
 		this.olusturmaTarihi = new Date();
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)

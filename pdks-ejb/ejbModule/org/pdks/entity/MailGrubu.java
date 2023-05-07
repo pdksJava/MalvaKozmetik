@@ -19,8 +19,7 @@ public class MailGrubu extends BasePDKSObject implements Serializable, Cloneable
 	static Logger logger = Logger.getLogger(MailGrubu.class);
 
 	public static final String TABLE_NAME = "MAIL_GRUBU";
-	public static final String COLUMN_NAME_ID = "ID";
-
+ 
 	public static final String COLUMN_NAME_TIPI = "TIPI";
 	public static final String COLUMN_NAME_MAIL = "EMAIL";
 

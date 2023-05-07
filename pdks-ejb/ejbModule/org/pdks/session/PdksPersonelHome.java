@@ -40,6 +40,7 @@ import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Dosya;
 import org.pdks.entity.IzinTipi;
+import org.pdks.entity.KapiSirket;
 import org.pdks.entity.Liste;
 import org.pdks.entity.MailGrubu;
 import org.pdks.entity.NoteTipi;
@@ -1790,7 +1791,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			str = " AND ";
 		}
 		Long userTesisId = null;
-		if (fields.isEmpty())
+		boolean bos = fields.isEmpty();
+		Date bugun = PdksUtil.getDate(new Date());
+		if (bos)
 			sb.append(str + " V." + PersonelKGS.COLUMN_NAME_DURUM + " =1 AND V." + PersonelKGS.COLUMN_NAME_PERSONEL_ID + " IS NULL");
 		if (authenticatedUser.isIK_Tesis() && authenticatedUser.getPdksPersonel().getTesis() != null)
 			userTesisId = authenticatedUser.getPdksPersonel().getTesis().getId();
@@ -1806,7 +1809,17 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				for (Iterator<PersonelView> iterator = list.iterator(); iterator.hasNext();) {
 					PersonelView personelView = iterator.next();
 					Personel pdksPersonel = personelView.getPdksPersonel();
-					if (pdksPersonel == null && !personelView.getPersonelKGS().getDurum()) {
+					PersonelKGS personelKGS = personelView.getPersonelKGS();
+					if (pdksPersonel == null) {
+						KapiSirket kapiSirket = personelKGS.getKapiSirket();
+						if (kapiSirket != null && (!kapiSirket.getDurum() || kapiSirket.getBitTarih().before(bugun))) {
+							iterator.remove();
+							continue;
+
+						}
+					}
+
+					if (pdksPersonel == null && !personelKGS.getDurum()) {
 						iterator.remove();
 					} else {
 						if (userTesisId != null) {
@@ -1832,6 +1845,20 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					for (Iterator<PersonelView> iterator = list.iterator(); iterator.hasNext();) {
 						PersonelView personelView = iterator.next();
 						Personel pdksPersonel = personelView.getPdksPersonel();
+						PersonelKGS personelKGS = personelView.getPersonelKGS();
+						if (pdksPersonel == null) {
+							if (!personelKGS.getDurum()) {
+								iterator.remove();
+								continue;
+							} else {
+								KapiSirket kapiSirket = personelKGS.getKapiSirket();
+								if (kapiSirket != null && (!kapiSirket.getDurum() || kapiSirket.getBitTarih().before(bugun))) {
+									iterator.remove();
+									continue;
+ 								}
+							}
+
+						}
 						if (pdksPersonel == null && !personelView.getPersonelKGS().getDurum()) {
 							iterator.remove();
 						} else {

@@ -47,8 +47,7 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	static Logger logger = Logger.getLogger(User.class);
 
 	public static final String TABLE_NAME = "PDKSUSER";
-	public static final String COLUMN_NAME_ID = "ID";
-
+ 
 	public static final String COLUMN_NAME_USERNAME = "KULLANICI_ADI";
 	public static final String COLUMN_NAME_PERSONEL = "PERSONEL_ID";
 	public static final String COLUMN_NAME_DURUM = "DURUM";

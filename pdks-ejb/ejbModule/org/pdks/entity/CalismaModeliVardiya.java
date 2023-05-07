@@ -22,8 +22,7 @@ public class CalismaModeliVardiya extends BasePDKSObject implements Serializable
 	 */
 	private static final long serialVersionUID = -8626070485848428888L;
 	public static final String TABLE_NAME = "CALISMA_MODELI_VARDIYA";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_VARDIYA = "VARDIYA_ID";
+ 	public static final String COLUMN_NAME_VARDIYA = "VARDIYA_ID";
 	public static final String COLUMN_NAME_CALISMA_MODELI = "CALISMA_MODELI_ID";
 
 	private Vardiya vardiya;

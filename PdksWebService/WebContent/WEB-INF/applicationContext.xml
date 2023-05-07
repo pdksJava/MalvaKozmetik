@@ -58,6 +58,7 @@
  				<value>com.pdks.entity.MailGrubu</value>
 				<value>com.pdks.entity.Parameter</value>
 				<value>com.pdks.entity.PdksPersonelView</value>
+				<value>com.pdks.entity.KapiSirket</value>
 				<value>com.pdks.entity.Personel</value>
 				<value>com.pdks.entity.PersonelDenklestirme</value>
 				<value>com.pdks.entity.PersonelMesai</value>

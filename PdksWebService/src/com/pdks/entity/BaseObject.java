@@ -6,8 +6,6 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -21,12 +19,12 @@ import org.hibernate.annotations.FetchMode;
 import com.pdks.genel.model.PdksUtil;
 
 @MappedSuperclass
-public abstract class BaseObject implements Serializable, Cloneable {
+public abstract class BaseObject extends BasePDKSObject implements Serializable, Cloneable {
 
 	/**
 	 * 
 	 */
-	public static final String COLUMN_NAME_ID = "ID";
+
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_OLUSTURAN = "OLUSTURANUSER_ID";
 	public static final String COLUMN_NAME_GUNCELLEYEN = "GUNCELLEYENUSER_ID";
@@ -34,7 +32,7 @@ public abstract class BaseObject implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEMETARIHI";
 
 	private static final long serialVersionUID = 4940573223065841991L;
-	protected Long id;
+
 	protected Boolean durum = Boolean.TRUE;
 	protected User guncelleyenUser, olusturanUser;
 	protected Date olusturmaTarihi = new Date(), guncellemeTarihi;
@@ -47,17 +45,6 @@ public abstract class BaseObject implements Serializable, Cloneable {
 
 	public void setDurum(Boolean durum) {
 		this.durum = durum;
-	}
-
-	@Id
-	@GeneratedValue
-	@Column(name = COLUMN_NAME_ID)
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -110,8 +97,6 @@ public abstract class BaseObject implements Serializable, Cloneable {
 	public void setCheckBoxDurum(boolean checkBoxDurum) {
 		this.checkBoxDurum = checkBoxDurum;
 	}
-
-	 
 
 	@Transient
 	public User getSonIslemYapan() {

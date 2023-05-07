@@ -24,8 +24,7 @@ public class PersonelDinamikAlan extends BasePDKSObject implements Serializable 
 	private static final long serialVersionUID = -3881392269334061361L;
 
 	public static final String TABLE_NAME = "PERSONEL_DINAMIK_ALAN";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_PERSONEL = "PERSONEL_ID";
+ 	public static final String COLUMN_NAME_PERSONEL = "PERSONEL_ID";
 	public static final String COLUMN_NAME_ALAN = "ALAN_ID";
 	public static final String COLUMN_NAME_TANIM_DEGER = "TANIM_DEGER_ID";
 	public static final String COLUMN_NAME_DURUM_SECIM = "DURUM_SECIM";

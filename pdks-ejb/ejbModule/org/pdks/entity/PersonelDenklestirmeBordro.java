@@ -28,8 +28,7 @@ public class PersonelDenklestirmeBordro  extends BasePDKSObject  implements Seri
 	static Logger logger = Logger.getLogger(PersonelDenklestirmeBordro.class);
 
 	public static final String TABLE_NAME = "PERS_DENK_BORDRO";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
+ 	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
 	public static final String COLUMN_NAME_NORMAL_GUN = "NORMAL_GUN_ADET";
 	public static final String COLUMN_NAME_HAFTA_TATIL = "HAFTA_TATIL_ADET";
 	public static final String COLUMN_NAME_G_HAFTA_TATIL = "TATIL_ADET";

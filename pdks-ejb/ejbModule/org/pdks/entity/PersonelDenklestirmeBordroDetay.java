@@ -27,8 +27,7 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 	static Logger logger = Logger.getLogger(PersonelDenklestirmeBordroDetay.class);
 
 	public static final String TABLE_NAME = "PERS_DENK_BORDRO_DETAY";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME_BORDRO = "PERS_DENK_BORDRO_ID";
+ 	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME_BORDRO = "PERS_DENK_BORDRO_ID";
 	public static final String COLUMN_NAME_TIPI = "TIPI";
 	public static final String COLUMN_NAME_MIKTAR = "MIKTAR";
 

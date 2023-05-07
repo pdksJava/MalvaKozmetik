@@ -481,7 +481,7 @@
 
 		<rich:modalPanel id="editPanel" autosized="true" width="850">
 			<f:facet name="header">
-				<h:outputText value="Hareket Islemleri" />
+				<h:outputText value="Hareket İşlemleri" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:panelGroup>
@@ -576,9 +576,11 @@
 					</table>
 				</a4j:outputPanel>
 				<DIV>
+					<a4j:commandButton status="ajaxStatus" value="Sil" action="#{personelHareketHome.save}" reRender="hareketForm"
+						rendered="#{personelHareketHome.islemTipi=='S'}" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
 
 					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{personelHareketHome.save}" reRender="hareketForm"
-						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+						rendered="#{personelHareketHome.islemTipi!='S'}" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
 					<ui:fragment
 						rendered="#{personelHareketHome.islemTipi=='E' and personelHareketHome.islemVardiyaGun!=null   and personelHareketHome.islemVardiyaGun.vardiya.calisma==false}">
 						<br />

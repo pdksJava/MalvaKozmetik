@@ -32,8 +32,7 @@ public class Role extends BasePDKSObject implements Serializable {
 	 */
 	private static final long serialVersionUID = -7832116917666289661L;
 	public static final String TABLE_NAME = "ROLE";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_ROLE_NAME = "ROLENAME";
+ 	public static final String COLUMN_NAME_ROLE_NAME = "ROLENAME";
 	public static final String COLUMN_NAME_DEPARTMAN = "DEPARTMAN_ID";
 	public static final String COLUMN_NAME_STATUS = "STATUS";
 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";

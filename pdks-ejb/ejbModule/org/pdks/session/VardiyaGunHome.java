@@ -4444,20 +4444,24 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 								}
 								if (!hareketKGSDeleteList.isEmpty() && (girisHareket == null || cikisHareket == null)) {
 									for (HareketKGS hareketKGS3 : hareketKGSDeleteList) {
-										String id = hareketKGS3.getId();
+
 										long kgsId = 0, pdksId = 0;
-										if (id != null && id.trim().length() > 1) {
-											if (id.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
-												kgsId = Long.parseLong(id.trim().substring(1));
-											else if (id.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS))
-												pdksId = Long.parseLong(id.trim().substring(1));
-										}
+										String str = hareketKGS3.getId();
+										Long id = Long.parseLong(str.substring(1));
+										if (str.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
+											kgsId = id;
+										else
+											pdksId = id;
 										if (kgsId + pdksId > 0) {
 											User sistemUser = ortakIslemler.getSistemAdminUser(session);
 											if (sistemUser == null)
 												sistemUser = authenticatedUser;
 											String aciklama = islemFazlaMesaiTalep.getAciklama() != null && islemFazlaMesaiTalep.getAciklama().trim().length() > 0 ? islemFazlaMesaiTalep.getAciklama().trim() : "";
-											pdksEntityController.hareketSil(kgsId, pdksId, sistemUser, nedenId, aciklama + (referans != null ? " " + referans.trim() : ""), session);
+											String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+											String sirketStr = "";
+											if (!birdenFazlaKGSSirketSQL.equals(""))
+												sirketStr = "_SIRKET";
+											pdksEntityController.hareketSil(kgsId, pdksId, sistemUser, nedenId, aciklama + (referans != null ? " " + referans.trim() : ""), hareketKGS3.getKgsSirketId(), sirketStr, session);
 											flush = true;
 										}
 									}

@@ -27,8 +27,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	 */
 	private static final long serialVersionUID = 4015750209129001721L;
 	public static final String TABLE_NAME = "CALISMA_MODELI";
-	public static final String COLUMN_NAME_ID = "ID";
-	public static final String COLUMN_NAME_DURUM = "DURUM";
+ 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_GENEL_VARDIYA = "GENEL_VARDIYA";
 	public static final String COLUMN_NAME_HAFTA_TATIL_MESAI_ODE = "HAFTA_TATIL_MESAI_ODE";
 	public static final String COLUMN_NAME_GECE_HAFTA_TATIL_MESAI_PARCALA = "GECE_HAFTA_TATIL_MESAI_PARCALA";
