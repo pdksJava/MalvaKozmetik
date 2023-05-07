@@ -3880,7 +3880,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		return "";
 	}
 
-	 
 	private String fazlaMesaiOnaylaDevam(Boolean guncellendi, Boolean manuelOnay) {
 		try {
 			boolean onaylandi = Boolean.FALSE;
@@ -3908,8 +3907,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							personelDenklestirmeAy.setGuncellemeTarihi(new Date());
 							personelDenklestirmeAy.setGuncelleyenUser(authenticatedUser);
 						}
-						if (guncellendi)
+						if (guncellendi) {
 							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeAy);
+							puantajAylik.setKaydet(Boolean.FALSE);
+						}
+
 						if (mailGonder) {
 							if (calisan != null && !sirketIdList.contains(calisan.getSirket().getId()))
 								sirketIdList.add(calisan.getSirket().getId());
