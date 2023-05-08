@@ -2293,8 +2293,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					mailGonder = Boolean.FALSE;
 					try {
 						if (!authenticatedUser.isAdmin()) {
-							setAylikPuantajList(puantajList);
-							fazlaMesaiOnaylaDevam(Boolean.TRUE, Boolean.TRUE);
+							fazlaMesaiOnaylaDevam(puantajList, Boolean.TRUE, Boolean.TRUE);
 						}
 
 					} catch (Exception eo) {
@@ -3879,18 +3878,24 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	@Transactional
 	public String fazlaMesaiOnayla() {
-		fazlaMesaiOnaylaDevam(Boolean.TRUE, Boolean.FALSE);
+		fazlaMesaiOnaylaDevam(aylikPuantajList, Boolean.TRUE, Boolean.FALSE);
 		return "";
 	}
 
-	private String fazlaMesaiOnaylaDevam(Boolean guncellendi, Boolean manuelOnay) {
+	/**
+	 * @param puantajList
+	 * @param guncellendi
+	 * @param manuelOnay
+	 * @return
+	 */
+	private String fazlaMesaiOnaylaDevam(List<AylikPuantaj> puantajList, Boolean guncellendi, Boolean manuelOnay) {
 		try {
 			boolean onaylandi = Boolean.FALSE;
 			TreeMap<Long, List<AylikPuantaj>> puantajMap = new TreeMap<Long, List<AylikPuantaj>>();
 			LinkedHashMap<Long, Personel> yoneticiMap = new LinkedHashMap<Long, Personel>();
 			boolean mailGonderildi = false;
 			List<Long> sirketIdList = new ArrayList<Long>();
-			for (AylikPuantaj puantajAylik : aylikPuantajList) {
+			for (AylikPuantaj puantajAylik : puantajList) {
 				if (puantajAylik.isKaydet()) {
 					PersonelDenklestirme personelDenklestirmeAy = puantajAylik.getPersonelDenklestirmeAylik();
 					personelDenklestirmeAy.setGuncellendi(guncellendi);
@@ -3914,7 +3919,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirmeAy);
 							puantajAylik.setKaydet(Boolean.FALSE);
 						}
-
 						if (mailGonder) {
 							if (calisan != null && !sirketIdList.contains(calisan.getSirket().getId()))
 								sirketIdList.add(calisan.getSirket().getId());
