@@ -160,7 +160,8 @@
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 200px"><ui:fragment rendered="#{vardiyaGun.izin.izinTipi!=null}">#{vardiyaGun.izin.izinTipi.izinTipiTanim.aciklama}</ui:fragment>
-										<ui:fragment rendered="#{vardiyaGun.izin.izinTipi==null}">#{vardiyaGun.vardiya.adi}</ui:fragment></td>
+										<ui:fragment rendered="#{vardiyaGun.izin.izinTipi==null}">#{vardiyaGun.vardiya.adi}</ui:fragment> <ui:fragment
+											rendered="#{authenticatedUser.admin and vardiyaGun.izin!=null}"> (#{vardiyaGun.vardiya.adi})</ui:fragment></td>
 								</tr>
 							</a4j:repeat>
 							<a4j:repeat value="#{vardiyaOzetRaporuHome.gecGelenVardiyaGunList}" var="vardiyaGun">
@@ -196,8 +197,8 @@
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 200px"><b> <ui:fragment rendered="#{vardiyaGun.vardiya.FMI}">#{vardiyaGun.vardiya.adi}</ui:fragment>
 											<ui:fragment rendered="#{vardiyaGun.vardiya.FMI==false}">
-												<ui:fragment rendered="#{vardiyaGun.personel.mailTakip}">DEVAMSIZLIK
-											 </ui:fragment>
+												<ui:fragment rendered="#{vardiyaGun.personel.mailTakip}">DEVAMSIZLIK <ui:fragment rendered="#{authenticatedUser.admin}"> (#{vardiyaGun.vardiya.adi})</ui:fragment>
+												</ui:fragment>
 												<ui:fragment rendered="#{vardiyaGun.personel.mailTakip==null or vardiyaGun.personel.mailTakip==false}">
 													<SPAN style="color: red;">DEVAMSIZLIK</SPAN>
 												</ui:fragment>

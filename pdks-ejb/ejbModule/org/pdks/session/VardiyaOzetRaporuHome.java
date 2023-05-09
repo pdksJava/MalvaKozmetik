@@ -186,7 +186,10 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(map, Sirket.class);
-
+			if (aramaSecenekleri.getTesisList() != null)
+				aramaSecenekleri.getTesisList().clear();
+			else
+				aramaSecenekleri.setTesisList(new ArrayList<SelectItem>());
 			if (sirket.isTesisDurumu()) {
 				map.clear();
 				map.put(PdksEntityController.MAP_KEY_MAP, "getId");
@@ -199,9 +202,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				if (session != null)
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 				TreeMap tesisMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, Personel.class, Boolean.FALSE);
-
 				if (!tesisMap.isEmpty()) {
-
 					list = PdksUtil.sortObjectStringAlanList(new ArrayList(tesisMap.values()), "getAciklama", null);
 					for (Tanim tesis : list) {
 						if (tesisId == null)
@@ -211,6 +212,9 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					aramaSecenekleri.setTesisId(tesisId);
 
 				}
+			} else {
+				tesisId = null;
+
 			}
 		}
 		aramaSecenekleri.setTesisId(tesisId);
@@ -452,7 +456,6 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									List<PersonelIzin> perIzinList = izinMap.get(perId);
 									for (Iterator iterator2 = perIzinList.iterator(); iterator2.hasNext();) {
 										PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-
 										ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
 										if (vardiyaGun.getIzin() != null) {
 											iterator2.remove();
@@ -522,7 +525,14 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 								}
 							}
 							if (vardiyaGun.isIzinli()) {
-								izinVardiyaGunList.add(vardiyaGun);
+								Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+								boolean ekle = true;
+								if (islemVardiya != null && islemVardiya.isCalisma() && islemVardiya.getVardiyaBasZaman().after(bugun))
+									ekle = false;
+								if (ekle)
+									izinVardiyaGunList.add(vardiyaGun);
+								else
+									logger.info(vardiyaGun.getVardiyaKeyStr());
 								gelmedi = false;
 								gecGeldi = false;
 								erkenCikti = false;
