@@ -53,7 +53,14 @@
 								<f:facet name="header">
 									<h:outputText value="KGS Kapı Adı" />
 								</f:facet>
-								<h:outputText value="#{kapi.kapiView.kapiKGSAciklama}" />
+								<SPAN id="#{kapi.kapiView.kapiKGS.id}"> <h:outputText value="#{kapi.kapiView.kapiKGSAciklama}" /> <ui:fragment
+										rendered="#{kapiHome.birdenFazlaKGSSirketSQL!=''}">
+										<h:outputText value="#{kapi.kapiView.kapiKGS.kapiSirket.aciklama}" />
+										<rich:toolTip for="#{kapi.kapiView.kapiKGS.id}">
+										</rich:toolTip>
+									</ui:fragment>
+
+								</SPAN>
 							</rich:column>
 							<rich:column>
 								<f:facet name="header">
@@ -67,7 +74,7 @@
 								</f:facet>
 								<h:outputText value="#{kapi.tipi.aciklama}" />
 							</rich:column>
- 
+
 							<rich:column>
 								<f:facet name="header">
 									<h:outputText value="PDKS" />
@@ -164,7 +171,7 @@
 									<s:convertEntity />
 								</h:selectOneMenu>
 							</s:decorate>
- 
+
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">PDKS</ui:define>
 								<h:selectBooleanCheckbox value="#{kapiHome.instance.pdks}" />

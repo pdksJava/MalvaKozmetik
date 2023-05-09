@@ -52,8 +52,9 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 	private List<Kapi> kapiList = new ArrayList<Kapi>();
 	private List<Tanim> kapiTipiList = new ArrayList<Tanim>();
 	private KapiView kapiView;
-	private Session session;
 	private boolean kgsGuncelle;
+	private String birdenFazlaKGSSirketSQL;
+	private Session session;
 
 	@Override
 	public Object getId() {
@@ -106,7 +107,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 		List<Kapi> kapiList = new ArrayList<Kapi>();
 		HashMap parametreMap = new HashMap();
 		try {
-			String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+			birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
 			String sirketStr = "";
 			if (!birdenFazlaKGSSirketSQL.equals(""))
 				sirketStr = "_SIRKET";
@@ -366,5 +367,13 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 
 	public void setKgsGuncelle(boolean kgsGuncelle) {
 		this.kgsGuncelle = kgsGuncelle;
+	}
+
+	public String getBirdenFazlaKGSSirketSQL() {
+		return birdenFazlaKGSSirketSQL;
+	}
+
+	public void setBirdenFazlaKGSSirketSQL(String birdenFazlaKGSSirketSQL) {
+		this.birdenFazlaKGSSirketSQL = birdenFazlaKGSSirketSQL;
 	}
 }
