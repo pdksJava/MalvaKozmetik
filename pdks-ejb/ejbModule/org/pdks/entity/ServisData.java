@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -19,7 +18,7 @@ public class ServisData extends BasePDKSObject implements Serializable {
 	/**
 	 * 
 	 */
- 
+
 	public static final String TABLE_NAME = "SERVICE_DATA";
 	public static final String COLUMN_NAME_FONKSIYON_ADI = "FONKSIYON_ADI";
 	public static final String COLUMN_NAME_TARIH = "TARIH";
@@ -49,8 +48,7 @@ public class ServisData extends BasePDKSObject implements Serializable {
 		this.tarih = tarih;
 	}
 
-	@Lob
-	@Column(name = COLUMN_NAME_ICERIK_IN)
+	@Column(name = COLUMN_NAME_ICERIK_IN, length = Integer.MAX_VALUE)
 	public byte[] getIcerikIn() {
 		return icerikIn;
 	}
@@ -59,8 +57,7 @@ public class ServisData extends BasePDKSObject implements Serializable {
 		this.icerikIn = icerikIn;
 	}
 
-	@Lob
-	@Column(name = COLUMN_NAME_ICERIK_OUT)
+	@Column(name = COLUMN_NAME_ICERIK_OUT, length = Integer.MAX_VALUE)
 	public byte[] getIcerikOut() {
 		return icerikOut;
 	}
