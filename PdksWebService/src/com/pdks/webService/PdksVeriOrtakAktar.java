@@ -2737,7 +2737,17 @@ public class PdksVeriOrtakAktar implements Serializable {
 						PersonelKGS personelKGS2 = personel.getPersonelKGS();
 						personel.setVeriDegisti(Boolean.FALSE);
 						if (kapiSirket != null && personelKGS2.getKapiSirket() != null && !personelKGS2.getId().equals(personelKGS.getId()) && !personelKGS2.getKapiSirket().getId().equals(kapiSirket.getId())) {
-							personel.setPersonelKGS(personelKGS);
+							boolean adBenzer = isBenzer(personelKGS.getAd(), personelKGS2.getAd());
+							boolean soyadBenzer = isBenzer(personelKGS.getSoyad(), personelKGS2.getSoyad());
+							if (soyadBenzer && adBenzer)
+								personel.setPersonelKGS(personelKGS);
+							else if (adBenzer)
+								personelERP.getHataList().add("Soyad uyumsuz!");
+							else if (soyadBenzer)
+								personelERP.getHataList().add("Ad uyumsuz!");
+							else
+								personelERP.getHataList().add("Ad soyad uyumsuz!");
+
 						}
 
 					} else if (personelDigerMap.containsKey(personelNo)) {

@@ -1615,7 +1615,7 @@ public class OrtakIslemler implements Serializable {
 				for (Object[] objects : perList) {
 					BigDecimal refId = (BigDecimal) objects[1], id = (BigDecimal) objects[0];
 					iliskiMap.put(refId.longValue(), id.longValue());
-					personelIdList.add(refId.longValue());
+					// personelIdList.add(refId.longValue());
 				}
 			} catch (Exception e) {
 				logger.error(sb.toString() + " " + e);
@@ -1624,10 +1624,13 @@ public class OrtakIslemler implements Serializable {
 		}
 		sb.append("SP_GET_HAREKET" + sirketStr);
 		LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
-		fields.put("kapi", getListIdStr(kapiIdList));
+		String kapi = getListIdStr(kapiIdList);
+		String basTarihStr = basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null;
+		String bitTarihStr = bitTarih != null ? PdksUtil.convertToDateString(bitTarih, formatStr) : null;
+		fields.put("kapi", kapi);
 		fields.put("personel", getListIdStr(personelIdList));
-		fields.put("basTarih", basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null);
-		fields.put("bitTarih", basTarih != null ? PdksUtil.convertToDateString(bitTarih, formatStr) : null);
+		fields.put("basTarih", basTarihStr);
+		fields.put("bitTarih", bitTarihStr);
 		fields.put("df", null);
 		if (authenticatedUser != null && authenticatedUser.isAdmin()) {
 			Gson gson = new Gson();
@@ -1637,6 +1640,26 @@ public class OrtakIslemler implements Serializable {
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		Class class2 = class1.getName().equals(HareketKGS.class.getName()) ? BasitHareket.class : class1;
 		List list = pdksEntityController.execSPList(fields, sb, class2);
+		if (!iliskiMap.isEmpty()) {
+			personelIdList.clear();
+			personelIdList.addAll(new ArrayList<Long>(iliskiMap.keySet()));
+			fields.clear();
+			fields.put("kapi", kapi);
+			fields.put("personel", getListIdStr(personelIdList));
+			fields.put("basTarih", basTarihStr);
+			fields.put("bitTarih", bitTarihStr);
+			fields.put("df", null);
+			if (authenticatedUser != null && authenticatedUser.isAdmin()) {
+				Gson gson = new Gson();
+				logger.debug(gson.toJson(fields));
+			}
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List list2 = pdksEntityController.execSPList(fields, sb, class2);
+			if (!list2.isEmpty())
+				list.addAll(list2);
+			list2 = null;
+		}
 		if (!list.isEmpty()) {
 			if (class1.getName().equals(HareketKGS.class.getName()))
 				getHareketKGSByBasitHareketList(list, iliskiMap, session);

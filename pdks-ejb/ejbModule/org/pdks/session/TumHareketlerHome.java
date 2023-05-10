@@ -43,6 +43,7 @@ import org.pdks.entity.Departman;
 import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiKGS;
+import org.pdks.entity.KapiSirket;
 import org.pdks.entity.KapiView;
 import org.pdks.entity.PdksPersonelView;
 import org.pdks.entity.Personel;
@@ -512,12 +513,26 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					for (PersonelKGS personelKGS : list)
 						perMap.put(personelKGS.getId(), personelKGS.getPersonelView());
 				}
-
+				TreeMap<Long, KapiSirket> kapiSirketMap = new TreeMap<Long, KapiSirket>();
+				HashMap map = new HashMap();
+				if (session != null)
+					map.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<KapiSirket> kapiSirketList = pdksEntityController.getObjectByInnerObjectList(map, KapiSirket.class);
+				for (KapiSirket kapiSirket : kapiSirketList) {
+					kapiSirketMap.put(kapiSirket.getId(), kapiSirket);
+				}
+				kapiSirketList = null;
 				List<HareketKGS> list = new ArrayList<HareketKGS>();
 				List<Long> islemIdler = new ArrayList<Long>();
+				List<String> idList = new ArrayList<String>();
 				for (BasitHareket hareket : kgsList) {
 					if (hareket.getDurum() == 1 && perMap.containsKey(hareket.getPersonelId()) && kapiMap.containsKey(hareket.getKapiId())) {
+						if (idList.contains(hareket.getId()))
+							continue;
+						idList.add(hareket.getId());
 						HareketKGS kgsHareket = hareket.getKgsHareket();
+						if (kgsHareket.getKgsSirketId() != null)
+							kgsHareket.setKapiSirket(kapiSirketMap.get(kgsHareket.getKgsSirketId()));
 						kgsHareket.setKapiView(kapiMap.get(hareket.getKapiId()));
 						kgsHareket.setPersonel(perMap.get(hareket.getPersonelId()));
 						if (kgsHareket.getIslemId() != null)
@@ -526,6 +541,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 					}
 				}
+				idList = null;
 				if (!islemIdler.isEmpty()) {
 					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket islem bilgileri okunuyor."));
 					parametreMap.clear();
@@ -554,6 +570,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 					for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 						HareketKGS kgsHareket = (HareketKGS) iterator.next();
+
 						if (kgsHareket.getIslemId() != null && islemMap.containsKey(kgsHareket.getIslemId())) {
 							PersonelHareketIslem islem = islemMap.get(kgsHareket.getIslemId());
 							kgsHareket.setIslem(islem);
@@ -885,11 +902,14 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
 		int row = 0;
 		int col = 0;
+		boolean yonetici = authenticatedUser.isAdmin() || authenticatedUser.isIK();
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Zaman");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kapi");
+		if (yonetici)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("KGS Şirket");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 
 		if (guncellenmis) {
@@ -924,6 +944,9 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(hareket.getSicilNo());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getAdSoyad());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getKapiView().getAciklama());
+				if (yonetici)
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getKapiSirket() != null ? hareket.getKapiSirket().getAciklama() : "");
+
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel != null && personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 				if (guncellenmis) {
 					if ((hareket.getSirket() != null && hareket.getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) || hareket.getIslem() != null) {

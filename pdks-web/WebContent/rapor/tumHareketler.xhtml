@@ -107,13 +107,19 @@
 								<h:outputText value="#{hareketler.personel.adSoyad}" />
 							</rich:column>
 
- 							<rich:column filterBy="#{hareketler.kapiView.aciklama}" filterEvent="onkeyup">
+							<rich:column filterBy="#{hareketler.kapiView.aciklama}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="Kapi" />
 
 								</f:facet>
 
 								<h:outputText value="#{hareketler.kapiView.aciklama}" />
+							</rich:column>
+							<rich:column rendered="#{authenticatedUser.IK or authenticatedUser.admin}">
+								<f:facet name="header">
+									<h:outputText value="KGS Şirket" />
+								</f:facet>
+								<h:outputText value="#{hareketler.kapiSirket.aciklama}" />
 							</rich:column>
 							<rich:column>
 								<f:facet name="header">
