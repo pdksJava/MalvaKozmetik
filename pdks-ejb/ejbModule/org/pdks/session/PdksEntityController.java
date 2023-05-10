@@ -869,22 +869,20 @@ public class PdksEntityController implements Serializable {
 				for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 					Object object = (Object) iterator.next();
 					kayitAdet++;
-					BasePDKSObject basePDKSObject = (BasePDKSObject) object;
-					if (basePDKSObject.getId().longValue() != kayitAdet) {
+					id = (Long) PdksUtil.getMethodObject(object, "getId", null);
+					if (id.longValue() != kayitAdet) {
 						removeList.add(object);
-						saveList.add(basePDKSObject.cloneEmpty());
-						// BasePDKSObject clone = (BasePDKSObject) basePDKSObject.clone();
-						// clone.setId(null);
-						// saveList.add(clone);
+						BasePDKSObject basePDKSObject = (BasePDKSObject) PdksUtil.getMethodObject(object, "cloneEmpty", null);
+						if (basePDKSObject != null)
+							saveList.add(basePDKSObject);
 					}
-
 				}
 				if (!saveList.isEmpty() && removeList.size() == saveList.size()) {
 					kayitAdet = saveList.size();
 					for (Object object : removeList) {
 						if (object != null) {
-							BasePDKSObject basePDKSObject = (BasePDKSObject) object;
-							if (basePDKSObject.getId() != null) {
+							id = (Long) PdksUtil.getMethodObject(object, "getId", null);
+							if (id != null) {
 								deleteObject(session, em1, object);
 							} else {
 								saveList.clear();
@@ -903,8 +901,8 @@ public class PdksEntityController implements Serializable {
 					session.clear();
 					for (Object object : saveList) {
 						if (object != null) {
-							BasePDKSObject basePDKSObject = (BasePDKSObject) object;
-							if (basePDKSObject.getId() == null) {
+							id = (Long) PdksUtil.getMethodObject(object, "getId", null);
+							if (id == null) {
 								save(object, session);
 							}
 						}
@@ -919,7 +917,6 @@ public class PdksEntityController implements Serializable {
 		if (kayitAdet > 0)
 			logger.info(kayitAdet + " " + class1.getName() + " düzenlendi.");
 		return kayitAdet;
-
 	}
 
 	/**
