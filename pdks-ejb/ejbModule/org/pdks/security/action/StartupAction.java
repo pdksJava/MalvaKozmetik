@@ -47,7 +47,6 @@ import org.pdks.entity.Parameter;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelIzin;
-import org.pdks.entity.ServisData;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.SkinBean;
 import org.pdks.entity.Tanim;
@@ -145,9 +144,17 @@ public class StartupAction implements Serializable {
 
 	public SkinBean skinBean = new SkinBean();
 
+	public Notice getHomePageNotice() {
+		return homePageNotice;
+	}
+
 	public void addIzinliCalisilanGunlerList(String str) {
 		if (!izinliCalisilanGunler.contains(str))
 			izinliCalisilanGunler.add(str);
+	}
+
+	public void setHomePageNotice(Notice homePageNotice) {
+		this.homePageNotice = homePageNotice;
 	}
 
 	public Map<String, MenuItem> getTopActiveMenuItemMap() {
@@ -233,18 +240,21 @@ public class StartupAction implements Serializable {
 			list.add(VardiyaIzin.class);
 			list.add(VardiyaYemekIzin.class);
 			list.add(YemekKartsiz.class);
-			list.add(ServisData.class);
+			// list.add(ServisData.class);
+ 			pdksEntityController.savePrepareTableID(UserRoles.class, entityManager, session);
+
 			for (Class class1 : list) {
 				long adet = pdksEntityController.savePrepareTableID(class1, entityManager, session);
 				toplamAdet += adet;
+				if (adet > 0)
+					session.flush();
 			}
-
 		} catch (Exception e) {
 			logger.error(e);
 		}
-		if (toplamAdet > 0) {
+		if (toplamAdet > 0)
 			logger.info(toplamAdet + " adet kayıt id güncellendi.");
-		}
+
 		list = null;
 	}
 
@@ -992,13 +1002,5 @@ public class StartupAction implements Serializable {
 		}
 
 		return smtpTLS;
-	}
-
-	public Notice getHomePageNotice() {
-		return homePageNotice;
-	}
-
-	public void setHomePageNotice(Notice homePageNotice) {
-		this.homePageNotice = homePageNotice;
 	}
 }
