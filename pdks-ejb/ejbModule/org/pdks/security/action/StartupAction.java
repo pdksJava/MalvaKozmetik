@@ -34,7 +34,6 @@ import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.CalismaModeliVardiya;
 import org.pdks.entity.DepartmanMailGrubu;
 import org.pdks.entity.IzinHakedisHakki;
-import org.pdks.entity.IzinIstirahat;
 import org.pdks.entity.IzinTipiBirlesikHaric;
 import org.pdks.entity.IzinTipiMailAdres;
 import org.pdks.entity.LDAPDomain;
@@ -223,7 +222,6 @@ public class StartupAction implements Serializable {
 			list.add(ArifeVardiyaDonem.class);
 			list.add(CalismaModeliVardiya.class);
 			list.add(DepartmanMailGrubu.class);
-			list.add(IzinIstirahat.class);
 			list.add(IzinTipiBirlesikHaric.class);
 			list.add(IzinHakedisHakki.class);
 			list.add(IzinTipiMailAdres.class);
@@ -241,7 +239,7 @@ public class StartupAction implements Serializable {
 			list.add(VardiyaYemekIzin.class);
 			list.add(YemekKartsiz.class);
 			// list.add(ServisData.class);
- 			pdksEntityController.savePrepareTableID(UserRoles.class, entityManager, session);
+			pdksEntityController.savePrepareTableID(UserRoles.class, entityManager, session);
 
 			for (Class class1 : list) {
 				long adet = pdksEntityController.savePrepareTableID(class1, entityManager, session);
