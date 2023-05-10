@@ -27,7 +27,7 @@ public class MenuItem extends BasePDKSObject implements Serializable {
 	 */
 	private static final long serialVersionUID = 6647696654599482807L;
 	public static final String TABLE_NAME = "MENUITEM";
- 	public static final String COLUMN_NAME_ADI = "NAME";
+	public static final String COLUMN_NAME_ADI = "NAME";
 
 	private String name = "";
 	private List<MenuItem> childMenuItemList = new ArrayList<MenuItem>();;
@@ -130,7 +130,7 @@ public class MenuItem extends BasePDKSObject implements Serializable {
 	 * @return the childMenuItemList
 	 */
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = MenuItem.class, fetch = FetchType.EAGER)
-	@JoinTable(name = "MENUITEM_MENUITEM", joinColumns = @JoinColumn(name = "MENUITEM_ID"), inverseJoinColumns = @JoinColumn(name = "CHILDMENUITEMLIST_ID"))
+	@JoinTable(name = MenuIliski.TABLE_NAME, joinColumns = @JoinColumn(name = MenuIliski.COLUMN_NAME_MENU_ITEM), inverseJoinColumns = @JoinColumn(name = MenuIliski.COLUMN_NAME_CHILD_MENU_ITEM))
 	public List<MenuItem> getChildMenuItemList() {
 		return childMenuItemList;
 	}

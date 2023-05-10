@@ -28,8 +28,17 @@ import org.jboss.seam.security.Identity;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.pdks.entity.AccountPermission;
+import org.pdks.entity.ArifeVardiyaDonem;
 import org.pdks.entity.AylikPuantaj;
+import org.pdks.entity.CalismaModeliVardiya;
+import org.pdks.entity.DepartmanMailGrubu;
+import org.pdks.entity.IzinIstirahat;
+import org.pdks.entity.IzinTipiBirlesikHaric;
+import org.pdks.entity.IzinTipiMailAdres;
+import org.pdks.entity.KatSayi;
 import org.pdks.entity.LDAPDomain;
+import org.pdks.entity.MailUser;
+import org.pdks.entity.MenuIliski;
 import org.pdks.entity.MenuItem;
 import org.pdks.entity.NoteTipi;
 import org.pdks.entity.Notice;
@@ -37,15 +46,24 @@ import org.pdks.entity.Parameter;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelIzin;
+import org.pdks.entity.ServisData;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.SkinBean;
 import org.pdks.entity.Tanim;
+import org.pdks.entity.Tatil;
 import org.pdks.entity.Vardiya;
+import org.pdks.entity.VardiyaGorev;
 import org.pdks.entity.VardiyaGun;
+import org.pdks.entity.VardiyaHafta;
+import org.pdks.entity.VardiyaIzin;
+import org.pdks.entity.VardiyaYemekIzin;
+import org.pdks.entity.YemekKartsiz;
 import org.pdks.erp.action.SapRfcManager;
 import org.pdks.sap.entity.SAPSunucu;
 import org.pdks.security.entity.MenuItemConstant;
 import org.pdks.security.entity.User;
+import org.pdks.security.entity.UserRoles;
+import org.pdks.security.entity.UserTesis;
 import org.pdks.session.LDAPUserManager;
 import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksEntityController;
@@ -126,17 +144,9 @@ public class StartupAction implements Serializable {
 
 	public SkinBean skinBean = new SkinBean();
 
-	public Notice getHomePageNotice() {
-		return homePageNotice;
-	}
-
 	public void addIzinliCalisilanGunlerList(String str) {
 		if (!izinliCalisilanGunler.contains(str))
 			izinliCalisilanGunler.add(str);
-	}
-
-	public void setHomePageNotice(Notice homePageNotice) {
-		this.homePageNotice = homePageNotice;
 	}
 
 	public Map<String, MenuItem> getTopActiveMenuItemMap() {
@@ -197,8 +207,55 @@ public class StartupAction implements Serializable {
 	/**
 	 * @param session
 	 */
+	public void savePrepareAllTableID(Session session) {
+		List<Class> list = new ArrayList<Class>();
+		long toplamAdet = 0L;
+		try {
+			list.add(AccountPermission.class);
+			list.add(ArifeVardiyaDonem.class);
+			list.add(CalismaModeliVardiya.class);
+			list.add(DepartmanMailGrubu.class);
+			list.add(IzinIstirahat.class);
+			list.add(IzinTipiBirlesikHaric.class);
+			list.add(IzinTipiMailAdres.class);
+			list.add(KatSayi.class);
+			list.add(LDAPDomain.class);
+			list.add(MailUser.class);
+			list.add(MenuIliski.class);
+			list.add(Notice.class);
+			list.add(Parameter.class);
+			list.add(SAPSunucu.class);
+			list.add(Tatil.class);
+			list.add(UserRoles.class);
+			list.add(UserTesis.class);
+			list.add(VardiyaGorev.class);
+			list.add(VardiyaHafta.class);
+			list.add(VardiyaIzin.class);
+			list.add(VardiyaYemekIzin.class);
+			list.add(YemekKartsiz.class);
+			list.add(ServisData.class);
+			for (Class class1 : list) {
+				long adet = pdksEntityController.savePrepareTableID(class1, entityManager, session);
+				toplamAdet += adet;
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		if (toplamAdet > 0) {
+			session.flush();
+			logger.info(toplamAdet + " adet kayıt id güncellendi.");
+			session.clear();
+		}
+		list = null;
+	}
+
+	/**
+	 * @param session
+	 */
 	public void startupMethod(Session session) {
 		logger.debug("startupMethod : " + new Date());
+		savePrepareAllTableID(session);
 		fillStartMethod(null, session);
 
 	}
@@ -935,5 +992,13 @@ public class StartupAction implements Serializable {
 		}
 
 		return smtpTLS;
+	}
+
+	public Notice getHomePageNotice() {
+		return homePageNotice;
+	}
+
+	public void setHomePageNotice(Notice homePageNotice) {
+		this.homePageNotice = homePageNotice;
 	}
 }

@@ -3,14 +3,17 @@ package org.pdks.entity;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 
+@Entity(name = MailUser.TABLE_NAME)
 public class MailUser extends BasePDKSObject implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6484652674222959271L;
-	// seam-gen attributes (you should probably edit these)
- 
+
+	public static final String TABLE_NAME = "MAILUSER";
+
 	private Integer version;
 
 	private String username;
@@ -22,8 +25,6 @@ public class MailUser extends BasePDKSObject implements Serializable {
 	private String staffId;// sicilno
 
 	private String email;
-
- 
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {
