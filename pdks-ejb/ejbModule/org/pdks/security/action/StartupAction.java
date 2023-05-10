@@ -3,6 +3,7 @@ package org.pdks.security.action;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.pdks.entity.ArifeVardiyaDonem;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.CalismaModeliVardiya;
 import org.pdks.entity.DepartmanMailGrubu;
+import org.pdks.entity.IzinHakedisHakki;
 import org.pdks.entity.IzinIstirahat;
 import org.pdks.entity.IzinTipiBirlesikHaric;
 import org.pdks.entity.IzinTipiMailAdres;
@@ -217,6 +219,7 @@ public class StartupAction implements Serializable {
 			list.add(DepartmanMailGrubu.class);
 			list.add(IzinIstirahat.class);
 			list.add(IzinTipiBirlesikHaric.class);
+			list.add(IzinHakedisHakki.class);
 			list.add(IzinTipiMailAdres.class);
 			list.add(KatSayi.class);
 			list.add(LDAPDomain.class);
@@ -254,8 +257,10 @@ public class StartupAction implements Serializable {
 	 * @param session
 	 */
 	public void startupMethod(Session session) {
-		logger.debug("startupMethod : " + new Date());
-		savePrepareAllTableID(session);
+		Calendar cal = Calendar.getInstance();
+		logger.debug("startupMethod : " + cal.getTime());
+		if (cal.get(Calendar.HOUR_OF_DAY) < 7)
+			savePrepareAllTableID(session);
 		fillStartMethod(null, session);
 
 	}
