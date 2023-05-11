@@ -753,7 +753,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	public List<MesaiPDKS> getMesaiPDKS(String sirketKodu, Integer yil, Integer ay, Boolean donemKapat) throws Exception {
 		sistemVerileriniYukle(pdksDAO);
-		boolean servisDurum = !(mailMap.containsKey("getMesaiPDKSDurum") && mailMap.get("getMesaiPDKSDurum").equals("0"));
+		boolean servisDurum = !PdksUtil.getCanliSunucuDurum() || !(mailMap.containsKey("getMesaiPDKSDurum") && mailMap.get("getMesaiPDKSDurum").equals("0"));
 		List<MesaiPDKS> list = null;
 		if (servisDurum) {
 			LinkedHashMap<String, Object> inputMap = new LinkedHashMap<String, Object>();
@@ -1348,7 +1348,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		servisAdi = "saveIzinler";
 		if (pdksDAO != null && izinList != null && !izinList.isEmpty()) {
 			sistemVerileriniYukle(pdksDAO);
-			boolean servisDurum = !(mailMap.containsKey(servisAdi + "Durum") && mailMap.get(servisAdi + "Durum").equals("0"));
+			boolean servisDurum = !PdksUtil.getCanliSunucuDurum() || !(mailMap.containsKey(servisAdi + "Durum") && mailMap.get(servisAdi + "Durum").equals("0"));
 			if (servisDurum) {
 
 				IzinERP erp = null;
@@ -2739,15 +2739,20 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (kapiSirket != null && personelKGS2.getKapiSirket() != null && !personelKGS2.getId().equals(personelKGS.getId()) && !personelKGS2.getKapiSirket().getId().equals(kapiSirket.getId())) {
 							boolean adBenzer = isBenzer(personelKGS.getAd(), personelKGS2.getAd());
 							boolean soyadBenzer = isBenzer(personelKGS.getSoyad(), personelKGS2.getSoyad());
-							if (soyadBenzer && adBenzer)
+							boolean kimlikBenzer = (PdksUtil.hasStringValue(personelKGS.getKimlikNo()) && PdksUtil.hasStringValue(personelKGS2.getKimlikNo())) || (personelKGS.getKimlikNo() != null && personelKGS.getKimlikNo() != null && personelKGS.getKimlikNo().equals(personelKGS2.getKimlikNo()));
+							if (soyadBenzer && adBenzer && kimlikBenzer)
 								personel.setPersonelKGS(personelKGS);
-							else if (adBenzer)
-								personelERP.getHataList().add("Soyad uyumsuz!");
-							else if (soyadBenzer)
-								personelERP.getHataList().add("Ad uyumsuz!");
-							else
-								personelERP.getHataList().add("Ad soyad uyumsuz!");
-
+							else {
+								String uygulamaFark = kapiSirket.getAciklama() + " ile " + personelKGS2.getKapiSirket().getAciklama();
+								if (adBenzer)
+									personelERP.getHataList().add(uygulamaFark + " soyad uyumsuz!");
+								else if (soyadBenzer)
+									personelERP.getHataList().add(uygulamaFark + " ad uyumsuz!");
+								else if (kimlikBenzer)
+									personelERP.getHataList().add(uygulamaFark + " ad soyad uyumsuz!");
+								if (!kimlikBenzer)
+									personelERP.getHataList().add(uygulamaFark + " kimlik numarası uyumsuz!");
+							}
 						}
 
 					} else if (personelDigerMap.containsKey(personelNo)) {
@@ -3212,7 +3217,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		servisAdi = "savePersoneller";
 		if (pdksDAO != null && personelList != null && !personelList.isEmpty()) {
 			sistemVerileriniYukle(pdksDAO);
-			boolean servisDurum = !(mailMap.containsKey(servisAdi + "Durum") && mailMap.get(servisAdi + "Durum").equals("0"));
+			boolean servisDurum = !PdksUtil.getCanliSunucuDurum() || !(mailMap.containsKey(servisAdi + "Durum") && mailMap.get(servisAdi + "Durum").equals("0"));
 			if (servisDurum) {
 				kapiSirket = null;
 				Date bugun = PdksUtil.getDate(new Date());

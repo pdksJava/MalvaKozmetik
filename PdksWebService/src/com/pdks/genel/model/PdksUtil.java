@@ -127,6 +127,15 @@ public class PdksUtil implements Serializable {
 	}
 
 	/**
+	 * @param aciklama
+	 * @return
+	 */
+	public static boolean hasStringValue(String aciklama) {
+		boolean strDolu = aciklama != null && aciklama.trim().length() > 0;
+		return strDolu;
+	}
+
+	/**
 	 * @param jsonStr
 	 * @param rootName
 	 * @param arrayTag

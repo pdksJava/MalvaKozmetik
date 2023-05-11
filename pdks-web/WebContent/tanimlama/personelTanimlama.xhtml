@@ -91,10 +91,15 @@
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 								</f:facet>
-								<h:outputText value="#{personelView.personelKGS.sicilNo}" id="pdksname" />
+								<SPAN id="KGS#{personelView.id}"> <h:outputText value="#{personelView.personelKGS.sicilNo}" /></SPAN>
+								<ui:fragment rendered="#{personelView.personelKGS.kapiSirket!=null}">
+									<rich:toolTip for="KGS#{personelView.id}">
+										<b>KGS Şirket : </b>#{personelView.personelKGS.kapiSirket.aciklama}
+								</rich:toolTip>
+								</ui:fragment>
 							</rich:column>
 							<rich:column>
-								<f:facet name="header" filterBy="#{user.firstname}" filterEvent="onkeyup">
+								<f:facet name="header" filterBy="#{user.firstname}">
 									<h:outputText value="PDKS Adı Soyadı" />
 								</f:facet>
 								<h:outputText title="#{personelView.pdksPersonelAciklama}" value="#{personelView.personelKGS.adSoyad}" id="adSoyad" />
@@ -109,13 +114,16 @@
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
 								</f:facet>
-								<h:outputText value="#{personelView.pdksPersonel.sirket.ad}" id="sirket" />
+								<h:outputText value="#{personelView.pdksPersonel.sirket.ad}" />
+
 							</rich:column>
 							<rich:column rendered="#{pdksPersonelHome.kimlikNoGoster}">
 								<f:facet name="header">
+
 									<h:outputText value="#{ortakIslemler.kimlikNoAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.personelKGS.kimlikNo}" />
+
 							</rich:column>
 							<rich:column rendered="#{pdksPersonelHome.kartNoGoster}">
 								<f:facet name="header">
@@ -275,14 +283,15 @@
 								<f:facet name="header">
 									<h:outputText value="Fazla Mesai Öde" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiOde)}" rendered="#{personelView.pdksPersonel.id!=null}"/>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiOde)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
 
 							<rich:column rendered="#{pdksPersonelHome.fazlaMesaiIzinKullan }">
 								<f:facet name="header">
 									<h:outputText value="Fazla Mesai İzin Kullandır" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiIzinKullan)}" rendered="#{personelView.pdksPersonel.id!=null}" />
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiIzinKullan)}"
+									rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
 							<rich:column rendered="#{pdksPersonelHome.suaOlabilir}">
 								<f:facet name="header">
@@ -294,14 +303,14 @@
 								<f:facet name="header">
 									Süt İzni
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sutIzni)}" rendered="#{personelView.pdksPersonel.id!=null}"/>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sutIzni)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
 							<rich:column rendered="#{pdksPersonelHome.gebeMi}">
 								<f:facet name="header">
 									<h:outputText value="Gebelik Durumu" />
 								</f:facet>
 								<ui:fragment rendered="#{personelView.pdksPersonel.cinsiyetBayan}">
-									<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.gebeMi)}" rendered="#{personelView.pdksPersonel.id!=null}"/>
+									<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.gebeMi)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 								</ui:fragment>
 
 							</rich:column>
