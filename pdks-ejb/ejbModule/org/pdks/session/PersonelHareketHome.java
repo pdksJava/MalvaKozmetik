@@ -1,6 +1,7 @@
 package org.pdks.session;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +35,6 @@ import org.pdks.entity.DepartmanDenklestirmeDonemi;
 import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiView;
-import org.pdks.entity.PdksPersonelView;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelHareketIslem;
@@ -347,7 +347,8 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			if (fazlaMesaiVardiyaGun != null) {
 				fazlaMesaiGiris = !ikRole;
 				dateStr = PdksUtil.convertToDateString(fazlaMesaiVardiyaGun.getVardiyaDate(), "yyyyMMdd");
-				perKGSId = fazlaMesaiVardiyaGun.getPersonel().getPersonelKGS().getId();
+				fazlaMesaiPersonel = fazlaMesaiVardiyaGun.getPersonel();
+				perKGSId = fazlaMesaiPersonel.getPersonelKGS().getId();
 				islemVardiyaGun = (VardiyaGun) fazlaMesaiVardiyaGun.clone();
 			}
 
@@ -371,7 +372,6 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			aramaSecenekleri.setSirket(authenticatedUser.getPdksPersonel().getSirket());
 		if (dateStr != null) {
 			donusAdres = linkAdres;
-
 			Date vardiyaDate = PdksUtil.convertToJavaDate(dateStr, "yyyyMMdd");
 			setTarih(vardiyaDate);
 			if (perKGSId != null) {
@@ -381,11 +381,11 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				PersonelKGS personelKGS = (PersonelKGS) pdksEntityController.getObjectByInnerObject(parametreMap, PersonelKGS.class);
 				PersonelView personelView = personelKGS != null ? personelKGS.getPersonelView() : null;
-				if (personelView != null)
+				if (personelView != null && fazlaMesaiPersonel == null)
 					fazlaMesaiPersonel = personelView.getPdksPersonel();
 				hareket.setPersonel(personelView);
-				if (personelView != null && personelView.getPdksPersonel() != null) {
-					Personel pdksPersonel = personelView.getPdksPersonel();
+				if (fazlaMesaiPersonel != null) {
+					Personel pdksPersonel = fazlaMesaiPersonel;
 					Sirket pdksSirket = pdksPersonel.getSirket();
 					if (pdksSirket != null) {
 						aramaSecenekleri.setSirket(pdksSirket);
@@ -411,7 +411,9 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 				}
 
 			}
+			Personel sakla = fazlaMesaiPersonel;
 			fillHareketList();
+			fazlaMesaiPersonel = sakla;
 
 		}
 		donemBul(tarih);
@@ -430,8 +432,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			PdksUtil.addMessageAvailableWarn("'" + ortakIslemler.getMenuUserAdi(session, "personelHareket") + "' sayfasına giriş yetkiniz yoktur!");
 			return MenuItemConstant.home;
 		}
-
-		return "";
+ 		return "";
 	}
 
 	/**
@@ -838,10 +839,18 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			hareket1List.clear();
 			if (sicilNoList != null && !sicilNoList.isEmpty()) {
 				HashMap parametreMap = new HashMap();
-				parametreMap.put("pdksSicilNo", sicilNoList);
+				HashMap map = new HashMap();
+				StringBuffer sb = new StringBuffer();
+				sb.append("SELECT P." + Personel.COLUMN_NAME_KGS_PERSONEL + " from " + Personel.TABLE_NAME + " P WITH(nolock) ");
+				sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :p ");
+				map.put("p", sicilNoList);
 				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<Long> personeller = ortakIslemler.getPersonelViewIdList(pdksEntityController.getObjectByInnerObjectList(parametreMap, PdksPersonelView.class));
+					map.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<BigDecimal> idList = pdksEntityController.getObjectBySQLList(sb, map, null);
+				ArrayList<Long> personeller = new ArrayList<Long>();
+				for (BigDecimal bigDecimal : idList) {
+					personeller.add(bigDecimal.longValue());
+				}
 				List<HareketKGS> list = new ArrayList<HareketKGS>();
 				List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
 
@@ -851,13 +860,13 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					try {
 						if (kapiIdler != null && !kapiIdler.isEmpty()) {
 							if (islemVardiyaGun == null)
-								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, PdksUtil.getDate(tarih), PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(tarih, 1)), HareketKGS.class, session);
+								list = ortakIslemler.getHareketBilgileri(kapiIdler, (List<Long>) personeller.clone(), PdksUtil.getDate(tarih), PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(tarih, 1)), HareketKGS.class, session);
 							else {
 								Vardiya vardiya = islemVardiyaGun.getIslemVardiya();
 								Date bitTarih = vardiya.getVardiyaFazlaMesaiBitZaman(), basTarih = vardiya.getVardiyaFazlaMesaiBasZaman();
 								if (vardiya.getVardiyaBitZaman().after(bitTarih))
 									bitTarih = vardiya.getVardiyaBitZaman();
-								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, basTarih, bitTarih, HareketKGS.class, session);
+								list = ortakIslemler.getHareketBilgileri(kapiIdler, (List<Long>) personeller.clone(), basTarih, bitTarih, HareketKGS.class, session);
 							}
 						}
 					} catch (Exception e) {
