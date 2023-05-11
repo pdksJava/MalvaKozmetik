@@ -1492,7 +1492,7 @@ public class OrtakIslemler implements Serializable {
 			}
 			if (kgs.length() > 0 || pdks.length() > 0) {
 				StringBuffer sb = new StringBuffer();
-				sb.append("SP_GET_HAREKET_BY_ID"+ sirketStr );
+				sb.append("SP_GET_HAREKET_BY_ID" + sirketStr);
 				LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
 				fields.put("kgs", kgs.length() > 0 ? kgs.toString() : null);
 				fields.put("pdks", pdks.length() > 0 ? pdks.toString() : null);
