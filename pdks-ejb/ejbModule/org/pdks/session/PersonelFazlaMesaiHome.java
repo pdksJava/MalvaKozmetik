@@ -433,11 +433,10 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		PersonelFazlaMesai fazlaMesai = getInstance();
 		boolean yeni = fazlaMesai.getId() == null;
 		try {
-
+ 			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), session);
 			VardiyaGun pdksVardiyaGun = getVardiyaPlan(fazlaMesai);
 			boolean tatil = fazlaMesai.getHareket().isTatil();
 			Double fazlaMesaiSaati = fazlaMesai.getHareket().getFazlaMesai();
-			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), session);
 
 			HareketKGS hareket = !list.isEmpty() ? list.get(0) : null;
 			if (hareket == null && fazlaMesai.getHareketId() != null) {
@@ -643,7 +642,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 		if (personeller != null && !personeller.isEmpty()) {
 			saveLastParameter();
- 			boolean fazlaMesaiYemekHesapla = ortakIslemler.getParameterKey("fazlaMesaiYemekHesapla").equals("1");
+			boolean fazlaMesaiYemekHesapla = ortakIslemler.getParameterKey("fazlaMesaiYemekHesapla").equals("1");
 			if (fazlaMesaiYemekHesapla)
 				yemekList = ortakIslemler.getYemekList(session);
 
