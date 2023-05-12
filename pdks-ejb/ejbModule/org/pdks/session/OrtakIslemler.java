@@ -1599,7 +1599,10 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	public List getHareketBilgileri(List<Long> kapiIdList, List<Long> personelIdList, Date basTarih, Date bitTarih, Class class1, Session session) throws Exception {
+	public List getHareketBilgileri(List<Long> kapiIdIList, List<Long> personelIdInputList, Date basTarih, Date bitTarih, Class class1, Session session) throws Exception {
+		List<Long> personelIdList = new ArrayList<Long>();
+		if (personelIdInputList != null)
+			personelIdList.addAll(personelIdInputList);
 		String formatStr = "yyyy-MM-dd HH:mm:ss";
 		TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
 		StringBuffer sb = new StringBuffer();
@@ -1628,7 +1631,7 @@ public class OrtakIslemler implements Serializable {
 		}
 		sb.append("SP_GET_HAREKET" + sirketStr);
 		LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
-		String kapi = getListIdStr(kapiIdList);
+		String kapi = getListIdStr(kapiIdIList);
 		String basTarihStr = basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null;
 		String bitTarihStr = bitTarih != null ? PdksUtil.convertToDateString(bitTarih, formatStr) : null;
 		fields.put("kapi", kapi);
@@ -1645,11 +1648,9 @@ public class OrtakIslemler implements Serializable {
 		Class class2 = class1.getName().equals(HareketKGS.class.getName()) ? BasitHareket.class : class1;
 		List list = pdksEntityController.execSPList(fields, sb, class2);
 		if (!iliskiMap.isEmpty()) {
-			personelIdList.clear();
-			personelIdList.addAll(new ArrayList<Long>(iliskiMap.keySet()));
 			fields.clear();
 			fields.put("kapi", kapi);
-			fields.put("personel", getListIdStr(personelIdList));
+			fields.put("personel", getListIdStr(new ArrayList<Long>(iliskiMap.keySet())));
 			fields.put("basTarih", basTarihStr);
 			fields.put("bitTarih", bitTarihStr);
 			fields.put("df", null);

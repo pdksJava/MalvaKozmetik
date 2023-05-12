@@ -2256,12 +2256,12 @@ public class PdksUtil implements Serializable {
 		Double yuvarlanmisDeger = null;
 		if (doubleValue != null) {
 			double d = doubleValue.doubleValue();
-			BigDecimal deger = new BigDecimal(d);
-			if (deger.doubleValue() > 0 && deger.doubleValue() > deger.longValue()) {
+			long l = doubleValue.longValue();
+			if (d > 0.0d && d > l) {
 				double fark = 0.0d;
 				switch (yarimYuvarla) {
 				case 1:
-					yuvarlanmisDeger = deger.doubleValue() * 2;
+					yuvarlanmisDeger = doubleValue.doubleValue() * 2;
 					fark = yuvarlanmisDeger.doubleValue() - yuvarlanmisDeger.longValue();
 					if (fark > 0) {
 						if (fark > 0.5)
@@ -2273,14 +2273,14 @@ public class PdksUtil implements Serializable {
 					break;
 
 				case 2:
-					fark = deger.doubleValue() - deger.longValue();
+					fark = doubleValue.doubleValue() - doubleValue.longValue();
 					double arti = 0;
 					for (int i = 3; i >= 0; i--) {
 						arti = i * 0.25;
 						if (fark >= arti)
 							break;
 					}
-					yuvarlanmisDeger = deger.longValue() + arti;
+					yuvarlanmisDeger = doubleValue.longValue() + arti;
 					break;
 
 				default:

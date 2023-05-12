@@ -432,7 +432,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			PdksUtil.addMessageAvailableWarn("'" + ortakIslemler.getMenuUserAdi(session, "personelHareket") + "' sayfasına giriş yetkiniz yoktur!");
 			return MenuItemConstant.home;
 		}
- 		return "";
+		return "";
 	}
 
 	/**
@@ -860,13 +860,13 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					try {
 						if (kapiIdler != null && !kapiIdler.isEmpty()) {
 							if (islemVardiyaGun == null)
-								list = ortakIslemler.getHareketBilgileri(kapiIdler, (List<Long>) personeller.clone(), PdksUtil.getDate(tarih), PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(tarih, 1)), HareketKGS.class, session);
+								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, PdksUtil.getDate(tarih), PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(tarih, 1)), HareketKGS.class, session);
 							else {
 								Vardiya vardiya = islemVardiyaGun.getIslemVardiya();
 								Date bitTarih = vardiya.getVardiyaFazlaMesaiBitZaman(), basTarih = vardiya.getVardiyaFazlaMesaiBasZaman();
 								if (vardiya.getVardiyaBitZaman().after(bitTarih))
 									bitTarih = vardiya.getVardiyaBitZaman();
-								list = ortakIslemler.getHareketBilgileri(kapiIdler, (List<Long>) personeller.clone(), basTarih, bitTarih, HareketKGS.class, session);
+								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, basTarih, bitTarih, HareketKGS.class, session);
 							}
 						}
 					} catch (Exception e) {
