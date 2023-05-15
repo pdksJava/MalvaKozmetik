@@ -241,7 +241,7 @@ public class YemekCiftBasanRaporHome extends EntityHome<VardiyaGun> implements S
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		try {
 			List list = pdksEntityController.getObjectBySQLList(qsb, parametreMap, null);
-			kgsList = ortakIslemler.getHareketIdBilgileri(list, null, session);
+			kgsList = ortakIslemler.getHareketIdBilgileri(list, null, basTarih, bitTarih, session);
 			list = null;
 		} catch (Exception e) {
 			kgsList = new ArrayList<HareketKGS>();

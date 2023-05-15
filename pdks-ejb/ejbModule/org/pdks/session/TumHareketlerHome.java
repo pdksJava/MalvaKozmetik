@@ -457,7 +457,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					kgsList = ortakIslemler.getHareketBilgileri(new ArrayList<Long>(kapiMap.keySet()), personelId, basTarih, PdksUtil.tariheGunEkleCikar(PdksUtil.getDate(bitTarih), 1), BasitHareket.class, session);
 				} else {
 					List list = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
-					kgsList = ortakIslemler.getHareketIdBilgileri(list, null, session);
+					kgsList = ortakIslemler.getHareketIdBilgileri(list, null, basTarih, bitTarih, session);
 					list = null;
 				}
 

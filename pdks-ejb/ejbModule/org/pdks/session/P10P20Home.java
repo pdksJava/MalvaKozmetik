@@ -122,7 +122,7 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 
 		List<HareketKGS> hareket1List = new ArrayList<HareketKGS>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
-		List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
+		List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(basTarih, bitTarih, session);
 		try {
 			if (kapiIdler != null && !kapiIdler.isEmpty())
 				kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) authenticatedUser.getTumPersoneller().clone(), basTarih, PdksUtil.tariheGunEkleCikar(bitTarih, 1), HareketKGS.class, session);

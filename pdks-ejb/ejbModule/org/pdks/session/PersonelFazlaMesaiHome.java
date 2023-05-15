@@ -433,7 +433,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		PersonelFazlaMesai fazlaMesai = getInstance();
 		boolean yeni = fazlaMesai.getId() == null;
 		try {
- 			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), session);
+			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), date, date, session);
 			VardiyaGun pdksVardiyaGun = getVardiyaPlan(fazlaMesai);
 			boolean tatil = fazlaMesai.getHareket().isTatil();
 			Double fazlaMesaiSaati = fazlaMesai.getHareket().getFazlaMesai();
@@ -517,7 +517,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		boolean yeni = fazlaMesai.getId() == null;
 		try {
 			VardiyaGun pdksVardiyaGun = getVardiyaPlan(fazlaMesai);
-			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), session);
+			List<HareketKGS> list = ortakIslemler.getHareketIdBilgileri(null, fazlaMesai.getHareket(), date, date, session);
 			HareketKGS hareket = !list.isEmpty() ? list.get(0) : null;
 
 			if (hareket != null) {
@@ -778,7 +778,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 					}
 
 				}
-				List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
+				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 				if (!personelList.isEmpty()) {
 					List<Long> perIdler = new ArrayList<Long>();
 					for (Iterator iterator2 = personelList.iterator(); iterator2.hasNext();) {
@@ -1177,7 +1177,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				if (!mesaiList.isEmpty()) {
 
 					try {
-						List<HareketKGS> hareketler = ortakIslemler.getHareketIdBilgileri(idList, null, session);
+						List<HareketKGS> hareketler = ortakIslemler.getHareketIdBilgileri(idList, null, date, date, session);
 						for (HareketKGS kgsHareket : hareketler) {
 							for (Iterator iterator = mesaiList.iterator(); iterator.hasNext();) {
 								PersonelFazlaMesai mesai = (PersonelFazlaMesai) iterator.next();
@@ -1405,7 +1405,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 					HareketKGS hareketKGS = new HareketKGS();
 					hareketKGS.setId(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS + hareketTableId);
 					hareketKGS.setHareketTableId(hareketTableId);
-					list = ortakIslemler.getHareketIdBilgileri(null, hareketKGS, session);
+					list = ortakIslemler.getHareketIdBilgileri(null, hareketKGS, date, date, session);
 				} catch (Exception e) {
 					list = new ArrayList<HareketKGS>();
 					e.printStackTrace();

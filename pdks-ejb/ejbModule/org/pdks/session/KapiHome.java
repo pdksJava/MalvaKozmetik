@@ -107,7 +107,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 		List<Kapi> kapiList = new ArrayList<Kapi>();
 		HashMap parametreMap = new HashMap();
 		try {
-			birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+			birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
 			String sirketStr = "";
 			if (!birdenFazlaKGSSirketSQL.equals(""))
 				sirketStr = "_SIRKET";

@@ -319,9 +319,9 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			TreeMap<String, VardiyaGun> vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller, basTarih, bitTarih, Boolean.FALSE, session, Boolean.TRUE);
 			try {
 				boolean islem = ortakIslemler.getVardiyaHareketIslenecekList(new ArrayList<VardiyaGun>(vardiyaMap.values()), date, session);
-				if (islem)  
+				if (islem)
 					vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller, basTarih, bitTarih, Boolean.FALSE, session, Boolean.TRUE);
-				 
+
 			} catch (Exception e) {
 			}
 			vardiyaList = new ArrayList<VardiyaGun>(vardiyaMap.values());
@@ -373,7 +373,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					logger.error("PDKS hata out : " + e.getMessage());
 					logger.debug(e.getMessage());
 				}
-				List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
+				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 				if (kapiIdler != null && !kapiIdler.isEmpty())
 					kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), tarih1, tarih2, HareketKGS.class, session);
 				else

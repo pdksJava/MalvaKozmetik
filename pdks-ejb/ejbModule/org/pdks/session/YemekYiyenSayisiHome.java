@@ -253,7 +253,7 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 				kgsList.add(hareketKGS);
 			}
 
-			kgsList = ortakIslemler.getHareketIdBilgileri(kgsList, null, session);
+			kgsList = ortakIslemler.getHareketIdBilgileri(kgsList, null, basTarih, bitTarih, session);
 			list = null;
 		} catch (Exception e) {
 			kgsList = new ArrayList<HareketKGS>();

@@ -135,7 +135,7 @@ public class BinadaKalanPersonellerHome extends EntityHome<VardiyaGun> implement
 			}
 
 		}
-		List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
+		List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(date, date, session);
 
 		try {
 			if (kapiIdler != null && !kapiIdler.isEmpty())

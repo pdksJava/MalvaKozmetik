@@ -624,7 +624,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			try {
 				String aciklama = kgsHareket.getKapiView().getKapi().getAciklama() + " güncellendi.";
 				KapiView terminalKapi = terminalKapiManuelUpdate(kgsHareket.getTerminalKapi());
-				String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+				String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
 				String sirketStr = "";
 				if (!birdenFazlaKGSSirketSQL.equals(""))
 					sirketStr = "_SIRKET";
@@ -741,11 +741,8 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 						kgsId = id;
 					else
 						pdksId = id;
-					// if (kgsHareket.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
-					// kgsId = kgsHareket.getHareketTableId();
-					// else
-					// abhId = kgsHareket.getHareketTableId();
-					String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+
+					String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
 					String sirketStr = "";
 					if (!birdenFazlaKGSSirketSQL.equals(""))
 						sirketStr = "_SIRKET";
@@ -852,7 +849,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					personeller.add(bigDecimal.longValue());
 				}
 				List<HareketKGS> list = new ArrayList<HareketKGS>();
-				List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
+				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih, tarih, session);
 
 				try {
 					parametreMap.clear();

@@ -146,7 +146,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 				iterator.remove();
 
 		}
-		List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
+		List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 		if (kapiIdler != null && !kapiIdler.isEmpty())
 			kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) perList.clone(), tarih1, tarih2, HareketKGS.class, session);
 		else

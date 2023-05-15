@@ -2192,7 +2192,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				else {
 					if (flush)
 						session.flush();
-					birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+					birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(aylikPuantajDefault.getIlkGun(), aylikPuantajDefault.getSonGun(), session);
 				}
 			} else {
 				if (fazlaMesaiMap == null)
@@ -2522,7 +2522,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					}
 					Long id = pdksEntityController.hareketEkle(kapiView, personelView, hareketKGS.getOrjinalZaman(), authenticatedUser, nedenId, islemAciklama, session);
 					if (id != null) {
-						String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(session);
+						String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
 						String sirketStr = "";
 						if (!birdenFazlaKGSSirketSQL.equals(""))
 							sirketStr = "_SIRKET";

@@ -162,7 +162,7 @@ public class KGSHareketHome extends EntityHome<HareketKGS> {
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				List<Long> personelIdler = ortakIslemler.getPersonelViewIdList(pdksEntityController.getObjectByInnerObjectList(parametreMap, PdksPersonelView.class));
 				List<HareketKGS> list = new ArrayList<HareketKGS>();
-				List<Long> kapiIdler = ortakIslemler.getPdksKapiIdler(session, Boolean.TRUE);
+				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(basTarih, bitTarih, session);
 				try {
 					if (kapiIdler != null && !kapiIdler.isEmpty())
 						list = ortakIslemler.getHareketBilgileri(kapiIdler, null, PdksUtil.getDate(basTarih), PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(bitTarih, 1)), HareketKGS.class, session);

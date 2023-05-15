@@ -74,6 +74,11 @@
 													<h:graphicImage value="/img/edit.gif" style="border:0" reRender="editPanel" />
 												</a4j:commandLink> <rich:toolTip for="editlink" value="Güncelle" /></TD>
 										</ui:fragment>
+										<ui:fragment rendered="#{pdksPersonelHome.personelKGSMap.containsKey(personelView.id)}">
+											<TD><a4j:commandButton status="ajaxStatus" id="editKapiGiris" image="/img/select.gif"
+													action="#{pdksPersonelHome.personelDegistir(personelView)}" reRender="pdksPersonelList" ajaxSingle="true" /> <rich:toolTip
+													for="editKapiGiris">Personel Değiştir</rich:toolTip></TD>
+										</ui:fragment>
 										<TD><a4j:commandButton status="ajaxStatus" id="editSaplink" image="/img/left_16.png"
 												rendered="#{personelView.pdksPersonel.sirket.erp==true and pdksPersonelHome.personelERPGuncelleme=='E'}"
 												action="#{pdksPersonelHome.kayitSapGuncelle(personelView)}" reRender="pdksPersonelList" ajaxSingle="true" /> <rich:toolTip

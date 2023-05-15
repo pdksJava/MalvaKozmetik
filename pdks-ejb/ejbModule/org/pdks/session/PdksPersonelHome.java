@@ -156,10 +156,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, kartNoGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
 	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable, transferAciklamaCiftKontrol;
 	private PersonelExtra personelExtra;
-	private Session session;
+	private TreeMap<Long, PersonelKGS> personelKGSMap;
 	private int COL_SICIL_NO, COL_ADI, COL_SOYADI, COL_SIRKET_KODU, COL_SIRKET_ADI, COL_TESIS_KODU, COL_TESIS_ADI, COL_GOREV_KODU, COL_GOREVI, COL_BOLUM_KODU, COL_BOLUM_ADI;
 	private int COL_ISE_BASLAMA_TARIHI, COL_KIDEM_TARIHI, COL_GRUBA_GIRIS_TARIHI, COL_ISTEN_AYRILMA_TARIHI, COL_DOGUM_TARIHI, COL_CINSIYET_KODU, COL_CINSIYET, COL_YONETICI_KODU, COL_YONETICI2_KODU;
 	private int COL_DEPARTMAN_KODU, COL_DEPARTMAN_ADI, COL_MASRAF_YERI_KODU, COL_MASRAF_YERI_ADI, COL_BORDRO_ALT_ALAN_KODU, COL_BORDRO_ALT_ALAN_ADI, COL_BORDRO_SANAL_PERSONEL;
+	private Session session;
 
 	@Override
 	public Object getId() {
@@ -544,6 +545,30 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			}
 			session.flush();
 			fillPersonelKGSList();
+		}
+		return "";
+	}
+
+	@Transactional
+	public String personelDegistir(PersonelView personelView) {
+		if (personelView != null) {
+			try {
+				Personel personel = personelView.getPdksPersonel();
+				if (personel != null && personelKGSMap.containsKey(personel.getPersonelKGS().getId())) {
+					PersonelKGS personelKGS = personelKGSMap.get(personel.getPersonelKGS().getId());
+					personel.setPersonelKGS(personelKGS);
+					if (!authenticatedUser.isAdmin()) {
+						personel.setGuncellemeTarihi(new Date());
+						personel.setGuncelleyenUser(authenticatedUser);
+					}
+					pdksEntityController.saveOrUpdate(session, entityManager, personel);
+					session.flush();
+					fillPersonelKGSList();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
 		}
 		return "";
 	}
@@ -1855,7 +1880,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 								if (kapiSirket != null && (!kapiSirket.getDurum() || kapiSirket.getBitTarih().before(bugun))) {
 									iterator.remove();
 									continue;
- 								}
+								}
 							}
 
 						}
@@ -1885,16 +1910,70 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					personelDurumMap.put(key, map.get(key));
 
 				boolean personelTanimSorgula = false;
+				if (personelKGSMap == null)
+					personelKGSMap = new TreeMap<Long, PersonelKGS>();
+				else
+					personelKGSMap.clear();
+				HashMap<Long, PersonelKGS> idMap = new HashMap<Long, PersonelKGS>();
 				for (PersonelView personelView : list) {
 					boolean personelTanimli = false;
 					Personel pdksPersonel = personelView.getPdksPersonel();
-					if (pdksPersonel != null && pdksPersonel.getSirket() != null)
+					if (pdksPersonel != null && pdksPersonel.getSirket() != null) {
+						PersonelKGS personelKGS = pdksPersonel.getPersonelKGS();
+						if (personelKGS.getKapiSirket() != null && personelKGS.getKapiSirket().getDurum().equals(Boolean.FALSE))
+							idMap.put(personelKGS.getId(), personelKGS);
 						personelTanimli = pdksPersonel.getSirket().getId() != null;
+
+					}
 
 					if (!personelTanimSorgula)
 						personelTanimSorgula = !personelTanimli;
 
 				}
+				if (!idMap.isEmpty()) {
+					try {
+						String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
+						if (!birdenFazlaKGSSirketSQL.equals("")) {
+							TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
+							fields.clear();
+							sb = new StringBuffer();
+							sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
+							sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON " + birdenFazlaKGSSirketSQL);
+							sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
+							fields.put("p", new ArrayList(idMap.keySet()));
+							if (session != null)
+								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+							List<Object[]> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+							for (Object[] objects : perList) {
+								BigDecimal refId = (BigDecimal) objects[1], id = (BigDecimal) objects[0];
+								if (refId.longValue() != id.longValue())
+									iliskiMap.put(refId.longValue(), id.longValue());
+							}
+							if (!iliskiMap.isEmpty()) {
+								fields.clear();
+								fields.put("id", new ArrayList<Long>(iliskiMap.keySet()));
+								if (session != null)
+									fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+								List<PersonelKGS> personelKGSList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelKGS.class);
+								for (PersonelKGS personelKGS : personelKGSList) {
+									if (personelKGS.getKapiSirket().getDurum()) {
+										Long id = iliskiMap.get(personelKGS.getId());
+										PersonelKGS personelKGS2 = id != null ? idMap.get(id) : null;
+										if (personelKGS2 != null && !personelKGS.getKapiSirket().getId().equals(personelKGS2.getKapiSirket().getId()) && personelKGS2.getAdSoyad().equals(personelKGS.getAdSoyad()))
+											personelKGSMap.put(id, personelKGS);
+									}
+
+								}
+							}
+							iliskiMap = null;
+							sb = new StringBuffer();
+						}
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+
+				}
+				idMap = null;
 				if (personelTanimSorgula) {
 					List<Sirket> templist = ortakIslemler.fillSirketList(session, Boolean.TRUE, Boolean.FALSE);
 					for (Sirket sirket : templist) {
@@ -4384,5 +4463,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setTransferAciklamaCiftKontrol(Boolean transferAciklamaCiftKontrol) {
 		this.transferAciklamaCiftKontrol = transferAciklamaCiftKontrol;
+	}
+
+	public TreeMap<Long, PersonelKGS> getPersonelKGSMap() {
+		return personelKGSMap;
+	}
+
+	public void setPersonelKGSMap(TreeMap<Long, PersonelKGS> personelKGSMap) {
+		this.personelKGSMap = personelKGSMap;
 	}
 }
