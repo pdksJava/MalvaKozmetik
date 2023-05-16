@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -29,10 +30,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_GUNCELLEYEN = "GUNCELLEYENUSER_ID";
 	public static final String COLUMN_NAME_OLUSTURMA_TARIHI = "OLUSTURMATARIHI";
 	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEMETARIHI";
+	public static final String COLUMN_NAME_FAZLA_MESAI_VAR = "FAZLA_MESAI_VAR";
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, izin = 9.0d;
-	private Boolean durum = Boolean.TRUE;
+	private Boolean fazlaMesaiVar = Boolean.TRUE, durum = Boolean.TRUE;
 	private User guncelleyenUser, olusturanUser;
 	private Date olusturmaTarihi = new Date(), guncellemeTarihi;
 
@@ -81,6 +83,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.durum = durum;
 	}
 
+	@Column(name = COLUMN_NAME_FAZLA_MESAI_VAR)
+	public Boolean getFazlaMesaiVar() {
+		return fazlaMesaiVar;
+	}
+
+	public void setFazlaMesaiVar(Boolean fazlaMesaiVar) {
+		this.fazlaMesaiVar = fazlaMesaiVar;
+	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_GUNCELLEYEN, nullable = true)
 	@Fetch(FetchMode.JOIN)
@@ -121,6 +132,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	public void setGuncellemeTarihi(Date guncellemeTarihi) {
 		this.guncellemeTarihi = guncellemeTarihi;
+	}
+
+	@Transient
+	public boolean getFazlaMesaiVarMi() {
+		return fazlaMesaiVar != null && fazlaMesaiVar.booleanValue();
 	}
 
 }

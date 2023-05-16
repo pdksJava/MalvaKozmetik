@@ -3528,13 +3528,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 							parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 						ilkYoneticiUser = (User) pdksEntityController.getObjectByInnerObject(parametreMap, User.class);
 					}
-					if (yonetici == null && (personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI1) || personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI2))) {
+					String onaylayanTipi = personelIzin.getIzinTipi().getOnaylayanTipi();
+					if (yonetici == null && (onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI1) || onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI2))) {
 						PdksUtil.addMessageWarn(ortakIslemler.yoneticiAciklama() + " tanımsızdır.");
 						durum = "";
-					} else if (ilkYoneticiUser == null && (personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI1) || personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI2))) {
+					} else if (ilkYoneticiUser == null && (onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI1) || onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI2))) {
 						PdksUtil.addMessageWarn(yonetici.getAdSoyad() + " " + ortakIslemler.yoneticiAciklama() + " kullanıcısı tanımsızdır.");
 						durum = "";
-					} else if (!yonetici.isCalisiyor()) {
+					} else if ((onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI1) || onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI2)) && !yonetici.isCalisiyor()) {
 						PdksUtil.addMessageWarn("Aktif yönetici bulunmaktadır. ");
 						durum = "";
 					}
@@ -3875,7 +3876,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 						}
 
 				}
-			}
+			} else if (authenticatedUser.isAdmin() || authenticatedUser.isIK())
+				toList.add(authenticatedUser);
 		} else {
 
 			if (!isGenelMudur && !isProjeMuduru)
@@ -4605,7 +4607,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					map.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
 					if (stajer)
 						map.put("stajerKullanilir=", Boolean.TRUE);
-					map.put("departman=", izinSahibi.getSirket().getDepartman());
+					map.put("departman.id=", izinSahibi.getSirket().getDepartman().getId());
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					list = pdksEntityController.getObjectByInnerObjectListInLogic(map, IzinTipi.class);
@@ -4636,7 +4638,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 						} else if (izinTipi.isGebelikMuayeneIzin() && !izinSahibi.isGebelikMuayeneIzniKullan()) {
 							iterator.remove();
 							continue;
-						} else if (izinTipi.getOnaylayanTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && !(izinSahibi.isHekim() || (izinSahibi.getOnaysizIzinKullanilir() != null && izinSahibi.getOnaysizIzinKullanilir()))) {
+						} else if (!izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_IK) && izinTipi.getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK) && !(izinSahibi.isHekim() || (izinSahibi.getOnaysizIzinKullanilir() != null && izinSahibi.getOnaysizIzinKullanilir()))) {
+
 							iterator.remove();
 							continue;
 						} else if (izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YONETICI1) && bagliPersonel == null) {

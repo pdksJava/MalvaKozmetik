@@ -30,6 +30,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.Identity;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BordroIzinGrubu;
+import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
@@ -125,26 +126,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			session.flush();
 		}
 
-		// for (Tanim tanim : list) {
-		// BordroIzinGrubu bordroIzinGrubu = null;
-		// String izinGrupKodu = tanim.getKodu();
-		// try {
-		// bordroIzinGrubu = BordroIzinGrubu.fromValue(izinGrupKodu);
-		// } catch (Exception e) {
-		// }
-		// if (bordroIzinGrubu != null) {
-		// String izinKodlari = tanim.getErpKodu();
-		// String izinKey = "izinGrup" + izinGrupKodu;
-		// if (!ortakIslemler.getParameterKey(izinKodlari).equals(""))
-		// izinKodlari = ortakIslemler.getParameterKey(izinKodlari);
-		// else if (!ortakIslemler.getParameterKey(izinKey).equals(""))
-		// izinKodlari = ortakIslemler.getParameterKey(izinKey);
-		// List<String> kodList = PdksUtil.getListStringTokenizer(izinKodlari, null);
-		// for (String key : kodList) {
-		// izinGrupMap.put(key, izinGrupKodu);
-		// }
-		// }
-		// }
 		fields.clear();
 		fields.put("tipi", Tanim.TIPI_IZIN_KODU_GRUPLARI);
 		fields.put("durum", Boolean.TRUE);
@@ -203,6 +184,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				if (!(personelDenklestirme.getDurum() || fazlaMesaiHesapla == false))
 					continue;
 				boolean flush = false;
+				CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
 				try {
 					for (VardiyaHafta vardiyaHafta : ap.getVardiyaHaftaList()) {
 						List<VardiyaGun> gunler = vardiyaHafta.getVardiyaGunler();
@@ -217,13 +199,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							}
 							if (haftaTatilGun != null && sonGun != null && sonGun.getIzin() != null && sonGun.getIzin().getIzinTipi().isTakvimGunuMu() == false) {
 								if (sonGun.getCalismaSuresi() == 0.0d && !haftaTatilGun.getId().equals(sonGun.getId())) {
-									// Vardiya htTatil = haftaTatilGun.getVardiya();
-									// Vardiya sonGunVardiya = sonGun.getVardiya();
-									// sonGun.setVardiya(htTatil);
-									// haftaTatilGun.setVardiya(sonGunVardiya);
-									// pdksEntityController.saveOrUpdate(session, entityManager, haftaTatilGun);
-									// pdksEntityController.saveOrUpdate(session, entityManager, sonGun);
-									// flush = true;
+									//
 
 								}
 
@@ -239,7 +215,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				Integer normalGunAdet = 0, haftaTatilAdet = 0, tatilAdet = 0;
 				// boolean calisiyor = ap.getSaatToplami() > 0.0d;
 				LinkedHashMap<BordroIzinGrubu, Double> detayMap = new LinkedHashMap<BordroIzinGrubu, Double>();
-
+				boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
 				for (VardiyaGun vardiyaGun : ap.getVardiyalar()) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
 						if (bugun.before(vardiyaGun.getVardiyaDate()) && fazlaMesaiHesapla)
@@ -251,27 +227,33 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						if (vardiyaGun.isIzinli()) {
 							// calisiyor = true;
 							String izinKodu = null;
-							int artiGun = 1;
+							double artiGun = 1.0d;
+							if (saatlikCalisma)
+								artiGun = calismaModeli.getIzin();
 							if (vardiyaGun.getIzin() != null) {
 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 								if (izinTipi.getTakvimGunumu() == false) {
 									if (vardiyaGun.getVardiya().isOffGun()) {
 										if (izinTipi.isOffDahilMi() == false)
-											artiGun = 0;
+											artiGun = 0.0d;
 									} else if (haftaTatil) {
 										if (izinTipi.isHTDahil())
-											artiGun = 0;
+											artiGun = 0.0d;
 
 									}
-									if (artiGun == 0)
+									if (artiGun == 0.0d)
 										logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + izinTipi.getIzinTipiTanim().getAciklama());
 								}
 								izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
-								if (!izinGrupMap.containsKey(izinKodu))
+								if (izinTipi.isUcretsizIzinTipi()) {
+									izinKodu = BordroIzinGrubu.UCRETSIZ_IZIN.value();
+								}
+
+								else if (!izinGrupMap.containsKey(izinKodu))
 									izinKodu = null;
 							} else
 								izinKodu = vardiya.getStyleClass();
-							if (artiGun > 0 && izinKodu != null) {
+							if (artiGun > 0.0d && izinKodu != null) {
 								BordroIzinGrubu bordroTipi = null;
 								try {
 									if (izinKodu.trim().length() > 0)

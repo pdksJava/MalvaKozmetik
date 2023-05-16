@@ -700,7 +700,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						ortakIslemler.personelKaydet(pdksPersonel, session);
 						if (pdksPersonel.getFazlaMesaiIzinKullan())
 							pdksPersonel.setFazlaMesaiOde(Boolean.FALSE);
-
+						if (pdksPersonel.getCalismaModeli() != null && pdksPersonel.getCalismaModeli().isFazlaMesaiVarMi() == false) {
+							pdksPersonel.setFazlaMesaiOde(false);
+							pdksPersonel.setFazlaMesaiIzinKullan(false);
+						}
 						pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 						if (mesajList.isEmpty()) {
 							try {
@@ -2671,216 +2674,223 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				LinkedHashMap<String, PersonelERP> perMap = new LinkedHashMap<String, PersonelERP>();
 				LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 				transferAciklamaCiftKontrol = ortakIslemler.getParameterKey("transferAciklamaCiftKontrol").equals("1");
-				for (int row = 1; COL_SICIL_NO >= 0 && row <= sheet.getLastRowNum(); row++) {
-					try {
-						perSicilNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_SICIL_NO);
-						if (perSicilNo == null || perSicilNo.trim().equals(""))
-							break;
-						if (maxTextLength > 0 && perSicilNo.trim().length() < maxTextLength)
-							perSicilNo = PdksUtil.textBaslangicinaKarakterEkle(perSicilNo.trim(), '0', maxTextLength);
-						if (perNoList.contains(perSicilNo))
-							continue;
-					} catch (Exception e) {
-
-					}
-					sirketKodu = null;
-					PersonelERP personelERP = new PersonelERP();
-
-					personelERP.setPersonelNo(perSicilNo);
-					if (COL_ADI >= 0)
-						personelERP.setAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_ADI));
-					if (COL_SOYADI >= 0)
-						personelERP.setSoyadi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_SOYADI));
-					if (COL_SIRKET_ADI >= 0) {
-						personelERP.setSirketAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_SIRKET_ADI));
-						if (COL_SIRKET_KODU >= 0) {
-							personelERP.setSirketKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_SIRKET_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_SIRKET, personelERP.getSirketKodu(), personelERP.getSirketAdi());
-						}
-
-						if (personelERP.getSirketKodu() == null && personelERP.getSirketAdi() != null && personelERP.getSirketAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getSirketAdi(), map);
-							personelERP.setSirketKodu(map.get("kod"));
-							personelERP.setSirketAdi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_SIRKET, personelERP.getSirketKodu(), personelERP.getSirketAdi());
-						}
-					}
-					if (COL_TESIS_ADI >= 0) {
-						personelERP.setTesisAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_TESIS_ADI));
-						sirketKodu = personelERP.getSirketKodu();
-						if (COL_TESIS_KODU >= 0) {
-							personelERP.setTesisKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_TESIS_KODU));
-							String tesisKodu = personelERP.getTesisKodu();
-							kontrolDosyaYaz(anaMap, REFERANS_TESIS, tesisKodu, personelERP.getTesisAdi());
-						}
-
-						if (personelERP.getTesisKodu() == null && personelERP.getTesisAdi() != null && personelERP.getTesisAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getTesisAdi(), map);
-							personelERP.setTesisKodu(map.get("kod"));
-							String tesisKodu = personelERP.getTesisKodu();
-							personelERP.setTesisAdi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_TESIS, tesisKodu, personelERP.getTesisAdi());
-						}
-					}
-					sirketKodu = null;
-					if (COL_DEPARTMAN_ADI >= 0) {
-						personelERP.setDepartmanAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_DEPARTMAN_ADI));
-						if (COL_DEPARTMAN_KODU >= 0) {
-							personelERP.setDepartmanKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_DEPARTMAN_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_DEPARTMAN, personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi());
-						}
-
-						if (personelERP.getDepartmanKodu() == null && personelERP.getDepartmanAdi() != null && personelERP.getDepartmanAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getDepartmanAdi(), map);
-							personelERP.setDepartmanKodu(map.get("kod"));
-							personelERP.setDepartmanAdi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_DEPARTMAN, personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi());
-						}
-					}
-					if (COL_BOLUM_ADI >= 0) {
-						personelERP.setBolumAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BOLUM_ADI));
-						if (COL_BOLUM_KODU >= 0) {
-							personelERP.setBolumKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BOLUM_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_BOLUM, personelERP.getBolumKodu(), personelERP.getBolumAdi());
-						}
-
-						if (personelERP.getBolumKodu() == null && personelERP.getBolumAdi() != null && personelERP.getBolumAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getBolumAdi(), map);
-							personelERP.setBolumKodu(map.get("kod"));
-							personelERP.setBolumAdi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_BOLUM, personelERP.getBolumKodu(), personelERP.getBolumAdi());
-						}
-					}
-
-					sirketKodu = personelERP.getTesisKodu();
-					if (COL_BORDRO_ALT_ALAN_ADI >= 0) {
-						personelERP.setBordroAltAlanAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_ALT_ALAN_ADI));
-						if (COL_BORDRO_ALT_ALAN_KODU >= 0) {
-							personelERP.setBordroAltAlanKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_ALT_ALAN_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_BORDRO_ALT_ALAN, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi());
-						}
-						if (personelERP.getBordroAltAlanKodu() == null && personelERP.getBordroAltAlanAdi() != null && personelERP.getBordroAltAlanAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getBordroAltAlanAdi(), map);
-							personelERP.setBordroAltAlanKodu(map.get("kod"));
-							personelERP.setBordroAltAlanAdi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_BORDRO_ALT_ALAN, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi());
-						}
-					}
-
-					if (COL_MASRAF_YERI_ADI >= 0) {
-						personelERP.setMasrafYeriAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_MASRAF_YERI_ADI));
-						if (COL_MASRAF_YERI_KODU >= 0) {
-							personelERP.setMasrafYeriKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_MASRAF_YERI_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_MASRAF_YERI, personelERP.getMasrafYeriKodu(), personelERP.getMasrafYeriAdi());
-						}
-						if (personelERP.getMasrafYeriKodu() == null && personelERP.getMasrafYeriAdi() != null && personelERP.getMasrafYeriAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getMasrafYeriAdi(), map);
-							personelERP.setMasrafYeriKodu(map.get("kod"));
-							personelERP.setMasrafYeriAdi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_MASRAF_YERI, personelERP.getMasrafYeriKodu(), personelERP.getMasrafYeriAdi());
-						}
-					}
-					sirketKodu = null;
-					if (COL_GOREVI >= 0) {
-						personelERP.setGorevi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREVI));
-						if (COL_GOREV_KODU >= 0) {
-							personelERP.setGorevKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREV_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
-						}
-
-						if (personelERP.getGorevKodu() == null && personelERP.getGorevi() != null && personelERP.getGorevi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getGorevi(), map);
-							personelERP.setGorevKodu(map.get("kod"));
-							personelERP.setGorevi(map.get("aciklama"));
-							kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
-						}
-					}
-					if (COL_CINSIYET >= 0) {
-						personelERP.setCinsiyeti(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET));
-						if (COL_CINSIYET_KODU >= 0) {
-							personelERP.setCinsiyetKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET_KODU));
-							kontrolDosyaYaz(anaMap, REFERANS_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti());
-						}
-
-						if (personelERP.getCinsiyetKodu() == null && personelERP.getCinsiyeti() != null && personelERP.getCinsiyeti().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
-							setKodAciklama(personelERP.getCinsiyeti(), map);
-							personelERP.setCinsiyetKodu(map.get("kod"));
-							personelERP.setCinsiyeti(map.get("aciklama"));
+				try {
+					for (int row = 1; COL_SICIL_NO >= 0 && row <= sheet.getLastRowNum(); row++) {
+						try {
+							perSicilNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_SICIL_NO);
+							logger.debug(row + " " + perSicilNo);
+							if (perSicilNo == null || perSicilNo.trim().equals(""))
+								break;
+							if (maxTextLength > 0 && perSicilNo.trim().length() < maxTextLength)
+								perSicilNo = PdksUtil.textBaslangicinaKarakterEkle(perSicilNo.trim(), '0', maxTextLength);
+							if (perNoList.contains(perSicilNo))
+								continue;
+						} catch (Exception e) {
 
 						}
-					}
-					if (COL_BORDRO_SANAL_PERSONEL >= 0) {
-						String sanalPersonel = ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_SANAL_PERSONEL);
-						if (sanalPersonel != null)
-							try {
-								personelERP.setSanalPersonel(new Boolean(sanalPersonel));
-							} catch (Exception e) {
+						sirketKodu = null;
+						PersonelERP personelERP = new PersonelERP();
+
+						personelERP.setPersonelNo(perSicilNo);
+						if (COL_ADI >= 0)
+							personelERP.setAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_ADI));
+						if (COL_SOYADI >= 0)
+							personelERP.setSoyadi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_SOYADI));
+						if (COL_SIRKET_ADI >= 0) {
+							personelERP.setSirketAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_SIRKET_ADI));
+							if (COL_SIRKET_KODU >= 0) {
+								personelERP.setSirketKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_SIRKET_KODU));
+								kontrolDosyaYaz(anaMap, REFERANS_SIRKET, personelERP.getSirketKodu(), personelERP.getSirketAdi());
 							}
+
+							if (personelERP.getSirketKodu() == null && personelERP.getSirketAdi() != null && personelERP.getSirketAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getSirketAdi(), map);
+								personelERP.setSirketKodu(map.get("kod"));
+								personelERP.setSirketAdi(map.get("aciklama"));
+								kontrolDosyaYaz(anaMap, REFERANS_SIRKET, personelERP.getSirketKodu(), personelERP.getSirketAdi());
+							}
+						}
+						if (COL_TESIS_ADI >= 0) {
+							personelERP.setTesisAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_TESIS_ADI));
+							sirketKodu = personelERP.getSirketKodu();
+							if (COL_TESIS_KODU >= 0) {
+								personelERP.setTesisKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_TESIS_KODU));
+								String tesisKodu = personelERP.getTesisKodu();
+								kontrolDosyaYaz(anaMap, REFERANS_TESIS, tesisKodu, personelERP.getTesisAdi());
+							}
+
+							if (personelERP.getTesisKodu() == null && personelERP.getTesisAdi() != null && personelERP.getTesisAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getTesisAdi(), map);
+								personelERP.setTesisKodu(map.get("kod"));
+								String tesisKodu = personelERP.getTesisKodu();
+								personelERP.setTesisAdi(map.get("aciklama"));
+								kontrolDosyaYaz(anaMap, REFERANS_TESIS, tesisKodu, personelERP.getTesisAdi());
+							}
+						}
+						sirketKodu = null;
+						if (COL_DEPARTMAN_ADI >= 0) {
+							personelERP.setDepartmanAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_DEPARTMAN_ADI));
+							if (COL_DEPARTMAN_KODU >= 0) {
+								personelERP.setDepartmanKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_DEPARTMAN_KODU));
+								kontrolDosyaYaz(anaMap, REFERANS_DEPARTMAN, personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi());
+							}
+
+							if (personelERP.getDepartmanKodu() == null && personelERP.getDepartmanAdi() != null && personelERP.getDepartmanAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getDepartmanAdi(), map);
+								personelERP.setDepartmanKodu(map.get("kod"));
+								personelERP.setDepartmanAdi(map.get("aciklama"));
+								kontrolDosyaYaz(anaMap, REFERANS_DEPARTMAN, personelERP.getDepartmanKodu(), personelERP.getDepartmanAdi());
+							}
+						}
+						if (COL_BOLUM_ADI >= 0) {
+							personelERP.setBolumAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BOLUM_ADI));
+							if (COL_BOLUM_KODU >= 0) {
+								personelERP.setBolumKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BOLUM_KODU));
+								kontrolDosyaYaz(anaMap, REFERANS_BOLUM, personelERP.getBolumKodu(), personelERP.getBolumAdi());
+							}
+
+							if (personelERP.getBolumKodu() == null && personelERP.getBolumAdi() != null && personelERP.getBolumAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getBolumAdi(), map);
+								personelERP.setBolumKodu(map.get("kod"));
+								personelERP.setBolumAdi(map.get("aciklama"));
+								kontrolDosyaYaz(anaMap, REFERANS_BOLUM, personelERP.getBolumKodu(), personelERP.getBolumAdi());
+							}
+						}
+
+						sirketKodu = personelERP.getTesisKodu();
+						if (COL_BORDRO_ALT_ALAN_ADI >= 0) {
+							personelERP.setBordroAltAlanAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_ALT_ALAN_ADI));
+							if (COL_BORDRO_ALT_ALAN_KODU >= 0) {
+								personelERP.setBordroAltAlanKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_ALT_ALAN_KODU));
+								kontrolDosyaYaz(anaMap, REFERANS_BORDRO_ALT_ALAN, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi());
+							}
+							if (personelERP.getBordroAltAlanKodu() == null && personelERP.getBordroAltAlanAdi() != null && personelERP.getBordroAltAlanAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getBordroAltAlanAdi(), map);
+								personelERP.setBordroAltAlanKodu(map.get("kod"));
+								personelERP.setBordroAltAlanAdi(map.get("aciklama"));
+								kontrolDosyaYaz(anaMap, REFERANS_BORDRO_ALT_ALAN, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi());
+							}
+						}
+
+						if (COL_MASRAF_YERI_ADI >= 0) {
+							personelERP.setMasrafYeriAdi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_MASRAF_YERI_ADI));
+							if (COL_MASRAF_YERI_KODU >= 0) {
+								personelERP.setMasrafYeriKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_MASRAF_YERI_KODU));
+								kontrolDosyaYaz(anaMap, REFERANS_MASRAF_YERI, personelERP.getMasrafYeriKodu(), personelERP.getMasrafYeriAdi());
+							}
+							if (personelERP.getMasrafYeriKodu() == null && personelERP.getMasrafYeriAdi() != null && personelERP.getMasrafYeriAdi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getMasrafYeriAdi(), map);
+								personelERP.setMasrafYeriKodu(map.get("kod"));
+								personelERP.setMasrafYeriAdi(map.get("aciklama"));
+								kontrolDosyaYaz(anaMap, REFERANS_MASRAF_YERI, personelERP.getMasrafYeriKodu(), personelERP.getMasrafYeriAdi());
+							}
+						}
+						sirketKodu = null;
+						if (COL_GOREVI >= 0) {
+							personelERP.setGorevi(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREVI));
+							if (COL_GOREV_KODU >= 0) {
+								personelERP.setGorevKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_GOREV_KODU));
+								kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
+							}
+
+							if (personelERP.getGorevKodu() == null && personelERP.getGorevi() != null && personelERP.getGorevi().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getGorevi(), map);
+								personelERP.setGorevKodu(map.get("kod"));
+								personelERP.setGorevi(map.get("aciklama"));
+								kontrolDosyaYaz(anaMap, REFERANS_GOREV, personelERP.getGorevKodu(), personelERP.getGorevi());
+							}
+						}
+						if (COL_CINSIYET >= 0) {
+							personelERP.setCinsiyeti(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET));
+							if (COL_CINSIYET_KODU >= 0) {
+								personelERP.setCinsiyetKodu(ExcelUtil.getSheetStringValueTry(sheet, row, COL_CINSIYET_KODU));
+								kontrolDosyaYaz(anaMap, REFERANS_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti());
+							}
+
+							if (personelERP.getCinsiyetKodu() == null && personelERP.getCinsiyeti() != null && personelERP.getCinsiyeti().indexOf(PdksUtil.SEPARATOR_KOD_ACIKLAMA) > 0) {
+								setKodAciklama(personelERP.getCinsiyeti(), map);
+								personelERP.setCinsiyetKodu(map.get("kod"));
+								personelERP.setCinsiyeti(map.get("aciklama"));
+
+							}
+						}
+						if (COL_BORDRO_SANAL_PERSONEL >= 0) {
+							String sanalPersonel = ExcelUtil.getSheetStringValueTry(sheet, row, COL_BORDRO_SANAL_PERSONEL);
+							if (sanalPersonel != null)
+								try {
+									personelERP.setSanalPersonel(new Boolean(sanalPersonel));
+								} catch (Exception e) {
+								}
+						}
+
+						String yoneticiPerNo = null, yonetici2PerNo = null;
+						if (COL_YONETICI_KODU >= 0)
+							yoneticiPerNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_YONETICI_KODU);
+						if (yoneticiPerNo != null && yoneticiPerNo.trim().length() > 0 && yoneticiPerNo.trim().length() < maxTextLength)
+							yoneticiPerNo = PdksUtil.textBaslangicinaKarakterEkle(yoneticiPerNo.trim(), '0', maxTextLength);
+						personelERP.setYoneticiPerNo(yoneticiPerNo);
+
+						if (COL_YONETICI2_KODU >= 0)
+							yonetici2PerNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_YONETICI2_KODU);
+						if (yonetici2PerNo != null && yonetici2PerNo.trim().length() > 0 && yonetici2PerNo.trim().length() < maxTextLength)
+							yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(yonetici2PerNo.trim(), '0', maxTextLength);
+						personelERP.setYonetici2PerNo(yonetici2PerNo);
+						Date izinHakEdisTarihi = null, iseBaslamaTarihi = null, istenAyrilmaTarihi = null, dogumTarihi = null, grubaGirisTarihi = null;
+						try {
+							try {
+								if (COL_KIDEM_TARIHI >= 0)
+									izinHakEdisTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_KIDEM_TARIHI, pattern);
+							} catch (Exception e) {
+								PdksUtil.addMessageWarn(perSicilNo + " kıdem tarihinde sorun var!");
+
+							}
+							try {
+								if (COL_GRUBA_GIRIS_TARIHI >= 0)
+									grubaGirisTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_GRUBA_GIRIS_TARIHI, pattern);
+							} catch (Exception e) {
+								PdksUtil.addMessageWarn(perSicilNo + " gruba giriş tarihinde sorun var!");
+
+							}
+
+							try {
+								if (COL_ISE_BASLAMA_TARIHI >= 0)
+									iseBaslamaTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_ISE_BASLAMA_TARIHI, pattern);
+							} catch (Exception e) {
+								PdksUtil.addMessageWarn(perSicilNo + " işe giriş tarihinde sorun var!");
+
+							}
+
+							try {
+								if (COL_ISTEN_AYRILMA_TARIHI >= 0)
+									istenAyrilmaTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_ISTEN_AYRILMA_TARIHI, pattern);
+							} catch (Exception e) {
+								PdksUtil.addMessageWarn(perSicilNo + " işten ayrılma tarihinde sorun var!");
+
+							}
+							try {
+								if (COL_DOGUM_TARIHI >= 0)
+									dogumTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_DOGUM_TARIHI, pattern);
+							} catch (Exception e) {
+								PdksUtil.addMessageWarn(perSicilNo + " doğum tarihinde  sorun var!");
+
+							}
+							personelERP.setIstenAyrilmaTarihi(istenAyrilmaTarihi != null ? PdksUtil.convertToDateString(istenAyrilmaTarihi, patternServis) : null);
+							personelERP.setIseGirisTarihi(iseBaslamaTarihi != null ? PdksUtil.convertToDateString(iseBaslamaTarihi, patternServis) : null);
+							personelERP.setGrubaGirisTarihi(grubaGirisTarihi != null ? PdksUtil.convertToDateString(grubaGirisTarihi, patternServis) : null);
+							personelERP.setDogumTarihi(dogumTarihi != null ? PdksUtil.convertToDateString(dogumTarihi, patternServis) : null);
+							personelERP.setKidemTarihi(izinHakEdisTarihi != null ? PdksUtil.convertToDateString(izinHakEdisTarihi, patternServis) : null);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+
+						perNoList.add(perSicilNo);
+						perMap.put(perSicilNo, personelERP);
 					}
-
-					String yoneticiPerNo = null, yonetici2PerNo = null;
-					if (COL_YONETICI_KODU >= 0)
-						yoneticiPerNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_YONETICI_KODU);
-					if (yoneticiPerNo != null && yoneticiPerNo.trim().length() > 0 && yoneticiPerNo.trim().length() < maxTextLength)
-						yoneticiPerNo = PdksUtil.textBaslangicinaKarakterEkle(yoneticiPerNo.trim(), '0', maxTextLength);
-					personelERP.setYoneticiPerNo(yoneticiPerNo);
-
-					if (COL_YONETICI2_KODU >= 0)
-						yonetici2PerNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_YONETICI2_KODU);
-					if (yonetici2PerNo != null && yonetici2PerNo.trim().length() > 0 && yonetici2PerNo.trim().length() < maxTextLength)
-						yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(yonetici2PerNo.trim(), '0', maxTextLength);
-					personelERP.setYonetici2PerNo(yonetici2PerNo);
-					Date izinHakEdisTarihi = null, iseBaslamaTarihi = null, istenAyrilmaTarihi = null, dogumTarihi = null, grubaGirisTarihi = null;
-					try {
-						try {
-							if (COL_KIDEM_TARIHI >= 0)
-								izinHakEdisTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_KIDEM_TARIHI, pattern);
-						} catch (Exception e) {
-							PdksUtil.addMessageWarn(perSicilNo + " kıdem tarihinde sorun var!");
-
-						}
-						try {
-							if (COL_GRUBA_GIRIS_TARIHI >= 0)
-								grubaGirisTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_GRUBA_GIRIS_TARIHI, pattern);
-						} catch (Exception e) {
-							PdksUtil.addMessageWarn(perSicilNo + " gruba giriş tarihinde sorun var!");
-
-						}
-
-						try {
-							if (COL_ISE_BASLAMA_TARIHI >= 0)
-								iseBaslamaTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_ISE_BASLAMA_TARIHI, pattern);
-						} catch (Exception e) {
-							PdksUtil.addMessageWarn(perSicilNo + " işe giriş tarihinde sorun var!");
-
-						}
-
-						try {
-							if (COL_ISTEN_AYRILMA_TARIHI >= 0)
-								istenAyrilmaTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_ISTEN_AYRILMA_TARIHI, pattern);
-						} catch (Exception e) {
-							PdksUtil.addMessageWarn(perSicilNo + " işten ayrılma tarihinde sorun var!");
-
-						}
-						try {
-							if (COL_DOGUM_TARIHI >= 0)
-								dogumTarihi = ExcelUtil.getSheetDateValueTry(sheet, row, COL_DOGUM_TARIHI, pattern);
-						} catch (Exception e) {
-							PdksUtil.addMessageWarn(perSicilNo + " doğum tarihinde  sorun var!");
-
-						}
-						personelERP.setIstenAyrilmaTarihi(istenAyrilmaTarihi != null ? PdksUtil.convertToDateString(istenAyrilmaTarihi, patternServis) : null);
-						personelERP.setIseGirisTarihi(iseBaslamaTarihi != null ? PdksUtil.convertToDateString(iseBaslamaTarihi, patternServis) : null);
-						personelERP.setGrubaGirisTarihi(grubaGirisTarihi != null ? PdksUtil.convertToDateString(grubaGirisTarihi, patternServis) : null);
-						personelERP.setDogumTarihi(dogumTarihi != null ? PdksUtil.convertToDateString(dogumTarihi, patternServis) : null);
-						personelERP.setKidemTarihi(izinHakEdisTarihi != null ? PdksUtil.convertToDateString(izinHakEdisTarihi, patternServis) : null);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-
-					perNoList.add(perSicilNo);
-					perMap.put(perSicilNo, personelERP);
+				} catch (Exception exx) {
+					logger.error(exx);
+					exx.printStackTrace();
 				}
+
 				if (!perNoList.isEmpty()) {
 					boolean listeDolu = true;
 					for (String veriTip : anaMap.keySet()) {
@@ -3008,7 +3018,12 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
-	public void listenerPersonelDosya(UploadEvent event) throws Exception {
+	/**
+	 * @param event
+	 * @return
+	 * @throws Exception
+	 */
+	public String listenerPersonelDosya(UploadEvent event) throws Exception {
 		servisCalisti = Boolean.FALSE;
 		UploadItem item = event.getUploadItem();
 		PdksUtil.getDosya(item, personelDosya);
@@ -3016,6 +3031,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			personelERPList = new ArrayList<PersonelERP>();
 		else
 			personelERPList.clear();
+		return "";
 
 	}
 

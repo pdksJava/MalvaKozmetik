@@ -27,6 +27,7 @@ public class IzinTipi extends BaseObject {
 	public static final String COLUMN_NAME_BAKIYE_IZIN_TIPI = "BAKIYE_IZIN_TIPI_ID";
 	public static final String COLUMN_NAME_MAIL_GONDERIM_DURUMU = "MAIL_GONDERIM_DURUMU";
 	public static final String COLUMN_NAME_GIRIS_TIPI = "GIRIS_TIPI";
+	public static final String COLUMN_NAME_UCRETLI = "UCRETLI";
 
 	public static final int MAIL_GONDERIM_DURUMU_ONAYSIZ = 0;
 
@@ -103,7 +104,7 @@ public class IzinTipi extends BaseObject {
 	private Double maxGun = 0D, maxSaat = 0D, minGun = 0D, minSaat = 0D, kotaBakiye = 0D, artikIzinGun = 0D;
 	private Departman departman;
 	private Boolean dokumAlmaDurum, takvimGunumu, saatGosterilecek, gunGosterilecek, erpAktarim, izinKagidiGeldi, dosyaEkle = Boolean.FALSE;
-	private Boolean gunSigortaDahil = Boolean.TRUE;
+	private Boolean gunSigortaDahil = Boolean.TRUE, ucretli = Boolean.TRUE;
 	private String personelGirisTipi = GIRIS_TIPI_PERSONEL;
 	private String bakiyeDevirTipi = BAKIYE_DEVIR_YOK;
 	private String onaylayanTipi = ONAYLAYAN_TIPI_YONETICI2;
@@ -243,6 +244,15 @@ public class IzinTipi extends BaseObject {
 
 	public void setErpAktarim(Boolean erpAktarim) {
 		this.erpAktarim = erpAktarim;
+	}
+
+	@Column(name = COLUMN_NAME_UCRETLI)
+	public Boolean getUcretli() {
+		return ucretli;
+	}
+
+	public void setUcretli(Boolean ucretli) {
+		this.ucretli = ucretli;
 	}
 
 	// @Column(name = "HIS_AKTARIM")
@@ -495,8 +505,6 @@ public class IzinTipi extends BaseObject {
 		return izinTipiTanim != null && izinTipiTanim.getKodu().equals(SUT_IZNI);
 	}
 
- 
-
 	@Transient
 	public boolean isGebelikMuayeneIzin() {
 		return izinTipiTanim != null && izinTipiTanim.getKodu().equals(GEBE_MUAYENE_IZNI);
@@ -687,6 +695,16 @@ public class IzinTipi extends BaseObject {
 	@Transient
 	public Boolean isTakvimGunuMu() {
 		return takvimGunumu != null && takvimGunumu.booleanValue();
+	}
+
+	@Transient
+	public boolean isUcretliIzinTipi() {
+		return ucretli != null && ucretli;
+	}
+
+	@Transient
+	public boolean isUcretsizIzinTipi() {
+		return ucretli == null || ucretli.equals(Boolean.FALSE);
 	}
 
 	@Transient

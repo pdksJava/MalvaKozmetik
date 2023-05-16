@@ -121,6 +121,12 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="Ücretli" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(izinTipi.ucretli)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="Hesap Tipi" />
 							</f:facet>
 							<h:outputText value="#{izinTipi.hesapTipiAciklama}" />
@@ -359,7 +365,7 @@
 							<ui:define name="label">Gün Sigorta Günü Dahil</ui:define>
 							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.gunSigortaDahil}" />
 						</s:decorate>
-						
+
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Döküm Alma Durumu</ui:define>
 							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.dokumAlmaDurum}" />
@@ -374,6 +380,12 @@
 							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.saatGosterilecek}">
 								<a4j:support event="onclick" ajaxSingle="true" reRender="artikIzinGun" status="ajaxStatus" />
 
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Ücretli</ui:define>
+							<h:selectBooleanCheckbox value="#{izinTipiHome.instance.ucretli}">
+								<a4j:support event="onclick" ajaxSingle="true" status="ajaxStatus" />
 							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">

@@ -437,11 +437,10 @@
 				</h:panelGroup>
 			</f:facet>
 			<h:form>
-				<a4j:outputPanel id="dosyaPanel">
+				<a4j:outputPanel id="dosyaPanel" ajaxRendered="true">
 					<rich:panel header="Dosya Ekleme" rendered="#{authenticatedUser.admin }">
 						<h:panelGrid columns="2" style="width:700px;">
-
-							<rich:fileUpload id="fileUpload" fileUploadListener="#{pdksPersonelHome.listenerPersonelDosya}" listHeight="50px" listWidth="300px"
+ 							<rich:fileUpload id="fileUpload" fileUploadListener="#{pdksPersonelHome.listenerPersonelDosya}" listHeight="50px" listWidth="300px"
 								sizeErrorLabel="Dosya boyutu büyük" maxFilesQuantity="1" immediateUpload="true" acceptedTypes="xls,xlsx"
 								transferErrorLabel="Personel webservice dosyası hatalı yüklenmiştir" doneLabel="Bitti" addControlLabel="Dosya Seçin (Excel)"
 								uploadControlLabel="Dosya Kaydet" cancelEntryControlLabel="Temizle" allowFlash="false">

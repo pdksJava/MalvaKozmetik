@@ -25,7 +25,7 @@ public class PersonelView implements Serializable {
 	 */
 	private static final long serialVersionUID = -6144167331942730263L;
 	static Logger logger = Logger.getLogger(PersonelView.class);
-	public static final String VIEW_NAME = "VIEW_PERSONEL";
+	public static final String VIEW_NAME = "VIEW_PERSONEL_SIRKET";
 	public static final String COLUMN_NAME_ID = "ID";
 	public static final String COLUMN_NAME_AD = "AD";
 	public static final String COLUMN_NAME_SOYAD = "SOYAD";

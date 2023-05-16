@@ -427,7 +427,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			bitGun = PdksUtil.tariheAyEkleCikar(basGun, 1);
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 			saveLastParameter();
-			if (yil * 100 + ay >= Integer.parseInt(str)) {
+			if (!str.equals("") && yil * 100 + ay >= Integer.parseInt(str)) {
 				fields.clear();
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");

@@ -6295,12 +6295,17 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			topluFazlaCalismaTalep = ortakIslemler.getParameterKey("topluFazlaCalismaTalep").equals("1") || userHome.hasPermission("vardiyaPlani", "topluFazlaCalismaTalep") || authenticatedUser.isAdmin();
 		else
 			topluFazlaCalismaTalep = false;
+
 		for (Iterator iterator = aylikPuantajList.iterator(); iterator.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 
 			if (!gebeGoster)
 				gebeGoster = aylikPuantaj.isGebeDurum();
 			PersonelDenklestirme personelDenklestirmeAylik = aylikPuantaj.getPersonelDenklestirmeAylik();
+			if (topluFazlaCalismaTalep)
+				topluFazlaCalismaTalep = personelDenklestirmeAylik.getPersonel().getSirket().isFazlaMesaiTalepGirer();
+			if (fazlaMesaiTalepVar)
+				fazlaMesaiTalepVar = personelDenklestirmeAylik.getPersonel().getSirket().isFazlaMesaiTalepGirer();
 			if (!sutIzniGoster)
 				sutIzniGoster = (personelDenklestirmeAylik.getSutIzniDurum() != null && personelDenklestirmeAylik.getSutIzniDurum());
 			if (!partTimeGoster)
