@@ -10550,7 +10550,6 @@ public class OrtakIslemler implements Serializable {
 		String str = getParameterKey("izinERPUpdate"), sanalPersonelAciklama = getParameterKey("sanalPersonelAciklama"), kartNoAciklama = getParameterKey("kartNoAciklama");
 		if (sanalPersonelAciklama.equals(""))
 			sanalPersonelAciklama = "Sanal Personel";
-		boolean kimlikNoGoster = false;
 
 		List<PersonelView> personelList = new ArrayList<PersonelView>(list);
 		TreeMap<String, Boolean> map = mantiksalAlanlariDoldur(personelList);
@@ -10558,8 +10557,7 @@ public class OrtakIslemler implements Serializable {
 		boolean sanalPersonel = map.containsKey("sanalPersonel"), icapDurum = map.containsKey("icapDurum"), partTimeDurum = map.containsKey("partTimeDurum");
 		boolean sutIzni = map.containsKey("sutIzni"), gebeMi = map.containsKey("gebeMi"), egitimDonemi = map.containsKey("egitimDonemi"), suaOlabilir = map.containsKey("suaOlabilir");
 		boolean emailCCDurum = map.containsKey("emailCCDurum"), emailBCCDurum = map.containsKey("emailBCCDurum"), bordroAltAlani = map.containsKey("bordroAltAlani");
-
-		boolean onaysizIzinKullanilir = map.containsKey("onaysizIzinKullanilir"), tesisDurum = map.containsKey("tesisDurum"), ikinciYoneticiIzinOnayla = map.containsKey("ikinciYoneticiIzinOnayla");
+		boolean kimlikNoGoster = map.containsKey("kimlikNoGoster"), onaysizIzinKullanilir = map.containsKey("onaysizIzinKullanilir"), tesisDurum = map.containsKey("tesisDurum"), ikinciYoneticiIzinOnayla = map.containsKey("ikinciYoneticiIzinOnayla");
 		boolean departmanGoster = map.containsKey("departmanGoster"), istenAyrilmaGoster = map.containsKey("istenAyrilmaGoster"), masrafYeriGoster = map.containsKey("masrafYeriGoster"), kartNoGoster = map.containsKey("kartNoGoster");
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
@@ -12754,7 +12752,7 @@ public class OrtakIslemler implements Serializable {
 					puantajData.setSaatToplami(saatToplami);
 					puantajData.setUcretiOdenenMesaiSure(ucretiOdenenMesaiSure);
 					puantajData.planSureHesapla(tatilGunleriMap);
-					
+
 					int yarimYuvarla = puantajData.getYarimYuvarla();
 					if (toplamCalismaGunSayisi == 0 && puantajData.getSaatToplami() == 0.0d) {
 						if (puantajData.getPlanlananSure() != 0.0d) {
@@ -12821,7 +12819,7 @@ public class OrtakIslemler implements Serializable {
 						puantajData.setAksamVardiyaSaatSayisi(0.0d);
 						puantajData.setAksamVardiyaSayisi(0);
 						puantajData.setResmiTatilToplami(0.0d);
-  						puantajData.setDevredenSure(0.0d);
+						puantajData.setDevredenSure(0.0d);
 					}
 					if (personelDenklestirme.getFazlaMesaiIzinKullan() && personel.isCalisiyorGun(puantajData.getSonGun())) {
 						// TODO KISMI UCRET_ODE
