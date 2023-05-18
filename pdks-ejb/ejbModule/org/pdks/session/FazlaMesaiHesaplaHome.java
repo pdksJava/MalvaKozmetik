@@ -141,6 +141,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private VardiyaGun seciliVardiyaGun;
 
+	private TreeMap<String, Boolean> baslikMap;
+
 	private Sirket sirket;
 
 	private DenklestirmeAy denklestirmeAy, gecenAy = null;
@@ -153,7 +155,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private Boolean izinCalismayanMailGonder = Boolean.FALSE, hatalariAyikla = Boolean.FALSE, kismiOdemeGoster = Boolean.FALSE;
 	private String manuelGirisGoster = "", kapiGirisSistemAdi = "", birdenFazlaKGSSirketSQL = "";
-	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, planOnayDurum, eksikCalismaGoster, eksikMaasGoster = false;
+	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, bordroPuantajEkranindaGoster = false, planOnayDurum, eksikCalismaGoster, eksikMaasGoster = false;
 	private int ay, yil, maxYil, sonDonem, pageSize;
 
 	private List<User> toList, ccList, bccList;
@@ -269,6 +271,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public String sayfaGirisAction() {
+		bordroPuantajEkranindaGoster = false;
+
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals("fazlaMesaiHesapla");
 		if (!ayniSayfa)
 			authenticatedUser.setCalistigiSayfa("fazlaMesaiHesapla");
@@ -900,6 +904,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		yemekList = null;
 		bugun = new Date();
 		fazlaMesaiOnayDurum = Boolean.FALSE;
+		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
+		if (baslikMap == null)
+			baslikMap = new TreeMap<String, Boolean>();
+		else
+			baslikMap.clear();
 		if (fmtMap == null)
 			fmtMap = new TreeMap<Long, List<FazlaMesaiTalep>>();
 		else
@@ -2335,7 +2344,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 				int donem = yil * 100 + ay;
 				if (donem >= Integer.parseInt(str))
-					fazlaMesaiOrtakIslemler.bordroVeriOlustur(puantajList, true, String.valueOf(donem), session);
+					baslikMap = fazlaMesaiOrtakIslemler.bordroVeriOlustur(puantajList, true, String.valueOf(donem), session);
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();
@@ -4513,7 +4522,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 		if (eksikMaasGoster) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "MASK", ortakIslemler.eksikCalismaAciklama() + " : Çalışanın bu listenin sonunda ücretinden kesilecek saati");
+			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "NORMC", ortakIslemler.eksikCalismaAciklama() + " : Çalışanın bu listenin sonunda ücretinden kesilecek saati");
 		}
 		if (resmiTatilVar) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
@@ -6107,6 +6116,22 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setBirdenFazlaKGSSirketSQL(String birdenFazlaKGSSirketSQL) {
 		this.birdenFazlaKGSSirketSQL = birdenFazlaKGSSirketSQL;
+	}
+
+	public boolean isBordroPuantajEkranindaGoster() {
+		return bordroPuantajEkranindaGoster;
+	}
+
+	public void setBordroPuantajEkranindaGoster(boolean bordroPuantajEkranindaGoster) {
+		this.bordroPuantajEkranindaGoster = bordroPuantajEkranindaGoster;
+	}
+
+	public TreeMap<String, Boolean> getBaslikMap() {
+		return baslikMap;
+	}
+
+	public void setBaslikMap(TreeMap<String, Boolean> baslikMap) {
+		this.baslikMap = baslikMap;
 	}
 
 }

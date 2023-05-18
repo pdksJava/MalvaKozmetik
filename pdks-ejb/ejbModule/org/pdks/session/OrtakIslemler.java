@@ -71,7 +71,7 @@ import org.pdks.entity.ArifeVardiyaDonem;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BaseObject;
 import org.pdks.entity.BasitHareket;
-import org.pdks.entity.BordroIzinGrubu;
+import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.CalismaModeliAy;
 import org.pdks.entity.CalismaModeliVardiya;
@@ -4216,6 +4216,98 @@ public class OrtakIslemler implements Serializable {
 		if (aciklama.equals(""))
 			aciklama = defaultBaslik;
 		return aciklama;
+	}
+
+	public String devredenMesaiKod() {
+		String kod = getBaslikAciklama("devredenMesaiKod", "DM");
+		return kod;
+	}
+
+	public String kismiOdemeKod() {
+		String kod = getBaslikAciklama("kismiOdemeKod", "KOM");
+		return kod;
+	}
+
+	public String ucretiOdenenKod() {
+		String kod = getBaslikAciklama("ucretiOdenenKod", "UOM");
+		return kod;
+	}
+
+	public String devredenBakiyeKod() {
+		String kod = getBaslikAciklama("devredenBakiyeKod", "B");
+		return kod;
+	}
+
+	public String normalCalismaSaatKod() {
+		String kod = getBaslikAciklama("normalCalismaSaatKod", "NMC");
+		return kod;
+	}
+
+	public String normalCalismaGunKod() {
+		String kod = normalCalismaSaatKod() + "G";
+		return kod;
+	}
+
+	public String haftaTatilCalismaSaatKod() {
+		String kod = getBaslikAciklama("haftaTatilCalismaSaatKod", "HTC");
+		return kod;
+	}
+
+	public String haftaTatilCalismaGunKod() {
+		String kod = haftaTatilCalismaSaatKod() + "G";
+		return kod;
+	}
+
+	public String resmiTatilCalismaSaatKod() {
+		String kod = getBaslikAciklama("resmiTatilCalismaSaatKod", "RTC");
+		return kod;
+	}
+
+	public String resmiTatilCalismaGunKod() {
+		String kod = resmiTatilCalismaSaatKod() + "G";
+		return kod;
+	}
+
+	public String izinSureSaatKod() {
+		String kod = getBaslikAciklama("izinSureSaatKod", "IZNS");
+		return kod;
+	}
+	public String izinSureGunAdetKod() {
+		String kod = getBaslikAciklama("izinSureGunAdetKod", "UIZNG");
+		return kod;
+	}
+	public String izinSureGunKod() {
+		String kod = izinSureSaatKod() + "G";
+		return kod;
+	}
+
+	public String ucretliIzinGunKod() {
+		String kod = getBaslikAciklama("ucretliIzinGunKod", "ULIG");
+		return kod;
+	}
+
+	public String ucretsizIzinGunKod() {
+		String kod = getBaslikAciklama("ucretsizIzinGunKod", "USIZG");
+		return kod;
+	}
+
+	public String hastalikIzinGunKod() {
+		String kod = getBaslikAciklama("hastalikIzinGunKod", "HASIZG");
+		return kod;
+	}
+
+	public String normalGunKod() {
+		String kod = getBaslikAciklama("normalGunKod", "NGA");
+		return kod;
+	}
+
+	public String haftaTatilGunKod() {
+		String kod = getBaslikAciklama("haftaTatilGunKod", "HTA");
+		return kod;
+	}
+	public String tatilGunKod() {
+		String kod = getBaslikAciklama("tatilGunKod", "TAA");
+		return kod;
 	}
 
 	/**
@@ -8972,11 +9064,8 @@ public class OrtakIslemler implements Serializable {
 							if (vardiya.isCalisma()) {
 								Tatil pdksTatil = tatillerMap.get(key);
 								if (!pdksTatil.isYarimGunMu()) {
-									if (!tatilDonemList.contains(vardiyaKey))
-										vardiya = offVardiya;
-									else
-										testVardiyaGun1.setVersion(-1);
-
+									vardiya = offVardiya;
+									testVardiyaGun1.setVersion(0);
 								}
 
 							}
@@ -9467,144 +9556,171 @@ public class OrtakIslemler implements Serializable {
 				}
 
 			}
-			// for (Long perId : izinMap.keySet()) {
-			// if (vMap != null && vMap.containsKey(perId)) {
-			// vardiyaIzinleriGuncelle(izinMap.get(perId), vMap.get(perId));
-			//
-			// }
-			// }
-		}
 
-		boolean planKatSayiOku = getParameterKey("planKatSayiOku").equals("1");
-		boolean haftaTatilFazlaMesaiKatSayiOku = getParameterKey("haftaTatilFazlaMesaiKatSayiOku").equals("1");
-		boolean offFazlaMesaiKatSayiOku = getParameterKey("offFazlaMesaiKatSayiOku").equals("1");
-		boolean yuvarlamaKatSayiOku = getParameterKey("yuvarlamaKatSayiOku").equals("1");
-		HashMap<KatSayiTipi, TreeMap<String, BigDecimal>> allMap = getPlanKatSayiAllMap(personelIdler, basTarih, bitTarih, session);
-		TreeMap<String, BigDecimal> sureMap = planKatSayiOku && allMap.containsKey(KatSayiTipi.HAREKET_BEKLEME_SURESI) ? allMap.get(KatSayiTipi.HAREKET_BEKLEME_SURESI) : null;
-		TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku && allMap.containsKey(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI) ? allMap.get(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI) : null;
-		TreeMap<String, BigDecimal> yuvarlamaMap = yuvarlamaKatSayiOku && allMap.containsKey(KatSayiTipi.YUVARLAMA_TIPI) ? allMap.get(KatSayiTipi.YUVARLAMA_TIPI) : null;
-		TreeMap<String, BigDecimal> haftaTatilFazlaMesaiMap = haftaTatilFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.HT_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.HT_FAZLA_MESAI_TIPI) : null;
-		TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) : null;
-		TreeMap<String, BigDecimal> erkenGirisMap = allMap.containsKey(KatSayiTipi.ERKEN_GIRIS_TIPI) ? allMap.get(KatSayiTipi.ERKEN_GIRIS_TIPI) : null;
-		TreeMap<String, BigDecimal> izinHaftaTatilDurumMap = allMap.containsKey(KatSayiTipi.IZIN_HAFTA_TATIL_DURUM) ? allMap.get(KatSayiTipi.IZIN_HAFTA_TATIL_DURUM) : null;
-		TreeMap<String, BigDecimal> gecCikisMap = allMap.containsKey(KatSayiTipi.GEC_CIKIS_TIPI) ? allMap.get(KatSayiTipi.GEC_CIKIS_TIPI) : null;
-		TreeMap<String, BigDecimal> fmtDurumMap = allMap.containsKey(KatSayiTipi.FMT_DURUM) ? allMap.get(KatSayiTipi.FMT_DURUM) : null;
-		boolean erkenGirisKontrolEt = erkenGirisMap != null && !erkenGirisMap.isEmpty();
-		boolean gecKontrolEt = gecCikisMap != null && !gecCikisMap.isEmpty();
-		boolean offFazlaMesaiKontrolEt = offFazlaMesaiMap != null && !offFazlaMesaiMap.isEmpty();
-		boolean haftaTatilFazlaMesaiKontrolEt = haftaTatilFazlaMesaiMap != null && !haftaTatilFazlaMesaiMap.isEmpty();
-		boolean fmtDurumKontrolEt = fmtDurumMap != null && !fmtDurumMap.isEmpty();
-		boolean izinHaftaTatilDurumKontrolEt = izinHaftaTatilDurumMap != null && !izinHaftaTatilDurumMap.isEmpty();
-		yuvarlamaKatSayiOku = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
-		suaKatSayiOku = sureSuaMap != null && !sureSuaMap.isEmpty();
-		planKatSayiOku = sureMap != null && !sureMap.isEmpty();
-		HashMap<Long, Date> tarih1Map = new HashMap<Long, Date>(), tarih2Map = new HashMap<Long, Date>();
-		List<VardiyaGun> bosList = new ArrayList<VardiyaGun>();
-		for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
-			VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-			Vardiya vardiya = vardiyaGun.getVardiya();
-			if (vardiya != null && vardiya.getId() != null) {
-				HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
-				String str = vardiyaGun.getVardiyaDateStr();
-				if (izinHaftaTatilDurumKontrolEt && izinHaftaTatilDurumMap.containsKey(str)) {
-					if (vardiya.isHaftaTatil())
-						vardiyaGun.setIzinHaftaTatilDurum(Boolean.FALSE);
+			boolean planKatSayiOku = getParameterKey("planKatSayiOku").equals("1");
+			boolean haftaTatilFazlaMesaiKatSayiOku = getParameterKey("haftaTatilFazlaMesaiKatSayiOku").equals("1");
+			boolean offFazlaMesaiKatSayiOku = getParameterKey("offFazlaMesaiKatSayiOku").equals("1");
+			boolean yuvarlamaKatSayiOku = getParameterKey("yuvarlamaKatSayiOku").equals("1");
+			HashMap<KatSayiTipi, TreeMap<String, BigDecimal>> allMap = getPlanKatSayiAllMap(personelIdler, basTarih, bitTarih, session);
+			TreeMap<String, BigDecimal> sureMap = planKatSayiOku && allMap.containsKey(KatSayiTipi.HAREKET_BEKLEME_SURESI) ? allMap.get(KatSayiTipi.HAREKET_BEKLEME_SURESI) : null;
+			TreeMap<String, BigDecimal> sureSuaMap = suaKatSayiOku && allMap.containsKey(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI) ? allMap.get(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI) : null;
+			TreeMap<String, BigDecimal> yuvarlamaMap = yuvarlamaKatSayiOku && allMap.containsKey(KatSayiTipi.YUVARLAMA_TIPI) ? allMap.get(KatSayiTipi.YUVARLAMA_TIPI) : null;
+			TreeMap<String, BigDecimal> haftaTatilFazlaMesaiMap = haftaTatilFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.HT_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.HT_FAZLA_MESAI_TIPI) : null;
+			TreeMap<String, BigDecimal> offFazlaMesaiMap = offFazlaMesaiKatSayiOku && allMap.containsKey(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) ? allMap.get(KatSayiTipi.OFF_FAZLA_MESAI_TIPI) : null;
+			TreeMap<String, BigDecimal> erkenGirisMap = allMap.containsKey(KatSayiTipi.ERKEN_GIRIS_TIPI) ? allMap.get(KatSayiTipi.ERKEN_GIRIS_TIPI) : null;
+			TreeMap<String, BigDecimal> izinHaftaTatilDurumMap = allMap.containsKey(KatSayiTipi.IZIN_HAFTA_TATIL_DURUM) ? allMap.get(KatSayiTipi.IZIN_HAFTA_TATIL_DURUM) : null;
+			TreeMap<String, BigDecimal> gecCikisMap = allMap.containsKey(KatSayiTipi.GEC_CIKIS_TIPI) ? allMap.get(KatSayiTipi.GEC_CIKIS_TIPI) : null;
+			TreeMap<String, BigDecimal> fmtDurumMap = allMap.containsKey(KatSayiTipi.FMT_DURUM) ? allMap.get(KatSayiTipi.FMT_DURUM) : null;
+			TreeMap<String, BigDecimal> saatCalisanNormalGunMap = allMap.containsKey(KatSayiTipi.SAAT_CALISAN_NORMAL_GUN) ? allMap.get(KatSayiTipi.SAAT_CALISAN_NORMAL_GUN) : null;
+			TreeMap<String, BigDecimal> saatCalisanIzinGunMap = allMap.containsKey(KatSayiTipi.SAAT_CALISAN_IZIN_GUN) ? allMap.get(KatSayiTipi.SAAT_CALISAN_IZIN_GUN) : null;
+			TreeMap<String, BigDecimal> saatCalisanHaftaTatilMap = allMap.containsKey(KatSayiTipi.SAAT_CALISAN_HAFTA_TATIL) ? allMap.get(KatSayiTipi.SAAT_CALISAN_HAFTA_TATIL) : null;
+			TreeMap<String, BigDecimal> saatCalisanResmiTatilMap = allMap.containsKey(KatSayiTipi.SAAT_CALISAN_RESMI_TATIL) ? allMap.get(KatSayiTipi.SAAT_CALISAN_RESMI_TATIL) : null;
+			TreeMap<String, BigDecimal> saatCalisanArifeTatilMap = allMap.containsKey(KatSayiTipi.SAAT_CALISAN_ARIFE_TATIL_SAAT) ? allMap.get(KatSayiTipi.SAAT_CALISAN_ARIFE_TATIL_SAAT) : null;
+			TreeMap<String, BigDecimal> saatCalisanArifeNormalMap = allMap.containsKey(KatSayiTipi.SAAT_CALISAN_ARIFE_NORMAL_SAAT) ? allMap.get(KatSayiTipi.SAAT_CALISAN_ARIFE_NORMAL_SAAT) : null;
 
-				} else if (vardiyaGun.isPazar())
-					vardiyaGun.setIzinHaftaTatilDurum(Boolean.TRUE);
-				if (fmtDurumKontrolEt && fmtDurumMap.containsKey(str)) {
-					BigDecimal deger = fmtDurumMap.get(str);
-					if (deger != null)
-						katSayiMap.put(KatSayiTipi.FMT_DURUM.value(), deger);
-				}
+			boolean erkenGirisKontrolEt = erkenGirisMap != null && !erkenGirisMap.isEmpty();
+			boolean gecKontrolEt = gecCikisMap != null && !gecCikisMap.isEmpty();
+			boolean offFazlaMesaiKontrolEt = offFazlaMesaiMap != null && !offFazlaMesaiMap.isEmpty();
+			boolean haftaTatilFazlaMesaiKontrolEt = haftaTatilFazlaMesaiMap != null && !haftaTatilFazlaMesaiMap.isEmpty();
+			boolean fmtDurumKontrolEt = fmtDurumMap != null && !fmtDurumMap.isEmpty();
+			boolean izinHaftaTatilDurumKontrolEt = izinHaftaTatilDurumMap != null && !izinHaftaTatilDurumMap.isEmpty();
+			boolean saatCalisanNormalGunKontrolEt = saatCalisanNormalGunMap != null && !saatCalisanNormalGunMap.isEmpty();
+			boolean saatCalisanIzinGunKontrolEt = saatCalisanIzinGunMap != null && !saatCalisanIzinGunMap.isEmpty();
+			boolean saatCalisanHaftaTatilKontrolEt = saatCalisanHaftaTatilMap != null && !saatCalisanHaftaTatilMap.isEmpty();
+			boolean saatCalisanResmiTatilKontrolEt = saatCalisanResmiTatilMap != null && !saatCalisanResmiTatilMap.isEmpty();
+			boolean saatCalisanArifeTatilKontrolEt = saatCalisanArifeTatilMap != null && !saatCalisanArifeTatilMap.isEmpty();
+			boolean saatCalisanArifeNormalKontrolEt = saatCalisanArifeNormalMap != null && !saatCalisanArifeNormalMap.isEmpty();
+			yuvarlamaKatSayiOku = yuvarlamaMap != null && !yuvarlamaMap.isEmpty();
+			suaKatSayiOku = sureSuaMap != null && !sureSuaMap.isEmpty();
+			planKatSayiOku = sureMap != null && !sureMap.isEmpty();
+			HashMap<Long, Date> tarih1Map = new HashMap<Long, Date>(), tarih2Map = new HashMap<Long, Date>();
+			List<VardiyaGun> bosList = new ArrayList<VardiyaGun>();
+			for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
+				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+				Vardiya vardiya = vardiyaGun.getVardiya();
+				if (vardiya != null && vardiya.getId() != null) {
+					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
+					String str = vardiyaGun.getVardiyaDateStr();
+					if (saatCalisanNormalGunKontrolEt && saatCalisanNormalGunMap.containsKey(str))
+						katSayiMap.put(KatSayiTipi.SAAT_CALISAN_NORMAL_GUN.value(), saatCalisanNormalGunMap.get(str));
+					if (vardiyaGun.isIzinli() && saatCalisanIzinGunKontrolEt && saatCalisanIzinGunMap.containsKey(str))
+						katSayiMap.put(KatSayiTipi.SAAT_CALISAN_IZIN_GUN.value(), saatCalisanIzinGunMap.get(str));
+					if (saatCalisanHaftaTatilKontrolEt && saatCalisanHaftaTatilMap.containsKey(str))
+						katSayiMap.put(KatSayiTipi.SAAT_CALISAN_HAFTA_TATIL.value(), saatCalisanHaftaTatilMap.get(str));
+					Tatil tatil = vardiyaGun.getTatil();
+					if (tatil != null) {
+						if (!tatil.isYarimGunMu()) {
+							if (saatCalisanResmiTatilKontrolEt && saatCalisanResmiTatilMap.containsKey(str))
+								katSayiMap.put(KatSayiTipi.SAAT_CALISAN_RESMI_TATIL.value(), saatCalisanResmiTatilMap.get(str));
+						} else {
+							if (saatCalisanArifeTatilKontrolEt && saatCalisanArifeTatilMap.containsKey(str))
+								katSayiMap.put(KatSayiTipi.SAAT_CALISAN_ARIFE_TATIL_SAAT.value(), saatCalisanArifeTatilMap.get(str));
+							if (saatCalisanArifeNormalKontrolEt && saatCalisanArifeNormalMap.containsKey(str))
+								katSayiMap.put(KatSayiTipi.SAAT_CALISAN_ARIFE_NORMAL_SAAT.value(), saatCalisanArifeNormalMap.get(str));
+						}
 
-				if (vardiya.isCalisma()) {
-					if (erkenGirisKontrolEt && erkenGirisMap.containsKey(str)) {
-						BigDecimal deger = erkenGirisMap.get(str);
+					}
+
+					if (izinHaftaTatilDurumKontrolEt && izinHaftaTatilDurumMap.containsKey(str)) {
+						if (vardiya.isHaftaTatil())
+							vardiyaGun.setIzinHaftaTatilDurum(Boolean.FALSE);
+
+					} else if (vardiyaGun.isPazar())
+						vardiyaGun.setIzinHaftaTatilDurum(Boolean.TRUE);
+					if (fmtDurumKontrolEt && fmtDurumMap.containsKey(str)) {
+						BigDecimal deger = fmtDurumMap.get(str);
 						if (deger != null)
-							katSayiMap.put(KatSayiTipi.ERKEN_GIRIS_TIPI.value(), deger);
+							katSayiMap.put(KatSayiTipi.FMT_DURUM.value(), deger);
 					}
-					if (gecKontrolEt && gecCikisMap.containsKey(str)) {
-						BigDecimal deger = gecCikisMap.get(str);
-						if (deger != null)
-							katSayiMap.put(KatSayiTipi.GEC_CIKIS_TIPI.value(), deger);
-					}
-				}
 
-				if (offFazlaMesaiKontrolEt && offFazlaMesaiMap.containsKey(str)) {
-					BigDecimal deger = offFazlaMesaiMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.OFF_FAZLA_MESAI_TIPI.value(), deger);
-						vardiyaGun.setOffFazlaMesaiBasDakika(deger.intValue());
+					if (vardiya.isCalisma()) {
+						if (erkenGirisKontrolEt && erkenGirisMap.containsKey(str)) {
+							BigDecimal deger = erkenGirisMap.get(str);
+							if (deger != null)
+								katSayiMap.put(KatSayiTipi.ERKEN_GIRIS_TIPI.value(), deger);
+						}
+						if (gecKontrolEt && gecCikisMap.containsKey(str)) {
+							BigDecimal deger = gecCikisMap.get(str);
+							if (deger != null)
+								katSayiMap.put(KatSayiTipi.GEC_CIKIS_TIPI.value(), deger);
+						}
 					}
-				}
-				if (haftaTatilFazlaMesaiKontrolEt && haftaTatilFazlaMesaiMap.containsKey(str)) {
-					BigDecimal deger = haftaTatilFazlaMesaiMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.HT_FAZLA_MESAI_TIPI.value(), deger);
-						vardiyaGun.setHaftaTatiliFazlaMesaiBasDakika(deger.intValue());
-					}
-				}
-				if (yuvarlamaKatSayiOku && yuvarlamaMap.containsKey(str)) {
-					BigDecimal deger = yuvarlamaMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.YUVARLAMA_TIPI.value(), deger);
-						vardiyaGun.setYarimYuvarla(deger.intValue());
-					}
-				}
-				if (suaKatSayiOku && sureSuaMap.containsKey(str)) {
-					BigDecimal deger = sureSuaMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI.value(), deger);
-						vardiyaGun.setCalismaSuaSaati(deger.doubleValue());
-					}
-				}
 
-				if (planKatSayiOku && sureMap.containsKey(str)) {
-					BigDecimal deger = sureMap.get(str);
-					if (deger != null) {
-						katSayiMap.put(KatSayiTipi.HAREKET_BEKLEME_SURESI.value(), deger);
-						vardiyaGun.setBeklemeSuresi(deger.intValue());
+					if (offFazlaMesaiKontrolEt && offFazlaMesaiMap.containsKey(str)) {
+						BigDecimal deger = offFazlaMesaiMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.OFF_FAZLA_MESAI_TIPI.value(), deger);
+							vardiyaGun.setOffFazlaMesaiBasDakika(deger.intValue());
+						}
 					}
-				}
-				Date tarih1 = null, tarih2 = null;
-				Long key = vardiyaGun.getPersonel().getId();
-				if (tarih1Map.containsKey(key))
-					tarih1 = tarih1Map.get(key);
-				else {
-					tarih1 = vardiyaGun.getPersonel().getIseGirisTarihi();
-					tarih1Map.put(key, tarih1);
-				}
-				if (tarih2Map.containsKey(key))
-					tarih2 = tarih2Map.get(key);
-				else {
-					tarih2 = vardiyaGun.getPersonel().getSonCalismaTarihi();
-					tarih2Map.put(key, tarih2);
-				}
-				if (tarih1 == null || tarih2 == null || vardiyaGun.getVardiyaDate().after(tarih2) || vardiyaGun.getVardiyaDate().before(tarih1)) {
-					if (hepsi == null || hepsi.booleanValue() == false) {
-						iterator.remove();
+					if (haftaTatilFazlaMesaiKontrolEt && haftaTatilFazlaMesaiMap.containsKey(str)) {
+						BigDecimal deger = haftaTatilFazlaMesaiMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.HT_FAZLA_MESAI_TIPI.value(), deger);
+							vardiyaGun.setHaftaTatiliFazlaMesaiBasDakika(deger.intValue());
+						}
 					}
+					if (yuvarlamaKatSayiOku && yuvarlamaMap.containsKey(str)) {
+						BigDecimal deger = yuvarlamaMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.YUVARLAMA_TIPI.value(), deger);
+							vardiyaGun.setYarimYuvarla(deger.intValue());
+						}
+					}
+					if (suaKatSayiOku && sureSuaMap.containsKey(str)) {
+						BigDecimal deger = sureSuaMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.SUA_GUNLUK_SAAT_SURESI.value(), deger);
+							vardiyaGun.setCalismaSuaSaati(deger.doubleValue());
+						}
+					}
+
+					if (planKatSayiOku && sureMap.containsKey(str)) {
+						BigDecimal deger = sureMap.get(str);
+						if (deger != null) {
+							katSayiMap.put(KatSayiTipi.HAREKET_BEKLEME_SURESI.value(), deger);
+							vardiyaGun.setBeklemeSuresi(deger.intValue());
+						}
+					}
+					Date tarih1 = null, tarih2 = null;
+					Long key = vardiyaGun.getPersonel().getId();
+					if (tarih1Map.containsKey(key))
+						tarih1 = tarih1Map.get(key);
+					else {
+						tarih1 = vardiyaGun.getPersonel().getIseGirisTarihi();
+						tarih1Map.put(key, tarih1);
+					}
+					if (tarih2Map.containsKey(key))
+						tarih2 = tarih2Map.get(key);
+					else {
+						tarih2 = vardiyaGun.getPersonel().getSonCalismaTarihi();
+						tarih2Map.put(key, tarih2);
+					}
+					if (tarih1 == null || tarih2 == null || vardiyaGun.getVardiyaDate().after(tarih2) || vardiyaGun.getVardiyaDate().before(tarih1)) {
+						if (hepsi == null || hepsi.booleanValue() == false) {
+							iterator.remove();
+						}
+					}
+					if (!katSayiMap.isEmpty()) {
+						vardiya.setIslemVardiyaGun(vardiyaGun);
+						vardiyaGun.setKatSayiMap(katSayiMap);
+					} else
+						katSayiMap = null;
 				}
-				if (!katSayiMap.isEmpty()) {
-					vardiya.setIslemVardiyaGun(vardiyaGun);
-					vardiyaGun.setKatSayiMap(katSayiMap);
-				} else
-					katSayiMap = null;
 			}
+			if (!bosList.isEmpty())
+				vardiyaGunList.addAll(bosList);
+			bosList = null;
+			allMap = null;
+			sureMap = null;
+			sureSuaMap = null;
+			yuvarlamaMap = null;
+			haftaTatilFazlaMesaiMap = null;
+			offFazlaMesaiMap = null;
+			erkenGirisMap = null;
+			gecCikisMap = null;
+			fmtDurumMap = null;
 		}
-		if (!bosList.isEmpty())
-			vardiyaGunList.addAll(bosList);
-		bosList = null;
-		allMap = null;
-		sureMap = null;
-		sureSuaMap = null;
-		yuvarlamaMap = null;
-		haftaTatilFazlaMesaiMap = null;
-		offFazlaMesaiMap = null;
-		erkenGirisMap = null;
-		gecCikisMap = null;
-		fmtDurumMap = null;
 
 		map = null;
 		return vardiyaGunList;
@@ -12735,7 +12851,7 @@ public class OrtakIslemler implements Serializable {
 						planlanSure += toplamSure - calisilmayanSuresi;
 						toplamCalismaGunSayisi += calismaGunSayisi;
 
-						if (authenticatedUser.isAdmin() && toplamSure > 0) {
+						if (authenticatedUser.isAdmin() && toplamSure + izinSuresi > 0) {
 							logger.debug(personel.getPdksSicilNo() + " --> " + hafta + " : " + raporGunSayisi + " " + toplamSure + " " + calismaGunSayisi + " " + izinSuresi + " " + haftaTatiliFark);
 							logger.debug(personel.getPdksSicilNo() + "     " + planlanSure + " " + toplamSure + " " + calisilmayanSuresi);
 						}
@@ -12792,17 +12908,17 @@ public class OrtakIslemler implements Serializable {
 						puantajData.setEksikCalismaSure(0.0d);
 						if (calismaModeli.isSaatlikOdeme()) {
 							if (hesaplananDenklestirme.getDevredenSure() < 0.0d) {
-								Double eksikCalismaSure = -hesaplananDenklestirme.getDevredenSure();
-								if (puantajData.getFazlaMesaiSure() > 0.0d) {
-									double sure = puantajData.getFazlaMesaiSure() - eksikCalismaSure;
-									eksikCalismaSure = 0.0d;
-									puantajData.setFazlaMesaiSure(0.0d);
-									if (sure > 0)
-										puantajData.setFazlaMesaiSure(sure);
-									else
-										eksikCalismaSure = -sure;
-								}
-								puantajData.setEksikCalismaSure(eksikCalismaSure);
+								// Double eksikCalismaSure = -hesaplananDenklestirme.getDevredenSure();
+								// if (puantajData.getFazlaMesaiSure() > 0.0d) {
+								// double sure = puantajData.getFazlaMesaiSure() - eksikCalismaSure;
+								// eksikCalismaSure = 0.0d;
+								// puantajData.setFazlaMesaiSure(0.0d);
+								// if (sure > 0)
+								// puantajData.setFazlaMesaiSure(sure);
+								// else
+								// eksikCalismaSure = -sure;
+								// }
+								puantajData.setEksikCalismaSure(saatToplami);
 
 							} else if (hesaplananDenklestirme.getDevredenSure() > 0.0d) {
 								Double sure = puantajData.getFazlaMesaiSure() + hesaplananDenklestirme.getDevredenSure();
@@ -14188,10 +14304,10 @@ public class OrtakIslemler implements Serializable {
 				logger.debug(vardiyaGun.getId());
 			if (personelIzin != null && vardiyaGun != null && islemVardiya != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
 				boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
-				BordroIzinGrubu izinGrubu = null;
+				BordroDetayTipi bordroDetayTipi = null;
 				if (vardiyaIzin && PdksUtil.hasStringValue(islemVardiya.getStyleClass()))
-					izinGrubu = BordroIzinGrubu.fromValue(islemVardiya.getStyleClass());
-				if (vardiyaIzin == false || izinGrubu == null) {
+					bordroDetayTipi = BordroDetayTipi.fromValue(islemVardiya.getStyleClass());
+				if (vardiyaIzin == false || bordroDetayTipi == null) {
 					Date vardiyaDate = vardiyaGun.getVardiyaDate();
 					if (!personelIzin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
 						izinERPUpdate = false;

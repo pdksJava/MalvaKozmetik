@@ -2500,7 +2500,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 		if (maasKesintiGoster) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "MASK", "Çalışanın bu listenin sonunda ücretinden kesilecek saati");
+			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "NORMC", "Çalışanın bu listenin sonunda ücretinden kesilecek saati");
 		}
 		if (resmiTatilVar) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);

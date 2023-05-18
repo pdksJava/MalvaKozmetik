@@ -2109,6 +2109,68 @@ public class VardiyaGun extends BaseObject {
 		this.donemStr = donemStr;
 	}
 
+	// SAAT_CALISAN_NORMAL_GUN(91), SAAT_CALISAN_IZIN_GUN(92), SAAT_CALISAN_HAFTA_TATIL(93), SAAT_CALISAN_RESMI_TATIL(
+	@Transient
+	public double getSaatCalisanNormalGunKatsayisi() {
+		double katSayi = 0.0d;
+		if (ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_NORMAL_GUN.value());
+			katSayi = decimal != null ? decimal.doubleValue() : 9.0d;
+		}
+		return katSayi;
+	}
+
+	@Transient
+	public double getSaatCalisanIzinGunKatsayisi() {
+		double katSayi = 0.0d;
+		if (ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_IZIN_GUN.value());
+
+			katSayi = decimal != null ? decimal.doubleValue() : 9.0d;
+		}
+		return katSayi;
+	}
+
+	@Transient
+	public double getSaatCalisanHaftaTatilKatsayisi() {
+		double katSayi = 0.0d;
+		if (ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_HAFTA_TATIL.value());
+			katSayi = decimal != null ? decimal.doubleValue() : 7.5d;
+		}
+		return katSayi;
+	}
+
+	@Transient
+	public double getSaatCalisanResmiTatilKatsayisi() {
+		double katSayi = 0.0d;
+		if (ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_RESMI_TATIL.value());
+			katSayi = decimal != null ? decimal.doubleValue() : 7.5d;
+		}
+		return katSayi;
+	}
+
+	@Transient
+	public double getSaatCalisanArifeNormalKatsayisi() {
+		double katSayi = 0.0d;
+		if (ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_ARIFE_NORMAL_SAAT.value());
+			katSayi = decimal != null ? decimal.doubleValue() : 4.0d;
+		}
+		return katSayi;
+	}
+
+	@Transient
+	public double getSaatCalisanArifeTatilKatsayisi() {
+		double katSayi = 0.0d;
+		if (ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_ARIFE_TATIL_SAAT.value());
+			katSayi = decimal != null ? decimal.doubleValue() : 5.0d;
+		}
+		return katSayi;
+	}
+
 	@Transient
 	public boolean isFazlaMesaiTalepDurum() {
 		if (!fazlaMesaiTalepDurum && izin == null && ayinGunu) {

@@ -30,7 +30,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AylikPuantaj;
-import org.pdks.entity.BordroIzinGrubu;
+import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Dosya;
@@ -474,7 +474,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						if (!maasKesintiGoster)
 							setMaasKesintiGoster(personelDenklestirme.getEksikCalismaSure() != null && personelDenklestirme.getEksikCalismaSure().doubleValue() > 0.0d);
 
-						personelDenklestirmeBordro.setDetayMap(new HashMap<BordroIzinGrubu, PersonelDenklestirmeBordroDetay>());
+						personelDenklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
 						AylikPuantaj aylikPuantaj = new AylikPuantaj(personelDenklestirmeBordro);
 						idMap.put(personelDenklestirmeBordro.getId(), personelDenklestirmeBordro);
 						personelDenklestirmeList.add(aylikPuantaj);
@@ -506,8 +506,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					List<PersonelDenklestirmeBordroDetay> list = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordroDetay.class);
 					for (PersonelDenklestirmeBordroDetay detay : list) {
 						Long key = detay.getPersonelDenklestirmeBordro().getId();
-						BordroIzinGrubu bordroIzinGrubu = BordroIzinGrubu.fromValue(detay.getTipi());
-						idMap.get(key).getDetayMap().put(bordroIzinGrubu, detay);
+						BordroDetayTipi bordroDetayTipi = BordroDetayTipi.fromValue(detay.getTipi());
+						idMap.get(key).getDetayMap().put(bordroDetayTipi, detay);
 					}
 					idMap = null;
 					list = null;

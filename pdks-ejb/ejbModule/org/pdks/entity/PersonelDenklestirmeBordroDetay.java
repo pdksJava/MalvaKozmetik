@@ -27,7 +27,7 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 	static Logger logger = Logger.getLogger(PersonelDenklestirmeBordroDetay.class);
 
 	public static final String TABLE_NAME = "PERS_DENK_BORDRO_DETAY";
- 	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME_BORDRO = "PERS_DENK_BORDRO_ID";
+	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME_BORDRO = "PERS_DENK_BORDRO_ID";
 	public static final String COLUMN_NAME_TIPI = "TIPI";
 	public static final String COLUMN_NAME_MIKTAR = "MIKTAR";
 
@@ -35,7 +35,7 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 
 	private String tipi;
 
-	private BordroIzinGrubu bordroIzinGrubu;
+	private BordroDetayTipi bordroDetayTipi;
 
 	private Double miktar = 0.0d;
 
@@ -46,10 +46,10 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 
 	}
 
-	public PersonelDenklestirmeBordroDetay(PersonelDenklestirmeBordro personelDenklestirmeBordro, BordroIzinGrubu bordroIzinGrubu) {
+	public PersonelDenklestirmeBordroDetay(PersonelDenklestirmeBordro personelDenklestirmeBordro, BordroDetayTipi bordroDetayTipi) {
 		super();
 		this.personelDenklestirmeBordro = personelDenklestirmeBordro;
-		this.tipi = bordroIzinGrubu.value();
+		this.tipi = bordroDetayTipi.value();
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
@@ -70,7 +70,7 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 
 	public void setTipi(String value) {
 		if (value != null)
-			this.bordroIzinGrubu = BordroIzinGrubu.fromValue(value);
+			this.bordroDetayTipi = BordroDetayTipi.fromValue(value);
 		this.tipi = value;
 	}
 
@@ -83,15 +83,6 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 		if (guncellendi == false)
 			this.setGuncellendi(this.miktar == null || this.miktar.doubleValue() != value.doubleValue());
 		this.miktar = value;
-	}
-
-	@Transient
-	public BordroIzinGrubu getBordroIzinGrubu() {
-		return bordroIzinGrubu;
-	}
-
-	public void setBordroIzinGrubu(BordroIzinGrubu bordroIzinGrubu) {
-		this.bordroIzinGrubu = bordroIzinGrubu;
 	}
 
 	@Transient
@@ -113,5 +104,14 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 	public String getDetayKey() {
 		String detayKey = getDetayKey(personelDenklestirmeBordro, tipi);
 		return detayKey;
+	}
+
+	@Transient
+	public BordroDetayTipi getBordroDetayTipi() {
+		return bordroDetayTipi;
+	}
+
+	public void setBordroDetayTipi(BordroDetayTipi bordroDetayTipi) {
+		this.bordroDetayTipi = bordroDetayTipi;
 	}
 }

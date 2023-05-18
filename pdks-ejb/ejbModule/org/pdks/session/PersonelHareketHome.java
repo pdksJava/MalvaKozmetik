@@ -701,6 +701,13 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	public String save() {
 		String islem = "";
 		HareketKGS kgsHareket = this.getInstance();
+		if (islemTipi.equals("E")) {
+			if (kgsHareket.getKapiId() == null) {
+				PdksUtil.addMessageError("Kapı seçiniz!");
+				return "";
+			}
+		}
+
 		PersonelView personelView = kgsHareket.getPersonel();
 		HashMap parametreMap = new HashMap();
 		if (personelView.getId() == null) {
