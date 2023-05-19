@@ -176,7 +176,6 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.setOdenenSure(0.0d);
 		this.setOffSure(0.0d);
 		this.setOffSure(0.0d);
-		this.setResmiTatilToplami(0.0d);
 		this.setSaatToplami(0.0d);
 		this.setUcretiOdenenMesaiSure(0.0d);
 	}
@@ -739,8 +738,18 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.saatToplami = value;
 	}
 
-	public void setResmiTatilToplami(Double resmiTatilToplami) {
-		this.resmiTatilToplami = resmiTatilToplami;
+	public void setResmiTatilToplami(Double value) {
+		if (value != null && value.doubleValue() > 0.0d)
+			logger.debug(value);
+		this.resmiTatilToplami = value;
+	}
+
+	public void addResmiTatilToplami(Double sure) {
+		if (sure != null && sure.doubleValue() > 0.0d) {
+			logger.debug(sure);
+			this.resmiTatilToplami += sure;
+		}
+
 	}
 
 	public void setFazlaMesaiSure(Double fazlaMesaiSure) {
@@ -753,8 +762,10 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.planlananSure = value;
 	}
 
-	public void setIzinSuresi(Double izinSuresi) {
-		this.izinSuresi = izinSuresi;
+	public void setIzinSuresi(Double value) {
+		if (value != null && value.doubleValue() != 0.0d)
+			logger.debug(value);
+		this.izinSuresi = value;
 	}
 
 	public Double getHesaplananSure() {
@@ -961,14 +972,6 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		personelDenklestirme.setDevredenSure(devredenSure);
 		personelDenklestirme.setHesaplananSure(hesaplananSure);
 		return personelDenklestirme;
-	}
-
-	public void addResmiTatilToplami(Double sure) {
-		if (sure != null && sure.doubleValue() > 0.0d) {
-			logger.debug(sure);
-			this.resmiTatilToplami += sure;
-		}
-
 	}
 
 	public Double getOffSure() {
