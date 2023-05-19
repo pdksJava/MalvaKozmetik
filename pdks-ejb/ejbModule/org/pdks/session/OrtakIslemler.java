@@ -4273,13 +4273,13 @@ public class OrtakIslemler implements Serializable {
 		return kod;
 	}
 
-	public String izinSureGunAdetKod() {
-		String kod = getBaslikAciklama("izinSureGunAdetKod", "UIZNG");
+	public String izinSureGunKod() {
+		String kod = izinSureSaatKod() + "G";
 		return kod;
 	}
 
-	public String izinSureGunKod() {
-		String kod = izinSureSaatKod() + "G";
+	public String izinSureGunAdetKod() {
+		String kod = getBaslikAciklama("izinSureGunAdetKod", "IZGA");
 		return kod;
 	}
 
@@ -4299,17 +4299,27 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	public String normalGunKod() {
-		String kod = getBaslikAciklama("normalGunKod", "NGA");
+		String kod = getBaslikAciklama("normalGunKod", "NG");
 		return kod;
 	}
 
 	public String haftaTatilGunKod() {
-		String kod = getBaslikAciklama("haftaTatilGunKod", "HTA");
+		String kod = getBaslikAciklama("haftaTatilGunKod", "HG");
 		return kod;
 	}
 
-	public String tatilGunKod() {
-		String kod = getBaslikAciklama("tatilGunKod", "TAA");
+	public String artikGunKod() {
+		String kod = getBaslikAciklama("artikGunKod", "AG");
+		return kod;
+	}
+
+	public String resmiTatilGunKod() {
+		String kod = getBaslikAciklama("resmiTatilGunKod", "RG");
+		return kod;
+	}
+
+	public String bordroToplamGunKod() {
+		String kod = getBaslikAciklama("bordroToplamGunKod", "TG");
 		return kod;
 	}
 

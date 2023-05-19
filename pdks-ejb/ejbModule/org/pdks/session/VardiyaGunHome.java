@@ -1817,7 +1817,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "DM", "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
+			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenMesaiKod(), "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 			if (eksikMaasGoster) {
@@ -1841,7 +1841,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_AKSAM_SAAT, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz gece mesai saati");
 			}
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "B", "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
+			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
 			if (modelGoster)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
 			if (izinTipiVardiyaList != null) {

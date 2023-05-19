@@ -31,11 +31,12 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
 	public static final String COLUMN_NAME_NORMAL_GUN = "NORMAL_GUN_ADET";
 	public static final String COLUMN_NAME_HAFTA_TATIL = "HAFTA_TATIL_ADET";
+	public static final String COLUMN_NAME_RESMI_HAFTA_TATIL = "RESMI_TATIL_ADET";
 	public static final String COLUMN_NAME_G_HAFTA_TATIL = "TATIL_ADET";
 
 	private PersonelDenklestirme personelDenklestirme;
 
-	private Double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, tatilAdet = 0.0d;
+	private Double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, resmiTatilAdet = 0.0d, tatilAdet = 0.0d;
 
 	private boolean guncellendi = false;
 
@@ -89,6 +90,17 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 		this.haftaTatilAdet = value;
 	}
 
+	@Column(name = COLUMN_NAME_RESMI_HAFTA_TATIL)
+	public Double getResmiTatilAdet() {
+		return resmiTatilAdet;
+	}
+
+	public void setResmiTatilAdet(Double value) {
+		if (guncellendi == false)
+			this.setGuncellendi(this.resmiTatilAdet == null || this.resmiTatilAdet.doubleValue() != value.doubleValue());
+		this.resmiTatilAdet = value;
+	}
+
 	@Column(name = COLUMN_NAME_G_HAFTA_TATIL)
 	public Double getTatilAdet() {
 		return tatilAdet;
@@ -99,28 +111,6 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 			this.setGuncellendi(this.tatilAdet == null || this.tatilAdet.doubleValue() != value.doubleValue());
 		this.tatilAdet = value;
 	}
-
-	// @Column(name = COLUMN_NAME_RESMI_TATIL_ADET)
-	// public Double getResmiTatilAdet() {
-	// return resmiTatilAdet;
-	// }
-	//
-	// public void setResmiTatilAdet(Double value) {
-	// if (guncellendi == false)
-	// this.setGuncellendi(this.resmiTatilAdet == null || this.resmiTatilAdet.doubleValue() != value.doubleValue());
-	// this.resmiTatilAdet = value;
-	// }
-	//
-	// @Column(name = COLUMN_NAME_IZIN_ADET)
-	// public Double getIzinGunAdet() {
-	// return izinGunAdet;
-	// }
-	//
-	// public void setIzinGunAdet(Double value) {
-	// if (guncellendi == false)
-	// this.setGuncellendi(this.izinGunAdet == null || this.izinGunAdet.doubleValue() != value.doubleValue());
-	// this.izinGunAdet = value;
-	// }
 
 	@Transient
 	public boolean isGuncellendi() {
@@ -189,6 +179,18 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	@Transient
+	public Double getBordroToplamGunAdet() {
+		double toplamGun = 0;
+		if (normalGunAdet != null)
+			toplamGun += normalGunAdet.doubleValue();
+		if (haftaTatilAdet != null)
+			toplamGun += haftaTatilAdet.doubleValue();
+		if (resmiTatilAdet != null)
+			toplamGun += resmiTatilAdet.doubleValue();
+		return toplamGun;
+	}
+
+	@Transient
 	public Double getSaatNormal() {
 		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroDetayTipi.SAAT_NORMAL);
 		Double value = detay != null ? detay.getMiktar().doubleValue() : 0.0d;
@@ -208,12 +210,14 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 		Integer value = detay != null ? detay.getMiktar().intValue() : 0;
 		return value;
 	}
+
 	@Transient
 	public Integer getUcretliIzinGunAdet() {
 		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroDetayTipi.IZIN_GUN);
 		Integer value = detay != null ? detay.getMiktar().intValue() : 0;
 		return value;
 	}
+
 	@Transient
 	public Integer getUcretsizIzin() {
 		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroDetayTipi.UCRETSIZ_IZIN);

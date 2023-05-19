@@ -213,7 +213,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					ex.printStackTrace();
 				}
 
-				double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, tatilAdet = 0.0d, izinGunAdet = 0.0d;
+				double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, resmiTatilAdet = 0.0d, tatilAdet = 0.0d, izinGunAdet = 0.0d;
 				double normalSaat = 0.0d, resmiTatilSaat = 0.0d, haftaTatilSaat = 0.0d, izinGunSaat = 0.0d;
 				LinkedHashMap<BordroDetayTipi, Double> detayMap = new LinkedHashMap<BordroDetayTipi, Double>();
 				boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
@@ -225,7 +225,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						Tatil tatil = vardiyaGun.getTatil();
 						boolean resmiTatil = tatil != null;
 						int calismaGun = 1;
-
 						if (vardiyaGun.isIzinli()) {
 							// calisiyor = true;
 							String izinKodu = null;
@@ -235,10 +234,11 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							if (vardiyaGun.getIzin() != null) {
 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 								if (izinTipi != null) {
-									if (izinTipi.isUcretsizIzinTipi() || vardiyaGun.isHaftaIci() == false)
+									if (izinTipi.isUcretsizIzinTipi())
 										calismaGun = 0;
 									else if (saatlikCalisma) {
-										izinGunSaat += resmiTatil == false ? vardiyaGun.getSaatCalisanIzinGunKatsayisi() : 0;
+										if (vardiyaGun.isHaftaIci())
+											izinGunSaat += resmiTatil == false ? vardiyaGun.getSaatCalisanIzinGunKatsayisi() : 0;
 									}
 								}
 
@@ -260,6 +260,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
 								if (izinTipi.isUcretsizIzinTipi()) {
 									izinKodu = BordroDetayTipi.UCRETSIZ_IZIN.value();
+									calismaGun = 0;
 								}
 
 								else {
@@ -287,11 +288,18 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 						}
 						if (calismaGun > 0) {
+							if (resmiTatil) {
+								if (!tatil.isYarimGunMu()) {
+									resmiTatilAdet += calismaGun;
+									calismaGun = 0;
+								}
+							}
 							if (!haftaTatil)
 								normalGunAdet += calismaGun;
 							else {
 								haftaTatilAdet += calismaGun;
 							}
+							// logger.info(vardiyaGun.getVardiyaDateStr() + " " + (normalGunAdet + haftaTatilAdet + resmiTatilAdet));
 						}
 
 						if (vardiyaGun.isIzinli() == false) {
@@ -314,7 +322,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				}
 
-				double toplamAdet = normalGunAdet + haftaTatilAdet;
+				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
 				double normalCalisma = ap.getSaatToplami() - ap.getResmiTatilToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat - ap.getFazlaMesaiSure();
 				if ((saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
@@ -334,6 +342,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					denklestirmeBordro.setGuncellendi(denklestirmeBordro.getId() == null);
 					denklestirmeBordro.setNormalGunAdet(normalGunAdet);
 					denklestirmeBordro.setHaftaTatilAdet(haftaTatilAdet);
+					denklestirmeBordro.setResmiTatilAdet(resmiTatilAdet);
 					denklestirmeBordro.setTatilAdet(tatilAdet);
 					if (izinGunAdet > 0)
 						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);
@@ -394,14 +403,16 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				baslikGuncelle(baslikMap, ortakIslemler.haftaTatilCalismaSaatKod() + keyEk, haftaTatilSaat);
 				baslikGuncelle(baslikMap, ortakIslemler.resmiTatilCalismaSaatKod() + keyEk, resmiTatilSaat);
 				baslikGuncelle(baslikMap, ortakIslemler.izinSureSaatKod() + keyEk, izinGunSaat);
-				baslikGuncelle(baslikMap, ortakIslemler.izinSureGunAdetKod() + keyEk, izinGunAdet);
+				baslikGuncelle(baslikMap, ortakIslemler.izinSureGunAdetKod(), izinGunAdet);
 				if (ap.getDenklestirmeBordro() != null) {
 					baslikGuncelle(baslikMap, ortakIslemler.ucretliIzinGunKod(), ap.getDenklestirmeBordro().getUcretliIzin().doubleValue());
 					baslikGuncelle(baslikMap, ortakIslemler.ucretsizIzinGunKod(), ap.getDenklestirmeBordro().getUcretsizIzin().doubleValue());
 					baslikGuncelle(baslikMap, ortakIslemler.hastalikIzinGunKod(), ap.getDenklestirmeBordro().getRaporluIzin().doubleValue());
 					baslikGuncelle(baslikMap, ortakIslemler.normalGunKod(), ap.getDenklestirmeBordro().getNormalGunAdet());
 					baslikGuncelle(baslikMap, ortakIslemler.haftaTatilGunKod(), ap.getDenklestirmeBordro().getHaftaTatilAdet());
-					baslikGuncelle(baslikMap, ortakIslemler.tatilGunKod(), ap.getDenklestirmeBordro().getTatilAdet());
+					baslikGuncelle(baslikMap, ortakIslemler.artikGunKod(), ap.getDenklestirmeBordro().getTatilAdet());
+					baslikGuncelle(baslikMap, ortakIslemler.resmiTatilGunKod(), ap.getDenklestirmeBordro().getResmiTatilAdet());
+					baslikGuncelle(baslikMap, ortakIslemler.bordroToplamGunKod(), ap.getDenklestirmeBordro().getBordroToplamGunAdet());
 				}
 
 			}
