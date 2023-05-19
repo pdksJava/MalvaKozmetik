@@ -12773,10 +12773,10 @@ public class OrtakIslemler implements Serializable {
 								// TODO Arife'den sonra planlar için
 								Tatil tatilArife = pdksVardiyaGun.getTatil();
 								if (tatilArife.getArifeVardiyaYarimHesapla() != null && tatilArife.getArifeVardiyaYarimHesapla()) {
- 									double yarimGun = izinSaat;
+									double yarimGun = izinSaat;
 									double calSure = pdksVardiyaGun.getVardiya().getNetCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure();
 									double arifeSure = calSure > izinSaat ? calSure : izinSaat;
- 									if (tatilArife.getArifeSonraVardiyaDenklestirmeVar() != null && tatilArife.getArifeSonraVardiyaDenklestirmeVar()) {
+									if (tatilArife.getArifeSonraVardiyaDenklestirmeVar() != null && tatilArife.getArifeSonraVardiyaDenklestirmeVar()) {
 										Vardiya vardiya = pdksVardiyaGun.getIslemVardiya();
 										if (tatilArife.getVardiyaMap() != null && tatilArife.getVardiyaMap().containsKey(vardiya.getId())) {
 											Vardiya vardiyaTatil = tatilArife.getVardiyaMap().get(vardiya.getId());
@@ -12789,7 +12789,7 @@ public class OrtakIslemler implements Serializable {
 									}
 									izinSuresi += yarimGun - arifeSure;
 								}
- 							}
+							}
 
 							if (ayinGunleri.containsKey(key) && pdksVardiyaGun.getResmiTatilSure() != 0) {
 								resmiTatilSure += pdksVardiyaGun.getResmiTatilSure();
@@ -13868,7 +13868,8 @@ public class OrtakIslemler implements Serializable {
 									vardiyaGun.addHaftaTatilDigerSure(haftaCalismaSuresi);
 								} else
 									vardiyaGun.setCalismaSuresi(calismaSuresi);
-								vardiyaHaftaTatil.setHaftaCalismaSuresi(haftaCalismaSuresi);
+								if (calismaModeli != null && calismaModeli.isFazlaMesaiVarMi())
+									vardiyaHaftaTatil.setHaftaCalismaSuresi(haftaCalismaSuresi);
 								if (haftaCalismaSuresi > 0) {
 									vardiyaGun.addCalismaSuresi(haftaCalismaSuresi);
 									haftaSonuSureMap.put(key1, haftaCalismaSuresi);
@@ -13897,18 +13898,22 @@ public class OrtakIslemler implements Serializable {
 						// haftaCalismaSuresi = 0d;
 						// }
 						haftaCalismaSuresi = haftaSonuSureMap.get(key);
-						vardiyaGun.setHaftaCalismaSuresi(haftaSonuSureMap.get(key));
+						if (calismaModeli != null && calismaModeli.isFazlaMesaiVarMi())
+							vardiyaGun.setHaftaCalismaSuresi(haftaSonuSureMap.get(key));
 					}
-					vardiyaGun.setHaftaCalismaSuresi(haftaCalismaSuresi);
+					if (calismaModeli != null && calismaModeli.isFazlaMesaiVarMi())
+						vardiyaGun.setHaftaCalismaSuresi(haftaCalismaSuresi);
 				}
 				for (VardiyaGun vardiyaGun : vardiyalar) {
 					String key = vardiyaGun.getVardiyaKeyStr();
 					double haftaCalismaSuresi = 0d;
 					if (haftaSonuSureMap.containsKey(key)) {
 						haftaCalismaSuresi = haftaSonuSureMap.get(key);
-						vardiyaGun.setHaftaCalismaSuresi(haftaSonuSureMap.get(key));
+						if (calismaModeli != null && calismaModeli.isFazlaMesaiVarMi())
+							vardiyaGun.setHaftaCalismaSuresi(haftaCalismaSuresi);
 					}
-					vardiyaGun.setHaftaCalismaSuresi(haftaCalismaSuresi);
+					if (calismaModeli != null && calismaModeli.isFazlaMesaiVarMi())
+						vardiyaGun.setHaftaCalismaSuresi(haftaCalismaSuresi);
 				}
 
 				if (adet == 7 || maxSuresi < denklestirmeTasiyici.getToplamCalisilacakZaman())
