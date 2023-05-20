@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page view-id="#{menuItemConstant.holdingKalanIzin}" xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+	<restrict>#{userHome.hasPermission('holdingKalanIzin','view')}</restrict>
+	<rewrite pattern="/holdingKalanIzin" />
+	<action execute="#{holdingKalanIzinHome.sayfaGirisAction}" on-postback="false" />
+	<navigation>
+		<rule if-outcome="holdingKalanIzin">
+			<redirect view-id="#{menuItemConstant.holdingKalanIzin}" />
+		</rule>
+
+	</navigation>
+</page>

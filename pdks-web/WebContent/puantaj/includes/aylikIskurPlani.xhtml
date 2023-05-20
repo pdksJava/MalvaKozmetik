@@ -1,0 +1,114 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+	<a4j:region id="hareketTables" rendered="#{not empty iskurVardiyaGunHome.aylikPuantajList }">
+		<DIV class="#{authenticatedUser.scroolClass}" id="#{authenticatedUser.scroolDiv}">
+			<table class="mars" cellpadding="1" cellspacing="1">
+				<thead>
+					<tr>
+
+						<th style="width: 20px"></th>
+
+
+						<th style="width: 30px"><h:outputText value="#{ortakIslemler.personelNoAciklama()}" /></th>
+						<th><h:outputText value="Adı Soyadı" /></th>
+						<th style="width: 60px"><h:outputText value="#{ortakIslemler.yoneticiAciklama()}" /></th>
+						<ui:fragment rendered="#{iskurVardiyaGunHome.aramaSecenekleri.sirketId==null}">
+							<th style="width: 30px"><h:outputText value="#{ortakIslemler.sirketAciklama()}" /></th>
+						</ui:fragment>
+						<th style="width: 30px"><h:outputText value="#{iskurVardiyaGunHome.bolumAciklama}" /></th>
+
+						<ui:repeat value="#{iskurVardiyaGunHome.aylikPuantajDefault.ayinVardiyalari}" var="vardiya">
+							<td class="#{vardiya.headerClass}" id="tatil#{vardiya.vardiyaDateStr}"
+								style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;"><h:outputText
+									value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}" /> <bR /> <h:outputText
+									value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" /> <ui:fragment rendered="#{vardiya.tatil!=null}">
+									<rich:toolTip for="tatil#{vardiya.vardiyaDateStr}">
+										<SPAN style="color: green; font-size: 12px;"><B>#{vardiya.tatil.ad}</B></SPAN>
+									</rich:toolTip>
+								</ui:fragment></td>
+
+						</ui:repeat>
+
+					</tr>
+				</thead>
+				<tbody>
+					<a4j:repeat value="#{iskurVardiyaGunHome.aylikPuantajList}" var="aylikPuantaj">
+						<tr>
+							<ui:fragment rendered="#{iskurVardiyaGunHome.planGirisi and iskurVardiyaGunHome.denklestirmeAyDurum}">
+								<td class="#{aylikPuantaj.trClass}" style="width: 30px"><ui:fragment
+										rendered="#{iskurVardiyaGunHome.kullaniciPersonel==false and (aylikPuantaj.yonetici.id!=null or aylikPuantaj.pdksPersonel.sanalPersonel)}">
+										<a4j:commandLink id="editAylikLink" ajaxSingle="true" action="#{iskurVardiyaGunHome.aylikPuantajSec(aylikPuantaj,'P')}"
+											onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide();#{rich:component('editAylikPanel')}.show()"
+											reRender="editAylikPanel">
+											<h:graphicImage value="/img/clock_16.png" style="border:0" />
+										</a4j:commandLink>
+										<rich:toolTip for="editAylikLink" value="Plan Güncelle" />
+									</ui:fragment></td>
+							</ui:fragment>
+							<td class="#{aylikPuantaj.trClass}" style="width: 30px"><h:outputText title="#{aylikPuantaj.bolumBordroAltBirim}"
+									value="#{aylikPuantaj.pdksPersonel.sicilNo}" /></td>
+							<td class="#{aylikPuantaj.trClass}" style="width: 60px" id="perBilgi#{aylikPuantaj.personelDenklestirmeAylik.id}" align="left"><h:outputText
+									value="#{aylikPuantaj.pdksPersonel.adSoyad}" /></td>
+							<td class="#{aylikPuantaj.trClass}" style="width: 60px" align="left"><h:outputText value="#{aylikPuantaj.yonetici.adSoyad}"
+									rendered="#{aylikPuantaj.yonetici.id!=null}" /></td>
+							<ui:fragment rendered="#{iskurVardiyaGunHome.aramaSecenekleri.sirketId==null}">
+								<td class="#{aylikPuantaj.trClass}" style="width: 20px" align="left">#{aylikPuantaj.pdksPersonel.sirket.ad}</td>
+							</ui:fragment>
+							<td class="#{aylikPuantaj.trClass}" style="width: 20px" align="left">#{aylikPuantaj.pdksPersonel.ekSaha3.aciklama}</td>
+
+
+							<a4j:repeat value="#{aylikPuantaj.ayinVardiyalari}" var="vardiyaGun">
+								<ui:fragment rendered="#{vardiyaGun.ayinGunu}">
+									<td align="center" class="#{vardiyaGun.getAylikClassAdi(aylikPuantaj.trClass)}" style="width: 20px"><ui:fragment id="veri"
+											rendered="#{vardiyaGun.calisan}">
+											<TABLE>
+												<TR>
+													<TD id="vardiya#{vardiyaGun.vardiyaKeyStr}"><h:outputText value="#{vardiyaGun.aciklama}" /> <ui:fragment
+															rendered="#{iskurVardiyaGunHome.ikRole and vardiyaGun.izin!=null and vardiyaGun.vardiya!=null}">
+															<br /> [ #{vardiyaGun.vardiya.kisaAdi} ]</ui:fragment> <rich:toolTip for="vardiya#{vardiyaGun.vardiyaKeyStr}">
+															<SPAN style="font-size: 12px; font-weight: normal;"> #{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMM')} -->
+																#{vardiyaGun.title} <ui:fragment rendered="#{vardiyaGun.resmiTatilSure>0}">
+													RT : #{authenticatedUser.sayiFormatliGoster(vardiyaGun.resmiTatilSure)}
+												</ui:fragment>
+
+															</SPAN>
+															<ui:fragment
+																rendered="#{(authenticatedUser.admin or ortakIslemler.testDurum) and vardiyaGun.guncelleyenUser!=null and vardiyaGun.guncellemeTarihi!=null}">
+																<br />
+																<SPAN style="font-size: 12px; font-weight: normal;">Güncelleme : #{vardiyaGun.guncelleyenUser.adSoyad} -->
+																	#{authenticatedUser.dateTimeFormatla(vardiyaGun.guncellemeTarihi)} </SPAN>
+															</ui:fragment>
+														</rich:toolTip></TD>
+
+
+												</TR>
+											</TABLE>
+										</ui:fragment></td>
+
+								</ui:fragment>
+							</a4j:repeat>
+
+						</tr>
+					</a4j:repeat>
+
+
+
+				</tbody>
+			</table>
+
+			<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{iskurVardiyaGunHome.aylikVardiyaExcel}" target="blank">
+				<a4j:support event="oncomplete" status="ajaxStatus" />
+			</h:commandLink>
+		</DIV>
+		<ui:fragment>
+			<SCRIPT>
+				tableScroll("#{authenticatedUser.scroolDiv}",600);
+	 		</SCRIPT>
+		</ui:fragment>
+	</a4j:region>
+
+</ui:composition>

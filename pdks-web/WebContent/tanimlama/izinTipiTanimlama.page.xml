@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page view-id="#{menuItemConstant.izinTipiTanimlama}" xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+		<restrict>#{userHome.hasPermission('izinTipiTanimlama','view')}</restrict>
+	<rewrite pattern="/izinTipiTanimlama"/>
+	<action execute="#{izinTipiHome.sayfaGirisAction}" on-postback="false"/>
+	<begin-conversation join="true" flush-mode="manual" />
+	<navigation>
+            <rule if-outcome="izinTipiTanimlama">
+                <redirect view-id="#{menuItemConstant.izinTipiTanimlama}"/>
+            </rule>
+           
+        </navigation>
+</page>

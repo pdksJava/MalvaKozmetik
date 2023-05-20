@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.0
+Created-By: 1.5.0_16-133 (Apple Inc.)
+Seam-Version: 2.1.1.GA
+Implementation-Version: 2.1.1.GA
+Specification-Version: 2.1.1.GA
+Specification-Title: jboss-seam
+Specification-Vendor: JBoss
+Implementation-Title: jboss-seam
+Implementation-Vendor: JBoss
+

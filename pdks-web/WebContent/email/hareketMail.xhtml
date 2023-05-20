@@ -1,0 +1,25 @@
+<m:message xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://jboss.com/products/seam/mail" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:hx="http://www.ibm.com/jsf/html_extended" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:jstl="http://java.sun.com/jsp/jstl"
+	xmlns:ui="http://java.sun.com/jsf/facelets" charset="UTF-8">
+	<m:from name="#{ortakIslemler.getParameterKey('fromName')}" address="#{ortakIslemler.getParameterKey('fromAdres')}" />
+	<ui:fragment rendered="#{authenticatedUser!=null}">
+		<m:to name="#{authenticatedUser.adSoyad}" address="#{authenticatedUser.email}" />
+	</ui:fragment>
+	<ui:fragment rendered="#{ortakIslemler.getParameterKey('bccAdres')!=''}">
+		<m:bcc address="#{ortakIslemler.getParameterKey('bccAdres')}" />
+	</ui:fragment>
+	<m:subject>Kapı hareketleri zip</m:subject>
+	<ui:fragment rendered="#{tumHareketlerHome.zipVeri!=null}">
+		<m:attachment fileName="tumHareketler.zip" contentType="application/zip" value="#{tumHareketlerHome.zipVeri}" />
+	</ui:fragment>
+	<m:body>
+
+
+		<p>Sayın #{authenticatedUser.adSoyad},</p>
+
+		<p>#{authenticatedUser.dateFormatla(tumHareketlerHome.basTarih)}-#{authenticatedUser.dateFormatla(tumHareketlerHome.bitTarih)} kapı giriş çıkış
+			hareketleri ektedir.</p>
+
+		<p>Saygılarımızla,</p>
+	</m:body>
+</m:message>

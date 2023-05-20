@@ -1,0 +1,156 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('izinHakedisHakkiTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<a4j:region>
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(izinHakedisHakkiHome.session,'izinHakedisHakkiTanimlama')}">
+					<rich:dataTable rowClasses="acik,koyu" value="#{izinHakedisHakkiHome.izinHakedisHakkiList}" var="izinHakedisHakki" rows="20" rowKeyVar="row"
+						id="izinTable">
+						<f:facet name="header">
+							<h:outputText value="İzin Hak Ediş Bilgileri" />
+						</f:facet>
+
+						<rich:column style="width:100" rendered="#{authenticatedUser.admin}">
+							<f:facet name="header">
+								<h:outputText value="PDKS Departman" />
+							</f:facet>
+							<h:outputText value="#{izinHakedisHakki.departman.departmanTanim.aciklama}" />
+							<ui:fragment rendered="#{izinHakedisHakki.suaDurum}"> (ŞUA)</ui:fragment>
+
+						</rich:column>
+
+						<rich:column style="width:100">
+							<f:facet name="header">
+								<h:outputText value="Çalışan Yaş Tipi" />
+							</f:facet>
+							<h:outputText value="#{izinHakedisHakki.yasTipiStr}" />
+						</rich:column>
+
+						<rich:column style="width:100">
+							<f:facet name="header">
+								<h:outputText value="Kıdem Yılları" />
+							</f:facet>
+							<h:outputText value="#{izinHakedisHakki.minGun}-#{izinHakedisHakki.maxGun}" />
+						</rich:column>
+						<rich:column style="width:100">
+							<f:facet name="header">
+								<h:outputText value="İzin Süresi" />
+							</f:facet>
+							<h:outputText value="#{izinHakedisHakki.izinSuresi}" id="izinSuresi" />
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+					<a4j:commandButton status="ajaxStatus" value="İzin Hakedis Hakki Ekle" action="#{izinHakedisHakkiHome.kayitEkle}"
+						oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
+					<rich:toolTip for="addlink" value="Add" />
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="650">
+			<f:facet name="header">
+				<h:outputText value="İzin Hakedis Hakki Ekle / Düzenle" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink" />
+					<rich:componentControl for="editPanel" attachTo="hidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+						<h:panelGrid columns="1">
+							<a4j:region renderRegionOnly="true" cellpadding="0" cellspacing="0">
+								<h:panelGrid columns="1" id="yasTipi">
+									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and izinHakedisHakkiHome.departmanList.size()>1}">
+										<ui:define name="label">PDKS Departman</ui:define>
+										<h:selectOneMenu value="#{izinHakedisHakkiHome.instance.departman}">
+											<s:selectItems var="comp" value="#{izinHakedisHakkiHome.departmanList}" label="#{comp.departmanTanim.aciklama}"
+												noSelectionLabel="Lütfen seçiniz" />
+											<a4j:support event="onchange" action="#{izinHakedisHakkiHome.fillYasTipiList}" reRender="yasTipi" status="ajaxStatus" ajaxSingle="true" />
+											<s:convertEntity />
+										</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Yaş Tipi</ui:define>
+										<h:selectOneMenu value="#{izinHakedisHakkiHome.yasTipi}" rendered="#{not empty izinHakedisHakkiHome.yasTipiList}" required="true"
+											requiredMessage="Yaş tipi seçiniz">
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{izinHakedisHakkiHome.yasTipiList}" />
+										</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{izinHakedisHakkiHome.instance.departman.admin and ortakIslemler.getParameterKey('uygulamaTipi')=='H' and ortakIslemler.getParameterKey('suaSenelikKullan')=='1'}">
+										<ui:define name="label">Şua</ui:define>
+										<h:selectBooleanCheckbox value="#{izinHakedisHakkiHome.instance.suaDurum}">
+
+										</h:selectBooleanCheckbox>
+									</s:decorate>
+								</h:panelGrid>
+							</a4j:region>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">İzin süresi</ui:define>
+								<h:inputText required="true" value="#{izinHakedisHakkiHome.izinSure}" size="5" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Başlangıç yıl</ui:define>
+								<h:inputText required="true" value="#{izinHakedisHakkiHome.basYil}" size="5" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Bitiş yıl</ui:define>
+								<h:inputText required="true" value="#{izinHakedisHakkiHome.bitisYil}" size="5" />
+							</s:decorate>
+
+
+						</h:panelGrid>
+
+					</a4j:outputPanel>
+					<!--  -->
+
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{izinHakedisHakkiHome.save}" reRender="izinTable"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true"
+									action="#{izinHakedisHakkiHome.remove}" oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+
+<!-- sql test	 KILIC 	
+ <Resource name="jdbc/pdks" global="jdbc/asmSQL" auth="Container"
+		type="javax.sql.DataSource" maxActive="100" maxIdle="30" maxWait="10000"
+		driverClassName="net.sourceforge.jtds.jdbc.Driver" 		username="hasansayar58" password="hasansayar58" 
+		url="jdbc:jtds:sqlserver://192.168.0.251:1433;DatabaseName=KILICPDKS_TEST"
+		defaultAutoCommit="true" removeAbandoned="true"
+		removeAbandonedTimeout="60" logAbandoned="true" />	
+  -->		
+<!-- sql test	 Merkez 	-->
+ <Resource name="jdbc/pdks" global="jdbc/asmSQL" auth="Container"
+		type="javax.sql.DataSource" maxActive="100" maxIdle="30" maxWait="10000"
+		driverClassName="net.sourceforge.jtds.jdbc.Driver" 		username="sa" password="a123A123" 
+		url="jdbc:jtds:sqlserver://10.41.40.69:1433;DatabaseName=MERKEZPDKS_TEST"
+		defaultAutoCommit="true" removeAbandoned="true"
+		removeAbandonedTimeout="60" logAbandoned="true" />	
+  		
+ <!-- sql test	KAR PORSELEN  	
+ <Resource name="jdbc/pdks" global="jdbc/asmSQL" auth="Container"
+		type="javax.sql.DataSource" maxActive="100" maxIdle="30" maxWait="10000"
+		driverClassName="net.sourceforge.jtds.jdbc.Driver" 		username="OzgurZamanPDKS" password="2119" 
+		url="jdbc:jtds:sqlserver://192.168.1.11:1433;DatabaseName=KARPDKS_TEST"
+		defaultAutoCommit="true" removeAbandoned="true"
+		removeAbandonedTimeout="60" logAbandoned="true" />	
+ -->		
+<!-- 
+-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2
+-Djdk.tls.client.protocols=TLSv1,TLSv1.1,TLSv1.2
+-Xms2048m 
+-Xmx8192m
+-Duser.timezone=Asia/Istanbul
+-Duser.language=en
+ -Duser.region=US
+-Djava.awt.headless=false
+
+ -->
+</Context>

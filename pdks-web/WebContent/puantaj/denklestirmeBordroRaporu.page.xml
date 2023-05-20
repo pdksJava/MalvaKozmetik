@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page view-id="#{menuItemConstant.denklestirmeBordroRaporu}" xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+	<restrict>#{userHome.hasPermission('denklestirmeBordroRaporu','view')}</restrict>
+	<rewrite pattern="/denklestirmeBordroRaporu" />
+	<action execute="#{denklestirmeBordroRaporuHome.sayfaGirisAction}" on-postback="false" />
+	<begin-conversation join="true" flush-mode="manual" />
+	<navigation>
+
+		<rule if-outcome="denklestirmeBordroRaporu">
+			<redirect view-id="#{menuItemConstant.denklestirmeBordroRaporu}" />
+		</rule>
+	</navigation>
+</page>

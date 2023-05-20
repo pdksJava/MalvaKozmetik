@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view contentType="text/html" xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:p="http://primefaces.prime.com.tr/ui">
+	<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title><h:outputText value="#{ortakIslemler.getParameterKey('fromName')} " /> <ui:insert name="title" /></title>
+<a:loadScript src="/js/pdks.js" />
+
+<link rel="shortcut icon" href="#{request.contextPath}/favicon.ico" />
+<link href="#{request.contextPath}/stylesheet/#{skinBean.skin}Theme.css" rel="stylesheet" type="text/css" />
+
+
+<ui:insert name="head" />
+<p:resources />
+
+<script type="text/javascript">
+
+if (typeof window.event == 'undefined'){
+        document.onkeypress = function(e){
+              var test_var=e.target.nodeName.toUpperCase();
+              if (e.target.type) var test_type=e.target.type.toUpperCase();
+              if ((test_var == 'INPUT' &amp;&amp; test_type == 'TEXT') || (test_var == 'INPUT' &amp;&amp; test_type == 'PASSWORD') || test_var == 'TEXTAREA'){
+                return e.keyCode;
+              } else if (e.keyCode == 8){
+                e.preventDefault();
+              }
+        }
+       }else{
+        document.onkeydown = function(){
+              var test_var=event.srcElement.tagName.toUpperCase();
+              if (event.srcElement.type) var test_type=event.srcElement.type.toUpperCase();
+              if ((test_var == 'INPUT' &amp;&amp; test_type == 'TEXT') || (test_var == 'INPUT' &amp;&amp; test_type == 'PASSWORD') || test_var == 'TEXTAREA'){
+                return event.keyCode;
+              } else if (event.keyCode == 8){
+                event.returnValue=false;
+              }
+        }
+       }
+
+</script>
+
+
+</head>
+
+<body>
+	<a4j:outputPanel id="pgrowl" ajaxRendered="true">
+		<p:growl id="growl" sticky="false" showSummary="false" showDetail="true" />
+	</a4j:outputPanel>
+	<ui:include src="/layout/menu.xhtml">
+		<ui:param name="projectName" value="PDKS" />
+	</ui:include>
+
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td width="457"></td>
+			<td class="headerTile">&nbsp;</td>
+			<td width="120"><img src="#{request.contextPath}/img/header_right.gif" width="122" height="83" /></td>
+		</tr>
+	</table>
+	<div class="body">
+		<ui:insert name="body" />
+	</div>
+
+	<div class="footer">
+		Powered by <a href="http://www.bilisimanadolu.com">Anadolu Bilişim Hizmetleri Corp</a>
+	</div>
+
+
+</body>
+	</html>
+</f:view>

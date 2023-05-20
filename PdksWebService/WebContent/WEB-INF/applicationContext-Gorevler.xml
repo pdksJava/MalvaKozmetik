@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans SYSTEM "dtd/spring-beans.dtd">
+
+<beans>
+	<bean name="personelKontrol" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="jobClass">
+			<value>com.pdks.quartz.model.PersonelKontrol</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+
+			</map>
+		</property>
+ 	</bean>
+ 	<bean id="personelKontrolTask" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="personelKontrol" />
+		</property>
+		<property name="cronExpression">
+		<!-- <value>0 0/5 * ? * MON-FRI</value> -->
+ 			<value>0 0 7 ? * MON-FRI</value>
+ 			
+ 		</property>
+	</bean>
+	<bean name="logRefresh" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="jobClass">
+			<value>com.pdks.quartz.model.LogRefresh</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+
+			</map>
+		</property>
+
+
+	</bean>
+	<bean id="logRefreshTaskHaftaIci" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="logRefresh" />
+		</property>
+		<property name="cronExpression">
+
+			<value>0 0/5 * ? * MON-FRI</value>
+		</property>
+	</bean>
+	<bean id="logRefreshTaskHaftaSonu" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="logRefresh" />
+		</property>
+		<property name="cronExpression">
+			<value>0 0/15 * ? * SAT,SUN</value>
+		</property>
+	</bean>
+
+	<!-- Katılım Payı Transfer -->
+
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="logRefreshTaskHaftaIci" />
+				<ref local="logRefreshTaskHaftaSonu" />
+				<ref local="personelKontrolTask" />
+				
+			</list>
+
+		</property>
+		<!-- http://quartz.sourceforge.net/javadoc/org/quartz/CronTrigger.html#setCronExpression(org.quartz.CronExpression) -->
+	</bean>
+
+</beans>

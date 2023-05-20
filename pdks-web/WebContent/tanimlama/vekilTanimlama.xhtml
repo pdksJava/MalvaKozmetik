@@ -1,0 +1,446 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('vekilTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+		<h:form>
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(userVekaletHome.session,'vekilTanimlama')}">
+				<h:panelGrid columns="1" cellpadding="0" cellspacing="0" id="personelBilgisi" width="1000">
+					<s:decorate id="baslangicField" template="/layout/edit.xhtml">
+						<ui:define name="label">Başlangıç Tarihi</ui:define>
+						<rich:calendar id="startDate" value="#{userVekaletHome.instance.basTarih}" required="true" requiredMessage="Başlangıç tarihi giriniz"
+							popup="#{userVekaletHome.instance.calendarPopup}" datePattern="#{authenticatedUser.dateFormat}" cellWidth="24px" cellHeight="22px" />
+					</s:decorate>
+					<s:decorate id="bitisField" template="/layout/edit.xhtml">
+						<ui:define name="label">Bitiş Tarihi</ui:define>
+						<rich:calendar id="endDate" value="#{userVekaletHome.instance.bitTarih}" required="true" requiredMessage="Bitiş tarihi giriniz"
+							popup="#{userVekaletHome.instance.calendarPopup}" datePattern="#{authenticatedUser.dateFormat}" cellWidth="24px" cellHeight="22px">
+
+						</rich:calendar>
+						<a4j:commandButton image="/img/plus.gif" title="Tarih sınırsız yap" ajaxSingle="true" reRender="personelBilgisi">
+							<f:setPropertyActionListener target="#{userVekaletHome.instance.bitTarih}" value="#{authenticatedUser.tarihUzat}" />
+						</a4j:commandButton>
+					</s:decorate>
+				</h:panelGrid>
+				<h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="1000">
+					<a4j:region cellpadding="0" cellspacing="0">
+						<h:panelGrid columns="1" cellpadding="0" cellspacing="0" id="personelBilgisiVekaletVeren">
+							<s:decorate id="vekaletVerenAdi" template="/layout/edit.xhtml">
+								<ui:define name="label">
+									<h:outputText value="Vekalet Veren Adi" />
+								</ui:define>
+								<h:inputText disabled="#{(authenticatedUser.yonetici==true or authenticatedUser.mudur==true) and authenticatedUser.IK==false}"
+									value="#{userVekaletHome.vekaletVerenAdi}" size="35" />
+							</s:decorate>
+							<s:decorate id="vekaletVerenSoyadi" template="/layout/edit.xhtml">
+								<ui:define name="label">
+									<h:outputText value="Vekalet Veren Soyadi" />
+								</ui:define>
+								<h:inputText disabled="#{(authenticatedUser.yonetici==true or authenticatedUser.mudur==true) and authenticatedUser.IK==false}"
+									value="#{userVekaletHome.vekaletVerenSoyadi}" size="35" />
+							</s:decorate>
+
+							<s:decorate id="vekaletVerenSicilNo" template="/layout/edit.xhtml">
+								<ui:define name="label">
+									<h:outputText value="Vekalet Veren #{ortakIslemler.personelNoAciklama()}" />
+								</ui:define>
+								<h:inputText disabled="#{(authenticatedUser.yonetici==true or authenticatedUser.mudur==true) and authenticatedUser.IK==false}"
+									value="#{userVekaletHome.vekaletVerenSicilNo}" size="10" />
+							</s:decorate>
+
+							<a4j:commandLink status="ajaxStatus" value="Vekalet Veren Ara" id="edit2link"
+								rendered="#{(authenticatedUser.yonetici==false and authenticatedUser.mudur==false) || authenticatedUser.IK==true }"
+								action="#{userVekaletHome.fillPdksUserList2}" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
+						</h:panelGrid>
+					</a4j:region>
+
+					<a4j:region cellpadding="0" cellspacing="0">
+						<h:panelGrid columns="1" cellpadding="0" cellspacing="0" id="personelBilgisiVekil">
+							<s:decorate id="vekilAdi" template="/layout/edit.xhtml">
+								<ui:define name="label">
+									<h:outputText value=" Vekil Adi" />
+								</ui:define>
+								<h:inputText value="#{userVekaletHome.vekilAdi}" size="35" />
+							</s:decorate>
+							<s:decorate id="vekilSoyadi" template="/layout/edit.xhtml">
+								<ui:define name="label">
+									<h:outputText value="Vekil Soyadi" />
+								</ui:define>
+								<h:inputText value="#{userVekaletHome.vekilSoyadi}" size="35" />
+							</s:decorate>
+
+							<s:decorate id="vekilSicilNo" template="/layout/edit.xhtml">
+								<ui:define name="label">
+									<h:outputText value="Vekil #{ortakIslemler.personelNoAciklama()}" />
+								</ui:define>
+								<h:inputText value="#{userVekaletHome.vekilSicilNo}" size="10" />
+							</s:decorate>
+
+							<a4j:commandLink status="ajaxStatus" value="Vekil Ara" action="#{userVekaletHome.fillPdksUserList}"
+								oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
+						</h:panelGrid>
+					</a4j:region>
+
+				</h:panelGrid>
+				<a4j:region cellpadding="0" cellspacing="0">
+					<a4j:commandButton status="ajaxStatus" action="#{userVekaletHome.save}" id="btnKaydet" value="Kaydet"
+						disabled="#{userVekaletHome.vekaletVerenUser==null or userVekaletHome.vekilUser==null}" reRender="izinListPanel,personelBilgisi" />
+				</a4j:region>
+			</rich:panel>
+		</h:form>
+		<h:form>
+			<rich:panel>
+				<h:panelGrid columns="1">
+					<h:panelGrid columns="1">
+						<s:decorate id="baslangicField" template="/layout/edit.xhtml">
+							<ui:define name="label">Başlangıç Tarihi</ui:define>
+							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{userVekaletHome.basDate}" required="true" requiredMessage="Tarih giriniz" />
+						</s:decorate>
+						<s:decorate id="bitisField" template="/layout/edit.xhtml">
+							<ui:define name="label">Bitiş Tarihi</ui:define>
+							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{userVekaletHome.bitDate}" required="true" requiredMessage="Tarih giriniz" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<a4j:commandButton status="ajaxStatus" value="Listele" action="#{userVekaletHome.fillUserTotalVekaletList}" reRender="izinListPanel" />
+						</s:decorate>
+					</h:panelGrid>
+					<a4j:outputPanel ajaxRendered="true">
+						<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+					</a4j:outputPanel>
+					<a4j:outputPanel id="izinListPanel">
+
+						<rich:dataTable rowClasses="acik,koyu" value="#{userVekaletHome.userTotalVekaletList}" var="vekalet" rows="20" rowKeyVar="row" id="vekaletTable">
+							<f:facet name="header">
+								<h:outputText value="Vekaletler" />
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">
+                     		   İşlemler
+               				 </f:facet>
+								<a4j:commandButton status="ajaxStatus" image="/img/edit.gif" ajaxSingle="true" id="editlink"
+									oncomplete="#{rich:component('editPanel2')}.show()"
+									rendered="#{vekalet.modify and (authenticatedUser.IK or authenticatedUser.admin or vekalet.yeniYonetici.id==authenticatedUser.id)}">
+									<f:setPropertyActionListener value="#{vekalet}" target="#{userVekaletHome.devirUserVekalet}">
+										<s:convertEntity />
+									</f:setPropertyActionListener>
+								</a4j:commandButton>
+								<a4j:commandButton status="ajaxStatus" image="/img/delete.gif" ajaxSingle="true" id="deletelink"
+									oncomplete="#{rich:component('deletePanel')}.show()"
+									rendered="#{vekalet.delete and (authenticatedUser.IK or authenticatedUser.admin or vekalet.vekaletVeren.id==authenticatedUser.id)}">
+									<f:setPropertyActionListener value="#{vekalet}" target="#{userVekaletHome.instance}">
+										<s:convertEntity />
+									</f:setPropertyActionListener>
+								</a4j:commandButton>
+								<rich:toolTip for="editlink" value="Vekalet Devret" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Vekalet Veren Adı Soyadı" />
+								</f:facet>
+								<h:outputText value="#{vekalet.vekaletVeren.pdksPersonel.adSoyad}" id="vekaletVerenAdi" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Vekalet Veren SicilNo" />
+								</f:facet>
+								<h:outputText value="#{vekalet.vekaletVeren.pdksPersonel.sicilNo}" id="vekaletVerenSicilNo" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Vekil Adı Soyadı" />
+								</f:facet>
+								<h:outputText value="#{vekalet.yeniYonetici.pdksPersonel.adSoyad}" id="vekilAdSoyad" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Vekil #{ortakIslemler.personelNoAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{vekalet.yeniYonetici.pdksPersonel.sicilNo}" id="vekilSicilNo" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Başlangıç Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(vekalet.basTarih)}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Bitiş Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(vekalet.bitTarih)}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Vekalet Oluşturan" />
+								</f:facet>
+								<h:outputText value="#{vekalet.olusturanUser.pdksPersonel.adSoyad}" id="olusturanAdSoyad" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Yapan" />
+								</f:facet>
+								<h:outputText value="#{vekalet.sonIslemYapan.adSoyad}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Tarihi" />
+								</f:facet>
+								<h:outputText value="#{vekalet.sonIslemTarihiStr}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+					</a4j:outputPanel>
+				</h:panelGrid>
+
+			</rich:panel>
+		</h:form>
+
+
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" styleClass="hidelink" id="hidelink5" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink5" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" action="#{userVekaletHome.kayitSil}"
+									oncomplete="#{rich:component('deletePanel')}.hide();" reRender="izinListPanel" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Vazgeç" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+
+
+
+
+
+		<rich:modalPanel id="editPanel" autosized="true" width="650">
+			<f:facet name="header">
+				<h:outputText value="#{userVekaletHome.aramaTipi} Kullanıcı Seçimi" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink" />
+					<rich:componentControl for="editPanel" attachTo="hidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid columns="1" id="pdksPersonelList" cellpadding="0" cellspacing="0">
+					<rich:dataTable rowClasses="acik,koyu" value="#{userVekaletHome.kullaniciList}" var="user" rows="20" rowKeyVar="row" id="userTable">
+						<f:facet name="header">
+							<h:outputText value="Personeller" />
+						</f:facet>
+						<rich:column>
+							<f:facet name="header">
+                       		Vekil İşlemleri
+               			 </f:facet>
+							<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="seclink" action="#{userVekaletHome.kullaniciSec(user)}"
+								oncomplete="#{rich:component('editPanel')}.hide()" reRender="personelBilgisiVekil,personelBilgisiVekaletVeren,btnKaydet">
+								<h:graphicImage value="/img/ok.gif" style="border:0" />
+
+							</a4j:commandLink>
+
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{user.staffId}" id="pdksname" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header" filterBy="#{user.firstname}" filterEvent="onkeyup">
+								<h:outputText value="Personel Adı Soyadı" />
+							</f:facet>
+							<h:outputText value="#{user.pdksPersonel.adSoyad}" id="adSoyad" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Kullanici Adi" />
+							</f:facet>
+							<h:outputText value="#{user.username}" id="username" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{user.pdksPersonel.sirket.ad}" id="sirket" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{user.pdksPersonel.pdksYonetici.adSoyad}" id="yoneticisi" />
+						</rich:column>
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="editPanel2" autosized="true" width="800">
+			<f:facet name="header">
+				<h:outputText value="Vekalet Devretme Ekranı" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+
+					<a4j:commandButton status="ajaxStatus" action="#{userVekaletHome.girisSifirla}" image="/img/close.png" id="hidelink2" styleClass="hidelink" />
+					<rich:componentControl for="editPanel2" attachTo="hidelink2" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+
+				<a4j:outputPanel ajaxRendered="true" id="devretId">
+					<rich:messages globalOnly="false" />
+				</a4j:outputPanel>
+
+
+				<rich:panel>
+					<h:panelGrid columns="1" cellpadding="0" cellspacing="0" id="vekilPersonelBilgisi">
+						<s:decorate id="baslangicField2" template="/layout/edit.xhtml">
+							<ui:define name="label">Vekalet Başlangıç Tarihi</ui:define>
+							<rich:calendar id="startDate2" value="#{userVekaletHome.devirUserVekalet.devirBasTarih}" datePattern="#{authenticatedUser.dateFormat}"
+								cellWidth="24px" cellHeight="22px" style="width:200px" />
+						</s:decorate>
+						<s:decorate id="bitisField2" template="/layout/edit.xhtml">
+							<ui:define name="label">VekaletBitiş Tarihi</ui:define>
+							<rich:calendar id="endDate2" value="#{userVekaletHome.devirUserVekalet.devirBitTarih}" datePattern="#{authenticatedUser.dateFormat}"
+								cellWidth="24px" cellHeight="22px" style="width:200px" />
+						</s:decorate>
+						<s:decorate id="vekilAdi2" template="/layout/edit.xhtml">
+							<ui:define name="label">
+								<h:outputText value=" Vekil Adi" />
+							</ui:define>
+							<h:inputText value="#{userVekaletHome.devirVekilAdi}" size="35" />
+						</s:decorate>
+						<s:decorate id="vekilSoyadi2" template="/layout/edit.xhtml">
+							<ui:define name="label">
+								<h:outputText value="Vekil Soyadi" />
+							</ui:define>
+							<h:inputText value="#{userVekaletHome.devirVekilSoyadi}" size="35" />
+						</s:decorate>
+
+						<s:decorate id="vekilSicilNo2" template="/layout/edit.xhtml">
+							<ui:define name="label">
+								<h:outputText value="Vekil #{ortakIslemler.personelNoAciklama()}" />
+							</ui:define>
+							<h:inputText value="#{userVekaletHome.devirVekilSicilNo}" size="10" />
+						</s:decorate>
+
+
+
+						<br />
+						<ui:fragment>
+
+							<a4j:commandButton status="ajaxStatus" value="Yeni Vekil Ara" action="#{userVekaletHome.fillPdksUserList3}"
+								oncomplete="#{rich:component('editPanel3')}.show()" reRender="editPanel3,pdksPersonelList2,idDevret" />
+
+							<ui:fragment id="idDevret">
+								<a4j:commandButton status="ajaxStatus" value="Yetki Devret" action="#{userVekaletHome.devret}" reRender="izinListPanel"
+									oncomplete="#{rich:component('editPanel2')}.hide()" />
+							</ui:fragment>
+
+							<a4j:commandButton status="ajaxStatus" value="Bitiş Tarihi Kapat" action="#{userVekaletHome.bitisTarihDegistir}"
+								rendered="#{ authenticatedUser.IK or authenticatedUser.admin or vekalet.vekaletVeren.id==authenticatedUser.id}"
+								oncomplete="#{rich:component('editPanel2')}.hide()" reRender="izinListPanel,devretId" />
+
+						</ui:fragment>
+					</h:panelGrid>
+
+				</rich:panel>
+
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="editPanel3" autosized="true" width="650">
+			<f:facet name="header">
+				<h:outputText value="Vekalet Devredecek Kullanıcı Seçimi" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink3" styleClass="hidelink" />
+					<rich:componentControl for="editPanel3" attachTo="hidelink3" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid id="pdksPersonelList2" columns="1" cellpadding="0" cellspacing="0">
+					<rich:dataTable rowClasses="acik,koyu" value="#{userVekaletHome.kullaniciList2}" var="user" rows="20" rowKeyVar="row" id="userTable3">
+						<f:facet name="header">
+							<h:outputText value="Personeller" />
+						</f:facet>
+						<rich:column>
+							<f:facet name="header">
+                        İşlemler
+                </f:facet>
+
+							<a4j:commandLink status="ajaxStatus" id="seclink" action="#{userVekaletHome.kullaniciSec(user)}"
+								oncomplete="#{rich:component('editPanel3')}.hide()" reRender="vekilAdi2,vekilSoyadi2,vekilSicilNo2">
+								<h:graphicImage value="/img/ok.gif" style="border:0" />
+
+							</a4j:commandLink>
+
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{user.staffId}" id="pdksname" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header" filterBy="#{user.firstname}" filterEvent="onkeyup">
+								<h:outputText value="Personel Adı Soyadı" />
+							</f:facet>
+							<h:outputText value="#{user.pdksPersonel.adSoyad}" id="adSoyad2" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Kullanici Adi" />
+							</f:facet>
+							<h:outputText value="#{user.username}" id="username2" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{user.pdksPersonel.sirket.ad}" id="sirket2" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+							</f:facet>
+							<h:outputText value="#{user.pdksPersonel.pdksYonetici.adSoyad}" id="yoneticisi2" />
+						</rich:column>
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+
+
+	</ui:define>
+
+
+</ui:composition>

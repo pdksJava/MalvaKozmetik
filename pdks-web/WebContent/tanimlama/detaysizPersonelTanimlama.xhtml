@@ -1,0 +1,188 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('detaysizPersonelTanimlama')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<a4j:region>
+				<rich:panel style="vardiyaGun" header="#{ortakIslemler.getMenuUserAdi(pdksPersonelHome.session,'detaysizPersonelTanimlama')}">
+					<h:panelGroup id="aramaSonuc">
+						<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+							<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Adi</ui:define>
+									<h:inputText value="#{pdksPersonelHome.adi}" size="35" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Soyadi</ui:define>
+									<h:inputText value="#{pdksPersonelHome.soyadi}" size="35" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+									<h:inputText value="#{pdksPersonelHome.sicilNo}" size="10" />
+								</s:decorate>
+							</h:panelGrid>
+							<s:decorate template="/layout/edit.xhtml">
+								<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.fillpersonelKGSList}" value="PDKS Personel Ara" reRender="pdksPersonelList" />
+							</s:decorate>
+						</h:panelGrid>
+					</h:panelGroup>
+				</rich:panel>
+				<rich:panel style="vardiyaGun">
+					<h:panelGrid id="pdksPersonelList" columns="1" cellpadding="0" cellspacing="0">
+						<rich:dataTable rowClasses="acik,koyu" value="#{pdksPersonelHome.tanimsizPersonelList}" var="personelView" rows="20" rowKeyVar="row" id="personelViewTable">
+							<f:facet name="header">
+								<h:outputText value="Personeller" />
+							</f:facet>
+							<rich:column>
+								<f:facet name="header">
+                        İşlemler
+                </f:facet>
+								<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{pdksPersonelHome.kayitGuncelle(personelView,false)}" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+									<h:graphicImage value="/img/edit.gif" style="border:0" reRender="editPanel" />
+								</a4j:commandLink>
+								<rich:toolTip for="editlink" value="Güncelle" />
+
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="KGS Id" />
+								</f:facet>
+								<h:outputText value="#{personelView.personelKGS.id}" />
+							</rich:column>
+
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.personelKGS.sicilNo}" id="pdksname" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header" filterBy="#{user.firstname}" filterEvent="onkeyup">
+									<h:outputText value="PDKS Adı Soyadı" />
+								</f:facet>
+								<h:outputText title="#{personelView.adSoyad}" value="#{personelView.personelKGS.adSoyad}" id="adSoyad" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.sirket.ad}" id="sirket" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Ünvanı" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.gorevTipi.aciklama}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Aktif" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.getYesNo(personelView.durumu)}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Yapan" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.sonIslemYapan.adSoyad}" />
+							</rich:column>
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Son İşlem Tarihi" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.sonIslemTarihiStr}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+					</h:panelGrid>
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="1000">
+			<f:facet name="header">
+				<h:outputText value="Güncelle Personel" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" styleClass="hidelink">
+							<a4j:support event="onclick" action="#{pdksPersonelHome.instanceRefresh}" reRender="pdksPersonelList" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+						<h:panelGrid columns="2">
+
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+								<h:outputText value="#{pdksPersonelHome.instance.personelKGS.sicilNo}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">PDKS Kart No</ui:define>
+								<h:outputText value="#{pdksPersonelHome.instance.personelKGS.kartNo}" />
+
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Adi</ui:define>
+								<h:inputText value="#{pdksPersonelHome.instance.ad}" size="35" required="true" requiredMessage="Adı giriniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Soyadi</ui:define>
+								<h:inputText value="#{pdksPersonelHome.instance.soyad}" size="35" required="true" requiredMessage="Soyadı giriniz" />
+							</s:decorate>
+
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:selectOneMenu value="#{pdksPersonelHome.instance.sirket}" required="true" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
+									<s:selectItems var="comp" value="#{pdksPersonelHome.sirketList}" label="#{comp.ad}" noSelectionLabel="Lütfen seçiniz" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Ünvanı</ui:define>
+								<h:selectOneMenu value="#{pdksPersonelHome.instance.gorevTipi}">
+									<s:selectItems var="comp" value="#{pdksPersonelHome.unvanTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+									<s:convertEntity />
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Aktif</ui:define>
+								<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.durum}" />
+							</s:decorate>
+
+						</h:panelGrid>
+
+					</a4j:outputPanel>
+					<!--  -->
+
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelHome.detaysizSave}" reRender="pdksPersonelList" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+
+
+
+
+	</ui:define>
+</ui:composition>
