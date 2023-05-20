@@ -104,6 +104,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 */
 	public TreeMap<String, Boolean> bordroVeriOlustur(List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, Session session) {
 		TreeMap<String, Boolean> baslikMap = new TreeMap<String, Boolean>();
+		String arifeGunuBordroYarim = ortakIslemler.getParameterKey("arifeGunuBordroYarim");
 		HashMap fields = new HashMap();
 		fields.put("tipi", Tanim.TIPI_IZIN_GRUPLARI);
 		fields.put("durum", Boolean.TRUE);
@@ -224,7 +225,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						boolean haftaTatil = vardiya.isHaftaTatil();
 						Tatil tatil = vardiyaGun.getTatil();
 						boolean resmiTatil = tatil != null;
-						int calismaGun = 1;
+						double calismaGun = 1.0d;
 						if (vardiyaGun.isIzinli()) {
 							// calisiyor = true;
 							String izinKodu = null;
@@ -287,11 +288,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							}
 
 						}
-						if (calismaGun > 0) {
+						if (calismaGun > 0.0d) {
 							if (resmiTatil) {
 								if (!tatil.isYarimGunMu()) {
 									resmiTatilAdet += calismaGun;
 									calismaGun = 0;
+								} else if (!arifeGunuBordroYarim.equals("")) {
+									calismaGun = 0.5d;
+									resmiTatilAdet += calismaGun;
 								}
 							}
 							if (!haftaTatil)
