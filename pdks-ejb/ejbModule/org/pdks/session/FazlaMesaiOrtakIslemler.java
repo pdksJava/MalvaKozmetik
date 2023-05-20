@@ -214,7 +214,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					ex.printStackTrace();
 				}
 
-				double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, resmiTatilAdet = 0.0d, tatilAdet = 0.0d, izinGunAdet = 0.0d;
+				double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, resmiTatilAdet = 0.0d, artikAdet = 0.0d, izinGunAdet = 0.0d;
 				double normalSaat = 0.0d, resmiTatilSaat = 0.0d, haftaTatilSaat = 0.0d, izinGunSaat = 0.0d;
 				LinkedHashMap<BordroDetayTipi, Double> detayMap = new LinkedHashMap<BordroDetayTipi, Double>();
 				boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
@@ -333,7 +333,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (ayGunSayisi == toplamAdet)
 						normalGunAdet += 30 - ayGunSayisi;
 					if (toplamAdet > 30) {
-						tatilAdet = 1;
+						artikAdet = 1;
 					}
 
 					PersonelDenklestirmeBordro denklestirmeBordro = bordroMap.containsKey(personelDenklestirme.getId()) ? bordroMap.get(personelDenklestirme.getId()) : null;
@@ -347,7 +347,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					denklestirmeBordro.setNormalGunAdet(normalGunAdet);
 					denklestirmeBordro.setHaftaTatilAdet(haftaTatilAdet);
 					denklestirmeBordro.setResmiTatilAdet(resmiTatilAdet);
-					denklestirmeBordro.setTatilAdet(tatilAdet);
+					denklestirmeBordro.setArtikAdet(artikAdet);
 					if (izinGunAdet > 0)
 						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);
 
@@ -414,7 +414,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					baslikGuncelle(baslikMap, ortakIslemler.hastalikIzinGunKod(), ap.getDenklestirmeBordro().getRaporluIzin().doubleValue());
 					baslikGuncelle(baslikMap, ortakIslemler.normalGunKod(), ap.getDenklestirmeBordro().getNormalGunAdet());
 					baslikGuncelle(baslikMap, ortakIslemler.haftaTatilGunKod(), ap.getDenklestirmeBordro().getHaftaTatilAdet());
-					baslikGuncelle(baslikMap, ortakIslemler.artikGunKod(), ap.getDenklestirmeBordro().getTatilAdet());
+					baslikGuncelle(baslikMap, ortakIslemler.artikGunKod(), ap.getDenklestirmeBordro().getArtikAdet());
 					baslikGuncelle(baslikMap, ortakIslemler.resmiTatilGunKod(), ap.getDenklestirmeBordro().getResmiTatilAdet());
 					baslikGuncelle(baslikMap, ortakIslemler.bordroToplamGunKod(), ap.getDenklestirmeBordro().getBordroToplamGunAdet());
 				}

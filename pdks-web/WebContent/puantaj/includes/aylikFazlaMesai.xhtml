@@ -743,8 +743,8 @@
 									</ui:fragment>
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.artikGunKod())}">
 										<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
-												rendered="#{aylikPuantaj.denklestirmeBordro.tatilAdet!=0}">
-												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.tatilAdet)}" />
+												rendered="#{aylikPuantaj.denklestirmeBordro.artikAdet!=0}">
+												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.artikAdet)}" />
 											</ui:fragment></td>
 									</ui:fragment>
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.bordroToplamGunKod())}">

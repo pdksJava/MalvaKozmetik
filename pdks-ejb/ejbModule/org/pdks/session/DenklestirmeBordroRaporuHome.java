@@ -75,7 +75,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private List<AylikPuantaj> personelDenklestirmeList;
 
-	private Boolean secimDurum = Boolean.FALSE, sureDurum, fazlaMesaiDurum, haftaTatilDurum, resmiTatilDurum, durumERP, onaylanmayanDurum, personelERP, modelGoster = Boolean.FALSE;
+	private Boolean secimDurum = Boolean.FALSE, sureDurum, fazlaMesaiDurum, haftaTatilDurum, artikGunDurum, resmiTatilGunDurum, resmiTatilDurum, durumERP, onaylanmayanDurum, personelERP, modelGoster = Boolean.FALSE;
 
 	private int ay, yil, maxYil, minYil;
 
@@ -99,7 +99,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private String COL_ALT_BOLUM = "altBolumAdi";
 	private String COL_NORMAL_GUN_ADET = "normalGunAdet";
 	private String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
-	private String COL_TATIL_ADET = "tatilAdet";
+	private String COL_RESMI_TATIL_ADET = "resmiTatilAdet";
+
+	private String COL_ARTIK_ADET = "artikAdet";
 	private String COL_UCRETLI_IZIN = "ucretliIzin";
 	private String COL_RAPORLU_IZIN = "raporluIzin";
 	private String COL_UCRETSIZ_IZIN = "ucretsizIzin";
@@ -405,6 +407,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		haftaCalisma = Boolean.FALSE;
 		resmiTatilDurum = Boolean.FALSE;
 		maasKesintiGoster = Boolean.FALSE;
+		artikGunDurum = Boolean.FALSE;
+		resmiTatilGunDurum = Boolean.FALSE;
 		HashMap fields = new HashMap();
 		fields.put("ay", ay);
 		fields.put("yil", yil);
@@ -463,6 +467,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					HashMap<Long, PersonelDenklestirmeBordro> idMap = new HashMap<Long, PersonelDenklestirmeBordro>();
 					for (PersonelDenklestirmeBordro personelDenklestirmeBordro : borDenklestirmeBordroList) {
 						PersonelDenklestirme personelDenklestirme = personelDenklestirmeBordro.getPersonelDenklestirme();
+ 						if (!artikGunDurum)
+							artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
+						if (!resmiTatilGunDurum)
+							resmiTatilGunDurum = personelDenklestirmeBordro.getResmiTatilAdet() != null && personelDenklestirmeBordro.getResmiTatilAdet().doubleValue() > 0.0d;
+						if (!artikGunDurum)
+							artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
 						if (!haftaCalisma)
 							haftaCalisma = personelDenklestirme.getHaftaCalismaSuresi() != null && personelDenklestirme.getHaftaCalismaSuresi().doubleValue() > 0.0d;
 						if (!resmiTatilDurum)
@@ -759,8 +769,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getNormalGunAdet());
 					else if (kodu.equals(COL_HAFTA_TATIL_ADET))
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getHaftaTatilAdet());
-					else if (kodu.equals(COL_TATIL_ADET))
-						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getTatilAdet());
+					else if (kodu.equals(COL_RESMI_TATIL_ADET))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getResmiTatilAdet());
+					else if (kodu.equals(COL_ARTIK_ADET))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getArtikAdet());
 					else if (kodu.equals(COL_UCRETLI_IZIN))
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretliIzin());
 					else if (kodu.equals(COL_RAPORLU_IZIN))
@@ -842,7 +854,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			bordroAlanlari.add(getBordroAlani(++sira, COL_ALT_BOLUM, ekSaha4Tanim.getAciklama()));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_NORMAL_GUN_ADET, "Normal Gün"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_HAFTA_TATIL_ADET, "H.Tatil Gün"));
-		bordroAlanlari.add(getBordroAlani(++sira, COL_TATIL_ADET, "G.Tatil Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_RESMI_TATIL_ADET, "R.Tatil Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_ARTIK_ADET, "Artık Gün"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETLI_IZIN, "Ücretli İzin Gün"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_RAPORLU_IZIN, "Raporlu (Hasta)"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETSIZ_IZIN, "Ücretsiz İzin Gün"));
@@ -1298,14 +1311,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		COL_HAFTA_TATIL_ADET = cOL_HAFTA_TATIL_ADET;
 	}
 
-	public String getCOL_TATIL_ADET() {
-		return COL_TATIL_ADET;
-	}
-
-	public void setCOL_TATIL_ADET(String cOL_TATIL_ADET) {
-		COL_TATIL_ADET = cOL_TATIL_ADET;
-	}
-
 	public String getCOL_UCRETLI_IZIN() {
 		return COL_UCRETLI_IZIN;
 	}
@@ -1392,5 +1397,37 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setCOL_EKSIK_CALISMA(String cOL_EKSIK_CALISMA) {
 		COL_EKSIK_CALISMA = cOL_EKSIK_CALISMA;
+	}
+
+	public String getCOL_RESMI_TATIL_ADET() {
+		return COL_RESMI_TATIL_ADET;
+	}
+
+	public void setCOL_RESMI_TATIL_ADET(String cOL_RESMI_TATIL_ADET) {
+		COL_RESMI_TATIL_ADET = cOL_RESMI_TATIL_ADET;
+	}
+
+	public String getCOL_ARTIK_ADET() {
+		return COL_ARTIK_ADET;
+	}
+
+	public void setCOL_ARTIK_ADET(String cOL_ARTIK_ADET) {
+		COL_ARTIK_ADET = cOL_ARTIK_ADET;
+	}
+
+	public Boolean getArtikGunDurum() {
+		return artikGunDurum;
+	}
+
+	public void setArtikGunDurum(Boolean artikGunDurum) {
+		this.artikGunDurum = artikGunDurum;
+	}
+
+	public Boolean getResmiTatilGunDurum() {
+		return resmiTatilGunDurum;
+	}
+
+	public void setResmiTatilGunDurum(Boolean resmiTatilGunDurum) {
+		this.resmiTatilGunDurum = resmiTatilGunDurum;
 	}
 }

@@ -153,12 +153,19 @@
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilGunDurum}">
 									<f:facet name="header">
-										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_TATIL_ADET)}" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_ADET)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.tatilAdet))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.tatilAdet)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilAdet))}"
+										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilAdet)>0}" />
+								</rich:column>
+								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.artikGunDurum}">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_ARTIK_ADET)}" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.artikAdet))}"
+										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.artikAdet)>0}" />
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
@@ -198,6 +205,13 @@
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai)>0}" />
+								</rich:column>
+								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilDurum}">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_MESAI)}" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilMesai))}"
+										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilMesai)>0}" />
 								</rich:column>
 
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamGun}">

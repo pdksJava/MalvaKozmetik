@@ -36,7 +36,7 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 
 	private PersonelDenklestirme personelDenklestirme;
 
-	private Double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, resmiTatilAdet = 0.0d, tatilAdet = 0.0d;
+	private Double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, resmiTatilAdet = 0.0d, artikAdet = 0.0d;
 
 	private boolean guncellendi = false;
 
@@ -47,12 +47,13 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 
 	}
 
-	public PersonelDenklestirmeBordro(PersonelDenklestirme personelDenklestirme, Double normalGunAdet, Double haftaTatilAdet, Double tatilAdet) {
+	public PersonelDenklestirmeBordro(PersonelDenklestirme personelDenklestirme, Double normalGunAdet, Double haftaTatilAdet, Double resmiTatilAdet, Double artikAdet) {
 		super();
 		this.personelDenklestirme = personelDenklestirme;
 		this.normalGunAdet = normalGunAdet;
 		this.haftaTatilAdet = haftaTatilAdet;
-		this.tatilAdet = tatilAdet;
+		this.resmiTatilAdet = resmiTatilAdet;
+		this.artikAdet = artikAdet;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
@@ -102,14 +103,14 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	@Column(name = COLUMN_NAME_G_HAFTA_TATIL)
-	public Double getTatilAdet() {
-		return tatilAdet;
+	public Double getArtikAdet() {
+		return artikAdet;
 	}
 
-	public void setTatilAdet(Double value) {
+	public void setArtikAdet(Double value) {
 		if (guncellendi == false)
-			this.setGuncellendi(this.tatilAdet == null || this.tatilAdet.doubleValue() != value.doubleValue());
-		this.tatilAdet = value;
+			this.setGuncellendi(this.artikAdet == null || this.artikAdet.doubleValue() != value.doubleValue());
+		this.artikAdet = value;
 	}
 
 	@Transient
