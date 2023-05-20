@@ -1,0 +1,67 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('departmanMail')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form>
+			<h:panelGrid width="780">
+				<rich:panel header="#{ortakIslemler.getMenuUserAdi(departmanMailHome.session,'departmanMail')}">
+					<h:panelGrid columns="1">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Departman</ui:define>
+
+							<h:selectOneMenu rendered="#{authenticatedUser.admin and departmanMailHome.departmanTanimList!=null}"
+								value="#{departmanMailHome.departmanTanim}" required="true" requiredMessage="Departman seçiniz">
+								<s:selectItems var="comp" value="#{departmanMailHome.departmanTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+								<s:convertEntity />
+								<a4j:support event="onchange" action="#{departmanMailHome.fillMail()}" status="ajaxStatus" ajaxSingle="true" reRendered="sss" />
+							</h:selectOneMenu>
+
+						</s:decorate>
+						<a4j:outputPanel id="sss" ajaxRendered="true">
+							<rich:dataTable value="#{departmanMailHome.mailList}" var="mail">
+								<f:facet name="header">
+									<h:outputText value="Mail Listesi" />
+
+								</f:facet>
+								<rich:column width="20">
+									<f:facet name="header">
+										<h:outputText value="Sil" />
+									</f:facet>
+									<a4j:commandLink action="#{departmanMailHome.delete(mail)}">
+									<h:graphicImage value="/img/delete.gif" />
+									</a4j:commandLink>
+								</rich:column>
+								<rich:column>
+									<f:facet name="header">
+										<h:outputText value="Mail" />
+									</f:facet>
+									<h:outputText value="#{mail}" />
+								</rich:column>
+							</rich:dataTable>
+						</a4j:outputPanel>
+						<a4j:outputPanel id="mail"  ajaxRendered="true">
+						<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Mail Adresi</ui:define>
+								<h:inputText value="#{departmanMailHome.mailString}"/>
+						</s:decorate>
+						</a4j:outputPanel>
+						<s:decorate template="/layout/edit.xhtml">
+						    <a4j:commandButton value="Ekle" action="#{departmanMailHome.add()}" reRendered="mail"/>
+						    <a4j:commandButton value="Kaydet" action="#{departmanMailHome.save()}" reRendered="mail" />
+						</s:decorate>
+							
+
+					</h:panelGrid>
+				</rich:panel>
+			</h:panelGrid>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page view-id="#{menuItemConstant.fazlaMesaiRapor}" xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+	<restrict>#{userHome.hasPermission('fazlaMesaiRapor','view')}</restrict>
+	<rewrite pattern="/fazlaMesaiRapor" />
+	<action execute="#{fazlaMesaiRaporHome.sayfaGirisAction}" on-postback="false" />
+	<begin-conversation join="true" flush-mode="manual" />
+	<navigation>
+
+		<rule if-outcome="fazlaMesaiRapor">
+			<redirect view-id="#{menuItemConstant.fazlaMesaiRapor}" />
+		</rule>
+	</navigation>
+</page>

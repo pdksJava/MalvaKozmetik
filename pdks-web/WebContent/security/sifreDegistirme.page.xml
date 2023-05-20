@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page view-id="#{menuItemConstant.sifreDegistirme}" xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+	<restrict>#{userHome.hasPermission('sifreDegistirme','view') and !authenticatedUser.ldapUse}</restrict>
+	<rewrite pattern="/sifreDegistirme" />
+	<action execute="#{userHome.sifreDegistirAction}" on-postback="false" />
+	<navigation>
+		<rule if-outcome="sifreDegistirme">
+			<redirect view-id="#{menuItemConstant.sifreDegistirme}" />
+		</rule>
+		<rule if-outcome="anaSayfa">
+			<redirect view-id="/home.xhtml" />
+		</rule>
+
+	</navigation>
+</page>

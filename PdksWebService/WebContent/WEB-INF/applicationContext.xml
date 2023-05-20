@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans SYSTEM "dtd/spring-beans.dtd">
+<beans>
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+
+	<bean id="PDKS_DS" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName">
+			<value>java:comp/env/jdbc/pdks</value>
+		</property>
+	</bean>
+
+
+	<!-- Transaction manager -->
+	<bean id="transactionManagerPDKS"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory">
+			<ref local="PDKSSessionFactory" />
+		</property>
+	</bean>
+	<!-- Transaction Interceptor For Manager Classes -->
+	<bean id="managerTransactionInterceptorPDKS"
+		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager">
+			<ref bean="transactionManagerPDKS" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="save*">PROPAGATION_REQUIRED</prop>
+				<prop key="call*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_SUPPORTS,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<bean id="PDKSSessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource">
+			<ref local="PDKS_DS" />
+		</property>
+		<property name="mappingResources">
+			<list>
+			</list>
+		</property>
+		<property name="annotatedClasses">
+			<list>
+			
+				<value>com.pdks.entity.CalismaModeli</value>
+				<value>com.pdks.entity.CalismaModeliAy</value>
+				<value>com.pdks.entity.DenklestirmeAy</value>
+				<value>com.pdks.entity.Departman</value>
+				<value>com.pdks.entity.IzinReferansERP</value>
+				<value>com.pdks.entity.IzinTipi</value>
+ 				<value>com.pdks.entity.MailGrubu</value>
+				<value>com.pdks.entity.Parameter</value>
+				<value>com.pdks.entity.PdksPersonelView</value>
+				<value>com.pdks.entity.KapiSirket</value>
+				<value>com.pdks.entity.Personel</value>
+				<value>com.pdks.entity.PersonelDenklestirme</value>
+				<value>com.pdks.entity.PersonelMesai</value>
+				<value>com.pdks.entity.PersonelIzin</value>
+				<value>com.pdks.entity.PersonelIzinDetay</value>
+				<value>com.pdks.entity.ERPPersonel</value>
+				<value>com.pdks.entity.PersonelKGS</value>
+				<value>com.pdks.entity.PersonelView</value>
+				<value>com.pdks.entity.Role</value>
+				<value>com.pdks.entity.Sirket</value>
+				<value>com.pdks.entity.ServiceData</value>
+				<value>com.pdks.entity.Tanim</value>
+				<value>com.pdks.entity.User</value>
+				<value>com.pdks.entity.UserRoles</value>
+				<value>com.pdks.entity.Vardiya</value>
+				<value>com.pdks.entity.VardiyaGun</value>
+				<value>com.pdks.entity.VardiyaSablonu</value>
+				<value>com.pdks.entity.HataliPersonel</value>
+				<value>com.pdks.entity.PersonelDinamikAlan</value>
+
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<!-- <prop key="hibernate.hbm2ddl.auto">update</prop> -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+				<prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+				<prop key="hibernate.max_fetch_depth">2</prop>
+				<prop key="hibernate.default_batch_fetch_size">16</prop>
+				<prop key="hibernate.jdbc.batch_size">25</prop>
+				<prop key="hibernate.jdbc.fetch_size">32</prop>
+				<prop key="hibernate.show_sql">false</prop>
+			</props>
+		</property>
+
+	</bean>
+
+</beans>

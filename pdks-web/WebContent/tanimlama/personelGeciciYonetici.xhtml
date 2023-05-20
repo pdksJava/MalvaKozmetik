@@ -1,0 +1,507 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('personelGeciciYonetici')}" />
+	</ui:define>
+	<ui:define name="body">
+		<h:form id="idPersonelAramaForm">
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(personelGeciciYoneticiHome.session,'personelGeciciYonetici')}">
+				<h:panelGrid columns="1" id="idPersonelKullaniciAramaHome">
+					<h:panelGrid columns="1" rendered="#{personelGeciciYoneticiHome.visibled==true}">
+
+						<rich:simpleTogglePanel id="personelKullaniciAramaPanel" rendered="#{personelGeciciYoneticiHome.visibled}" switchType="client"
+							label="#{personelGeciciYoneticiHome.aramaTipi}" height="110" opened="true">
+
+							<a4j:region cellpadding="0" cellspacing="0">
+								<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Adı </ui:define>
+										<h:inputText value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.ad}" size="35" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Soyadı </ui:define>
+										<h:inputText value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.soyad}" size="35" />
+									</s:decorate>
+
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">#{ortakIslemler.personelNoAciklama()} </ui:define>
+										<h:inputText value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.erpSicilNo}" size="10" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{personelGeciciYoneticiHome.userArama}">
+										<ui:define name="label">Kullanıcı Adı </ui:define>
+										<h:inputText value="#{personelGeciciYoneticiHome.arananUser.username}" size="30" />
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{personelGeciciYoneticiHome.sirketList.size!=1}">
+										<ui:define name="label">#{ortakIslemler.sirketAciklama()} </ui:define>
+										<h:selectOneMenu value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.sirket}">
+											<s:selectItems var="comp" value="#{personelGeciciYoneticiHome.sirketList}" label="#{comp.ad}" noSelectionLabel="Lutfen seciniz" />
+											<s:convertEntity />
+										</h:selectOneMenu>
+									</s:decorate>
+									 
+
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha1')}">
+										<ui:define name="label">#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha1').aciklama}</ui:define>
+										<h:selectOneMenu value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.ekSaha1}">
+											<s:selectItems var="comp" value="#{personelGeciciYoneticiHome.ekSahaListMap.get('ekSaha1')}" label="#{comp.aciklama}"
+												noSelectionLabel="Lütfen seçiniz" />
+											<s:convertEntity />
+										</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha2')}">
+										<ui:define name="label">#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha2').aciklama}</ui:define>
+										<h:selectOneMenu value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.ekSaha2}">
+											<s:selectItems var="comp" value="#{personelGeciciYoneticiHome.ekSahaListMap.get('ekSaha2')}" label="#{comp.aciklama}"
+												noSelectionLabel="Lütfen seçiniz" />
+											<s:convertEntity />
+										</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha3')}">
+										<ui:define name="label">#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha3').aciklama}</ui:define>
+										<h:selectOneMenu value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.ekSaha3}">
+											<s:selectItems var="comp" value="#{personelGeciciYoneticiHome.ekSahaListMap.get('ekSaha3')}" label="#{comp.aciklama}"
+												noSelectionLabel="Lütfen seçiniz" />
+											<s:convertEntity />
+										</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha4')}">
+										<ui:define name="label">#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha4').aciklama}</ui:define>
+										<h:selectOneMenu value="#{personelGeciciYoneticiHome.arananUser.pdksPersonel.ekSaha4}">
+											<s:selectItems var="comp" value="#{personelGeciciYoneticiHome.ekSahaListMap.get('ekSaha4')}" label="#{comp.aciklama}"
+												noSelectionLabel="Lütfen seçiniz" />
+											<s:convertEntity />
+										</h:selectOneMenu>
+									</s:decorate>
+
+
+								</h:panelGrid>
+								<s:decorate template="/layout/edit.xhtml" id="idButtonArama">
+									<a4j:commandButton status="ajaxStatus" action="#{personelGeciciYoneticiHome.fillKullaniciList}" value="Kullanici Ara"
+										reRender="personelKullaniciAramaList,idButtonArama" />
+
+									<a4j:commandButton status="ajaxStatus" rendered="#{personelGeciciYoneticiHome.checkBox  and not empty personelGeciciYoneticiHome.userList }"
+										action="#{personelGeciciYoneticiHome.checkBoxSecimDevam(personelGeciciYoneticiHome.userList)}" value="Devam Et"
+										reRender="#{personelGeciciYoneticiHome.reRender}" />
+									<a4j:commandButton status="ajaxStatus" rendered="#{personelGeciciYoneticiHome.visibled==true}" action="#{personelGeciciYoneticiHome.kapat}"
+										value="Kapat" reRender="personelKullaniciAramaList,idButtonArama" image="/img/close.png" />
+								</s:decorate>
+							</a4j:region>
+							<BR />
+							<a4j:outputPanel id="personelKullaniciAramaList" cellpadding="0" cellspacing="0">
+								<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
+
+									<rich:dataTable rowClasses="acik,koyu" rendered="#{not empty personelGeciciYoneticiHome.userList}"
+										value="#{personelGeciciYoneticiHome.userList}" var="userView" rows="20" rowKeyVar="row">
+										<f:facet name="header">
+											<h:outputText value="Kullanıcılar" />
+										</f:facet>
+										<rich:column>
+											<f:facet name="header">
+												<s:decorate template="/layout/arama.xhtml" rendered="#{personelHareketHome.islemTipi!='S'}">
+													<ui:define name="label">İşlemler</ui:define>
+													<h:selectBooleanCheckbox rendered="#{personelGeciciYoneticiHome.checkBox==true}" value="#{personelGeciciYoneticiHome.checkBoxDurum}">
+														<a4j:support event="onclick" action="#{personelGeciciYoneticiHome.secimDurumDegistir}" reRender="personelKullaniciAramaList"
+															status="ajaxStatus" />
+
+													</h:selectBooleanCheckbox>
+												</s:decorate>
+											</f:facet>
+
+											<h:commandButton alt="Kullanıcı seç" rendered="#{personelGeciciYoneticiHome.checkBox==false  }" image="/img/ok.gif"
+												action="#{personelGeciciYoneticiHome.tekKullaniciSecimIslemi(userView)}">
+												<a4j:support event="onclick" status="ajaxStatus" reRender="#{personelGeciciYoneticiHome.reRender}" />
+											</h:commandButton>
+											<h:selectBooleanCheckbox rendered="#{personelGeciciYoneticiHome.checkBox==true}" value="#{userView.pdksPersonel.checkBoxDurum}" />
+
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.sicilNo}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="Personel Adı Soyadı" />
+											</f:facet>
+											<h:outputText value="#{userView.adSoyad}" id="adSoyad" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="Kullanici Adi" />
+											</f:facet>
+											<h:outputText value="#{userView.username}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.sirket.ad}" />
+										</rich:column>
+										 
+										<rich:column rendered="#{ortakIslemler.getListTesisDurum(personelGeciciYoneticiHome.userList)}">
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.tesis.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha1') and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.userList,'1')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha1').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.ekSaha1.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha2') and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.userList,'2')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha2').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.ekSaha2.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha3')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha3').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.ekSaha3.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha4') and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.userList,'4')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.ekSahaTanimMap.get('ekSaha4').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.ekSaha4.aciklama}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{userView.pdksPersonel.pdksYonetici.adSoyad}" />
+										</rich:column>
+										<f:facet name="footer">
+											<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+										</f:facet>
+									</rich:dataTable>
+
+
+									<rich:dataTable rowClasses="acik,koyu" rendered="#{not empty personelGeciciYoneticiHome.personelList}"
+										value="#{personelGeciciYoneticiHome.personelList}" var="personelView" rows="20" rowKeyVar="row" id="personelViewTable">
+										<f:facet name="header">
+											<h:outputText value="Personeller" />
+										</f:facet>
+										<rich:column>
+											<f:facet name="header">
+												<s:decorate template="/layout/arama.xhtml">
+
+													<ui:define name="label">İşlemler</ui:define>
+													<h:selectBooleanCheckbox rendered="#{personelGeciciYoneticiHome.checkBox==true}" value="#{personelGeciciYoneticiHome.checkBoxDurum}">
+														<a4j:support event="onclick" action="#{personelGeciciYoneticiHome.secimDurumDegistir}" reRender="personelKullaniciAramaList"
+															status="ajaxStatus" />
+
+													</h:selectBooleanCheckbox>
+												</s:decorate>
+											</f:facet>
+											<h:commandButton alt="Personel seç" image="/img/ok.gif" rendered="#{personelGeciciYoneticiHome.checkBox==false}"
+												action="#{personelGeciciYoneticiHome.tekPersonelSecimIslemi(personelView)}">
+												<a4j:support event="onclick" status="ajaxStatus" reRender="#{personelGeciciYoneticiHome.reRender}" />
+											</h:commandButton>
+											<h:selectBooleanCheckbox rendered="#{personelGeciciYoneticiHome.checkBox==true}" value="#{personelView.checkBoxDurum}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{personelView.sicilNo}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="Personel Adı Soyadı" />
+											</f:facet>
+											<h:outputText value="#{personelView.adSoyad}" id="adSoyad" />
+										</rich:column>
+
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{personelView.sirket.ad}" />
+										</rich:column>
+										 
+										<rich:column rendered="#{ortakIslemler.getListTesisDurum(personelGeciciYoneticiHome.personelList)}">
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{personelView.tesis.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha1') and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.personelList,'1')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.get('ekSaha1').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{personelView.ekSaha1.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha2') and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.personelList,'2')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.get('ekSaha2').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{personelView.ekSaha2.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha3')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.get('ekSaha3').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{personelView.ekSaha3.aciklama}" />
+										</rich:column>
+										<rich:column
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and personelGeciciYoneticiHome.ekSahaTanimMap.containsKey('ekSaha4') and ortakIslemler.getListEkSahaDurum(personelGeciciYoneticiHome.personelList,'4')}">
+											<f:facet name="header">
+												<h:outputText value="#{personelGeciciYoneticiHome.get('ekSaha4').aciklama}" />
+											</f:facet>
+											<h:outputText value="#{personelView.ekSaha4.aciklama}" />
+										</rich:column>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+											</f:facet>
+											<h:outputText value="#{personelView.yoneticisi.adSoyad}" />
+										</rich:column>
+										<f:facet name="footer">
+											<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+										</f:facet>
+									</rich:dataTable>
+									<a4j:commandButton status="ajaxStatus"
+										rendered="#{personelGeciciYoneticiHome.checkBox and  personelGeciciYoneticiHome.personelArama and not empty personelGeciciYoneticiHome.personelList }"
+										action="#{personelGeciciYoneticiHome.checkBoxSecimDevam(personelGeciciYoneticiHome.personelList)}" value="Devam Et"
+										reRender="#{personelGeciciYoneticiHome.reRender}" />
+									<a4j:commandButton status="ajaxStatus"
+										rendered="#{personelGeciciYoneticiHome.checkBox and  personelGeciciYoneticiHome.userArama and not empty personelGeciciYoneticiHome.userList }"
+										action="#{personelGeciciYoneticiHome.checkBoxSecimDevam(personelGeciciYoneticiHome.userList)}" value="Devam Et"
+										reRender="#{personelGeciciYoneticiHome.reRender}" />
+
+								</h:panelGrid>
+							</a4j:outputPanel>
+						</rich:simpleTogglePanel>
+
+					</h:panelGrid>
+				</h:panelGrid>
+			</rich:panel>
+
+
+			<a4j:commandButton status="ajaxStatus" rendered="#{personelGeciciYoneticiHome.visibled==false and authenticatedUser.IK}"
+				action="#{personelGeciciYoneticiHome.kullaniciArama('yoneticiyeBagliPersonelList,idPersonelAramaForm,idPersonelGeciciForm',ortakIslemler.yoneticiRoleList)}"
+				value="#{ortakIslemler.yoneticiAciklama()} Seç" reRender="idPersonelKullaniciAramaHome,idPersonelAramaForm,rotasyonTable,rotasyonTable2,yoneticiyeBagliPersonelList" />
+		</h:form>
+		<h:form id="idPersonelGeciciForm">
+			<rich:panel id="yoneticiyeBagliPersonelList" style="vertical-align:top;">
+				<h:panelGrid columns="2" rendered="#{personelGeciciYoneticiHome.visibled==false and not empty personelGeciciYoneticiHome.personelList}">
+					<h:panelGroup>
+						<div>
+							<rich:dataTable rowClasses="acik,koyu" value="#{personelGeciciYoneticiHome.personelList}" var="personel" rows="20" rowKeyVar="row"
+								id="userViewTable">
+								<f:facet name="header">
+									<h:outputText value="#{personelGeciciYoneticiHome.arananKullanici.adSoyad} Bağlı Personeller" />
+								</f:facet>
+								<rich:column rendered="#{personelGeciciYoneticiHome.personelList.size()>1}">
+									<f:facet name="header">
+                   				     İşlemler
+                				</f:facet>
+
+									<h:selectBooleanCheckbox value="#{personel.checkBoxDurum}" />
+
+								</rich:column>
+								<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+									</f:facet>
+									<h:outputText value="#{personel.sicilNo}" />
+								</rich:column>
+								<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+									<f:facet name="header">
+										<h:outputText value="Adı Soyadı" />
+									</f:facet>
+									<h:outputText value="#{personel.adSoyad}" id="adSoyad" />
+								</rich:column>
+
+								<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+									</f:facet>
+									<h:outputText value="#{personel.sirket.ad}" />
+								</rich:column>
+
+								<f:facet name="footer">
+									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+								</f:facet>
+							</rich:dataTable>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup>
+						<a4j:outputPanel ajaxRendered="true">
+							<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+						</a4j:outputPanel>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{personelGeciciYoneticiHome.yoneticiler.size!=0}">
+							<ui:define name="label">Rotasyon #{ortakIslemler.yoneticiAciklama()}</ui:define>
+							<h:selectOneMenu value="#{personelGeciciYoneticiHome.yeniYoneticiId}" required="true" requiredMessage="Rotasyon #{ortakIslemler.yoneticiAciklama()} seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{personelGeciciYoneticiHome.yoneticiler}" />
+
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate id="baslangicField" template="/layout/edit.xhtml">
+							<ui:define name="label">Başlangıç Tarihi</ui:define>
+							<rich:calendar id="startDate" value="#{personelGeciciYoneticiHome.instance.basTarih}" required="true"
+								requiredMessage="Başlangıç tarihi giriniz" popup="#{personelGeciciYoneticiHome.instance.calendarPopup}" datePattern="#{authenticatedUser.dateFormat}"
+								cellWidth="24px" cellHeight="22px" style="width:200px" />
+						</s:decorate>
+						<s:decorate id="bitisField" template="/layout/edit.xhtml">
+							<ui:define name="label">Bitiş Tarihi</ui:define>
+							<rich:calendar id="startDate" value="#{personelGeciciYoneticiHome.instance.bitTarih}" required="true" requiredMessage="Bitiş tarihi giriniz"
+								popup="#{personelGeciciYoneticiHome.instance.calendarPopup}" datePattern="#{authenticatedUser.dateFormat}" cellWidth="24px" cellHeight="22px" style="width:200px" />
+						</s:decorate>
+						<a4j:commandButton status="ajaxStatus" id="yoneticiTransfer" action="#{personelGeciciYoneticiHome.yoneticiTransferGerceklestir}" value="Kaydet"
+							reRender="rotasyonTable" />
+
+						<rich:dataTable rowClasses="acik,koyu"
+							rendered="#{not empty personelGeciciYoneticiHome.rotasyonList and personelGeciciYoneticiHome.arananKullanici.pdksPersonel !=null}"
+							value="#{personelGeciciYoneticiHome.rotasyonList}" var="rotasyon" rows="20" rowKeyVar="row" id="rotasyonTable">
+							<f:facet name="header">
+								<h:outputText value="#{personelGeciciYoneticiHome.arananKullanici.adSoyad} --  Personel Rotasyonları" />
+							</f:facet>
+							<rich:column style="padding-left: 1px;padding-right: 1px;">
+								<f:facet name="header">
+				                        İşlemler
+				                </f:facet>
+								<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="deletelink" oncomplete="#{rich:component('deletePanel')}.show()" rendered="true">
+									<h:graphicImage value="/img/delete.gif" style="border:0" />
+									<f:setPropertyActionListener value="#{rotasyon}" target="#{personelGeciciYoneticiHome.instance}">
+										<s:convertEntity />
+									</f:setPropertyActionListener>
+								</a4j:commandLink>
+								<rich:toolTip for="editlink" value="Vekalet Devret" />
+							</rich:column>
+							<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{rotasyon.personelGecici.personelKGS.sicilNo}" />
+							</rich:column>
+							<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+								<f:facet name="header">
+									<h:outputText value="Adı Soyadı" />
+								</f:facet>
+								<h:outputText value="#{rotasyon.personelGecici.adSoyad}" id="adSoyad" />
+							</rich:column>
+							<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+								<f:facet name="header">
+									<h:outputText value="Başlangıç Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(rotasyon.basTarih)}" />
+							</rich:column>
+							<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+								<f:facet name="header">
+									<h:outputText value="Bitiş Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(rotasyon.bitTarih)}" />
+							</rich:column>
+							<rich:column style="font-size: 9x;padding-left: 1px;padding-right: 1px;">
+								<f:facet name="header">
+									<h:outputText value="Rotasyon #{ortakIslemler.yoneticiAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{rotasyon.yeniYonetici.adSoyad}" />
+							</rich:column>
+
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
+					</h:panelGroup>
+				</h:panelGrid>
+
+			</rich:panel>
+			<rich:dataTable rowClasses="acik,koyu"
+				rendered="#{not empty personelGeciciYoneticiHome.rotasyonList and personelGeciciYoneticiHome.arananKullanici.pdksPersonel !=null and personelGeciciYoneticiHome.visibled ==true }"
+				value="#{personelGeciciYoneticiHome.rotasyonList}" var="rotasyon" rows="20" rowKeyVar="row" id="rotasyonTable2">
+				<f:facet name="header">
+					<h:outputText value="#{personelGeciciYoneticiHome.arananKullanici.adSoyad} --  Personel Rotasyonları" />
+				</f:facet>
+
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Personel #{ortakIslemler.personelNoAciklama()}" />
+					</f:facet>
+					<h:outputText value="#{rotasyon.personelGecici.personelKGS.sicilNo}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Personel Adı Soyadı" />
+					</f:facet>
+					<h:outputText value="#{rotasyon.personelGecici.adSoyad}" id="adSoyad" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Rotasyon Başlangıç Tarihi" />
+					</f:facet>
+					<h:outputText value="#{authenticatedUser.dateFormatla(rotasyon.basTarih)}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Rotasyon Bitiş Tarihi" />
+					</f:facet>
+					<h:outputText value="#{authenticatedUser.dateFormatla(rotasyon.bitTarih)}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Rotasyon #{ortakIslemler.yoneticiAciklama()}" />
+					</f:facet>
+					<h:outputText value="#{rotasyon.yeniYonetici.adSoyad}" />
+				</rich:column>
+
+				<f:facet name="footer">
+					<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+				</f:facet>
+			</rich:dataTable>
+		</h:form>
+
+
+
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink4" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink4" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<a4j:region>
+					<table width="100%">
+						<tbody>
+							<tr>
+								<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true"
+										action="#{personelGeciciYoneticiHome.delete}" oncomplete="#{rich:component('deletePanel')}.hide();" reRender="rotasyonTable" /></td>
+								<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Vazgeç"
+										oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</a4j:region>
+			</h:form>
+		</rich:modalPanel>
+	</ui:define>
+
+</ui:composition>

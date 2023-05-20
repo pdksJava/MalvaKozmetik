@@ -1,0 +1,4 @@
+#Wed Jan 21 17:09:32 EET 2009
+default.configuration=abh2-ejb
+eclipse.preferences.version=1
+hibernate3.enabled=true

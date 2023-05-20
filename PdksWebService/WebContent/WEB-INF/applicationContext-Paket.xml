@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans SYSTEM "dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- ########################################### -->
+	<!-- # pdks # -->
+	<!-- ########################################### -->
+	<bean id="pdksDAO" class="com.pdks.dao.impl.PdksDAOHibernate">
+		<property name="sessionFactory">
+			<ref bean="PDKSSessionFactory" />
+		</property>
+	</bean>
+
+
+	<!-- ===================== GENEL TANIMLARI ======================= -->
+	<bean id="pdksDAOIntercepted" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target">
+			<ref bean="pdksDAO" />
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.pdks.dao.PdksDAO</value>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>managerTransactionInterceptorPDKS</value>
+			</list>
+		</property>
+	</bean>
+
+
+
+
+</beans>
