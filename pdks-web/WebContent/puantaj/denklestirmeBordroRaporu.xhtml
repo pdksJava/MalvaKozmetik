@@ -138,7 +138,7 @@
 									<h:outputText value="#{puantaj.pdksPersonel.pdksYonetici.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
 
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: center;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_ADET)}" />
 									</f:facet>
@@ -146,28 +146,28 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.normalGunAdet)>0}" />
 								</rich:column>
 
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: center;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_ADET)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilGunDurum}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilGunDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_ADET)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilAdet)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.artikGunDurum}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.artikGunDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_ARTIK_ADET)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.artikAdet))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.artikAdet)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: center;">
 									<f:facet name="header">
 										<h:outputText value="Toplam Gün" />
 									</f:facet>
@@ -176,35 +176,35 @@
 												value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.bordroToplamGunAdet))}" /></b>
 									</ui:fragment>
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.normalGunSaatDurum}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.normalGunSaatDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_SAAT)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatNormal))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatNormal)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.haftaTatilSaatDurum}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.haftaTatilSaatDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_SAAT)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatHaftaTatil))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatHaftaTatil)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilSaatDurum}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilSaatDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_SAAT)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatResmiTatil))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatResmiTatil)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.izinSaatDurum}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.izinSaatDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_IZIN_SAAT)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatIzin))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.saatIzin)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: center;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETLI_IZIN)}" />
 									</f:facet>
@@ -212,7 +212,7 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretliIzin)>0}" />
 
 								</rich:column>
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: center;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RAPORLU_IZIN)}" />
 									</f:facet>
@@ -220,7 +220,7 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.raporluIzin)>0}" />
 
 								</rich:column>
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: center;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETSIZ_IZIN)}" />
 									</f:facet>
@@ -228,7 +228,7 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretsizIzin)>0}" />
 
 								</rich:column>
-								<rich:column style="text-align: right;">
+								<rich:column style="text-align: center;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETI_ODENEN_MESAI)}" />
 									</f:facet>
@@ -236,14 +236,14 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretiOdenenMesai)>0}" />
 								</rich:column>
 
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.haftaCalisma}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.haftaCalisma}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_MESAI)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilDurum}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_MESAI)}" />
 									</f:facet>
@@ -251,14 +251,14 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilMesai)>0}" />
 								</rich:column>
 
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamGun}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.aksamGun}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AKSAM_GUN_MESAI)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamGunMesai))}"
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamGunMesai)>0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamSaat}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.aksamSaat}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AKSAM_SAAT_MESAI)}" />
 									</f:facet>
@@ -266,7 +266,7 @@
 										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamSaatMesai)>0}" />
 
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.maasKesintiGoster}">
+								<rich:column style="text-align: center;" rendered="#{denklestirmeBordroRaporuHome.maasKesintiGoster}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_EKSIK_CALISMA)}" />
 									</f:facet>
