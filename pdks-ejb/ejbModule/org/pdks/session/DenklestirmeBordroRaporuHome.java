@@ -76,6 +76,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private List<AylikPuantaj> personelDenklestirmeList;
 
 	private Boolean secimDurum = Boolean.FALSE, sureDurum, fazlaMesaiDurum, haftaTatilDurum, artikGunDurum, resmiTatilGunDurum, resmiTatilDurum, durumERP, onaylanmayanDurum, personelERP, modelGoster = Boolean.FALSE;
+	private Boolean normalGunSaatDurum = Boolean.FALSE, haftaTatilSaatDurum = Boolean.FALSE, resmiTatilSaatDurum = Boolean.FALSE, izinSaatDurum = Boolean.FALSE;
 
 	private int ay, yil, maxYil, minYil;
 
@@ -100,8 +101,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private String COL_NORMAL_GUN_ADET = "normalGunAdet";
 	private String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
 	private String COL_RESMI_TATIL_ADET = "resmiTatilAdet";
-
 	private String COL_ARTIK_ADET = "artikAdet";
+	private String COL_NORMAL_GUN_SAAT = "normalGunSaat";
+	private String COL_HAFTA_TATIL_SAAT = "haftaTatilSaat";
+	private String COL_RESMI_TATIL_SAAT = "resmiTatilSaat";
+	private String COL_IZIN_SAAT = "izinSaat";
 	private String COL_UCRETLI_IZIN = "ucretliIzin";
 	private String COL_RAPORLU_IZIN = "raporluIzin";
 	private String COL_UCRETSIZ_IZIN = "ucretsizIzin";
@@ -409,6 +413,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		maasKesintiGoster = Boolean.FALSE;
 		artikGunDurum = Boolean.FALSE;
 		resmiTatilGunDurum = Boolean.FALSE;
+		normalGunSaatDurum = Boolean.FALSE;
+		haftaTatilSaatDurum = Boolean.FALSE;
+		resmiTatilSaatDurum = Boolean.FALSE;
+		izinSaatDurum = Boolean.FALSE;
 		HashMap fields = new HashMap();
 		fields.put("ay", ay);
 		fields.put("yil", yil);
@@ -467,7 +475,17 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					HashMap<Long, PersonelDenklestirmeBordro> idMap = new HashMap<Long, PersonelDenklestirmeBordro>();
 					for (PersonelDenklestirmeBordro personelDenklestirmeBordro : borDenklestirmeBordroList) {
 						PersonelDenklestirme personelDenklestirme = personelDenklestirmeBordro.getPersonelDenklestirme();
- 						if (!artikGunDurum)
+
+						if (!normalGunSaatDurum)
+							normalGunSaatDurum = personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d;
+						if (!haftaTatilSaatDurum)
+							haftaTatilSaatDurum = personelDenklestirmeBordro.getSaatHaftaTatil() != null && personelDenklestirmeBordro.getSaatHaftaTatil().doubleValue() > 0.0d;
+						if (!resmiTatilSaatDurum)
+							resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d;
+						if (!izinSaatDurum)
+							izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d;
+
+						if (!artikGunDurum)
 							artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
 						if (!resmiTatilGunDurum)
 							resmiTatilGunDurum = personelDenklestirmeBordro.getResmiTatilAdet() != null && personelDenklestirmeBordro.getResmiTatilAdet().doubleValue() > 0.0d;
@@ -773,6 +791,14 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getResmiTatilAdet());
 					else if (kodu.equals(COL_ARTIK_ADET))
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getArtikAdet());
+					else if (kodu.equals(COL_NORMAL_GUN_SAAT))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getSaatNormal());
+					else if (kodu.equals(COL_HAFTA_TATIL_SAAT))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getSaatHaftaTatil());
+					else if (kodu.equals(COL_RESMI_TATIL_SAAT))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getSaatResmiTatil());
+					else if (kodu.equals(COL_IZIN_SAAT))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getSaatIzin());
 					else if (kodu.equals(COL_UCRETLI_IZIN))
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretliIzin());
 					else if (kodu.equals(COL_RAPORLU_IZIN))
@@ -1429,5 +1455,69 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setResmiTatilGunDurum(Boolean resmiTatilGunDurum) {
 		this.resmiTatilGunDurum = resmiTatilGunDurum;
+	}
+
+	public String getCOL_NORMAL_GUN_SAAT() {
+		return COL_NORMAL_GUN_SAAT;
+	}
+
+	public void setCOL_NORMAL_GUN_SAAT(String cOL_NORMAL_GUN_SAAT) {
+		COL_NORMAL_GUN_SAAT = cOL_NORMAL_GUN_SAAT;
+	}
+
+	public String getCOL_HAFTA_TATIL_SAAT() {
+		return COL_HAFTA_TATIL_SAAT;
+	}
+
+	public void setCOL_HAFTA_TATIL_SAAT(String cOL_HAFTA_TATIL_SAAT) {
+		COL_HAFTA_TATIL_SAAT = cOL_HAFTA_TATIL_SAAT;
+	}
+
+	public String getCOL_RESMI_TATIL_SAAT() {
+		return COL_RESMI_TATIL_SAAT;
+	}
+
+	public void setCOL_RESMI_TATIL_SAAT(String cOL_RESMI_TATIL_SAAT) {
+		COL_RESMI_TATIL_SAAT = cOL_RESMI_TATIL_SAAT;
+	}
+
+	public String getCOL_IZIN_SAAT() {
+		return COL_IZIN_SAAT;
+	}
+
+	public void setCOL_IZIN_SAAT(String cOL_IZIN_SAAT) {
+		COL_IZIN_SAAT = cOL_IZIN_SAAT;
+	}
+
+	public Boolean getNormalGunSaatDurum() {
+		return normalGunSaatDurum;
+	}
+
+	public void setNormalGunSaatDurum(Boolean normalGunSaatDurum) {
+		this.normalGunSaatDurum = normalGunSaatDurum;
+	}
+
+	public Boolean getHaftaTatilSaatDurum() {
+		return haftaTatilSaatDurum;
+	}
+
+	public void setHaftaTatilSaatDurum(Boolean haftaTatilSaatDurum) {
+		this.haftaTatilSaatDurum = haftaTatilSaatDurum;
+	}
+
+	public Boolean getResmiTatilSaatDurum() {
+		return resmiTatilSaatDurum;
+	}
+
+	public void setResmiTatilSaatDurum(Boolean resmiTatilSaatDurum) {
+		this.resmiTatilSaatDurum = resmiTatilSaatDurum;
+	}
+
+	public Boolean getIzinSaatDurum() {
+		return izinSaatDurum;
+	}
+
+	public void setIzinSaatDurum(Boolean izinSaatDurum) {
+		this.izinSaatDurum = izinSaatDurum;
 	}
 }
