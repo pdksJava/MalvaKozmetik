@@ -103,7 +103,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 
 		for (KapiKGS kapiKGS : list) {
 			Kapi kapi = kapiKGS.getKapi();
-			if (kapiKGS.isManuel()) {
+			if (kapiKGS.isPdksManuel()) {
 				if (kapi.isGirisKapi() && manuelGiris == null)
 					manuelGiris = kapiKGS;
 				else if (kapi.isCikisKapi() && manuelCikis == null)

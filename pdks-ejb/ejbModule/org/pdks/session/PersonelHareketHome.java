@@ -225,7 +225,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		List<KapiView> kapiList = ortakIslemler.fillKapiPDKSList(session);
 		for (Iterator iterator = kapiList.iterator(); iterator.hasNext();) {
 			KapiView kapiView = (KapiView) iterator.next();
-			if (kapiView.getKapiKGS().isManuel()) {
+			if (kapiView.getKapiKGS().isPdksManuel()) {
 				if (kapiView.getKapi().isGirisKapi())
 					manuelGiris = kapiView;
 				else if (kapiView.getKapi().isCikisKapi())

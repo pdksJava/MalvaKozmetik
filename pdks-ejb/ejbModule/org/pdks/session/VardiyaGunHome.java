@@ -4564,7 +4564,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			list.add(kapiKGS.getKapiView());
 		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 			KapiView kapiView = (KapiView) iterator.next();
-			if (kapiView.getKapiKGS().isManuel()) {
+			if (kapiView.getKapiKGS().isPdksManuel()) {
 				if (kapiView.getKapi().isGirisKapi())
 					manuelGiris = kapiView;
 				else if (kapiView.getKapi().isCikisKapi())

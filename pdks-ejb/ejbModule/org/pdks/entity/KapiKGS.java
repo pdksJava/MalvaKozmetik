@@ -29,7 +29,7 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 
 	// public static final String TABLE_NAME = "KAPI_KGS";
 	public static final String TABLE_NAME = "KAPI_SIRKET_KGS";
- 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
+	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
 	public static final String COLUMN_NAME_KGS_ID = "KGS_ID";
 	public static final String COLUMN_NAME_KGS_SIRKET = "KGS_SIRKET_ID";
 
@@ -131,6 +131,14 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 	@Transient
 	public boolean isManuel() {
 		return manuel != null && manuel;
+	}
+
+	@Transient
+	public boolean isPdksManuel() {
+		boolean pdksManuel = false;
+		if (manuel != null && manuel)
+			pdksManuel = kapiSirket == null || kapiSirket.getId() <= 0L;
+		return pdksManuel;
 	}
 
 	@Transient

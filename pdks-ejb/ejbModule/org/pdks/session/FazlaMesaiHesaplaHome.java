@@ -2496,7 +2496,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				List<KapiView> list = ortakIslemler.fillKapiPDKSList(session);
 				for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 					KapiView kapiView = (KapiView) iterator.next();
-					if (kapiView.getKapiKGS().isManuel()) {
+					if (kapiView.getKapiKGS().isPdksManuel()) {
 						if (kapiView.getKapi().isGirisKapi())
 							manuelGiris = kapiView;
 						else if (kapiView.getKapi().isCikisKapi())
