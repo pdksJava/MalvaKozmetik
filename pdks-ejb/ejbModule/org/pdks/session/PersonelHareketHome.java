@@ -223,16 +223,10 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	 */
 	private List<KapiView> setManuelKapi() {
 		List<KapiView> kapiList = ortakIslemler.fillKapiPDKSList(session);
-		for (Iterator iterator = kapiList.iterator(); iterator.hasNext();) {
-			KapiView kapiView = (KapiView) iterator.next();
-			if (kapiView.getKapiKGS().isPdksManuel()) {
-				if (kapiView.getKapi().isGirisKapi())
-					manuelGiris = kapiView;
-				else if (kapiView.getKapi().isCikisKapi())
-					manuelCikis = kapiView;
-
-			}
-		}
+		HashMap<String, KapiView> manuelKapiMap = ortakIslemler.getManuelKapiMap(kapiList, session);
+		manuelGiris = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
+		manuelCikis = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
+		manuelKapiMap = null;
 		return kapiList;
 	}
 

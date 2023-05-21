@@ -14066,6 +14066,40 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param kapiInputList
+	 * @param session
+	 * @return
+	 */
+	public HashMap<String, KapiView> getManuelKapiMap(List<KapiView> kapiInputList, Session session) {
+		HashMap<String, KapiView> map = new HashMap<String, KapiView>();
+		List<KapiView> kapiList = null;
+		if (kapiInputList == null)
+			kapiList = fillKapiPDKSList(session);
+		else
+			kapiList = new ArrayList<KapiView>(kapiInputList);
+		KapiView girisKapi = null, cikisKapi = null;
+		for (Iterator iterator = kapiList.iterator(); iterator.hasNext();) {
+			KapiView kapiView = (KapiView) iterator.next();
+			if (kapiView.getKapi() == null || !kapiView.getKapiKGS().isPdksManuel())
+				iterator.remove();
+		}
+		if (kapiList.size() == 2) {
+			for (KapiView kapiView : kapiList) {
+				if (kapiView.getKapi().isGirisKapi())
+					girisKapi = kapiView;
+				else if (kapiView.getKapi().isCikisKapi())
+					cikisKapi = kapiView;
+			}
+			if (cikisKapi != null && girisKapi != null) {
+				map.put(Kapi.TIPI_KODU_GIRIS, girisKapi);
+				map.put(Kapi.TIPI_KODU_CIKIS, cikisKapi);
+			}
+		}
+		kapiList = null;
+		return map;
+	}
+
+	/**
 	 * @param vardiyalar
 	 * @param hareketKaydet
 	 * @param oncekiVardiyaGun
@@ -14082,23 +14116,9 @@ public class OrtakIslemler implements Serializable {
 				sistemUser = getSistemAdminUser(session);
 		}
 		if (sistemUser != null && neden != null) {
-			List<KapiView> kapiList = fillKapiPDKSList(session);
-			KapiView girisKapi = null, cikisKapi = null;
-			for (Iterator iterator = kapiList.iterator(); iterator.hasNext();) {
-				KapiView kapiView = (KapiView) iterator.next();
-				if (!kapiView.getKapiKGS().isPdksManuel())
-					iterator.remove();
-
-			}
-			if (kapiList.size() == 2) {
-				for (KapiView kapiView : kapiList) {
-					if (kapiView.getKapi().isGirisKapi())
-						girisKapi = kapiView;
-					else if (kapiView.getKapi().isCikisKapi())
-						cikisKapi = kapiView;
-				}
-			}
-			kapiList = null;
+			HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
+			KapiView girisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS), cikisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
+			manuelKapiMap = null;
 			if (girisKapi != null && cikisKapi != null) {
 				for (VardiyaGun pdksVardiyaGun : vardiyalar) {
 					try {

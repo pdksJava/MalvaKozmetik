@@ -89,7 +89,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 
 	}
 
-	public void fillkapiList() {
+	public void fillKapiList() {
 		kapiList.clear();
 		List<KapiView> kapiViewList = new ArrayList<KapiView>();
 		HashMap parametreMap = new HashMap();
@@ -99,20 +99,14 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<KapiKGS> list = pdksEntityController.getObjectByInnerObjectList(parametreMap, KapiKGS.class);
 		KapiKGS manuelGiris = null, manuelCikis = null;
-		List<KapiKGS> manuelList = new ArrayList<KapiKGS>();
-
-		for (KapiKGS kapiKGS : list) {
-			Kapi kapi = kapiKGS.getKapi();
-			if (kapiKGS.isPdksManuel()) {
-				if (kapi.isGirisKapi() && manuelGiris == null)
-					manuelGiris = kapiKGS;
-				else if (kapi.isCikisKapi() && manuelCikis == null)
-					manuelCikis = kapiKGS;
-				manuelList.add(kapiKGS);
-			}
+		for (KapiKGS kapiKGS : list)
 			kapiViewList.add(kapiKGS.getKapiView());
-		}
-		if (manuelList.size() == 2 && manuelGiris != null && manuelCikis != null) {
+
+		HashMap<String, KapiView> manuelKapiMap = ortakIslemler.getManuelKapiMap(kapiViewList, session);
+		manuelGiris = manuelKapiMap.containsKey(Kapi.TIPI_KODU_GIRIS) ? manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS).getKapiKGS() : null;
+		manuelCikis = manuelKapiMap.containsKey(Kapi.TIPI_KODU_CIKIS) ? manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS).getKapiKGS() : null;
+		manuelKapiMap = null;
+		if (manuelGiris != null && manuelCikis != null) {
 			kapiViewList.clear();
 			kapiViewList.add(manuelGiris.getKapiView());
 			kapiViewList.add(manuelCikis.getKapiView());
@@ -369,7 +363,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 			hareket.setKapiView(new KapiView());
 			hareket.setIslem(new PersonelHareketIslem());
 			setInstance(hareket);
-			fillkapiList();
+			fillKapiList();
 			fillHareketIslemList();
 			fillEkSahaTanim();
 			vardiyaGunleri.clear();

@@ -1236,18 +1236,10 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		manuelGiris = null;
 		manuelCikis = null;
 		if (!kgsList1.isEmpty()) {
-			List<KapiView> list = ortakIslemler.fillKapiPDKSList(session);
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				KapiView kapiView = (KapiView) iterator.next();
-				if (kapiView.getKapiKGS().isPdksManuel()) {
-					if (kapiView.getKapi().isGirisKapi())
-						manuelGiris = kapiView;
-					else if (kapiView.getKapi().isCikisKapi())
-						manuelCikis = kapiView;
-
-				}
-			}
-			list = null;
+			HashMap<String, KapiView> manuelKapiMap = ortakIslemler.getManuelKapiMap(null, session);
+			manuelGiris = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
+			manuelCikis = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
+			manuelKapiMap = null;
 		}
 		setHareketList(kgsList1);
 
