@@ -663,7 +663,13 @@
 										<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
 												rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal!=0}">
 
-												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" />
+												<B><ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal gt 0}">
+														<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" />
+													</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal lt 0}">
+														<SPAN style="color: red;"> <h:outputText
+																value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
+													</ui:fragment>
+												</B>
 											</ui:fragment></td>
 									</ui:fragment>
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.haftaTatilCalismaSaatKod())}">
@@ -688,7 +694,13 @@
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.normalCalismaGunKod())}">
 										<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
 												rendered="#{aylikPuantaj.calismaModeli.aylikOdeme and aylikPuantaj.denklestirmeBordro.saatNormal!=0}">
-												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" />
+												<B><ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal gt 0}">
+														<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" />
+													</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal lt 0}">
+														<SPAN style="color: red;"> <h:outputText
+																value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
+													</ui:fragment>
+												</B>
 											</ui:fragment></td>
 									</ui:fragment>
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.haftaTatilCalismaGunKod())}">
@@ -704,7 +716,7 @@
 												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatResmiTatil)}" />
 											</ui:fragment></td>
 									</ui:fragment>
-									
+
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.ucretliIzinGunKod())}">
 										<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
 												rendered="#{aylikPuantaj.denklestirmeBordro.ucretliIzin!=0}">

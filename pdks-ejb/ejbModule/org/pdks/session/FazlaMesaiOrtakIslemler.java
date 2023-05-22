@@ -329,7 +329,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
-				double normalCalisma = ap.getSaatToplami() - ap.getResmiTatilToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat - ap.getFazlaMesaiSure();
+				double normalCalisma = ap.getSaatToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat - ap.getFazlaMesaiSure();
 				if ((saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
 					if (ayGunSayisi == toplamAdet)
 						normalGunAdet += 30 - ayGunSayisi;
@@ -354,7 +354,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					}
 					if (izinGunAdet > 0)
 						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);
-					if (normalCalisma > 0)
+					if (normalCalisma != 0)
 						detayMap.put(BordroDetayTipi.SAAT_NORMAL, normalCalisma);
 					if (resmiTatilSaat > 0)
 						detayMap.put(BordroDetayTipi.SAAT_RESMI_TATIL, resmiTatilSaat);
