@@ -12323,9 +12323,11 @@ public class OrtakIslemler implements Serializable {
 							}
 							sure += parcaSure1;
 						}
-						if ((vardiyaGun.getDurum() || vardiyaGun.isFiiliHesapla() == false) && !tatilBas.isEmpty()) {
+						int basAdet = tatilBas != null ? tatilBas.size() : -1;
+						int bitAdet = tatilBit != null ? tatilBit.size() : -2;
+						if ((vardiyaGun.getDurum() || vardiyaGun.isFiiliHesapla() == false) && basAdet > 0 && basAdet == bitAdet) {
 							for (int i = 0; i < tatilBas.size(); i++) {
-								Date basTar = calBas.get(i), bitTar = calBit.get(i);
+								Date basTar = tatilBas.get(i), bitTar = tatilBit.get(i);
 								parcaSure2 += getSaatSure(basTar, bitTar, yemekList, vardiyaGun, session);
 							}
 							fazlaMesaiSure += parcaSure2;
