@@ -220,8 +220,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
 				for (VardiyaGun vardiyaGun : ap.getVardiyalar()) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
-
-						Vardiya vardiya = vardiyaGun.getVardiya();
+ 						Vardiya vardiya = vardiyaGun.getVardiya();
 						boolean haftaTatil = vardiya.isHaftaTatil();
 						Tatil tatil = vardiyaGun.getTatil();
 						boolean resmiTatil = tatil != null;
@@ -230,8 +229,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							// calisiyor = true;
 							String izinKodu = null;
 							double artiGun = 1.0d;
-							if (saatlikCalisma)
-								artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
+//							if (saatlikCalisma)
+//								artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
 							if (vardiyaGun.getIzin() != null) {
 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 								if (izinTipi != null) {

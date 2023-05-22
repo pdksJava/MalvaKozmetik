@@ -98,6 +98,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	private String islemTipi, donusAdres = "", planKey;
 	private boolean denklestirmeAyDurum, ikRole, adminRole;
 	private Boolean visibled = false;
+	private Tanim sonIslemNeden = null;
 	private List<String> roller;
 	private Date tarih;
 	@Min(value = 0, message = "Minumum 0 giriniz")
@@ -300,7 +301,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		visibled = null;
 		adminRoleDurum();
-
+		sonIslemNeden = null;
 		boolean fazlaMesaiGiris = false;
 		donusAdres = null;
 		if (linkAdres == null && ikRole == false && authenticatedUser.isDirektorSuperVisor() == false)
@@ -517,6 +518,14 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		if (pdksPersonel == null)
 			pdksPersonel = fazlaMesaiPersonel;
 		fillHareketIslemList();
+		if (sonIslemNeden != null) {
+			Long id = sonIslemNeden.getId();
+			for (Tanim tanim : hareketIslemList) {
+				if (tanim.getId().equals(id))
+					sonIslemNeden = tanim;
+
+			}
+		}
 		hareketSecim = "";
 		if (pdksPersonel != null) {
 			aramaSecenekleri.setSicilNo(pdksPersonel.getPdksSicilNo());
@@ -524,7 +533,6 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 				aramaSecenekleri.setSirketId(pdksPersonel.getSirket().getId());
 		}
 		if (!authenticatedUser.isIK() && !authenticatedUser.isAdmin()) {
-
 			cal.setTime(tarih);
 			HashMap map1 = new HashMap();
 			// map1.put("onaylandi=", Boolean.TRUE);
@@ -541,15 +549,16 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		}
 		if (devam) {
 			fillKGSKapiList();
-
 			setIslemTipi("E");
-
 			HareketKGS hareket = new HareketKGS();
 			hareket.setPersonel(pdksPersonel.getPersonelKGS().getPersonelView());
 			hareket.getPersonel().setPdksPersonel(pdksPersonel);
 			hareket.setKapiView(new KapiView());
+			PersonelHareketIslem islem = new PersonelHareketIslem();
+			if (sonIslemNeden != null)
+				islem.setNeden(sonIslemNeden);
 
-			hareket.setIslem(new PersonelHareketIslem());
+			hareket.setIslem(islem);
 			setInstance(hareket);
 			cal = Calendar.getInstance();
 			setSaat(cal.get(Calendar.HOUR_OF_DAY));
@@ -658,6 +667,8 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		Long abhId = null;
 		try {
 			HareketKGS kgsHareket = getInstance();
+			if (visibled == null || ikRole == false)
+				sonIslemNeden = kgsHareket.getIslem().getNeden();
 			PersonelView personelView = kgsHareket.getPersonel();
 			HashMap parametreMap = new HashMap();
 			if (personelView.getId() == null) {
