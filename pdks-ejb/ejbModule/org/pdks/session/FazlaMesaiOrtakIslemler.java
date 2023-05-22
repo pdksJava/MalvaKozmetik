@@ -329,7 +329,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
-				double normalCalisma = ap.getSaatToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat - ap.getFazlaMesaiSure();
+				double normalCalisma = ap.getSaatToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat;
 				if ((saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
 					if (ayGunSayisi == toplamAdet)
 						normalGunAdet += 30 - ayGunSayisi;
