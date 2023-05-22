@@ -97,12 +97,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param kaydet
 	 * @param puantajList
 	 * @param fazlaMesaiHesapla
 	 * @param donemStr
 	 * @param session
+	 * @return
 	 */
-	public TreeMap<String, Boolean> bordroVeriOlustur(List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, Session session) {
+	public TreeMap<String, Boolean> bordroVeriOlustur(boolean kaydet, List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, Session session) {
 		TreeMap<String, Boolean> baslikMap = new TreeMap<String, Boolean>();
 		String arifeGunuBordroYarim = ortakIslemler.getParameterKey("arifeGunuBordroYarim");
 		HashMap fields = new HashMap();
@@ -220,7 +222,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
 				for (VardiyaGun vardiyaGun : ap.getVardiyalar()) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
- 						Vardiya vardiya = vardiyaGun.getVardiya();
+						Vardiya vardiya = vardiyaGun.getVardiya();
 						boolean haftaTatil = vardiya.isHaftaTatil();
 						Tatil tatil = vardiyaGun.getTatil();
 						boolean resmiTatil = tatil != null;
@@ -229,8 +231,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							// calisiyor = true;
 							String izinKodu = null;
 							double artiGun = 1.0d;
-//							if (saatlikCalisma)
-//								artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
+							// if (saatlikCalisma)
+							// artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
 							if (vardiyaGun.getIzin() != null) {
 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 								if (izinTipi != null) {
@@ -343,13 +345,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						continue;
 
 					denklestirmeBordro.setGuncellendi(denklestirmeBordro.getId() == null);
-					denklestirmeBordro.setNormalGunAdet(normalGunAdet);
-					denklestirmeBordro.setHaftaTatilAdet(haftaTatilAdet);
-					denklestirmeBordro.setResmiTatilAdet(resmiTatilAdet);
-					denklestirmeBordro.setArtikAdet(artikAdet);
-					if (izinGunAdet > 0)
-						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);
-
 					if (!saatlikCalisma) {
 						normalCalisma = 0.0d;
 						resmiTatilSaat = 0.0d;
@@ -357,7 +352,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						izinGunSaat = 0.0d;
 						normalSaat = 0.0d;
 					}
-
+					if (izinGunAdet > 0)
+						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);
 					if (normalCalisma > 0)
 						detayMap.put(BordroDetayTipi.SAAT_NORMAL, normalCalisma);
 					if (resmiTatilSaat > 0)
@@ -367,9 +363,15 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (izinGunSaat > 0)
 						detayMap.put(BordroDetayTipi.SAAT_IZIN, izinGunSaat);
 
-					if (denklestirmeBordro.isGuncellendi()) {
-						pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeBordro);
-						flush = true;
+					if (kaydet) {
+						denklestirmeBordro.setNormalGunAdet(normalGunAdet);
+						denklestirmeBordro.setHaftaTatilAdet(haftaTatilAdet);
+						denklestirmeBordro.setResmiTatilAdet(resmiTatilAdet);
+						denklestirmeBordro.setArtikAdet(artikAdet);
+						if (denklestirmeBordro.isGuncellendi()) {
+							pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeBordro);
+							flush = true;
+						}
 					}
 					ap.setDenklestirmeBordro(denklestirmeBordro);
 					HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay> detayMap1 = new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>();
@@ -386,10 +388,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							}
 							detayMap1.put(bordroIzinGrubu, bordroDetay);
 							bordroDetay.setGuncellendi(bordroDetay.getId() == null);
-							bordroDetay.setMiktar(detayMap.get(bordroIzinGrubu));
-							if (bordroDetay.isGuncellendi()) {
-								pdksEntityController.saveOrUpdate(session, entityManager, bordroDetay);
-								flush = true;
+							if (kaydet) {
+								bordroDetay.setMiktar(detayMap.get(bordroIzinGrubu));
+								if (bordroDetay.isGuncellendi()) {
+									pdksEntityController.saveOrUpdate(session, entityManager, bordroDetay);
+									flush = true;
+								}
 							}
 						}
 
