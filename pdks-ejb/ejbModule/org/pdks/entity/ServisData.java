@@ -26,7 +26,7 @@ public class ServisData extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_ICERIK_OUT = "ICERIK_OUT";
 
 	private String adi;
-	private byte[] icerikIn, icerikOut;
+	private String icerikIn, icerikOut;
 	private Date tarih;
 
 	@Column(name = COLUMN_NAME_FONKSIYON_ADI)
@@ -48,21 +48,21 @@ public class ServisData extends BasePDKSObject implements Serializable {
 		this.tarih = tarih;
 	}
 
-	@Column(name = COLUMN_NAME_ICERIK_IN, length = Integer.MAX_VALUE)
-	public byte[] getIcerikIn() {
+	@Column(name = COLUMN_NAME_ICERIK_IN)
+	public String getIcerikIn() {
 		return icerikIn;
 	}
 
-	public void setIcerikIn(byte[] icerikIn) {
+	public void setIcerikIn(String icerikIn) {
 		this.icerikIn = icerikIn;
 	}
 
-	@Column(name = COLUMN_NAME_ICERIK_OUT, length = Integer.MAX_VALUE)
-	public byte[] getIcerikOut() {
+	@Column(name = COLUMN_NAME_ICERIK_OUT)
+	public String getIcerikOut() {
 		return icerikOut;
 	}
 
-	public void setIcerikOut(byte[] icerikOut) {
+	public void setIcerikOut(String icerikOut) {
 		this.icerikOut = icerikOut;
 	}
 

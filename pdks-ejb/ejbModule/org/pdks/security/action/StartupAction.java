@@ -46,6 +46,7 @@ import org.pdks.entity.Parameter;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelIzin;
+import org.pdks.entity.ServisData;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.SkinBean;
 import org.pdks.entity.Tanim;
@@ -238,8 +239,8 @@ public class StartupAction implements Serializable {
 			list.add(VardiyaIzin.class);
 			list.add(VardiyaYemekIzin.class);
 			list.add(YemekKartsiz.class);
-			// list.add(ServisData.class);
-			pdksEntityController.savePrepareTableID(UserRoles.class, entityManager, session);
+			list.add(ServisData.class);
+			// pdksEntityController.savePrepareTableID(ServisData.class, entityManager, session);
 
 			for (Class class1 : list) {
 				long adet = pdksEntityController.savePrepareTableID(class1, entityManager, session);

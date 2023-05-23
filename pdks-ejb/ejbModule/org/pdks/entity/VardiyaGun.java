@@ -2152,11 +2152,21 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	@Transient
+	public double getSaatCalisanGunlukKatsayisi() {
+		double katSayi = 0.0d;
+		if (ayinGunu) {
+			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_GUN.value());
+			katSayi = decimal != null ? decimal.doubleValue() : 7.5d;
+		}
+		return katSayi;
+	}
+
+	@Transient
 	public double getSaatCalisanArifeNormalKatsayisi() {
 		double katSayi = 0.0d;
 		if (ayinGunu) {
 			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_ARIFE_NORMAL_SAAT.value());
-			katSayi = decimal != null ? decimal.doubleValue() : 4.0d;
+			katSayi = decimal != null ? decimal.doubleValue() : 3.75d;
 		}
 		return katSayi;
 	}
@@ -2166,7 +2176,7 @@ public class VardiyaGun extends BaseObject {
 		double katSayi = 0.0d;
 		if (ayinGunu) {
 			BigDecimal decimal = getKatSayi(KatSayiTipi.SAAT_CALISAN_ARIFE_TATIL_SAAT.value());
-			katSayi = decimal != null ? decimal.doubleValue() : 5.0d;
+			katSayi = decimal != null ? decimal.doubleValue() : 3.75d;
 		}
 		return katSayi;
 	}

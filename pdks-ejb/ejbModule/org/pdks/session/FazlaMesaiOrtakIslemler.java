@@ -220,8 +220,15 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				double normalSaat = 0.0d, resmiTatilSaat = 0.0d, haftaTatilSaat = 0.0d, izinGunSaat = 0.0d;
 				LinkedHashMap<BordroDetayTipi, Double> detayMap = new LinkedHashMap<BordroDetayTipi, Double>();
 				boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
+				Double gunlukKatsayi = null;
 				for (VardiyaGun vardiyaGun : ap.getVardiyalar()) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null) {
+						if (gunlukKatsayi == null) {
+							gunlukKatsayi = vardiyaGun.getSaatCalisanGunlukKatsayisi();
+							if (gunlukKatsayi == null || gunlukKatsayi.doubleValue() < 7.5d)
+								gunlukKatsayi = gunlukKatsayi.doubleValue();
+						}
+
 						Vardiya vardiya = vardiyaGun.getVardiya();
 						boolean haftaTatil = vardiya.isHaftaTatil();
 						Tatil tatil = vardiyaGun.getTatil();
@@ -329,7 +336,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
-				double normalCalisma = ap.getSaatToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat - ap.getFazlaMesaiSure();
+				double normalCalisma = ap.getSaatToplami() > ap.getPlanlananSure() ? ap.getPlanlananSure() : ap.getSaatToplami();
 				if ((saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
 					if (ayGunSayisi == toplamAdet)
 						normalGunAdet += 30 - ayGunSayisi;
@@ -351,6 +358,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						haftaTatilSaat = 0.0d;
 						izinGunSaat = 0.0d;
 						normalSaat = 0.0d;
+					} else {
+						normalGunAdet = normalCalisma / gunlukKatsayi;
+						resmiTatilAdet = resmiTatilSaat / gunlukKatsayi;
+						haftaTatilAdet = haftaTatilSaat / gunlukKatsayi;
+						artikAdet = 0;
+
 					}
 					if (izinGunAdet > 0)
 						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);

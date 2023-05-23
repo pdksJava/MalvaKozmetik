@@ -319,7 +319,6 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public double getIzinSaat(VardiyaGun pdksVardiyaGun) {
 		double izinSure = this.getIzin();
-		IzinTipi izinTipi = pdksVardiyaGun.getIzin() != null ? pdksVardiyaGun.getIzin().getIzinTipi() : null;
 		if (izinhaftaSonu > 0.0d) {
 			Calendar cal = Calendar.getInstance();
 			Date vardiyaDate = pdksVardiyaGun.getVardiyaDate();
@@ -328,10 +327,13 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 			if (dayOfWeek == Calendar.SATURDAY)
 				izinSure = izinhaftaSonu;
 		}
-		if (this.isSaatlikOdeme() && izinTipi != null) {
-			if (izinTipi.isUcretsizIzinTipi())
-				izinSure = 0.0d;
-		}
+		if (this.isSaatlikOdeme()) {
+//			IzinTipi izinTipi = pdksVardiyaGun.getIzin() != null ? pdksVardiyaGun.getIzin().getIzinTipi() : null;
+//			if (izinTipi != null) {
+//				if (izinTipi.isUcretsizIzinTipi())
+//					izinSure = 0.0d;
+//			}
+ 		}
 
 		return izinSure;
 	}
