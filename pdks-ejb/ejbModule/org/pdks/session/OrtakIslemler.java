@@ -4233,6 +4233,11 @@ public class OrtakIslemler implements Serializable {
 		return kod;
 	}
 
+	public String gerceklesenMesaiKod() {
+		String kod = getBaslikAciklama("gerceklesenMesaiKod", "GM");
+		return kod;
+	}
+
 	public String devredenBakiyeKod() {
 		String kod = getBaslikAciklama("devredenBakiyeKod", "B");
 		return kod;

@@ -329,7 +329,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
-				double normalCalisma = ap.getSaatToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat;
+				double normalCalisma = ap.getSaatToplami() - resmiTatilSaat - haftaTatilSaat - izinGunSaat - ap.getFazlaMesaiSure();
 				if ((saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
 					if (ayGunSayisi == toplamAdet)
 						normalGunAdet += 30 - ayGunSayisi;
@@ -377,34 +377,43 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay> detayMap1 = new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>();
 					denklestirmeBordro.setDetayMap(detayMap1);
 					if (!detayMap.isEmpty()) {
-						for (BordroDetayTipi bordroIzinGrubu : detayMap.keySet()) {
+						for (BordroDetayTipi bordroDetayTipi : detayMap.keySet()) {
 							PersonelDenklestirmeBordroDetay bordroDetay = null;
-							String detayKey = PersonelDenklestirmeBordroDetay.getDetayKey(denklestirmeBordro, bordroIzinGrubu.value());
+							String detayKey = PersonelDenklestirmeBordroDetay.getDetayKey(denklestirmeBordro, bordroDetayTipi.value());
 							if (bordroDetayMap.containsKey(detayKey)) {
 								bordroDetay = bordroDetayMap.get(detayKey);
 								bordroDetayMap.remove(detayKey);
 							} else {
-								bordroDetay = new PersonelDenklestirmeBordroDetay(denklestirmeBordro, bordroIzinGrubu);
+								bordroDetay = new PersonelDenklestirmeBordroDetay(denklestirmeBordro, bordroDetayTipi);
 							}
-							detayMap1.put(bordroIzinGrubu, bordroDetay);
+							detayMap1.put(bordroDetayTipi, bordroDetay);
 							bordroDetay.setGuncellendi(bordroDetay.getId() == null);
 							if (kaydet) {
-								bordroDetay.setMiktar(detayMap.get(bordroIzinGrubu));
+								bordroDetay.setMiktar(detayMap.get(bordroDetayTipi));
 								if (bordroDetay.isGuncellendi()) {
 									pdksEntityController.saveOrUpdate(session, entityManager, bordroDetay);
 									flush = true;
 								}
 							}
 						}
-
+						if (calismaModeli.isFazlaMesaiVarMi()) {
+							if (ap.getGecenAyFazlaMesai(authenticatedUser) != 0)
+								baslikMap.put(ortakIslemler.devredenMesaiKod(), Boolean.TRUE);
+							if (ap.getFazlaMesaiSure() > 0)
+								baslikMap.put(ortakIslemler.ucretiOdenenKod(), Boolean.TRUE);
+							if (ap.getDevredenSure() != 0)
+								baslikMap.put(ortakIslemler.devredenBakiyeKod(), Boolean.TRUE);
+							if (ap.getAylikNetFazlaMesai() != 0)
+								baslikMap.put(ortakIslemler.gerceklesenMesaiKod(), Boolean.TRUE);
+						}
 					}
+
 				}
+
 				detayMap = null;
 				if (flush)
 					session.flush();
 
-				baslikGuncelle(baslikMap, ortakIslemler.devredenMesaiKod(), ap.getGecenAyFazlaMesai(authenticatedUser));
-				baslikGuncelle(baslikMap, ortakIslemler.devredenBakiyeKod(), ap.getDevredenSure());
 				String keyEk = saatlikCalisma ? "" : "G";
 				baslikGuncelle(baslikMap, ortakIslemler.normalCalismaSaatKod() + keyEk, normalSaat);
 				baslikGuncelle(baslikMap, ortakIslemler.haftaTatilCalismaSaatKod() + keyEk, haftaTatilSaat);

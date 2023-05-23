@@ -85,12 +85,16 @@
 								value="ÇGS" /> <rich:toolTip for="baslikCGS">
 								<SPAN style="font-size: 12px; font-weight: normal;"> <B>Çalışılması Gereken Saat: </B>Çalışanın bu listede çalışması gereken saat
 								</SPAN>
-							</rich:toolTip></th>
-						<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;" id="baslikGM"><h:outputText
-								value="GM" /> <rich:toolTip for="baslikGM">
-								<SPAN style="font-size: 12px; font-weight: normal;"> <B>Gerçekleşen Mesai : </B>Çalışanın bu listedeki eksi/fazla çalışma saati
-								</SPAN>
-							</rich:toolTip></th>
+							</rich:toolTip></th> de
+						<ui:fragment
+							rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod())}">
+							<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+								id="baslik#{ortakIslemler.gerceklesenMesaiKod()}"><h:outputText value="#{ortakIslemler.gerceklesenMesaiKod()}" /> <rich:toolTip
+									for="baslik#{ortakIslemler.gerceklesenMesaiKod()}">
+									<SPAN style="font-size: 12px; font-weight: normal;"> <B>Gerçekleşen Mesai : </B>Çalışanın bu listedeki eksi/fazla çalışma saati
+									</SPAN>
+								</rich:toolTip></th>
+						</ui:fragment>
 						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.stajerSirket==false}">
 							<ui:fragment
 								rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.devredenMesaiKod())}">
@@ -461,25 +465,30 @@
 									</rich:toolTip>
 								</ui:fragment>
 							</td>
-							<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center" id="aylikNetFazlaMesa#{aylikPuantaj.personelDenklestirmeAylik.id}"><ui:fragment
-									rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.aylikNetFazlaMesai!=0 and aylikPuantaj.calismaModeli.fazlaMesaiVar}">
-									<ui:fragment rendered="#{aylikPuantaj.eksikCalismaVar}">
-										<SPAN style="color: red; font-size: 13px;"> <h:outputText
-												value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.aylikNetFazlaMesai)}" />
-										</SPAN>
+							<ui:fragment
+								rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod())}">
 
-										<rich:toolTip for="aylikNetFazlaMesa#{aylikPuantaj.personelDenklestirmeAylik.id}">
-											<span style="color: black; font-size: 13px;">İzin veya kart girişlerinden kaynaklı eksik çalışma var!</span>
-										</rich:toolTip>
-									</ui:fragment>
-									<ui:fragment rendered="#{aylikPuantaj.eksikCalismaVar==false}">
-										<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.aylikNetFazlaMesai)}" />
+								<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center" id="aylikNetFazlaMesa#{aylikPuantaj.personelDenklestirmeAylik.id}"><ui:fragment
+										rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.aylikNetFazlaMesai!=0 and aylikPuantaj.calismaModeli.fazlaMesaiVar}">
+										<ui:fragment rendered="#{aylikPuantaj.eksikCalismaVar}">
+											<SPAN style="color: red; font-size: 13px;"> <h:outputText
+													value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.aylikNetFazlaMesai)}" />
+											</SPAN>
 
-									</ui:fragment>
-								</ui:fragment></td>
+											<rich:toolTip for="aylikNetFazlaMesa#{aylikPuantaj.personelDenklestirmeAylik.id}">
+												<span style="color: black; font-size: 13px;">İzin veya kart girişlerinden kaynaklı eksik çalışma var!</span>
+											</rich:toolTip>
+										</ui:fragment>
+										<ui:fragment rendered="#{aylikPuantaj.eksikCalismaVar==false}">
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.aylikNetFazlaMesai)}" />
+
+										</ui:fragment>
+									</ui:fragment></td>
+							</ui:fragment>
 
 							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.stajerSirket==false}">
-								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey('DM')}">
+								<ui:fragment
+									rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false  or fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.devredenMesaiKod())}">
 									<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center" id=""><ui:fragment
 											rendered="#{aylikPuantaj.getGecenAyFazlaMesai(authenticatedUser)!=0}">
 
@@ -506,7 +515,8 @@
 											</ui:fragment>
 										</ui:fragment></td>
 								</ui:fragment>
-								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey('UOM')}">
+								<ui:fragment
+									rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.ucretiOdenenKod())}">
 									<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
 											rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.fazlaMesaiSure!=0}">
 											<SPAN id="fazlaMesaiSure#{aylikPuantaj.personelDenklestirmeAylik.id}"><U> <ui:fragment
@@ -668,8 +678,7 @@
 													</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal lt 0}">
 														<SPAN style="color: red;"> <h:outputText
 																value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
-													</ui:fragment>
-												</B>
+													</ui:fragment> </B>
 											</ui:fragment></td>
 									</ui:fragment>
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.haftaTatilCalismaSaatKod())}">
@@ -699,8 +708,7 @@
 													</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal lt 0}">
 														<SPAN style="color: red;"> <h:outputText
 																value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
-													</ui:fragment>
-												</B>
+													</ui:fragment> </B>
 											</ui:fragment></td>
 									</ui:fragment>
 									<ui:fragment rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.haftaTatilCalismaGunKod())}">
