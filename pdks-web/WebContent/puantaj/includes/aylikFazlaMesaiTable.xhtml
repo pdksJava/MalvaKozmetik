@@ -638,8 +638,7 @@
 						</ui:fragment>
 					</rich:column>
 					<rich:column rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.normalGunKod())}" headerClass="bordroGun"
-						styleClass="#{aylikPuantaj.trSonucClass}"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+						styleClass="#{aylikPuantaj.trSonucClass}" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
 						<f:facet name="header">
 							<ui:fragment>
 								<h:outputText value="#{ortakIslemler.normalGunKod()}" id="baslik#{ortakIslemler.normalGunKod()}" />
@@ -653,8 +652,7 @@
 						</ui:fragment>
 					</rich:column>
 					<rich:column rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.haftaTatilGunKod())}" headerClass="bordroGun"
-						styleClass="#{aylikPuantaj.trSonucClass}"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+						styleClass="#{aylikPuantaj.trSonucClass}" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
 						<f:facet name="header">
 							<ui:fragment>
 								<h:outputText value="#{ortakIslemler.haftaTatilGunKod()}" id="baslik#{ortakIslemler.haftaTatilGunKod()}" />
@@ -668,8 +666,7 @@
 						</ui:fragment>
 					</rich:column>
 					<rich:column rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.resmiTatilGunKod())}" headerClass="bordroGun"
-						styleClass="#{aylikPuantaj.trSonucClass}"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+						styleClass="#{aylikPuantaj.trSonucClass}" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
 						<f:facet name="header">
 							<ui:fragment>
 								<h:outputText value="#{ortakIslemler.resmiTatilGunKod()}" id="baslik#{ortakIslemler.resmiTatilGunKod()}" />
@@ -726,23 +723,23 @@
 						</ui:fragment>
 					</rich:column>
 					<rich:column rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.ucretsizIzinGunKod())}"
-						styleClass="#{aylikPuantaj.trSonucClass}"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background: #FFFFFF">
+						styleClass="#{aylikPuantaj.trSonucClass}" headerClass="izinGrup"
+						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;>
 						<f:facet name="header">
-							<ui:fragment>
-								<h:outputText value="#{ortakIslemler.ucretsizIzinGunKod()}" id="baslik#{ortakIslemler.ucretsizIzinGunKod()}" />
-								<rich:toolTip for="baslik#{ortakIslemler.ucretsizIzinGunKod()}">
-									<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretsiz İzin Gün</B></SPAN>
-								</rich:toolTip>
-							</ui:fragment>
+						<ui:fragment>
+							<h:outputText value="#{ortakIslemler.ucretsizIzinGunKod()}" id="baslik#{ortakIslemler.ucretsizIzinGunKod()}" />
+							<rich:toolTip for="baslik#{ortakIslemler.ucretsizIzinGunKod()}">
+								<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretsiz İzin Gün</B></SPAN>
+							</rich:toolTip>
+						</ui:fragment>
 						</f:facet>
 						<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.ucretsizIzin!=0}">
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.ucretsizIzin)}" />
 						</ui:fragment>
 					</rich:column>
 					<rich:column rendered="#{fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.hastalikIzinGunKod())}"
-						styleClass="#{aylikPuantaj.trSonucClass}"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background: #FFFFFF">
+						styleClass="#{aylikPuantaj.trSonucClass}"  headerClass="izinGrup"
+						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;>
 						<f:facet name="header">
 							<ui:fragment>
 								<h:outputText value="#{ortakIslemler.hastalikIzinGunKod()}" id="baslik#{ortakIslemler.hastalikIzinGunKod()}" />

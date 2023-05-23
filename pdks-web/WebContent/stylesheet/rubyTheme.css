@@ -679,6 +679,14 @@ sari {
 	width: autostretch;
 }
 
+.izinGrup {
+	background: white;
+	color: black;
+	font-size: 10px;
+	white-space: nowrap;
+	width: autostretch;
+}
+
 .bordroGun {
 	background: yellow;
 	color: black;
