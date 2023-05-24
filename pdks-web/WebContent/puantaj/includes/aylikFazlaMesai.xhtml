@@ -85,7 +85,7 @@
 								value="ÇGS" /> <rich:toolTip for="baslikCGS">
 								<SPAN style="font-size: 12px; font-weight: normal;"> <B>Çalışılması Gereken Saat: </B>Çalışanın bu listede çalışması gereken saat
 								</SPAN>
-							</rich:toolTip></th> de
+							</rich:toolTip></th>  
 						<ui:fragment
 							rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod())}">
 							<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
@@ -563,7 +563,7 @@
 
 								</ui:fragment>
 
-								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey('B')}">
+								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster==false or fazlaMesaiHesaplaHome.baslikMap.containsKey(ortakIslemler.devredenBakiyeKod())}">
 									<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
 											rendered="#{(aylikPuantaj.fazlaMesaiHesapla or aylikPuantaj.denklestirilmeyenDevredenVar) and aylikPuantaj.devredenSure!=0}">
 											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.guncelleyenUser==null }">
