@@ -348,8 +348,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (denklestirmeBordro == null) {
 						denklestirmeBordro = new PersonelDenklestirmeBordro();
 						denklestirmeBordro.setPersonelDenklestirme(personelDenklestirme);
-					} else if (fazlaMesaiHesapla == false)
-						continue;
+					}
+					Long denklestirmeBordroId = denklestirmeBordro.getId();
 
 					denklestirmeBordro.setGuncellendi(denklestirmeBordro.getId() == null);
 					if (!saatlikCalisma) {
@@ -375,49 +375,63 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						detayMap.put(BordroDetayTipi.SAAT_HAFTA_TATIL, haftaTatilSaat);
 					if (izinGunSaat > 0)
 						detayMap.put(BordroDetayTipi.SAAT_IZIN, izinGunSaat);
-
+					if (!kaydet)
+						denklestirmeBordro = (PersonelDenklestirmeBordro) denklestirmeBordro.cloneEmpty();
+					denklestirmeBordro.setNormalGunAdet(normalGunAdet);
+					denklestirmeBordro.setHaftaTatilAdet(haftaTatilAdet);
+					denklestirmeBordro.setResmiTatilAdet(resmiTatilAdet);
+					denklestirmeBordro.setArtikAdet(artikAdet);
 					if (kaydet) {
-						denklestirmeBordro.setNormalGunAdet(normalGunAdet);
-						denklestirmeBordro.setHaftaTatilAdet(haftaTatilAdet);
-						denklestirmeBordro.setResmiTatilAdet(resmiTatilAdet);
-						denklestirmeBordro.setArtikAdet(artikAdet);
 						if (denklestirmeBordro.isGuncellendi()) {
 							pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeBordro);
 							flush = true;
 						}
+
 					}
 					ap.setDenklestirmeBordro(denklestirmeBordro);
+
 					HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay> detayMap1 = new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>();
 					denklestirmeBordro.setDetayMap(detayMap1);
-					if (!detayMap.isEmpty()) {
-						for (BordroDetayTipi bordroDetayTipi : detayMap.keySet()) {
-							PersonelDenklestirmeBordroDetay bordroDetay = null;
-							String detayKey = PersonelDenklestirmeBordroDetay.getDetayKey(denklestirmeBordro, bordroDetayTipi.value());
-							if (bordroDetayMap.containsKey(detayKey)) {
-								bordroDetay = bordroDetayMap.get(detayKey);
-								bordroDetayMap.remove(detayKey);
-							} else {
-								bordroDetay = new PersonelDenklestirmeBordroDetay(denklestirmeBordro, bordroDetayTipi);
-							}
-							detayMap1.put(bordroDetayTipi, bordroDetay);
-							bordroDetay.setGuncellendi(bordroDetay.getId() == null);
-							if (kaydet) {
+					if (kaydet || fazlaMesaiHesapla) {
+						if (!detayMap.isEmpty()) {
+							for (BordroDetayTipi bordroDetayTipi : detayMap.keySet()) {
+								PersonelDenklestirmeBordroDetay bordroDetay = null;
+								String detayKey = PersonelDenklestirmeBordroDetay.getDetayKey(denklestirmeBordro, bordroDetayTipi.value());
+								if (bordroDetayMap.containsKey(detayKey)) {
+									bordroDetay = bordroDetayMap.get(detayKey);
+									bordroDetayMap.remove(detayKey);
+								} else {
+									bordroDetay = new PersonelDenklestirmeBordroDetay(denklestirmeBordro, bordroDetayTipi);
+								}
+								if (!kaydet)
+									bordroDetay = (PersonelDenklestirmeBordroDetay) bordroDetay.cloneEmpty();
+								detayMap1.put(bordroDetayTipi, bordroDetay);
+								bordroDetay.setGuncellendi(bordroDetay.getId() == null);
 								bordroDetay.setMiktar(detayMap.get(bordroDetayTipi));
-								if (bordroDetay.isGuncellendi()) {
-									pdksEntityController.saveOrUpdate(session, entityManager, bordroDetay);
-									flush = true;
+								if (kaydet) {
+									if (bordroDetay.isGuncellendi()) {
+										pdksEntityController.saveOrUpdate(session, entityManager, bordroDetay);
+										flush = true;
+									}
 								}
 							}
+							if (calismaModeli.isFazlaMesaiVarMi()) {
+								if (ap.getGecenAyFazlaMesai(authenticatedUser) != 0)
+									baslikMap.put(ortakIslemler.devredenMesaiKod(), Boolean.TRUE);
+								if (ap.getFazlaMesaiSure() > 0)
+									baslikMap.put(ortakIslemler.ucretiOdenenKod(), Boolean.TRUE);
+								if (ap.getDevredenSure() != 0)
+									baslikMap.put(ortakIslemler.devredenBakiyeKod(), Boolean.TRUE);
+								if (ap.getAylikNetFazlaMesai() != 0)
+									baslikMap.put(ortakIslemler.gerceklesenMesaiKod(), Boolean.TRUE);
+							}
 						}
-						if (calismaModeli.isFazlaMesaiVarMi()) {
-							if (ap.getGecenAyFazlaMesai(authenticatedUser) != 0)
-								baslikMap.put(ortakIslemler.devredenMesaiKod(), Boolean.TRUE);
-							if (ap.getFazlaMesaiSure() > 0)
-								baslikMap.put(ortakIslemler.ucretiOdenenKod(), Boolean.TRUE);
-							if (ap.getDevredenSure() != 0)
-								baslikMap.put(ortakIslemler.devredenBakiyeKod(), Boolean.TRUE);
-							if (ap.getAylikNetFazlaMesai() != 0)
-								baslikMap.put(ortakIslemler.gerceklesenMesaiKod(), Boolean.TRUE);
+					} else if (denklestirmeBordroId != null) {
+						for (String key : bordroDetayMap.keySet()) {
+							PersonelDenklestirmeBordroDetay bordroDetay = bordroDetayMap.get(key);
+							if (bordroDetay.getPersonelDenklestirmeBordro().getId().equals(denklestirmeBordroId)) {
+								detayMap1.put(bordroDetay.getBordroDetayTipi(), bordroDetay);
+							}
 						}
 					}
 
@@ -445,7 +459,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				}
 
 			}
-			if (!bordroDetayMap.isEmpty()) {
+			if (kaydet && !bordroDetayMap.isEmpty()) {
 				for (String key : bordroDetayMap.keySet()) {
 					session.delete(bordroDetayMap.get(key));
 				}

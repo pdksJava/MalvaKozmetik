@@ -439,6 +439,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	public double getAylikFazlaMesai() {
 
 		double aylikFazlaMesai = saatToplami - (planlananSure + ucretiOdenenMesaiSure);
+		if (calismaModeli == null || !calismaModeli.isFazlaMesaiVarMi())
+			aylikFazlaMesai = 0;
 
 		return aylikFazlaMesai;
 	}
@@ -810,10 +812,12 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public static void baslikCell(CreationHelper factory, Drawing drawing, ClientAnchor anchor, Cell cell, String value, String title) {
 		cell.setCellValue(value);
-		Comment comment1 = drawing.createCellComment(anchor);
-		RichTextString str1 = factory.createRichTextString(title);
-		comment1.setString(str1);
-		cell.setCellComment(comment1);
+		if (PdksUtil.hasStringValue(title)) {
+			Comment comment1 = drawing.createCellComment(anchor);
+			RichTextString str1 = factory.createRichTextString(title);
+			comment1.setString(str1);
+			cell.setCellComment(comment1);
+		}
 	}
 
 	public Double getOdenenSure() {
