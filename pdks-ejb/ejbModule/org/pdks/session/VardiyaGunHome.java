@@ -32,6 +32,7 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -1748,7 +1749,12 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " Çalışma Planı", Boolean.TRUE);
 		XSSFCellStyle styleCenter = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
+		styleCenter.setWrapText(Boolean.TRUE);
 		styleCenter.setAlignment(CellStyle.ALIGN_CENTER);
+		styleCenter.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
+		styleCenter.getFont().setColor(IndexedColors.BLACK.index);
+		styleCenter.setFillPattern(CellStyle.SOLID_FOREGROUND);
+
 		XSSFCellStyle styleOdd = (XSSFCellStyle) ExcelUtil.getCellStyleTutar(wb);
 		XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getCellStyleTutar(wb);
 		XSSFCellStyle styleTatil = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
@@ -1768,11 +1774,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		XSSFCellStyle styleCalisma = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
 		styleCalisma.setAlignment(CellStyle.ALIGN_CENTER);
 		int row = 0, col = 0;
+		ExcelUtil.setFont(9, new Integer(Font.BOLDWEIGHT_BOLD), header, wb);
 
-		header.setWrapText(true);
-
-		header.setWrapText(true);
-		header.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		header.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 156, (byte) 192, (byte) 223 }));
 
 		styleOdd.setFillPattern(CellStyle.SOLID_FOREGROUND);
@@ -1813,18 +1816,14 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		CreationHelper factory = wb.getCreationHelper();
 		Drawing drawing = sheet.createDrawingPatriarch();
 		ClientAnchor anchor = factory.createClientAnchor();
-		XSSFCellStyle headerVardiyaGun = (XSSFCellStyle) header.clone();
+		XSSFCellStyle headerVardiyaGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
 		headerVardiyaGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 99, (byte) 182, (byte) 153 }));
 
-		XSSFCellStyle headerVardiyaTatilYarimGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-		headerVardiyaTatilYarimGun.setWrapText(true);
-		headerVardiyaTatilYarimGun.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		XSSFCellStyle headerVardiyaTatilYarimGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
 		headerVardiyaTatilYarimGun.getFont().setColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
 		headerVardiyaTatilYarimGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 144, (byte) 185, (byte) 63 }));
 
-		XSSFCellStyle headerVardiyaTatilGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-		headerVardiyaTatilGun.setWrapText(true);
-		headerVardiyaTatilGun.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		XSSFCellStyle headerVardiyaTatilGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
 		headerVardiyaTatilGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 92, (byte) 127, (byte) 45 }));
 		headerVardiyaTatilGun.getFont().setColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
 		for (VardiyaGun vardiyaGun : aylikPuantajDefault.getVardiyalar()) {
@@ -1881,8 +1880,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
 				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_AKSAM_SAAT, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz gece mesai saati");
 			}
-			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
+			if (devredenBakiyeKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, header);
+				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
+			}
 			if (modelGoster)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
 			XSSFCellStyle headerIzinTipi = (XSSFCellStyle) header.clone();
@@ -1985,7 +1986,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				calismaModeli = personel.getCalismaModeli();
 			boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
 			++sayac;
-			XSSFCellStyle styleGenelCenter = null, styleGenel = null;
+			XSSFCellStyle styleGenelCenter = null, styleGenel = null, styleGenelLeft = null;
 			try {
 				if (row % 2 == 0) {
 					styleGenel = (XSSFCellStyle) styleOdd.clone();
@@ -1994,6 +1995,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 				styleGenelCenter = (XSSFCellStyle) styleGenel.clone();
 				styleGenelCenter.setAlignment(CellStyle.ALIGN_CENTER);
+				styleGenelLeft = (XSSFCellStyle) styleGenel.clone();
+				styleGenelLeft.setAlignment(CellStyle.ALIGN_LEFT);
 				boolean koyuRenkli = onayDurumList.size() == 2 && aylikPuantaj.isOnayDurum();
 				if (koyuRenkli) {
 					ExcelUtil.setFontBold(wb, styleGenel);
@@ -2001,7 +2004,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 				col = 0;
 				ExcelUtil.getCell(sheet, row, col++, styleGenelCenter).setCellValue(personel.getSicilNo());
-				Cell personelCell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
+				Cell personelCell = ExcelUtil.getCell(sheet, row, col++, styleGenelLeft);
 				personelCell.setCellValue(personel.getAdSoyad());
 				String titlePersonel = null;
 				if (personel.getPersonelExtra() != null && personel.getPersonelExtra().getId() != null) {
@@ -2022,7 +2025,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					comment1.setString(str1);
 					personelCell.setCellComment(comment1);
 				}
-				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
+				ExcelUtil.getCell(sheet, row, col++, styleGenelLeft).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
 
 				List vardiyaList = aylikPuantaj.getAyinVardiyalari();
 
@@ -2100,7 +2103,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						if (calismaModeli != null)
 							modelAciklama = calismaModeli.getAciklama();
 
-						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(modelAciklama);
+						ExcelUtil.getCell(sheet, row, col++, styleGenelLeft).setCellValue(modelAciklama);
 					}
 					if (bordroPuantajEkranindaGoster) {
 						PersonelDenklestirmeBordro denklestirmeBordro = aylikPuantaj.getDenklestirmeBordro();

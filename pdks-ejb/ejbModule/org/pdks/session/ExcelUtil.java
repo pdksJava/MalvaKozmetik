@@ -27,6 +27,9 @@ public class ExcelUtil implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -1634377377517034595L;
+	private static String FONT_NAME = "Arial";
+	private static Integer BOLDWEIGHT = 8;
+
 	static Logger logger = Logger.getLogger(ExcelUtil.class);
 
 	public static CellRangeAddress getRegion(int firstRow, int firstCol, int lastRow, int lastCol) throws Exception {
@@ -87,9 +90,9 @@ public class ExcelUtil implements Serializable {
 	 * @param boldweight
 	 * @return
 	 */
-	public static Font createFont(Workbook wb, short punto, String fontName, short boldweight) {
+	public static Font createFont(Workbook wb, short fontHeightInPoint, String fontName, short boldweight) {
 		Font headerFont = wb.createFont();
-		headerFont.setFontHeightInPoints(punto);
+		headerFont.setFontHeightInPoints(fontHeightInPoint);
 		headerFont.setFontName(fontName);
 		headerFont.setBoldweight(boldweight);
 
@@ -190,11 +193,26 @@ public class ExcelUtil implements Serializable {
 	}
 
 	/**
+	 * @param fontHeightInPoint
+	 * @param boldweight
+	 * @param style
+	 * @param wb
+	 */
+	public static void setFont(Integer fontHeightInPoint, Integer boldweight, CellStyle style, Workbook wb) {
+		if (fontHeightInPoint == null)
+			boldweight = BOLDWEIGHT;
+		if (boldweight == null)
+			boldweight = Integer.parseInt(String.valueOf(Font.BOLDWEIGHT_NORMAL));
+		Font font = createFont(wb, fontHeightInPoint.shortValue(), FONT_NAME, boldweight.shortValue());
+		style.setFont(font);
+	}
+
+	/**
 	 * @param wb
 	 * @param style
 	 */
 	public static void setFontNormal(Workbook wb, CellStyle style) {
-		Font font = createFont(wb, (short) 8, "Arial", Font.BOLDWEIGHT_NORMAL);
+		Font font = createFont(wb, BOLDWEIGHT.shortValue(), FONT_NAME, Font.BOLDWEIGHT_NORMAL);
 		style.setFont(font);
 	}
 
@@ -203,17 +221,17 @@ public class ExcelUtil implements Serializable {
 	 * @param style
 	 */
 	public static void setFontBold(Workbook wb, CellStyle style) {
-		Font font = createFont(wb, (short) 8, "Arial", Font.BOLDWEIGHT_BOLD);
+		Font font = createFont(wb, BOLDWEIGHT.shortValue(), FONT_NAME, Font.BOLDWEIGHT_BOLD);
 		style.setFont(font);
 	}
 
 	/**
+	 * @param fontHeightInPoint
 	 * @param wb
 	 * @return
 	 */
-	public static Font setHeaderFont(Workbook wb) {
-		Font font = createFont(wb, (short) 11, "Arial", HSSFFont.BOLDWEIGHT_NORMAL);
-		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+	public static Font setHeaderFont(Integer fontHeightInPoint, Workbook wb) {
+		Font font = createFont(wb, fontHeightInPoint.shortValue(), FONT_NAME, HSSFFont.BOLDWEIGHT_BOLD);
 		return font;
 	}
 
@@ -221,9 +239,20 @@ public class ExcelUtil implements Serializable {
 	 * @param wb
 	 * @return
 	 */
-	public static CellStyle getStyleHeader(Workbook wb) {
+	public static Font setHeaderFont(Workbook wb) {
+		Font font = setHeaderFont(11, wb);
+		return font;
+	}
+
+	/**
+	 * @param fontHeightInPoint
+	 * @param wb
+	 * @return
+	 */
+	public static CellStyle getStyleHeader(Integer fontHeightInPoint, Workbook wb) {
 		CellStyle style = wb.createCellStyle();
-		Font font = setHeaderFont(wb);
+		Font font = setHeaderFont(fontHeightInPoint, wb);
+	 	style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		style.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
 		style.setFont(font);
 		style.setBorderTop(HSSFCellStyle.BORDER_THIN);
@@ -233,47 +262,103 @@ public class ExcelUtil implements Serializable {
 		style.setWrapText(Boolean.TRUE);
 		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 		return style;
+
 	}
 
-	public static CellStyle getCellStyleTutar(Workbook wb, short dataFormat) {
+	/**
+	 * @param wb
+	 * @return
+	 */
+	public static CellStyle getStyleHeader(Workbook wb) {
+		CellStyle style = getStyleHeader(11, wb);
 
-		CellStyle cellStyleTutar = getStyleData(wb);
-
-		cellStyleTutar.setDataFormat(dataFormat);
-		cellStyleTutar.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-		return cellStyleTutar;
+		return style;
 	}
 
+	/**
+	 * @param wb
+	 * @return
+	 */
 	public static CellStyle getCellStyleTutar(Workbook wb) {
-		DataFormat df = wb.createDataFormat();
-
-		CellStyle cellStyleTutar = getCellStyleTutar(wb, df.getFormat("#,##0.00"));
-
+		CellStyle cellStyleTutar = getCellStyleFormat("#,##0.00", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_RIGHT)), wb);
 		return cellStyleTutar;
 	}
+
+	/**
+	 * @param wb
+	 * @return
+	 */
+	public static CellStyle getCellStyleNumber(Workbook wb) {
+		CellStyle cellStyleTutar = getCellStyleFormat("#,##0", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_RIGHT)), wb);
+		return cellStyleTutar;
+	}
+
+	/**
+	 * @param formatStr
+	 * @param wb
+	 * @return
+	 */
+	public static Integer getDataFormat(String formatStr, Workbook wb) {
+		Integer format = null;
+		if (PdksUtil.hasStringValue(formatStr) && wb != null)
+			try {
+				DataFormat df = wb.createDataFormat();
+				format = Integer.parseInt(String.valueOf(df.getFormat(formatStr)));
+			} catch (Exception e) {
+				format = null;
+			}
+
+		return format;
+	}
+
+	// /**
+	// * @param formatStr
+	// * @param wb
+	// * @return
+	// */
+	// public static CellStyle getCellStyleTutar(String formatStr, Workbook wb) {
+	// CellStyle cellStyleTutar = getCellStyleFormat(formatStr, Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_RIGHT)), wb);
+	// return cellStyleTutar;
+	// }
 
 	public static CellStyle getCellStyleTimeStamp(Workbook wb) {
-		DataFormat df = wb.createDataFormat();
-		CellStyle cellStyleDate = getStyleData(wb);
-		cellStyleDate.setDataFormat(df.getFormat(PdksUtil.getDateFormat() + " h:mm"));
-		cellStyleDate.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle cellStyleDate = getCellStyleFormat(PdksUtil.getDateFormat() + " h:mm", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_CENTER)), wb);
 		return cellStyleDate;
 	}
 
+	/**
+	 * @param wb
+	 * @return
+	 */
 	public static CellStyle getCellStyleTime(Workbook wb) {
-		DataFormat df = wb.createDataFormat();
-		CellStyle cellStyleDate = getStyleData(wb);
-		cellStyleDate.setDataFormat(df.getFormat("h:mm"));
-		cellStyleDate.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle cellStyleDate = getCellStyleFormat("h:mm", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_CENTER)), wb);
 		return cellStyleDate;
 	}
 
+	/**
+	 * @param wb
+	 * @return
+	 */
 	public static CellStyle getCellStyleDate(Workbook wb) {
-		DataFormat df = wb.createDataFormat();
-		CellStyle cellStyleDate = getStyleData(wb);
-		cellStyleDate.setDataFormat(df.getFormat(PdksUtil.getDateFormat()));
-		cellStyleDate.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle cellStyleDate = getCellStyleFormat(PdksUtil.getDateFormat(), Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_CENTER)), wb);
 		return cellStyleDate;
+	}
+
+	/**
+	 * @param format
+	 * @param wb
+	 * @return
+	 */
+	public static CellStyle getCellStyleFormat(String formatStr, Integer alignment, Workbook wb) {
+		CellStyle cellStyle = getStyleData(wb);
+		if (alignment != null)
+			cellStyle.setAlignment(alignment.shortValue());
+		Integer format = getDataFormat(formatStr, wb);
+
+		if (format != null)
+			cellStyle.setDataFormat(format.shortValue());
+		return cellStyle;
+
 	}
 
 	/**
