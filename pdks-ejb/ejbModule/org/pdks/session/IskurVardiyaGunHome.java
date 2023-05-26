@@ -1038,8 +1038,8 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				styleGenelCenter.setAlignment(CellStyle.ALIGN_CENTER);
 				boolean koyuRenkli = onayDurumList.size() == 2 && aylikPuantaj.isOnayDurum();
 				if (koyuRenkli) {
-					ExcelUtil.setFontBold(wb, styleGenel);
-					ExcelUtil.setFontBold(wb, styleGenelCenter);
+					ExcelUtil.setFontNormalBold(wb, styleGenel);
+					ExcelUtil.setFontNormalBold(wb, styleGenelCenter);
 				}
 				col = 0;
 				ExcelUtil.getCell(sheet, row, col++, styleGenelCenter).setCellValue(personel.getSicilNo());

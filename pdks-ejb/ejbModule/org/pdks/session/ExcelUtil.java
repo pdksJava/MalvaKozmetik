@@ -28,7 +28,9 @@ public class ExcelUtil implements Serializable {
 	 */
 	private static final long serialVersionUID = -1634377377517034595L;
 	private static String FONT_NAME = "Arial";
-	private static Integer BOLDWEIGHT = 8;
+	private static Integer NORMAL_WEIGHT = 8;
+	private static Integer BOLD_WEIGHT = 9;
+	// private static Integer BOLDWEIGHT = 8;
 
 	static Logger logger = Logger.getLogger(ExcelUtil.class);
 
@@ -200,7 +202,7 @@ public class ExcelUtil implements Serializable {
 	 */
 	public static void setFont(Integer fontHeightInPoint, Integer boldweight, CellStyle style, Workbook wb) {
 		if (fontHeightInPoint == null)
-			boldweight = BOLDWEIGHT;
+			boldweight = NORMAL_WEIGHT;
 		if (boldweight == null)
 			boldweight = Integer.parseInt(String.valueOf(Font.BOLDWEIGHT_NORMAL));
 		Font font = createFont(wb, fontHeightInPoint.shortValue(), FONT_NAME, boldweight.shortValue());
@@ -212,7 +214,7 @@ public class ExcelUtil implements Serializable {
 	 * @param style
 	 */
 	public static void setFontNormal(Workbook wb, CellStyle style) {
-		Font font = createFont(wb, BOLDWEIGHT.shortValue(), FONT_NAME, Font.BOLDWEIGHT_NORMAL);
+		Font font = createFont(wb, NORMAL_WEIGHT.shortValue(), FONT_NAME, Font.BOLDWEIGHT_NORMAL);
 		style.setFont(font);
 	}
 
@@ -220,8 +222,8 @@ public class ExcelUtil implements Serializable {
 	 * @param wb
 	 * @param style
 	 */
-	public static void setFontBold(Workbook wb, CellStyle style) {
-		Font font = createFont(wb, BOLDWEIGHT.shortValue(), FONT_NAME, Font.BOLDWEIGHT_BOLD);
+	public static void setFontNormalBold(Workbook wb, CellStyle style) {
+		Font font = createFont(wb, NORMAL_WEIGHT.shortValue(), FONT_NAME, Font.BOLDWEIGHT_BOLD);
 		style.setFont(font);
 	}
 
@@ -240,7 +242,7 @@ public class ExcelUtil implements Serializable {
 	 * @return
 	 */
 	public static Font setHeaderFont(Workbook wb) {
-		Font font = setHeaderFont(11, wb);
+		Font font = setHeaderFont(BOLD_WEIGHT, wb);
 		return font;
 	}
 
@@ -252,7 +254,7 @@ public class ExcelUtil implements Serializable {
 	public static CellStyle getStyleHeader(Integer fontHeightInPoint, Workbook wb) {
 		CellStyle style = wb.createCellStyle();
 		Font font = setHeaderFont(fontHeightInPoint, wb);
-	 	style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		style.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
 		style.setFont(font);
 		style.setBorderTop(HSSFCellStyle.BORDER_THIN);
