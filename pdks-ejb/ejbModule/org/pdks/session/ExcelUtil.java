@@ -30,8 +30,7 @@ public class ExcelUtil implements Serializable {
 	private static String FONT_NAME = "Arial";
 	private static Integer NORMAL_WEIGHT = 8;
 	private static Integer BOLD_WEIGHT = 9;
-	// private static Integer BOLDWEIGHT = 8;
-
+ 
 	static Logger logger = Logger.getLogger(ExcelUtil.class);
 
 	public static CellRangeAddress getRegion(int firstRow, int firstCol, int lastRow, int lastCol) throws Exception {
