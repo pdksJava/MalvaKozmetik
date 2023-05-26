@@ -55,7 +55,6 @@ import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGorev;
 import org.pdks.entity.VardiyaGun;
 import org.pdks.entity.VardiyaHafta;
-import org.pdks.entity.VardiyaIzin;
 import org.pdks.entity.VardiyaYemekIzin;
 import org.pdks.entity.YemekKartsiz;
 import org.pdks.erp.action.SapRfcManager;
@@ -236,7 +235,7 @@ public class StartupAction implements Serializable {
 			list.add(UserTesis.class);
 			list.add(VardiyaGorev.class);
 			list.add(VardiyaHafta.class);
-			list.add(VardiyaIzin.class);
+//			list.add(VardiyaIzin.class);
 			list.add(VardiyaYemekIzin.class);
 			list.add(YemekKartsiz.class);
 			list.add(ServisData.class);

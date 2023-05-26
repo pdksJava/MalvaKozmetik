@@ -121,7 +121,6 @@ import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGorev;
 import org.pdks.entity.VardiyaGun;
 import org.pdks.entity.VardiyaHafta;
-import org.pdks.entity.VardiyaIzin;
 import org.pdks.entity.VardiyaPlan;
 import org.pdks.entity.VardiyaSaat;
 import org.pdks.entity.VardiyaSablonu;
@@ -14412,49 +14411,8 @@ public class OrtakIslemler implements Serializable {
 		}
 		if (vardiyaGunList != null) {
 			DenklestirmeAy denklestirmeAy = personelDenklestirme.getDenklestirmeAy();
-			List<VardiyaGun> izinVardiyaGunList = vardiyaIzinleriGuncelle(izinler, vardiyaGunList);
-			if (denklestirmeAy == null || denklestirmeAy.isDurumu() == false)
-				izinVardiyaGunList.clear();
-			if (!izinVardiyaGunList.isEmpty()) {
-				TreeMap<Long, List<VardiyaGun>> izinVardiyaGunMap = new TreeMap<Long, List<VardiyaGun>>();
-				for (VardiyaGun vardiyaGun : izinVardiyaGunList) {
-					Vardiya vardiya = vardiyaGun.getVardiya();
-					List<VardiyaGun> vList = izinVardiyaGunMap.containsKey(vardiya.getId()) ? izinVardiyaGunMap.get(vardiya.getId()) : new ArrayList<VardiyaGun>();
-					if (vList.isEmpty())
-						izinVardiyaGunMap.put(vardiya.getId(), vList);
-					vList.add(vardiyaGun);
-				}
-				if (!izinVardiyaGunMap.isEmpty()) {
-					HashMap parametreMap = new HashMap();
-					parametreMap.put("izinVardiya.id", new ArrayList(izinVardiyaGunMap.keySet()));
-					if (session != null)
-						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<VardiyaIzin> vardiyaIzinList = pdksEntityController.getObjectByInnerObjectList(parametreMap, VardiyaIzin.class);
-					boolean flush = false;
-					for (VardiyaIzin vardiyaIzin2 : vardiyaIzinList) {
-						Vardiya calismaVardiya = vardiyaIzin2.getCalismaVardiya();
-						if (calismaVardiya != null) {
-							List<VardiyaGun> vList = izinVardiyaGunMap.get(vardiyaIzin2.getIzinVardiya().getId());
-							for (VardiyaGun vardiyaGun : vList) {
-								vardiyaGun.setVardiya(calismaVardiya);
-								try {
-									pdksEntityController.saveOrUpdate(session, null, vardiyaGun);
-									flush = true;
-								} catch (Exception e) {
-									logger.error(e);
-									e.printStackTrace();
-								}
-							}
-						}
-					}
-					if (flush)
-						session.flush();
-					vardiyaIzinList = null;
+			vardiyaIzinleriGuncelle(izinler, vardiyaGunList);
 
-				}
-				izinVardiyaGunMap = null;
-			}
-			izinVardiyaGunList = null;
 			String donem = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
 			for (Iterator<VardiyaGun> iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = iterator.next();
@@ -14632,7 +14590,6 @@ public class OrtakIslemler implements Serializable {
 											}
 										}
 										vardiyaGun.addHareket(arifeGirisHareket, Boolean.TRUE);
-
 										HareketKGS arifeCikisHareket = new HareketKGS();
 										arifeCikisHareket.setPersonel(sonCikis.getPersonel());
 										arifeCikisHareket.setKapiView(sonCikis.getKapiView());
@@ -14743,7 +14700,8 @@ public class OrtakIslemler implements Serializable {
 				denklestirme.setVardiyalar(new ArrayList(vardiyaMap.values()));
 				// Haftalik denklestirme verileri yapiliyor
 				denklestirme.setDenklestirmeAy(personelDenklestirme.getDenklestirmeAy());
-				sonVardiyaGun = personelVardiyaDenklestir(gunMap, girisView, denklestirme, vardiyaNetCalismaSuresiMap, yemekList, tatilGunleriMap, session);
+				if (girisView != null)
+					sonVardiyaGun = personelVardiyaDenklestir(gunMap, girisView, denklestirme, vardiyaNetCalismaSuresiMap, yemekList, tatilGunleriMap, session);
 				oncekiVardiyaGun = denklestirme.getOncekiVardiyaGun();
 				normalFazlaMesai += denklestirme.getNormalFazlaMesai();
 				resmiTatilMesai += denklestirme.getResmiTatilMesai();

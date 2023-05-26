@@ -30,7 +30,6 @@ import org.pdks.entity.CalismaSekli;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGun;
-import org.pdks.entity.VardiyaIzin;
 import org.pdks.entity.VardiyaSablonu;
 import org.pdks.entity.VardiyaYemekIzin;
 import org.pdks.entity.YemekIzin;
@@ -269,45 +268,6 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 
 	}
 
-	public void izinVardiyalariGetir(Vardiya izinVardiya) {
-		izinCalismaVardiyaList.clear();
-		VardiyaIzin vardiyaIzin = null;
-		if (izinVardiya.isIzin()) {
-			if (izinVardiya.getId() != null) {
-				HashMap parametreMap = new HashMap();
-				parametreMap.put("izinVardiya.id", izinVardiya.getId());
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				vardiyaIzin = (VardiyaIzin) pdksEntityController.getObjectByInnerObject(parametreMap, VardiyaIzin.class);
-			}
-			if (vardiyaIzin == null)
-				vardiyaIzin = new VardiyaIzin(izinVardiya);
-			izinVardiya.setVardiyaIzin(vardiyaIzin);
-			if (authenticatedUser.isAdmin()) {
-				Boolean ekle = null;
-				if (vardiyaIzin.getCalismaVardiya() != null)
-					ekle = false;
-				Long izinDepartmanId = izinVardiya.getDepartman() != null ? izinVardiya.getDepartman().getId() : null;
-				for (Vardiya vardiya : vardiyaList) {
-					if (vardiya.isCalisma() == false || !vardiya.getGenel())
-						continue;
-					if (vardiyaIzin.getId() == null && vardiya.getDurum().equals(Boolean.FALSE))
-						continue;
-					Long departmanId = vardiya.getDepartman() != null ? vardiya.getDepartman().getId() : null;
-					if (izinDepartmanId != null && PdksUtil.isLongDegisti(izinDepartmanId, departmanId))
-						continue;
-
-					izinCalismaVardiyaList.add(vardiya);
-					if (ekle != null && ekle.equals(Boolean.FALSE))
-						ekle = vardiya.getId().equals(vardiyaIzin.getCalismaVardiya().getId());
-
-				}
-				if (ekle != null && !ekle)
-					vardiyaIzin.setCalismaVardiya(null);
-			}
-		}
-	}
-
 	public void kayitGuncelle(Vardiya pdksVardiya) {
 		if (pdksVardiya == null) {
 			pdksVardiya = new Vardiya();
@@ -325,7 +285,6 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 		setInstance(pdksVardiya);
 		pdksVardiya.setTipi(String.valueOf(pdksVardiya.getVardiyaTipi()));
 		fillCalismaSekilleri();
-		izinVardiyalariGetir(pdksVardiya);
 		fillVardiyaTipiList();
 	}
 
@@ -376,8 +335,6 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 					pdksVardiya.setGebelik(Boolean.FALSE);
 				}
 				pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiya);
-				if (authenticatedUser.isAdmin() && pdksVardiya.isIzin() && pdksVardiya.getVardiyaIzin() != null)
-					pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiya.getVardiyaIzin());
 				if (calismaModeliList.size() + calismaModeliKayitliList.size() > 0) {
 					parametreMap.clear();
 					parametreMap.put("vardiya.id", pdksVardiya.getId());
