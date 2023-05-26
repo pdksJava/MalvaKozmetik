@@ -871,7 +871,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (denklestirmeAy.getFazlaMesaiMaxSure() == null)
 					fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
 				DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
+				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 				denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 				fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 			} catch (Exception ee) {
@@ -1161,7 +1161,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 
 				boolean renk = Boolean.FALSE;
-				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
+				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 
 				List<VardiyaHafta> vardiyaHaftaList = new ArrayList<VardiyaHafta>();
 				fazlaMesaiOrtakIslemler.haftalikVardiyaOlustur(vardiyaHaftaList, aylikPuantajSablon, denklestirmeDonemi, tatilGunleriMap, null);
@@ -3184,6 +3184,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (hareketler != null) {
 				for (HareketKGS hareketKGS : hareketler) {
 					String islemYapan = "";
+					if (hareketKGS.getId() != null && hareketKGS.getId().startsWith("V"))
+						continue;
 					if (hareketKGS.getKapiView() != null) {
 						try {
 							if (hareketKGS.isManuelGiris()) {

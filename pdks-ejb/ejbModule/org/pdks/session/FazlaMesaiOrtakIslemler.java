@@ -1444,16 +1444,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 	}
 
- 
 	/**
-	 * @param tatilGunleriMap
 	 * @param ay
 	 * @param yil
 	 * @param denklestirmeDonemi
 	 * @param session
 	 * @return
 	 */
-	public AylikPuantaj getAylikPuantaj(TreeMap<String, Tatil> tatilGunleriMap, int ay, int yil, DepartmanDenklestirmeDonemi denklestirmeDonemi, Session session) {
+	public AylikPuantaj getAylikPuantaj(int ay, int yil, DepartmanDenklestirmeDonemi denklestirmeDonemi, Session session) {
 		AylikPuantaj aylikPuantaj = new AylikPuantaj();
 		if (yil > 0) {
 
@@ -1502,8 +1500,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 
 		}
-		if (tatilGunleriMap == null)
-			tatilGunleriMap = ortakIslemler.getTatilGunleri(null, denklestirmeDonemi.getBaslangicTarih(), denklestirmeDonemi.getBitisTarih(), session);
+
+		TreeMap<String, Tatil> tatilGunleriMap = ortakIslemler.getTatilGunleri(null, denklestirmeDonemi.getBaslangicTarih(), denklestirmeDonemi.getBitisTarih(), session);
 		for (Iterator iterator = aylikPuantaj.getVardiyalar().iterator(); iterator.hasNext();) {
 			VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 			vardiyaGun.setTatil(tatilGunleriMap.containsKey(vardiyaGun.getVardiyaDateStr()) ? tatilGunleriMap.get(vardiyaGun.getVardiyaDateStr()) : null);

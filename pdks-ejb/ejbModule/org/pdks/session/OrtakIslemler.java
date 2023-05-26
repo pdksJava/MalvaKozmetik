@@ -5173,6 +5173,14 @@ public class OrtakIslemler implements Serializable {
 
 			}
 			if (!perList.isEmpty()) {
+				HashMap map = new HashMap();
+				map.put("manuel", Boolean.FALSE);
+				map.put("kapi.durum", Boolean.TRUE);
+				map.put("kapi.pdks", Boolean.TRUE);
+				map.put("kapi.tipi.kodu", Kapi.TIPI_KODU_GIRIS);
+				if (session != null)
+					map.put(PdksEntityController.MAP_KEY_SESSION, session);
+				KapiView girisView = getKapiView(map);
 				HashMap<Long, Double> vardiyaNetCalismaSuresiMap = vardiyaSuresiOlustur(session);
 				TreeMap<String, VardiyaHafta> vardiyaHaftaMap = denklestirmeHaftalikVardiyaSablonuOlustur(denklestirmeDonemi, perList);
 				Calendar cal = Calendar.getInstance();
@@ -5398,7 +5406,8 @@ public class OrtakIslemler implements Serializable {
 					List<YemekIzin> yemekList = getYemekList(session);
 					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
 					HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
-					KapiView girisView = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
+					if (girisView == null)
+						girisView = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
 					Tanim neden = null;
 					User sistemUser = null;
 					if (PdksUtil.isSistemDestekVar()) {
@@ -14230,7 +14239,8 @@ public class OrtakIslemler implements Serializable {
 	public void otomatikHareketEkle(List<VardiyaGun> vardiyaList, Session session) {
 		boolean kartOkuyucuDurum = getParameterKey("kartOkuyucuDurum").equals("0");
 		if (kartOkuyucuDurum && vardiyaList != null) {
-			KapiView girisKapi = null, cikisKapi = null;
+			HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
+			KapiView girisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS), cikisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
 			HashMap fields = new HashMap();
 			Date bugun = new Date();
 			Boolean flush = Boolean.FALSE;

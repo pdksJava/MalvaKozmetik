@@ -2624,7 +2624,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		cal.set(Calendar.YEAR, yil);
 		boolean devam = true;
 		List<VardiyaHafta> vardiyaHaftaList = null;
-		AylikPuantaj aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
+		AylikPuantaj aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 		tatilGunleriMap = null;
 		boolean veriGuncelle = false;
 		for (Iterator iterator = denklestirmeAy.getModeller().iterator(); iterator.hasNext();) {
@@ -2677,9 +2677,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		aylikPuantajSablon.setFazlaMesaiHesapla(Boolean.TRUE);
 		AylikPuantaj gecenAylikPuantajSablon = null;
 		if (ay != 1)
-			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay - 1, yil, denklestirmeDonemiGecenAy, session);
+			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay - 1, yil, denklestirmeDonemiGecenAy, session);
 		else
-			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, 12, yil - 1, denklestirmeDonemiGecenAy, session);
+			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(12, yil - 1, denklestirmeDonemiGecenAy, session);
 		basTarih = denklestirmeDonemi.getBaslangicTarih();
 		bitTarih = denklestirmeDonemi.getBitisTarih();
 
@@ -4357,7 +4357,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			vardiyalar = null;
 			if (!vardiyaMap.isEmpty() && denklestirmeAy != null) {
 				denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-				AylikPuantaj aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
+				AylikPuantaj aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 				List<VardiyaHafta> vardiyaHaftaList = new ArrayList<VardiyaHafta>();
 				List<VardiyaGun> sablonVardiyalar = new ArrayList<VardiyaGun>();
 				VardiyaPlan pdksVardiyaPlanMaster = fazlaMesaiOrtakIslemler.haftalikVardiyaOlustur(vardiyaHaftaList, aylikPuantajSablon, denklestirmeDonemi, tatilGunleriMap, sablonVardiyalar);

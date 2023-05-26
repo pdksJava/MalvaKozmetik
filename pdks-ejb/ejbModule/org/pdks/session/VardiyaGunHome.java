@@ -5381,7 +5381,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		cal.set(Calendar.YEAR, yil);
 		boolean devam = true;
 		List<VardiyaHafta> vardiyaHaftaList = null;
-		AylikPuantaj defaultAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
+		AylikPuantaj defaultAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 		tatilGunleriMap = null;
 		boolean veriGuncelle = false;
 		for (Iterator iterator = denklestirmeAy.getModeller().iterator(); iterator.hasNext();) {
@@ -5434,9 +5434,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		defaultAylikPuantajSablon.setFazlaMesaiHesapla(Boolean.TRUE);
 		AylikPuantaj gecenAylikPuantajSablon = null;
 		if (ay != 1)
-			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay - 1, yil, denklestirmeDonemiGecenAy, session);
+			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay - 1, yil, denklestirmeDonemiGecenAy, session);
 		else
-			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, 12, yil - 1, denklestirmeDonemiGecenAy, session);
+			gecenAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(12, yil - 1, denklestirmeDonemiGecenAy, session);
 		basTarih = denklestirmeDonemi.getBaslangicTarih();
 		bitTarih = denklestirmeDonemi.getBitisTarih();
 
@@ -7872,7 +7872,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (denklestirmeAy != null) {
 			try {
 				DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
+				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 				denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 				fillFazlaMesaiTalepDevam(aylikPuantaj, denklestirmeDonemi);
 			} catch (Exception ee) {
@@ -9288,7 +9288,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			vardiyalar = null;
 			if (!vardiyaMap.isEmpty() && denklestirmeAy != null) {
 				denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-				AylikPuantaj aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
+				AylikPuantaj aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 				List<VardiyaHafta> vardiyaHaftaList = new ArrayList<VardiyaHafta>();
 				List<VardiyaGun> sablonVardiyalar = new ArrayList<VardiyaGun>();
 				VardiyaPlan pdksVardiyaPlanMaster = fazlaMesaiOrtakIslemler.haftalikVardiyaOlustur(vardiyaHaftaList, aylikPuantajSablon, denklestirmeDonemi, tatilGunleriMap, sablonVardiyalar);
