@@ -119,6 +119,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
 	private String COL_EKSIK_CALISMA = "eksikCalisma";
 
+	private Sheet sheet;
+
+	private CellStyle tutarStyle, numberStyle;
+
 	private Date basGun, bitGun;
 
 	private Sirket sirket;
@@ -691,17 +695,15 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 			boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
 			Workbook wb = new XSSFWorkbook();
-			Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
+			sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
 			CellStyle style = ExcelUtil.getStyleData(wb);
 			CellStyle styleCenter = ExcelUtil.getStyleData(wb);
 			styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-			CellStyle stytleNumeric = ExcelUtil.getStyleData(wb);
-			stytleNumeric.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
 			XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 			header.setFillPattern(CellStyle.SOLID_FOREGROUND);
 			header.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 156, (byte) 192, (byte) 223 }));
-			CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
-			CellStyle numberStyle = ExcelUtil.getCellStyleTutar(wb);
+			tutarStyle = ExcelUtil.getCellStyleTutar(wb);
+			numberStyle = ExcelUtil.getCellStyleTutar(wb);
 			XSSFCellStyle headerSaat = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerIzin = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerBGun = (XSSFCellStyle) header.clone();
@@ -820,23 +822,23 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					else if (kodu.equals(COL_ALT_BOLUM))
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 					else if (kodu.equals(COL_NORMAL_GUN_ADET))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getNormalGunAdet());
+						setExcelNumber(row, col++, denklestirmeBordro.getNormalGunAdet());
 					else if (kodu.equals(COL_HAFTA_TATIL_ADET))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getHaftaTatilAdet());
+						setExcelNumber(row, col++, denklestirmeBordro.getHaftaTatilAdet());
 					else if (kodu.equals(COL_RESMI_TATIL_ADET))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getResmiTatilAdet());
+						setExcelNumber(row, col++, denklestirmeBordro.getResmiTatilAdet());
 					else if (kodu.equals(COL_ARTIK_ADET))
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getArtikAdet());
 					else if (kodu.equals(COL_TOPLAM_ADET))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getBordroToplamGunAdet());
+						setExcelNumber(row, col++, denklestirmeBordro.getBordroToplamGunAdet());
 					else if (kodu.equals(COL_NORMAL_GUN_SAAT))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getSaatNormal());
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatNormal());
 					else if (kodu.equals(COL_HAFTA_TATIL_SAAT))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getSaatHaftaTatil());
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatHaftaTatil());
 					else if (kodu.equals(COL_RESMI_TATIL_SAAT))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getSaatResmiTatil());
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatResmiTatil());
 					else if (kodu.equals(COL_IZIN_SAAT))
-						ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getSaatIzin());
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatIzin());
 					else if (kodu.equals(COL_UCRETLI_IZIN))
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretliIzin());
 					else if (kodu.equals(COL_RAPORLU_IZIN))
@@ -845,17 +847,17 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretsizIzin());
 					else if (kodu.equals(COL_RESMI_TATIL_MESAI)) {
 						if (denklestirmeBordro.getResmiTatilMesai() > 0)
-							ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getResmiTatilMesai());
+							setExcelNumber(row, col++, denklestirmeBordro.getResmiTatilMesai());
 						else
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
 					} else if (kodu.equals(COL_UCRETI_ODENEN_MESAI)) {
 						if (denklestirmeBordro.getUcretiOdenenMesai() > 0)
-							ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getUcretiOdenenMesai());
+							setExcelNumber(row, col++, denklestirmeBordro.getUcretiOdenenMesai());
 						else
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
 					} else if (kodu.equals(COL_HAFTA_TATIL_MESAI)) {
 						if (denklestirmeBordro.getHaftaTatilMesai() > 0)
-							ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getHaftaTatilMesai());
+							setExcelNumber(row, col++, denklestirmeBordro.getHaftaTatilMesai());
 						else
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
 
@@ -863,13 +865,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getAksamGunMesai());
 					else if (kodu.equals(COL_AKSAM_SAAT_MESAI)) {
 						if (denklestirmeBordro.getAksamSaatMesai() > 0)
-							ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getAksamSaatMesai());
+							setExcelNumber(row, col++, denklestirmeBordro.getAksamSaatMesai());
 						else
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
 
 					} else if (kodu.equals(COL_EKSIK_CALISMA)) {
 						if (denklestirmeBordro.getEksikCalismaSure() > 0)
-							ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(denklestirmeBordro.getEksikCalismaSure());
+							setExcelNumber(row, col++, denklestirmeBordro.getEksikCalismaSure());
 						else
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
 
@@ -887,6 +889,16 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		}
 
 		return baos;
+	}
+
+	/**
+	 * @param row
+	 * @param col
+	 * @param tutar
+	 */
+	private void setExcelNumber(int row, int col, Double tutar) {
+		CellStyle style = tutar.doubleValue() - tutar.longValue() > 0.0d ? tutarStyle : numberStyle;
+		ExcelUtil.getCell(sheet, row, col, style).setCellValue(tutar);
 	}
 
 	/**
