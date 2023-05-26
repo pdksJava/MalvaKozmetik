@@ -871,7 +871,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (denklestirmeAy.getFazlaMesaiMaxSure() == null)
 					fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
 				DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
 				denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 				fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 			} catch (Exception ee) {
@@ -1161,7 +1161,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 
 				boolean renk = Boolean.FALSE;
-				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
 
 				List<VardiyaHafta> vardiyaHaftaList = new ArrayList<VardiyaHafta>();
 				fazlaMesaiOrtakIslemler.haftalikVardiyaOlustur(vardiyaHaftaList, aylikPuantajSablon, denklestirmeDonemi, tatilGunleriMap, null);
@@ -3072,6 +3072,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @return
 	 */
 	public String ayrikKayitlariOlustur() {
+		HashMap<String, KapiView> manuelKapiMap = ortakIslemler.getManuelKapiMap(null, session);
+		Tanim neden = null;
+		User sistemUser = null;
+		if (PdksUtil.isSistemDestekVar()) {
+			neden = ortakIslemler.getOtomatikKapGirisiNeden(session);
+			if (neden != null)
+				sistemUser = ortakIslemler.getSistemAdminUser(session);
+		}
 		List<AylikPuantaj> list = new ArrayList<AylikPuantaj>(aylikPuantajList);
 		boolean devam = false;
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
@@ -3111,7 +3119,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 			if (ayrikVar > 1) {
 				try {
-					ortakIslemler.addManuelGirisCikisHareketler(vardiyaList, true, null, session);
+					ortakIslemler.addManuelGirisCikisHareketler(manuelKapiMap, neden, sistemUser, vardiyaList, true, null, session);
 					devam = true;
 				} catch (Exception e) {
 					logger.error(e);
@@ -4501,7 +4509,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		styleCalisma.setAlignment(CellStyle.ALIGN_CENTER);
 		int row = 0, col = 0;
 		ExcelUtil.setFont(9, new Integer(Font.BOLDWEIGHT_BOLD), header, wb);
- 		header.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 156, (byte) 192, (byte) 223 }));
+		header.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 156, (byte) 192, (byte) 223 }));
 
 		styleOdd.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
@@ -4552,11 +4560,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		headerVardiyaGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 99, (byte) 182, (byte) 153 }));
 
 		XSSFCellStyle headerVardiyaTatilYarimGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
- 		headerVardiyaTatilYarimGun.getFont().setColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
+		headerVardiyaTatilYarimGun.getFont().setColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
 		headerVardiyaTatilYarimGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 144, (byte) 185, (byte) 63 }));
 
 		XSSFCellStyle headerVardiyaTatilGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
- 		headerVardiyaTatilGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 92, (byte) 127, (byte) 45 }));
+		headerVardiyaTatilGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 92, (byte) 127, (byte) 45 }));
 		headerVardiyaTatilGun.getFont().setColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
 		for (VardiyaGun vardiyaGun : aylikPuantajDefault.getVardiyalar()) {
 			try {

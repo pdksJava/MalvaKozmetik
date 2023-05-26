@@ -1028,7 +1028,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				}
 
 				boolean renk = Boolean.FALSE;
-				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
 
 				List<VardiyaHafta> vardiyaHaftaList = new ArrayList<VardiyaHafta>();
 				fazlaMesaiOrtakIslemler.haftalikVardiyaOlustur(vardiyaHaftaList, aylikPuantajSablon, denklestirmeDonemi, tatilGunleriMap, null);

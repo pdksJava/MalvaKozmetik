@@ -5397,10 +5397,16 @@ public class OrtakIslemler implements Serializable {
 					personelVardiyaBulMap = null;
 					List<YemekIzin> yemekList = getYemekList(session);
 					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
-					Long perNoId = null;
 					HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
 					KapiView girisView = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
-
+					Tanim neden = null;
+					User sistemUser = null;
+					if (PdksUtil.isSistemDestekVar()) {
+						neden = getOtomatikKapGirisiNeden(session);
+						if (neden != null)
+							sistemUser = getSistemAdminUser(session);
+					}
+					Long perNoId = null;
 					for (Iterator<Long> iterator2 = personelDenklestirmeMap.keySet().iterator(); iterator2.hasNext();) {
 						perNoId = iterator2.next();
 						Long kgsId = personelDenklestirmeMap.get(perNoId).getPersonel().getPersonelKGS().getId();
@@ -5431,8 +5437,8 @@ public class OrtakIslemler implements Serializable {
 						// Denklestirme islemleri yapiliyor
 						ArrayList<PersonelIzin> izinler = izinMap.containsKey(perNoId) ? izinMap.get(perNoId) : null;
 
-						denklestirmeOlustur(manuelKapiMap, gunMap, tarihHareketEkle, yemekAraliklari, girisView, personelDenklestirmeTasiyiciList, tatilGunleriMap, personelDenklestirmeMap, vardiyaNetCalismaSuresiMap, izinler, fazlaMesailer, calismaPlaniMap, perHareketList, perNoId, yemekList,
-								session);
+						denklestirmeOlustur(neden, sistemUser, manuelKapiMap, gunMap, tarihHareketEkle, yemekAraliklari, girisView, personelDenklestirmeTasiyiciList, tatilGunleriMap, personelDenklestirmeMap, vardiyaNetCalismaSuresiMap, izinler, fazlaMesailer, calismaPlaniMap, perHareketList,
+								perNoId, yemekList, session);
 
 						personelDenklestirme.setToplamCalisilacakZaman(0);
 						personelDenklestirme.setToplamCalisilanZaman(0);
@@ -13183,8 +13189,11 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param manuelKapiMap
+	 * @param neden
+	 * @param sistemUser
 	 * @param gunMap
-	 * @param girisView
+	 * @param girisKapi
 	 * @param denklestirmeTasiyici
 	 * @param vardiyaNetCalismaSuresiMap
 	 * @param yemekList
@@ -13192,7 +13201,8 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	private VardiyaGun personelVardiyaDenklestir(TreeMap<String, Boolean> gunMap, KapiView girisView, PersonelDenklestirmeTasiyici denklestirmeTasiyici, HashMap<Long, Double> vardiyaNetCalismaSuresiMap, List<YemekIzin> yemekList, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
+	private VardiyaGun personelVardiyaDenklestir(HashMap<String, KapiView> manuelKapiMap, Tanim neden, User sistemUser, TreeMap<String, Boolean> gunMap, KapiView girisKapi, PersonelDenklestirmeTasiyici denklestirmeTasiyici, HashMap<Long, Double> vardiyaNetCalismaSuresiMap,
+			List<YemekIzin> yemekList, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
 		double resmiTatilMesai = 0;
 		VardiyaGun sonVardiyaGun = denklestirmeTasiyici.getSonVardiyaGun();
 		Double yemekMolasiYuzdesi = getYemekMolasiYuzdesi(denklestirmeTasiyici.getDenklestirmeAy(), session);
@@ -13203,7 +13213,7 @@ public class OrtakIslemler implements Serializable {
 			if (vardiyalar != null)
 				try {
 					if (denklestirmeTasiyici.getDenklestirmeAy() != null && (denklestirmeTasiyici.getDenklestirmeAy().isDurumu())) {
-						VardiyaGun oncekiVardiyaGun = addManuelGirisCikisHareketler(vardiyalar, false, denklestirmeTasiyici.getOncekiVardiyaGun(), session);
+						VardiyaGun oncekiVardiyaGun = addManuelGirisCikisHareketler(manuelKapiMap, neden, sistemUser, vardiyalar, false, denklestirmeTasiyici.getOncekiVardiyaGun(), session);
 						denklestirmeTasiyici.setOncekiVardiyaGun(oncekiVardiyaGun);
 					}
 				} catch (Exception e) {
@@ -13424,21 +13434,21 @@ public class OrtakIslemler implements Serializable {
 											zaman = Long.parseLong(PdksUtil.convertToDateString(hareketKGS.getZaman(), "yyyyMMddHHmm"));
 											Kapi kapi = hareketKGS.getKapiView().getKapi();
 											if (zaman >= basZaman && zaman < bitZaman) {
-												if (!bayramBasladi && kapi.isCikisKapi()) {
+												if (girisKapi != null && !bayramBasladi && kapi.isCikisKapi()) {
 													HareketKGS cikisHareket = ((HareketKGS) hareketKGS.clone()).getYeniHareket(tatil.getBasTarih(), null);
 													cikisHareketleri.add(cikisHareket);
-													HareketKGS girisHareket = ((HareketKGS) cikisHareket.clone()).getYeniHareket(null, girisView);
+													HareketKGS girisHareket = ((HareketKGS) cikisHareket.clone()).getYeniHareket(null, girisKapi);
 													girisHareket.setTatil(Boolean.TRUE);
 													girisHareket.setPersonelFazlaMesai(null);
 													girisHareketleri.add(girisHareket);
 												}
 												hareketKGS.setTatil(Boolean.TRUE);
 												bayramBasladi = Boolean.TRUE;
-											} else if (zaman >= bitZaman && !bayramBitti && kapi.isCikisKapi()) {
+											} else if (girisKapi != null && zaman >= bitZaman && !bayramBitti && kapi.isCikisKapi()) {
 												HareketKGS cikisHareket = ((HareketKGS) hareketKGS.clone()).getYeniHareket((Date) tatil.getBitGun(), null);
 												cikisHareket.setTatil(Boolean.TRUE);
 												cikisHareketleri.add(cikisHareket);
-												HareketKGS girisHareket = ((HareketKGS) cikisHareket.clone()).getYeniHareket(null, girisView);
+												HareketKGS girisHareket = ((HareketKGS) cikisHareket.clone()).getYeniHareket(null, girisKapi);
 												girisHareket.setTatil(Boolean.FALSE);
 												girisHareketleri.add(girisHareket);
 												bayramBitti = Boolean.TRUE;
@@ -14055,6 +14065,9 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param manuelKapiMap
+	 * @param neden
+	 * @param sistemUser
 	 * @param vardiyalar
 	 * @param hareketKaydet
 	 * @param oncekiVardiyaGun
@@ -14062,16 +14075,17 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public VardiyaGun addManuelGirisCikisHareketler(List<VardiyaGun> vardiyalar, boolean hareketKaydet, VardiyaGun oncekiVardiyaGun, Session session) throws Exception {
-		Tanim neden = null;
-		User sistemUser = null;
-		if (PdksUtil.isSistemDestekVar()) {
-			neden = getOtomatikKapGirisiNeden(session);
-			if (neden != null)
-				sistemUser = getSistemAdminUser(session);
+	public VardiyaGun addManuelGirisCikisHareketler(HashMap<String, KapiView> manuelKapiMap, Tanim neden, User sistemUser, List<VardiyaGun> vardiyalar, boolean hareketKaydet, VardiyaGun oncekiVardiyaGun, Session session) throws Exception {
+		if (neden == null || sistemUser == null) {
+			if (PdksUtil.isSistemDestekVar()) {
+				neden = getOtomatikKapGirisiNeden(session);
+				if (neden != null)
+					sistemUser = getSistemAdminUser(session);
+			}
 		}
 		if (sistemUser != null && neden != null) {
-			HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
+			if (manuelKapiMap == null)
+				manuelKapiMap = getManuelKapiMap(null, session);
 			KapiView girisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS), cikisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
 			manuelKapiMap = null;
 			if (girisKapi != null && cikisKapi != null) {
@@ -14094,6 +14108,7 @@ public class OrtakIslemler implements Serializable {
 										manuelCikis.setPersonel(hareketKGS.getPersonel());
 										manuelCikis.setZaman(PdksUtil.getDateTime(oncekiIslemVardiya.getVardiyaFazlaMesaiBitZaman()));
 										String aciklama = "";
+
 										if (hareketKaydet)
 											cikisId = pdksEntityController.hareketEkle(manuelCikis.getKapiView(), manuelCikis.getPersonel(), manuelCikis.getZaman(), sistemUser, neden.getId(), aciklama, session);
 										manuelCikis = getHareketKGS(manuelCikis, cikisId, session);
@@ -14340,6 +14355,8 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param neden
+	 * @param sistemUser
 	 * @param manuelKapiMap
 	 * @param gunMap
 	 * @param hareketEkle
@@ -14357,7 +14374,7 @@ public class OrtakIslemler implements Serializable {
 	 * @param yemekList
 	 * @param session
 	 */
-	private void denklestirmeOlustur(HashMap<String, KapiView> manuelKapiMap, TreeMap<String, Boolean> gunMap, Boolean hareketEkle, List<YemekIzin> yemekAraliklari, KapiView girisView, List<PersonelDenklestirmeTasiyici> list, TreeMap<String, Tatil> tatilGunleriMap,
+	private void denklestirmeOlustur(Tanim neden, User sistemUser, HashMap<String, KapiView> manuelKapiMap, TreeMap<String, Boolean> gunMap, Boolean hareketEkle, List<YemekIzin> yemekAraliklari, KapiView girisView, List<PersonelDenklestirmeTasiyici> list, TreeMap<String, Tatil> tatilGunleriMap,
 			TreeMap<Long, PersonelDenklestirmeTasiyici> personelDenklestirmeMap, HashMap<Long, Double> vardiyaNetCalismaSuresiMap, List<PersonelIzin> izinler, List<PersonelFazlaMesai> fazlaMesailer, HashMap<Long, ArrayList<VardiyaGun>> calismaPlaniMap, List<HareketKGS> perHareketList, Long perNoId,
 			List<YemekIzin> yemekList, Session session) {
 		boolean testDurum = PdksUtil.getTestDurum() && false;
@@ -14375,6 +14392,8 @@ public class OrtakIslemler implements Serializable {
 			if (hareketEkle || kartOkuyucuDurum) {
 				girisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
 				cikisKapi = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
+				if (girisView == null)
+					girisView = girisKapi;
 			}
 		}
 		kartOkuyucuDurum = kartOkuyucuDurum && girisKapi != null && cikisKapi != null;
@@ -14700,8 +14719,7 @@ public class OrtakIslemler implements Serializable {
 				denklestirme.setVardiyalar(new ArrayList(vardiyaMap.values()));
 				// Haftalik denklestirme verileri yapiliyor
 				denklestirme.setDenklestirmeAy(personelDenklestirme.getDenklestirmeAy());
-				if (girisView != null)
-					sonVardiyaGun = personelVardiyaDenklestir(gunMap, girisView, denklestirme, vardiyaNetCalismaSuresiMap, yemekList, tatilGunleriMap, session);
+				sonVardiyaGun = personelVardiyaDenklestir(manuelKapiMap, neden, sistemUser, gunMap, girisView, denklestirme, vardiyaNetCalismaSuresiMap, yemekList, tatilGunleriMap, session);
 				oncekiVardiyaGun = denklestirme.getOncekiVardiyaGun();
 				normalFazlaMesai += denklestirme.getNormalFazlaMesai();
 				resmiTatilMesai += denklestirme.getResmiTatilMesai();

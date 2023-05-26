@@ -639,7 +639,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		if (denklestirmeAy != null) {
 			try {
 				DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
 				denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 				fillFazlaMesaiOzetRaporDevam(aylikPuantaj, denklestirmeDonemi);
 			} catch (Exception ee) {
@@ -1032,7 +1032,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				}
 
 				boolean renk = Boolean.FALSE;
-				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, ay, yil, denklestirmeDonemi, session);
 
 				List<VardiyaHafta> vardiyaHaftaList = new ArrayList<VardiyaHafta>();
 				fazlaMesaiOrtakIslemler.haftalikVardiyaOlustur(vardiyaHaftaList, aylikPuantajSablon, denklestirmeDonemi, tatilGunleriMap, null);
@@ -1491,63 +1491,6 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			}
 		}
 
-	}
-
-	/**
-	 * @param hareketler
-	 */
-	private void manuelHareketSil(List<HareketKGS> hareketler) {
-		if (hareketler != null) {
-			for (Iterator iterator = hareketler.iterator(); iterator.hasNext();) {
-				HareketKGS hareketKGS = (HareketKGS) iterator.next();
-				if (hareketKGS.getId() != null && hareketKGS.getId().startsWith(HareketKGS.AYRIK_HAREKET))
-					iterator.remove();
-			}
-		}
-
-	}
-
-	/**
-	 * @return
-	 */
-	public String ayrikKayitlariOlustur() {
-		List<AylikPuantaj> list = new ArrayList<AylikPuantaj>(aylikPuantajList);
-		boolean devam = false;
-		for (AylikPuantaj aylikPuantaj : list) {
-			if (aylikPuantaj.isAyrikHareketVar() == false)
-				continue;
-			List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>(aylikPuantaj.getVardiyalar());
-			int ayrikVar = 0;
-			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
-				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-				if (vardiyaGun.isAyinGunu() && vardiyaGun.getId() != null) {
-					if (vardiyaGun.isAyrikHareketVar()) {
-						manuelHareketSil(vardiyaGun.getGirisHareketleri());
-						manuelHareketSil(vardiyaGun.getCikisHareketleri());
-						manuelHareketSil(vardiyaGun.getHareketler());
-						++ayrikVar;
-					} else if (ayrikVar == 0)
-						iterator.remove();
-				} else
-					iterator.remove();
-
-			}
-			if (ayrikVar > 1) {
-				try {
-					ortakIslemler.addManuelGirisCikisHareketler(vardiyaList, true, null, session);
-					devam = true;
-				} catch (Exception e) {
-					logger.error(e);
-					e.printStackTrace();
-				}
-
-			}
-			vardiyaList = null;
-		}
-		list = null;
-		if (devam)
-			fillFazlaMesaiOzetRaporList();
-		return "";
 	}
 
 	/**

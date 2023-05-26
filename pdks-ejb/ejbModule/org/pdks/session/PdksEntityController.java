@@ -66,6 +66,10 @@ public class PdksEntityController implements Serializable {
 	@In(required = false, create = true)
 	User authenticatedUser;
 
+	/**
+	 * @param fieldValue
+	 * @return
+	 */
 	private String getStringParse(Object fieldValue) {
 		String stringParse = "";
 		if (fieldValue != null) {
@@ -140,6 +144,12 @@ public class PdksEntityController implements Serializable {
 		map = null;
 	}
 
+	/**
+	 * @param fieldsOrj
+	 * @param class1
+	 * @param esit
+	 * @return
+	 */
 	private List getObjectByInnerObjectList(HashMap fieldsOrj, Class class1, String esit) {
 		List objectList = null;
 		List<Liste> listKey = null;
@@ -981,6 +991,13 @@ public class PdksEntityController implements Serializable {
 		return object;
 	}
 
+	/**
+	 * @param sb
+	 * @param fields
+	 * @param class1
+	 * @param uzerineYaz
+	 * @return
+	 */
 	public TreeMap getObjectBySQLMap(StringBuffer sb, HashMap fields, Class class1, Boolean uzerineYaz) {
 		TreeMap treeMap = null;
 		if (fields.containsKey(MAP_KEY_MAP)) {
@@ -993,6 +1010,15 @@ public class PdksEntityController implements Serializable {
 		return treeMap;
 	}
 
+	/**
+	 * @param session
+	 * @param maxSize
+	 * @param sqlSTR
+	 * @param key
+	 * @param list
+	 * @param class1
+	 * @return
+	 */
 	public List getObjectBySQLList(Session session, Integer maxSize, String sqlSTR, String key, Collection list, Class class1) {
 		List listAll = new ArrayList();
 		List veriler = new ArrayList(list);
@@ -1068,6 +1094,12 @@ public class PdksEntityController implements Serializable {
 		return listAll;
 	}
 
+	/**
+	 * @param sb
+	 * @param fields
+	 * @param class1
+	 * @return
+	 */
 	public List getObjectBySQLList(StringBuffer sb, HashMap fields, Class class1) {
 		List list = null;
 		// Integer ti = null;

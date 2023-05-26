@@ -763,7 +763,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 				// boolean ayBitmedi = denklestirmeDonemi.getBitisTarih().getTime() >= PdksUtil.getDate(bugun).getTime();
 
 				boolean renk = Boolean.FALSE;
-				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(0, 0, denklestirmeDonemi, session);
+				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(null, 0, 0, denklestirmeDonemi, session);
 				List<PersonelDenklestirmeTasiyici> list = new ArrayList<PersonelDenklestirmeTasiyici>();
 				try {
 
