@@ -44,7 +44,8 @@ public class HareketKGS implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_SIRKET = "SIRKET";
 	public static final String COLUMN_NAME_TABLE_ID = "TABLE_ID";
 
-	public static final String AYRIK_HAREKET = "M";
+	public static final String AYRIK_HAREKET = "B";
+	public static final String SANAL_HAREKET = "S";
 
 	public static final int DURUM_BLOKE = 2;
 	public static final int DURUM_AKTIF = 1;

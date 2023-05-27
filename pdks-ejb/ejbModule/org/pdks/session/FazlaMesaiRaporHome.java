@@ -1234,12 +1234,12 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		if (fazlaMesaiOnaylaDurum) {
 			for (Iterator iterator = girisHareketleri.iterator(); iterator.hasNext();) {
 				HareketKGS hareketKGS = (HareketKGS) iterator.next();
-				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith("V"))
+				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith(HareketKGS.SANAL_HAREKET))
 					iterator.remove();
 			}
 			for (Iterator iterator = cikisHareketleri.iterator(); iterator.hasNext();) {
 				HareketKGS hareketKGS = (HareketKGS) iterator.next();
-				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith("V"))
+				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith(HareketKGS.SANAL_HAREKET))
 					iterator.remove();
 			}
 			boolean cikis = false;

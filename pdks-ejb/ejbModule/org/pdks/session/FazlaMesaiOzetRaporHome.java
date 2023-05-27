@@ -1549,12 +1549,12 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		if (fazlaMesaiOnaylaDurum || (vardiyaGun.isAyrikHareketVar() && vardiyaGun.getVardiya().isCalisma())) {
 			for (Iterator iterator = girisHareketleri.iterator(); iterator.hasNext();) {
 				HareketKGS hareketKGS = (HareketKGS) iterator.next();
-				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith("V") || hareketKGS.getId().startsWith("M"))
+				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith(HareketKGS.SANAL_HAREKET) || hareketKGS.getId().startsWith(HareketKGS.AYRIK_HAREKET))
 					iterator.remove();
 			}
 			for (Iterator iterator = cikisHareketleri.iterator(); iterator.hasNext();) {
 				HareketKGS hareketKGS = (HareketKGS) iterator.next();
-				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith("V") || hareketKGS.getId().startsWith("M"))
+				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith(HareketKGS.SANAL_HAREKET) || hareketKGS.getId().startsWith(HareketKGS.AYRIK_HAREKET))
 					iterator.remove();
 			}
 			boolean cikis = false;

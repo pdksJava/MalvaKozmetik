@@ -3119,7 +3119,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 			if (ayrikVar > 1) {
 				try {
-					ortakIslemler.addManuelGirisCikisHareketler(manuelKapiMap, neden, sistemUser, vardiyaList, true, null, session);
+					LinkedHashMap<String, Object> addManuelGirisCikisHareketlerMap = new LinkedHashMap<String, Object>();
+					addManuelGirisCikisHareketlerMap.put("manuelKapiMap", manuelKapiMap);
+					addManuelGirisCikisHareketlerMap.put("neden", neden);
+					addManuelGirisCikisHareketlerMap.put("sistemUser", sistemUser);
+					addManuelGirisCikisHareketlerMap.put("vardiyalar", vardiyaList);
+					addManuelGirisCikisHareketlerMap.put("hareketKaydet", false);
+					addManuelGirisCikisHareketlerMap.put("oncekiVardiyaGun", null);
+					ortakIslemler.addManuelGirisCikisHareketler(ortakIslemler.mapBosVeriSil(addManuelGirisCikisHareketlerMap, ""), session);
 					devam = true;
 				} catch (Exception e) {
 					logger.error(e);
@@ -3184,7 +3191,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (hareketler != null) {
 				for (HareketKGS hareketKGS : hareketler) {
 					String islemYapan = "";
-					if (hareketKGS.getId() != null && hareketKGS.getId().startsWith("V"))
+					if (hareketKGS.getId() != null && hareketKGS.getId().startsWith(HareketKGS.SANAL_HAREKET))
 						continue;
 					if (hareketKGS.getKapiView() != null) {
 						try {
@@ -3219,12 +3226,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (fazlaMesaiOnaylaDurum || (vGun.isAyrikHareketVar() && vGun.getVardiya().isCalisma())) {
 			for (Iterator iterator = girisHareketleri.iterator(); iterator.hasNext();) {
 				HareketKGS hareketKGS = (HareketKGS) iterator.next();
-				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith("V") || hareketKGS.getId().startsWith("M"))
+				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith(HareketKGS.SANAL_HAREKET) || hareketKGS.getId().startsWith(HareketKGS.AYRIK_HAREKET))
 					iterator.remove();
 			}
 			for (Iterator iterator = cikisHareketleri.iterator(); iterator.hasNext();) {
 				HareketKGS hareketKGS = (HareketKGS) iterator.next();
-				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith("V") || hareketKGS.getId().startsWith("M"))
+				if (hareketKGS.getId() == null || hareketKGS.getId().startsWith(HareketKGS.SANAL_HAREKET) || hareketKGS.getId().startsWith(HareketKGS.AYRIK_HAREKET))
 					iterator.remove();
 			}
 			boolean cikis = false;
