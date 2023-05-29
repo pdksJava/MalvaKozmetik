@@ -92,6 +92,18 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		return "";
 	}
 
+	public String calismaModeliKopyala(CalismaModeli xCalismaModeli) {
+		CalismaModeli calismaModeliYeni = (CalismaModeli) xCalismaModeli.cloneEmpty();
+
+		calismaModeliYeni.setId(null);
+		if (calismaModeliYeni.getAciklama() != null)
+			calismaModeliYeni.setAciklama(xCalismaModeli.getAciklama() + " kopya");
+		setCalismaModeli(calismaModeliYeni);
+		fillVardiyalar();
+		return "";
+
+	}
+
 	public void fillBagliOlduguDepartmanTanimList() {
 
 		List tanimList = null;
@@ -168,9 +180,9 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		} else
 			kayitliVardiyaList = new ArrayList<Vardiya>();
 		if (vardiyaList.size() > 1)
-			vardiyaList = PdksUtil.sortListByAlanAdi(vardiyaList, "vardiyaNumeric", false);
+			vardiyaList = PdksUtil.sortObjectStringAlanList(vardiyaList, "getKisaAdi", null);
 		if (kayitliVardiyaList.size() > 1)
-			kayitliVardiyaList = PdksUtil.sortListByAlanAdi(kayitliVardiyaList, "vardiyaNumeric", false);
+			kayitliVardiyaList = PdksUtil.sortObjectStringAlanList(kayitliVardiyaList, "getKisaAdi", null);
 
 		return "";
 	}

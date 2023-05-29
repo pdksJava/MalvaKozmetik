@@ -2531,8 +2531,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		for (Tanim tanim : personelTransferList) {
 			long sira = -1;
 			try {
-				if (tanim.getErpKodu() != null && tanim.getErpKodu().trim().length() > 0) {
-					sira = Long.parseLong(tanim.getErpKodu());
+				if (PdksUtil.hasStringValue(tanim.getErpKodu())) {
+					sira = Long.parseLong(tanim.getErpKodu().trim());
 					if (sira > son)
 						son = sira;
 					if (bas < 0 || sira < bas)
