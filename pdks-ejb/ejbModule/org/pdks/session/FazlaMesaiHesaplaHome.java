@@ -3124,7 +3124,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					addManuelGirisCikisHareketlerMap.put("neden", neden);
 					addManuelGirisCikisHareketlerMap.put("sistemUser", sistemUser);
 					addManuelGirisCikisHareketlerMap.put("vardiyalar", vardiyaList);
-					addManuelGirisCikisHareketlerMap.put("hareketKaydet", false);
+					addManuelGirisCikisHareketlerMap.put("hareketKaydet", true);
 					addManuelGirisCikisHareketlerMap.put("oncekiVardiyaGun", null);
 					ortakIslemler.addManuelGirisCikisHareketler(ortakIslemler.mapBosVeriSil(addManuelGirisCikisHareketlerMap, ""), session);
 					devam = true;

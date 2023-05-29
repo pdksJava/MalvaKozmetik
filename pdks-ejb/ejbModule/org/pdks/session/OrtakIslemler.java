@@ -13214,21 +13214,21 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param personelVardiyaDenklestirMap
+	 * @param dataDenkMap
 	 * @param session
 	 * @return
 	 */
-	private VardiyaGun personelVardiyaDenklestir(LinkedHashMap<String, Object> personelVardiyaDenklestirMap, Session session) {
-		HashMap<String, KapiView> manuelKapiMap = personelVardiyaDenklestirMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) personelVardiyaDenklestirMap.get("manuelKapiMap") : null;
-		Tanim neden = personelVardiyaDenklestirMap.containsKey("neden") ? (Tanim) personelVardiyaDenklestirMap.get("neden") : null;
-		User sistemUser = personelVardiyaDenklestirMap.containsKey("sistemUser") ? (User) personelVardiyaDenklestirMap.get("sistemUser") : null;
-		TreeMap<String, Boolean> gunMap = personelVardiyaDenklestirMap.containsKey("gunMap") ? (TreeMap<String, Boolean>) personelVardiyaDenklestirMap.get("gunMap") : null;
-		KapiView girisKapi = personelVardiyaDenklestirMap.containsKey("girisView") ? (KapiView) personelVardiyaDenklestirMap.get("girisView") : null;
-		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = personelVardiyaDenklestirMap.containsKey("vardiyaNetCalismaSuresiMap") ? (HashMap<Long, Double>) personelVardiyaDenklestirMap.get("vardiyaNetCalismaSuresiMap") : null;
-		TreeMap<String, Tatil> tatilGunleriMap = personelVardiyaDenklestirMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) personelVardiyaDenklestirMap.get("tatilGunleriMap") : null;
-		List<YemekIzin> yemekList = personelVardiyaDenklestirMap.containsKey("yemekList") ? (List<YemekIzin>) personelVardiyaDenklestirMap.get("yemekList") : null;
-		PersonelDenklestirmeTasiyici denklestirmeTasiyici = personelVardiyaDenklestirMap.containsKey("personelDenklestirme") ? (PersonelDenklestirmeTasiyici) personelVardiyaDenklestirMap.get("personelDenklestirme") : null;
-		personelVardiyaDenklestirMap = null;
+	private VardiyaGun personelVardiyaDenklestir(LinkedHashMap<String, Object> dataDenkMap, Session session) {
+		HashMap<String, KapiView> manuelKapiMap = dataDenkMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) dataDenkMap.get("manuelKapiMap") : null;
+		Tanim neden = dataDenkMap.containsKey("neden") ? (Tanim) dataDenkMap.get("neden") : null;
+		User sistemUser = dataDenkMap.containsKey("sistemUser") ? (User) dataDenkMap.get("sistemUser") : null;
+		TreeMap<String, Boolean> gunMap = dataDenkMap.containsKey("gunMap") ? (TreeMap<String, Boolean>) dataDenkMap.get("gunMap") : null;
+		KapiView girisKapi = dataDenkMap.containsKey("girisView") ? (KapiView) dataDenkMap.get("girisView") : null;
+		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = dataDenkMap.containsKey("vardiyaNetCalismaSuresiMap") ? (HashMap<Long, Double>) dataDenkMap.get("vardiyaNetCalismaSuresiMap") : null;
+		TreeMap<String, Tatil> tatilGunleriMap = dataDenkMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) dataDenkMap.get("tatilGunleriMap") : null;
+		List<YemekIzin> yemekList = dataDenkMap.containsKey("yemekList") ? (List<YemekIzin>) dataDenkMap.get("yemekList") : null;
+		PersonelDenklestirmeTasiyici denklestirmeTasiyici = dataDenkMap.containsKey("personelDenklestirme") ? (PersonelDenklestirmeTasiyici) dataDenkMap.get("personelDenklestirme") : null;
+		dataDenkMap = null;
 		double resmiTatilMesai = 0;
 		VardiyaGun sonVardiyaGun = denklestirmeTasiyici.getSonVardiyaGun();
 		Double yemekMolasiYuzdesi = getYemekMolasiYuzdesi(denklestirmeTasiyici.getDenklestirmeAy(), session);
@@ -13239,15 +13239,16 @@ public class OrtakIslemler implements Serializable {
 			if (vardiyalar != null)
 				try {
 					if (denklestirmeTasiyici.getDenklestirmeAy() != null && (denklestirmeTasiyici.getDenklestirmeAy().isDurumu())) {
-						LinkedHashMap<String, Object> addManuelGirisCikisHareketlerMap = new LinkedHashMap<String, Object>();
-						addManuelGirisCikisHareketlerMap.put("manuelKapiMap", manuelKapiMap);
-						addManuelGirisCikisHareketlerMap.put("neden", neden);
-						addManuelGirisCikisHareketlerMap.put("sistemUser", sistemUser);
-						addManuelGirisCikisHareketlerMap.put("vardiyalar", vardiyalar);
-						addManuelGirisCikisHareketlerMap.put("hareketKaydet", false);
-						addManuelGirisCikisHareketlerMap.put("oncekiVardiyaGun", denklestirmeTasiyici.getOncekiVardiyaGun());
-						VardiyaGun oncekiVardiyaGun = addManuelGirisCikisHareketler(mapBosVeriSil(addManuelGirisCikisHareketlerMap, "addManuelGirisCikisHareketler"), session);
+						LinkedHashMap<String, Object> dataGirisCikisMap = new LinkedHashMap<String, Object>();
+						dataGirisCikisMap.put("manuelKapiMap", manuelKapiMap);
+						dataGirisCikisMap.put("neden", neden);
+						dataGirisCikisMap.put("sistemUser", sistemUser);
+						dataGirisCikisMap.put("vardiyalar", vardiyalar);
+						dataGirisCikisMap.put("hareketKaydet", false);
+						dataGirisCikisMap.put("oncekiVardiyaGun", denklestirmeTasiyici.getOncekiVardiyaGun());
+						VardiyaGun oncekiVardiyaGun = addManuelGirisCikisHareketler(mapBosVeriSil(dataGirisCikisMap, "addManuelGirisCikisHareketler"), session);
 						denklestirmeTasiyici.setOncekiVardiyaGun(oncekiVardiyaGun);
+						dataGirisCikisMap = null;
 					}
 				} catch (Exception e) {
 					logger.error(e);
@@ -14098,19 +14099,19 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param addManuelGirisCikisHareketlerMap
+	 * @param dataGirisCikisMap
 	 * @param session
 	 * @return
 	 * @throws Exception
 	 */
-	public VardiyaGun addManuelGirisCikisHareketler(LinkedHashMap<String, Object> addManuelGirisCikisHareketlerMap, Session session) throws Exception {
-		Tanim neden = addManuelGirisCikisHareketlerMap.containsKey("neden") ? (Tanim) addManuelGirisCikisHareketlerMap.get("neden") : null;
-		User sistemUser = addManuelGirisCikisHareketlerMap.containsKey("sistemUser") ? (User) addManuelGirisCikisHareketlerMap.get("sistemUser") : null;
-		HashMap<String, KapiView> manuelKapiMap = addManuelGirisCikisHareketlerMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) addManuelGirisCikisHareketlerMap.get("manuelKapiMap") : null;
-		List<VardiyaGun> vardiyalar = addManuelGirisCikisHareketlerMap.containsKey("vardiyalar") ? (List<VardiyaGun>) addManuelGirisCikisHareketlerMap.get("vardiyalar") : null;
-		Boolean hareketKaydet = addManuelGirisCikisHareketlerMap.containsKey("hareketKaydet") ? (Boolean) addManuelGirisCikisHareketlerMap.get("hareketKaydet") : null;
-		VardiyaGun oncekiVardiyaGun = addManuelGirisCikisHareketlerMap.containsKey("oncekiVardiyaGun") ? (VardiyaGun) addManuelGirisCikisHareketlerMap.get("oncekiVardiyaGun") : null;
-		addManuelGirisCikisHareketlerMap = null;
+	public VardiyaGun addManuelGirisCikisHareketler(LinkedHashMap<String, Object> dataGirisCikisMap, Session session) throws Exception {
+		Tanim neden = dataGirisCikisMap.containsKey("neden") ? (Tanim) dataGirisCikisMap.get("neden") : null;
+		User sistemUser = dataGirisCikisMap.containsKey("sistemUser") ? (User) dataGirisCikisMap.get("sistemUser") : null;
+		HashMap<String, KapiView> manuelKapiMap = dataGirisCikisMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) dataGirisCikisMap.get("manuelKapiMap") : null;
+		List<VardiyaGun> vardiyalar = dataGirisCikisMap.containsKey("vardiyalar") ? (List<VardiyaGun>) dataGirisCikisMap.get("vardiyalar") : null;
+		Boolean hareketKaydet = dataGirisCikisMap.containsKey("hareketKaydet") ? (Boolean) dataGirisCikisMap.get("hareketKaydet") : null;
+		VardiyaGun oncekiVardiyaGun = dataGirisCikisMap.containsKey("oncekiVardiyaGun") ? (VardiyaGun) dataGirisCikisMap.get("oncekiVardiyaGun") : null;
+		dataGirisCikisMap = null;
 		if (neden == null || sistemUser == null) {
 			if (PdksUtil.isSistemDestekVar()) {
 				neden = getOtomatikKapGirisiNeden(session);
@@ -14410,29 +14411,29 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param denklestirmeOlusturMap
+	 * @param denklestirmeMap
 	 * @param session
 	 */
-	private void denklestirmeOlustur(LinkedHashMap<String, Object> denklestirmeOlusturMap, Session session) {
-		Tanim neden = denklestirmeOlusturMap.containsKey("neden") ? (Tanim) denklestirmeOlusturMap.get("neden") : null;
-		User sistemUser = denklestirmeOlusturMap.containsKey("sistemUser") ? (User) denklestirmeOlusturMap.get("sistemUser") : null;
-		HashMap<String, KapiView> manuelKapiMap = denklestirmeOlusturMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) denklestirmeOlusturMap.get("manuelKapiMap") : null;
-		TreeMap<String, Boolean> gunMap = denklestirmeOlusturMap.containsKey("gunMap") ? (TreeMap<String, Boolean>) denklestirmeOlusturMap.get("gunMap") : null;
-		Boolean hareketEkle = denklestirmeOlusturMap.containsKey("hareketEkle") ? (Boolean) denklestirmeOlusturMap.get("hareketEkle") : null;
-		List<YemekIzin> yemekAraliklari = denklestirmeOlusturMap.containsKey("yemekAraliklari") ? (List<YemekIzin>) denklestirmeOlusturMap.get("yemekAraliklari") : null;
-		KapiView girisView = denklestirmeOlusturMap.containsKey("girisView") ? (KapiView) denklestirmeOlusturMap.get("girisView") : null;
-		List<PersonelDenklestirmeTasiyici> personelDenklestirmeTasiyiciList = denklestirmeOlusturMap.containsKey("personelDenklestirmeTasiyiciList") ? (List<PersonelDenklestirmeTasiyici>) denklestirmeOlusturMap.get("personelDenklestirmeTasiyiciList") : null;
-		TreeMap<String, Tatil> tatilGunleriMap = denklestirmeOlusturMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) denklestirmeOlusturMap.get("tatilGunleriMap") : null;
-		TreeMap<Long, PersonelDenklestirmeTasiyici> personelDenklestirmeMap = denklestirmeOlusturMap.containsKey("personelDenklestirmeMap") ? (TreeMap<Long, PersonelDenklestirmeTasiyici>) denklestirmeOlusturMap.get("personelDenklestirmeMap") : null;
-		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = denklestirmeOlusturMap.containsKey("vardiyaNetCalismaSuresiMap") ? (HashMap<Long, Double>) denklestirmeOlusturMap.get("vardiyaNetCalismaSuresiMap") : null;
-		List<PersonelIzin> izinler = denklestirmeOlusturMap.containsKey("izinler") ? (List<PersonelIzin>) denklestirmeOlusturMap.get("izinler") : null;
-		List<PersonelFazlaMesai> fazlaMesailer = denklestirmeOlusturMap.containsKey("fazlaMesailer") ? (List<PersonelFazlaMesai>) denklestirmeOlusturMap.get("fazlaMesailer") : null;
-		HashMap<Long, ArrayList<VardiyaGun>> calismaPlaniMap = denklestirmeOlusturMap.containsKey("calismaPlaniMap") ? (HashMap<Long, ArrayList<VardiyaGun>>) denklestirmeOlusturMap.get("calismaPlaniMap") : null;
-		List<HareketKGS> perHareketList = denklestirmeOlusturMap.containsKey("perHareketList") ? (List<HareketKGS>) denklestirmeOlusturMap.get("perHareketList") : null;
-		Long perNoId = denklestirmeOlusturMap.containsKey("perNoId") ? (Long) denklestirmeOlusturMap.get("perNoId") : null;
-		List<YemekIzin> yemekList = denklestirmeOlusturMap.containsKey("yemekList") ? (List<YemekIzin>) denklestirmeOlusturMap.get("yemekList") : null;
+	private void denklestirmeOlustur(LinkedHashMap<String, Object> denklestirmeMap, Session session) {
+		Tanim neden = denklestirmeMap.containsKey("neden") ? (Tanim) denklestirmeMap.get("neden") : null;
+		User sistemUser = denklestirmeMap.containsKey("sistemUser") ? (User) denklestirmeMap.get("sistemUser") : null;
+		HashMap<String, KapiView> manuelKapiMap = denklestirmeMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) denklestirmeMap.get("manuelKapiMap") : null;
+		TreeMap<String, Boolean> gunMap = denklestirmeMap.containsKey("gunMap") ? (TreeMap<String, Boolean>) denklestirmeMap.get("gunMap") : null;
+		Boolean hareketEkle = denklestirmeMap.containsKey("hareketEkle") ? (Boolean) denklestirmeMap.get("hareketEkle") : null;
+		List<YemekIzin> yemekAraliklari = denklestirmeMap.containsKey("yemekAraliklari") ? (List<YemekIzin>) denklestirmeMap.get("yemekAraliklari") : null;
+		KapiView girisView = denklestirmeMap.containsKey("girisView") ? (KapiView) denklestirmeMap.get("girisView") : null;
+		List<PersonelDenklestirmeTasiyici> personelDenklestirmeTasiyiciList = denklestirmeMap.containsKey("personelDenklestirmeTasiyiciList") ? (List<PersonelDenklestirmeTasiyici>) denklestirmeMap.get("personelDenklestirmeTasiyiciList") : null;
+		TreeMap<String, Tatil> tatilGunleriMap = denklestirmeMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) denklestirmeMap.get("tatilGunleriMap") : null;
+		TreeMap<Long, PersonelDenklestirmeTasiyici> personelDenklestirmeMap = denklestirmeMap.containsKey("personelDenklestirmeMap") ? (TreeMap<Long, PersonelDenklestirmeTasiyici>) denklestirmeMap.get("personelDenklestirmeMap") : null;
+		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = denklestirmeMap.containsKey("vardiyaNetCalismaSuresiMap") ? (HashMap<Long, Double>) denklestirmeMap.get("vardiyaNetCalismaSuresiMap") : null;
+		List<PersonelIzin> izinler = denklestirmeMap.containsKey("izinler") ? (List<PersonelIzin>) denklestirmeMap.get("izinler") : null;
+		List<PersonelFazlaMesai> fazlaMesailer = denklestirmeMap.containsKey("fazlaMesailer") ? (List<PersonelFazlaMesai>) denklestirmeMap.get("fazlaMesailer") : null;
+		HashMap<Long, ArrayList<VardiyaGun>> calismaPlaniMap = denklestirmeMap.containsKey("calismaPlaniMap") ? (HashMap<Long, ArrayList<VardiyaGun>>) denklestirmeMap.get("calismaPlaniMap") : null;
+		List<HareketKGS> perHareketList = denklestirmeMap.containsKey("perHareketList") ? (List<HareketKGS>) denklestirmeMap.get("perHareketList") : null;
+		Long perNoId = denklestirmeMap.containsKey("perNoId") ? (Long) denklestirmeMap.get("perNoId") : null;
+		List<YemekIzin> yemekList = denklestirmeMap.containsKey("yemekList") ? (List<YemekIzin>) denklestirmeMap.get("yemekList") : null;
 		boolean testDurum = PdksUtil.getTestDurum() && false;
-		denklestirmeOlusturMap = null;
+		denklestirmeMap = null;
 		if (testDurum)
 			logger.info(perNoId + " denklestirmeOlustur 0100 " + new Date());
 		PersonelDenklestirmeTasiyici personelDenklestirme = personelDenklestirmeMap.get(perNoId);
@@ -14773,19 +14774,19 @@ public class OrtakIslemler implements Serializable {
 				denklestirme.setVardiyalar(new ArrayList(vardiyaMap.values()));
 				// Haftalik denklestirme verileri yapiliyor
 				denklestirme.setDenklestirmeAy(personelDenklestirme.getDenklestirmeAy());
-				LinkedHashMap<String, Object> personelVardiyaDenklestirMap = new LinkedHashMap<String, Object>();
-				personelVardiyaDenklestirMap.put("manuelKapiMap", manuelKapiMap);
-				personelVardiyaDenklestirMap.put("neden", neden);
-				personelVardiyaDenklestirMap.put("sistemUser", sistemUser);
-				personelVardiyaDenklestirMap.put("gunMap", gunMap);
-				personelVardiyaDenklestirMap.put("personelDenklestirme", denklestirme);
-				personelVardiyaDenklestirMap.put("girisView", girisView);
-				personelVardiyaDenklestirMap.put("vardiyaNetCalismaSuresiMap", vardiyaNetCalismaSuresiMap);
-				personelVardiyaDenklestirMap.put("yemekList", yemekList);
-				personelVardiyaDenklestirMap.put("tatilGunleriMap", tatilGunleriMap);
-				personelVardiyaDenklestirMap.put("manuelKapiMap", manuelKapiMap);
+				LinkedHashMap<String, Object> dataMap = new LinkedHashMap<String, Object>();
+				dataMap.put("manuelKapiMap", manuelKapiMap);
+				dataMap.put("neden", neden);
+				dataMap.put("sistemUser", sistemUser);
+				dataMap.put("gunMap", gunMap);
+				dataMap.put("personelDenklestirme", denklestirme);
+				dataMap.put("girisView", girisView);
+				dataMap.put("vardiyaNetCalismaSuresiMap", vardiyaNetCalismaSuresiMap);
+				dataMap.put("yemekList", yemekList);
+				dataMap.put("tatilGunleriMap", tatilGunleriMap);
+				dataMap.put("manuelKapiMap", manuelKapiMap);
 
-				sonVardiyaGun = personelVardiyaDenklestir(mapBosVeriSil(personelVardiyaDenklestirMap, "personelVardiyaDenklestir"), session);
+				sonVardiyaGun = personelVardiyaDenklestir(mapBosVeriSil(dataMap, "personelVardiyaDenklestir"), session);
 				oncekiVardiyaGun = denklestirme.getOncekiVardiyaGun();
 				normalFazlaMesai += denklestirme.getNormalFazlaMesai();
 				resmiTatilMesai += denklestirme.getResmiTatilMesai();
