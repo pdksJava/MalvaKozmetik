@@ -388,8 +388,11 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public void addCalismaSuresi(double value) {
-		if (this.getVardiyaDateStr().equals("20210928") && value != 0.0d)
-			logger.debug(value);
+		if (value != 0.0d) {
+			if (this.getVardiyaDateStr().equals("20230420"))
+				logger.debug(value);
+		}
+
 		calismaSuresi += value;
 	}
 
@@ -1830,7 +1833,7 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public void addBayramCalismaSuresi(double value) {
-		if (value > 0.0d)
+		if (value != 0.0d)
 			logger.debug(value);
 		bayramCalismaSuresi += value;
 	}

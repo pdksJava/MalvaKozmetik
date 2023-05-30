@@ -6550,10 +6550,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 		}
 		boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
-		gerceklesenMesaiKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod());
-		devredenBakiyeKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenBakiyeKod());
-		devredenMesaiKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenMesaiKod());
-		ucretiOdenenKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.ucretiOdenenKod());
+		gerceklesenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod());
+		devredenBakiyeKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenBakiyeKod());
+		devredenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenMesaiKod());
+		ucretiOdenenKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.ucretiOdenenKod());
 		normalCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || baslikMap.containsKey(ortakIslemler.normalCalismaSaatKod());
 		haftaTatilCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.haftaTatilCalismaSaatKod()));
 		resmiTatilCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.resmiTatilCalismaSaatKod()));
@@ -9007,7 +9007,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (aylikPuantajDosyaList == null)
 			aylikPuantajDosyaList = new ArrayList<AylikPuantaj>();
 		boolean fileImportDurum = userHome.hasPermission("vardiyaPlani", "fileImportPlan");
-		if ((fileImportDurum || (ikRole && ortakIslemler.getParameterKey("fileImport").equals("1"))) && ay > 0 && aramaSecenekleri.getSirketId() != null) {
+		String fileImportStr = ortakIslemler.getParameterKey("fileImport");
+		if (ay > 0 && aramaSecenekleri.getSirketId() != null && (fileImportDurum || fileImportStr.equals("1") || (ikRole && fileImportStr.equalsIgnoreCase("ik")))) {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.MONTH, 1);
 			int donem = (cal.get(Calendar.YEAR) * 100) + cal.get(Calendar.MONTH) + 1;
