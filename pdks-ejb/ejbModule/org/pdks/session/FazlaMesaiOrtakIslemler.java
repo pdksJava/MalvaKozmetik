@@ -107,6 +107,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	public TreeMap<String, Boolean> bordroVeriOlustur(boolean kaydet, List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, Session session) {
 		TreeMap<String, Boolean> baslikMap = new TreeMap<String, Boolean>();
 		String arifeGunuBordroYarim = ortakIslemler.getParameterKey("arifeGunuBordroYarim");
+		boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
 		HashMap fields = new HashMap();
 		fields.put("tipi", Tanim.TIPI_IZIN_GRUPLARI);
 		fields.put("durum", Boolean.TRUE);
@@ -440,13 +441,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				detayMap = null;
 				if (flush)
 					session.flush();
-
-				String keyEk = saatlikCalisma ? "" : "G";
-				baslikGuncelle(baslikMap, ortakIslemler.normalCalismaSaatKod() + keyEk, normalSaat);
-				baslikGuncelle(baslikMap, ortakIslemler.haftaTatilCalismaSaatKod() + keyEk, haftaTatilSaat);
-				baslikGuncelle(baslikMap, ortakIslemler.resmiTatilCalismaSaatKod() + keyEk, resmiTatilSaat);
-				baslikGuncelle(baslikMap, ortakIslemler.izinSureSaatKod() + keyEk, izinGunSaat);
-				baslikGuncelle(baslikMap, ortakIslemler.izinSureGunAdetKod(), izinGunAdet);
+				if (saatlikCalismaVar) {
+					String keyEk = saatlikCalisma ? "" : "G";
+					baslikGuncelle(baslikMap, ortakIslemler.normalCalismaSaatKod() + keyEk, normalSaat);
+					baslikGuncelle(baslikMap, ortakIslemler.haftaTatilCalismaSaatKod() + keyEk, haftaTatilSaat);
+					baslikGuncelle(baslikMap, ortakIslemler.resmiTatilCalismaSaatKod() + keyEk, resmiTatilSaat);
+					baslikGuncelle(baslikMap, ortakIslemler.izinSureSaatKod() + keyEk, izinGunSaat);
+					baslikGuncelle(baslikMap, ortakIslemler.izinSureGunAdetKod(), izinGunAdet);
+				}
 				if (ap.getDenklestirmeBordro() != null) {
 					baslikGuncelle(baslikMap, ortakIslemler.ucretliIzinGunKod(), ap.getDenklestirmeBordro().getUcretliIzin().doubleValue());
 					baslikGuncelle(baslikMap, ortakIslemler.ucretsizIzinGunKod(), ap.getDenklestirmeBordro().getUcretsizIzin().doubleValue());

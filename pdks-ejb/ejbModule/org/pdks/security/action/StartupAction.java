@@ -235,7 +235,7 @@ public class StartupAction implements Serializable {
 			list.add(UserTesis.class);
 			list.add(VardiyaGorev.class);
 			list.add(VardiyaHafta.class);
-//			list.add(VardiyaIzin.class);
+			// list.add(VardiyaIzin.class);
 			list.add(VardiyaYemekIzin.class);
 			list.add(YemekKartsiz.class);
 			list.add(ServisData.class);
@@ -459,6 +459,7 @@ public class StartupAction implements Serializable {
 			if (deger.length() > 3)
 				MailManager.setHeaderRenk(deger);
 		}
+		String fontSize = "22px";
 		if (parameterMap.containsKey("projeHeaderRenk")) {
 			String deger = parameterMap.get("projeHeaderRenk");
 			LinkedHashMap<String, String> map = parametreAyikla(deger);
@@ -466,7 +467,11 @@ public class StartupAction implements Serializable {
 				projeHeaderBackgroundColor = map.get("background-color");
 			if (map.containsKey("color"))
 				projeHeaderColor = map.get("color");
+			if (map.containsKey("font-size"))
+				fontSize = map.get("font-size");
+
 		}
+		projeHeaderColor += ";font-size:" + fontSize + ";";
 		if (parameterMap.containsKey("vardiyaKontrolTarih")) {
 			String dateStr = parameterMap.get("vardiyaKontrolTarih");
 			Date vardiyaKontrolTarih = null;

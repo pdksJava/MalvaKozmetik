@@ -2385,14 +2385,15 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				e.printStackTrace();
 			}
 		}
+		boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
 		gerceklesenMesaiKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod());
 		devredenBakiyeKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenBakiyeKod());
 		devredenMesaiKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenMesaiKod());
 		ucretiOdenenKod = bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.ucretiOdenenKod());
-		normalCalismaSaatKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.normalCalismaSaatKod());
-		haftaTatilCalismaSaatKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.haftaTatilCalismaSaatKod());
-		resmiTatilCalismaSaatKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilCalismaSaatKod());
-		izinSureSaatKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.izinSureSaatKod());
+		normalCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || baslikMap.containsKey(ortakIslemler.normalCalismaSaatKod());
+		haftaTatilCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.haftaTatilCalismaSaatKod()));
+		resmiTatilCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.resmiTatilCalismaSaatKod()));
+		izinSureSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.izinSureSaatKod()));
 		normalCalismaGunKod = bordroPuantajEkranindaGoster && baslikMap.containsKey(ortakIslemler.normalCalismaGunKod());
 		haftaTatilCalismaGunKod = bordroPuantajEkranindaGoster && baslikMap.containsKey(ortakIslemler.haftaTatilCalismaGunKod());
 		resmiTatilCalismaGunKod = bordroPuantajEkranindaGoster && baslikMap.containsKey(ortakIslemler.resmiTatilCalismaGunKod());

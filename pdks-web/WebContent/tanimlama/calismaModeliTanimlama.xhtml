@@ -88,7 +88,7 @@
 							</f:facet>
 							<h:outputText value="#{calismaModeli.bagliVardiyaSablonu.adi}" />
 						</rich:column>
-						<rich:column>
+						<rich:column rendered="#{calismaModeliHome.saatlikCalismaVar}">
 							<f:facet name="header">
 								<h:outputText value="Maaş Ödeme Tipi" />
 							</f:facet>
@@ -208,7 +208,7 @@
 								<s:convertEntity />
 							</h:selectOneMenu>
 						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{calismaModeliHome.saatlikCalismaVar}">
 							<ui:define name="label">Aylık Maaş Mı</ui:define>
 
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.aylikMaas}" disabled="#{authenticatedUser.admin==false}">
@@ -257,7 +257,7 @@
 								<f:validateDoubleRange maximum="0" />
 							</h:inputText>
 						</s:decorate>
- 						<s:decorate template="/layout/edit.xhtml">
+						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Fazla Mesai Var</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.fazlaMesaiVar}" disabled="#{authenticatedUser.admin==false}">
 

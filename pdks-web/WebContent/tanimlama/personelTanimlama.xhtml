@@ -437,10 +437,13 @@
 				</h:panelGroup>
 			</f:facet>
 			<h:form>
-				<a4j:outputPanel id="dosyaPanel" ajaxRendered="true">
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<a4j:outputPanel id="dosyaPanel">
 					<rich:panel header="Dosya Ekleme" rendered="#{authenticatedUser.admin }">
 						<h:panelGrid columns="2" style="width:700px;">
- 							<rich:fileUpload id="fileUpload" fileUploadListener="#{pdksPersonelHome.listenerPersonelDosya}" listHeight="50px" listWidth="300px"
+							<rich:fileUpload id="fileUpload" fileUploadListener="#{pdksPersonelHome.listenerPersonelDosya}" listHeight="50px" listWidth="300px"
 								sizeErrorLabel="Dosya boyutu büyük" maxFilesQuantity="1" immediateUpload="true" acceptedTypes="xls,xlsx"
 								transferErrorLabel="Personel webservice dosyası hatalı yüklenmiştir" doneLabel="Bitti" addControlLabel="Dosya Seçin (Excel)"
 								uploadControlLabel="Dosya Kaydet" cancelEntryControlLabel="Temizle" allowFlash="false">
@@ -473,9 +476,7 @@
 								</ui:fragment>
 							</a4j:outputPanel>
 						</h:panelGrid>
-						<a4j:outputPanel ajaxRendered="true">
-							<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
-						</a4j:outputPanel>
+
 						<ui:fragment rendered="#{pdksPersonelHome.personelDosya.dosyaIcerik!=null}">
 							<rich:dataTable rowClasses="acik,koyu" headerClass="headerWrap" columnClasses="columnWrap" value="#{pdksPersonelHome.personelERPReturnList}"
 								rendered="#{not empty pdksPersonelHome.personelERPReturnList}" var="personelHata" rows="50" rowKeyVar="row" id="personelHataViewTable">
