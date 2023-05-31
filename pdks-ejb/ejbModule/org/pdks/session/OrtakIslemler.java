@@ -9663,10 +9663,10 @@ public class OrtakIslemler implements Serializable {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 				Vardiya vardiya = vardiyaGun.getVardiya();
 				if (vardiya != null && vardiya.getId() != null) {
- 					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
+					HashMap<Integer, BigDecimal> katSayiMap = new HashMap<Integer, BigDecimal>();
 					String str = vardiyaGun.getVardiyaDateStr();
 					Tatil tatil = tatilKontrolEt ? tatilMap.get(str) : null;
- 					if (saatCalisanNormalGunKontrolEt && saatCalisanNormalGunMap.containsKey(str))
+					if (saatCalisanNormalGunKontrolEt && saatCalisanNormalGunMap.containsKey(str))
 						katSayiMap.put(KatSayiTipi.SAAT_CALISAN_NORMAL_GUN.value(), saatCalisanNormalGunMap.get(str));
 					if (vardiyaGun.isIzinli() && saatCalisanIzinGunKontrolEt && saatCalisanIzinGunMap.containsKey(str))
 						katSayiMap.put(KatSayiTipi.SAAT_CALISAN_IZIN_GUN.value(), saatCalisanIzinGunMap.get(str));
@@ -12449,12 +12449,11 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @param puantajData
 	 * @param kaydet
-	 * @param yemekList
 	 * @param tatilGunleriMap
 	 * @param session
 	 * @return
 	 */
-	public PersonelDenklestirme aylikPlanSureHesapla(AylikPuantaj puantajData, boolean kaydet, List<YemekIzin> yemekList, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
+	public PersonelDenklestirme aylikPlanSureHesapla(AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
 
 		double gunduzCalismaSaat = 45.0d;
 		if (puantajData.getPersonelDenklestirmeAylik() != null) {
@@ -12554,6 +12553,7 @@ public class OrtakIslemler implements Serializable {
 									puantajData.setResmiTatilToplami(0.0d);
 								ilkGiris = false;
 							}
+							List<YemekIzin> yemekList = pdksVardiyaGun.getYemekList();
 							Double izinSaat = null;
 							Tatil tatilOrj = tatilGunleriMap.get(key);
 							if (tatilGunleriMap.containsKey(key))
@@ -13244,7 +13244,7 @@ public class OrtakIslemler implements Serializable {
 		KapiView girisKapi = dataDenkMap.containsKey("girisView") ? (KapiView) dataDenkMap.get("girisView") : null;
 		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = dataDenkMap.containsKey("vardiyaNetCalismaSuresiMap") ? (HashMap<Long, Double>) dataDenkMap.get("vardiyaNetCalismaSuresiMap") : null;
 		TreeMap<String, Tatil> tatilGunleriMap = dataDenkMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) dataDenkMap.get("tatilGunleriMap") : null;
-		List<YemekIzin> yemekList = dataDenkMap.containsKey("yemekList") ? (List<YemekIzin>) dataDenkMap.get("yemekList") : null;
+		List<YemekIzin> yemekGenelList = dataDenkMap.containsKey("yemekList") ? (List<YemekIzin>) dataDenkMap.get("yemekList") : null;
 		PersonelDenklestirmeTasiyici denklestirmeTasiyici = dataDenkMap.containsKey("personelDenklestirme") ? (PersonelDenklestirmeTasiyici) dataDenkMap.get("personelDenklestirme") : null;
 		dataDenkMap = null;
 		double resmiTatilMesai = 0;
@@ -13311,9 +13311,12 @@ public class OrtakIslemler implements Serializable {
 			// String bayramEkleme = getParameterKey("bayramEkle");
 			// Date simdikiZaman = new Date();
 			boolean arifeYemekEkle = getParameterKey("arifeYemekEkle").equals("1");
+
+			setVardiyaYemekList(vardiyalar, yemekGenelList);
+
 			for (VardiyaGun vardiyaGun : vardiyalar) {
 				vardiyaGun.setHaftaCalismaSuresi(0d);
-				if (vardiyaGun.getVardiya() == null) {
+				if (vardiyaGun.getVardiya() == null || vardiyaGun.getVardiya().getId() == null) {
 					eksikCalisma = Boolean.TRUE;
 					continue;
 				}
@@ -13340,7 +13343,7 @@ public class OrtakIslemler implements Serializable {
 				for (VardiyaGun vardiyaGun : vardiyalar) {
 					String vGun = vardiyaGun.getVardiyaDateStr();
 					String gun = vGun.substring(6);
-
+					List<YemekIzin> yemekList = vardiyaGun.getYemekList();
 					cal.setTime(vardiyaGun.getVardiyaDate());
 					int ayinSonGunu = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 					Date digerAyinIlkGunu = vardiyaGun.isAyinGunu() && ayinSonGunu == Integer.parseInt(gun) ? PdksUtil.tariheGunEkleCikar(vardiyaGun.getVardiyaDate(), 1) : null;
@@ -13554,6 +13557,8 @@ public class OrtakIslemler implements Serializable {
 							boolean arifeGunu = orjTatil != null && arifeAyGun.equals(vGun.substring(4)) && orjTatil.isYarimGunMu();
 							Date oncekiCikisZaman = null;
 							double yemekSure = (double) vardiyaGun.getVardiya().getYemekSuresi() / 60.0d, netSure = vardiyaGun.getVardiya().getNetCalismaSuresi();
+							if (gun.equals("01"))
+								logger.debug("");
 
 							for (int i = 0; i < tatilCikisHareketleri.size(); i++) {
 								HareketKGS cikisHareket = tatilCikisHareketleri.get(i);
@@ -13664,12 +13669,6 @@ public class OrtakIslemler implements Serializable {
 												if (hareketYilAy.equals(yilAy) && tatilBasZaman.before(tatilBitZaman)) {
 													Double yemekSuresi = 0.0d;
 													if (yemekler.isEmpty()) {
-														// yemekSuresi = (vardiyaYemekSuresi * 60.0d - 30.0d) * 0.5;
-														// if (yemekSuresi > 0.0d) {
-														// cal.setTime(tatilBasZaman);
-														// cal.add(Calendar.MINUTE, yemekSuresi.intValue());
-														// tatilBasZaman = cal.getTime();
-														// }
 
 													}
 													double bayramCalisma = getSaatSure(tatilBasZaman, tatilBitZaman, yemekler, vardiyaGun, session) - (yemekSuresi / 60.0d);
@@ -13988,6 +13987,44 @@ public class OrtakIslemler implements Serializable {
 
 		}
 		return sonVardiyaGun;
+
+	}
+
+	/**
+	 * TODO Vardiya yemek molları ayarlanıyor
+	 * 
+	 * @param vardiyalar
+	 * @param yemekGenelList
+	 */
+	public void setVardiyaYemekList(List<VardiyaGun> vardiyalar, List<YemekIzin> yemekGenelList) {
+		if (vardiyalar != null) {
+			boolean ozelYemekVar = false;
+			if (yemekGenelList != null) {
+				for (YemekIzin yemekIzin : yemekGenelList) {
+					if (yemekIzin.getVardiyaMap() != null)
+						ozelYemekVar = true;
+				}
+			} else
+				yemekGenelList = new ArrayList<YemekIzin>();
+			for (VardiyaGun vardiyaGun : vardiyalar) {
+				Vardiya vardiya = vardiyaGun.getVardiya();
+				List<YemekIzin> yemekList = ozelYemekVar ? new ArrayList<YemekIzin>() : null;
+				if (ozelYemekVar == false)
+					yemekList = yemekGenelList;
+				else {
+					if (yemekGenelList != null) {
+						for (YemekIzin yemekIzin : yemekGenelList) {
+							if (vardiya != null && vardiya.getId() != null) {
+								if (yemekIzin.getVardiyaMap() == null || yemekIzin.getVardiyaMap().containsKey(vardiya.getId()))
+									yemekList.add(yemekIzin);
+							}
+						}
+					}
+				}
+
+				vardiyaGun.setYemekList(yemekList);
+			}
+		}
 
 	}
 

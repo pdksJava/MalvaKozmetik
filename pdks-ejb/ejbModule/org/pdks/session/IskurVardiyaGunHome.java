@@ -145,11 +145,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 	private List<CalismaModeliAy> modelList;
 
-	private List<YemekIzin> yemekAraliklari;
-
 	private List<Vardiya> calismaOlmayanVardiyaList;
-
-	private List<YemekIzin> yemekList;
 
 	private boolean vardiyaVar = Boolean.FALSE, seciliDurum, mailGonder, haftaTatilMesaiDurum = Boolean.FALSE, vardiyaGuncelle = Boolean.FALSE, hastaneSuperVisor = Boolean.FALSE;
 	private boolean onayDurum = Boolean.FALSE, partTimeGoster = Boolean.FALSE, sutIzniGoster = Boolean.FALSE, planGirisi, sablonGuncelle, veriGuncellendi;
@@ -1644,8 +1640,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					continue;
 				if (!(girisZaman.getTime() <= aksamVardiyaBitisZamani.getTime() && cikisZaman.getTime() >= aksamVardiyaBaslangicZamani.getTime()))
 					continue;
-				if (yemekList == null)
-					yemekList = ortakIslemler.getYemekList(session);
+
 				if (girisZaman.before(aksamVardiyaBaslangicZamani))
 					girisZaman = aksamVardiyaBaslangicZamani;
 				if (cikisZaman.after(aksamVardiyaBitisZamani))
@@ -2506,7 +2501,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		manuelVardiyaIzinGir = ortakIslemler.isVardiyaIzinGir(session, authenticatedUser.getDepartman());
 		gorevYeriGirisDurum = ortakIslemler.getParameterKey("uygulamaTipi").equals("H") && ortakIslemler.getParameterKey("gorevYeriGiris").equals("1");
 		departmanBolumAyni = Boolean.FALSE;
-		yemekList = null;
 		modelGoster = Boolean.FALSE;
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
 		String aksamBordroBasZamani = ortakIslemler.getParameterKey("aksamBordroBasZamani"), aksamBordroBitZamani = ortakIslemler.getParameterKey("aksamBordroBitZamani");
@@ -2523,7 +2517,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		gunSec = Boolean.FALSE;
 		DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi(), denklestirmeDonemiGecenAy = new DepartmanDenklestirmeDonemi();
 		HashMap fields = new HashMap();
-		yemekAraliklari = ortakIslemler.getYemekList(session);
 		sicilNo = ortakIslemler.getSicilNo(sicilNo);
 		if (aramaSecenekleri.getSirketId() != null) {
 			fields.clear();
@@ -5194,14 +5187,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		this.sutIzniGoster = sutIzniGoster;
 	}
 
-	public List<YemekIzin> getYemekAraliklari() {
-		return yemekAraliklari;
-	}
-
-	public void setYemekAraliklari(List<YemekIzin> yemekAraliklari) {
-		this.yemekAraliklari = yemekAraliklari;
-	}
-
 	public TreeMap<String, VardiyaGun> getVardiyalarMap() {
 		return vardiyalarMap;
 	}
@@ -5452,14 +5437,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 	public void setBitTarihStr(String bitTarihStr) {
 		this.bitTarihStr = bitTarihStr;
-	}
-
-	public List<YemekIzin> getYemekList() {
-		return yemekList;
-	}
-
-	public void setYemekList(List<YemekIzin> yemekList) {
-		this.yemekList = yemekList;
 	}
 
 	public Boolean getDepartmanBolumAyni() {

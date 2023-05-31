@@ -1731,7 +1731,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							yemekAraliklari = ortakIslemler.getYemekList(session);
 							if (personelDurumMap.containsKey(personelDenklestirme.getId()))
 								puantaj.setFazlaMesaiIzinKontrol(Boolean.FALSE);
-							personelDenklestirme = ortakIslemler.aylikPlanSureHesapla(puantaj, !personelDenklestirme.isKapandi(authenticatedUser), yemekAraliklari, tatilGunleriMap, session);
+							personelDenklestirme = ortakIslemler.aylikPlanSureHesapla(puantaj, !personelDenklestirme.isKapandi(authenticatedUser), tatilGunleriMap, session);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -1741,6 +1741,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					double resmiTatilToplami = puantaj.getResmiTatilToplami();
 					double kesilenSure = personelDenklestirme.getKesilenSure();
 					int izinsizGun = 0;
+					ortakIslemler.setVardiyaYemekList(puantaj.getVardiyalar(), yemekAraliklari);
 					for (Iterator iterator = puantaj.getVardiyalar().iterator(); iterator.hasNext();) {
 						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 						if (!vardiyaGun.isAyinGunu()) {
@@ -3517,8 +3518,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									continue;
 								if (!(girisZaman.getTime() <= aksamVardiyaBitisZamani.getTime() && cikisZaman.getTime() >= aksamVardiyaBaslangicZamani.getTime()))
 									continue;
-								if (yemekList == null)
-									yemekList = ortakIslemler.getYemekList(session);
+
+								yemekList = vGun.getYemekList();
 								if (girisZaman.before(aksamVardiyaBaslangicZamani))
 									girisZaman = aksamVardiyaBaslangicZamani;
 								if (cikisZaman.after(aksamVardiyaBitisZamani))

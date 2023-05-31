@@ -4313,7 +4313,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			Date izinBitTarih = (Date) personelIzin.getBitisZamani().clone();
 			boolean ilkGun = Boolean.FALSE;
 			int durum = hesapTipiMethod == PersonelIzin.HESAP_TIPI_SAAT ? 0 : 1;
-			List<YemekIzin> pdksYemekList = ortakIslemler.getYemekList(session);
+			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(session);
 
 			int hafta = 0;
 			boolean artikIizinVar = senelikIzin && artikIzinGun != 0D;
@@ -4322,6 +4322,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			Date tarih = null;
 			StringBuffer sb = new StringBuffer();
 			Double yemekMolasiYuzdesi = ortakIslemler.getYemekMolasiYuzdesi(null, session);
+			ortakIslemler.setVardiyaYemekList(new ArrayList<VardiyaGun>(vardiyalar.values()), yemekGenelList);
 			while (PdksUtil.tarihKarsilastirNumeric(personelIzin.getBitisZamani(), vardiyaDate) >= durum) {
 				pdksVardiyaGun.setVardiyaDate(vardiyaDate);
 				tarih = (Date) vardiyaDate.clone();
@@ -4333,6 +4334,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				cal.setTime(vardiyaDate);
 				if (vardiyalar.containsKey(vardiyaKey)) {
 					VardiyaGun tempVardiya = (VardiyaGun) vardiyalar.get(vardiyaKey);
+					List<YemekIzin> pdksYemekList = tempVardiya.getYemekList();
 					if (artikIzinGun > 0.0D && cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY && tempVardiya != null && tempVardiya.getVardiya().getKisaAdi() != null && tempVardiya.getVardiya().getKisaAdi().equals("CMT")) {
 						if (sb.length() > 0)
 							sb.append(", ");

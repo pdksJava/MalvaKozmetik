@@ -89,6 +89,7 @@ public class VardiyaGun extends BaseObject {
 	private Boolean fazlaMesaiOnayla;
 	private Integer version = 0;
 	private List<FazlaMesaiTalep> fazlaMesaiTalepler;
+	private List<YemekIzin> yemekList;
 
 	public VardiyaGun() {
 		super();
@@ -2215,6 +2216,17 @@ public class VardiyaGun extends BaseObject {
 		BigDecimal decimal = getKatSayi(KatSayiTipi.RESMI_TATIL_SURE_EKLE_DURUM.value());
 		boolean tatilYemekHesabiSureEkle = decimal != null && decimal.intValue() > 0;
 		return tatilYemekHesabiSureEkle;
+	}
+
+	@Transient
+	public List<YemekIzin> getYemekList() {
+		if (yemekList == null)
+			yemekList = new ArrayList<YemekIzin>();
+		return yemekList;
+	}
+
+	public void setYemekList(List<YemekIzin> yemekList) {
+		this.yemekList = yemekList;
 	}
 
 }
