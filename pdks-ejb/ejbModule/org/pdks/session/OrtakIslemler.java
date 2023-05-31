@@ -13753,14 +13753,20 @@ public class OrtakIslemler implements Serializable {
 									if (toplamYemekSuresi > vardiyaYemekSuresi) {
 										calSure += fark;
 										toplamYemekSuresi = vardiyaYemekSuresi;
-									} else if (vardiyaYemekSuresi > toplamYemekSuresi && netSure * yemekMolasiYuzdesi <= calSure) {
-										calSure += fark;
-										double resmiCalisma = resmiTatilSure;
+									} else if (vardiyaYemekSuresi > toplamYemekSuresi && (netSure + vardiyaYemekSuresi) * yemekMolasiYuzdesi >= calSure) {
+										double pay = calSure + toplamYemekSuresi;
+										double payda = netSure + vardiyaYemekSuresi;
+										double yemekFark = (calSure - PdksUtil.setSureDoubleTypeRounded((pay * netSure) / payda, vardiyaGun.getYarimYuvarla()));
+										if (tatilYemekHesabiSureEkle == false)
+											calSure -= yemekFark;
+										else
+											calSure -= fark;
+ 										double resmiCalisma = resmiTatilSure;
 										if (resmiTatilSure > 0.0d) {
 											double rs = resmiCalisma > netSure ? netSure : resmiCalisma;
-											double pay = rs + (tatilYemekHesabiSureEkle == false ? 0.0d : vardiyaYemekSuresi);
-											double payda = netSure + (tatilYemekHesabiSureEkle == false ? 0.0d : vardiyaYemekSuresi);
-											double yemekFark = PdksUtil.setSureDoubleTypeRounded((pay * fark) / payda, vardiyaGun.getYarimYuvarla());
+											pay = rs + (tatilYemekHesabiSureEkle == false ? 0.0d : vardiyaYemekSuresi);
+											payda = netSure + (tatilYemekHesabiSureEkle == false ? 0.0d : vardiyaYemekSuresi);
+											yemekFark = PdksUtil.setSureDoubleTypeRounded((pay * fark) / payda, vardiyaGun.getYarimYuvarla());
 											vardiyaYemekSuresi += yemekFark;
 											resmiTatilSure += yemekFark;
 											vardiyaGun.addBayramCalismaSuresi(yemekFark);
@@ -13769,9 +13775,7 @@ public class OrtakIslemler implements Serializable {
 									if (calSure > netSure) {
 										if (resmiTatilSure + netSure - calSure > 0.0d)
 											resmiTatilSure += netSure - calSure;
-
 										calSure = netSure;
-
 									}
 
 								} else if (yemekList.isEmpty()) {
@@ -13784,10 +13788,13 @@ public class OrtakIslemler implements Serializable {
 											vardiyaGun.addBayramCalismaSuresi(fark);
 										}
 									} else if (vardiyaYemekSuresi > toplamYemekSuresi && (netSure + vardiyaYemekSuresi) * yemekMolasiYuzdesi >= calSure) {
-										double pay = eksikSure;
+										double pay = calSure;
 										double payda = netSure + vardiyaYemekSuresi;
-										double yemekFark = PdksUtil.setSureDoubleTypeRounded((pay * vardiyaYemekSuresi) / payda, vardiyaGun.getYarimYuvarla());
-										calSure -= yemekFark;
+										double yemekFark = (calSure - PdksUtil.setSureDoubleTypeRounded((pay * netSure) / payda, vardiyaGun.getYarimYuvarla()));
+										if (tatilYemekHesabiSureEkle == false)
+											calSure -= yemekFark;
+										else
+											calSure -= fark;
 									}
 								} else if (vardiyaYemekSuresi > toplamYemekSuresi && netSure * yemekMolasiYuzdesi <= calSure) {
 									calSure += fark;
