@@ -2210,4 +2210,11 @@ public class VardiyaGun extends BaseObject {
 		this.izinHaftaTatilDurum = izinHaftaTatilDurum;
 	}
 
+	@Transient
+	public boolean isTatilYemekHesabiSureEkle() {
+		BigDecimal decimal = getKatSayi(KatSayiTipi.RESMI_TATIL_SURE_EKLE_DURUM.value());
+		boolean tatilYemekHesabiSureEkle = decimal != null && decimal.intValue() > 0;
+		return tatilYemekHesabiSureEkle;
+	}
+
 }
