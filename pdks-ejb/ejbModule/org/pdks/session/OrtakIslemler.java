@@ -13747,10 +13747,20 @@ public class OrtakIslemler implements Serializable {
 									}
 
 								} else if (yemekList.isEmpty()) {
-									fark += (vardiyaGun.getVardiya().getNetCalismaSuresi() + vardiyaYemekSuresi - calSure);
-									calSure += fark;
-									resmiTatilSure += fark;
-									vardiyaGun.addBayramCalismaSuresi(fark);
+									double eksikSure = netSure + vardiyaYemekSuresi - calSure;
+									if (eksikSure <= 0) {
+										fark += (netSure + vardiyaYemekSuresi - calSure);
+										calSure += fark;
+										if (resmiTatilSure > 0) {
+											resmiTatilSure += fark;
+											vardiyaGun.addBayramCalismaSuresi(fark);
+										}
+									} else if (vardiyaYemekSuresi > toplamYemekSuresi && (netSure + vardiyaYemekSuresi) * yemekMolasiYuzdesi >= calSure) {
+										double pay = eksikSure;
+										double payda = netSure + vardiyaYemekSuresi;
+										double yemekFark = PdksUtil.setSureDoubleTypeRounded((pay * vardiyaYemekSuresi) / payda, vardiyaGun.getYarimYuvarla());
+										calSure -= yemekFark;
+									}
 								} else if (vardiyaYemekSuresi > toplamYemekSuresi && netSure * yemekMolasiYuzdesi <= calSure) {
 									calSure += fark;
 									double resmiCalisma = resmiTatilSure;
@@ -13763,9 +13773,7 @@ public class OrtakIslemler implements Serializable {
 										resmiTatilSure += yemekFark;
 										vardiyaGun.addBayramCalismaSuresi(yemekFark);
 									}
-
 								}
-
 							}
 							if (resmiTatilSure > 0.0d)
 								resmiTatilMesai += resmiTatilSure;
