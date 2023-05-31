@@ -1731,7 +1731,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							yemekAraliklari = ortakIslemler.getYemekList(session);
 							if (personelDurumMap.containsKey(personelDenklestirme.getId()))
 								puantaj.setFazlaMesaiIzinKontrol(Boolean.FALSE);
-							personelDenklestirme = ortakIslemler.aylikPlanSureHesapla(puantaj, !personelDenklestirme.isKapandi(authenticatedUser), tatilGunleriMap, session);
+							personelDenklestirme = ortakIslemler.aylikPlanSureHesapla(true, puantaj, !personelDenklestirme.isKapandi(authenticatedUser), tatilGunleriMap, session);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

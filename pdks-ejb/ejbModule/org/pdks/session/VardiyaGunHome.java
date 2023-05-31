@@ -2379,7 +2379,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					}
 
 					if (!helpPersonel(personelAylikPuantaj.getPdksPersonel()))
-						ortakIslemler.aylikPlanSureHesapla(personelAylikPuantaj, false, tatilGunleriMap, session);
+						ortakIslemler.aylikPlanSureHesapla(true, personelAylikPuantaj, false, tatilGunleriMap, session);
 				}
 			} catch (Exception ee) {
 				logger.info(ee.getMessage());
@@ -3104,7 +3104,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		}
 
 		if (haftaCalismaSuresi > 0)
-			ortakIslemler.aylikPlanSureHesapla(aylikPuantaj, false, tatilGunleriMap, session);
+			ortakIslemler.aylikPlanSureHesapla(false, aylikPuantaj, false, tatilGunleriMap, session);
 
 		aylikPuantaj.setAksamVardiyaSaatSayisi(aksamVardiyaSaatSayisi);
 		aylikPuantaj.setAksamVardiyaSayisi(aksamVardiyaSayisi);
@@ -3200,7 +3200,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			plan.getVardiyaGunMap().clear();
 		boolean durum = !vardiyalarMap.isEmpty();
 		if (!helpPersonel(personelAylikPuantaj.getPdksPersonel()))
-			ortakIslemler.aylikPlanSureHesapla(personelAylikPuantaj, false, tatilGunleriMap, session);
+			ortakIslemler.aylikPlanSureHesapla(true, personelAylikPuantaj, false, tatilGunleriMap, session);
 		TreeMap<Long, VardiyaGun> mesaiMap = new TreeMap<Long, VardiyaGun>();
 		for (VardiyaGun pdksVardiyaGun : personelAylikPuantaj.getVardiyalar()) {
 			if (pdksVardiyaGun.isGuncellendi() || pdksVardiyaGun.getId() == null) {
@@ -3407,7 +3407,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				if (tekrarOku && !baskaKayitVar)
 					fillAylikVardiyaPlanList();
 				else if (!helpPersonel(personelAylikPuantaj.getPdksPersonel()))
-					ortakIslemler.aylikPlanSureHesapla(personelAylikPuantaj, true, tatilGunleriMap, session);
+					ortakIslemler.aylikPlanSureHesapla(true, personelAylikPuantaj, true, tatilGunleriMap, session);
 				aylikVardiyaOzetOlustur();
 			}
 
@@ -6173,7 +6173,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					try {
 						if (gecenAylikPuantaj.getPersonelDenklestirmeAylik() != null && !helpPersonel(personel)) {
 							gecenAylikPuantaj.setCalismaModeliAy(gecenAylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy());
-							ortakIslemler.aylikPlanSureHesapla(gecenAylikPuantaj, false, tatilGunleriMap, session);
+							ortakIslemler.aylikPlanSureHesapla(true, gecenAylikPuantaj, false, tatilGunleriMap, session);
 						}
 
 					} catch (Exception e) {
@@ -6220,7 +6220,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						aylikPuantaj.setCalismaModeliAy(personelDenklestirme.getCalismaModeliAy());
 						CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
 						if (!helpPersonel(personel))
-							ortakIslemler.aylikPlanSureHesapla(aylikPuantaj, denklestirmeAyDurum, tatilGunleriMap, session);
+							ortakIslemler.aylikPlanSureHesapla(true, aylikPuantaj, denklestirmeAyDurum, tatilGunleriMap, session);
 
 						if (denklestirmeAy.getSure() == 0.0d) {
 							Double genelSaatToplami = aylikPuantaj.getSaatToplami();
@@ -6233,7 +6233,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							denklestirmeAy.setGuncellemeTarihi(new Date());
 							denklestirmeAy.setGuncelleyenUser(sistemUser);
 							pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);
-							ortakIslemler.aylikPlanSureHesapla(aylikPuantaj, denklestirmeAyDurum, tatilGunleriMap, session);
+							ortakIslemler.aylikPlanSureHesapla(true, aylikPuantaj, denklestirmeAyDurum, tatilGunleriMap, session);
 							flush = true;
 						}
 						if (!denklestirmeAyDurum) {
