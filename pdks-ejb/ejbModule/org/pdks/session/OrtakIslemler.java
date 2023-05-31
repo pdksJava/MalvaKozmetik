@@ -13775,9 +13775,9 @@ public class OrtakIslemler implements Serializable {
 											vardiyaGun.addBayramCalismaSuresi(fark);
 										}
 									} else if (vardiyaYemekSuresi > toplamYemekSuresi && (netSure + vardiyaYemekSuresi) * yemekMolasiYuzdesi >= calSure) {
-										double pay = eksikSure;
+										double pay = calSure;
 										double payda = netSure + vardiyaYemekSuresi;
-										double yemekFark = PdksUtil.setSureDoubleTypeRounded((pay * vardiyaYemekSuresi) / payda, vardiyaGun.getYarimYuvarla());
+										double yemekFark = (calSure - PdksUtil.setSureDoubleTypeRounded((pay * netSure) / payda, vardiyaGun.getYarimYuvarla()));
 										calSure -= yemekFark;
 									}
 								} else if (vardiyaYemekSuresi > toplamYemekSuresi && netSure * yemekMolasiYuzdesi <= calSure) {
