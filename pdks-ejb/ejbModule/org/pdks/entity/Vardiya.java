@@ -1052,7 +1052,7 @@ public class Vardiya extends BaseObject {
 		} else if (vardiyaTarih != null) {
 			Vardiya oncekiIslemVardiya = pdksVardiyaGun.getOncekiVardiyaGun() != null && pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() != null ? pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() : null;
 			Vardiya sonrakiIslemVardiya = pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().isCalisma() ? pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() : null;
-			vardiyaBasZaman = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(vardiyaTarih, "yyyyMMdd") + " 13:00", "yyyyMMdd HH:mm");
+			this.setVardiyaBasZaman(PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(vardiyaTarih, "yyyyMMdd") + " 13:00", "yyyyMMdd HH:mm"));
 			cal = Calendar.getInstance();
 			cal.setTime(vardiyaTarih);
 
@@ -1072,7 +1072,7 @@ public class Vardiya extends BaseObject {
 					}
 				}
 			}
-			vardiyaBasZaman = pdksVardiyaGun.getVardiyaDate();
+			this.setVardiyaBasZaman(pdksVardiyaGun.getVardiyaDate());
 			int bosluk = 0;
 			if (!this.isCalisma())
 				bosluk = this.isHaftaTatil() ? this.getHaftaTatiliFazlaMesaiBasDakika() : this.getOffFazlaMesaiBasDakika();
@@ -1087,7 +1087,7 @@ public class Vardiya extends BaseObject {
 				}
 			} else
 				this.setVardiyaTelorans1BasZaman(vardiyaBasZaman);
-			vardiyaBitZaman = PdksUtil.addTarih(vardiyaBasZaman, Calendar.HOUR_OF_DAY, 18);
+			this.setVardiyaBitZaman(PdksUtil.addTarih(vardiyaBasZaman, Calendar.HOUR_OF_DAY, 18));
 			this.setVardiyaTelorans2BasZaman(vardiyaBasZaman);
 			// setVardiyaFazlaMesaiBasZaman(vardiyaBasZaman);
 
@@ -1354,15 +1354,17 @@ public class Vardiya extends BaseObject {
 	}
 
 	public void setVardiyaTelorans2BitZaman(Date value) {
-		if (value != null) {
-			if (islemVardiyaGun != null && islemVardiyaGun.getVardiyaDateStr().equals("20230420")) {
+		if (islemVardiyaGun != null && islemVardiyaGun.getVardiyaDateStr().endsWith("01")) {
+			if (value != null) {
 				// ++islemAdet;
 				logger.debug(islemAdet + " " + value);
 			}
 
 		}
-		if (vardiyaBitZaman == null || value.after(vardiyaBitZaman))
-			this.vardiyaTelorans2BitZaman = value;
+		if (value != null) {
+			if (vardiyaBitZaman == null || value.after(vardiyaBitZaman))
+				this.vardiyaTelorans2BitZaman = value;
+		}
 
 	}
 
