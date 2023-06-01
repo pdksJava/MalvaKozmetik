@@ -1613,7 +1613,7 @@ public class OrtakIslemler implements Serializable {
 		String formatStr = "yyyy-MM-dd HH:mm:ss";
 		TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
 		StringBuffer sb = new StringBuffer();
-		String birdenFazlaKGSSirketSQL = getBirdenFazlaKGSSirketSQL(basTarih, bitTarih, session);
+		String birdenFazlaKGSSirketSQL = getBirdenFazlaKGSSirketSQL(PdksUtil.tariheGunEkleCikar(basTarih, -1), PdksUtil.tariheGunEkleCikar(bitTarih, 1), session);
 		String sirketStr = "";
 		if (!birdenFazlaKGSSirketSQL.equals("")) {
 			sirketStr = "_SIRKET";
@@ -1623,11 +1623,11 @@ public class OrtakIslemler implements Serializable {
 			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " KS ON KS." + KapiSirket.COLUMN_NAME_ID + "=K." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
 			if (basTarih != null) {
 				sb.append(" AND KS." + KapiSirket.COLUMN_NAME_BIT_TARIH + ">=:b1 ");
-				map.put("b1", basTarih);
+				map.put("b1", PdksUtil.tariheGunEkleCikar(basTarih, -1));
 			}
 			if (bitTarih != null) {
 				sb.append(" AND KS." + KapiSirket.COLUMN_NAME_BAS_TARIH + "<=:b2 ");
-				map.put("b2", bitTarih);
+				map.put("b2", PdksUtil.tariheGunEkleCikar(bitTarih, 1));
 			}
 			sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
 			map.put("p", personelIdList);
@@ -9704,7 +9704,6 @@ public class OrtakIslemler implements Serializable {
 						}
 					}
 					if (tatil != null) {
-						
 
 						if (!tatil.isYarimGunMu()) {
 							if (saatCalisanResmiTatilKontrolEt && saatCalisanResmiTatilMap.containsKey(str))
@@ -13762,7 +13761,7 @@ public class OrtakIslemler implements Serializable {
 											calSure -= yemekFark;
 										else
 											calSure -= fark;
- 										double resmiCalisma = resmiTatilSure;
+										double resmiCalisma = resmiTatilSure;
 										if (resmiTatilSure > 0.0d) {
 											double rs = resmiCalisma > netSure ? netSure : resmiCalisma;
 											pay = rs + (tatilYemekHesabiSureEkle == false ? 0.0d : vardiyaYemekSuresi);

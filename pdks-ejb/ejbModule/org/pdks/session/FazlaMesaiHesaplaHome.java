@@ -3361,8 +3361,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								if (hatali && girisHareket.getOrjinalZaman().getTime() < islemVardiya.getVardiyaTelorans1BasZaman().getTime()) {
 									personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
 									fazlaMesaiHesapla = Boolean.FALSE;
-
-									vGun.setHareketHatali(Boolean.TRUE);
+ 									vGun.setHareketHatali(Boolean.TRUE);
 									vGun.setOnayli(Boolean.FALSE);
 								}
 							}
@@ -3388,7 +3387,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 						}
 						try {
-							if (vardiyaKey.equals("00002618_20221001"))
+							if (vardiyaKey.endsWith("01"))
 								logger.debug(key1 + " " + vGun.getId());
 							girisHareketleri = vGun.getGirisHareketleri();
 							cikisHareketleri = vGun.getCikisHareketleri();

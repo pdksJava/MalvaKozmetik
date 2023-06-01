@@ -388,6 +388,12 @@
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">
+														<h:outputText value="Kapi Şirket" />
+													</f:facet>
+													<h:outputText value="#{hareketler.kapiView.kapiKGS.kapiSirket.aciklama}" />
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
 														<h:outputText value="Zaman" />
 													</f:facet>
 													<h:outputText value="#{authenticatedUser.dateTimeLongFormatla(hareketler.zaman)}" />

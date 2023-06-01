@@ -829,15 +829,18 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 						boolean durum = false;
 						for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 							VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-
-							if (vardiyaGun.getPersonel().getId().equals(perId)) {
-								if (vardiyaGun.addHareket(kgsHareket, Boolean.FALSE))
+ 							if (vardiyaGun.getPersonel().getId().equals(perId)) {
+								if (vardiyaGun.addHareket(kgsHareket, Boolean.FALSE)) {
 									durum = true;
+								}
+
 							}
 
 						}
-						if (!durum)
+						if (!durum) {
+							iterator1.remove();
 							continue;
+						}
 						if (kgsHareket.getKapiView().getKapi().isGirisKapi()) {
 							if (!girisMap.containsKey(perId)) {
 								kgsHareket.setGirisZaman(kgsHareket.getZaman());
@@ -883,13 +886,19 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 									Date vardiyaTelorans2BitZaman = islemVardiya.getVardiyaTelorans2BitZaman();
 									Date vardiyaFazlaMesaiBitZaman = islemVardiya.getVardiyaFazlaMesaiBitZaman();
 									for (int j = 0; j < cikisHareketleri.size(); j++) {
-										HareketKGS kgsHareketGiris = (HareketKGS) girisHareketleri.get(j).clone();
-										HareketKGS kgsHareketCikis = (HareketKGS) cikisHareketleri.get(j).clone();
+										HareketKGS hareketGiris = girisHareketleri.get(j);
+										HareketKGS hareketCikis = cikisHareketleri.get(j);
+										// if (hareketGiris.getOrjinalZaman() != null)
+										// hareketGiris.setZaman(hareketGiris.getOrjinalZaman());
+										// if (hareketCikis.getOrjinalZaman() != null)
+										// hareketCikis.setZaman(hareketCikis.getOrjinalZaman());
+										HareketKGS kgsHareketGiris = (HareketKGS) hareketGiris.clone();
+										HareketKGS kgsHareketCikis = (HareketKGS) hareketCikis.clone();
 
 										try {
 											Long kgsZaman = kgsHareketCikis.getZaman().getTime();
-											Date girisZaman = kgsHareketGiris != null && kgsHareketGiris.getZaman() != null ? (Date) kgsHareketGiris.getZaman().clone() : null;
-											Date cikisZaman = kgsHareketCikis != null && kgsHareketCikis.getZaman() != null ? (Date) kgsHareketCikis.getZaman().clone() : null;
+											Date girisZaman = kgsHareketGiris != null && kgsHareketGiris.getOrjinalZaman() != null ? (Date) kgsHareketGiris.getZaman().clone() : null;
+											Date cikisZaman = kgsHareketCikis != null && kgsHareketCikis.getOrjinalZaman() != null ? (Date) kgsHareketCikis.getZaman().clone() : null;
 
 											if ((cikisZaman.getTime() > vardiyaTelorans2BitZaman.getTime()) && (cikisZaman.getTime() <= vardiyaFazlaMesaiBitZaman.getTime())) {
 												kgsHareketCikis.setVardiyaGun(vardiyaGun);
