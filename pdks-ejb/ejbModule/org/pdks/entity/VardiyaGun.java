@@ -1945,7 +1945,7 @@ public class VardiyaGun extends BaseObject {
 
 	public void setFazlaMesaiOnayla(Boolean value) {
 		if (vardiyaDateStr.endsWith("01"))
-			logger.info(vardiyaDateStr + " " + value);
+			logger.debug(vardiyaDateStr + " " + value);
 		this.fazlaMesaiOnayla = value;
 	}
 

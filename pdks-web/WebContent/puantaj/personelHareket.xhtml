@@ -462,7 +462,7 @@
 				</a4j:outputPanel>
 				<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
 					<s:decorate template="/layout/edit.xhtml">
-						<ui:define name="label">Personel Adi</ui:define>
+						<ui:define name="label">Personel Adı</ui:define>
 						<h:outputText value="#{personelHareketHome.instance.personel.pdksPersonel.adSoyad}" />
 					</s:decorate>
 					<s:decorate template="/layout/edit.xhtml">
@@ -512,19 +512,19 @@
 						<tr>
 							<TD valign="top"><h:panelGrid columns="1" cellpadding="0" cellspacing="0" id="hareketIslem">
 									<s:decorate template="/layout/edit.xhtml">
-										<ui:define name="label">Personel Adi</ui:define>
+										<ui:define name="label">Personel Adı</ui:define>
 										<h:outputText value="#{personelHareketHome.instance.personel.pdksPersonel.adSoyad}" />
 									</s:decorate>
 									<s:decorate template="/layout/edit.xhtml">
 										<ui:define name="label">Tarih</ui:define>
 										<h:outputText value="#{authenticatedUser.dateFormatla(personelHareketHome.tarih)}" />
 									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml" rendered="#{personelHareketHome.islemTipi=='E'}">
+									<s:decorate template="/layout/edit.xhtml" id="inputKapi" rendered="#{personelHareketHome.islemTipi=='E'}">
 										<ui:define name="label">Kapi</ui:define>
 										<h:selectOneMenu value="#{personelHareketHome.instance.kapiId}" style="width:350px" required="false" requiredMessage="Kapi Seciniz">
 											<f:selectItem itemLabel="Lütfen seçiniz" />
 											<f:selectItems value="#{personelHareketHome.kapiList}" />
-
+											<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="inputKapi" />
 										</h:selectOneMenu>
 									</s:decorate>
 									<s:decorate template="/layout/edit.xhtml" rendered="#{personelHareketHome.islemTipi!='E'}">
@@ -535,13 +535,17 @@
 										<ui:define name="label">Zaman</ui:define>
 										<h:outputText value="#{personelHareketHome.saatStr}" /> : <h:outputText value="#{personelHareketHome.dakikaStr}" />
 									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml" rendered="#{personelHareketHome.islemTipi!='S'}">
+									<s:decorate template="/layout/edit.xhtml" id="inputZaman" rendered="#{personelHareketHome.islemTipi!='S'}">
 										<ui:define name="label">Zaman</ui:define>
 										<TABLE>
 											<TR>
-												<TD><rich:inputNumberSpinner minValue="0" maxValue="23" inputSize="2" value="#{personelHareketHome.saat}" /></TD>
+												<TD><rich:inputNumberSpinner minValue="0" maxValue="23" inputSize="2" value="#{personelHareketHome.saat}">
+														<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="inputZaman" />
+													</rich:inputNumberSpinner></TD>
 												<TD>:</TD>
-												<TD><rich:inputNumberSpinner minValue="0" maxValue="59" inputSize="2" value="#{personelHareketHome.dakika}" /></TD>
+												<TD><rich:inputNumberSpinner minValue="0" maxValue="59" inputSize="2" value="#{personelHareketHome.dakika}">
+														<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="inputZaman" />
+													</rich:inputNumberSpinner></TD>
 											</TR>
 										</TABLE>
 
@@ -574,8 +578,8 @@
 										rendered="#{empty personelHareketHome.hareketList }">
 										<br></br>
 
-										<a4j:commandButton status="ajaxStatus" value="Giriş ve Çıkış Kaydet" action="#{personelHareketHome.saveGirisCikis}"
-											reRender="hareketForm" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+										<a4j:commandButton status="ajaxStatus" value="Giriş ve Çıkış Kaydet" action="#{personelHareketHome.saveGirisCikis}" reRender="hareketForm"
+											oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
 
 									</ui:fragment></TD>
 							</ui:fragment>
