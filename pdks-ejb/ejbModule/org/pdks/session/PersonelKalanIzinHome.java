@@ -1193,7 +1193,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 									parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 								personel = (Personel) pdksEntityController.getObjectByInnerObject(parametreMap, Personel.class);
 								fields.clear();
-								fields.put("izinSahibi", personel);
+								fields.put("izinSahibi.id", personel.getId());
 								fields.put("izinTipi", izinTipleri);
 								if (session != null)
 									fields.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -1253,8 +1253,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 										tempIzin.setDogumTarihi(dogumTarihi);
 									}
 									tempIzin.setIzinHakEdisTarihi(izinHakEdisTarihi);
-								} else
-									tempIzin = null;
+								}  
 							}
 							try {
 								bakiyeYil = ExcelUtil.getSheetDoubleValue((org.apache.poi.ss.usermodel.Cell) veriMap.get(COL_IZIN_YILI)).intValue();
