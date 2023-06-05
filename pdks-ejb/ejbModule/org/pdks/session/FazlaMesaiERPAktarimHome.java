@@ -20,7 +20,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -599,8 +598,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
 		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle stytleNumeric = ExcelUtil.getStyleDataRight(wb);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
+ 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		boolean bordroAltAlani = false;
 		for (PersonelDenklestirme mesai : onaysizPersonelDenklestirmeList) {
 			Personel personel = mesai.getPersonel();

@@ -47,7 +47,6 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.ws.BindingProvider;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
