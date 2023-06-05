@@ -2,6 +2,7 @@ package org.pdks.session;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -19,6 +20,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.jboss.seam.annotations.Name;
 
@@ -32,6 +34,11 @@ public class ExcelUtil implements Serializable {
 	private static String FONT_NAME = "Arial";
 	private static Integer NORMAL_WEIGHT = 8;
 	private static Integer BOLD_WEIGHT = 9;
+	public static String HEADER_COLOR = "excelHeaderColor";
+	public static String ROW_COLOR = "excelRowColor";
+	public static String COLOR = "color";
+	public static String BACKGROUND_COLOR = "backgroundColor";
+	private static HashMap<String, HashMap<String, Integer[]>> colorMap = new HashMap<String, HashMap<String, Integer[]>>();
 
 	static Logger logger = Logger.getLogger(ExcelUtil.class);
 
@@ -468,6 +475,45 @@ public class ExcelUtil implements Serializable {
 			cell.setCellStyle(style);
 
 		return cell;
+	}
+
+	/**
+	 * @param type
+	 * @param cellStyle
+	 */
+	protected static void setStyleColor(String type, CellStyle cellStyle) {
+		if (colorMap.containsKey(type)) {
+			XSSFCellStyle xssfCellStyle = (XSSFCellStyle) cellStyle;
+			HashMap<String, Integer[]> map = colorMap.get(type);
+			if (map.containsKey(BACKGROUND_COLOR)) {
+				Integer[] colors = map.get(BACKGROUND_COLOR);
+				if (colors != null && colors.length == 3)
+					xssfCellStyle.setFillForegroundColor(getXSSFColor(colors[0].byteValue(), colors[1].byteValue(), colors[2].byteValue()));
+			}
+			if (map.containsKey(COLOR)) {
+				Integer[] colors = map.get(COLOR);
+				if (colors != null && colors.length == 3) {
+					XSSFColor color = getXSSFColor(colors[0].byteValue(), colors[1].byteValue(), colors[2].byteValue());
+					xssfCellStyle.getFont().setColor(color);
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * @return the colorMap
+	 */
+	public static HashMap<String, HashMap<String, Integer[]>> getColorMap() {
+		return colorMap;
+	}
+
+	/**
+	 * @param colorMap
+	 *            the colorMap to set
+	 */
+	public static void setColorMap(HashMap<String, HashMap<String, Integer[]>> colorMap) {
+		ExcelUtil.colorMap = colorMap;
 	}
 
 }

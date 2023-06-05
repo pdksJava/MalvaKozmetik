@@ -63,6 +63,7 @@ import org.pdks.security.entity.MenuItemConstant;
 import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserRoles;
 import org.pdks.security.entity.UserTesis;
+import org.pdks.session.ExcelUtil;
 import org.pdks.session.LDAPUserManager;
 import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksEntityController;
@@ -444,6 +445,7 @@ public class StartupAction implements Serializable {
 				}
 			}
 		}
+		setExcelColor();
 		if (parameterMap.containsKey("oddTableRenk")) {
 			String deger = parameterMap.get("oddTableRenk");
 			if (deger.length() > 3)
@@ -651,6 +653,62 @@ public class StartupAction implements Serializable {
 				logger.error("PDKS hata out : " + e.getMessage());
 			}
 		fillSirketList(session);
+	}
+
+	private void setExcelColor() {
+		HashMap<String, HashMap<String, Integer[]>> colorMap = ExcelUtil.getColorMap();
+		colorMap.clear();
+		if (parameterMap.containsKey("excelHeaderBackgroundColor")) {
+			String colors = parameterMap.get("excelHeaderBackgroundColor");
+			setExcelColorValue(ExcelUtil.HEADER_COLOR, ExcelUtil.BACKGROUND_COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelHeaderColor")) {
+			String colors = parameterMap.get("excelHeaderColor");
+			setExcelColorValue(ExcelUtil.HEADER_COLOR, ExcelUtil.COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelRowBackgroundColor")) {
+			String colors = parameterMap.get("excelRowBackgroundColor");
+			setExcelColorValue(ExcelUtil.ROW_COLOR, ExcelUtil.BACKGROUND_COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelRowColor")) {
+			String colors = parameterMap.get("excelRowColor");
+			setExcelColorValue(ExcelUtil.ROW_COLOR, ExcelUtil.COLOR, colors, colorMap);
+		}
+	}
+
+	/**
+	 * @param type
+	 * @param color
+	 * @param excelColor
+	 * @param colorMap
+	 */
+	private void setExcelColorValue(String type, String color, String excelColor, HashMap<String, HashMap<String, Integer[]>> colorMap) {
+		List<String> colorList = PdksUtil.getListStringTokenizer(excelColor, null);
+		if (colorList.size() == 3) {
+			Integer[] colors = new Integer[3];
+			for (int i = 0; i < colors.length; i++) {
+				String str = colorList.get(i);
+				try {
+					Integer deger = Integer.parseInt(str);
+					if (deger >= 0)
+						colors[i] = Integer.parseInt(str);
+					else {
+						colors = null;
+						break;
+					}
+				} catch (Exception e) {
+					colors = null;
+					break;
+				}
+
+			}
+			if (colors != null) {
+				HashMap<String, Integer[]> map = colorMap.containsKey(type) ? colorMap.get(type) : new HashMap<String, Integer[]>();
+				if (map.isEmpty())
+					colorMap.put(type, map);
+				map.put(color, colors);
+			}
+		}
 	}
 
 	/**
