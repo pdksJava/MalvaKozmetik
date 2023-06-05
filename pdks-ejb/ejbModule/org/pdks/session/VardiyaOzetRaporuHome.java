@@ -926,24 +926,19 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		try {
 			Workbook wb = new XSSFWorkbook();
 			Sheet sheet = ExcelUtil.createSheet(wb, "VardiyaOzetRaporu " + PdksUtil.convertToDateString(date, "yyyyMMdd"), Boolean.TRUE);
-			XSSFCellStyle styleCenter = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-			styleCenter.setAlignment(CellStyle.ALIGN_CENTER);
-			XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-			XSSFCellStyle styleOdd = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-			styleOdd.setAlignment(CellStyle.ALIGN_LEFT);
-			styleOdd.setFillPattern(CellStyle.SOLID_FOREGROUND);
-			styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-			XSSFCellStyle styleOddTutar = (XSSFCellStyle) styleOdd.clone();
+		 	CellStyle header =  ExcelUtil.getStyleHeader(wb);
+			XSSFCellStyle styleOdd =  (XSSFCellStyle) ExcelUtil.getStyleData(wb);
+ 			styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
+			XSSFCellStyle styleOddTutar =  (XSSFCellStyle) styleOdd.clone();
 			styleOddTutar.setAlignment(CellStyle.ALIGN_RIGHT);
-			XSSFCellStyle styleOddCenter = (XSSFCellStyle) styleOdd.clone();
+			XSSFCellStyle styleOddCenter =  (XSSFCellStyle) styleOdd.clone();
 			styleOddCenter.setAlignment(CellStyle.ALIGN_CENTER);
-			XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
+			XSSFCellStyle styleEven =  (XSSFCellStyle) ExcelUtil.getStyleData(wb);
 			styleEven.setAlignment(CellStyle.ALIGN_LEFT);
-			styleEven.setFillPattern(CellStyle.SOLID_FOREGROUND);
-			styleEven.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
-			XSSFCellStyle styleEvenTutar = (XSSFCellStyle) styleEven.clone();
+ 			ExcelUtil.setFillForegroundColor(styleEven,219, 248, 219 );
+ 			XSSFCellStyle styleEvenTutar =  (XSSFCellStyle) styleEven.clone();
 			styleEvenTutar.setAlignment(CellStyle.ALIGN_RIGHT);
-			XSSFCellStyle styleEvenCenter = (XSSFCellStyle) styleEven.clone();
+			XSSFCellStyle styleEvenCenter =  (XSSFCellStyle) styleEven.clone();
 			styleEvenCenter.setAlignment(CellStyle.ALIGN_CENTER);
 
 			int col = 0, row = 0;
@@ -965,13 +960,13 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				++row;
 				Personel personel = aylikPuantaj.getPdksPersonel();
 				String aciklama = "";
-				XSSFCellStyle satirStyle = (XSSFCellStyle) styleOdd.clone(), satirTutarStyle = (XSSFCellStyle) styleOddTutar.clone();
+				XSSFCellStyle satirStyle =    (XSSFCellStyle) styleOdd.clone(), satirTutarStyle =    (XSSFCellStyle) styleOddTutar.clone();
 				if (personel.getEkSaha3() != null) {
 					aciklama = personel.getEkSaha3().getAciklama();
 				} else if (personel.getCalismaModeli() != null) {
 					aciklama = personel.getCalismaModeli().getAciklama();
-					satirStyle = (XSSFCellStyle) styleEven.clone();
-					satirTutarStyle = (XSSFCellStyle) styleEvenTutar.clone();
+					satirStyle =  (XSSFCellStyle) styleEven.clone();
+					satirTutarStyle =   (XSSFCellStyle) styleEvenTutar .clone();
 				} else
 					aciklama = "TOPLAM";
 				ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(aciklama);

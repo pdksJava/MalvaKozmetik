@@ -3194,8 +3194,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Personel WebService Listesi", false);
 		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle cellStyleDate = ExcelUtil.getCellStyleDate(wb);
 		int row = 0;

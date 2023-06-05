@@ -764,8 +764,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Karti", Boolean.TRUE);
 		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
 		CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
@@ -835,8 +834,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Karti", Boolean.TRUE);
 		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
 		int row = 0, col = 0;

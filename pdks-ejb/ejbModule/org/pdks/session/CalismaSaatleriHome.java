@@ -389,8 +389,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 		Sheet sheet = ExcelUtil.createSheet(wb, "Vardiya Listesi", false);
 		Sheet sheetHareket = ExcelUtil.createSheet(wb, "Hareket  Listesi", false);
 		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		int row = 0;

@@ -1588,8 +1588,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		ByteArrayOutputStream baos = null;
 		Sheet sheet = ExcelUtil.createSheet(wb, yil + " fazla calisma", Boolean.TRUE);
 		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		styleCenter.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleNumber = ExcelUtil.getCellStyleTutar(wb);
 		styleNumber.setAlignment(CellStyle.ALIGN_CENTER);

@@ -1,5 +1,6 @@
 package org.pdks.session;
 
+import java.awt.Color;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,8 +49,8 @@ public class ExcelUtil implements Serializable {
 	 * @param rgb3
 	 * @return
 	 */
-	public static XSSFColor getXSSFColor(byte rgb1, byte rgb2, byte rgb3) {
-		XSSFColor color = new XSSFColor(new byte[] { rgb1, rgb2, rgb3 });
+	public static XSSFColor getXSSFColor(Integer rgb1, Integer rgb2, Integer rgb3) {
+		XSSFColor color = new XSSFColor(new byte[] { rgb1.byteValue(), rgb2.byteValue(), rgb3.byteValue() });
 		return color;
 	}
 
@@ -256,8 +257,29 @@ public class ExcelUtil implements Serializable {
 	 * @param wb
 	 * @return
 	 */
+	public static CellStyle getStyleDataCenter(Workbook wb) {
+		CellStyle style = getStyleData(wb);
+		style.setAlignment(CellStyle.ALIGN_CENTER);
+		return style;
+	}
+
+	/**
+	 * @param wb
+	 * @return
+	 */
+	public static CellStyle getStyleDataRight(Workbook wb) {
+		CellStyle style = getStyleData(wb);
+		style.setAlignment(CellStyle.ALIGN_RIGHT);
+		return style;
+	}
+
+	/**
+	 * @param wb
+	 * @return
+	 */
 	public static CellStyle getStyleData(Workbook wb) {
 		CellStyle style = wb.createCellStyle();
+		style.setAlignment(CellStyle.ALIGN_LEFT);
 		style.setVerticalAlignment(CellStyle.VERTICAL_TOP);
 		setFontNormal(wb, style);
 		style.setBorderTop(HSSFCellStyle.BORDER_THIN);
@@ -357,7 +379,7 @@ public class ExcelUtil implements Serializable {
 	 * @return
 	 */
 	public static CellStyle getCellStyleTutar(Workbook wb) {
-		CellStyle cellStyleTutar = getCellStyleFormat("#,##0.00", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_RIGHT)), wb);
+		CellStyle cellStyleTutar = getCellStyleFormat("#,##0.00", Integer.parseInt(String.valueOf(CellStyle.ALIGN_RIGHT)), wb);
 		return cellStyleTutar;
 	}
 
@@ -366,7 +388,7 @@ public class ExcelUtil implements Serializable {
 	 * @return
 	 */
 	public static CellStyle getCellStyleNumber(Workbook wb) {
-		CellStyle cellStyleTutar = getCellStyleFormat("#,##0", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_RIGHT)), wb);
+		CellStyle cellStyleTutar = getCellStyleFormat("#,##0", Integer.parseInt(String.valueOf(CellStyle.ALIGN_RIGHT)), wb);
 		return cellStyleTutar;
 	}
 
@@ -393,7 +415,7 @@ public class ExcelUtil implements Serializable {
 	 * @return
 	 */
 	public static CellStyle getCellStyleTimeStamp(Workbook wb) {
-		CellStyle cellStyleDate = getCellStyleFormat(PdksUtil.getDateFormat() + " h:mm", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_CENTER)), wb);
+		CellStyle cellStyleDate = getCellStyleFormat(PdksUtil.getDateFormat() + " h:mm", Integer.parseInt(String.valueOf(CellStyle.ALIGN_CENTER)), wb);
 		return cellStyleDate;
 	}
 
@@ -402,7 +424,7 @@ public class ExcelUtil implements Serializable {
 	 * @return
 	 */
 	public static CellStyle getCellStyleTime(Workbook wb) {
-		CellStyle cellStyleDate = getCellStyleFormat("h:mm", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_CENTER)), wb);
+		CellStyle cellStyleDate = getCellStyleFormat("h:mm", Integer.parseInt(String.valueOf(CellStyle.ALIGN_CENTER)), wb);
 		return cellStyleDate;
 	}
 
@@ -411,7 +433,7 @@ public class ExcelUtil implements Serializable {
 	 * @return
 	 */
 	public static CellStyle getCellStyleDate(Workbook wb) {
-		CellStyle cellStyleDate = getCellStyleFormat(PdksUtil.getDateFormat(), Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_CENTER)), wb);
+		CellStyle cellStyleDate = getCellStyleFormat(PdksUtil.getDateFormat(), Integer.parseInt(String.valueOf(CellStyle.ALIGN_CENTER)), wb);
 		return cellStyleDate;
 	}
 
@@ -478,6 +500,38 @@ public class ExcelUtil implements Serializable {
 	}
 
 	/**
+	 * @param cellStyle
+	 * @param rgb1
+	 * @param rgb2
+	 * @param rgb3
+	 */
+	public static void setFontColor(CellStyle cellStyle, Integer rgb1, Integer rgb2, Integer rgb3) {
+		XSSFCellStyle xssfCellStyle = (XSSFCellStyle) cellStyle;
+		xssfCellStyle.getFont().setColor(getXSSFColor(rgb1, rgb2, rgb3));
+	}
+
+	/**
+	 * @param cellStyle
+	 * @param color
+	 */
+	public static void setFontColor(CellStyle cellStyle, Color color) {
+		XSSFCellStyle xssfCellStyle = (XSSFCellStyle) cellStyle;
+		xssfCellStyle.getFont().setColor(new XSSFColor(color));
+	}
+
+	/**
+	 * @param cellStyle
+	 * @param rgb1
+	 * @param rgb2
+	 * @param rgb3
+	 */
+	public static void setFillForegroundColor(CellStyle cellStyle, Integer rgb1, Integer rgb2, Integer rgb3) {
+		XSSFCellStyle xssfCellStyle = (XSSFCellStyle) cellStyle;
+		cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		xssfCellStyle.setFillForegroundColor(getXSSFColor(rgb1, rgb2, rgb3));
+	}
+
+	/**
 	 * @param type
 	 * @param cellStyle
 	 */
@@ -488,12 +542,12 @@ public class ExcelUtil implements Serializable {
 			if (map.containsKey(BACKGROUND_COLOR)) {
 				Integer[] colors = map.get(BACKGROUND_COLOR);
 				if (colors != null && colors.length == 3)
-					xssfCellStyle.setFillForegroundColor(getXSSFColor(colors[0].byteValue(), colors[1].byteValue(), colors[2].byteValue()));
+					xssfCellStyle.setFillForegroundColor(getXSSFColor(colors[0], colors[1], colors[2]));
 			}
 			if (map.containsKey(COLOR)) {
 				Integer[] colors = map.get(COLOR);
 				if (colors != null && colors.length == 3) {
-					XSSFColor color = getXSSFColor(colors[0].byteValue(), colors[1].byteValue(), colors[2].byteValue());
+					XSSFColor color = getXSSFColor(colors[0], colors[1], colors[2]);
 					xssfCellStyle.getFont().setColor(color);
 				}
 			}

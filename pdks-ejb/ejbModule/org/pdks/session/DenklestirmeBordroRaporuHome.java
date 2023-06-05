@@ -15,7 +15,6 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -696,28 +695,26 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			Workbook wb = new XSSFWorkbook();
 			sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
 			CellStyle style = ExcelUtil.getStyleData(wb);
-			CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-			styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+			CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 			XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-			header.setFillPattern(CellStyle.SOLID_FOREGROUND);
-			header.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 156, (byte) 192, (byte) 223));
+			ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
 			tutarStyle = ExcelUtil.getCellStyleTutar(wb);
 			numberStyle = ExcelUtil.getCellStyleTutar(wb);
 			XSSFCellStyle headerSaat = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerIzin = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerBGun = (XSSFCellStyle) header.clone();
-			XSSFCellStyle headerBTGun = (XSSFCellStyle) header.clone();
-			headerSaat.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 146, (byte) 208, (byte) 62));
-			headerIzin.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 255));
-			headerBGun.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 0));
-			headerBTGun.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 236, (byte) 125, (byte) 125));
+			XSSFCellStyle headerBTGun = (XSSFCellStyle) (XSSFCellStyle) header.clone();
+			ExcelUtil.setFillForegroundColor(headerSaat, 146, 208, 62);
+			ExcelUtil.setFillForegroundColor(headerIzin, 255, 255, 255);
+			ExcelUtil.setFillForegroundColor(headerBGun, 255, 255, 0);
+			ExcelUtil.setFillForegroundColor(headerBTGun, 236, 125, 125);
 			DataFormat df = wb.createDataFormat();
 			numberStyle.setDataFormat(df.getFormat("###"));
 			int row = 0, col = 0;
 			for (Iterator iterator = bordroAlanlari.iterator(); iterator.hasNext();) {
 				Tanim tanim = (Tanim) iterator.next();
 				String kodu = tanim.getKodu();
-				XSSFCellStyle baslikHeader = null;
+				CellStyle baslikHeader = null;
 				if (kodu.startsWith(COL_TESIS) && tesisGoster == false) {
 					iterator.remove();
 					continue;

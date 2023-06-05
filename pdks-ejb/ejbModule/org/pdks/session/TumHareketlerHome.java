@@ -895,8 +895,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Tüm Hareketler", Boolean.TRUE);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		styleCenter.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);

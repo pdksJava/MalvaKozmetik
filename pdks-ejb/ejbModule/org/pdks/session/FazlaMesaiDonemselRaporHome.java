@@ -23,9 +23,6 @@ import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -355,68 +352,48 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, ("Fazla Mesai " + donem).trim(), Boolean.TRUE);
 
-		XSSFCellStyle styleTutarEven = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleTutarEven.setAlignment(CellStyle.ALIGN_RIGHT);
-		styleTutarEven.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleTutarEven.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
+		CellStyle styleTutarEven = ExcelUtil.getStyleDataRight(wb);
+		ExcelUtil.setFillForegroundColor(styleTutarEven, 219, 248, 219);
 
-		XSSFCellStyle styleTutarOdd = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleTutarOdd.setAlignment(CellStyle.ALIGN_RIGHT);
-		styleTutarOdd.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		CellStyle styleTutarOdd = ExcelUtil.getStyleDataRight(wb);
+
 		styleTutarOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-		XSSFCellStyle styleGenel = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleGenel.setAlignment(CellStyle.ALIGN_LEFT);
-		XSSFCellStyle styleOdd = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		XSSFCellStyle styleOddCenter = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleOddCenter.setAlignment(CellStyle.ALIGN_CENTER);
-		XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		XSSFCellStyle styleEvenCenter = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleEvenCenter.setAlignment(CellStyle.ALIGN_CENTER);
-		XSSFCellStyle styleTatil = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleTatil.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
 
-		XSSFCellStyle styleIstek = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleIstek.setAlignment(CellStyle.ALIGN_CENTER);
-		XSSFCellStyle styleEgitim = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleEgitim.setAlignment(CellStyle.ALIGN_CENTER);
-		XSSFCellStyle styleOff = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleOff.setAlignment(CellStyle.ALIGN_CENTER);
-		XSSFFont xssfFont = styleOff.getFont();
-		xssfFont.setColor(new XSSFColor(Color.WHITE));
-		XSSFCellStyle styleIzin = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleIzin.setAlignment(CellStyle.ALIGN_CENTER);
-		XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-		XSSFCellStyle styleCalisma = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		styleCalisma.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleOdd = ExcelUtil.getStyleData(wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleEven = ExcelUtil.getStyleData(wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
+
+		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleEgitim = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleOff = ExcelUtil.getStyleDataCenter(wb);
+		ExcelUtil.setFontColor(styleOff, Color.WHITE);
+		CellStyle styleIzin = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 
 		header.setWrapText(true);
 
 		header.setWrapText(true);
-		header.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		header.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 156, (byte) 192, (byte) 223));
+		ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
 
-		styleOdd.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-		styleOddCenter.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleOddCenter.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 213, (byte) 228, (byte) 251));
-		styleEven.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEven.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
-		styleEvenCenter.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEvenCenter.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
-		styleTatil.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleTatil.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 153, (byte) 204));
-		styleIstek.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleIstek.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 0));
-		styleIzin.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleIzin.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 146, (byte) 208, (byte) 80));
-		styleCalisma.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleCalisma.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 255));
-		styleEgitim.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEgitim.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 0, (byte) 0, (byte) 255));
-		styleOff.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleOff.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 13, (byte) 12, (byte) 89));
-		styleOff.getFont().setColor(ExcelUtil.getXSSFColor((byte) 256, (byte) 256, (byte) 256));
+		ExcelUtil.setFillForegroundColor(styleOddCenter, 213, 228, 251);
+		ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
+		ExcelUtil.setFillForegroundColor(styleEvenCenter, 219, 248, 219);
+		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
+		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
+		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
+
+		ExcelUtil.setFillForegroundColor(styleCalisma, 255, 255, 255);
+
+		ExcelUtil.setFillForegroundColor(styleEgitim, 0, 0, 255);
+
+		ExcelUtil.setFillForegroundColor(styleOff, 13, 12, 89);
+		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		boolean tesisDurum = ortakIslemler.getListTesisDurum(personelList);
