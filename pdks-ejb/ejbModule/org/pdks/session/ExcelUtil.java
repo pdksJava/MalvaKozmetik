@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.jboss.seam.annotations.Name;
 
 @Name("excelUtil")
@@ -34,6 +35,25 @@ public class ExcelUtil implements Serializable {
 
 	static Logger logger = Logger.getLogger(ExcelUtil.class);
 
+	/**
+	 * @param rgb1
+	 * @param rgb2
+	 * @param rgb3
+	 * @return
+	 */
+	public static XSSFColor getXSSFColor(byte rgb1, byte rgb2, byte rgb3) {
+		XSSFColor color = new XSSFColor(new byte[] { rgb1, rgb2, rgb3 });
+		return color;
+	}
+
+	/**
+	 * @param firstRow
+	 * @param firstCol
+	 * @param lastRow
+	 * @param lastCol
+	 * @return
+	 * @throws Exception
+	 */
 	public static CellRangeAddress getRegion(int firstRow, int firstCol, int lastRow, int lastCol) throws Exception {
 		CellRangeAddress cellRangeAddress = null;
 		try {
@@ -101,6 +121,12 @@ public class ExcelUtil implements Serializable {
 		return headerFont;
 	}
 
+	/**
+	 * @param sheet
+	 * @param row
+	 * @param col
+	 * @return
+	 */
 	public static Cell getCell(Sheet sheet, int row, int col) {
 		Cell cell = null;
 		try {
@@ -112,6 +138,11 @@ public class ExcelUtil implements Serializable {
 		return cell;
 	}
 
+	/**
+	 * @param cell
+	 * @return
+	 * @throws Exception
+	 */
 	public static Double getSheetDoubleValue(Cell cell) throws Exception {
 		Double value = null;
 		if (cell != null) {
@@ -130,12 +161,25 @@ public class ExcelUtil implements Serializable {
 		return value;
 	}
 
+	/**
+	 * @param sheet
+	 * @param row
+	 * @param col
+	 * @return
+	 * @throws Exception
+	 */
 	public static Double getSheetDoubleValue(Sheet sheet, int row, int col) throws Exception {
 		Cell cell = getCell(sheet, row, col);
 		Double value = cell != null && cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC ? new Double(cell.getNumericCellValue()) : null;
 		return value;
 	}
 
+	/**
+	 * @param cell
+	 * @param pattern
+	 * @return
+	 * @throws Exception
+	 */
 	public static Date getSheetDateValue(Cell cell, String pattern) throws Exception {
 		Date value = null;
 		try {
@@ -147,12 +191,24 @@ public class ExcelUtil implements Serializable {
 		return value;
 	}
 
+	/**
+	 * @param sheet
+	 * @param row
+	 * @param col
+	 * @return
+	 * @throws Exception
+	 */
 	public static Date getSheetDateValue(Sheet sheet, int row, int col) throws Exception {
 		Cell cell = getCell(sheet, row, col);
 		Date value = cell != null ? cell.getDateCellValue() : null;
 		return value;
 	}
 
+	/**
+	 * @param cell
+	 * @return
+	 * @throws Exception
+	 */
 	public static String getSheetStringValue(Cell cell) throws Exception {
 		String value = null;
 		if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING)
@@ -164,6 +220,13 @@ public class ExcelUtil implements Serializable {
 		return value;
 	}
 
+	/**
+	 * @param sheet
+	 * @param row
+	 * @param col
+	 * @return
+	 * @throws Exception
+	 */
 	public static String getSheetStringValue(Sheet sheet, int row, int col) throws Exception {
 		Cell cell = getCell(sheet, row, col);
 		String value = null;
@@ -182,6 +245,10 @@ public class ExcelUtil implements Serializable {
 		return value;
 	}
 
+	/**
+	 * @param wb
+	 * @return
+	 */
 	public static CellStyle getStyleData(Workbook wb) {
 		CellStyle style = wb.createCellStyle();
 		style.setVerticalAlignment(CellStyle.VERTICAL_TOP);
@@ -263,7 +330,7 @@ public class ExcelUtil implements Serializable {
 		style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		style.setBorderRight(HSSFCellStyle.BORDER_THIN);
 		style.setWrapText(Boolean.TRUE);
-		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		style.setAlignment(CellStyle.ALIGN_CENTER);
 		return style;
 
 	}
@@ -314,16 +381,10 @@ public class ExcelUtil implements Serializable {
 		return format;
 	}
 
-	// /**
-	// * @param formatStr
-	// * @param wb
-	// * @return
-	// */
-	// public static CellStyle getCellStyleTutar(String formatStr, Workbook wb) {
-	// CellStyle cellStyleTutar = getCellStyleFormat(formatStr, Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_RIGHT)), wb);
-	// return cellStyleTutar;
-	// }
-
+	/**
+	 * @param wb
+	 * @return
+	 */
 	public static CellStyle getCellStyleTimeStamp(Workbook wb) {
 		CellStyle cellStyleDate = getCellStyleFormat(PdksUtil.getDateFormat() + " h:mm", Integer.parseInt(String.valueOf(HSSFCellStyle.ALIGN_CENTER)), wb);
 		return cellStyleDate;
@@ -389,6 +450,13 @@ public class ExcelUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param sheet
+	 * @param rowNo
+	 * @param columnNo
+	 * @param style
+	 * @return
+	 */
 	public static Cell getCell(Sheet sheet, int rowNo, int columnNo, CellStyle style) {
 		Row row = sheet.getRow(rowNo);
 		if (row == null)

@@ -966,26 +966,26 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 		header.setWrapText(true);
 		header.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		header.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 156, (byte) 192, (byte) 223 }));
+		header.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 156, (byte) 192, (byte) 223));
 
 		styleOdd.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
 		styleEven.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEven.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 219, (byte) 248, (byte) 219 }));
+		styleEven.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
 
 		styleTatil.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleTatil.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 153, (byte) 204 }));
+		styleTatil.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 153, (byte) 204));
 		styleIstek.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleIstek.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
+		styleIstek.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 0));
 		styleIzin.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleIzin.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 146, (byte) 208, (byte) 80 }));
+		styleIzin.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 146, (byte) 208, (byte) 80));
 		styleCalisma.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleCalisma.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 255 }));
+		styleCalisma.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 255));
 		styleEgitim.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEgitim.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 0, (byte) 0, (byte) 255 }));
+		styleEgitim.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 0, (byte) 0, (byte) 255));
 		styleOff.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleOff.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 13, (byte) 12, (byte) 89 }));
-		styleOff.getFont().setColor(new XSSFColor(new byte[] { (byte) 256, (byte) 256, (byte) 256 }));
+		styleOff.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 13, (byte) 12, (byte) 89));
+		styleOff.getFont().setColor(ExcelUtil.getXSSFColor((byte) 256, (byte) 256, (byte) 256));
 		ExcelUtil.getCell(sheet, row, col, header).setCellValue(aciklamaExcel);
 		for (int i = 0; i < 3; i++)
 			ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");

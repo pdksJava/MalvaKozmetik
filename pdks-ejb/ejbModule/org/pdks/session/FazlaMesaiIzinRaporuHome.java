@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -546,7 +545,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
 			styleEven.setAlignment(CellStyle.ALIGN_LEFT);
 			styleEven.setFillPattern(CellStyle.SOLID_FOREGROUND);
-			styleEven.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 219, (byte) 248, (byte) 219 }));
+			styleEven.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
 			XSSFCellStyle styleEvenTutar = (XSSFCellStyle) styleEven.clone();
 			styleEvenTutar.setAlignment(CellStyle.ALIGN_RIGHT);
 			XSSFCellStyle styleEvenCenter = (XSSFCellStyle) styleEven.clone();

@@ -3361,7 +3361,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								if (hatali && girisHareket.getOrjinalZaman().getTime() < islemVardiya.getVardiyaTelorans1BasZaman().getTime()) {
 									personelFazlaMesaiEkle(vGun, vardiyaPlanKey);
 									fazlaMesaiHesapla = Boolean.FALSE;
- 									vGun.setHareketHatali(Boolean.TRUE);
+									vGun.setHareketHatali(Boolean.TRUE);
 									vGun.setOnayli(Boolean.FALSE);
 								}
 							}
@@ -4481,7 +4481,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		XSSFCellStyle styleTutarEven = (XSSFCellStyle) ExcelUtil.getCellStyleTutar(wb);
 		styleTutarEven.setAlignment(CellStyle.ALIGN_RIGHT);
 		styleTutarEven.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleTutarEven.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 219, (byte) 248, (byte) 219 }));
+		styleTutarEven.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
 
 		XSSFCellStyle styleTutarOdd = (XSSFCellStyle) ExcelUtil.getCellStyleTutar(wb);
 		styleTutarOdd.setAlignment(CellStyle.ALIGN_RIGHT);
@@ -4511,39 +4511,39 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		XSSFCellStyle izinBaslik = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 		izinBaslik.setAlignment(CellStyle.ALIGN_CENTER);
 		izinBaslik.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		izinBaslik.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 146, (byte) 208, (byte) 80 }));
+		izinBaslik.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 146, (byte) 208, (byte) 80));
 
 		XSSFCellStyle styleIzin = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
 		styleIzin.setAlignment(CellStyle.ALIGN_CENTER);
 		styleIzin.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleIzin.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 146, (byte) 208, (byte) 80 }));
+		styleIzin.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 146, (byte) 208, (byte) 80));
 
 		XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 		XSSFCellStyle styleCalisma = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
 		styleCalisma.setAlignment(CellStyle.ALIGN_CENTER);
 		int row = 0, col = 0;
 		ExcelUtil.setFont(9, new Integer(Font.BOLDWEIGHT_BOLD), header, wb);
-		header.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 156, (byte) 192, (byte) 223 }));
+		header.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 156, (byte) 192, (byte) 223));
 
 		styleOdd.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
 		styleOddCenter.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		styleOddCenter.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
 		styleEven.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEven.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 219, (byte) 248, (byte) 219 }));
+		styleEven.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
 		styleEvenCenter.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEvenCenter.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 219, (byte) 248, (byte) 219 }));
+		styleEvenCenter.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 219, (byte) 248, (byte) 219));
 		styleTatil.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleTatil.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 153, (byte) 204 }));
+		styleTatil.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 153, (byte) 204));
 		styleIstek.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleIstek.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
+		styleIstek.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 0));
 		styleCalisma.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleCalisma.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 255 }));
+		styleCalisma.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 255));
 		styleEgitim.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleEgitim.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 0, (byte) 0, (byte) 255 }));
+		styleEgitim.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 0, (byte) 0, (byte) 255));
 		styleOff.setFillPattern(CellStyle.SOLID_FOREGROUND);
-		styleOff.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 13, (byte) 12, (byte) 89 }));
-		styleOff.getFont().setColor(new XSSFColor(new byte[] { (byte) 256, (byte) 256, (byte) 256 }));
+		styleOff.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 13, (byte) 12, (byte) 89));
+		styleOff.getFont().setColor(ExcelUtil.getXSSFColor((byte) 256, (byte) 256, (byte) 256));
 		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  "), "_", "");
 		ExcelUtil.getCell(sheet, row, col, header).setCellValue(aciklamaExcel);
 		for (int i = 0; i < 3; i++)
@@ -4571,15 +4571,15 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Drawing drawing = sheet.createDrawingPatriarch();
 		ClientAnchor anchor = factory.createClientAnchor();
 		XSSFCellStyle headerVardiyaGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
-		headerVardiyaGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 99, (byte) 182, (byte) 153 }));
+		headerVardiyaGun.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 99, (byte) 182, (byte) 153));
 
 		XSSFCellStyle headerVardiyaTatilYarimGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
-		headerVardiyaTatilYarimGun.getFont().setColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
-		headerVardiyaTatilYarimGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 144, (byte) 185, (byte) 63 }));
+		headerVardiyaTatilYarimGun.getFont().setColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 0));
+		headerVardiyaTatilYarimGun.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 144, (byte) 185, (byte) 63));
 
 		XSSFCellStyle headerVardiyaTatilGun = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
-		headerVardiyaTatilGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 92, (byte) 127, (byte) 45 }));
-		headerVardiyaTatilGun.getFont().setColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
+		headerVardiyaTatilGun.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 92, (byte) 127, (byte) 45));
+		headerVardiyaTatilGun.getFont().setColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 0));
 		for (VardiyaGun vardiyaGun : aylikPuantajDefault.getVardiyalar()) {
 			try {
 				if (!vardiyaGun.isAyinGunu())
@@ -4652,16 +4652,16 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 		}
 		XSSFCellStyle headerIzinTipi = (XSSFCellStyle) header.clone();
-		headerIzinTipi.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 153, (byte) 204 }));
+		headerIzinTipi.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 153, (byte) 204));
 		if (bordroPuantajEkranindaGoster) {
 			XSSFCellStyle headerSaat = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerIzin = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerBGun = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerBTGun = (XSSFCellStyle) header.clone();
-			headerSaat.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 146, (byte) 208, (byte) 62 }));
-			headerIzin.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 255 }));
-			headerBGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 255, (byte) 255, (byte) 0 }));
-			headerBTGun.setFillForegroundColor(new XSSFColor(new byte[] { (byte) 236, (byte) 125, (byte) 125 }));
+			headerSaat.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 146, (byte) 208, (byte) 62));
+			headerIzin.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 255));
+			headerBGun.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 255, (byte) 255, (byte) 0));
+			headerBTGun.setFillForegroundColor(ExcelUtil.getXSSFColor((byte) 236, (byte) 125, (byte) 125));
 
 			if (normalCalismaSaatKod) {
 				cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
