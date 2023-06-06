@@ -37,9 +37,11 @@ public class ExcelUtil implements Serializable {
 	private static Integer BOLD_WEIGHT = 9;
 	public static final String HEADER_COLOR = "excelHeaderColor";
 	public static final String ROW_COLOR = "excelRowColor";
-	public static final String ODD_COLOR = "excelOddColor";
+	public static final String ALIGN_CENTER = "alignCenter";
+	public static final String ALIGN_RIGHT = "alignRight";
 	public static final String EVEN_COLOR = "excelEvenColor";
 	public static final String COLOR = "color";
+	public static final String ODD_COLOR = "excelOddColor";
 	public static final String BACKGROUND_COLOR = "backgroundColor";
 	public static final String FORMAT_NUMBER = "formatNumber";
 	public static final String FORMAT_TUTAR = "formatTutar";
@@ -285,7 +287,7 @@ public class ExcelUtil implements Serializable {
 	 */
 	public static CellStyle getStyleEven(String formatStr, Workbook wb) {
 		CellStyle style = formatOddEven(formatStr, wb);
- 		HashMap<String, Integer[]> styleMap = setStyleColor(EVEN_COLOR, style);
+		HashMap<String, Integer[]> styleMap = setStyleColor(EVEN_COLOR, style);
 		if (!styleMap.containsKey(BACKGROUND_COLOR)) {
 			XSSFCellStyle styleEven = (XSSFCellStyle) style;
 			setFillForegroundColor(styleEven, 219, 248, 219);
@@ -319,11 +321,19 @@ public class ExcelUtil implements Serializable {
 			} else if (formatStr.equals(FORMAT_DATETIME)) {
 				style.setAlignment(CellStyle.ALIGN_CENTER);
 				str = PdksUtil.getDateFormat() + " " + FORMAT_DATA_TIME;
+			} else if (formatStr.equals(ALIGN_CENTER)) {
+				style.setAlignment(CellStyle.ALIGN_CENTER);
+				str = "";
+			} else if (formatStr.equals(ALIGN_RIGHT)) {
+				style.setAlignment(CellStyle.ALIGN_RIGHT);
+				str = "";
 			}
 			if (str != null) {
-				Integer formatType = getDataFormat(formatStr, wb);
-				if (formatType != null) {
-					style.setDataFormat(formatType.shortValue());
+				if (PdksUtil.hasStringValue(str)) {
+					Integer formatType = getDataFormat(formatStr, wb);
+					if (formatType != null) {
+						style.setDataFormat(formatType.shortValue());
+					}
 				}
 			} else
 				style.setAlignment(CellStyle.ALIGN_LEFT);
