@@ -108,7 +108,7 @@
 								<ui:fragment rendered="#{fazlaMesaiRaporHome.ikRole}">
 									<DIV style="text-align: center; font-weight: bold; color: blue; font-size: 16px;">#{fazlaMesaiRaporHome.seciliBolum.aciklama}</DIV>
 								</ui:fragment>
-								<rich:dataTable rowClasses="even,odd" value="#{fazlaMesaiRaporHome.aylikPuantajList}" var="aylikPuantaj" style="width: 80%;" rows="50"
+								<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiRaporHome.aylikPuantajList}" var="aylikPuantaj" style="width: 80%;" rows="50"
 									rowKeyVar="row">
 
 									<f:facet name="header">

@@ -83,6 +83,7 @@ public class MenuItemConstant implements Serializable {
 	public static String fazlaMesaiOzetRapor = "/puantaj/fazlaMesaiOzetRapor.xhtml";
 	public static String fazlaMesaiKontrolRapor = "/puantaj/fazlaMesaiKontrolRapor.xhtml";
 	public static String fazlaMesaiDonemselRapor = "/puantaj/fazlaMesaiDonemselRapor";
+	public static String fazlaMesaiOnayRapor = "/puantaj/fazlaMesaiOnayRapor.xhtml";
 	public static String fazlaMesaiRapor = "/puantaj/fazlaMesaiRapor.xhtml";
 	public static String mesaiTalepListesi = "/puantaj/mesaiTalepListesi.xhtml";
 	public static String mesaiTalepLinkOnay = "/puantaj/mesaiTalepLinkOnay.xhtml";
@@ -987,6 +988,14 @@ public class MenuItemConstant implements Serializable {
 
 	public static void setDenklestirmeBordroRaporu(String denklestirmeBordroRaporu) {
 		MenuItemConstant.denklestirmeBordroRaporu = denklestirmeBordroRaporu;
+	}
+
+	public static String getFazlaMesaiOnayRapor() {
+		return fazlaMesaiOnayRapor;
+	}
+
+	public static void setFazlaMesaiOnayRapor(String fazlaMesaiOnayRapor) {
+		MenuItemConstant.fazlaMesaiOnayRapor = fazlaMesaiOnayRapor;
 	}
 
 }
