@@ -1867,10 +1867,12 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			ExcelUtil.setFillForegroundColor(headerIzinTipi, 255, 153, 204);
 
 			if (bordroPuantajEkranindaGoster) {
-				CellStyle headerSaat = (XSSFCellStyle) header.clone();
-				CellStyle headerIzin = (XSSFCellStyle) header.clone();
-				CellStyle headerBGun = (XSSFCellStyle) header.clone();
-				CellStyle headerBTGun = (XSSFCellStyle) header.clone();
+				XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+				headerSiyah.getFont().setColor(ExcelUtil.getXSSFColor(255, 255, 255));
+				XSSFCellStyle headerSaat = (XSSFCellStyle) headerSiyah.clone();
+				XSSFCellStyle headerIzin = (XSSFCellStyle) headerSiyah.clone();
+				XSSFCellStyle headerBGun = (XSSFCellStyle) headerSiyah.clone();
+				XSSFCellStyle headerBTGun = (XSSFCellStyle) (XSSFCellStyle) headerSiyah.clone();
 				ExcelUtil.setFillForegroundColor(headerSaat, 146, 208, 62);
 				ExcelUtil.setFillForegroundColor(headerIzin, 255, 255, 255);
 				ExcelUtil.setFillForegroundColor(headerBGun, 255, 255, 0);

@@ -650,13 +650,14 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			personelFazlaMesaiList.clear();
 			if (!personelList.isEmpty()) {
 				List<Long> personelIdler = new ArrayList<Long>();
-				for (Personel personel : personelList) {
+				for (Personel personel : personelList)
 					personelIdler.add(personel.getId());
-				}
-
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT F.* FROM " + VardiyaGun.TABLE_NAME + " V WITH(nolock) ");
 				sb.append(" INNER JOIN  " + PersonelFazlaMesai.TABLE_NAME + " F ON F." + PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN + "=V." + VardiyaGun.COLUMN_NAME_ID);
+				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_PERSONEL);
+				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn());
+				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
 				sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<= :bitTarih AND V." + VardiyaGun.COLUMN_NAME_PERSONEL + ":pId ");
 				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_DURUM + " = 1");
 				sb.append(" ORDER BY V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI);
@@ -667,6 +668,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 				List<PersonelFazlaMesai> idList = pdksEntityController.getObjectBySQLList(sb, map, PersonelFazlaMesai.class);
 				TreeMap<String, Liste> listeMap = new TreeMap<String, Liste>();
+				personelIdler = null;
 				for (Iterator iterator = idList.iterator(); iterator.hasNext();) {
 					PersonelFazlaMesai personelFazlaMesai = (PersonelFazlaMesai) iterator.next();
 					if (personelFazlaMesai.getDurum().equals(Boolean.FALSE) || personelFazlaMesai.isOnaylandi() == false)
