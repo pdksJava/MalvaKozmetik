@@ -33,7 +33,6 @@ import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -1744,12 +1743,16 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " Çalışma Planı", Boolean.TRUE);
 		XSSFCellStyle styleCenter = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
-		styleCenter.setWrapText(Boolean.TRUE);
- 		ExcelUtil.setFillForegroundColor(styleCenter, 255, 255, 0);
-		styleCenter.getFont().setColor(IndexedColors.BLACK.index);
 
-		XSSFCellStyle styleOdd = (XSSFCellStyle) ExcelUtil.getCellStyleTutar(wb);
-		XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getCellStyleTutar(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleTutarEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb);
+		styleTutarEvenDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		styleTutarOddDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarDay = null;
 		XSSFCellStyle styleTatil = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
 
 		XSSFCellStyle styleIstek = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
@@ -1758,15 +1761,11 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		ExcelUtil.setFontColor(styleOff, Color.WHITE);
 		XSSFCellStyle styleIzin = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
 		XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+		short headerColor = header.getFont().getColor();
 		XSSFCellStyle styleCalisma = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 		ExcelUtil.setFont(9, new Integer(Font.BOLDWEIGHT_BOLD), header, wb);
-
-		ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
-
-		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-		ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
-
+		header.getFont().setColor(headerColor);
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
@@ -1966,17 +1965,20 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				calismaModeli = personel.getCalismaModeli();
 			boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
 			++sayac;
-			XSSFCellStyle styleGenelCenter = null, styleGenel = null, styleGenelLeft = null;
+			CellStyle styleGenelCenter = null, styleGenel = null, styleGenelLeft = null;
 			try {
-				if (row % 2 == 0) {
-					styleGenel = (XSSFCellStyle) styleOdd.clone();
+				if (row % 2 != 0) {
+					styleTutarDay = styleTutarOddDay;
+					styleGenel = styleOdd;
+					styleGenelLeft = styleOdd;
+					styleGenelCenter = styleOddCenter;
 				} else {
-					styleGenel = (XSSFCellStyle) styleEven.clone();
+					styleTutarDay = styleTutarEvenDay;
+					styleGenel = styleEven;
+					styleGenelLeft = styleEven;
+					styleGenelCenter = styleEvenCenter;
 				}
-				styleGenelCenter = (XSSFCellStyle) styleGenel.clone();
-				styleGenelCenter.setAlignment(CellStyle.ALIGN_CENTER);
-				styleGenelLeft = (XSSFCellStyle) styleGenel.clone();
-				styleGenelLeft.setAlignment(CellStyle.ALIGN_LEFT);
+
 				boolean koyuRenkli = onayDurumList.size() == 2 && aylikPuantaj.isOnayDurum();
 				if (koyuRenkli) {
 					ExcelUtil.setFontNormalBold(wb, styleGenel);
@@ -2012,7 +2014,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 					VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
 					String styleText = pdksVardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
-					styleGenel = styleCalisma;
+					styleGenel = styleTutarDay;
 					if (styleText.equals(VardiyaGun.STYLE_CLASS_HAFTA_TATIL))
 						styleGenel = styleTatil;
 					else if (styleText.equals(VardiyaGun.STYLE_CLASS_IZIN))
@@ -2041,7 +2043,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 				}
 				if (sonucGoster && !help) {
-					if (row % 2 == 0)
+					if (row % 2 != 0)
 						styleGenel = styleOdd;
 					else {
 						styleGenel = styleEven;

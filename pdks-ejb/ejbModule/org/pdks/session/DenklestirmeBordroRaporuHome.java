@@ -697,8 +697,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			CellStyle style = ExcelUtil.getStyleData(wb);
 			CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 			XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-			ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
-			tutarStyle = ExcelUtil.getCellStyleTutar(wb);
+ 			tutarStyle = ExcelUtil.getCellStyleTutar(wb);
 			numberStyle = ExcelUtil.getCellStyleTutar(wb);
 			XSSFCellStyle headerSaat = (XSSFCellStyle) header.clone();
 			XSSFCellStyle headerIzin = (XSSFCellStyle) header.clone();

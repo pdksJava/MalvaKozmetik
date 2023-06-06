@@ -27,7 +27,6 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -1775,16 +1774,18 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " Fazla Mesai", Boolean.TRUE);
 
-		CellStyle styleTutarEven = ExcelUtil.getStyleData(wb);
- 		ExcelUtil.setFillForegroundColor(styleTutarEven, 219, 248, 219);
+		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleTutarEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb);
+		styleTutarEvenDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		styleTutarOddDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarDay = null;
 
-		CellStyle styleTutarOdd = ExcelUtil.getStyleData(wb);
- 		styleTutarOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
 		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
-	 	CellStyle styleOdd = ExcelUtil.getStyleData(wb);
-		CellStyle styleOddCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle styleEven = ExcelUtil.getStyleData(wb);
-		CellStyle styleEvenCenter = ExcelUtil.getStyleDataCenter(wb);
+
 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
 
 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
@@ -1796,15 +1797,6 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 
-		header.setWrapText(true);
-
-		header.setWrapText(true);
- 		ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
-
- 		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-		ExcelUtil.setFillForegroundColor(styleOddCenter, 213, 228, 251);
-		ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
-		ExcelUtil.setFillForegroundColor(styleEvenCenter, 219, 248, 219);
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
@@ -1896,9 +1888,11 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			try {
 				boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
 				try {
-					if (row % 2 == 0)
+					if (row % 2 != 0) {
+						styleTutarDay = styleTutarOddDay;
 						styleGenel = styleOdd;
-					else {
+					} else {
+						styleTutarDay = styleTutarEvenDay;
 						styleGenel = styleEven;
 					}
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getSicilNo());
@@ -1927,7 +1921,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 						String styleText = vardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
-						styleGenel = styleCalisma;
+						styleGenel = styleTutarDay;
 						if (styleText.equals(VardiyaGun.STYLE_CLASS_HAFTA_TATIL))
 							styleGenel = styleTatil;
 						else if (styleText.equals(VardiyaGun.STYLE_CLASS_IZIN))
@@ -1954,7 +1948,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 					}
 					if (!help) {
-						if (row % 2 == 0)
+						if (row % 2 != 0)
 							styleGenel = styleTutarOdd;
 						else {
 							styleGenel = styleTutarEven;

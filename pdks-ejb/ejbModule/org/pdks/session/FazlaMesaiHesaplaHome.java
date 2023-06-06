@@ -29,7 +29,6 @@ import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -1392,7 +1391,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					puantaj.setSablonAylikPuantaj(aylikPuantajSablon);
 					puantaj.setFazlaMesaiHesapla(Boolean.FALSE);
 
-					puantaj.setTrClass(renk ? VardiyaGun.STYLE_CLASS_ODD : VardiyaGun.STYLE_CLASS_EVEN);
+					puantaj.setTrClass(renk == false ? VardiyaGun.STYLE_CLASS_ODD : VardiyaGun.STYLE_CLASS_EVEN);
 					renk = !renk;
 					Integer aksamVardiyaSayisi = 0;
 					Double aksamVardiyaSaatSayisi = 0d, sabahAksamCikisSaatSayisi = 0d, haftaCalismaSuresi = 0d, resmiTatilSuresi = 0d, offSure = null;
@@ -2982,7 +2981,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					sb.append("<TR><TD><B>" + ortakIslemler.personelNoAciklama() + "</B></TD><TD><B> : </B>" + sicilNo.trim() + "</TD>");
 				sb.append("</TABLE>");
 				sb.append("<" + uolStr + ">");
-				boolean renkUyari = false;
+				boolean renkUyari = true;
 				for (String string : strList) {
 					sb.append("<LI class=\"" + (renkUyari ? "odd" : "even") + "\" style=\"text-align: left;\">" + string + "</LI>");
 					renkUyari = !renkUyari;
@@ -4475,19 +4474,21 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " Fazla Mesai", Boolean.TRUE);
+		CellStyle styleTutarEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb);
+		styleTutarEvenDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		styleTutarOddDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarDay = null;
 
-		CellStyle styleTutarEven = ExcelUtil.getCellStyleTutar(wb);
-		ExcelUtil.setFillForegroundColor(styleTutarEven, 219, 248, 219);
+		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 
-		CellStyle styleTutarOdd = ExcelUtil.getCellStyleTutar(wb);
- 		styleTutarOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
 		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
- 		CellStyle styleGenelCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle styleOdd = ExcelUtil.getStyleData(wb);
-		CellStyle styleOddCenter = ExcelUtil.getStyleDataCenter(wb);
-		 
-		CellStyle styleEven = ExcelUtil.getStyleData(wb);
-		CellStyle styleEvenCenter = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleGenelCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
 
 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
@@ -4498,18 +4499,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		ExcelUtil.setFillForegroundColor(izinBaslik, 146, 208, 80);
 
 		CellStyle styleIzin = ExcelUtil.getStyleDataCenter(wb);
- 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
+		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
 
-		XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
+		XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+		short headerColor = header.getFont().getColor();
 		ExcelUtil.setFont(9, new Integer(Font.BOLDWEIGHT_BOLD), header, wb);
-		ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
-
- 		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
- 		styleOddCenter.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-		ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
-		ExcelUtil.setFillForegroundColor(styleEvenCenter, 219, 248, 219);
+		header.getFont().setColor(headerColor);
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
 
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
@@ -4737,10 +4734,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			try {
 				boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
 				try {
-					if (row % 2 == 0) {
+					if (row % 2 != 0) {
+						styleTutarDay = styleTutarOddDay;
 						styleGenelCenter = styleOddCenter;
 						styleGenel = styleOdd;
 					} else {
+						styleTutarDay = styleTutarEvenDay;
 						styleGenelCenter = styleEvenCenter;
 						styleGenel = styleEven;
 					}
@@ -4773,7 +4772,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 						String styleText = vardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
-						styleGenel = styleCalisma;
+						styleGenel = styleTutarDay;
 						if (styleText.equals(VardiyaGun.STYLE_CLASS_HAFTA_TATIL))
 							styleGenel = styleTatil;
 						else if (styleText.equals(VardiyaGun.STYLE_CLASS_IZIN))
@@ -4800,7 +4799,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 					}
 					if (!help) {
-						if (row % 2 == 0)
+						if (row % 2 != 0)
 							styleGenel = styleTutarOdd;
 						else {
 							styleGenel = styleTutarEven;
@@ -4889,7 +4888,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						if (aksamSaat)
 							setCell(sheet, row, col++, styleGenel, denklestirmeVar == false ? 0L : new Double(aylikPuantaj.getAksamVardiyaSaatSayisi()));
 						if (modelGoster) {
-							if (row % 2 == 0) {
+							if (row % 2 != 0) {
 								styleGenelCenter = styleOddCenter;
 								styleGenel = styleOdd;
 							} else {
@@ -4957,7 +4956,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 						}
 						if (izinTipiVardiyaList != null) {
-							if (row % 2 == 0)
+							if (row % 2 != 0)
 								styleGenel = styleTutarOdd;
 							else {
 								styleGenel = styleTutarEven;

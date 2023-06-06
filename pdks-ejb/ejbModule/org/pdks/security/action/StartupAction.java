@@ -674,6 +674,38 @@ public class StartupAction implements Serializable {
 			String colors = parameterMap.get("excelRowColor");
 			setExcelColorValue(ExcelUtil.ROW_COLOR, ExcelUtil.COLOR, colors, colorMap);
 		}
+		if (parameterMap.containsKey("excelOddBackgroundColor")) {
+			String colors = parameterMap.get("excelOddBackgroundColor");
+			setExcelColorValue(ExcelUtil.ODD_COLOR, ExcelUtil.BACKGROUND_COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelOddColor")) {
+			String colors = parameterMap.get("excelOddColor");
+			setExcelColorValue(ExcelUtil.ODD_COLOR, ExcelUtil.COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelEvenBackgroundColor")) {
+			String colors = parameterMap.get("excelEvenBackgroundColor");
+			setExcelColorValue(ExcelUtil.EVEN_COLOR, ExcelUtil.BACKGROUND_COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelEvenColor")) {
+			String colors = parameterMap.get("excelEvenColor");
+			setExcelColorValue(ExcelUtil.EVEN_COLOR, ExcelUtil.COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelOddDayBackgroundColor")) {
+			String colors = parameterMap.get("excelOddDayBackgroundColor");
+			setExcelColorValue(ExcelUtil.ODD_DAY_COLOR, ExcelUtil.BACKGROUND_COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelOddDayColor")) {
+			String colors = parameterMap.get("excelOddDayColor");
+			setExcelColorValue(ExcelUtil.ODD_DAY_COLOR, ExcelUtil.COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelEvenDayBackgroundColor")) {
+			String colors = parameterMap.get("excelEvenDayBackgroundColor");
+			setExcelColorValue(ExcelUtil.EVEN_DAY_COLOR, ExcelUtil.BACKGROUND_COLOR, colors, colorMap);
+		}
+		if (parameterMap.containsKey("excelEvenDayColor")) {
+			String colors = parameterMap.get("excelEvenDayColor");
+			setExcelColorValue(ExcelUtil.EVEN_DAY_COLOR, ExcelUtil.COLOR, colors, colorMap);
+		}
 	}
 
 	/**

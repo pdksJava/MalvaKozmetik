@@ -27,7 +27,6 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -938,8 +937,10 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  "), "_", "");
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " İşkur Çalışma Planı", Boolean.TRUE);
- 		XSSFCellStyle styleOdd = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		XSSFCellStyle styleTatil = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
 
 		XSSFCellStyle styleIstek = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
@@ -951,12 +952,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		XSSFCellStyle styleCalisma = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 
-		header.setWrapText(true);
-
-		ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
-		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-		ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
-		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
+	 	ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
 		ExcelUtil.setFillForegroundColor(styleCalisma, 255, 255, 255);
@@ -1000,15 +996,16 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			row++;
 			boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
 
-			XSSFCellStyle styleGenelCenter = null, styleGenel = null;
+			CellStyle styleGenelCenter = null, styleGenel = null;
 			try {
-				if (row % 2 == 0) {
-					styleGenel = (XSSFCellStyle) styleOdd.clone();
+				if (row % 2 != 0) {
+					styleGenel = styleOdd;
+					styleGenelCenter = styleOddCenter;
 				} else {
-					styleGenel = (XSSFCellStyle) styleEven.clone();
+					styleGenel = styleEven;
+					styleGenelCenter = styleEvenCenter;
 				}
-				styleGenelCenter = (XSSFCellStyle) styleGenel.clone();
-				styleGenelCenter.setAlignment(CellStyle.ALIGN_CENTER);
+
 				boolean koyuRenkli = onayDurumList.size() == 2 && aylikPuantaj.isOnayDurum();
 				if (koyuRenkli) {
 					ExcelUtil.setFontNormalBold(wb, styleGenel);

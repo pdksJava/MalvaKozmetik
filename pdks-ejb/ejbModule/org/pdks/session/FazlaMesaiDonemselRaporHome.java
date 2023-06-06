@@ -20,7 +20,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -351,19 +350,13 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, ("Fazla Mesai " + donem).trim(), Boolean.TRUE);
-
-		CellStyle styleTutarEven = ExcelUtil.getStyleDataRight(wb);
-		ExcelUtil.setFillForegroundColor(styleTutarEven, 219, 248, 219);
-
-		CellStyle styleTutarOdd = ExcelUtil.getStyleDataRight(wb);
-
-		styleTutarOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
 		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
 
-		CellStyle styleOdd = ExcelUtil.getStyleData(wb);
-		CellStyle styleOddCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle styleEven = ExcelUtil.getStyleData(wb);
-		CellStyle styleEvenCenter = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+ 
 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
 
 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
@@ -375,15 +368,8 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 
-		header.setWrapText(true);
-
-		header.setWrapText(true);
-		ExcelUtil.setFillForegroundColor(header, 156, 192, 223);
-
-		styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-		ExcelUtil.setFillForegroundColor(styleOddCenter, 213, 228, 251);
-		ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
-		ExcelUtil.setFillForegroundColor(styleEvenCenter, 219, 248, 219);
+ 
+ 
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
@@ -420,7 +406,7 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 			Personel personel = (Personel) iter.next();
 			row++;
 			col = 0;
-			if (row % 2 == 0)
+			if (row % 2 != 0)
 				styleGenel = styleOdd;
 			else {
 				styleGenel = styleEven;
@@ -439,7 +425,7 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 				if (pd == null)
 					pd = new PersonelDenklestirme();
 
-				if (row % 2 == 0)
+				if (row % 2 != 0)
 					styleGenel = styleTutarOdd;
 				else
 					styleGenel = styleTutarEven;
