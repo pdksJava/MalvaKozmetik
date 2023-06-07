@@ -303,6 +303,7 @@ public class ExcelUtil implements Serializable {
 		CellStyle style = formatOddEven(formatStr, wb);
 		HashMap<String, Integer[]> styleMap = setStyleColor(ODD_COLOR, style);
 		if (!styleMap.containsKey(BACKGROUND_COLOR)) {
+			style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 			XSSFCellStyle styleOdd = (XSSFCellStyle) style;
 			setFillForegroundColor(styleOdd, 219, 248, 219);
 		}
@@ -319,8 +320,9 @@ public class ExcelUtil implements Serializable {
 		CellStyle style = formatOddEven(formatStr, wb);
 		HashMap<String, Integer[]> styleMap = setStyleColor(EVEN_COLOR, style);
 		if (!styleMap.containsKey(BACKGROUND_COLOR)) {
+			style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 			XSSFCellStyle styleEven = (XSSFCellStyle) style;
-			setFillForegroundColor(styleEven, 213, 228, 251);
+ 			setFillForegroundColor(styleEven, 213, 228, 251);
 
 		}
 
@@ -649,8 +651,8 @@ public class ExcelUtil implements Serializable {
 	 * @param rgb3
 	 */
 	public static void setFillForegroundColor(CellStyle cellStyle, Integer rgb1, Integer rgb2, Integer rgb3) {
-		XSSFCellStyle xssfCellStyle = (XSSFCellStyle) cellStyle;
 		cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		XSSFCellStyle xssfCellStyle = (XSSFCellStyle) cellStyle;
 		xssfCellStyle.setFillForegroundColor(getXSSFColor(rgb1, rgb2, rgb3));
 	}
 
