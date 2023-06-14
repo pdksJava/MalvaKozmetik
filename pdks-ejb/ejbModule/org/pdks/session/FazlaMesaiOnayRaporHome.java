@@ -101,9 +101,10 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	private boolean adminRole, ikRole;
 
 	private Boolean departmanBolumAyni = Boolean.FALSE, tekSirket;
+
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, fazlaMesaiSayfa = Boolean.TRUE;
 
-	private int ay, yil, maxYil, maxFazlaMesaiRaporGun;
+	private int ay, yil, maxYil, maxFazlaMesaiOnayGun;
 
 	private List<User> toList, ccList, bccList;
 
@@ -176,31 +177,34 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		yil = -1;
 		ay = -1;
 		fazlaMesaiVardiyaGun = null;
-		String maxFazlaMesaiRaporGunStr = ortakIslemler.getParameterKey("maxFazlaMesaiRaporGun");
+		String maxFazlaMesaiRaporGunStr = ortakIslemler.getParameterKey("maxFazlaMesaiOnayGun");
 		if (!maxFazlaMesaiRaporGunStr.equals(""))
 			try {
-				maxFazlaMesaiRaporGun = Integer.parseInt(maxFazlaMesaiRaporGunStr);
+				maxFazlaMesaiOnayGun = Integer.parseInt(maxFazlaMesaiRaporGunStr);
 			} catch (Exception e) {
-				maxFazlaMesaiRaporGun = -1;
+				maxFazlaMesaiOnayGun = -1;
 			}
-		if (maxFazlaMesaiRaporGun < 1)
-			maxFazlaMesaiRaporGun = 7;
+		// if (maxFazlaMesaiOnayGun < 1)
+		// maxFazlaMesaiOnayGun = 7;
 
 		if (basTarih == null) {
 			basTarih = PdksUtil.getDate(new Date());
-			Calendar cal = Calendar.getInstance();
-			int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-			if (dayOfWeek != Calendar.MONDAY) {
-				cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-				if (cal.getTime().after(basTarih))
-					cal.add(Calendar.DATE, -7);
-				basTarih = PdksUtil.getDate(cal.getTime());
+			if (maxFazlaMesaiOnayGun > 0) {
+
+				Calendar cal = Calendar.getInstance();
+				int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+				if (dayOfWeek != Calendar.MONDAY) {
+					cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+					if (cal.getTime().after(basTarih))
+						cal.add(Calendar.DATE, -7);
+					basTarih = PdksUtil.getDate(cal.getTime());
+				}
+				basTarih = PdksUtil.tariheGunEkleCikar(basTarih, -7);
 			}
-			basTarih = PdksUtil.tariheGunEkleCikar(basTarih, -7);
 		}
 
 		if (bitTarih == null)
-			bitTarih = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiRaporGun - 1);
+			bitTarih = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiOnayGun > 0 ? maxFazlaMesaiOnayGun - 1 : 0);
 
 		try {
 			modelGoster = Boolean.FALSE;
@@ -411,9 +415,9 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	public String tarihDegisti(String tipi) {
 		personelFazlaMesaiList.clear();
 		if (basTarih.getTime() <= bitTarih.getTime()) {
-			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiRaporGun);
-			if (sonGun.before(bitTarih))
-				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiRaporGun + " günden fazla işlem yapılmaz!");
+			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiOnayGun);
+			if (maxFazlaMesaiOnayGun > 0 && sonGun.before(bitTarih))
+				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiOnayGun + " günden fazla işlem yapılmaz!");
 			else
 				try {
 					fillSirketList();
@@ -540,9 +544,9 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	public String fillPersonelDenklestirmeRaporList() {
 		boolean devam = true;
 		if (basTarih.getTime() <= bitTarih.getTime()) {
-			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiRaporGun);
-			if (sonGun.before(bitTarih)) {
-				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiRaporGun + " günden fazla işlem yapılmaz!");
+			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiOnayGun);
+			if (maxFazlaMesaiOnayGun > 0 && sonGun.before(bitTarih)) {
+				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiOnayGun + " günden fazla işlem yapılmaz!");
 				devam = false;
 			}
 
@@ -1344,14 +1348,6 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		this.kullaniciPersonel = kullaniciPersonel;
 	}
 
-	public int getMaxFazlaMesaiRaporGun() {
-		return maxFazlaMesaiRaporGun;
-	}
-
-	public void setMaxFazlaMesaiRaporGun(int maxFazlaMesaiRaporGun) {
-		this.maxFazlaMesaiRaporGun = maxFazlaMesaiRaporGun;
-	}
-
 	public Date getBasTarih() {
 		return basTarih;
 	}
@@ -1422,5 +1418,13 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public void setSession(Session session) {
 		this.session = session;
+	}
+
+	public int getMaxFazlaMesaiOnayGun() {
+		return maxFazlaMesaiOnayGun;
+	}
+
+	public void setMaxFazlaMesaiOnayGun(int maxFazlaMesaiOnayGun) {
+		this.maxFazlaMesaiOnayGun = maxFazlaMesaiOnayGun;
 	}
 }
