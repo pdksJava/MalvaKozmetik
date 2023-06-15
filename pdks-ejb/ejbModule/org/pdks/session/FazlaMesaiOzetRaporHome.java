@@ -730,7 +730,20 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			List<String> list1 = ortakIslemler.getYetkiTumPersonelNoList();
 
 			HashMap fields = new HashMap();
+			Sirket sirket = null;
+			if (sirketId != null && sirketId > 0) {
+				fields.put("id", sirketId);
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
+				fields.clear();
+			}
+
 			HashMap<String, Personel> ayrilanPersonelMap = new HashMap<String, Personel>();
+			if (sirket != null) {
+				fields.put("sirket.id=", sirketId);
+			}
+
 			if (hastaneSuperVisor)
 				fields.put("ekSaha1.id=", authenticatedUser.getPdksPersonel().getEkSaha1().getId());
 			sicilNo = ortakIslemler.getSicilNo(sicilNo);
@@ -803,15 +816,16 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			if (pdksHaric || authenticatedUser.isAdmin() || authenticatedUser.isIK() || (sicilNo != null && sicilNo.trim().length() > 0)) {
 				if (sicilNo == null || sicilNo.trim().length() == 0) {
 					map.put(PdksEntityController.MAP_KEY_SELECT, "pdksSicilNo");
+
 					if (sirket != null) {
+
 						if (!sirket.getDepartman().isAdminMi()) {
 							if (seciliEkSaha3Id != null)
 								map.put("ekSaha3.id=", seciliEkSaha3Id);
-							if (departmanBolumAyni == false && tesisId != null && tesisId > 0)
+							if (sirket.isTesisDurumu() && tesisId != null && tesisId > 0)
 								map.put("tesis.id=", tesisId);
 						}
-						if (departmanBolumAyni == false)
-							map.put("sirket.id=", sirket.getId());
+						map.put("sirket.id=", sirket.getId());
 
 					}
 
@@ -1025,7 +1039,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					}
 				}
 
-				boolean renk = Boolean.FALSE;
+				boolean renk = Boolean.TRUE;
 				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 
 				List<VardiyaHafta> vardiyaHaftaList = new ArrayList<VardiyaHafta>();

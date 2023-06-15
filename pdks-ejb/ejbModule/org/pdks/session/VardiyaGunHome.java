@@ -9470,7 +9470,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 								Personel personel = personelMap.get(sicilNo);
 								Long depId = personel.getSirket().getDepartman().getId();
 								TreeMap<String, IzinTipi> izinTipiMap = calIzinMap.containsKey(depId) ? calIzinMap.get(depId) : new TreeMap<String, IzinTipi>();
-								boolean hataVar = Boolean.FALSE, renk = Boolean.FALSE;
+								boolean hataVar = Boolean.FALSE, renk = Boolean.TRUE;
 								if (personel != null) {
 									personel = (Personel) personelMap.get(sicilNo).clone();
 									personel.setDurum(Boolean.TRUE);

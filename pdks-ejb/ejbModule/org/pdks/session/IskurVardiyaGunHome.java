@@ -4499,7 +4499,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 							for (String sicilNo : perList) {
 								Personel personel = personelMap.get(sicilNo);
-								boolean hataVar = Boolean.FALSE, renk = Boolean.FALSE;
+								boolean hataVar = Boolean.FALSE, renk = Boolean.TRUE;
 								if (personel != null) {
 									personel = (Personel) personelMap.get(sicilNo).clone();
 									personel.setDurum(Boolean.TRUE);
