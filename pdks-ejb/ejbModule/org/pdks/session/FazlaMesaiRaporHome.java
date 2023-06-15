@@ -224,24 +224,26 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			} catch (Exception e) {
 				maxFazlaMesaiRaporGun = -1;
 			}
-		if (maxFazlaMesaiRaporGun < 1)
-			maxFazlaMesaiRaporGun = 7;
+		// if (maxFazlaMesaiRaporGun < 1)
+		// maxFazlaMesaiRaporGun = 7;
 
 		if (basTarih == null) {
 			basTarih = PdksUtil.getDate(new Date());
-			Calendar cal = Calendar.getInstance();
-			int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-			if (dayOfWeek != Calendar.MONDAY) {
-				cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-				if (cal.getTime().after(basTarih))
-					cal.add(Calendar.DATE, -7);
-				basTarih = PdksUtil.getDate(cal.getTime());
+			if (maxFazlaMesaiRaporGun > 0) {
+				Calendar cal = Calendar.getInstance();
+				int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+				if (dayOfWeek != Calendar.MONDAY) {
+					cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+					if (cal.getTime().after(basTarih))
+						cal.add(Calendar.DATE, -7);
+					basTarih = PdksUtil.getDate(cal.getTime());
+				}
+				basTarih = PdksUtil.tariheGunEkleCikar(basTarih, -7);
 			}
-			basTarih = PdksUtil.tariheGunEkleCikar(basTarih, -7);
 		}
 
 		if (bitTarih == null)
-			bitTarih = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiRaporGun - 1);
+			bitTarih = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiRaporGun > 0 ? maxFazlaMesaiRaporGun - 1 : 0);
 
 		try {
 			modelGoster = Boolean.FALSE;
@@ -469,7 +471,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		aylikPuantajList.clear();
 		if (basTarih.getTime() <= bitTarih.getTime()) {
 			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiRaporGun);
-			if (sonGun.before(bitTarih))
+			if (maxFazlaMesaiRaporGun > 0 && sonGun.before(bitTarih))
 				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiRaporGun + " günden fazla işlem yapılmaz!");
 			else
 				try {
@@ -602,7 +604,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		boolean devam = true;
 		if (basTarih.getTime() <= bitTarih.getTime()) {
 			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiRaporGun);
-			if (sonGun.before(bitTarih)) {
+			if (maxFazlaMesaiRaporGun > 0 && sonGun.before(bitTarih)) {
 				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiRaporGun + " günden fazla işlem yapılmaz!");
 				devam = false;
 			}
@@ -1464,7 +1466,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
-	 	CellStyle styleTutarEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleTutarEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb);
 		styleTutarEvenDay.setAlignment(CellStyle.ALIGN_CENTER);
 		CellStyle styleTutarOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		styleTutarOddDay.setAlignment(CellStyle.ALIGN_CENTER);

@@ -1959,7 +1959,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							sb = new StringBuffer();
 							sb.append("<p><b>" + mailMap.get("konu") + " var!</b></p>");
 							sb.append("<TABLE class=\"mars\" style=\"width: 90%\">");
-							boolean renkUyari = false;
+							boolean renkUyari = true;
 							sb.append("<THEAD><TR><TH>" + personelNoAciklama() + "</TH>");
 							sb.append("<TH>Adı Soyadı</TH>");
 							sb.append("<TH>Tipi</TH><TH>Başlangıç Zamanı</TH>");
@@ -2013,7 +2013,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							StringBuffer sb = new StringBuffer();
 							sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi saveIzinler fonksiyonunda hatalı veri var!</b></p>");
 							sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
-							boolean gonder = false, renkUyari = false;
+							boolean gonder = false, renkUyari = true;
 							for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
 								IzinERP izinERP = (IzinERP) iterator.next();
 								if (izinERP.getDurum() == null)
@@ -3519,7 +3519,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							sb = new StringBuffer();
 							sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi savePersoneller fonksiyonunda hatalı veri var!</b></p>");
 							sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
-							boolean renkUyari = false;
+							boolean renkUyari = true;
 							Sirket bosSirket = new Sirket();
 							if (parentBordroTanimKoduStr == null)
 								parentBordroTanimKoduStr = "";

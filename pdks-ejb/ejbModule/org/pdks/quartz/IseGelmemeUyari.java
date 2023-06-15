@@ -994,7 +994,7 @@ public class IseGelmemeUyari implements Serializable {
 					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>İzin Durum</b></TH>");
 				sb.append("</TR></THEAD><TBODY>");
 				yeniList.addAll(sirketSubeList);
-				boolean renk = false;
+				boolean renk = true;
 				for (Iterator iterator2 = sirketSubeList.iterator(); iterator2.hasNext();) {
 					VardiyaGun vg = (VardiyaGun) iterator2.next();
 					Personel personel = vg.getPersonel();
