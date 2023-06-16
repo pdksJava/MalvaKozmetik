@@ -1475,7 +1475,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							vardiyaGun.addResmiTatilSure(vardiyaGun.getGecenAyResmiTatilSure());
 							if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate())) {
 								if (vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman() != null)
-									vardiyaGun.setZamanGelmedi(!bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
+									vardiyaGun.setZamanGelmedi(vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
 								else
 									logger.debug("");
 							}

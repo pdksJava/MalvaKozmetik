@@ -1172,7 +1172,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 								vgIdList.add(vardiyaGun.getId());
 								vgMap.put(vardiyaGun.getVardiyaDateStr(), vardiyaGun);
 								if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate()))
-									vardiyaGun.setZamanGelmedi(!bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
+									vardiyaGun.setZamanGelmedi(vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
 
 							}
 							if (fazlaMesaiOnayla && vardiyaGun.getIslemVardiya() != null && vardiyaGun.getIslemVardiya().isCalisma()) {

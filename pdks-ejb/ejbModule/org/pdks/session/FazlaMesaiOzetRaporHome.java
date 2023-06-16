@@ -536,6 +536,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				if (tesisId != null || seciliEkSaha3Id != null || (sirket != null && sirket.isTesisDurumu() == false))
 					bolumDoldur();
 		}
+		aylikPuantajList.clear();
 		return "";
 	}
 
@@ -1185,8 +1186,12 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 									vardiyaGunSon = vardiyaGun;
 								vgIdList.add(vardiyaGun.getId());
 								vgMap.put(vardiyaGun.getVardiyaDateStr(), vardiyaGun);
-								if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate()))
-									vardiyaGun.setZamanGelmedi(!bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
+								if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate())) {
+									try {
+										vardiyaGun.setZamanGelmedi(vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
+									} catch (Exception e) {
+									}
+								}
 
 							}
 							if (fazlaMesaiOnayla && vardiyaGun.getIslemVardiya() != null && vardiyaGun.getIslemVardiya().isCalisma()) {

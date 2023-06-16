@@ -998,8 +998,8 @@ public class IseGelmemeUyari implements Serializable {
 				for (Iterator iterator2 = sirketSubeList.iterator(); iterator2.hasNext();) {
 					VardiyaGun vg = (VardiyaGun) iterator2.next();
 					Personel personel = vg.getPersonel();
-					sb.append("<TR class=\"" + (renk ? "odd" : "even") + "\">");
-					renk = !renk;
+					String classTR = "class=\"" + (renk ? "odd" : "even") + "\"";
+					sb.append("<TR " + classTR + ">");
 					if (hariciPersonelPlandaVar)
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "") + "</td>");
 					if (bolumVar)
@@ -1016,7 +1016,7 @@ public class IseGelmemeUyari implements Serializable {
 						if (vg.getHareketler() != null && !vg.getHareketler().isEmpty()) {
 							sb.append("<TABLE>");
 							for (HareketKGS hareketKGS : vg.getHareketler()) {
-								sb.append("<TR><td nowrap>" + hareketKGS.getKapiView().getAciklama() + "</td>");
+								sb.append("<TR " + classTR + "><td nowrap >" + hareketKGS.getKapiView().getAciklama() + "</td>");
 								sb.append("<td nowrap>" + (hareketKGS.getZaman() != null ? user.getTarihFormatla(hareketKGS.getZaman(), PdksUtil.getDateFormat() + " H:mm") : "") + "</td></TR>");
 							}
 							sb.append("</TABLE>");
@@ -1030,12 +1030,14 @@ public class IseGelmemeUyari implements Serializable {
 							sb.append("<td style=\"border: 1px solid;\"> </td>");
 						else {
 							String aciklama = vg.getIzin().getIzinTipiAciklama();
-							sb.append("<td style=\"border: 1px solid;\">" + aciklama + "</td>");
+							sb.append("<td style=\"border: 1px solid;\" nowrap>" + aciklama + "</td>");
 						}
 
 					}
 
 					sb.append("</TR>");
+					renk = !renk;
+
 				}
 				sb.append("</TBODY></TABLE><BR/><BR/>");
 			}

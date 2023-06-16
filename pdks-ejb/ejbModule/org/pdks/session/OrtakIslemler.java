@@ -9405,7 +9405,7 @@ public class OrtakIslemler implements Serializable {
 						}
 					}
 				}
-				if (islemVardiya.getVardiyaBitZaman().after(islemVardiya.getVardiyaFazlaMesaiBitZaman()) || islemVardiya.getVardiyaTelorans2BitZaman() == null) {
+				if (vardiyaGun.getSonrakiVardiyaGun() == null || islemVardiya.getVardiyaBitZaman().after(islemVardiya.getVardiyaFazlaMesaiBitZaman()) || islemVardiya.getVardiyaTelorans2BitZaman() == null) {
 					Date vardiyaTelorans2BitZaman = PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -20);
 					if (vardiyaTelorans2BitZaman.after(islemVardiya.getVardiyaBitZaman()))
 						islemVardiya.setVardiyaTelorans2BitZaman(vardiyaTelorans2BitZaman);
@@ -14108,7 +14108,7 @@ public class OrtakIslemler implements Serializable {
 					if (vardiyaGun.getId() != null) {
 						vardiyaGun.setVardiyaZamani();
 						if (vardiyaGun.getVardiya().isCalisma())
-							vardiyaGun.setZamanGelmedi(!bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
+							vardiyaGun.setZamanGelmedi(vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
 						if (tatilGunleriMap.containsKey(tarihStr))
 							vardiyaGun.setTatil(tatilGunleriMap.get(tarihStr));
 						if (vardiyaGun.getVardiyaSaat() != null) {
