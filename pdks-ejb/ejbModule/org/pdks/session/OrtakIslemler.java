@@ -5281,7 +5281,7 @@ public class OrtakIslemler implements Serializable {
 						if (personelDenklestirmeDonemMap.containsKey(personel.getId())) {
 							PersonelDenklestirme denklestirme = personelDenklestirmeDonemMap.get(personel.getId());
 							if (denklestirme.getCalismaModeliAy() != null)
-								personelDenklestirmeTasiyici.setCalismaModeli(denklestirme.getCalismaModeliAy().getCalismaModeli());
+								personelDenklestirmeTasiyici.setCalismaModeli(denklestirme.getCalismaModeli());
 						}
 						personelDenklestirmeTasiyici.setDenklestirmeAy(denklestirmeDonemi.getDenklestirmeAy());
 						personelDenklestirmeTasiyici.setPersonel(personel);
@@ -5647,7 +5647,7 @@ public class OrtakIslemler implements Serializable {
 				ArrayList<Personel> tumPersoneller = new ArrayList<Personel>();
 				for (PersonelDenklestirme personelDenklestirme : personelDenklestirmeList) {
 					Personel personel = personelDenklestirme.getPdksPersonel();
-					CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeliAy().getCalismaModeli() : personel.getCalismaModeli();
+					CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeli() : personel.getCalismaModeli();
 					if (calismaModeli != null && hareketKaydiVardiyaMap.containsKey(calismaModeli.getId())) {
 						PersonelDenklestirmeTasiyici personelDenklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
 						personelDenklestirmeTasiyici.setPersonel(personel);
@@ -9470,7 +9470,7 @@ public class OrtakIslemler implements Serializable {
 						PersonelDenklestirme denklestirme = denkMap.get(key);
 						try {
 							if (denklestirme.getCalismaModeliAy() != null)
-								vardiyaGun.setCalismaModeli(denklestirme.getCalismaModeliAy().getCalismaModeli());
+								vardiyaGun.setCalismaModeli(denklestirme.getCalismaModeli());
 						} catch (Exception e) {
 							logger.equals(e);
 							e.printStackTrace();
@@ -12491,7 +12491,7 @@ public class OrtakIslemler implements Serializable {
 		if (puantajData.getPersonelDenklestirmeAylik() != null) {
 			CalismaModeli calismaModeli = null;
 			if (puantajData.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
-				calismaModeli = puantajData.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli();
+				calismaModeli = puantajData.getPersonelDenklestirmeAylik().getCalismaModeli();
 			else
 				calismaModeli = puantajData.getPdksPersonel().getCalismaModeli();
 			if (calismaModeli != null)
@@ -12554,7 +12554,7 @@ public class OrtakIslemler implements Serializable {
 				personelDenklestirme = puantajData.getPersonelDenklestirmeAylik();
 				CalismaModeli calismaModeli = null;
 				if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null) {
-					calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+					calismaModeli = personelDenklestirme.getCalismaModeli();
 
 				}
 
@@ -12592,7 +12592,7 @@ public class OrtakIslemler implements Serializable {
 							boolean arifeGunu = false;
 							Vardiya vardiyaIzin = pdksVardiyaGun.getVardiya();
 							if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null) {
-								CalismaModeli calismaModeliAy = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+								CalismaModeli calismaModeliAy = personelDenklestirme.getCalismaModeli();
 								izinSaat = calismaModeliAy.getIzinSaat(pdksVardiyaGun);
 								if (pdksVardiyaGun.getIzin() != null && pdksVardiyaGun.getIzin().getIzinTipi().isIslemYokCGS()) {
 									izinSaat = 0.0d;
@@ -13028,7 +13028,7 @@ public class OrtakIslemler implements Serializable {
 							}
 							if (personelDenklestirme != null) {
 								personelDenklestirme.setGuncellendi(Boolean.FALSE);
-								if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeliAy().getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
+								if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 									personelDenklestirme.setPlanlanSure(planlanSure);
 								// personelDenklestirme.setDevredenSure(puantajData.getDevredenSure());
 								if (personelDenklestirme.isGuncellendi())

@@ -189,7 +189,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				if (!(personelDenklestirme.getDurum() || fazlaMesaiHesapla == false))
 					continue;
 				boolean flush = false;
-				CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+				CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 				try {
 					for (VardiyaHafta vardiyaHafta : ap.getVardiyaHaftaList()) {
 						List<VardiyaGun> gunler = vardiyaHafta.getVardiyaGunler();

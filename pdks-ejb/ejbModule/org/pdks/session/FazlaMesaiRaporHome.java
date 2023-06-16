@@ -891,7 +891,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						Personel personel = puantaj.getPdksPersonel();
 						perCalismaModeli = personel.getCalismaModeli();
 						if (puantaj.getPersonelDenklestirmeAylik() != null && puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
-							perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli();
+							perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
 						Date sonPersonelCikisZamani = null;
 
 						Boolean gebemi = Boolean.FALSE, calisiyor = Boolean.FALSE;
@@ -1620,8 +1620,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						Cell planlananCell = setCell(sheet, row, col++, styleGenel, aylikPuantaj.getPlanlananSure());
 						if (aylikPuantaj.getCalismaModeliAy() != null && planlananCell != null && aylikPuantaj.getSutIzniDurum().equals(Boolean.FALSE)) {
 							Comment comment1 = drawing.createCellComment(anchor);
-							String title = aylikPuantaj.getCalismaModeliAy().getCalismaModeli().getAciklama() + " : ";
-							if (aylikPuantaj.getCalismaModeliAy().getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
+							String title = aylikPuantaj.getCalismaModeli().getAciklama() + " : ";
+							if (aylikPuantaj.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getCalismaModeliAy().getSure());
 							else
 								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirmeAylik().getPlanlanSure());

@@ -1381,7 +1381,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 					perCalismaModeli = personel.getCalismaModeli();
 					if (puantaj.getPersonelDenklestirmeAylik() != null && puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
-						perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli();
+						perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
 
 					Boolean tarihGecti = Boolean.TRUE;
 					Boolean gebemi = Boolean.FALSE, calisiyor = Boolean.FALSE;
@@ -1939,7 +1939,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (denklestirmeAyDurum) {
 						kesilenSure = 0;
 						if (negatifBakiyeDenkSaat < 0.0d) {
-							double normalCalisma = personelDenklestirme.getCalismaModeliAy().getCalismaModeli().getHaftaIci();
+							double normalCalisma = personelDenklestirme.getCalismaModeli().getHaftaIci();
 							if (calisiyor == false) {
 								if (puantaj.getDevredenSure() < 0) {
 									kesilenSure = -puantaj.getDevredenSure();
@@ -4719,7 +4719,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (!aylikPuantaj.isFazlaMesaiHesapla() || !aylikPuantaj.isSecili())
 					continue;
 			}
-			CalismaModeli calismaModeli = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null ? aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli() : null;
+			CalismaModeli calismaModeli = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null ? aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeli() : null;
 			if (calismaModeli == null)
 				calismaModeli = personel.getCalismaModeli();
 			PersonelKGS personelKGS = personel.getPersonelKGS();
@@ -4807,8 +4807,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						Cell planlananCell = setCell(sheet, row, col++, styleGenel, aylikPuantaj.getPlanlananSure());
 						if (aylikPuantaj.getCalismaModeliAy() != null && planlananCell != null && aylikPuantaj.getSutIzniDurum().equals(Boolean.FALSE)) {
 							Comment comment1 = drawing.createCellComment(anchor);
-							String title = aylikPuantaj.getCalismaModeliAy().getCalismaModeli().getAciklama() + " : ";
-							if (aylikPuantaj.getCalismaModeliAy().getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
+							String title = aylikPuantaj.getCalismaModeli().getAciklama() + " : ";
+							if (aylikPuantaj.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getCalismaModeliAy().getSure());
 							else
 								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirmeAylik().getPlanlanSure());

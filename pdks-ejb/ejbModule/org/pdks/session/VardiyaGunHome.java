@@ -1471,7 +1471,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		StringBuffer sbCalismaModeliUyumsuz = new StringBuffer();
 		CalismaModeli calismaModeli = personelDenklestirme != null && personelDenklestirme.getPersonel() != null ? personelDenklestirme.getPersonel().getCalismaModeli() : null;
 		if (personelDenklestirme.getCalismaModeliAy() != null)
-			calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+			calismaModeli = personelDenklestirme.getCalismaModeli();
 		for (Iterator<String> iterator = vardiyaGunMap.keySet().iterator(); iterator.hasNext();) {
 			String key = iterator.next();
 			VardiyaGun vardiyaGun = vardiyaGunMap.get(key);
@@ -1960,7 +1960,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (!aylikPuantaj.isSecili() || personel == null || personel.getSicilNo() == null || personel.getSicilNo().trim().equals(""))
 				continue;
 			row++;
-			CalismaModeli calismaModeli = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null ? aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli() : null;
+			CalismaModeli calismaModeli = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null ? aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeli() : null;
 			if (calismaModeli == null)
 				calismaModeli = personel.getCalismaModeli();
 			boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
@@ -2053,8 +2053,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 					if (aylikPuantaj.getCalismaModeliAy() != null && planlananCell != null && aylikPuantaj.getSutIzniDurum().equals(Boolean.FALSE)) {
 						Comment comment1 = drawing.createCellComment(anchor);
-						String title = aylikPuantaj.getCalismaModeliAy().getCalismaModeli().getAciklama() + " : ";
-						if (aylikPuantaj.getCalismaModeliAy().getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
+						String title = aylikPuantaj.getCalismaModeli().getAciklama() + " : ";
+						if (aylikPuantaj.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 							title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getCalismaModeliAy().getSure());
 						else
 							title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirmeAylik().getPlanlanSure());
@@ -2630,7 +2630,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			boolean izinGirisYok = izin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK);
 			CalismaModeli cm = null;
 			try {
-				cm = offIzinGuncelle && izinGirisYok && puantaj != null ? puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli() : null;
+				cm = offIzinGuncelle && izinGirisYok && puantaj != null ? puantaj.getPersonelDenklestirmeAylik().getCalismaModeli() : null;
 			} catch (Exception e) {
 				cm = null;
 			}
@@ -2893,7 +2893,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		Personel personel = aylikPuantaj.getPdksPersonel();
 		CalismaModeli calismaModeli = null;
 		try {
-			calismaModeli = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli();
+			calismaModeli = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
 		} catch (Exception e) {
 			calismaModeli = aylikPuantaj.getCalismaModeli();
 		}
@@ -5840,7 +5840,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							personelDenklestirme.setPersonelDenklestirmeGecenAy(denklestirmeGecenAyMap.get(personel.getId()));
 							personelDenklestirme.setGuncellendi(Boolean.TRUE);
 						}
-						if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getPlanlanSure().doubleValue() == 0.0d && personelDenklestirme.getCalismaModeliAy().getCalismaModeli().getToplamGunGuncelle()) {
+						if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getPlanlanSure().doubleValue() == 0.0d && personelDenklestirme.getCalismaModeli().getToplamGunGuncelle()) {
 							personelDenklestirme.setPlanlanSure(personelDenklestirme.getCalismaModeliAy().getSure());
 							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = true;
@@ -5849,7 +5849,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						boolean denklestirme = true;
 						if (kaydet) {
 							if (personelDenklestirme.getId() == null) {
-								if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeliAy().getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
+								if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 									personelDenklestirme.setPlanlanSure(-1d);
 								personelDenklestirme.setOlusturanUser(authenticatedUser);
 								denklestirme = personelDenklestirme.isDenklestirme();
@@ -5872,8 +5872,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 						}
 						if (mevcutDonem) {
-							if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeliAy().getCalismaModeli() != null) {
-								CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+							if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeli() != null) {
+								CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 								if (calismaModeli.getBagliVardiyaSablonu() != null) {
 									VardiyaSablonu bagliVardiyaSablonu = calismaModeli.getBagliVardiyaSablonu();
 									Personel personelDenk = personelDenklestirme.getPersonel();
@@ -6195,7 +6195,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					}
 					vardiyaGunHareketOnaysizList = null;
 					if (personelDenklestirme != null && personelDenklestirme.getPlanlanSure() < 0d) {
-						if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeliAy().getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
+						if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 							personelDenklestirme.setPlanlanSure(saatToplami);
 						if (!personelDenklestirme.isKapandi())
 							personelDenklestirme.setDevredenSure(null);
@@ -6217,7 +6217,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							flush = true;
 						}
 						aylikPuantaj.setCalismaModeliAy(personelDenklestirme.getCalismaModeliAy());
-						CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+						CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 						if (!helpPersonel(personel))
 							ortakIslemler.aylikPlanSureHesapla(true, aylikPuantaj, denklestirmeAyDurum, tatilGunleriMap, session);
 
@@ -6716,7 +6716,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							AylikPuantaj aylikPuantaj = personelIdMap.get(perId);
 							TreeMap<String, List<HareketKGS>> map1 = map.get(perId);
 							// PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
-							// CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+							// CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 							for (VardiyaGun vardiyaGun : aylikPuantaj.getAyinVardiyalari()) {
 								String tarihStr = vardiyaGun.getVardiyaDateStr();
 								List<HareketKGS> orjinalList = new ArrayList<HareketKGS>(map1.get(tarihStr));
@@ -9407,8 +9407,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							List<Long> modelIdList = new ArrayList<Long>();
 
 							for (PersonelDenklestirme personelDenklestirme : personelDenklestirmeList) {
-								if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeliAy().getCalismaModeli() != null) {
-									CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+								if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeli() != null) {
+									CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 									if (calismaModeli.getGenelVardiya().equals(Boolean.FALSE) && !modelIdList.contains(calismaModeli.getId()))
 										modelIdList.add(calismaModeli.getId());
 								}
@@ -9488,8 +9488,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 									devam = !devam;
 									List<Long> vardiyaIdList = null;
 									try {
-										if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getCalismaModeliAy() != null && personelDenklestirmeAylik.getCalismaModeliAy().getCalismaModeli() != null) {
-											CalismaModeli calismaModeli = personelDenklestirmeAylik.getCalismaModeliAy().getCalismaModeli();
+										if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getCalismaModeliAy() != null && personelDenklestirmeAylik.getCalismaModeli() != null) {
+											CalismaModeli calismaModeli = personelDenklestirmeAylik.getCalismaModeli();
 											if (calismaModeliVardiyaMap.containsKey(calismaModeli.getId()))
 												vardiyaIdList = calismaModeliVardiyaMap.get(calismaModeli.getId());
 

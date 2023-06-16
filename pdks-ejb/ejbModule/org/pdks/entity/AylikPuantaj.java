@@ -464,7 +464,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 			logger.debug(personelDenklestirmeAylik.getId());
 		if (calismaModeliAy != null && personelDenklestirmeAylik.getCalismaModeliAy() == null)
 			personelDenklestirmeAylik.setCalismaModeliAy(calismaModeliAy);
-		CalismaModeli calismaModeli = personelDenklestirmeAylik.getCalismaModeliAy() != null ? personelDenklestirmeAylik.getCalismaModeliAy().getCalismaModeli() : null;
+		CalismaModeli calismaModeli = personelDenklestirmeAylik.getCalismaModeliAy() != null ? personelDenklestirmeAylik.getCalismaModeli() : null;
 		if (personelDenklestirmeAylik.isSuaDurumu()) {
 			for (VardiyaGun vg : vardiyalar) {
 				if (vg.isAyinGunu() && vg.getVardiya() != null && vg.getVardiya().getId() != null)
@@ -474,7 +474,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		double arifeToplamSure = getArifeToplamSure(tatilGunleriMap, calismaModeli);
 		Double hesaplananSure = (personelDenklestirmeAylik != null ? personelDenklestirmeAylik.getMaksimumSure(izinSure, arifeToplamSure) : 0d);
 		if (tatilGunleriMap != null && vardiyalar != null && !vardiyalar.isEmpty()) {
-			double yarimGun = personelDenklestirmeAylik.getCalismaModeliAy().getCalismaModeli().getArife();
+			double yarimGun = personelDenklestirmeAylik.getCalismaModeli().getArife();
 			gebeDurum = false;
 			for (VardiyaGun vg : vardiyalar) {
 				if (vg.getIzin() != null || vg.getVardiya() == null || vg.getVardiya().getId() == null)

@@ -986,7 +986,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					for (PersonelDenklestirme personelDenklestirme : personelDenklestirmeler) {
 						PersonelDenklestirmeTasiyici denklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
 						denklestirmeTasiyici.setPersonel(personelDenklestirme.getPersonel());
-						denklestirmeTasiyici.setCalismaModeli(personelDenklestirme.getCalismaModeliAy().getCalismaModeli());
+						denklestirmeTasiyici.setCalismaModeli(personelDenklestirme.getCalismaModeli());
 						denklestirmeTasiyici.setDenklestirmeAy(denklestirmeAy);
 						list.add(denklestirmeTasiyici);
 					}
@@ -1127,7 +1127,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 
 					perCalismaModeli = personel.getCalismaModeli();
 					if (puantaj.getPersonelDenklestirmeAylik() != null && puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
-						perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli();
+						perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
 					Date sonPersonelCikisZamani = null;
 
 					Boolean gebemi = Boolean.FALSE, calisiyor = Boolean.FALSE;

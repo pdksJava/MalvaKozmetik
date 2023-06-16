@@ -617,6 +617,17 @@ public class PersonelDenklestirme extends BaseObject {
 	}
 
 	@Transient
+	public CalismaModeli getCalismaModeli() {
+		CalismaModeli calismaModeli = null;
+		if (calismaModeliAy != null)
+			calismaModeli = calismaModeliAy.getCalismaModeli();
+		else if (personel != null)
+			calismaModeli = personel.getCalismaModeli();
+
+		return calismaModeli;
+	}
+
+	@Transient
 	public Double getCalismaSuaSaati() {
 		return calismaSuaSaati;
 	}

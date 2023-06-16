@@ -1353,7 +1353,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			boolean izinGirisYok = izin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK);
 			CalismaModeli cm = null;
 			try {
-				cm = offIzinGuncelle && izinGirisYok && puantaj != null ? puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy().getCalismaModeli() : null;
+				cm = offIzinGuncelle && izinGirisYok && puantaj != null ? puantaj.getPersonelDenklestirmeAylik().getCalismaModeli() : null;
 			} catch (Exception e) {
 				cm = null;
 			}
@@ -4444,8 +4444,8 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 							List<Long> modelIdList = new ArrayList<Long>();
 
 							for (PersonelDenklestirme personelDenklestirme : personelDenklestirmeList) {
-								if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeliAy().getCalismaModeli() != null) {
-									CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy().getCalismaModeli();
+								if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeli() != null) {
+									CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 									if (calismaModeli.getGenelVardiya().equals(Boolean.FALSE) && !modelIdList.contains(calismaModeli.getId()))
 										modelIdList.add(calismaModeli.getId());
 								}
@@ -4518,8 +4518,8 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 									devam = !devam;
 									List<Long> vardiyaIdList = null;
 									try {
-										if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getCalismaModeliAy() != null && personelDenklestirmeAylik.getCalismaModeliAy().getCalismaModeli() != null) {
-											CalismaModeli calismaModeli = personelDenklestirmeAylik.getCalismaModeliAy().getCalismaModeli();
+										if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getCalismaModeliAy() != null && personelDenklestirmeAylik.getCalismaModeli() != null) {
+											CalismaModeli calismaModeli = personelDenklestirmeAylik.getCalismaModeli();
 											if (calismaModeliVardiyaMap.containsKey(calismaModeli.getId()))
 												vardiyaIdList = calismaModeliVardiyaMap.get(calismaModeli.getId());
 
