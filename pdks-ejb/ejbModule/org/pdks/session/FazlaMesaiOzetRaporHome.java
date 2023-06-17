@@ -1525,54 +1525,15 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		return list;
 	}
 
-	private String getExcelAciklama() {
-		String gorevYeriAciklama = "";
-		if (gorevYeri != null)
-			gorevYeriAciklama = gorevYeri.getAciklama() + "_";
-		else if (seciliEkSaha3Id != null || tesisId != null) {
-			HashMap parametreMap = new HashMap();
-			Tanim ekSaha3 = null, tesis = null;
-			if (tesisId != null) {
-				parametreMap.clear();
-				parametreMap.put("id", tesisId);
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				tesis = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
-			}
-
-			if (seciliEkSaha3Id != null) {
-				parametreMap.clear();
-				parametreMap.put("id", seciliEkSaha3Id);
-				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				ekSaha3 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
-			}
-			if (tesis != null)
-				gorevYeriAciklama = tesis.getAciklama() + "_";
-			if (ekSaha3 != null)
-				gorevYeriAciklama += ekSaha3.getAciklama() + "_";
-		} else if (sirketId != null && tekSirket) {
-			HashMap parametreMap = new HashMap();
-			parametreMap.put("id", sirketId);
-			if (session != null)
-				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
-			if (sirket != null)
-				gorevYeriAciklama = sirket.getAciklama() + "_";
-		}
-		return gorevYeriAciklama;
-	}
-
 	public String fazlaMesaiExcel() {
 		try {
 			for (Iterator iter = aylikPuantajList.iterator(); iter.hasNext();) {
 				AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
 				aylikPuantaj.setSecili(Boolean.TRUE);
 			}
-			String gorevYeriAciklama = getExcelAciklama();
-			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(gorevYeriAciklama, aylikPuantajList);
+			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(aylikPuantajList);
 			if (baosDosya != null) {
-				String dosyaAdi = "FazlaMesai_" + gorevYeriAciklama + (sirket != null ? "_" + sirket.getAd() : "") + (tesis != null ? "_" + tesis.getAciklama() : "") + "_" + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
+				String dosyaAdi = "FazlaMesai" + (sirket != null ? "_" + sirket.getAd() : "") + (tesis != null ? "_" + tesis.getAciklama() : "") + "_" + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
@@ -1593,11 +1554,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	}
 
 	/**
-	 * @param gorevYeriAciklama
 	 * @param list
 	 * @return
 	 */
-	private ByteArrayOutputStream fazlaMesaiExcelDevam(String gorevYeriAciklama, List<AylikPuantaj> list) {
+	private ByteArrayOutputStream fazlaMesaiExcelDevam(List<AylikPuantaj> list) {
 		TreeMap<String, String> sirketMap = new TreeMap<String, String>();
 		sirket = null;
 		tesis = null;
@@ -1662,7 +1622,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			col = 0;
 			++row;
 		}
-		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  "), "_", "");
+		String aciklamaExcel = PdksUtil.replaceAll(PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  "), "_", "");
 		ExcelUtil.getCell(sheet, row, col, header).setCellValue(aciklamaExcel);
 		for (int i = 0; i < 3; i++)
 			ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");
