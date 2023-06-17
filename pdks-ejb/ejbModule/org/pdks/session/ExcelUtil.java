@@ -363,7 +363,7 @@ public class ExcelUtil implements Serializable {
 			}
 			if (str != null) {
 				if (PdksUtil.hasStringValue(str)) {
-					Integer formatType = getDataFormat(formatStr, wb);
+					Integer formatType = getDataFormat(str, wb);
 					if (formatType != null) {
 						style.setDataFormat(formatType.shortValue());
 					}

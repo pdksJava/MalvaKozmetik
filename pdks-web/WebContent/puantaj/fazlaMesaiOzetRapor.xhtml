@@ -130,46 +130,29 @@
 								rowKeyVar="row">
 
 								<f:facet name="header">
-									<h:outputText value="Fazla Mesai Özet Raporu" />
+									<h:outputText value="Fazla Mesai Toplu Raporu" />
 								</f:facet>
 								<rich:column style="text-align: center;width: 30px;">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 									</f:facet>
-									<SPAN> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi==false or aylikPuantaj.pdksPersonel.pdks==false}">
-											<SPAN style="color: red"> <h:outputText id="bolumBordroAltBirimSicil" value="#{aylikPuantaj.pdksPersonel.sicilNo}" />
-											</SPAN>
-										</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi  and aylikPuantaj.pdksPersonel.pdks }">
-											<SPAN title="#{aylikPuantaj.bolumBordroAltBirim}"> <h:outputText value="#{aylikPuantaj.pdksPersonel.sicilNo}" />
-											</SPAN>
-										</ui:fragment> <ui:fragment rendered="#{fazlaMesaiOzetRaporHome.denklestirmeAy.durum and fazlaMesaiOzetRaporHome.hataYok==false}">
-											<rich:toolTip for="bolumBordroAltBirimSicil">
+									<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi==false or aylikPuantaj.pdksPersonel.pdks==false}">
+										<SPAN style="color: red"><h:outputText value="#{aylikPuantaj.pdksPersonel.sicilNo}" /> </SPAN>
+									</ui:fragment>
+									<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi  and aylikPuantaj.pdksPersonel.pdks }">
+										<h:outputText value="#{aylikPuantaj.pdksPersonel.sicilNo}" />
 
-												<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.pdks==false}">
-																	Fazla Mesai Tanımsız!<br />
-												</ui:fragment>
-												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.onaylandi==false}">
-																	 Aylık plan onaylanmamıştır!
-										</ui:fragment>
-																(#{aylikPuantaj.bolumBordroAltBirim})			
-										</rich:toolTip>
-										</ui:fragment></SPAN>
+									</ui:fragment>
+
+
 								</rich:column>
 								<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
 									<f:facet name="header">
 										<h:outputText value="Adı Soyadı" />
 									</f:facet>
-									<SPAN> <SPAN id="perBilgi#{aylikPuantaj.personelDenklestirmeAylik.id}"> <h:outputText
-												value="#{aylikPuantaj.pdksPersonel.adSoyad}" style="width:autostretch ;white-space: nowrap;" /></SPAN> <rich:toolTip
-											for="perBilgi#{aylikPuantaj.personelDenklestirmeAylik.id}">
-														#{aylikPuantaj.pdksPersonel.sirket.ad}
-										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiIzinKullan}">
-												<br />
-												<SPAN color="red"> <b>Fazla Mesai İzin Kullanılacak!</b>
-												</SPAN>
+									<SPAN id="perBilgi#{aylikPuantaj.personelDenklestirmeAylik.id}"> <h:outputText value="#{aylikPuantaj.pdksPersonel.adSoyad}"
+											style="width:autostretch ;white-space: nowrap;" /></SPAN>
 
-											</ui:fragment>
-										</rich:toolTip></SPAN>
 								</rich:column>
 								<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaMesaiOzetRaporHome.seciliEkSaha3Id==null}">
 									<f:facet name="header">
@@ -321,15 +304,6 @@
 														</ui:fragment>
 
 
-														<rich:toolTip for="vardiya#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}">
-															<SPAN style="font-size: 12px;">#{authenticatedUser.getTarihFormatla(aylikPuantaj.vardiyaGun.vardiyaDate, 'd MMM')} -->
-																#{aylikPuantaj.vardiyaGun.fazlaMesaiTitle} <ui:fragment rendered="#{aylikPuantaj.vardiyaGun.islemVardiya!=null}">
-																	<br />
-																	<br />
-																	Fazla çalışma saat : #{authenticatedUser.dateTimeFormatla(aylikPuantaj.vardiyaGun.islemVardiya.vardiyaFazlaMesaiBasZaman)} -#{authenticatedUser.dateTimeFormatla(aylikPuantaj.vardiyaGun.islemVardiya.vardiyaFazlaMesaiBitZaman)}
-																</ui:fragment>
-															</SPAN>
-														</rich:toolTip>
 
 													</ui:fragment>
 												</DIV>
@@ -365,7 +339,7 @@
 										<DIV id="planlananSureAciklama#{aylikPuantaj.personelDenklestirmeAylik.id}">
 											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.planlananSure)}" rendered="#{aylikPuantaj.planlananSure!=0}" />
 										</DIV>
-										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy!=null and aylikPuantaj.sutIzniDurum==false }">
+										<ui:fragment rendered="#{false and aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy!=null and aylikPuantaj.sutIzniDurum==false }">
 											<rich:toolTip for="planlananSureAciklama#{aylikPuantaj.personelDenklestirmeAylik.id}">
 																		#{aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy.calismaModeli.aciklama} :
 												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy.calismaModeli.toplamGunGuncelle==false}">

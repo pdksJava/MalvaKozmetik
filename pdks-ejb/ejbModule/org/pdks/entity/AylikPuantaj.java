@@ -811,10 +811,10 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	}
 
 	public static void baslikCell(CreationHelper factory, Drawing drawing, ClientAnchor anchor, Cell cell, String value, String title) {
-		cell.setCellValue(value);
+		cell.setCellValue(value != null ? value.trim() : "");
 		if (PdksUtil.hasStringValue(title)) {
 			Comment comment1 = drawing.createCellComment(anchor);
-			RichTextString str1 = factory.createRichTextString(title);
+			RichTextString str1 = factory.createRichTextString(title.trim());
 			comment1.setString(str1);
 			cell.setCellComment(comment1);
 		}
