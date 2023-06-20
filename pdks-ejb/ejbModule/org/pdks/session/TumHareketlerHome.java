@@ -895,10 +895,13 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Tüm Hareketler", Boolean.TRUE);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTimeStamp = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0;
 		int col = 0;
 		boolean yonetici = authenticatedUser.isAdmin() || authenticatedUser.isIK();
@@ -917,9 +920,21 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 		}
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Oluşturulma Zamanı");
-
+		boolean renk = true;
 		for (Iterator iter = hareketList.iterator(); iter.hasNext();) {
 			HareketKGS hareket = (HareketKGS) iter.next();
+
+			CellStyle styleCenter = null, style = null, styleTimeStamp = null;
+			if (renk) {
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+				styleTimeStamp = styleOddTimeStamp;
+			} else {
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+				styleTimeStamp = styleEvenTimeStamp;
+			}
+			renk = !renk;
 			row++;
 			col = 0;
 			Personel personel = null;
@@ -932,7 +947,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			}
 
 			try {
-				ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(hareket.getZaman());
+				ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getZaman());
 				String sirket = "";
 				try {
 					sirket = personel.getSirket().getAd();
@@ -950,7 +965,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				if (guncellenmis) {
 					if ((hareket.getSirket() != null && hareket.getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) || hareket.getIslem() != null) {
 						if (hareket.getOrjinalZaman() != null)
-							ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(hareket.getOrjinalZaman());
+							ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getOrjinalZaman());
 						else
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getIslem() != null ? hareket.getIslem().getGuncelleyenUser().getAdSoyad() : "");
@@ -960,7 +975,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					}
 
 				}
-				ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(hareket.getOlusturmaZamani());
+				ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getOlusturmaZamani());
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");
 				e.printStackTrace();

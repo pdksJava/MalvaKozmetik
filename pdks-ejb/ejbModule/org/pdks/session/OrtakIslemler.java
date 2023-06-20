@@ -10779,9 +10779,14 @@ public class OrtakIslemler implements Serializable {
 				izinERPUpdate = false;
 		}
 		Sheet sheet = ExcelUtil.createSheet(wb, "Personel Listesi", false);
-		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle cellStyleDate = ExcelUtil.getCellStyleDate(wb);
+
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
 		List<Tanim> dinamikAciklamaList = getPersonelTanimList(Tanim.TIPI_PERSONEL_DINAMIK_TANIM, session);
 		List<Tanim> dinamikDurumList = getPersonelTanimList(Tanim.TIPI_PERSONEL_DINAMIK_DURUM, session);
 		List<Tanim> dinamikSayisalList = getPersonelTanimList(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL, session);
@@ -10901,7 +10906,7 @@ public class OrtakIslemler implements Serializable {
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("E-Posta BCC");
 		}
 		boolean ikRole = authenticatedUser.isAdmin() || authenticatedUser.isIK();
-
+		boolean renk = true;
 		for (Iterator iter = personelList.iterator(); iter.hasNext();) {
 			PersonelView personelView = (PersonelView) iter.next();
 			Personel personel = personelView.getPdksPersonel();
@@ -10912,12 +10917,23 @@ public class OrtakIslemler implements Serializable {
 			Sirket sirket = personel.getSirket();
 			if (!sirket.getPdks())
 				continue;
+			CellStyle style = null, styleCenter = null, cellStyleDate = null;
+			if (renk) {
+				cellStyleDate = styleOddDate;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				cellStyleDate = styleEvenDate;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			PersonelKGS personelKGS = personel.getPersonelKGS();
 			User kullanici = personelView.getKullanici();
 			row++;
 			col = 0;
 			try {
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSicilNo());
+				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 				if (personel.getSirket() != null) {
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
@@ -10929,7 +10945,7 @@ public class OrtakIslemler implements Serializable {
 					String kimlikNo = "";
 					if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo()))
 						kimlikNo = personelKGS.getKimlikNo();
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kimlikNo);
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kimlikNo);
 				}
 				if (kartNoGoster) {
 					String kartNo = "";
@@ -10937,9 +10953,9 @@ public class OrtakIslemler implements Serializable {
 						kartNo = personelKGS.getKartNo();
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kartNo);
 				}
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getSicilNo() : "");
+				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getSicilNo() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "");
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getYonetici2() != null ? personel.getYonetici2().getSicilNo() : "");
+				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getYonetici2() != null ? personel.getYonetici2().getSicilNo() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getYonetici2() != null ? personel.getYonetici2().getAdSoyad() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSablon() != null ? personel.getSablon().getAdi() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getCalismaModeli() != null ? personel.getCalismaModeli().getAciklama() : "");
@@ -10972,7 +10988,7 @@ public class OrtakIslemler implements Serializable {
 
 				try {
 					if (ikinciYoneticiIzinOnayla)
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getIkinciYoneticiIzinOnayla()));
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getIkinciYoneticiIzinOnayla()));
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
 					e.printStackTrace();
@@ -10981,7 +10997,7 @@ public class OrtakIslemler implements Serializable {
 				}
 				try {
 					if (onaysizIzinKullanilir)
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getOnaysizIzinKullanilir()));
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getOnaysizIzinKullanilir()));
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
 					e.printStackTrace();
@@ -10994,7 +11010,7 @@ public class OrtakIslemler implements Serializable {
 				if (admin) {
 					try {
 						if (icapDurum)
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getIcapciOlabilir()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getIcapciOlabilir()));
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -11030,7 +11046,7 @@ public class OrtakIslemler implements Serializable {
 					}
 					try {
 						if (suaOlabilir)
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getSuaOlabilir()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getSuaOlabilir()));
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -11040,7 +11056,7 @@ public class OrtakIslemler implements Serializable {
 
 				}
 				try {
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getMailTakip()));
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getMailTakip()));
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
 					e.printStackTrace();
@@ -11050,7 +11066,7 @@ public class OrtakIslemler implements Serializable {
 				if (admin || ik) {
 					if (sutIzni) {
 						try {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getSutIzni()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getSutIzni()));
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
 							e.printStackTrace();
@@ -11060,7 +11076,7 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (gebeMi) {
 						try {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.isPersonelGebeMi()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.isPersonelGebeMi()));
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
 							e.printStackTrace();
@@ -11070,7 +11086,7 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (sanalPersonel) {
 						try {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getSanalPersonel()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getSanalPersonel()));
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
 							e.printStackTrace();
@@ -11080,7 +11096,7 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (egitimDonemi) {
 						try {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getEgitimDonemi()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getEgitimDonemi()));
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
 							e.printStackTrace();
@@ -11090,7 +11106,7 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (partTimeDurum) {
 						try {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getPartTime()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getPartTime()));
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
 							e.printStackTrace();
@@ -11100,7 +11116,7 @@ public class OrtakIslemler implements Serializable {
 					}
 
 					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getPdks()));
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getPdks()));
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -11109,7 +11125,7 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (fazlaMesaiOde) {
 						try {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getFazlaMesaiOde()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getFazlaMesaiOde()));
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
 							e.printStackTrace();
@@ -11120,7 +11136,7 @@ public class OrtakIslemler implements Serializable {
 
 					if (fazlaMesaiIzinKullan) {
 						try {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(personel.getFazlaMesaiIzinKullan()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(personel.getFazlaMesaiIzinKullan()));
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
 							e.printStackTrace();
@@ -11132,7 +11148,7 @@ public class OrtakIslemler implements Serializable {
 				}
 				for (Tanim alan : dinamikDurumList) {
 					PersonelDinamikAlan pda = getPersonelDinamikAlan(personelDinamikMap, personel, alan);
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(user.getYesNo(pda.isDurumSecili()));
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(user.getYesNo(pda.isDurumSecili()));
 				}
 				for (Tanim alan : dinamikAciklamaList) {
 					PersonelDinamikAlan pda = getPersonelDinamikAlan(personelDinamikMap, personel, alan);
@@ -11151,7 +11167,7 @@ public class OrtakIslemler implements Serializable {
 
 				}
 				try {
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kullanici != null ? user.getYesNo(kullanici.getVardiyaDuzeltYetki()) : "");
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kullanici != null ? user.getYesNo(kullanici.getVardiyaDuzeltYetki()) : "");
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
 					e.printStackTrace();

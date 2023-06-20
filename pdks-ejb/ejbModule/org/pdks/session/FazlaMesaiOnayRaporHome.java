@@ -835,15 +835,20 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Dönemsel Fazla Çalışma", Boolean.TRUE);
-		CellStyle styleTutar = ExcelUtil.getCellStyleTutar(wb);
-		CellStyle styleNumber = ExcelUtil.getCellStyleNumber(wb);
-
-		CellStyle styleZaman = ExcelUtil.getCellStyleTimeStamp(wb);
-		CellStyle styleDate = ExcelUtil.getCellStyleDate(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
-
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTimeStamp = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleOddNumber = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleEvenNumber = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
 
 		int col = 0, row = 0;
 
@@ -860,13 +865,30 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onay Nedeni");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onaylayan");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onay Zamanı");
-
+		boolean renk = true;
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			PersonelFazlaMesai personelFazlaMesai = (PersonelFazlaMesai) iter.next();
 			VardiyaGun vardiyaGun = personelFazlaMesai.getVardiyaGun();
 			Vardiya vardiya = vardiyaGun.getVardiya();
 			Personel personel = vardiyaGun.getPdksPersonel();
 
+			CellStyle styleCenter = null, styleGenel = null, styleTutar = null, styleNumber = null, styleZaman = null, styleDate = null;
+			if (renk) {
+				styleGenel = styleOdd;
+				styleCenter = styleOddCenter;
+				styleDate = styleOddDate;
+				styleZaman = styleOddTimeStamp;
+				styleNumber = styleOddNumber;
+				styleTutar = styleOddTutar;
+			} else {
+				styleGenel = styleEven;
+				styleCenter = styleEvenCenter;
+				styleDate = styleEvenDate;
+				styleZaman = styleEvenTimeStamp;
+				styleNumber = styleEvenNumber;
+				styleTutar = styleEvenTutar;
+			}
+			renk = !renk;
 			row++;
 			col = 0;
 

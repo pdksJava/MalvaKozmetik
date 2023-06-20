@@ -23,6 +23,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.jboss.seam.annotations.Name;
 
 @Name("excelUtil")
@@ -295,6 +296,28 @@ public class ExcelUtil implements Serializable {
 	}
 
 	/**
+	 * @param style
+	 * @param alignment
+	 * @return
+	 */
+	public static CellStyle setAlignment(CellStyle style, short alignment) {
+		style.setAlignment(alignment);
+		return style;
+	}
+
+	/**
+	 * @param style
+	 * @param boldweight
+	 * @return
+	 */
+	public static XSSFCellStyle setBoldweight(CellStyle style, short boldweight) {
+		XSSFCellStyle xssfCellStyle = (XSSFCellStyle) style;
+		XSSFFont font = xssfCellStyle.getFont();
+		font.setBoldweight(boldweight);
+		return xssfCellStyle;
+	}
+
+	/**
 	 * @param formatStr
 	 * @param wb
 	 * @return
@@ -322,7 +345,7 @@ public class ExcelUtil implements Serializable {
 		if (!styleMap.containsKey(BACKGROUND_COLOR)) {
 			style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 			XSSFCellStyle styleEven = (XSSFCellStyle) style;
- 			setFillForegroundColor(styleEven, 213, 228, 251);
+			setFillForegroundColor(styleEven, 213, 228, 251);
 
 		}
 

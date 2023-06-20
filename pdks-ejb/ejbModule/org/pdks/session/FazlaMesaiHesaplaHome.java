@@ -32,7 +32,6 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -4265,17 +4264,20 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Drawing drawing = sheet.createDrawingPatriarch();
 		ClientAnchor anchor = factory.createClientAnchor();
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
-		CellStyle date = ExcelUtil.getCellStyleDate(wb);
-		XSSFCellStyle dateBold = (XSSFCellStyle) ExcelUtil.getCellStyleDate(wb);
-		XSSFCellStyle styleKapi = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		XSSFFont fontDateBold = dateBold.getFont();
-		fontDateBold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		XSSFFont fontKapiBold = styleKapi.getFont();
-		fontKapiBold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		int row = 0;
+
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTimeStamp = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		XSSFCellStyle styleOddDateBold = ExcelUtil.setBoldweight(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
+		XSSFCellStyle styleOddKapiBold = ExcelUtil.setBoldweight(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		XSSFCellStyle styleEvenDateBold = ExcelUtil.setBoldweight(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
+		XSSFCellStyle styleEvenKapiBold = ExcelUtil.setBoldweight(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
+ 		int row = 0;
 		int col = 0;
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
@@ -4286,7 +4288,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Zaman");
 		if (ikRole)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Oluşturma Zamanı");
-
+		boolean renk = true;
 		for (Iterator iterator = puantajList.iterator(); iterator.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 			Personel personel = aylikPuantaj.getPdksPersonel();
@@ -4296,9 +4298,27 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			} catch (Exception e1) {
 				sirket = "" + ortakIslemler.sirketAciklama() + " tanımsız";
 			}
+
 			for (VardiyaGun vg : aylikPuantaj.getVardiyalar()) {
 				if (vg.getVardiya() == null)
 					continue;
+				CellStyle styleDateBold = null, style = null, styleCenter = null, styleDate = null, styleKapi = null, styleTimeStamp = null;
+				if (renk) {
+					styleDateBold = styleOddDateBold;
+					styleDate = styleOddDate;
+					style = styleOdd;
+					styleCenter = styleOddCenter;
+					styleKapi = styleOddKapiBold;
+					styleTimeStamp = styleOddTimeStamp;
+				} else {
+					styleDateBold = styleEvenDateBold;
+					styleDate = styleEvenDate;
+					style = styleEven;
+					styleCenter = styleEvenCenter;
+					styleKapi = styleEvenKapiBold;
+					styleTimeStamp = styleEvenTimeStamp;
+				}
+
 				String izinAciklama = null, izinKisaAciklama = null;
 				if (vg.getIzin() != null) {
 					izinAciklama = vg.getIzin().getIzinTipi().getIzinTipiTanim().getAciklama();
@@ -4312,14 +4332,15 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					hareketList.add(null);
 				}
 				Vardiya vardiya = vg.getVardiya();
-				CellStyle dateStyle = dateBold;
+				CellStyle dateStyle = styleDateBold;
 				String vardiyaAdi = vardiya.isCalisma() ? authenticatedUser.timeFormatla(vardiya.getBasZaman()) + ":" + authenticatedUser.timeFormatla(vardiya.getBitZaman()) : vardiya.getVardiyaAdi();
-				CellStyle kapiStyle = vg.getHareketDurum() ? style : styleKapi;
+				renk = !renk;
 				for (Iterator iter = hareketList.iterator(); iter.hasNext();) {
 					Object object = (Object) iter.next();
 					HareketKGS hareket = object != null ? (HareketKGS) object : null;
 					row++;
 					col = 0;
+
 					try {
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sirket);
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
@@ -4331,12 +4352,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							Cell izinCell = ExcelUtil.getCell(sheet, row, col++, style);
 							AylikPuantaj.baslikCell(factory, drawing, anchor, izinCell, izinKisaAciklama + "\n" + vardiyaAdi, izinAciklama);
 						}
+						CellStyle kapiStyle = vg.getHareketDurum() ? style : styleKapi;
+
 						if (hareket != null) {
 							ExcelUtil.getCell(sheet, row, col++, kapiStyle).setCellValue(hareket.getKapiView().getAciklama());
-							ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(hareket.getZaman());
+							ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getZaman());
 							if (ikRole) {
 								if (hareket.getOlusturmaZamani() != null) {
-									Cell createCell = setCellDate(sheet, row, col++, timeStamp, hareket.getOlusturmaZamani());
+									Cell createCell = setCellDate(sheet, row, col++, styleTimeStamp, hareket.getOlusturmaZamani());
 									if (hareket.getIslem() != null) {
 										PersonelHareketIslem islem = hareket.getIslem();
 										Comment commentGuncelleyen = drawing.createCellComment(anchor);
@@ -4364,8 +4387,29 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						logger.debug(row);
 
 					}
-					dateStyle = date;
+					if (iter.hasNext()) {
+						if (renk) {
+							styleDateBold = styleOddDateBold;
+							styleDate = styleOddDate;
+							style = styleOdd;
+							styleCenter = styleOddCenter;
+							styleKapi = styleOddKapiBold;
+							styleTimeStamp = styleOddTimeStamp;
+						} else {
+							styleDateBold = styleEvenDateBold;
+							styleDate = styleEvenDate;
+							style = styleEven;
+							styleCenter = styleEvenCenter;
+							styleKapi = styleEvenKapiBold;
+							styleTimeStamp = styleEvenTimeStamp;
+						}
+						dateStyle = styleDate;
+						renk = !renk;
+
+					}
+
 				}
+
 				if (sifirla)
 					hareketList = null;
 
@@ -4797,7 +4841,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 					}
 					if (!help) {
-					 
+
 						setCell(sheet, row, col++, styleTutar, aylikPuantaj.getSaatToplami());
 						Cell planlananCell = setCell(sheet, row, col++, styleTutar, aylikPuantaj.getPlanlananSure());
 						if (aylikPuantaj.getCalismaModeliAy() != null && planlananCell != null && aylikPuantaj.getSutIzniDurum().equals(Boolean.FALSE)) {
@@ -4882,7 +4926,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						if (aksamSaat)
 							setCell(sheet, row, col++, styleTutar, denklestirmeVar == false ? 0L : new Double(aylikPuantaj.getAksamVardiyaSaatSayisi()));
 						if (modelGoster) {
-							 
+
 							String modelAciklama = "";
 							if (calismaModeli != null)
 								modelAciklama = calismaModeli.getAciklama();
@@ -4985,8 +5029,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			logger.error("Pdks hata out : " + e.getMessage());
 			baos = null;
 		}
- 		return baos;
- 	}
+		return baos;
+	}
 
 	/**
 	 * @param factory
