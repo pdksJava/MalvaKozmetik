@@ -598,7 +598,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
 		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
- 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		boolean bordroAltAlani = false;
 		for (PersonelDenklestirme mesai : onaysizPersonelDenklestirmeList) {
 			Personel personel = mesai.getPersonel();
@@ -708,11 +708,16 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle stytleNumeric = ExcelUtil.getStyleDataRight(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddNumeric = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenNumeric = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+
 		int row = 0, col = 0;
 
 		boolean bordroAltAlani = false;
@@ -786,6 +791,10 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			Personel personel = mesai.getPersonel();
 			row++;
 			col = 0;
+			CellStyle style = ExcelUtil.getStyleData(wb);
+			CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
+			CellStyle stytleNumeric = ExcelUtil.getStyleDataRight(wb);
+			CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 			if (tesisDurum)
@@ -903,12 +912,26 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 					mesaiMap.put(tanim.getErpKodu(), tanim.getAciklama());
 				}
 				Long perMesaiId = -1L;
+				boolean renk = true;
+				CellStyle style = null, styleCenter = null, styleNumber = null, styleTutar = null;
 				for (PersonelMesai personelMesai : aylikFazlaMesaiTalepler) {
 					Personel personel = personelMesai.getPersonel();
+					if (renk) {
+						styleNumber = styleOddNumeric;
+						styleTutar = styleOddTutar;
+						style = styleOdd;
+						styleCenter = styleOddCenter;
+					} else {
+						styleNumber = styleEvenNumeric;
+						styleTutar = styleEvenTutar;
+						style = styleEven;
+						styleCenter = styleEvenCenter;
+					}
+					renk = !renk;
 					if (!personel.getId().equals(perMesaiId)) {
 						if (perMesaiId.longValue() > 0L) {
 							if (izinTipiPersonelMap.containsKey(perMesaiId))
-								row = izinleriYaz(izinTipiPersonelMap.get(perMesaiId), row, sheetERP, styleCenter, style, tutarStyle);
+								row = izinleriYaz(izinTipiPersonelMap.get(perMesaiId), row, sheetERP, styleCenter, style, styleNumber);
 						}
 						perMesaiId = personel.getId();
 					}
@@ -953,11 +976,12 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 						ExcelUtil.getCell(sheetERP, row, col++, styleCenter).setCellValue("");
 
 					ExcelUtil.getCell(sheetERP, row, col++, style).setCellValue(aciklama);
-					ExcelUtil.getCell(sheetERP, row, col++, tutarStyle).setCellValue(User.getYuvarla(personelMesai.getSure()));
+					Double sure = personelMesai.getSure();
+					ExcelUtil.getCell(sheetERP, row, col++, sure.doubleValue() > sure.longValue() ? styleTutar : styleNumber).setCellValue(User.getYuvarla(personelMesai.getSure()));
 				}
 				if (perMesaiId.longValue() > 0L) {
 					if (izinTipiPersonelMap.containsKey(perMesaiId))
-						row = izinleriYaz(izinTipiPersonelMap.get(perMesaiId), row, sheetERP, styleCenter, style, tutarStyle);
+						row = izinleriYaz(izinTipiPersonelMap.get(perMesaiId), row, sheetERP, styleCenter, style, styleNumber);
 				}
 
 				for (int i = 0; i < col; i++)
@@ -980,10 +1004,10 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 	 * @param sheetERP
 	 * @param styleCenter
 	 * @param style
-	 * @param tutarStyle
+	 * @param styleNumber
 	 * @return
 	 */
-	private int izinleriYaz(Personel personel, int row, Sheet sheetERP, CellStyle styleCenter, CellStyle style, CellStyle tutarStyle) {
+	private int izinleriYaz(Personel personel, int row, Sheet sheetERP, CellStyle styleCenter, CellStyle style, CellStyle styleNumber) {
 		for (Vardiya vardiya : izinTipiVardiyaList) {
 			Integer adet = getVardiyaAdet(personel, vardiya);
 			if (adet != null) {
@@ -1011,7 +1035,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 				String erpKodu = vardiya.getKisaAdi();
 				ExcelUtil.getCell(sheetERP, row, col++, styleCenter).setCellValue(erpKodu);
 				ExcelUtil.getCell(sheetERP, row, col++, style).setCellValue(aciklama);
-				ExcelUtil.getCell(sheetERP, row, col++, tutarStyle).setCellValue(adet);
+				ExcelUtil.getCell(sheetERP, row, col++, styleNumber).setCellValue(adet);
 
 			}
 

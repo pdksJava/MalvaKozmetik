@@ -204,10 +204,15 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		ByteArrayOutputStream baosDosya = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Karti", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDateTime= ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+		
+	 
 		int row = 0, col = 0;
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
@@ -219,11 +224,23 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kapı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Hareket Tipi");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
+		boolean renk = true;
 		for (Iterator iterator = hareketList.iterator(); iterator.hasNext();) {
 			HareketKGS hareket = (HareketKGS) iterator.next();
 			KapiView kapiView = hareket.getKapiView();
 			PersonelView personelView = hareket.getPersonel();
 			Personel personel = personelView.getPdksPersonel();
+			CellStyle style = null, styleCenter = null, styleDateTime = null;
+			if (renk) {
+				styleDateTime = styleOddDateTime;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDateTime = styleEvenDateTime;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			++row;
 			col = 0;
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel != null ? personel.getSirket().getAd() : "");
@@ -233,7 +250,7 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelView.getSicilNo() != null ? personelView.getSicilNo() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kapiView.getAciklama());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(kapiView.getKapi() != null ? kapiView.getKapi().getTipi().getAciklama() : "");
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(hareket.getZaman());
+			ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(hareket.getZaman());
 
 		}
 		for (int i = 0; i < col; i++)

@@ -762,11 +762,16 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Karti", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
-		CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+
 		int row = 0, col = 0;
 		boolean ekSaha1 = false, ekSaha2 = false, ekSaha3 = false, ekSaha4 = false;
 		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(pdksPersonelList, null);
@@ -792,9 +797,22 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Toplamı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kullanılan İzin Toplamı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bakiye İzin Toplamı");
-
+		boolean renk = true;
 		for (TempIzin tempIzin : pdksPersonelList) {
 			Personel personel = tempIzin.getPersonel();
+			CellStyle style = null, styleCenter = null, styleTutar = null, styleDate = null;
+			if (renk) {
+				styleDate = styleOddDate;
+				styleTutar = styleOddTutar;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDate = styleEvenDate;
+				styleTutar = styleEvenTutar;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			++row;
 			col = 0;
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
@@ -808,10 +826,13 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(personel.getIzinHakEdisTarihi());
-			ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(tempIzin.getToplamBakiyeIzin());
-			ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(tempIzin.getKullanilanIzin());
-			ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(tempIzin.getToplamKalanIzin());
+			if (personel.getIzinHakEdisTarihi() != null)
+				ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getIzinHakEdisTarihi());
+			else
+				ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+			ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(tempIzin.getToplamBakiyeIzin());
+			ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(tempIzin.getKullanilanIzin());
+			ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(tempIzin.getToplamKalanIzin());
 		}
 
 		for (int i = 0; i < col; i++)
@@ -832,10 +853,13 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Karti", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0, col = 0;
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
@@ -854,17 +878,29 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İZİN BAŞL. TARİHİ");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İZİN BİTİŞ TARİHİ");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İZİN AÇIKLAMA");
-
+		boolean renk = true;
 		for (TempIzin tempIzin : pdksPersonelList) {
+
 			boolean durum = tempIzin.getPersonel().getSirket().getDepartman().isAdminMi();
 			ArrayList<PersonelIzin> yillikIzinler = (ArrayList<PersonelIzin>) (tempIzin.getYillikIzinler() != null ? PdksUtil.sortListByAlanAdi(tempIzin.getYillikIzinler(), "baslangicZamani", Boolean.FALSE) : null);
 			Date oncekiHakedisTarihi = null;
 			if (yillikIzinler != null && !yillikIzinler.isEmpty()) {
+
 				for (PersonelIzin personelIzin : yillikIzinler) {
 					int yil = PdksUtil.getDateField(personelIzin.getBaslangicZamani(), Calendar.YEAR);
 					if (durum && 1900 > yil)
 						continue;
-
+					CellStyle style = null, styleCenter = null, styleDateTime = null;
+					if (renk) {
+						styleDateTime = styleOddDateTime;
+						style = styleOdd;
+						styleCenter = styleOddCenter;
+					} else {
+						styleDateTime = styleEvenDateTime;
+						style = styleEven;
+						styleCenter = styleEvenCenter;
+					}
+					renk = !renk;
 					col = 0;
 					List<PersonelIzin> harcananlar = null;
 					if (personelIzin.getHarcananIzinler() != null && !personelIzin.getHarcananIzinler().isEmpty()) {
@@ -884,17 +920,17 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					if (harcananlar != null) {
 						for (PersonelIzin personelIzinHarcanan : harcananlar) {
 							row++;
-							col = izinExcelBakiye(sheet, style, styleCenter, timeStamp, row, oncekiHakedisTarihi, personelIzin);
+							col = izinExcelBakiye(sheet, style, styleCenter, styleDateTime, row, oncekiHakedisTarihi, personelIzin);
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelIzinHarcanan.getIzinSuresi());
-							ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(PdksUtil.getDate(personelIzinHarcanan.getBaslangicZamani()));
-							ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(PdksUtil.getDate(personelIzinHarcanan.getBitisZamani()));
+							ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(PdksUtil.getDate(personelIzinHarcanan.getBaslangicZamani()));
+							ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(PdksUtil.getDate(personelIzinHarcanan.getBitisZamani()));
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personelIzinHarcanan.getAciklama());
 							col = 0;
 						}
 
 					} else {
 						row++;
-						col = izinExcelBakiye(sheet, style, styleCenter, timeStamp, row, oncekiHakedisTarihi, personelIzin);
+						col = izinExcelBakiye(sheet, style, styleCenter, styleDateTime, row, oncekiHakedisTarihi, personelIzin);
 						ExcelUtil.getCell(sheet, row, col++, styleCenter);
 						ExcelUtil.getCell(sheet, row, col++, styleCenter);
 						ExcelUtil.getCell(sheet, row, col++, styleCenter);
@@ -1250,7 +1286,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 										tempIzin.setDogumTarihi(dogumTarihi);
 									}
 									tempIzin.setIzinHakEdisTarihi(izinHakEdisTarihi);
-								}  
+								}
 							}
 							try {
 								bakiyeYil = ExcelUtil.getSheetDoubleValue((org.apache.poi.ss.usermodel.Cell) veriMap.get(COL_IZIN_YILI)).intValue();

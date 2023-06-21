@@ -387,10 +387,14 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Vardiya Listesi", false);
 		Sheet sheetHareket = ExcelUtil.createSheet(wb, "Hareket  Listesi", false);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+
 		int row = 0;
 		int col = 0;
 		boolean tesisDurum = ortakIslemler.getListTesisDurum(vardiyaGunList), izinDurum = false, hareketDurum = false, fazlaMesaiDurum = false;
@@ -456,10 +460,21 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("İşlem Zamanı");
 		}
 		int rowHareket = 0, colHareket = 0;
-
+		boolean renk = true;
 		for (VardiyaGun calismaPlani : vardiyaGunList) {
 			row++;
 			col = 0;
+			CellStyle style = null, styleCenter = null, cellStyleDateTime = null;
+			if (renk) {
+				cellStyleDateTime = styleOddDateTime;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				cellStyleDateTime = styleEvenDateTime;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			Personel personel = calismaPlani.getPersonel();
 			List<HareketKGS> hareketler = calismaPlani.getHareketler();
 			Sirket sirket = personel.getSirket();
@@ -483,12 +498,12 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			}
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(vardiya.isCalisma() ? authenticatedUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : "");
 			if (calismaPlani.getGirisHareket() != null)
-				ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(calismaPlani.getGirisHareket().getOrjinalZaman());
+				ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(calismaPlani.getGirisHareket().getOrjinalZaman());
 			else
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 
 			if (calismaPlani.getCikisHareket() != null)
-				ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(calismaPlani.getCikisHareket().getOrjinalZaman());
+				ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(calismaPlani.getCikisHareket().getOrjinalZaman());
 			else
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 			if (izinDurum) {
@@ -524,14 +539,14 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, styleCenter).setCellValue(vardiya.isCalisma() ? authenticatedUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : vardiya.getAdi());
 						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(kapiAciklama);
-						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, timeStamp).setCellValue(hareketKGS.getOrjinalZaman());
+						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, cellStyleDateTime).setCellValue(hareketKGS.getOrjinalZaman());
 						if (manuelGiris) {
 							PersonelHareketIslem islem = hareketKGS.getIslem();
 							if (islem != null) {
 								manuelGiris = true;
 								ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(islem.getOnaylayanUser() != null ? islem.getOnaylayanUser().getAdSoyad() : "");
 								if (islem.getOlusturmaTarihi() != null)
-									ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, timeStamp).setCellValue(islem.getOlusturmaTarihi());
+									ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, cellStyleDateTime).setCellValue(islem.getOlusturmaTarihi());
 								else
 									ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue("");
 							} else {

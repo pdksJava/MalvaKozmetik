@@ -1587,11 +1587,17 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		Workbook wb = new XSSFWorkbook();
 		ByteArrayOutputStream baos = null;
 		Sheet sheet = ExcelUtil.createSheet(wb, yil + " fazla calisma", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle styleNumber = ExcelUtil.getCellStyleTutar(wb);
-		styleNumber.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTutar =ExcelUtil.setAlignment( ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER) ;
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTutar =ExcelUtil.setAlignment(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER) ;
+		
+		
+		 
+	 
 
 		int row = 0;
 		int col = 0;
@@ -1611,11 +1617,23 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Fazla Çalışma Saat");
 		if (maasKesintiGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.eksikCalismaAciklama());
+		boolean renk = true;
 		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 			Personel personel = aylikPuantaj.getPdksPersonel();
 			row++;
 			col = 0;
+			CellStyle style = null, styleCenter = null, styleTutar = null;
+			if (renk) {
+				styleTutar = styleOddTutar;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleTutar = styleEvenTutar;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			try {
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(aylikPuantaj.getDenklestirmeAy() != null ? aylikPuantaj.getDenklestirmeAy().getAyAdi() : "");
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
@@ -1632,12 +1650,12 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				else
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 				if (aylikPuantaj.getFazlaMesaiSure() > 0.0)
-					ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(aylikPuantaj.getFazlaMesaiSure());
+					ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(aylikPuantaj.getFazlaMesaiSure());
 				else
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 				if (maasKesintiGoster) {
 					if (aylikPuantaj.getEksikCalismaSure() > 0.0)
-						ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(aylikPuantaj.getEksikCalismaSure());
+						ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(aylikPuantaj.getEksikCalismaSure());
 					else
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 				}

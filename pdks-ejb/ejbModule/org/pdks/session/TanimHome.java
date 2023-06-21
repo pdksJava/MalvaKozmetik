@@ -136,9 +136,13 @@ public class TanimHome extends EntityHome<Tanim> implements Serializable {
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, sayfaAdi, Boolean.TRUE);
-		CellStyle styleCenter =  ExcelUtil.getStyleDataCenter(wb);
-		CellStyle styleGenel =  ExcelUtil.getStyleData(wb);
- 		CellStyle header =  ExcelUtil.getStyleHeader(wb);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddNumber = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenNumber = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
 		int col = 0, row = 0;
 		ExcelUtil.getCell(sheet, row, col, header).setCellValue("Kodu");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("ERP Kodu");
@@ -147,16 +151,28 @@ public class TanimHome extends EntityHome<Tanim> implements Serializable {
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Durum");
 		if (authenticatedUser.isAdmin())
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("ID");
+		boolean renk = true;
 		for (Tanim tanim : list) {
 			++row;
 			col = 0;
+			CellStyle style = null, styleCenter = null, styleNumber = null;
+			if (renk) {
+				styleNumber = styleOddNumber;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleNumber = styleEvenNumber;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			ExcelUtil.getCell(sheet, row, col, styleCenter).setCellValue(tanim.getKodu());
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(tanim.getErpKodu());
-			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(tanim.getAciklamatr());
-			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(tanim.getAciklamaen());
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(tanim.getAciklamatr());
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(tanim.getAciklamaen());
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(User.getDurumAciklamaAna(tanim.getDurum()));
 			if (authenticatedUser.isAdmin())
-				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(tanim.getId());
+				ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tanim.getId());
 		}
 		try {
 

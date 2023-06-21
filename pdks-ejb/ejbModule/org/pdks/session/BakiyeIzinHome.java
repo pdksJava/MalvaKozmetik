@@ -312,10 +312,14 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 		String izinAciklama = izinTipiTanim.getAciklama();
 		String adi = PdksUtil.setTurkishStr("Izin Listesi");
 		Sheet sheet = ExcelUtil.createSheet(wb, adi.length() <= 30 ? adi : adi.substring(0, 30), false);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-		CellStyle styleNumber = ExcelUtil.getCellStyleTutar(wb);
+
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		int row = 0;
 		int col = 0;
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
@@ -337,10 +341,22 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Toplamı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kullanılan İzin Toplamı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kalan İzin");
+		boolean renk = true;
 		for (TempIzin tempIzin : pdksPersonelList) {
 			row++;
 			Personel personel = tempIzin.getPersonel();
 			col = 0;
+			CellStyle style = null, styleCenter = null, styleTutar = null;
+			if (renk) {
+				styleTutar = styleOddTutar;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleTutar = styleEvenTutar;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
 			if (ekSahalar != null) {
 				for (int i = 1; i <= 4; i++) {
@@ -359,9 +375,9 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izinAciklama);
-			ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tempIzin.getToplamBakiyeIzin());
-			ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tempIzin.getKullanilanIzin());
-			ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tempIzin.getToplamKalanIzin());
+			ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(tempIzin.getToplamBakiyeIzin());
+			ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(tempIzin.getKullanilanIzin());
+			ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(tempIzin.getToplamKalanIzin());
 		}
 		for (int i = 0; i < col; i++)
 			sheet.autoSizeColumn(i);

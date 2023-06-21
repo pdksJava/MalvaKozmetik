@@ -3192,9 +3192,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Personel WebService Listesi", false);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle cellStyleDate = ExcelUtil.getCellStyleDate(wb);
 		int row = 0;
 		int col = 0;

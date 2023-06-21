@@ -286,11 +286,17 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Rapor", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle styleNumber = ExcelUtil.getCellStyleTutar(wb);
- 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
+
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+
 		int row = 0, col = 0;
 		boolean ekSaha1 = false, ekSaha2 = false, ekSaha3 = true, ekSaha4 = false;
 		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(holdingIzinList, null);
@@ -307,7 +313,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		}
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
- 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kidemBasTarihiAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Doğum Tarihi");
@@ -329,17 +335,31 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bakiye İzin Toplamı");
 		if (suaVar)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bu Yıl Hakkedilen ŞUA");
-
+		boolean renk = true;
 		for (HoldingIzin tempIzin : holdingIzinList) {
 			Personel personel = tempIzin.getPersonel();
 			row++;
 			col = 0;
+ 			CellStyle style = null, styleCenter = null, styleNumber = null, styleDate = null;
+			if (renk) {
+				styleDate = styleOddDate;
+				styleNumber = styleOddTutar;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDate = styleEvenDate;
+				styleNumber = styleEvenTutar;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
+
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(personel.getIzinHakEdisTarihi());
+			ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getIzinHakEdisTarihi());
 			if (personel.getDogumTarihi() != null)
-				ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(personel.getDogumTarihi());
+				ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getDogumTarihi());
 			else
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
 			if (istenAyrilanEkle) {
@@ -347,7 +367,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 				if (calisiyor)
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 				else
-					ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(personel.getIstenAyrilisTarihi());
+					ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getIstenAyrilisTarihi());
 			}
 			if (ekSaha1)
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha1() != null ? personel.getEkSaha1().getAciklama() : "");

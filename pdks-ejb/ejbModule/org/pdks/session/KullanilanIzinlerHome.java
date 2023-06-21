@@ -140,9 +140,13 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izinler", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
+	 	CellStyle header = ExcelUtil.getStyleHeader(wb);
+ 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDateTime  = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDateTime  = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0;
 		int col = 0;
 		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(personelIzinList, null);
@@ -170,12 +174,24 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Son İşlem Tarihi");
 		if (islemTipi != null && islemTipi.equals("B"))
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onay Son Durum");
+		boolean renk = true;
 		for (Iterator iter = personelIzinList.iterator(); iter.hasNext();) {
 			PersonelIzin izin = (PersonelIzin) iter.next();
 			row++;
 			col = 0;
+			CellStyle style = null, styleCenter = null, styleDateTime = null;
+			if (renk) {
+				styleDateTime = styleOddDateTime;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDateTime = styleEvenDateTime;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			Personel personel = izin.getIzinSahibi();
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSicilNo());
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 			String sirket = "";
 			try {
@@ -194,12 +210,12 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izin.getIzinTipiAciklama());
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(izin.getBaslangicZamani());
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(izin.getBitisZamani());
+			ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(izin.getBaslangicZamani());
+			ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(izin.getBitisZamani());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izin.getSureAciklama());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izin.getAciklama());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izin.getSonIslemYapan().getAdSoyad());
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(izin.getSonIslemTarihi());
+			ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(izin.getSonIslemTarihi());
 			if (islemTipi != null && islemTipi.equals("B"))
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(izin.getIzinDurumuAciklama(ortakIslemler, session));
 		}
@@ -383,10 +399,16 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "SSK Izin Rapor", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
+ 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDate  = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDate  = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		
+		
+
 		int row = 0, col = 0;
 		boolean ekSaha1 = false, ekSaha2 = false, ekSaha3 = false, ekSaha4 = false;
 		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(personelIzinList, null);
@@ -416,10 +438,22 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Veren Hekim Adı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Açıklama");
 
+		boolean renk = true;
 		for (PersonelIzin izin : personelIzinList) {
 			Personel personel = izin.getIzinSahibi();
 			++row;
 			col = 0;
+			CellStyle style = null, styleCenter = null, styleDate = null;
+			if (renk) {
+				styleDate = styleOddDate;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDate = styleEvenDate;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			IzinIstirahat istirahat = getIzinIstirahat(izin.getId());
 			if (istirahat == null)
 				istirahat = new IzinIstirahat();
@@ -434,8 +468,8 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 			if (ekSaha4)
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(izin.getBaslangicZamani());
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(izin.getBitisZamani());
+			ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(izin.getBaslangicZamani());
+			ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(izin.getBitisZamani());
 			String sure = "";
 			try {
 				sure = izin.getSureAciklama();

@@ -136,10 +136,14 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(date, "d MMMMM yyyy") + " Devamsizlik Raporu", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+
 		CreationHelper factory = wb.getCreationHelper();
 		Drawing drawing = sheet.createDrawingPatriarch();
 		ClientAnchor anchor = factory.createClientAnchor();
@@ -173,10 +177,22 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				hareketler = new ArrayList<HareketKGS>();
 				hareketler.add(null);
 			}
+			boolean renk = true;
 			for (Object hareket : hareketler) {
 				HareketKGS hareketKGS = hareket != null ? (HareketKGS) hareket : null;
 				row++;
 				col = 0;
+				CellStyle style = null, styleCenter = null, cellStyleDateTime = null;
+				if (renk) {
+					cellStyleDateTime = styleOddDateTime;
+					style = styleOdd;
+					styleCenter = styleOddCenter;
+				} else {
+					cellStyleDateTime = styleEvenDateTime;
+					style = styleEven;
+					styleCenter = styleEvenCenter;
+				}
+				renk = !renk;
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
 				if (tesisDurum)
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
@@ -197,11 +213,11 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				commentVardiya.setString(strVardiya);
 				vardiyaCell.setCellComment(commentVardiya);
 				if (vardiyaGun.getGirisHareketleri() != null)
-					ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(vardiyaGun.getGirisHareket().getOrjinalZaman());
+					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(vardiyaGun.getGirisHareket().getOrjinalZaman());
 				else
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 				if (vardiyaGun.getCikisHareketleri() != null)
-					ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(vardiyaGun.getCikisHareket().getOrjinalZaman());
+					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(vardiyaGun.getCikisHareket().getOrjinalZaman());
 				else
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 				if (aciklamaGoster) {
@@ -220,7 +236,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				if (hareketleriGoster) {
 					if (hareketKGS != null) {
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareketKGS.getKapiView().getKapi().getAciklama());
-						ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(hareketKGS.getZaman());
+						ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(hareketKGS.getZaman());
 					} else {
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
