@@ -232,9 +232,12 @@ public class OrtakIslemler implements Serializable {
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin WebService Listesi", false);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+
 		int row = 0;
 		int col = 0;
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Açıklama");
@@ -248,11 +251,21 @@ public class OrtakIslemler implements Serializable {
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Referans ERP No");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süre Birimi");
 		String pattern = "yyyy-MM-dd HH:mm";
+		boolean renk = true;
 		for (PersonelIzin personelIzin : izinList) {
 			if (personelIzin.getReferansERP() == null)
 				continue;
 			++row;
 			col = 0;
+			CellStyle style = null, styleCenter = null;
+			if (renk) {
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			String aciklama = personelIzin.getAciklama();
 			int index = aciklama.lastIndexOf("(");
 			if (index > 0)

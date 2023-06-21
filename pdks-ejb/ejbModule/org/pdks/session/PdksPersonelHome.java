@@ -3193,9 +3193,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Personel WebService Listesi", false);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle cellStyleDate = ExcelUtil.getCellStyleDate(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+
 		int row = 0;
 		int col = 0;
 		for (Iterator iterator = dosyaTanimList.iterator(); iterator.hasNext();) {
@@ -3203,9 +3207,20 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			Tanim tanim = (Tanim) liste.getValue();
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(tanim.getAciklama());
 		}
-
+		boolean renk = true;
 		for (Iterator iter = personelList.iterator(); iter.hasNext();) {
 			PersonelView personelView = (PersonelView) iter.next();
+			CellStyle style = null, styleCenter = null, styleDate = null;
+			if (renk) {
+				styleDate = styleOddDate;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDate = styleEvenDate;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			row++;
 			col = 0;
 			Personel personel = personelView.getPdksPersonel();
@@ -3291,27 +3306,27 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(String.valueOf(personel.isSanalPersonelMi()));
 						else if (kodu.equals("ISE_BASLAMA_TARIHI")) {
 							if (personel.getIseBaslamaTarihi() != null)
-								ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getIseBaslamaTarihi());
+								ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getIseBaslamaTarihi());
 							else
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						} else if (kodu.equals("KIDEM_TARIHI")) {
 							if (personel.getIzinHakEdisTarihi() != null)
-								ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getIzinHakEdisTarihi());
+								ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getIzinHakEdisTarihi());
 							else
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						} else if (kodu.equals("ISTEN_AYRILMA_TARIHI")) {
 							if (personel.getIstenAyrilisTarihi() != null)
-								ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getIstenAyrilisTarihi());
+								ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getIstenAyrilisTarihi());
 							else
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						} else if (kodu.equals("DOGUM_TARIHI")) {
 							if (personel.getDogumTarihi() != null)
-								ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getDogumTarihi());
+								ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getDogumTarihi());
 							else
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						} else if (kodu.equals("GRUBA_GIRIS_TARIHI")) {
 							if (personel.getGrubaGirisTarihi() != null)
-								ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getGrubaGirisTarihi());
+								ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getGrubaGirisTarihi());
 							else
 								ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						}
