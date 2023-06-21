@@ -146,9 +146,11 @@ if (typeof window.event == 'undefined'){
 				#{authenticatedUser.timeLongFormatla(authenticatedUser.menuItemTime.lastTime)}</SPAN>
 		</rich:toolTip>
 	</ui:fragment>
-	<div class="footer">
-		<a>Powered by HASAN SAYAR</a>
-	</div>
+	<ui:fragment rendered="#{ortakIslemler.getParameterKey('poweredBy')!=''}">
+		<div class="footer">
+			<a>Powered by #{ortakIslemler.getParameterKey('poweredBy')}</a>
+		</div>
+	</ui:fragment>
 	<a4j:status id="ajaxStatus" onstart="#{rich:component('wait')}.show()" onstop="#{rich:component('wait')}.hide()" />
 	<rich:modalPanel id="wait" style="background: #{startupAction.projeHeaderBackgroundColor};" autosized="true" width="200" height="160"
 		moveable="false" resizeable="false">

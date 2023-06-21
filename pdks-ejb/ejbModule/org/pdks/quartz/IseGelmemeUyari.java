@@ -994,20 +994,27 @@ public class IseGelmemeUyari implements Serializable {
 					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>İzin Durum</b></TH>");
 				sb.append("</TR></THEAD><TBODY>");
 				yeniList.addAll(sirketSubeList);
-				boolean renk = true;
+				Long id = null;
+				boolean renk = false;
 				for (Iterator iterator2 = sirketSubeList.iterator(); iterator2.hasNext();) {
 					VardiyaGun vg = (VardiyaGun) iterator2.next();
 					Personel personel = vg.getPersonel();
+					boolean degisti = false;
+					if (id == null || !personel.getId().equals(id)) {
+						id = personel.getId();
+						degisti = true;
+					}
+					renk = !renk;
 					String classTR = "class=\"" + (renk ? "odd" : "even") + "\"";
 					sb.append("<TR " + classTR + ">");
 					if (hariciPersonelPlandaVar)
-						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "") + "</td>");
+						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getPdksYonetici() != null && degisti ? personel.getPdksYonetici().getAdSoyad() : "") + "</td>");
 					if (bolumVar)
-						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "") + "</td>");
+						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null && degisti ? personel.getEkSaha3().getAciklama() : "") + "</td>");
 					if (altBolumVar)
-						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "") + "</td>");
-					sb.append("<td nowrap style=\"border: 1px solid;\">" + personel.getAdSoyad() + "</td>");
-					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + personel.getSicilNo() + "</td>");
+						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha4() != null && degisti ? personel.getEkSaha4().getAciklama() : "") + "</td>");
+					sb.append("<td nowrap style=\"border: 1px solid;\">" + (degisti ? personel.getAdSoyad() : "") + "</td>");
+					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + (degisti ? personel.getSicilNo() : "") + "</td>");
 					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + vg.getVardiyaZamanAdi() + "</td>");
 					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + (vg.getIlkGiris() != null ? user.getTarihFormatla(vg.getIlkGiris().getOrjinalZaman(), PdksUtil.getDateFormat() + " H:mm") : "") + "</td>");
 					sb.append("<td align=\"center\" style=\"border: 1px solid;\">" + (vg.getSonCikis() != null ? user.getTarihFormatla(vg.getSonCikis().getOrjinalZaman(), PdksUtil.getDateFormat() + " H:mm") : "") + "</td>");
@@ -1036,7 +1043,6 @@ public class IseGelmemeUyari implements Serializable {
 					}
 
 					sb.append("</TR>");
-					renk = !renk;
 
 				}
 				sb.append("</TBODY></TABLE><BR/><BR/>");

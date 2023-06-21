@@ -65,9 +65,11 @@ if (typeof window.event == 'undefined'){
 		<ui:insert name="body" />
 	</div>
 
-	<div class="footer">
-		Powered by <a href="http://www.bilisimanadolu.com">Anadolu Bilişim Hizmetleri Corp</a>
-	</div>
+	<ui:fragment rendered="#{ortakIslemler.getParameterKey('poweredBy')!=''}">
+		<div class="footer">
+			<a>Powered by #{ortakIslemler.getParameterKey('poweredBy')}</a>
+		</div>
+	</ui:fragment>
 
 
 </body>
