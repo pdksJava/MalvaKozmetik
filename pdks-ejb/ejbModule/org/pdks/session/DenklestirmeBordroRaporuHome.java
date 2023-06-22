@@ -694,12 +694,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
 			Workbook wb = new XSSFWorkbook();
 			sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
+			XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+			XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 			CellStyle style = ExcelUtil.getStyleData(wb);
 			CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-			XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 			tutarStyle = ExcelUtil.getCellStyleTutar(wb);
 			numberStyle = ExcelUtil.getCellStyleTutar(wb);
-			XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 			headerSiyah.getFont().setColor(ExcelUtil.getXSSFColor(255, 255, 255));
 			XSSFCellStyle headerSaat = (XSSFCellStyle) headerSiyah.clone();
 			XSSFCellStyle headerIzin = (XSSFCellStyle) headerSiyah.clone();

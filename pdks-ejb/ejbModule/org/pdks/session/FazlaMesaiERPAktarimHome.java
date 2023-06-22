@@ -596,9 +596,11 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		boolean bordroAltAlani = false;
 		for (PersonelDenklestirme mesai : onaysizPersonelDenklestirmeList) {
 			Personel personel = mesai.getPersonel();
@@ -634,9 +636,19 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		sheet.setColumnWidth(col++, (short) (2500 * katsayi));
 
 		col = 0;
+		boolean renk = true;
 		for (PersonelDenklestirme mesai : onaysizPersonelDenklestirmeList) {
 			row++;
 			col = 0;
+			CellStyle style = null, styleCenter = null;
+			if (renk) {
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			Personel personel = mesai.getPersonel();
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());

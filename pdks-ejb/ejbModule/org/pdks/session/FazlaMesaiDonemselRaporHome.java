@@ -350,21 +350,18 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, ("Fazla Mesai " + donem).trim(), Boolean.TRUE);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
-
-		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+ 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
- 
-		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
-
-		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
+ 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
+ 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleEgitim = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleOff = ExcelUtil.getStyleDataCenter(wb);
 		ExcelUtil.setFontColor(styleOff, Color.WHITE);
 		CellStyle styleIzin = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 

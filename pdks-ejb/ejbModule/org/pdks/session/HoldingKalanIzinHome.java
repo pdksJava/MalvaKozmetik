@@ -287,8 +287,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Rapor", Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-
-		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+ 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);

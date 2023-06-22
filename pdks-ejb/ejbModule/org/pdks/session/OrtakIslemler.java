@@ -10793,8 +10793,7 @@ public class OrtakIslemler implements Serializable {
 		}
 		Sheet sheet = ExcelUtil.createSheet(wb, "Personel Listesi", false);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-
-		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+ 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);

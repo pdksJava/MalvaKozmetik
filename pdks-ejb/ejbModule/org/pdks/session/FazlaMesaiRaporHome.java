@@ -20,7 +20,6 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -31,7 +30,6 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -58,7 +56,6 @@ import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeTasiyici;
-import org.pdks.entity.PersonelHareketIslem;
 import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
@@ -1204,176 +1201,6 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		return "";
 	}
 
-	public String aylikVardiyaHareketExcel() {
-		try {
-			List<AylikPuantaj> list = new ArrayList<AylikPuantaj>();
-			for (Iterator iter = aylikPuantajList.iterator(); iter.hasNext();) {
-				AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
-				if (aylikPuantaj.getHareketler() != null)
-					list.add(aylikPuantaj);
-
-			}
-			if (!list.isEmpty()) {
-				String gorevYeriAciklama = getExcelAciklama();
-				ByteArrayOutputStream baosDosya = aylikVardiyaHareketExcelDevam(list);
-				if (baosDosya != null) {
-					String dosyaAdi = "AylikCalismaHareket_" + gorevYeriAciklama + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
-					PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Pdks hata in : \n");
-			e.printStackTrace();
-			logger.error("Pdks hata out : " + e.getMessage());
-
-		}
-
-		return "";
-	}
-
-	/**
-	 * @param puantajList
-	 * @return
-	 */
-	private ByteArrayOutputStream aylikVardiyaHareketExcelDevam(List<AylikPuantaj> puantajList) {
-
-		ByteArrayOutputStream baos = null;
-		Workbook wb = new XSSFWorkbook();
-		try {
-			aylikVardiyaHareketExcelOlustur(puantajList, wb);
-			baos = new ByteArrayOutputStream();
-			wb.write(baos);
-		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-			baos = null;
-		}
-
-		return baos;
-	}
-
-	/**
-	 * @param puantajList
-	 * @param wb
-	 */
-	private void aylikVardiyaHareketExcelOlustur(List<AylikPuantaj> puantajList, Workbook wb) {
-		Sheet sheet = ExcelUtil.createSheet(wb, "Tüm Hareketler", Boolean.TRUE);
-		CreationHelper factory = wb.getCreationHelper();
-		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
-		CellStyle style = ExcelUtil.getStyleData(wb);
-		CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
-		CellStyle date = ExcelUtil.getCellStyleDate(wb);
-		XSSFCellStyle dateBold = (XSSFCellStyle) ExcelUtil.getCellStyleDate(wb);
-		XSSFFont fontBold = dateBold.getFont();
-		XSSFCellStyle styleKapi = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-		XSSFFont fontKapiBold = styleKapi.getFont();
-		fontKapiBold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		fontBold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		int row = 0;
-		int col = 0;
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarihi");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kapi");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Zaman");
-		if (authenticatedUser.isAdmin() || authenticatedUser.isIK())
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Oluşturma Zamanı");
-
-		for (Iterator iterator = puantajList.iterator(); iterator.hasNext();) {
-			AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
-			Personel personel = aylikPuantaj.getPdksPersonel();
-			String sirket = "";
-			try {
-				sirket = personel.getSirket().getAd();
-			} catch (Exception e1) {
-				sirket = "" + ortakIslemler.sirketAciklama() + " tanımsız";
-			}
-			for (VardiyaGun vg : aylikPuantaj.getVardiyalar()) {
-				if (vg.getVardiya() == null)
-					continue;
-				String izinAciklama = null, izinKisaAciklama = null;
-				if (vg.getIzin() != null) {
-					izinAciklama = vg.getIzin().getIzinTipi().getIzinTipiTanim().getAciklama();
-					izinKisaAciklama = vg.getIzin().getIzinTipi().getKisaAciklama();
-				}
-
-				List<HareketKGS> hareketList = vg.getHareketler();
-				boolean sifirla = hareketList == null;
-				if (sifirla) {
-					hareketList = new ArrayList<HareketKGS>();
-					hareketList.add(null);
-				}
-				Vardiya vardiya = vg.getVardiya();
-				CellStyle dateStyle = dateBold;
-				String vardiyaAdi = vardiya.isCalisma() ? authenticatedUser.timeFormatla(vardiya.getBasZaman()) + ":" + authenticatedUser.timeFormatla(vardiya.getBitZaman()) : vardiya.getVardiyaAdi();
-				CellStyle kapiStyle = vg.getHareketDurum() ? style : styleKapi;
-				for (Iterator iter = hareketList.iterator(); iter.hasNext();) {
-					Object object = (Object) iter.next();
-					HareketKGS hareket = object != null ? (HareketKGS) object : null;
-					row++;
-					col = 0;
-					try {
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sirket);
-						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
-						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
-						ExcelUtil.getCell(sheet, row, col++, dateStyle).setCellValue(vg.getVardiyaDate());
-						if (izinKisaAciklama == null)
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(vardiyaAdi);
-						else {
-							Cell izinCell = ExcelUtil.getCell(sheet, row, col++, style);
-							AylikPuantaj.baslikCell(factory, drawing, anchor, izinCell, izinKisaAciklama + "\n" + vardiyaAdi, izinAciklama);
-						}
-						if (hareket != null) {
-							ExcelUtil.getCell(sheet, row, col++, kapiStyle).setCellValue(hareket.getKapiView().getAciklama());
-							ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(hareket.getZaman());
-							if (authenticatedUser.isAdmin() || authenticatedUser.isIK()) {
-								if (hareket.getOlusturmaZamani() != null) {
-									Cell createCell = setCellDate(sheet, row, col++, timeStamp, hareket.getOlusturmaZamani());
-									if (hareket.getIslem() != null) {
-										PersonelHareketIslem islem = hareket.getIslem();
-										Comment commentGuncelleyen = drawing.createCellComment(anchor);
-										String title = "Ekleyen : " + islem.getOnaylayanUser().getAdSoyad();
-										if (islem.getNeden() != null)
-											title += "\nNeden : " + islem.getNeden().getAciklama();
-										RichTextString str1 = factory.createRichTextString(title);
-										commentGuncelleyen.setString(str1);
-										createCell.setCellComment(commentGuncelleyen);
-									}
-								} else
-									ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-
-							}
-						} else {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-						}
-
-					} catch (Exception e) {
-						logger.error("PDKS hata in : \n");
-						e.printStackTrace();
-						logger.error("PDKS hata out : " + e.getMessage());
-						logger.debug(row);
-
-					}
-					dateStyle = date;
-				}
-				if (sifirla)
-					hareketList = null;
-
-			}
-
-		}
-		for (int i = 0; i < col; i++)
-			sheet.autoSizeColumn(i);
-	}
-
 	private String getExcelAciklama() {
 		String gorevYeriAciklama = "";
 		if (gorevYeri != null)
@@ -1461,17 +1288,14 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Dönemsel Çalışma", Boolean.TRUE);
-
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
-		CellStyle styleTutarEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb);
-		styleTutarEvenDay.setAlignment(CellStyle.ALIGN_CENTER);
-		CellStyle styleTutarOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb);
-		styleTutarOddDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarEvenDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarOddDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
 		CellStyle styleTutarDay = null;
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
 
 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
@@ -1656,8 +1480,6 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 			for (int i = 0; i <= col; i++)
 				sheet.autoSizeColumn(i);
-			if (ortakIslemler.getParameterKey("aylikVardiyaHareketExcelOlustur").equals("1"))
-				aylikVardiyaHareketExcelOlustur(list, wb);
 			baos = new ByteArrayOutputStream();
 			wb.write(baos);
 		} catch (Exception e) {

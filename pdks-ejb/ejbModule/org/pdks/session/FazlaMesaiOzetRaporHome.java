@@ -1578,6 +1578,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " Fazla Mesai", Boolean.TRUE);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
@@ -1590,15 +1591,12 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 		CellStyle styleDay = null, styleGenel = null, styleTutar = null, styleStrDay = null;
 		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-
-		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
-
-		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
+ 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
+ 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleEgitim = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleOff = ExcelUtil.getStyleDataCenter(wb);
 		ExcelUtil.setFontColor(styleOff, Color.WHITE);
 		CellStyle styleIzin = ExcelUtil.getStyleDataCenter(wb);
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 

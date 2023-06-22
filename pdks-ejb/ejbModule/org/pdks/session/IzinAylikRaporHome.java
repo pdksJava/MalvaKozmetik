@@ -212,11 +212,11 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 
 	public String excelAktar() {
 		try {
- 			ByteArrayOutputStream baosDosya = excelDevam();
+			ByteArrayOutputStream baosDosya = excelDevam();
 			if (baosDosya != null) {
 				String dosya = PdksUtil.convertToDateString(basDate, "MMMMM-yyyy") + "_İzinRaporu.xlsx";
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosya);
- 			}
+			}
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
@@ -234,8 +234,11 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basDate, "MMMMM-yyyy") + " Aylik Izin Raporu"), Boolean.TRUE);
 
-		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		int row = 0;
 		ExcelUtil.getCell(sheet, row, 0, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, 1, header).setCellValue(ortakIslemler.personelNoAciklama());
@@ -246,17 +249,25 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 			ExcelUtil.getCell(sheet, row, ++sayac, header).setCellValue(gun.toString());
 
 		}
-
+		boolean renk = true;
 		for (Iterator iter = pdksPersonelList.iterator(); iter.hasNext();) {
 			Personel personel = (Personel) iter.next();
 			row++;
-
+			CellStyle style = null, styleCenter = null;
+			if (renk) {
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
 			try {
 				if (personel.getId() != null)
 					ExcelUtil.getCell(sheet, row, 0, style).setCellValue(personel.getAdSoyad());
 				else
 					ExcelUtil.getCell(sheet, row, 0, header).setCellValue(personel.getEkSaha() != null ? personel.getEkSaha().getAciklama() : "");
-				ExcelUtil.getCell(sheet, row, 1, style).setCellValue(personel.getSicilNo());
+				ExcelUtil.getCell(sheet, row, 1, styleCenter).setCellValue(personel.getSicilNo());
 				String sirket = "";
 				try {
 					if ((personel.getId() != null))

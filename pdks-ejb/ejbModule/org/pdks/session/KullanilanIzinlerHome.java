@@ -406,10 +406,7 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEvenDate  = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
-		
-		
-
-		int row = 0, col = 0;
+ 		int row = 0, col = 0;
 		boolean ekSaha1 = false, ekSaha2 = false, ekSaha3 = false, ekSaha4 = false;
 		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(personelIzinList, null);
 		if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) {

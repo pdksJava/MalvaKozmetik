@@ -312,8 +312,7 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 		String izinAciklama = izinTipiTanim.getAciklama();
 		String adi = PdksUtil.setTurkishStr("Izin Listesi");
 		Sheet sheet = ExcelUtil.createSheet(wb, adi.length() <= 30 ? adi : adi.substring(0, 30), false);
-
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
+ 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);

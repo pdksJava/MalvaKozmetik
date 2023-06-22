@@ -531,20 +531,14 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 		try {
 			Workbook wb = new XSSFWorkbook();
 			Sheet sheet = ExcelUtil.createSheet(wb, "FazlaMesaiIzinRaporu " + PdksUtil.convertToDateString(date, "yyyyMMdd"), Boolean.TRUE);
-	 		CellStyle header =  ExcelUtil.getStyleHeader(wb);
-			XSSFCellStyle styleOdd =  (XSSFCellStyle) ExcelUtil.getStyleData(wb);
- 			styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-			CellStyle styleOddTutar =  (CellStyle) styleOdd.clone();
-			styleOddTutar.setAlignment(CellStyle.ALIGN_RIGHT);
-			XSSFCellStyle styleOddCenter =  (XSSFCellStyle) styleOdd.clone();
-			styleOddCenter.setAlignment(CellStyle.ALIGN_CENTER);
-			XSSFCellStyle styleEven =  (XSSFCellStyle) ExcelUtil.getStyleData(wb);
- 			ExcelUtil.setFillForegroundColor(styleEven,219, 248, 219 );
-			XSSFCellStyle styleEvenTutar =  (XSSFCellStyle) styleEven.clone();
-			styleEvenTutar.setAlignment(CellStyle.ALIGN_RIGHT);
-			XSSFCellStyle styleEvenCenter = (XSSFCellStyle) styleEven.clone();
-			styleEvenCenter.setAlignment(CellStyle.ALIGN_CENTER);
-
+			CellStyle header = ExcelUtil.getStyleHeader(wb);
+			XSSFCellStyle styleOdd = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
+			styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
+	 		XSSFCellStyle styleOddCenter = (XSSFCellStyle) ExcelUtil.setAlignment((CellStyle) styleOdd.clone(), CellStyle.ALIGN_CENTER);
+			XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
+			ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
+ 			XSSFCellStyle styleEvenCenter = (XSSFCellStyle) ExcelUtil.setAlignment((CellStyle) styleEven.clone(),CellStyle.ALIGN_CENTER);
+ 
 			int col = 0, row = 0;
 
 			if (izinVardiyaGunList.size() > 0) {

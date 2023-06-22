@@ -36,7 +36,6 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -1746,10 +1745,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleTutarEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb);
-		styleTutarEvenDay.setAlignment(CellStyle.ALIGN_CENTER);
-		CellStyle styleTutarOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb);
-		styleTutarOddDay.setAlignment(CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarEvenDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarOddDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
 		CellStyle styleTutarDay = null, styleGenelCenter = null, styleGenel = null, styleGenelLeft = null;
 		XSSFCellStyle styleTatil = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
 
@@ -6878,10 +6875,18 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Fazla Mesai Talep", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle cellStyleDateTime = ExcelUtil.getCellStyleTimeStamp(wb);
-		CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleOddNumber = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleEvenNumber = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+
 		int row = 0;
 		int col = 0;
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
@@ -6900,33 +6905,49 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onay'a Gönderme Zamanı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onaylayan");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onaylama Zamanı");
-
+		boolean renk = true;
 		for (Iterator iter = aylikFazlaMesaiTalepler.iterator(); iter.hasNext();) {
 			FazlaMesaiTalep fmt = (FazlaMesaiTalep) iter.next();
 			Personel personel = fmt.getVardiyaGun().getPersonel();
 			Sirket sirket = personel.getSirket();
 			++row;
 			col = 0;
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSicilNo());
+			CellStyle style = null, styleCenter = null, styleTutar = null, styleNumber = null, styleDateTime = null;
+			if (renk) {
+				styleDateTime = styleOddDateTime;
+				styleNumber = styleOddNumber;
+				styleTutar = styleOddTutar;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDateTime = styleEvenDateTime;
+				styleNumber = styleEvenNumber;
+				styleTutar = styleEvenTutar;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sirket.getAd());
 			if (tesisDurum)
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-			ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(fmt.getBaslangicZamani());
-			ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(fmt.getBitisZamani());
-			ExcelUtil.getCell(sheet, row, col++, tutarStyle).setCellValue(fmt.getMesaiSuresi());
+			ExcelUtil.getCell(sheet, row, col++, styleEvenDateTime).setCellValue(fmt.getBaslangicZamani());
+			ExcelUtil.getCell(sheet, row, col++, styleEvenDateTime).setCellValue(fmt.getBitisZamani());
+			Double sure = fmt.getMesaiSuresi();
+			ExcelUtil.getCell(sheet, row, col++, sure.doubleValue() > sure.doubleValue() ? styleTutar : styleNumber).setCellValue(sure);
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(fmt.getMesaiNeden() != null ? fmt.getMesaiNeden().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(fmt.getOnayDurumAciklama());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(fmt.getOlusturanUser() != null ? fmt.getOlusturanUser().getAdSoyad() : "");
 			if (fmt.getOlusturmaTarihi() != null)
-				ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(fmt.getOlusturmaTarihi());
+				ExcelUtil.getCell(sheet, row, col++, styleEvenDateTime).setCellValue(fmt.getOlusturmaTarihi());
 			else
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(fmt.getGuncelleyenUser() != null ? fmt.getGuncelleyenUser().getAdSoyad() : "");
 			if (fmt.getGuncellemeTarihi() != null)
-				ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(fmt.getGuncellemeTarihi());
+				ExcelUtil.getCell(sheet, row, col++, styleEvenDateTime).setCellValue(fmt.getGuncellemeTarihi());
 			else
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 
@@ -8278,20 +8299,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		try {
 
 			Sheet sheet = ExcelUtil.createSheet(wb, "Tüm Talepler", Boolean.TRUE);
-			CellStyle styleTutar = ExcelUtil.getStyleData(wb);
-			styleTutar.setAlignment(CellStyle.ALIGN_RIGHT);
-			CellStyle style = ExcelUtil.getStyleData(wb);
-			CellStyle styleCenter = ExcelUtil.getStyleData(wb);
-			styleCenter.setAlignment(CellStyle.ALIGN_CENTER);
 			CellStyle header = ExcelUtil.getStyleHeader(wb);
-			CellStyle timeStamp = ExcelUtil.getCellStyleTimeStamp(wb);
-			CellStyle date = ExcelUtil.getCellStyleDate(wb);
-			XSSFCellStyle dateBold = (XSSFCellStyle) ExcelUtil.getCellStyleDate(wb);
-			XSSFFont fontBold = dateBold.getFont();
-			XSSFCellStyle styleKapi = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
-			XSSFFont fontKapiBold = styleKapi.getFont();
-			fontKapiBold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-			fontBold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+
+			CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+			CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+			CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+			CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+			CellStyle styleOddDate = ExcelUtil.setBoldweight(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
+			CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+			CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+			CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+			CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+			CellStyle styleEvenDate = ExcelUtil.setBoldweight(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
+
 			int row = 0;
 			int col = 0;
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
@@ -8312,12 +8332,27 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onaylayan");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Onaylama Zamanı");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Mesai Nedeni");
-
+			boolean renk = true;
 			for (Iterator iterator = fazlaMesaiTalepler.iterator(); iterator.hasNext();) {
 				FazlaMesaiTalep ft = (FazlaMesaiTalep) iterator.next();
 				VardiyaGun vg = ft.getVardiyaGun();
 				Personel personel = vg.getPersonel();
 				String sirket = "";
+				CellStyle style = null, styleCenter = null, cellStyleDateTime = null, cellStyleDate = null, cellTutar = null;
+				if (renk) {
+					cellStyleDateTime = styleOddDateTime;
+					cellStyleDate = styleOddDate;
+					cellTutar = styleOddTutar;
+					style = styleOdd;
+					styleCenter = styleOddCenter;
+				} else {
+					cellStyleDateTime = styleEvenDateTime;
+					cellStyleDate = styleEvenDate;
+					cellTutar = styleEvenTutar;
+					style = styleEven;
+					styleCenter = styleEvenCenter;
+				}
+				renk = !renk;
 				try {
 					sirket = personel.getSirket().getAd();
 				} catch (Exception e1) {
@@ -8333,18 +8368,18 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (tesisDurum)
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-					ExcelUtil.getCell(sheet, row, col++, date).setCellValue(vg.getVardiyaDate());
+					ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(vg.getVardiyaDate());
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(vg.getVardiyaAciklama());
-					ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(ft.getBaslangicZamani());
-					ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(ft.getBitisZamani());
-					ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue(ft.getMesaiSuresi());
+					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getBaslangicZamani());
+					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getBitisZamani());
+					ExcelUtil.getCell(sheet, row, col++, cellTutar).setCellValue(ft.getMesaiSuresi());
 					String neden = ft.getMesaiNeden().getAciklama() + (ft.getAciklama() != null && ft.getAciklama().trim().length() > 0 ? "\nAçıklama : " + ft.getAciklama().trim() : "");
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ft.getOnayDurumAciklama());
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ft.getOlusturanUser().getAdSoyad());
-					ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(ft.getOlusturmaTarihi());
+					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getOlusturmaTarihi());
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ft.getGuncelleyenUser() != null ? ft.getGuncelleyenUser().getAdSoyad() : "");
 					if (ft.getGuncellemeTarihi() != null)
-						ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(ft.getGuncellemeTarihi());
+						ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getGuncellemeTarihi());
 					else
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(neden);
