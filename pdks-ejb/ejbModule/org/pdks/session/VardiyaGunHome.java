@@ -2149,7 +2149,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 			}
 		}
-		int son = col;
 		if (sonucGoster && sayac > 1) {
 			row += 2;
 			boolean renk = Boolean.TRUE;
@@ -2193,8 +2192,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 		}
 		try {
-
-			for (int i = 0; i < son; i++)
+			for (int i = 0; i < col; i++)
 				sheet.autoSizeColumn(i);
 
 			baos = new ByteArrayOutputStream();
@@ -6878,13 +6876,13 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
-		CellStyle styleOddNumber = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleOddTutar = ExcelUtil.setAlignment(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		CellStyle styleOddNumber = ExcelUtil.setAlignment(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb), CellStyle.ALIGN_CENTER);
 		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
-		CellStyle styleEvenNumber = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
+		CellStyle styleEvenTutar = ExcelUtil.setAlignment(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		CellStyle styleEvenNumber = ExcelUtil.setAlignment(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb), CellStyle.ALIGN_CENTER);
 		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 
 		int row = 0;
@@ -6933,15 +6931,15 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (tesisDurum)
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-			ExcelUtil.getCell(sheet, row, col++, styleEvenDateTime).setCellValue(fmt.getBaslangicZamani());
-			ExcelUtil.getCell(sheet, row, col++, styleEvenDateTime).setCellValue(fmt.getBitisZamani());
+			ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(fmt.getBaslangicZamani());
+			ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(fmt.getBitisZamani());
 			Double sure = fmt.getMesaiSuresi();
 			ExcelUtil.getCell(sheet, row, col++, sure.doubleValue() > sure.doubleValue() ? styleTutar : styleNumber).setCellValue(sure);
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(fmt.getMesaiNeden() != null ? fmt.getMesaiNeden().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(fmt.getOnayDurumAciklama());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(fmt.getOlusturanUser() != null ? fmt.getOlusturanUser().getAdSoyad() : "");
 			if (fmt.getOlusturmaTarihi() != null)
-				ExcelUtil.getCell(sheet, row, col++, styleEvenDateTime).setCellValue(fmt.getOlusturmaTarihi());
+				ExcelUtil.getCell(sheet, row, col++, styleDateTime).setCellValue(fmt.getOlusturmaTarihi());
 			else
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 
@@ -8303,12 +8301,14 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 			CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 			CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-			CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+			CellStyle styleOddTutar = ExcelUtil.setAlignment(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+			CellStyle styleOddNumber = ExcelUtil.setAlignment(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb), CellStyle.ALIGN_CENTER);
 			CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
 			CellStyle styleOddDate = ExcelUtil.setBoldweight(ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
 			CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 			CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-			CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+			CellStyle styleEvenTutar = ExcelUtil.setAlignment(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+			CellStyle styleEvenNumber = ExcelUtil.setAlignment(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb), CellStyle.ALIGN_CENTER);
 			CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 			CellStyle styleEvenDate = ExcelUtil.setBoldweight(ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb), HSSFFont.BOLDWEIGHT_BOLD);
 
@@ -8338,17 +8338,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				VardiyaGun vg = ft.getVardiyaGun();
 				Personel personel = vg.getPersonel();
 				String sirket = "";
-				CellStyle style = null, styleCenter = null, cellStyleDateTime = null, cellStyleDate = null, cellTutar = null;
+				CellStyle style = null, styleCenter = null, cellStyleDateTime = null, cellStyleDate = null, cellTutar = null, cellNumber = null;
 				if (renk) {
 					cellStyleDateTime = styleOddDateTime;
 					cellStyleDate = styleOddDate;
 					cellTutar = styleOddTutar;
+					cellNumber = styleOddNumber;
 					style = styleOdd;
 					styleCenter = styleOddCenter;
 				} else {
 					cellStyleDateTime = styleEvenDateTime;
 					cellStyleDate = styleEvenDate;
 					cellTutar = styleEvenTutar;
+					cellNumber = styleEvenNumber;
 					style = styleEven;
 					styleCenter = styleEvenCenter;
 				}
@@ -8372,7 +8374,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(vg.getVardiyaAciklama());
 					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getBaslangicZamani());
 					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getBitisZamani());
-					ExcelUtil.getCell(sheet, row, col++, cellTutar).setCellValue(ft.getMesaiSuresi());
+					Double sure = ft.getMesaiSuresi();
+					ExcelUtil.getCell(sheet, row, col++, sure.doubleValue() > sure.longValue() ? cellTutar : cellNumber).setCellValue(sure);
 					String neden = ft.getMesaiNeden().getAciklama() + (ft.getAciklama() != null && ft.getAciklama().trim().length() > 0 ? "\nAçıklama : " + ft.getAciklama().trim() : "");
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ft.getOnayDurumAciklama());
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ft.getOlusturanUser().getAdSoyad());

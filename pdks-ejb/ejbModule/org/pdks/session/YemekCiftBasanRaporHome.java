@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -131,12 +130,23 @@ public class YemekCiftBasanRaporHome extends EntityHome<VardiyaGun> implements S
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Yemek Rapor", Boolean.TRUE);
-		CellStyle style = ExcelUtil.getStyleData(wb);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle date = ExcelUtil.getCellStyleDate(wb);
-		DataFormat df = wb.createDataFormat();
-		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
-		timeStamp.setDataFormat(df.getFormat("hh:mm"));
+		
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleOddTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEvenTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TIME, wb);
+		
+		
+//		CellStyle style = ExcelUtil.getStyleData(wb);
+//		CellStyle date = ExcelUtil.getCellStyleDate(wb);
+//		DataFormat df = wb.createDataFormat();
+//		CellStyle timeStamp = ExcelUtil.getCellStyleDate(wb);
+//		timeStamp.setDataFormat(df.getFormat("hh:mm"));
 		int row = 0, col = 0;
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Yemek Tarih");
@@ -148,15 +158,28 @@ public class YemekCiftBasanRaporHome extends EntityHome<VardiyaGun> implements S
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Yemek Yeri");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Durum");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Id");
-
+		boolean renk = true;
 		for (Iterator iter = hareketler.iterator(); iter.hasNext();) {
 			HareketKGS yemek = (HareketKGS) iter.next();
 			row++;
 			col = 0;
-			ExcelUtil.getCell(sheet, row, col++, date).setCellValue(yemek.getZaman());
-			ExcelUtil.getCell(sheet, row, col++, timeStamp).setCellValue(yemek.getZaman());
+			CellStyle style = null, styleCenter = null, styleDate = null, styleTime = null;
+			if (renk) {
+				styleDate = styleOddDate;
+				styleTime = styleOddTime;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				styleDate = styleEvenDate;
+				styleTime = styleEvenTime;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
+			ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(yemek.getZaman());
+			ExcelUtil.getCell(sheet, row, col++, styleTime).setCellValue(yemek.getZaman());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yemek.getPersonel().getPdksPersonel().getAdSoyad());
-			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yemek.getPersonel().getPdksPersonel().getPdksSicilNo());
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yemek.getPersonel().getPdksPersonel().getPdksSicilNo());
 			try {
 
 				String sirket = "", ogun = "";
@@ -180,7 +203,7 @@ public class YemekCiftBasanRaporHome extends EntityHome<VardiyaGun> implements S
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ogun);
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yemek.getKapiView().getAciklama());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yemek.getToplam() == 1 ? "Mükerrer Öğün" : "Mükerrer Çoklu Öğün");
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yemek.getId());
+				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yemek.getId());
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");
 				e.printStackTrace();

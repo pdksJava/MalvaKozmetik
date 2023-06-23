@@ -1292,11 +1292,14 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleTutarEvenDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
 		CellStyle styleTutarOddDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
 		CellStyle styleTutarDay = null;
 		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
+		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
 
 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
 
@@ -1378,11 +1381,13 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					if (row % 2 != 0) {
 						styleTutarDay = styleTutarOddDay;
 						styleGenel = styleOdd;
+						styleCenter = styleOddCenter;
 					} else {
 						styleTutarDay = styleTutarEvenDay;
 						styleGenel = styleEven;
+						styleCenter = styleEvenCenter;
 					}
-					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getSicilNo());
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 					Cell personelCell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
 					personelCell.setCellValue(personel.getAdSoyad());
 					if (!sirketMap.isEmpty()) {

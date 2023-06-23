@@ -351,13 +351,14 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, ("Fazla Mesai " + donem).trim(), Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
- 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
- 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
- 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleEgitim = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleOff = ExcelUtil.getStyleDataCenter(wb);
 		ExcelUtil.setFontColor(styleOff, Color.WHITE);
@@ -365,8 +366,6 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 
- 
- 
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
@@ -403,12 +402,18 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 			Personel personel = (Personel) iter.next();
 			row++;
 			col = 0;
-			if (row % 2 != 0)
+			CellStyle styleGenel = null, styleCenter = null;
+
+			if (row % 2 != 0) {
 				styleGenel = styleOdd;
+				styleCenter = styleOddCenter;
+			}
+
 			else {
 				styleGenel = styleEven;
+				styleCenter = styleEvenCenter;
 			}
-			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getSicilNo());
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getAdSoyad());
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getSirket() != null ? personel.getSirket().getAd() : "");
 			if (tesisDurum && tesisVar)
