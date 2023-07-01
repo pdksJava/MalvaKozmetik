@@ -47,7 +47,7 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	static Logger logger = Logger.getLogger(User.class);
 
 	public static final String TABLE_NAME = "PDKSUSER";
- 
+
 	public static final String COLUMN_NAME_USERNAME = "KULLANICI_ADI";
 	public static final String COLUMN_NAME_PERSONEL = "PERSONEL_ID";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
@@ -77,7 +77,7 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	// private Set<UserRoles> yetkilerim;
 
 	private boolean durum = Boolean.TRUE, yeniSifre = Boolean.FALSE, admin = Boolean.FALSE, IK = Boolean.FALSE, IK_Tesis = Boolean.FALSE;
-	private boolean sistemYoneticisi = Boolean.FALSE, yonetici = Boolean.FALSE, yoneticiKontratli = Boolean.FALSE, genelMudur = Boolean.FALSE, sekreter = Boolean.FALSE;
+	private boolean sistemYoneticisi = Boolean.FALSE, yonetici = Boolean.FALSE, anahtarKullanici = Boolean.FALSE, yoneticiKontratli = Boolean.FALSE, genelMudur = Boolean.FALSE, sekreter = Boolean.FALSE;
 	private boolean projeMuduru = Boolean.FALSE, mudur = Boolean.FALSE, superVisor = Boolean.FALSE, IKDirektor = Boolean.FALSE, personel = Boolean.FALSE;
 	private boolean operatorSSK = Boolean.FALSE, yetkiSet = Boolean.FALSE, direktorSuperVisor = Boolean.FALSE, taseronAdmin = Boolean.FALSE;
 	private boolean browserIE, izinGirebilir = Boolean.FALSE, izinSSKGirebilir = Boolean.FALSE, izinOnaylayabilir = Boolean.FALSE, testLogin = Boolean.FALSE;
@@ -1048,6 +1048,17 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	private String getDateTimeLongFormat() {
 		String dateTimeLongFormat = PdksUtil.getDateTimeLongFormat();
 		return dateTimeLongFormat;
+	}
+
+	@Transient
+	public boolean isAnahtarKullanici() {
+		if (!yetkiSet)
+			PdksUtil.setUserYetki(this);
+		return anahtarKullanici;
+	}
+
+	public void setAnahtarKullanici(boolean anahtarKullanici) {
+		this.anahtarKullanici = anahtarKullanici;
 	}
 
 }

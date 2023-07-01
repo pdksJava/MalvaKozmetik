@@ -2166,6 +2166,7 @@ public class PdksUtil implements Serializable {
 			user.setAdmin(Boolean.FALSE);
 			user.setGenelMudur(Boolean.FALSE);
 			user.setIKDirektor(Boolean.FALSE);
+			user.setAnahtarKullanici(Boolean.FALSE);
 			user.setIK(Boolean.FALSE);
 			user.setMudur(Boolean.FALSE);
 			user.setYonetici(Boolean.FALSE);
@@ -2185,7 +2186,10 @@ public class PdksUtil implements Serializable {
 				for (Role role : user.getYetkiliRollerim()) {
 					if (role.getRolename().equals(Role.TIPI_ADMIN))
 						user.setAdmin(Boolean.TRUE);
-					else if (role.getRolename().equals(Role.TIPI_SISTEM_YONETICI)) {
+					else if (role.getRolename().equals(Role.TIPI_ANAHTAR_KULLANICI)) {
+						user.setIK(Boolean.TRUE);
+						user.setAnahtarKullanici(Boolean.TRUE);
+					} else if (role.getRolename().equals(Role.TIPI_SISTEM_YONETICI)) {
 						user.setIK(Boolean.TRUE);
 						user.setSistemYoneticisi(Boolean.TRUE);
 					} else if (role.getRolename().equals(Role.TIPI_IK))

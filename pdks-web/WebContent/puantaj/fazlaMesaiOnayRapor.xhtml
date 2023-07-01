@@ -69,7 +69,7 @@
 								rendered="#{fazlaMesaiOnayRaporHome.gorevYeriList!=null and fazlaMesaiOnayRaporHome.gorevYeriList.size()>0}">
 								<ui:define name="label">#{fazlaMesaiOnayRaporHome.bolumAciklama}</ui:define>
 								<h:selectOneMenu value="#{fazlaMesaiOnayRaporHome.seciliEkSaha3Id}" disabled="#{fazlaMesaiOnayRaporHome.gorevYeriList.size()==1}"
-									requiredMessage="#{fazlaMesaiOnayRaporHome.bolumAciklama} giriniz!" required="#{authenticatedUser.admin==false}">
+									requiredMessage="#{fazlaMesaiOnayRaporHome.bolumAciklama} giriniz!">
 									<f:selectItem itemLabel="Lütfen seçiniz" />
 									<f:selectItems value="#{fazlaMesaiOnayRaporHome.gorevYeriList}" />
 									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiOnayRaporHome.personelFazlaMesaiList.clear()}" ajaxSingle="true"
@@ -218,7 +218,7 @@
 
 			</rich:panel>
 		</h:form>
-		 
+
 
 
 
