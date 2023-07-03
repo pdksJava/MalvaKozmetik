@@ -350,13 +350,13 @@
 														</h:panelGrid>
 													</ui:fragment>
 												</rich:column>
-												<rich:column filterBy="#{hareketler.personel.sicilNo}" filterEvent="onkeyup">
+												<rich:column style="text-align:center">
 													<f:facet name="header">
 														<h:outputText value="Sicil Numarasi" />
 													</f:facet>
 													<h:outputText value="#{hareketler.personel.sicilNo}" />
 												</rich:column>
-												<rich:column filterBy="#{hareketler.personel.adSoyad}" filterEvent="onkeyup">
+												<rich:column >
 													<f:facet name="header">
 														<h:outputText value="Personel" />
 													</f:facet>
@@ -414,12 +414,7 @@
 
 												</rich:column>
 
-												<rich:column>
-													<f:facet name="header">
-														<h:outputText value="Orjinal Zaman" />
-													</f:facet>
-													<h:outputText value="#{authenticatedUser.dateTimeLongFormatla(hareketler.orjinalZaman)}" />
-												</rich:column>
+												
 												<rich:column>
 													<f:facet name="header">
 														<h:outputText value="Onay Durum" />
