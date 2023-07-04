@@ -29,7 +29,7 @@ public class HareketKGS implements Serializable, Cloneable {
 	private static final long serialVersionUID = -7614576632219960146L;
 	static Logger logger = Logger.getLogger(HareketKGS.class);
 
-//	public static final String TABLE_NAME = "KGS_HAREKET_VIEW";
+	// public static final String TABLE_NAME = "KGS_HAREKET_VIEW";
 	public static final String TABLE_NAME = "KGS_HAREKET_SIRKET_VIEW";
 	public static final String COLUMN_NAME_ID = "ID";
 	public static final String COLUMN_NAME_PERSONEL = "USERID";
@@ -62,7 +62,7 @@ public class HareketKGS implements Serializable, Cloneable {
 	private KapiSirket kapiSirket;
 	private KapiKGS kapiKGS;
 	private KapiView kapiView, terminalKapi;
-	private Date zaman, olusturmaZamani, orjinalZaman, girisZaman, cikisZaman, girisOrjinalZaman, cikisOrjinalZaman, yemekTeloreansZamani, oncekiYemekZamani;
+	private Date zaman, olusturmaZamani, orjinalZaman, kgsZaman, girisZaman, cikisZaman, girisOrjinalZaman, cikisOrjinalZaman, yemekTeloreansZamani, oncekiYemekZamani;
 	private Double fazlaMesai;
 	private PersonelHareketIslem islem;
 	private PersonelFazlaMesai personelFazlaMesai;
@@ -200,8 +200,7 @@ public class HareketKGS implements Serializable, Cloneable {
 		this.olusturmaZamani = olusturmaZamani;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = COLUMN_NAME_ORJ_ZAMAN, nullable = false)
+	@Transient
 	public Date getOrjinalZaman() {
 		return this.orjinalZaman;
 	}
@@ -217,6 +216,16 @@ public class HareketKGS implements Serializable, Cloneable {
 
 	public void setIslemId(Long islemId) {
 		this.islemId = islemId;
+	}
+
+	@Temporal(value = TemporalType.TIMESTAMP)
+	@Column(name = COLUMN_NAME_ORJ_ZAMAN)
+	public Date getKgsZaman() {
+		return kgsZaman;
+	}
+
+	public void setKgsZaman(Date kgsZaman) {
+		this.kgsZaman = kgsZaman;
 	}
 
 	@ManyToOne(cascade = { javax.persistence.CascadeType.REFRESH })

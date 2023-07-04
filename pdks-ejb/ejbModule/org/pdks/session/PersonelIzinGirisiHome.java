@@ -4286,7 +4286,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		// gore hesaplama yapilir.
 
 		double izinSuresiSaatGun = 0;
-		double eklenecekGun = 1;
+		Double eklenecekGun = 1.0;
 		String tatilGunuKey = "";
 		Calendar basCal = Calendar.getInstance();
 		basCal.setTime((Date) personelIzin.getBaslangicZamani().clone());
@@ -4348,16 +4348,28 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 							izinBasTarih = vardiyaDate;
 						}
 
-						eklenecekGun = 1;
+						eklenecekGun = 1.0d;
 						Tatil tatil = null;
 						if (senelikIzin && resmiTatilGunleri.containsKey(tatilGunuKey)) {
 							tatil = (Tatil) resmiTatilGunleri.get(tatilGunuKey);
 							if (tatil.isYarimGunMu() && !tempVardiya.getVardiya().isHaftaTatil()) {
 								eklenecekGun = new Double("0.5").doubleValue();
-								if (izinTipi != null && izinTipi.isSenelikIzin())
-									throw new Exception("Arife gününü içeren izin girilemez!");
+								if (izinTipi != null && izinTipi.isSenelikIzin()) {
+									String arifeSenelikIzinGun = ortakIslemler.getParameterKey("arifeSenelikIzinGun");
+									try {
+										eklenecekGun = null;
+										if (!arifeSenelikIzinGun.equals(""))
+											eklenecekGun = Double.parseDouble(arifeSenelikIzinGun);
+
+									} catch (Exception e) {
+										eklenecekGun = null;
+									}
+									if (eklenecekGun == null || eklenecekGun.doubleValue() < 0.0d)
+										throw new Exception("Arife gününü içeren izin girilemez!");
+								}
+
 							} else
-								eklenecekGun = 0;
+								eklenecekGun = 0.0d;
 						}
 						if (artiklarMap != null) {
 							if (!artikIizinVar && bayramArtikIzinSifirla.equals("1"))

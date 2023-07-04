@@ -356,7 +356,7 @@
 													</f:facet>
 													<h:outputText value="#{hareketler.personel.sicilNo}" />
 												</rich:column>
-												<rich:column >
+												<rich:column>
 													<f:facet name="header">
 														<h:outputText value="Personel" />
 													</f:facet>
@@ -414,7 +414,7 @@
 
 												</rich:column>
 
-												
+
 												<rich:column>
 													<f:facet name="header">
 														<h:outputText value="Onay Durum" />
@@ -424,6 +424,15 @@
 												<h:outputText value=" #{hareketler.islem.onayDurumAciklama}" rendered="#{hareketler.durum!=0}" />
 														<h:outputText value=" (İptal Edildi)" rendered="#{hareketler.durum==0}" />
 													</ui:fragment>
+												</rich:column>
+												<rich:column rendered="#{personelHareketHome.kgsUpdateGoster}">
+													<f:facet name="header">
+														<h:outputText value="Orjinal Zaman" />
+													</f:facet>
+													<ui:fragment rendered="#{hareketler.islem!=null and hareketler.kgsZaman!=null}">
+														<h:outputText value="#{authenticatedUser.dateTimeLongFormatla(hareketler.kgsZaman)}" />
+													</ui:fragment>
+
 												</rich:column>
 												<f:facet name="footer">
 													<rich:datascroller renderIfSinglePage="false" maxPages="5" />

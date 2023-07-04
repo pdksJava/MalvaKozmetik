@@ -91,7 +91,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 	private List<SelectItem> sirketList;
 	private Date basTarih, bitTarih;
 	private Kapi kapi;
-	private boolean pdksKapi = Boolean.TRUE, pdksHaricKapi = Boolean.FALSE, yemekKapi = Boolean.FALSE, guncellenmis = Boolean.FALSE;
+	private boolean pdksKapi = Boolean.TRUE, pdksHaricKapi = Boolean.FALSE, yemekKapi = Boolean.FALSE, guncellenmis = Boolean.FALSE, kgsUpdateGoster = Boolean.FALSE;
 	private String sicilNo = "", adi = "", soyadi = "", bolumAciklama;
 	private byte[] zipVeri;
 	private List<SelectItem> departmanList;
@@ -525,18 +525,22 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				List<HareketKGS> list = new ArrayList<HareketKGS>();
 				List<Long> islemIdler = new ArrayList<Long>();
 				List<String> idList = new ArrayList<String>();
+				kgsUpdateGoster = false;
 				for (BasitHareket hareket : kgsList) {
 					if (hareket.getDurum() == 1 && perMap.containsKey(hareket.getPersonelId()) && kapiMap.containsKey(hareket.getKapiId())) {
 						if (idList.contains(hareket.getId()))
 							continue;
 						idList.add(hareket.getId());
 						HareketKGS kgsHareket = hareket.getKgsHareket();
+
 						if (kgsHareket.getKgsSirketId() != null)
 							kgsHareket.setKapiSirket(kapiSirketMap.get(kgsHareket.getKgsSirketId()));
 						kgsHareket.setKapiView(kapiMap.get(hareket.getKapiId()));
 						kgsHareket.setPersonel(perMap.get(hareket.getPersonelId()));
 						if (kgsHareket.getIslemId() != null)
 							islemIdler.add(kgsHareket.getIslemId());
+						if (!kgsUpdateGoster)
+							kgsUpdateGoster = kgsHareket.getIslemId() != null && kgsHareket.getKgsZaman() != null;
 						list.add(kgsHareket);
 
 					}
@@ -574,7 +578,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 						if (kgsHareket.getIslemId() != null && islemMap.containsKey(kgsHareket.getIslemId())) {
 							PersonelHareketIslem islem = islemMap.get(kgsHareket.getIslemId());
 							kgsHareket.setIslem(islem);
-							if (islem != null)
+							if (islem != null && kgsHareket.getKgsZaman() != null)
 								guncellenmis = Boolean.TRUE;
 							if (islem.getIslemTipi().equalsIgnoreCase("U") && islemTarihMap.containsKey(kgsHareket.getIslemId())) {
 								kgsHareket.setOrjinalZaman(islemTarihMap.get(kgsHareket.getIslemId()));
@@ -706,14 +710,13 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				sb.append(hareket.getAdSoyad() + "|");
 				sb.append(hareket.getSicilNo() + "|");
 				sb.append(hareket.getKapiView().getAciklama() + "|");
+
 				if (guncellenmis) {
-					if (guncellenmis) {
-						if ((hareket.getSirket() != null && hareket.getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) || hareket.getIslem() != null) {
-							sb.append((hareket.getOrjinalZaman() != null ? PdksUtil.convertToDateString(hareket.getOrjinalZaman(), "dd/MM/yyyy HH:mm") : "") + "|");
-							sb.append((hareket.getIslem() != null ? hareket.getIslem().getGuncelleyenUser().getAdSoyad() : "") + "|");
-						} else {
-							sb.append("||");
-						}
+					if (hareket.getKgsZaman() != null && hareket.getIslem() != null) {
+						sb.append((hareket.getOrjinalZaman() != null ? PdksUtil.convertToDateString(hareket.getKgsZaman(), "dd/MM/yyyy HH:mm") : "") + "|");
+						sb.append((hareket.getIslem() != null ? hareket.getIslem().getGuncelleyenUser().getAdSoyad() : "") + "|");
+					} else {
+						sb.append("||");
 					}
 				}
 
@@ -963,9 +966,9 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel != null && personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 				if (guncellenmis) {
-					if ((hareket.getSirket() != null && hareket.getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) || hareket.getIslem() != null) {
-						if (hareket.getOrjinalZaman() != null)
-							ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getOrjinalZaman());
+					if (hareket.getKgsZaman() != null && hareket.getIslem() != null) {
+						if (hareket.getKgsZaman() != null)
+							ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getKgsZaman());
 						else
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getIslem() != null ? hareket.getIslem().getGuncelleyenUser().getAdSoyad() : "");
@@ -1219,5 +1222,13 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public boolean isKgsUpdateGoster() {
+		return kgsUpdateGoster;
+	}
+
+	public void setKgsUpdateGoster(boolean kgsUpdateGoster) {
+		this.kgsUpdateGoster = kgsUpdateGoster;
 	}
 }
