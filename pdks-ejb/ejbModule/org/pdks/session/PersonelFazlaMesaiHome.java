@@ -524,7 +524,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				fazlaMesai.setHareket(hareket);
 				// fazlaMesai.setHareket(hareket);
 				fazlaMesai.setVardiyaGun(pdksVardiyaGun);
-				fazlaMesai.setFazlaMesaiSaati(hareket.getFazlaMesai());
+				fazlaMesai.setFazlaMesaiSaati(0.0d);
 				fazlaMesai.setOnayDurum(PersonelFazlaMesai.DURUM_ONAYLANMADI);
 
 				if (yeni) {
@@ -829,7 +829,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 						boolean durum = false;
 						for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 							VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
- 							if (vardiyaGun.getPersonel().getId().equals(perId)) {
+							if (vardiyaGun.getPersonel().getId().equals(perId)) {
 								if (vardiyaGun.addHareket(kgsHareket, Boolean.FALSE)) {
 									durum = true;
 								}

@@ -47,6 +47,7 @@ public class MenuItemConstant implements Serializable {
 	public static String personelTanimlama = "/tanimlama/personelTanimlama.xhtml";
 	public static String personelRoleTanimlama = "/tanimlama/personelRoleTanimlama.xhtml";
 	public static String personelKullaniciExcelGuncelle = "/tanimlama/personelKullaniciExcelGuncelle.xhtml";
+	public static String taseronPersonelKopyala = "/tanimlama/taseronPersonelKopyala.xhtml";
 	public static String personelYoneticiGuncelle = "/tanimlama/personelYoneticiGuncelle.xhtml";
 	public static String izinTipiTanimlama = "/tanimlama/izinTipiTanimlama.xhtml";
 	public static String izinHakedisHakkiTanimlama = "/tanimlama/izinHakedisHakkiTanimlama.xhtml";
@@ -996,6 +997,14 @@ public class MenuItemConstant implements Serializable {
 
 	public static void setFazlaMesaiOnayRapor(String fazlaMesaiOnayRapor) {
 		MenuItemConstant.fazlaMesaiOnayRapor = fazlaMesaiOnayRapor;
+	}
+
+	public static String getTaseronPersonelKopyala() {
+		return taseronPersonelKopyala;
+	}
+
+	public static void setTaseronPersonelKopyala(String taseronPersonelKopyala) {
+		MenuItemConstant.taseronPersonelKopyala = taseronPersonelKopyala;
 	}
 
 }

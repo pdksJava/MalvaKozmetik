@@ -3325,6 +3325,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					List<PersonelFazlaMesai> list = pdksEntityController.getObjectByInnerObjectList(fields, PersonelFazlaMesai.class);
 					for (PersonelFazlaMesai fazlaMesai : list) {
 						if (fazlaMesai.isOnaylandi()) {
+							fazlaMesai.setFazlaMesaiSaati(0.0d);
 							fazlaMesai.setOnayDurum(PersonelFazlaMesai.DURUM_ONAYLANMADI);
 							fazlaMesai.setGuncelleyenUser(authenticatedUser);
 							fazlaMesai.setGuncellemeTarihi(new Date());

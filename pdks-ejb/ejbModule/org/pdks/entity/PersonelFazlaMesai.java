@@ -40,7 +40,7 @@ public class PersonelFazlaMesai extends BaseObject implements Cloneable {
 
 	private Tanim fazlaMesaiOnayDurum;
 
-	private Double fazlaMesaiSaati;
+	private Double fazlaMesaiSaati = 0.0d;
 
 	private Date basZaman, bitZaman;
 
