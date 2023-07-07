@@ -331,6 +331,22 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 			}
 			kapiGiris = mailMap.containsKey("kapiGirisUygulama") ? (String) mailMap.get("kapiGirisUygulama") : "kapı giriş";
+			kapiSirket = null;
+			Date bugun = PdksUtil.getDate(new Date());
+			String birdenFazlaKGSSirketSQL = mailMap.containsKey("birdenFazlaKGSSirketSQL") ? (String) mailMap.get("birdenFazlaKGSSirketSQL") : "";
+			if (!birdenFazlaKGSSirketSQL.equals("")) {
+				HashMap map = new HashMap();
+				map.put("id>", 0L);
+				map.put("basTarih<=", bugun);
+				map.put("bitTarih>=", bugun);
+				List<KapiSirket> kapiSirketList = pdksDAO.getObjectByInnerObjectListInLogic(map, KapiSirket.class);
+				if (kapiSirketList.size() == 1) {
+					kapiSirket = kapiSirketList.get(0);
+					kapiGiris = kapiSirket.getAciklama();
+				}
+				kapiSirketList = null;
+
+			}
 			uygulamaBordro = mailMap.containsKey("uygulamaBordro") ? (String) mailMap.get("uygulamaBordro") : "Bordro Uygulaması ";
 			if (dateFormat == null)
 				dateFormat = "dd/MM/yyyy";
@@ -1418,7 +1434,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 				cal.set(Calendar.DATE, 1);
 				cal.add(Calendar.MONTH, -izinBitisTarihiAySayisi);
 				Date gecmisTarihi = PdksUtil.getDate(cal.getTime());
+				Date tarih1 = null, tarih2 = null;
 				for (IzinERP izinERP : izinList) {
+					Date baslangicZamani = getTarih(izinERP.getBasZaman(), FORMAT_DATE_TIME);
+					Date bitisZamani = getTarih(izinERP.getBitZaman(), FORMAT_DATE_TIME);
+					if (baslangicZamani != null)
+						if (tarih1 == null || baslangicZamani.before(tarih1))
+							tarih1 = baslangicZamani;
+					if (bitisZamani != null)
+						if (tarih2 == null || bitisZamani.after(tarih2))
+							tarih2 = bitisZamani;
 					izinERP.setYazildi(false);
 					if (izinERP.getIzinSuresi() == null || izinERP.getIzinSuresi().doubleValue() == 0.0d)
 						izinERP.setDurum(false);
@@ -1430,7 +1455,17 @@ public class PdksVeriOrtakAktar implements Serializable {
 					veriIsle("izinTipi", izinERP.getIzinTipi(), veriSorguMap);
 					veriIsle("personelIzin", izinERP.getReferansNoERP(), veriSorguMap);
 				}
-				TreeMap<String, Personel> personelMap = veriSorguMap.containsKey("personel") ? pdksDAO.getObjectByInnerObjectMap("getPdksSicilNo", "pdksSicilNo", veriSorguMap.get("personel"), Personel.class, false) : new TreeMap<String, Personel>();
+				List<Personel> personelList = pdksDAO.getObjectByInnerObjectList("pdksSicilNo", veriSorguMap.get("personel"), Personel.class);
+				if (personelList.size() > 1)
+					personelList = PdksUtil.sortListByAlanAdi(personelList, "iseBaslamaTarihi", Boolean.FALSE);
+				TreeMap<String, Personel> personelMap = new TreeMap<String, Personel>();
+				for (Personel personel : personelList) {
+					if ((tarih1 == null || personel.getSskCikisTarihi().getTime() >= tarih1.getTime()) && (tarih2 == null || personel.getIseBaslamaTarihi().getTime() <= tarih2.getTime())) {
+						personelMap.put(personel.getPdksSicilNo(), personel);
+					}
+				}
+				personelList = null;
+				// TreeMap<String, Personel> personelMap = veriSorguMap.containsKey("personel") ? pdksDAO.getObjectByInnerObjectMap("getPdksSicilNo", "pdksSicilNo", veriSorguMap.get("personel"), Personel.class, false) : new TreeMap<String, Personel>();
 				TreeMap<String, ERPPersonel> personelERPHataliMap = veriSorguMap.containsKey("personel") ? pdksDAO.getObjectByInnerObjectMap("getSicilNo", "sicilNo", veriSorguMap.get("personel"), ERPPersonel.class, false) : new TreeMap<String, ERPPersonel>();
 				TreeMap<String, IzinReferansERP> izinERPMap = veriSorguMap.containsKey("personelIzin") ? pdksDAO.getObjectByInnerObjectMap("getId", "id", veriSorguMap.get("personelIzin"), IzinReferansERP.class, false) : new TreeMap<String, IzinReferansERP>();
 				TreeMap<String, IzinTipi> izinTipiMap = null;
@@ -1631,9 +1666,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (bitisZamani.before(baslangicZamani))
 							addHatalist(izinERP.getHataList(), "İzin başlama zamanı bitiş tarihinden sonra olamaz!");
 						if (baslangicZamani.before(izinSahibi.getIseBaslamaTarihi()))
-							addHatalist(izinERP.getHataList(), "İzin başlangıç zamanı işe giriş tarihi " + PdksUtil.convertToDateString(izinSahibi.getIseBaslamaTarihi(), FORMAT_DATE) + " den önce olamaz!");
+							addHatalist(izinERP.getHataList(), "İzin başlangıç zamanı işe giriş tarihi " + PdksUtil.convertToDateString(izinSahibi.getIseBaslamaTarihi(), FORMAT_DATE) + " den önce olamaz! [ " + izinSahibi.getAdSoyad() + " ]");
 						if (PdksUtil.getDate(bitisZamani).after(sonCalismaTarihi))
-							addHatalist(izinERP.getHataList(), "İzin bitiş zamanı işten ayrılma tarihi " + PdksUtil.convertToDateString(sonCalismaTarihi, FORMAT_DATE) + " den sonra olamaz!");
+							addHatalist(izinERP.getHataList(), "İzin bitiş zamanı işten ayrılma tarihi " + PdksUtil.convertToDateString(sonCalismaTarihi, FORMAT_DATE) + " den sonra olamaz! [ " + izinSahibi.getAdSoyad() + " ]");
 						IzinTipi izinTipi = izinTipiMap.get(izinERP.getIzinTipi());
 						List<PersonelDenklestirme> kapaliDenklestirmeler = null;
 						if (!izinERP.getHataList().isEmpty())
