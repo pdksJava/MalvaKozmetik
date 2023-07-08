@@ -114,8 +114,8 @@
 								</ui:fragment>
 
 								<rich:tab label="Onaylanan Mesai" name="onay1" rendered="#{not empty fazlaMesaiOnayRaporHome.onaylananList}">
-									<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiOnayRaporHome.onaylananList}" var="fazlaMesai"
-										style="width: 80%;" rows="50" rowKeyVar="row">
+									<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiOnayRaporHome.onaylananList}" var="fazlaMesai" style="width: 80%;" rows="50"
+										rowKeyVar="row">
 
 										<f:facet name="header">
 											<h:outputText value="Dönemsel Fazla Çalışma Raporu" />
@@ -177,7 +177,7 @@
 										</rich:column>
 										<rich:column style="text-align:center">
 											<f:facet name="header">
-												<h:outputText value="Süre" />
+												<h:outputText value="Süre (Saat)" />
 											</f:facet>
 											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesai.fazlaMesaiSaati)}" />
 										</rich:column>
@@ -185,7 +185,60 @@
 											<f:facet name="header">
 												<h:outputText value="Onay Nedeni" />
 											</f:facet>
-											<h:outputText value="#{fazlaMesai.fazlaMesaiOnayDurum.aciklama}" />
+											<SPAN id="mesai#{fazlaMesai.id}"> <h:panelGrid columns="2">
+													<h:outputText value="#{fazlaMesai.fazlaMesaiOnayDurum.aciklama}" />
+													<ui:fragment rendered="#{fazlaMesai.fazlaMesaiTalep!=null and fazlaMesaiOnayRaporHome.talepGoster}">
+														<h:graphicImage value="/img/msginfo.png" style="border:0" height="18" />
+														<rich:toolTip for="mesai#{fazlaMesai.id}">
+															<DIV>
+																<TABLE class="mars">
+																	<TR class="acik">
+																		<TD nowrap="nowrap"><B>Mesai Başlangıç Zamanı</B></TD>
+																		<TD nowrap="nowrap"><B> : </B> <h:outputText
+																				value="#{authenticatedUser.dateTimeFormatla(fazlaMesai.fazlaMesaiTalep.baslangicZamani)}" /></TD>
+
+																		<TD nowrap="nowrap"><B>Mesai Bitiş Zamanı</B></TD>
+																		<TD nowrap="nowrap"><h:outputText value="#{authenticatedUser.dateTimeFormatla(fazlaMesai.fazlaMesaiTalep.bitisZamani)}" /></TD>
+																	</TR>
+																	<TR class="koyu">
+																		<TD nowrap="nowrap"><B>Mesai Süresi (Saat)</B></TD>
+																		<TD nowrap="nowrap"><B> : </B> <h:outputText
+																				value="#{authenticatedUser.sayiFormatliGoster(fazlaMesai.fazlaMesaiTalep.mesaiSuresi)}" /></TD>
+
+																		<TD nowrap="nowrap"><B>Mesai Nedeni</B></TD>
+																		<TD nowrap="nowrap"><B> : </B> <ui:fragment>
+																				<h:outputText value="#{fazlaMesai.fazlaMesaiTalep.mesaiNeden.aciklama}" id="mnd" />
+																				<ui:fragment rendered="#{fazlaMesai.fazlaMesaiTalep.aciklama!=null and fazlaMesai.fazlaMesaiTalep.aciklama!='' }">
+																 [ #{fazlaMesai.fazlaMesaiTalep.aciklama} ]	</ui:fragment>
+																			</ui:fragment></TD>
+																	</TR>
+																	<TR class="acik">
+																		<TD nowrap="nowrap"><B>Onay'a Gönderen</B></TD>
+																		<TD nowrap="nowrap"><B> : </B> <h:outputText value="#{fazlaMesai.fazlaMesaiTalep.olusturanUser.adSoyad}" /></TD>
+
+																		<TD nowrap="nowrap"><B>Onay'a Gönderme Zamanı</B></TD>
+																		<TD nowrap="nowrap"><B> : </B> <h:outputText
+																				value="#{authenticatedUser.dateTimeFormatla(fazlaMesai.fazlaMesaiTalep.olusturmaTarihi)}" /></TD>
+																	</TR>
+																	<TR class="koyu">
+																		<TD nowrap="nowrap"><B>Onaylayan</B></TD>
+																		<TD nowrap="nowrap"><B> : </B> <ui:fragment rendered="#{fazlaMesai.fazlaMesaiTalep.guncelleyenUser.id == authenticatedUser.id}">
+																				<SPAN style="color: blue; font-weight: bold;"> <h:outputText value="#{fazlaMesai.fazlaMesaiTalep.guncelleyenUser.adSoyad}" />
+																				</SPAN>
+																			</ui:fragment> <ui:fragment rendered="#{fazlaMesai.fazlaMesaiTalep.guncelleyenUser.id != authenticatedUser.id}">
+																				<h:outputText value="#{fazlaMesai.fazlaMesaiTalep.guncelleyenUser.adSoyad}" />
+																			</ui:fragment></TD>
+
+																		<TD nowrap="nowrap"><B>Onaylama Zamanı</B></TD>
+																		<TD nowrap="nowrap"><B> : </B> <h:outputText
+																				value="#{authenticatedUser.dateTimeFormatla(fazlaMesai.fazlaMesaiTalep.guncellemeTarihi)}" /></TD>
+																	</TR>
+																</TABLE>
+															</DIV>
+
+														</rich:toolTip>
+													</ui:fragment>
+												</h:panelGrid></SPAN>
 										</rich:column>
 										<rich:column>
 											<f:facet name="header">

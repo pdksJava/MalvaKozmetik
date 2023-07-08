@@ -33,9 +33,9 @@ public class ExcelUtil implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -1634377377517034595L;
-	private static String FONT_NAME = "Arial";
-	private static Integer NORMAL_WEIGHT = 8;
-	private static Integer BOLD_WEIGHT = 9;
+	public static String FONT_NAME = "Arial";
+	public static Integer NORMAL_WEIGHT = 8;
+	public static Integer BOLD_WEIGHT = 9;
 	public static final String HEADER_COLOR = "excelHeaderColor";
 	public static final String ROW_COLOR = "excelRowColor";
 	public static final String ALIGN_CENTER = "alignCenter";

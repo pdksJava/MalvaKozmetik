@@ -17,8 +17,15 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -98,7 +105,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	private DenklestirmeAy denklestirmeAy;
 
-	private boolean adminRole, ikRole;
+	private boolean adminRole, ikRole, talepGoster;
 
 	private Boolean departmanBolumAyni = Boolean.FALSE, tekSirket;
 
@@ -129,6 +136,9 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	private TreeMap<String, Tanim> fazlaMesaiMap;
 	private Date basTarih, bitTarih;
+	private Font fontBold, font;
+	private CellStyle header, styleOdd, styleOddCenter, styleOddTimeStamp, styleOddDate, styleOddTutar, styleOddNumber;
+	private CellStyle styleEven, styleEvenCenter, styleEvenTimeStamp, styleEvenDate, styleEvenTutar, styleEvenNumber;
 	private Session session;
 
 	@Override
@@ -443,6 +453,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			onaylanmayanList.clear();
 		else
 			onaylanmayanList = new ArrayList<PersonelFazlaMesai>();
+		talepGoster = false;
 		return "";
 	}
 
@@ -639,6 +650,13 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			aylikPuantajDefault.setIlkGun(basTarih);
 			aylikPuantajDefault.setSonGun(bitTarih);
 			List<Personel> personelList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantajDefault, true, session);
+			if (PdksUtil.hasStringValue(sicilNo)) {
+				for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
+					Personel personel = (Personel) iterator.next();
+					if (!personel.getPdksSicilNo().equals(sicilNo))
+						iterator.remove();
+				}
+			}
 			listeTemizle();
 
 			if (!personelList.isEmpty()) {
@@ -707,7 +725,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 				}
 				personelIdler = null;
-
+				talepGoster = false;
 				vardiyaAciklamaMap = null;
 				tabAdi = "";
 				if (!listeMap.isEmpty()) {
@@ -715,8 +733,12 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					for (Liste liste : list) {
 						List<PersonelFazlaMesai> fazlaMesaiList = (List<PersonelFazlaMesai>) liste.getValue();
 						for (PersonelFazlaMesai personelFazlaMesai : fazlaMesaiList) {
-							if (personelFazlaMesai.isOnaylandi())
+							if (personelFazlaMesai.isOnaylandi()) {
+								if (!talepGoster)
+									talepGoster = personelFazlaMesai.getFazlaMesaiTalep() != null;
 								onaylananList.add(personelFazlaMesai);
+							}
+
 							else
 								onaylanmayanList.add(personelFazlaMesai);
 						}
@@ -854,6 +876,23 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
+		if (talepGoster) {
+			fontBold = ExcelUtil.createFont(wb, (short) 9, ExcelUtil.FONT_NAME, HSSFFont.BOLDWEIGHT_BOLD);
+			font = ExcelUtil.createFont(wb, (short) 8, ExcelUtil.FONT_NAME, HSSFFont.BOLDWEIGHT_NORMAL);
+		}
+		header = ExcelUtil.getStyleHeader(wb);
+		styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		styleOddTimeStamp = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		styleOddNumber = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb);
+		styleEven = ExcelUtil.getStyleEven(null, wb);
+		styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+		styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		styleEvenNumber = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
 		if (!list1.isEmpty())
 			sayfaOlustur(true, list1, wb);
 		if (!list2.isEmpty())
@@ -881,6 +920,15 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	 */
 	private void sayfaOlustur(boolean onayDurum, List<PersonelFazlaMesai> list, Workbook wb) {
 		Sheet sheet = ExcelUtil.createSheet(wb, onayDurum ? "Dönemsel Fazla Çalışma" : "Fazla Çalışma İptal", Boolean.TRUE);
+		CreationHelper factory = null;
+		// Drawing drawing = null;
+		// ClientAnchor anchor = null;
+		if (onayDurum && talepGoster) {
+			// drawing = sheet.createDrawingPatriarch();
+			factory = wb.getCreationHelper();
+			// anchor = factory.createClientAnchor();
+		}
+
 		TreeMap<String, String> sirketMap = new TreeMap<String, String>();
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			PersonelFazlaMesai personelFazlaMesai = (PersonelFazlaMesai) iter.next();
@@ -889,20 +937,6 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			String tekSirketTesisAdi = (personel.getSirket() != null ? personel.getSirket().getAd() : "") + " " + (personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 			sirketMap.put(tekSirketTesis, tekSirketTesisAdi);
 		}
-
-		CellStyle header = ExcelUtil.getStyleHeader(wb);
-		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
-		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleOddTimeStamp = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
-		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
-		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
-		CellStyle styleOddNumber = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_NUMBER, wb);
-		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
-		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
-		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
-		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
-		CellStyle styleEvenNumber = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
 
 		int col = 0, row = 0;
 
@@ -916,14 +950,20 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Başlangıç Zamanı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bitiş Zamanı");
 		if (onayDurum)
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süre");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süre (Saat)");
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(onayDurum ? "Onay" : "Red" + " Nedeni");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşlem Yapan");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşlem Zamanı");
+		if (factory != null)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Talep Bilgi");
 		boolean renk = true;
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			PersonelFazlaMesai personelFazlaMesai = (PersonelFazlaMesai) iter.next();
+			FazlaMesaiTalep fmt = null;
+			if (factory != null)
+				fmt = personelFazlaMesai.getFazlaMesaiTalep();
+
 			VardiyaGun vardiyaGun = personelFazlaMesai.getVardiyaGun();
 			Vardiya vardiya = vardiyaGun.getVardiya();
 			Personel personel = vardiyaGun.getPdksPersonel();
@@ -972,14 +1012,37 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					else
 						ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tutar.longValue());
 				}
+				Cell cellFazlaMesaiOnayDurum = ExcelUtil.getCell(sheet, row, col++, styleGenel);
+				String aciklama = personelFazlaMesai.getFazlaMesaiOnayDurum() != null ? personelFazlaMesai.getFazlaMesaiOnayDurum().getAciklama() : "";
+				cellFazlaMesaiOnayDurum.setCellValue(aciklama);
 
-				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personelFazlaMesai.getFazlaMesaiOnayDurum() != null ? personelFazlaMesai.getFazlaMesaiOnayDurum().getAciklama() : "");
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personelFazlaMesai.getOlusturanUser() != null ? personelFazlaMesai.getOlusturanUser().getAdSoyad() : "");
 				if (personelFazlaMesai.getOlusturmaTarihi() != null)
 					ExcelUtil.getCell(sheet, row, col++, styleZaman).setCellValue(personelFazlaMesai.getOlusturmaTarihi());
 				else
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				if (factory != null) {
+					if (fmt != null) {
+						List<String> sb = new ArrayList<String>();
+						sb.add("Mesai Başlangıç Zamanı : " + authenticatedUser.dateTimeFormatla(fmt.getBaslangicZamani()));
+						sb.add("Mesai Bitiş Zamanı : " + authenticatedUser.dateTimeFormatla(fmt.getBitisZamani()));
+						sb.add("Mesai Süresi (Saat) : " + authenticatedUser.sayiFormatliGoster(fmt.getMesaiSuresi()));
+						if (fmt.getMesaiNeden() != null)
+							sb.add("Mesai Nedeni : " + fmt.getMesaiNeden().getAciklama() + (PdksUtil.hasStringValue(fmt.getAciklama()) ? " [ " + fmt.getAciklama() + " ]" : ""));
+						sb.add("Onay'a Gönderen : " + fmt.getOlusturanUser().getAdSoyad());
+						sb.add("Onay'a Gönderme Zamanı : " + authenticatedUser.dateTimeFormatla(fmt.getOlusturmaTarihi()));
+						sb.add("Onaylayan : " + fmt.getGuncelleyenUser().getAdSoyad());
+						sb.add("Onaylama Zamanı : " + authenticatedUser.dateTimeFormatla(fmt.getGuncellemeTarihi()));
+						Cell fmtCell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
+						talepCell(wb, factory, fmtCell, sb);
+						// RichTextString rt = talepCell(wb, factory, null, sb);
+						// if (rt != null)
+						// setCellComment(drawing, anchor, cellFazlaMesaiOnayDurum, rt);
+						sb = null;
 
+					} else
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
+				}
 			} catch (Exception e) {
 				logger.error("Pdks hata in : \n");
 				e.printStackTrace();
@@ -991,6 +1054,77 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		}
 		for (int i = 0; i <= col; i++)
 			sheet.autoSizeColumn(i);
+	}
+
+	/**
+	 * @param drawing
+	 * @param anchor
+	 * @param cell
+	 * @param str1
+	 */
+	public void setCellComment(Drawing drawing, ClientAnchor anchor, Cell cell, RichTextString str1) {
+		if (str1 != null && cell != null) {
+			Comment comment1 = drawing.createCellComment(anchor);
+			comment1.setString(str1);
+			cell.setCellComment(comment1);
+		}
+	}
+
+	/**
+	 * @param wb
+	 * @param factory
+	 * @param drawing
+	 * @param anchor
+	 * @param cell
+	 * @param titles
+	 */
+	private RichTextString talepCell(Workbook wb, CreationHelper factory, Cell cell, List<String> titles) {
+		RichTextString rt = null;
+		if (titles != null && !titles.isEmpty()) {
+			for (Iterator iterator = titles.iterator(); iterator.hasNext();) {
+				String string = (String) iterator.next();
+				if (PdksUtil.hasStringValue(string) && string.indexOf(":") > 0)
+					continue;
+				iterator.hasNext();
+			}
+			int bas[] = new int[titles.size()], uz[] = new int[titles.size()];
+			StringBuffer sb = new StringBuffer();
+			int b1 = 0, b2 = 0;
+			int i = 0;
+			for (Iterator iterator = titles.iterator(); iterator.hasNext();) {
+				String string = (String) iterator.next();
+				String str = string.trim() + (iterator.hasNext() ? "\n" : "");
+				int basYer = (i > 0 ? uz[i - 1] : 0);
+				b1 = basYer + str.indexOf(":");
+				b2 = basYer + str.length();
+				sb.append(str);
+				bas[i] = b1;
+				uz[i] = b2;
+				++i;
+			}
+
+			String title = sb.toString();
+			rt = factory.createRichTextString(title);
+			rt.applyFont(font);
+			b1 = 0;
+			for (int j = 0; j < uz.length; j++) {
+				try {
+ 					b2 = bas[j];
+					rt.applyFont(b1, b2, fontBold);
+					b1 = uz[j];
+					// b1 = b2 + 1;
+					// b2 = uz[j];
+					// rt.applyFont(b1, b2, font);
+				} catch (Exception e) {
+					logger.error(j + " " + b1 + " " + b2 + " " + e);
+					e.printStackTrace();
+				}
+
+			}
+			if (cell != null)
+				cell.setCellValue(rt);
+		}
+		return rt;
 	}
 
 	/**
@@ -1513,6 +1647,14 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public void setOnaylanmayanList(List<PersonelFazlaMesai> onaylanmayanList) {
 		this.onaylanmayanList = onaylanmayanList;
+	}
+
+	public boolean isTalepGoster() {
+		return talepGoster;
+	}
+
+	public void setTalepGoster(boolean talepGoster) {
+		this.talepGoster = talepGoster;
 	}
 
 }
