@@ -120,15 +120,18 @@
 										<f:facet name="header">
 											<h:outputText value="Dönemsel Fazla Çalışma Raporu" />
 										</f:facet>
+										<rich:column style="text-align: center;width: 30px;" rendered="#{authenticatedUser.admin}">
+											<f:facet name="header">
+												<h:outputText value="ID" />
+											</f:facet>
+											<h:outputText value="#{fazlaMesai.id}" />
+										</rich:column>
 										<rich:column style="text-align: center;width: 30px;">
 											<f:facet name="header">
 												<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 											</f:facet>
 
 											<h:outputText value="#{fazlaMesai.vardiyaGun.pdksPersonel.sicilNo}" />
-
-
-
 										</rich:column>
 										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
 											<f:facet name="header">
@@ -266,6 +269,12 @@
 										<f:facet name="header">
 											<h:outputText value="Fazla Çalışma İptal Raporu" />
 										</f:facet>
+										<rich:column style="text-align: center;width: 30px;" rendered="#{authenticatedUser.admin}">
+											<f:facet name="header">
+												<h:outputText value="ID" />
+											</f:facet>
+											<h:outputText value="#{fazlaMesai.id}" />
+										</rich:column>
 										<rich:column style="text-align: center;width: 30px;">
 											<f:facet name="header">
 												<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
