@@ -1380,14 +1380,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.clear();
 		User user = (User) authenticatedUser.clone();
-		HashMap paramMap = new HashMap();
-		paramMap.clear();
-		paramMap.put("tipi", Tanim.TIPI_ONAYLAMAMA_NEDEN);
-		paramMap.put("durum", Boolean.TRUE);
-		if (session != null)
-			paramMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<Tanim> redSebebiList = pdksEntityController.getObjectByInnerObjectList(paramMap, Tanim.class);
-		setRedSebebiList(redSebebiList);
+		// HashMap paramMap = new HashMap();
+		// paramMap.clear();
+		// paramMap.put("tipi", Tanim.TIPI_ONAYLAMAMA_NEDEN);
+		// paramMap.put("durum", Boolean.TRUE);
+		// if (session != null)
+		// paramMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<Tanim> sebepList = ortakIslemler.getTanimList(Tanim.TIPI_ONAYLAMAMA_NEDEN, session);
+		setRedSebebiList(sebepList);
 		if (vekilYoneticiMap == null)
 			vekilYoneticiMap = new TreeMap<Long, User>();
 		HashMap<Long, PersonelIzinOnay> liste = new HashMap<Long, PersonelIzinOnay>();
@@ -2497,13 +2497,13 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			if (!authenticatedUser.isAdmin() && !authenticatedUser.isIK())
 				nedenSor = izin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_IKINCI_YONETICI_ONAYINDA || izin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_IK_ONAYINDA;
 			if (nedenSor) {
-				HashMap paramMap = new HashMap();
-				paramMap.clear();
-				paramMap.put("tipi", Tanim.TIPI_ONAYLAMAMA_NEDEN);
-				paramMap.put("durum", Boolean.TRUE);
-				if (session != null)
-					paramMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				redSebebiList = pdksEntityController.getObjectByInnerObjectList(paramMap, Tanim.class);
+				// HashMap paramMap = new HashMap();
+				// paramMap.clear();
+				// paramMap.put("tipi", Tanim.TIPI_ONAYLAMAMA_NEDEN);
+				// paramMap.put("durum", Boolean.TRUE);
+				// if (session != null)
+				// paramMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				redSebebiList = ortakIslemler.getTanimList(Tanim.TIPI_ONAYLAMAMA_NEDEN, session);
 
 			}
 			setRedSebebiList(redSebebiList);

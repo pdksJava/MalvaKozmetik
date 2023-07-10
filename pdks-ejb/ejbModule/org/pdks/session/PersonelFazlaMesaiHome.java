@@ -83,8 +83,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 	FacesMessages facesMessages;
 
 	List<HareketKGS> hareketList = new ArrayList<HareketKGS>();
-	private List<Tanim> fazlaMesaiList = new ArrayList<Tanim>(), bolumList;
-	private List<Tanim> onaylamamaNedeniList = new ArrayList<Tanim>();
+	private List<Tanim> fazlaMesaiList = new ArrayList<Tanim>(), bolumList, onaylamamaNedeniList = new ArrayList<Tanim>();
 	private VardiyaGun vardiyaGun;
 	private List<Sirket> sirketList = new ArrayList<Sirket>();
 	private Sirket sirket;
@@ -387,6 +386,15 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 	 * @param onayDurum
 	 */
 	public void ekle(HareketKGS hareket, boolean onayDurum) {
+		String tipi = null, sort = null;
+		if (onayDurum) {
+			tipi = Tanim.TIPI_FAZLA_MESAI_NEDEN;
+			sort = "getAciklama";
+		} else {
+			tipi = Tanim.TIPI_ONAYLAMAMA_NEDEN;
+			sort = "getKodu";
+		}
+		List<Tanim> list = ortakIslemler.getTanimAlanList(tipi, sort, "S", session);
 		PersonelFazlaMesai fazlaMesai = getInstance();
 		fazlaMesai.setBasZaman(hareket.getGirisZaman());
 		fazlaMesai.setBitZaman(hareket.getCikisZaman());
@@ -413,7 +421,9 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 					fazlaMesaiTalepler = PdksUtil.sortListByAlanAdi(fazlaMesaiTalepler, "id", Boolean.TRUE);
 				vg.setFazlaMesaiTalepler(fazlaMesaiTalepler);
 			}
-		}
+			setFazlaMesaiList(list);
+		} else
+			setOnaylamamaNedeniList(list);
 
 		fazlaMesai.setHareket(hareket);
 		fazlaMesai.setHareketId(hareket.getId());
@@ -421,9 +431,6 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		fazlaMesai.setFazlaMesaiSaati(hareket.getFazlaMesai());
 
 		hareket.setPersonelFazlaMesai(fazlaMesai);
-		List<Tanim> list = ortakIslemler.getTanimList(Tanim.TIPI_FAZLA_MESAI_NEDEN, session);
-
-		setFazlaMesaiList(list);
 
 	}
 
@@ -581,8 +588,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			seciliEkSaha4 = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
 		}
-		List<Tanim> list1 = ortakIslemler.getTanimList(Tanim.TIPI_ONAYLAMAMA_NEDEN, session);
-		setOnaylamamaNedeniList(list1);
+
 		ArrayList<String> sicilNoList = null;
 		if (fazlaMesaiGirisDurum)
 			sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.FALSE, session);

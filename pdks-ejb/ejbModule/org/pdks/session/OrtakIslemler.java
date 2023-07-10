@@ -6240,12 +6240,12 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	private List<Tanim> getTanimAlanList(String tipi, String method, String tip, Session session) {
+	public List<Tanim> getTanimAlanList(String tipi, String method, String tip, Session session) {
 		List<Tanim> tanimList = null;
 		HashMap parametreMap = new HashMap();
 		try {
 			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT DISTINCT * FROM " + Tanim.TABLE_NAME + " WITH(nolock) ");
+			sb.append("SELECT DISTINCT V.* FROM " + Tanim.TABLE_NAME + " V WITH(nolock) ");
 			sb.append(" WHERE " + Tanim.COLUMN_NAME_TIPI + "=:tipi AND " + Tanim.COLUMN_NAME_DURUM + "=1");
 			parametreMap.put("tipi", tipi);
 			if (session != null)
