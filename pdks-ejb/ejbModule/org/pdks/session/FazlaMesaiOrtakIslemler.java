@@ -713,6 +713,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			String pattern = PdksUtil.getDateTimeFormat();
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 			List<String> list = new ArrayList<String>();
+			if (vardiyaGun.getVardiyaKeyStr().equals("9084_20230603"))
+				logger.debug(vardiyaGun.getId());
 			try {
 				if (islemVardiya.isCalisma()) {
 					if (islemVardiya.getVardiyaTelorans1BasZaman() != null && islemVardiya.getVardiyaFazlaMesaiBasZaman() != null && islemVardiya.getVardiyaBasZaman().getTime() > vardiyaGun.getVardiyaDate().getTime()

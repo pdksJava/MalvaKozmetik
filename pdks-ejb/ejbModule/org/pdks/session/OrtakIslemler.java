@@ -9412,9 +9412,9 @@ public class OrtakIslemler implements Serializable {
 				if (vardiyaGun.getVardiya().isCalisma() && islemVardiya.getBasSaat() <= islemVardiya.getBitSaat()) {
 					VardiyaGun sonrakiVardiyaGun = vardiyaGun.getSonrakiVardiyaGun();
 					if (sonrakiVardiyaGun != null) {
-						Vardiya vardiya = sonrakiVardiyaGun.getIslemVardiya();
-						if (vardiya != null && vardiya.isCalisma() == false) {
-							islemVardiya.setVardiyaFazlaMesaiBitZaman(PdksUtil.addTarih(vardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -40));
+						Vardiya sonrakiVardiya = sonrakiVardiyaGun.getIslemVardiya();
+						if (sonrakiVardiya != null && sonrakiVardiya.isCalisma() == false) {
+							islemVardiya.setVardiyaFazlaMesaiBitZaman(PdksUtil.addTarih(sonrakiVardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -40));
 						}
 					}
 				}
@@ -9422,8 +9422,9 @@ public class OrtakIslemler implements Serializable {
 					Date vardiyaTelorans2BitZaman = PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -20);
 					if (vardiyaTelorans2BitZaman.after(islemVardiya.getVardiyaBitZaman()))
 						islemVardiya.setVardiyaTelorans2BitZaman(vardiyaTelorans2BitZaman);
-					// if (islemVardiya.isCalisma() == false)
-					islemVardiya.setVardiyaBitZaman(PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -40));
+					Date vardiyaBitZaman = PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -40);
+					if (vardiyaBitZaman.after(islemVardiya.getVardiyaBasZaman()))
+						islemVardiya.setVardiyaBitZaman(vardiyaBitZaman);
 
 				}
 				if (islemVardiya != null)
@@ -10793,7 +10794,7 @@ public class OrtakIslemler implements Serializable {
 		}
 		Sheet sheet = ExcelUtil.createSheet(wb, "Personel Listesi", false);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
- 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
