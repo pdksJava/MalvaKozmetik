@@ -79,7 +79,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private Font fontRed;
-	private String bolumAciklama;
+	private String bolumAciklama, sicilNo;
 	private boolean tesisDurum = false, digerTesisDurum = false;
 	private Session session;
 
@@ -110,6 +110,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		if (aramaSecenekleri == null)
 			aramaSecenekleri = new AramaSecenekleri(authenticatedUser);
 		fillEkSahaTanim();
+		sicilNo = "";
 		Date dateBas = PdksUtil.buGun();
 		setDate(dateBas);
 		if (aramaSecenekleri.getDepartmanId() == null) {
@@ -251,6 +252,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		HashMap map = new HashMap();
 		map.put("pdks=", Boolean.TRUE);
 		map.put("durum=", Boolean.TRUE);
+		if (PdksUtil.hasStringValue(sicilNo))
+			map.put("pdksSicilNo=", sicilNo);
 		if (aramaSecenekleri.getSirketId() != null)
 			map.put("sirket.id=", aramaSecenekleri.getSirketId());
 		else {
@@ -906,7 +909,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 	public String vardiyaOzetExcel() {
 		try {
-			ByteArrayOutputStream baosDosya = vardiyaOzetExcellDevam();
+			ByteArrayOutputStream baosDosya = vardiyaOzetExcelDevam();
 			if (baosDosya != null) {
 				String dosyaAdi = "VardiyaOzetRaporu" + PdksUtil.convertToDateString(date, "yyyyMMdd") + ".xlsx";
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
@@ -921,7 +924,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		return "";
 	}
 
-	private ByteArrayOutputStream vardiyaOzetExcellDevam() {
+	private ByteArrayOutputStream vardiyaOzetExcelDevam() {
 		ByteArrayOutputStream baosDosya = null;
 		try {
 			Workbook wb = new XSSFWorkbook();
@@ -950,6 +953,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("ÇALIŞAN SAYISI");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İZİNLİ SAYISI");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("TOPLAM SAYI");
+			List<VardiyaGun> vardiyaGunList = new ArrayList<VardiyaGun>();
 			for (AylikPuantaj aylikPuantaj : puantajList) {
 				col = 0;
 				++row;
@@ -967,6 +971,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(aciklama);
 				for (Iterator iterator = aylikPuantaj.getVardiyalar().iterator(); iterator.hasNext();) {
 					VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+					vardiyaGunList.add(vardiyaGun);
 					if (vardiyaGun.getCalismaSuresi() > 0)
 						ExcelUtil.getCell(sheet, row, col++, satirTutarStyle).setCellValue(new Double(vardiyaGun.getCalismaSuresi()).longValue());
 					else
@@ -990,7 +995,6 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			for (int i = 0; i < col; i++)
 				sheet.autoSizeColumn(i);
 			if (izinVardiyaGunList.size() + gelmeyenVardiyaGunList.size() + gecGelenVardiyaGunList.size() > 0 + erkenCikanVardiyaGunList.size()) {
-
 				sheet = ExcelUtil.createSheet(wb, "DevamsizlikDetay " + PdksUtil.convertToDateString(date, "yyyyMMdd"), Boolean.TRUE);
 				col = 0;
 				row = 0;
@@ -998,22 +1002,26 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				String tip = "";
 				XSSFCellStyle satirStyle = null, satirCenter = null;
 				List<Integer> baslikList = new ArrayList<Integer>();
-
 				if (izinVardiyaGunList.size() + gelmeyenVardiyaGunList.size() + gecGelenVardiyaGunList.size() > 0) {
+					if (!izinVardiyaGunList.isEmpty())
+						vardiyaGunList.addAll(izinVardiyaGunList);
+					if (!gelmeyenVardiyaGunList.isEmpty())
+						vardiyaGunList.addAll(gelmeyenVardiyaGunList);
+					if (!gecGelenVardiyaGunList.isEmpty())
+						vardiyaGunList.addAll(gecGelenVardiyaGunList);
 					ExcelUtil.getCell(sheet, row, col, header).setCellValue("RAPOR/İZİN/GEÇ GİRİŞ TABLOSU");
-					for (int i = 1; i < 9; i++)
+					int son = 7 + (tesisDurum ? 1 : 0);
+					for (int i = 1; i < son; i++)
 						ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");
 					baslikList.add(row);
-
-					++row;
+ 					++row;
 					col = 0;
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Soyadı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 					boolean tesisDurumu = tesisDurum;
-
-					if (tesisDurumu)
+ 					if (tesisDurumu)
 						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
@@ -1108,10 +1116,14 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					}
 				}
 			}
+			if (!vardiyaGunList.isEmpty())
+				ortakIslemler.vardiyaHareketExcel(date, vardiyaGunList, bolumAciklama, wb);
+
 			baosDosya = new ByteArrayOutputStream();
 			wb.write(baosDosya);
 		} catch (Exception e) {
-
+			logger.error(e);
+			e.printStackTrace();
 		}
 		return baosDosya;
 	}
@@ -1312,5 +1324,13 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 	public void setDigerTesisDurum(boolean digerTesisDurum) {
 		this.digerTesisDurum = digerTesisDurum;
+	}
+
+	public String getSicilNo() {
+		return sicilNo;
+	}
+
+	public void setSicilNo(String sicilNo) {
+		this.sicilNo = sicilNo;
 	}
 }

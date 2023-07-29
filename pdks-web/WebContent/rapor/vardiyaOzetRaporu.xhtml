@@ -46,6 +46,14 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+								<h:inputText value="#{vardiyaOzetRaporuHome.sicilNo}">
+									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="vardiyaOzetPanel"
+										action="#{vardiyaOzetRaporuHome.puantajList.clear()}" />
+
+								</h:inputText>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">Tarih</ui:define>
 								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{vardiyaOzetRaporuHome.date}" id="dateFilter">
 									<a4j:support event="onchanged" action="#{vardiyaOzetRaporuHome.fillTesisList()}" onclick="#{rich:component('wait')}.show()"

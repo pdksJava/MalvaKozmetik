@@ -1307,7 +1307,7 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public String getVardiyaPlanAdi() {
-		String str = getVardiyaAdi(this.islemVardiya == null ? this.vardiya : this.islemVardiya);
+		String str = getVardiyaAdi(this.vardiya);
 		return str;
 	}
 
@@ -1325,7 +1325,7 @@ public class VardiyaGun extends BaseObject {
 				tmp.setVardiyaZamani();
 				if (vTemp.isCalisma()) {
 					String pattern = PdksUtil.getSaatFormat();
-					Vardiya tmpVardiya = vTemp.getVardiyaTarih() == null ? tmp.getIslemVardiya() : vTemp;
+					Vardiya tmpVardiya = tmp.getIslemVardiya();
 					str = PdksUtil.convertToDateString(tmpVardiya.getVardiyaBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(tmpVardiya.getVardiyaBitZaman(), pattern) + " [ " + vTemp.getKisaAdi() + " ] ";
 					try {
 						str += " Net Süre : " + PdksUtil.numericValueFormatStr(tmpVardiya.getNetCalismaSuresi(), null);

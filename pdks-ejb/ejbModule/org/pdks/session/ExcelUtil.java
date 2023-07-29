@@ -13,10 +13,14 @@ import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.PrintSetup;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -143,6 +147,20 @@ public class ExcelUtil implements Serializable {
 		headerFont.setBoldweight(boldweight);
 
 		return headerFont;
+	}
+
+	/**
+	 * @param drawing
+	 * @param anchor
+	 * @param cell
+	 * @param str1
+	 */
+	public static void setCellComment(Drawing drawing, ClientAnchor anchor, Cell cell, RichTextString str1) {
+		if (str1 != null && cell != null) {
+			Comment comment1 = drawing.createCellComment(anchor);
+			comment1.setString(str1);
+			cell.setCellComment(comment1);
+		}
 	}
 
 	/**

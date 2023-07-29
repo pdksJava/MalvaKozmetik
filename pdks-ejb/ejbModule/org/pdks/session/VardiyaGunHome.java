@@ -9567,31 +9567,36 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 										String vardiyaKey = list.get(gun++);
 										Vardiya pdksVardiya = null;
-										if (vardiyaKey != null && !vardiyaKey.equals("")) {
-											if (izinler != null && !izinler.isEmpty()) {
-												vardiyaList.add(pdksVardiyaGun);
-												setIzin(personel.getId(), izinler, vardiyaList);
-												vardiyaList.clear();
-											}
-											if (pdksVardiyaGun.getIzin() != null) {
-												pdksVardiya = pdksVardiyaGun.getVardiya();
-												if (aylikPuantajSablonNew.getCalismaModeli() != null) {
-													if (vardiyaMap.containsKey(vardiyaKey)) {
-														Vardiya pdksVardiyaNew = vardiyaMap.get(vardiyaKey);
-														if (!pdksVardiyaNew.getId().equals(pdksVardiya.getId())) {
-															pdksVardiya = pdksVardiyaNew;
+										if (vardiyaKey != null) {
+											if (PdksUtil.setTurkishStr(vardiyaKey).equalsIgnoreCase("ISTIFA"))
+												vardiyaKey = "";
+
+											if (!vardiyaKey.equals("")) {
+												if (izinler != null && !izinler.isEmpty()) {
+													vardiyaList.add(pdksVardiyaGun);
+													setIzin(personel.getId(), izinler, vardiyaList);
+													vardiyaList.clear();
+												}
+												if (pdksVardiyaGun.getIzin() != null) {
+													pdksVardiya = pdksVardiyaGun.getVardiya();
+													if (aylikPuantajSablonNew.getCalismaModeli() != null) {
+														if (vardiyaMap.containsKey(vardiyaKey)) {
+															Vardiya pdksVardiyaNew = vardiyaMap.get(vardiyaKey);
+															if (!pdksVardiyaNew.getId().equals(pdksVardiya.getId())) {
+																pdksVardiya = pdksVardiyaNew;
+															}
 														}
 													}
-												}
-											} else if (vardiyaMap.containsKey(vardiyaKey)) {
-												pdksVardiya = vardiyaMap.get(vardiyaKey);
-											} else {
-												if (!izinTipiMap.containsKey(vardiyaKey)) {
-													hataVar = Boolean.TRUE;
-													PdksUtil.addMessageAvailableWarn(sicilNo + " " + perMap.get(sicilNo) + " " + PdksUtil.convertToDateString(vardiyaDate, "d/M/yyyyy") + " günü " + vardiyaKey + " vardiya bilgisi okunamadı!");
+												} else if (vardiyaMap.containsKey(vardiyaKey)) {
+													pdksVardiya = vardiyaMap.get(vardiyaKey);
 												} else {
-													if (pdksVardiya == null)
-														pdksVardiya = pdksVardiyaGun.getVardiya();
+													if (!izinTipiMap.containsKey(vardiyaKey)) {
+														hataVar = Boolean.TRUE;
+														PdksUtil.addMessageAvailableWarn(sicilNo + " " + perMap.get(sicilNo) + " " + PdksUtil.convertToDateString(vardiyaDate, "d/M/yyyyy") + " günü " + vardiyaKey + " vardiya bilgisi okunamadı!");
+													} else {
+														if (pdksVardiya == null)
+															pdksVardiya = pdksVardiyaGun.getVardiya();
+													}
 												}
 											}
 										}

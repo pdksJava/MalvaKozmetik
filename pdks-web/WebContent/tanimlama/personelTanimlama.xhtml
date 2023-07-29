@@ -860,7 +860,7 @@
 										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.sirket.erp==false}">
 											<ui:define name="label">#{ortakIslemler.yoneticiAciklama()}</ui:define>
 											<h:selectOneMenu id="toComp" value="#{pdksPersonelHome.instance.yoneticisi}"
-												disabled="#{pdksPersonelHome.instance.sirket.erp and (ortakIslemler.getParameterKey('yoneticiERPKontrol')=='' or ortakIslemler.getParameterKey('yoneticiERPKontrol')=='1')}">
+												disabled="#{pdksPersonelHome.instance.sirket.erp and  (ortakIslemler.getParameterKey('yoneticiERPKontrol')=='' or ortakIslemler.getParameterKey('yoneticiERPKontrol')=='1')}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.pdksPersonelList}" label="#{comp.adSoyad}" noSelectionLabel="Lütfen seçiniz" />
 												<a4j:support event="onchange" />
 												<s:convertEntity />
@@ -877,7 +877,7 @@
 										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.yoneticiRolVarmi and pdksPersonelHome.instance.sirket.erp}">
 											<ui:define name="label">#{ortakIslemler.yoneticiAciklama()}</ui:define>
 											<h:selectOneMenu id="toComp" value="#{pdksPersonelHome.asilYonetici1}"
-												disabled="#{pdksPersonelHome.personelERPGuncelleme!='M' and pdksPersonelHome.instance.sanalPersonel==false and pdksPersonelHome.instance.sirket.erp and (ortakIslemler.getParameterKey('yoneticiERPKontrol')=='' or ortakIslemler.getParameterKey('yoneticiERPKontrol')=='1')}">
+												disabled="#{ortakIslemler.getParameterKey('yoneticiERP1Kontrol')=='' and pdksPersonelHome.personelERPGuncelleme!='M' and pdksPersonelHome.instance.sanalPersonel==false and pdksPersonelHome.instance.sirket.erp and (ortakIslemler.getParameterKey('yoneticiERPKontrol')=='' or ortakIslemler.getParameterKey('yoneticiERPKontrol')=='1')}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.yoneticiList}" label="#{comp.adSoyad}" noSelectionLabel="Lütfen seçiniz" />
 												<s:convertEntity />
 											</h:selectOneMenu>

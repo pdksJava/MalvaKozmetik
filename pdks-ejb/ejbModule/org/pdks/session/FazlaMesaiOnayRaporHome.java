@@ -20,10 +20,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -1056,19 +1053,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			sheet.autoSizeColumn(i);
 	}
 
-	/**
-	 * @param drawing
-	 * @param anchor
-	 * @param cell
-	 * @param str1
-	 */
-	public void setCellComment(Drawing drawing, ClientAnchor anchor, Cell cell, RichTextString str1) {
-		if (str1 != null && cell != null) {
-			Comment comment1 = drawing.createCellComment(anchor);
-			comment1.setString(str1);
-			cell.setCellComment(comment1);
-		}
-	}
+	
 
 	/**
 	 * @param wb

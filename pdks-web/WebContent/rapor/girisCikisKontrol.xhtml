@@ -11,16 +11,54 @@
 		<h:form id="formExcel">
 
 			<rich:panel header="#{ortakIslemler.getMenuUserAdi(girisCikisKontrolHome.session,'girisCikisKontrol')}">
-				<h:panelGrid columns="1">
+				<h:panelGrid columns="1" id="secimler">
+					<s:decorate template="/layout/edit.xhtml"
+						rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and girisCikisKontrolHome.aramaSecenekleri.departmanIdList.size()>1}">
+						<ui:define name="label">PDKS Departman</ui:define>
+						<h:selectOneMenu value="#{girisCikisKontrolHome.aramaSecenekleri.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+							<f:selectItem itemLabel="Lütfen seçiniz" />
+							<f:selectItems value="#{girisCikisKontrolHome.aramaSecenekleri.departmanIdList}" />
+							<a4j:support event="onchange" action="#{girisCikisKontrolHome.fillSirketList()}" ajaxSingle="true" reRender="secimler,hareketPanel" />
+						</h:selectOneMenu>
 
-					<s:decorate template="/layout/edit.xhtml">
-						<ui:define name="label">Tarih</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{girisCikisKontrolHome.date}" required="true"
-							requiredMessage="Tarih giriniz" />
+
 					</s:decorate>
-					<a4j:commandButton status="ajaxStatus" value="Hareket Listele" action="#{girisCikisKontrolHome.fillHareketList}" reRender="hareketPanel" />
-				</h:panelGrid>
+					<h:panelGrid columns="2">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{girisCikisKontrolHome.aramaSecenekleri.sirketIdList.size()>0}">
+							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+							<h:selectOneMenu value="#{girisCikisKontrolHome.aramaSecenekleri.sirketId}"
+								disabled="#{girisCikisKontrolHome.aramaSecenekleri.sirketIdList.size()==1}">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{girisCikisKontrolHome.aramaSecenekleri.sirketIdList}" />
+								<a4j:support event="onchange" action="#{girisCikisKontrolHome.fillTesisList()}" ajaxSingle="true" reRender="secimler,hareketPanel" />
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{ortakIslemler.tesisDurumu and girisCikisKontrolHome.aramaSecenekleri.tesisList!=null and girisCikisKontrolHome.aramaSecenekleri.tesisList.size()>0}">
+							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+							<h:selectOneMenu value="#{girisCikisKontrolHome.aramaSecenekleri.tesisId}"
+								disabled="#{girisCikisKontrolHome.aramaSecenekleri.tesisList.size()==1}">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{girisCikisKontrolHome.aramaSecenekleri.tesisList}" />
 
+							</h:selectOneMenu>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+							<h:inputText value="#{girisCikisKontrolHome.sicilNo}">
+								<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="hareketPanel"
+									action="#{girisCikisKontrolHome.vardiyaGunList.clear()}" />
+
+							</h:inputText>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Tarih</ui:define>
+							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{girisCikisKontrolHome.date}" required="true"
+								requiredMessage="Tarih giriniz" />
+						</s:decorate>
+						<a4j:commandButton status="ajaxStatus" value="Hareket Listele" action="#{girisCikisKontrolHome.fillHareketList}" reRender="hareketPanel" />
+					</h:panelGrid>
+				</h:panelGrid>
 			</rich:panel>
 
 			<a4j:region>
@@ -107,9 +145,13 @@
 							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 						</f:facet>
 					</rich:dataTable>
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
-						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:hareketTable')}"
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{girisCikisKontrolHome.girisCikisExcel()}"
 						rendered="#{not empty girisCikisKontrolHome.vardiyaGunList}" />
+
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{girisCikisKontrolHome.vardiyaOzetExcel}" target="blank"
+						rendered="#{not empty vardiyaOzetRaporuHome.puantajList}">
+						<a4j:support event="oncomplete" status="ajaxStatus" />
+					</h:commandLink>
 
 				</rich:panel>
 				<rich:modalPanel id="hareketDetayPanel" autosized="true" width="450">
