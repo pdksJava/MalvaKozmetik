@@ -13252,7 +13252,8 @@ public class OrtakIslemler implements Serializable {
 							hesaplananDenklestirme.setDevredenSure(0.0d);
 						}
 
-						puantajData.setDevredenSure(hesaplananDenklestirme.getDevredenSure());
+						puantajData.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
+
 					}
 					if (!calismaModeli.isFazlaMesaiVarMi()) {
 						puantajData.setHaftaCalismaSuresi(0.0d);

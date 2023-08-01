@@ -729,7 +729,8 @@ public class Vardiya extends BaseObject {
 		if (bitSaat > basSaat) {
 			if (sonrakiVardiya != null && sonrakiVardiya.isHaftaTatil()) {
 				cal1.add(Calendar.MINUTE, this.getHaftaTatiliFazlaMesaiBasDakika());
-				sonGun = cal1.getTime();
+				if (vardiyaBitZaman != null && cal1.getTime().after(vardiyaBitZaman))
+					sonGun = cal1.getTime();
 			}
 
 			if (sonGun != null)
@@ -835,7 +836,8 @@ public class Vardiya extends BaseObject {
 		if (bitSaat > basSaat) {
 			if (sonrakiVardiya != null && sonrakiVardiya.isHaftaTatil()) {
 				cal.add(Calendar.MINUTE, this.getHaftaTatiliFazlaMesaiBasDakika());
-				sonGun = cal.getTime();
+				if (vardiyaBitZaman != null && cal.getTime().after(vardiyaBitZaman))
+					sonGun = cal.getTime();
 				// sonGun = PdksUtil.tariheGunEkleCikar(tarih, 1);
 			}
 
@@ -994,7 +996,9 @@ public class Vardiya extends BaseObject {
 			if (sonrakiVardiya != null && sonrakiVardiya.isHaftaTatil()) {
 				cal.setTime(vardiyaTarih);
 				cal.add(Calendar.MINUTE, this.getHaftaTatiliFazlaMesaiBasDakika());
-				sonGun = cal.getTime();
+				if (vardiyaBitZaman != null && cal.getTime().after(vardiyaBitZaman))
+					sonGun = cal.getTime();
+
 				// sonGun = PdksUtil.tariheGunEkleCikar(tarih, 1);
 			}
 
@@ -1390,7 +1394,7 @@ public class Vardiya extends BaseObject {
 
 	public void setVardiyaFazlaMesaiBitZaman(Date value) {
 		if (value != null) {
-			if (vardiyaDateStr != null && vardiyaDateStr.equals("20221222")) {
+			if (vardiyaDateStr != null && vardiyaDateStr.equals("20230603")) {
 				++islemAdet;
 				logger.debug(islemAdet + " " + value);
 			}
