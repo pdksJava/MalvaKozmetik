@@ -561,7 +561,7 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	public static Double getYuvarla(Double deger) {
 		Double yeniDeger = null;
 		if (deger != null) {
-			if (deger > 0 && deger.doubleValue() > deger.longValue()) {
+			if (PdksUtil.isDoubleValueNotLong(deger)) {
 				yeniDeger = PdksUtil.setSureDoubleRounded(deger);
 			} else
 				yeniDeger = deger;
@@ -580,7 +580,7 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	public static Double setSureDoubleTypeRounded(Double deger, int yarimYuvarla) {
 		Double yeniDeger = null;
 		if (deger != null) {
-			if (deger > 0 && deger.doubleValue() > deger.longValue()) {
+			if (PdksUtil.isDoubleValueNotLong(deger)) {
 				yeniDeger = PdksUtil.setSureDoubleTypeRounded(deger, yarimYuvarla);
 			} else
 				yeniDeger = deger;

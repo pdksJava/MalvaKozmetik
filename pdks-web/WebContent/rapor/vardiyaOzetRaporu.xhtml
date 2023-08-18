@@ -105,7 +105,11 @@
 								<tr>
 									<td class="#{aylikPuantaj.trClass}" style="width: 150px"><b> <ui:fragment rendered="#{aylikPuantaj.pdksPersonel.ekSaha3!=null}">
 									#{aylikPuantaj.pdksPersonel.ekSaha3.aciklama}
-								</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.pdksPersonel.ekSaha3==null}">
+									<ui:fragment
+													rendered="#{vardiyaOzetRaporuHome.ekSaha4Tanim!=null and aylikPuantaj.pdksPersonel.ekSaha3.kodu==vardiyaOzetRaporuHome.altBolumGrupGoster and aylikPuantaj.pdksPersonel.ekSaha4!=null}">
+									   #{aylikPuantaj.pdksPersonel.ekSaha4.aciklama}
+									</ui:fragment>
+											</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.pdksPersonel.ekSaha3==null}">
 												<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.calismaModeli!=null}">
 									#{aylikPuantaj.pdksPersonel.calismaModeli.aciklama}
 								</ui:fragment>
@@ -164,7 +168,13 @@
 									<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
 										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
 									</ui:fragment>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama} <ui:fragment
+											rendered="#{vardiyaOzetRaporuHome.ekSaha4Tanim!=null and vardiyaGun.personel.ekSaha3.kodu==vardiyaOzetRaporuHome.altBolumGrupGoster and vardiyaGun.personel.ekSaha4!=null}">
+									   #{vardiyaGun.personel.ekSaha4.aciklama}
+									</ui:fragment>
+
+
+									</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 200px"><ui:fragment rendered="#{vardiyaGun.izin.izinTipi!=null}">#{vardiyaGun.izin.izinTipi.izinTipiTanim.aciklama}</ui:fragment>
@@ -181,7 +191,10 @@
 									<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
 										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
 									</ui:fragment>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama} <ui:fragment
+											rendered="#{vardiyaOzetRaporuHome.ekSaha4Tanim!=null and vardiyaGun.personel.ekSaha3.kodu==vardiyaOzetRaporuHome.altBolumGrupGoster and vardiyaGun.personel.ekSaha4!=null}">
+									   #{vardiyaGun.personel.ekSaha4.aciklama}
+									</ui:fragment></td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.timeFormatla(vardiyaGun.ilkGiris.zaman)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 200px"><ui:fragment rendered="#{vardiyaGun.ilkGiris!=null}">
@@ -200,7 +213,10 @@
 									<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
 										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
 									</ui:fragment>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama} <ui:fragment
+											rendered="#{vardiyaOzetRaporuHome.ekSaha4Tanim!=null and vardiyaGun.personel.ekSaha3.kodu==vardiyaOzetRaporuHome.altBolumGrupGoster and vardiyaGun.personel.ekSaha4!=null}">
+									   #{vardiyaGun.personel.ekSaha4.aciklama}
+									</ui:fragment></td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 200px"><b> <ui:fragment rendered="#{vardiyaGun.vardiya.FMI}">#{vardiyaGun.vardiya.adi}</ui:fragment>
@@ -254,7 +270,10 @@
 									<ui:fragment rendered="#{vardiyaOzetRaporuHome.digerTesisDurum}">
 										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
 									</ui:fragment>
-									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama} <ui:fragment
+											rendered="#{vardiyaOzetRaporuHome.ekSaha4Tanim!=null and vardiyaGun.personel.ekSaha3.kodu==vardiyaOzetRaporuHome.altBolumGrupGoster and vardiyaGun.personel.ekSaha4!=null}">
+									   #{vardiyaGun.personel.ekSaha4.aciklama}
+									</ui:fragment></td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.timeFormatla(vardiyaGun.sonCikis.zaman)}</td>
 									<td class="#{vardiyaGun.tdClass}" style="width: 200px">Erken çıkış

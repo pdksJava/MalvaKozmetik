@@ -78,8 +78,9 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>();
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
+	private Tanim ekSaha4Tanim;
 	private Font fontRed;
-	private String bolumAciklama, sicilNo;
+	private String bolumAciklama, sicilNo, altBolumGrupGoster = "ABG";
 	private boolean tesisDurum = false, digerTesisDurum = false;
 	private Session session;
 
@@ -435,12 +436,14 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					}
 
 					try {
-						TreeMap<Long, Liste> veriMap = new TreeMap<Long, Liste>();
+						TreeMap<String, Liste> veriMap = new TreeMap<String, Liste>();
 						TreeMap<Long, Vardiya> vardiyaDataMap = new TreeMap<Long, Vardiya>();
 						TreeMap<String, VardiyaGun> vardiyaGunDataMap = new TreeMap<String, VardiyaGun>();
 						List<VardiyaGun> fmiList = new ArrayList<VardiyaGun>();
 						boolean fmiVardiyaOzetRapor = ortakIslemler.getParameterKey("fmiVardiyaOzetRapor").equals("1") || authenticatedUser.isAdmin();
 						List<VardiyaGun> kartBastMayanList = new ArrayList<VardiyaGun>();
+						ekSaha4Tanim = ortakIslemler.getEkSaha4(null, aramaSecenekleri.getSirketId(), session);
+						boolean altBolumVar = false;
 						for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 							VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
 							VardiyaGun vardiyaGun = (VardiyaGun) pdksVardiyaGun.clone();
@@ -541,26 +544,35 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							}
 							if (!gelmedi) {
 								Long calismaSekliId = personel.getCalismaModeli() != null ? personel.getCalismaModeli().getId() : 0L;
-								Long bolumId = personel.getEkSaha3() != null ? personel.getEkSaha3().getId() : 0L;
-								String key = calismaSekliId + "_" + bolumId + "_" + vardiya.getId();
+								Tanim bolum = personel.getEkSaha3(), altBolum = null;
+								Long bolumId = bolum != null ? bolum.getId() : 0L, altBolumId = 0L;
+								if (ekSaha4Tanim != null && bolumId.longValue() > 0L && bolum.getKodu().equals(altBolumGrupGoster)) {
+									altBolum = personel.getEkSaha4();
+									altBolumId = altBolum != null ? altBolum.getId() : 0L;
+									altBolumVar = true;
+								}
+								String veriKey = bolumId + "_" + altBolumId;
+								String key = calismaSekliId + "_" + veriKey + "_" + vardiya.getId();
+
 								Liste liste = null;
+
 								AylikPuantaj aylikPuantaj = null;
-								if (veriMap.containsKey(bolumId)) {
-									liste = veriMap.get(bolumId);
+								if (veriMap.containsKey(veriKey)) {
+									liste = veriMap.get(veriKey);
 									aylikPuantaj = (AylikPuantaj) liste.getValue();
 								} else {
 									aylikPuantaj = new AylikPuantaj();
 									aylikPuantaj.setIzinSuresi(0.0d);
-									liste = new Liste(bolumId, aylikPuantaj);
+									liste = new Liste(veriKey, aylikPuantaj);
 									String str = personel.getCalismaModeli() != null ? personel.getCalismaModeli().getAciklama() : "";
-									liste.setSelected(str + " " + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : ""));
+									liste.setSelected(str + " " + (bolum != null ? bolum.getAciklama() : "") + (altBolum != null ? " " + altBolum.getAciklama() : ""));
 									Personel pdksPersonel = (Personel) personel.clone();
-									if (pdksPersonel.getEkSaha3() == null)
+									if (bolum == null)
 										pdksPersonel.setEkSaha3(new Tanim());
 									if (pdksPersonel.getCalismaModeli() == null)
 										pdksPersonel.setCalismaModeli(new CalismaModeli());
 									aylikPuantaj.setPdksPersonel(pdksPersonel);
-									veriMap.put(bolumId, liste);
+									veriMap.put(veriKey, liste);
 								}
 								double adet = 1.0d;
 								if (pdksVardiyaGun.isIzinli()) {
@@ -610,6 +622,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							if (fmiVardiyaOzetRapor && vardiya.isFMI() && (vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty()))
 								fmiList.add(vardiyaGun);
 						}
+						if (!altBolumVar)
+							ekSaha4Tanim = null;
 						if (!veriMap.isEmpty()) {
 							List<Liste> list = new ArrayList(veriMap.values());
 							list = PdksUtil.sortObjectStringAlanList(list, "getSelected", null);
@@ -958,10 +972,18 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				col = 0;
 				++row;
 				Personel personel = aylikPuantaj.getPdksPersonel();
+
 				String aciklama = "";
 				XSSFCellStyle satirStyle = (XSSFCellStyle) styleOdd.clone(), satirTutarStyle = (XSSFCellStyle) styleOddTutar.clone();
-				if (personel.getEkSaha3() != null) {
-					aciklama = personel.getEkSaha3().getAciklama();
+				Tanim bolum = personel.getEkSaha3();
+				if (bolum != null) {
+					aciklama = bolum.getAciklama();
+					if (ekSaha4Tanim != null && bolum.getKodu().equals(altBolumGrupGoster)) {
+						Tanim altBolum = personel.getEkSaha4();
+						if (altBolum != null)
+							aciklama += " " + altBolum.getAciklama();
+					}
+
 				} else if (personel.getCalismaModeli() != null) {
 					aciklama = personel.getCalismaModeli().getAciklama();
 					satirStyle = (XSSFCellStyle) styleEven.clone();
@@ -1014,14 +1036,14 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					for (int i = 1; i < son; i++)
 						ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");
 					baslikList.add(row);
- 					++row;
+					++row;
 					col = 0;
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Soyadı");
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 					boolean tesisDurumu = tesisDurum;
- 					if (tesisDurumu)
+					if (tesisDurumu)
 						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
@@ -1147,7 +1169,19 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getSirket().getAd());
 		if (tesisDurum)
 			ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
-		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
+
+		Tanim bolum = personel.getEkSaha3();
+		String bolumAciklama = "";
+		if (bolum != null) {
+			bolumAciklama = bolum.getAciklama();
+			if (ekSaha4Tanim != null && bolum.getKodu().equals(altBolumGrupGoster)) {
+				Tanim altBolum = personel.getEkSaha4();
+				if (altBolum != null)
+					bolumAciklama += " " + altBolum.getAciklama();
+			}
+		}
+
+		ExcelUtil.getCell(sheet, row, col++, satirStyle).setCellValue(bolumAciklama);
 		ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue(PdksUtil.convertToDateString(vg.getVardiyaDate(), PdksUtil.getDateFormat()));
 		if (tip.equals("I")) {
 			ExcelUtil.getCell(sheet, row, col++, satirCenter).setCellValue("");
@@ -1332,5 +1366,21 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 	public void setSicilNo(String sicilNo) {
 		this.sicilNo = sicilNo;
+	}
+
+	public Tanim getEkSaha4Tanim() {
+		return ekSaha4Tanim;
+	}
+
+	public void setEkSaha4Tanim(Tanim ekSaha4Tanim) {
+		this.ekSaha4Tanim = ekSaha4Tanim;
+	}
+
+	public String getAltBolumGrupGoster() {
+		return altBolumGrupGoster;
+	}
+
+	public void setAltBolumGrupGoster(String altBolumGrupGoster) {
+		this.altBolumGrupGoster = altBolumGrupGoster;
 	}
 }

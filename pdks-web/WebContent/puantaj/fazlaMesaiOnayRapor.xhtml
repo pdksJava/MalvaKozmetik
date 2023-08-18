@@ -357,13 +357,14 @@
 									</rich:dataTable>
 								</rich:tab>
 							</rich:tabPanel>
-						</a4j:outputPanel>
 
-						<ui:fragment rendered="#{fazlaMesaiOnayRaporHome.veriDolu() }">
 							<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiOnayRaporHome.fazlaMesaiExcel}" target="blank">
 								<a4j:support event="oncomplete" onclick="#{rich:component('wait')}.show()" oncomplete=" #{rich:component('wait')}.hide()" />
 							</h:commandLink>
-						</ui:fragment>
+
+						</a4j:outputPanel>
+
+
 					</rich:panel>
 				</a4j:outputPanel>
 

@@ -989,7 +989,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 
 					ExcelUtil.getCell(sheetERP, row, col++, style).setCellValue(aciklama);
 					Double sure = personelMesai.getSure();
-					ExcelUtil.getCell(sheetERP, row, col++, sure.doubleValue() > sure.longValue() ? styleTutar : styleNumber).setCellValue(User.getYuvarla(personelMesai.getSure()));
+					ExcelUtil.getCell(sheetERP, row, col++, PdksUtil.isDoubleValueNotLong(sure) ? styleTutar : styleNumber).setCellValue(User.getYuvarla(personelMesai.getSure()));
 				}
 				if (perMesaiId.longValue() > 0L) {
 					if (izinTipiPersonelMap.containsKey(perMesaiId))

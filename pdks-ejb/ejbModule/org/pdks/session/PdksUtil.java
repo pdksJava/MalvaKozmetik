@@ -879,6 +879,18 @@ public class PdksUtil implements Serializable {
 	}
 
 	/**
+	 * @param value
+	 * @return
+	 */
+	public static boolean isDoubleValueNotLong(Double value) {
+		boolean doubleValue = false;
+		if (value != null)
+			doubleValue = value.doubleValue() - value.longValue() != 0.0d;
+		return doubleValue;
+
+	}
+
+	/**
 	 * @param tarih1
 	 * @param tarih2
 	 * @return

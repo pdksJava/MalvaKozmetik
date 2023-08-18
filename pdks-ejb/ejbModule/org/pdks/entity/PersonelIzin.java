@@ -81,7 +81,7 @@ public class PersonelIzin extends BaseObject {
 
 	private int izinDurumu = IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA;
 
-	private String aciklama, mesaj, personelNo,referansERP;
+	private String aciklama, mesaj, personelNo, referansERP;
 
 	private Personel izinSahibi;
 
@@ -487,7 +487,7 @@ public class PersonelIzin extends BaseObject {
 
 	@Transient
 	public String getIzinSuresiAciklama() {
-		String aciklama = (izinSuresi.doubleValue() > izinSuresi.longValue() ? izinSuresi.doubleValue() : izinSuresi.longValue()) + " " + getSuresiAciklama();
+		String aciklama = (PdksUtil.isDoubleValueNotLong(izinSuresi) ? izinSuresi.doubleValue() : izinSuresi.longValue()) + " " + getSuresiAciklama();
 		return aciklama;
 	}
 
@@ -814,6 +814,7 @@ public class PersonelIzin extends BaseObject {
 	public Personel getPdksPersonel() {
 		return izinSahibi;
 	}
+
 	@Transient
 	public String getReferansERP() {
 		return referansERP;

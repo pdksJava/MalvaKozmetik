@@ -1331,10 +1331,11 @@ public class IseGelmemeUyari implements Serializable {
 					userList.add(islemYapan);
 				}
 				zamanlayici.mailGonder(session, "İşe gelme durumu", new String(sb), userList, Boolean.TRUE);
-
+				ortakIslemler.gunlukFazlaCalisanlar(session);
 			}
 		}
 		sb = null;
+		
 		return "";
 	}
 
