@@ -472,7 +472,7 @@ public class OrtakIslemler implements Serializable {
 		if (veriOlustur)
 			wb = new XSSFWorkbook();
 
-		Sheet sheet = ExcelUtil.createSheet(wb, "Fazla Mesai Vardiya", Boolean.TRUE);
+		Sheet sheet = ExcelUtil.createSheet(wb, "Vardiyalar", Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
@@ -498,25 +498,28 @@ public class OrtakIslemler implements Serializable {
 			if (altBolumAciklama != null)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(altBolumAciklama);
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yoneticiAciklama);
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Görevi");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Zamanı");
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süre");
 			boolean renk = true;
 			for (VardiyaGun gun : vardiyaGunList) {
 				Personel personel = gun.getPdksPersonel();
-				CellStyle styleCenter = null, styleGenel = null, styleDouble = null, styleNumber = null;
+				CellStyle styleCenter = null;
+				CellStyle styleGenel = null;
+				CellStyle styleDouble = null;
+				CellStyle styleNumber = null;
 				if (renk) {
 					styleGenel = styleOdd;
 					styleCenter = styleOddCenter;
 					styleDouble = styleOddTutar;
 					styleNumber = styleOddNumber;
-
 				} else {
 					styleGenel = styleEven;
 					styleCenter = styleEvenCenter;
 					styleDouble = styleEvenTutar;
 					styleNumber = styleEvenNumber;
-
 				}
+
 				renk = !renk;
 				row++;
 				col = 0;
@@ -528,28 +531,29 @@ public class OrtakIslemler implements Serializable {
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(sirket.getAd());
 				if (tesisAciklama != null)
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(sirket.getTesisDurum() && personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
-
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 				if (altBolumAciklama != null)
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getYoneticisi() != null ? personel.getYoneticisi().getAdSoyad() : "");
+				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getGorevTipi() != null ? personel.getGorevTipi().getAciklama() : "");
 				Cell cell = ExcelUtil.getCell(sheet, row, col++, styleCenter);
 				VardiyaSaat vardiyaSaat = gun.getVardiyaSaat();
 				if (vardiyaSaat == null)
 					vardiyaSaat = new VardiyaSaat();
-				Double sure = vardiyaSaat.getCalismaSuresi(), normalSure = vardiyaSaat.getNormalSure();
-				if (normalSure != null && normalSure > 0.0d) {
+				Double sure = Double.valueOf(vardiyaSaat.getCalismaSuresi());
+				Double normalSure = Double.valueOf(vardiyaSaat.getNormalSure());
+				if ((normalSure != null) && (normalSure.doubleValue() > 0.0D)) {
 					RichTextString str1 = factory.createRichTextString("Net Süre : " + PdksUtil.numericValueFormatStr(normalSure, null));
 					ExcelUtil.setCellComment(drawing, anchor, cell, str1);
 				}
 
 				cell.setCellValue(gun.getVardiyaZamanAdi());
-				if (sure != null)
-					ExcelUtil.getCell(sheet, row, col++, PdksUtil.isDoubleValueNotLong(sure) ? styleDouble : styleNumber).setCellValue(sure);
-				else
+				if (sure != null && sure.doubleValue() != 0.0d)
+					ExcelUtil.getCell(sheet, row, col++, PdksUtil.isDoubleValueNotLong(sure) ? styleDouble : styleNumber).setCellValue(sure.doubleValue());
+				else {
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
-
+				}
 			}
 			for (int i = 0; i <= col; i++)
 				sheet.autoSizeColumn(i);
@@ -557,7 +561,6 @@ public class OrtakIslemler implements Serializable {
 				baos = new ByteArrayOutputStream();
 				wb.write(baos);
 			}
-
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
 			e.printStackTrace();
@@ -15567,26 +15570,39 @@ public class OrtakIslemler implements Serializable {
 		List<VardiyaGun> izinVardiyaGunList = new ArrayList<VardiyaGun>();
 		if (izinler != null && vardiyaGunList != null) {
 			boolean izinVar = false;
-			for (Iterator<VardiyaGun> iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
-				VardiyaGun vardiyaGun = iterator.next();
+			try {
+				for (Iterator<VardiyaGun> iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
+					VardiyaGun vardiyaGun = iterator.next();
+					vardiyaGun.setIzinler(null);
+					vardiyaGun.setIzin(null);
+					Vardiya vardiya = vardiyaGun.getVardiya();
+					if (vardiyaGun.getVardiyaKeyStr().equals("20230704"))
+						logger.debug("");
+					if (vardiya == null) {
+						Personel personel = vardiyaGun.getPdksPersonel();
 
-				vardiyaGun.setIzinler(null);
-				vardiyaGun.setIzin(null);
-				if (vardiyaGun.getVardiya() == null)
-					continue;
-				// Personel izinleri vardiya gününe ekleniyor
-				if (izinler != null) {
-					for (Iterator<PersonelIzin> iterator3 = izinler.iterator(); iterator3.hasNext();) {
-						PersonelIzin personelIzin = iterator3.next();
-						setIzinDurum(vardiyaGun, personelIzin);
+						boolean calisiyor = personel != null && personel.isCalisiyorGun(vardiyaGun.getVardiyaDate());
+						if (!calisiyor)
+							continue;
 					}
-					if (vardiyaGun.getIzin() != null && vardiyaGun.getVardiya().isHaftaTatil()) {
-						if (!vardiyaGun.getIzin().getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
-							izinVar = true;
+
+					// Personel izinleri vardiya gününe ekleniyor
+					if (izinler != null) {
+						for (Iterator<PersonelIzin> iterator3 = izinler.iterator(); iterator3.hasNext();) {
+							PersonelIzin personelIzin = iterator3.next();
+							setIzinDurum(vardiyaGun, personelIzin);
+						}
+						if (vardiya != null && vardiyaGun.getIzin() != null && vardiya.isHaftaTatil()) {
+							if (!vardiyaGun.getIzin().getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
+								izinVar = true;
+						}
 					}
+					if (vardiya != null && vardiyaGun.getIzin() != null && vardiyaGun.getVardiya().isIzin())
+						izinVardiyaGunList.add(vardiyaGun);
 				}
-				if (vardiyaGun.getIzin() != null && vardiyaGun.getVardiya().isIzin())
-					izinVardiyaGunList.add(vardiyaGun);
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			if (izinVar) {

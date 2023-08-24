@@ -1269,11 +1269,13 @@ public class VardiyaGun extends BaseObject {
 			}
 			if (!ayinGunu && !ozelGorevVar)
 				classAd = STYLE_CLASS_DIGER_AY;
-		} else
-			classAd = STYLE_CLASS_OFF;
+		} else {
+
+			if (PdksUtil.hasStringValue(anaClasss) && personel != null && personel.isCalisiyorGun(vardiyaDate) == false)
+				classAd = STYLE_CLASS_OFF;
+		}
 		if (ayinGunu && version < 0 && this.isIzinli() == false && fiiliHesapla == false)
 			classAd = STYLE_CLASS_HATA;
-
 		return classAd;
 
 	}

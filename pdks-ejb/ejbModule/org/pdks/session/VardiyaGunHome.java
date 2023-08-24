@@ -1476,8 +1476,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		try {
 			String str = ortakIslemler.getParameterKey("kisaDonemSaat");
 			if (PdksUtil.hasStringValue(str))
-				kisaDonemSaat = Double.parseDouble(str);
-			if (kisaDonemSaat <= 0)
+				kisaDonemSaat = Double.valueOf(Double.parseDouble(str));
+			if (kisaDonemSaat.doubleValue() <= 0.0D)
 				kisaDonemSaat = null;
 		} catch (Exception e) {
 			kisaDonemSaat = null;
@@ -1486,48 +1486,83 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		try {
 			String str = ortakIslemler.getParameterKey("geceVardiyaAdetMaxSaat");
 			if (PdksUtil.hasStringValue(str))
-				geceVardiyaAdetMaxSaat = Integer.parseInt(str);
-			if (geceVardiyaAdetMaxSaat <= 0)
+				geceVardiyaAdetMaxSaat = Integer.valueOf(Integer.parseInt(str));
+			if (geceVardiyaAdetMaxSaat.intValue() <= 0)
 				geceVardiyaAdetMaxSaat = null;
 		} catch (Exception e) {
 			geceVardiyaAdetMaxSaat = null;
 		}
+		Integer haftaTatilCalismaGunAdetMaxSaat = null;
+		try {
+			String str = ortakIslemler.getParameterKey("haftaTatilCalismaGunAdetMaxSaat");
+			if (PdksUtil.hasStringValue(str))
+				haftaTatilCalismaGunAdetMaxSaat = Integer.valueOf(Integer.parseInt(str));
+			if (haftaTatilCalismaGunAdetMaxSaat.intValue() <= 0)
+				haftaTatilCalismaGunAdetMaxSaat = null;
+		} catch (Exception e) {
+			haftaTatilCalismaGunAdetMaxSaat = null;
+		}
 		VardiyaGun oncekiVardiyaGunKontrol = null;
 		int geceVardiyaAdetSaat = 0;
+		Integer haftaTatilCalismaGunAdetSaat = null;
+		String haftaTatilCalismaGunAdetMaxSaatStr = null;
+		String geceVardiyaAdetMaxSaatStr = null;
+		String calismaPlanDenetimTarihStr = this.ortakIslemler.getParameterKey("calismaPlanDenetimTarih");
+		Date calismaPlanDenetimTarih = null;
+		try {
+			if (PdksUtil.hasStringValue(calismaPlanDenetimTarihStr))
+				calismaPlanDenetimTarih = PdksUtil.getDateFromString(calismaPlanDenetimTarihStr);
+		} catch (Exception localException1) {
+		}
 		for (Iterator<String> iterator = vardiyaGunMap.keySet().iterator(); iterator.hasNext();) {
 			String key = iterator.next();
 			VardiyaGun vardiyaGun = vardiyaGunMap.get(key);
 			if (vardiyaGun.getVardiya() != null) {
 				Vardiya vardiya = vardiyaGun.getVardiya();
+				boolean calismaPlanDenetimTarihKontrol = (calismaPlanDenetimTarih != null) && (vardiyaGun.getVardiyaDate().after(calismaPlanDenetimTarih));
+				if (haftaTatilCalismaGunAdetMaxSaat != null) {
+					if (vardiya.isHaftaTatil()) {
+						if ((haftaTatilCalismaGunAdetSaat != null) && (haftaTatilCalismaGunAdetSaat.intValue() > haftaTatilCalismaGunAdetMaxSaat.intValue())) {
+							yaz = Boolean.FALSE.booleanValue();
+							haftaTatilCalismaGunAdetMaxSaatStr = haftaTatilCalismaGunAdetMaxSaat + " günden fazla ardışık çalışma olamaz! ";
+							haftaTatilCalismaGunAdetMaxSaat = null;
+						}
+						if (calismaPlanDenetimTarihKontrol)
+							haftaTatilCalismaGunAdetSaat = Integer.valueOf(0);
+					} else if ((vardiya.isCalisma()) && (haftaTatilCalismaGunAdetSaat != null)) {
+						haftaTatilCalismaGunAdetSaat = Integer.valueOf(haftaTatilCalismaGunAdetSaat.intValue() + 1);
+					}
+				}
 				if (geceVardiyaAdetMaxSaat != null) {
-					if (!vardiya.isAksamVardiyasi() || vardiyaGun.getIzin() != null) {
+					if ((!vardiya.isAksamVardiyasi()) || (vardiyaGun.getIzin() != null)) {
 						if (vardiya.isCalisma()) {
-							if (geceVardiyaAdetSaat > 0 && geceVardiyaAdetSaat > geceVardiyaAdetMaxSaat) {
-								yaz = Boolean.FALSE;
-								sb.append(geceVardiyaAdetMaxSaat + " günden fazla ardışık akşam çalışma olamaz! ");
+							if ((geceVardiyaAdetSaat > 0) && (geceVardiyaAdetSaat > geceVardiyaAdetMaxSaat.intValue())) {
+								yaz = Boolean.FALSE.booleanValue();
+								geceVardiyaAdetMaxSaatStr = geceVardiyaAdetMaxSaat + " günden fazla ardışık akşam çalışma olamaz! ";
+
 								geceVardiyaAdetMaxSaat = null;
 							}
 							geceVardiyaAdetSaat = 0;
 						}
-
-					} else
-						++geceVardiyaAdetSaat;
+					} else if (calismaPlanDenetimTarihKontrol)
+						geceVardiyaAdetSaat++;
 				}
-				if (kisaDonemSaat != null && key.startsWith(donem) && vardiya.isCalisma() && vardiyaGun.getIzin() == null) {
-					if (oncekiVardiyaGunKontrol != null) {
+				if ((kisaDonemSaat != null) && (vardiya.isCalisma()) && (vardiyaGun.getIzin() == null)) {
+					if ((key.startsWith(donem)) && (oncekiVardiyaGunKontrol != null)) {
 						Date basSaat = oncekiVardiyaGunKontrol.getIslemVardiya().getVardiyaBitZaman();
 						Date bitSaat = vardiyaGun.getIslemVardiya().getVardiyaBasZaman();
-						double toplamSure = PdksUtil.setSureDoubleTypeRounded(PdksUtil.getSaatFarki(bitSaat, basSaat).doubleValue(), vardiyaGun.getYarimYuvarla());
+						double toplamSure = PdksUtil.setSureDoubleTypeRounded(Double.valueOf(PdksUtil.getSaatFarki(bitSaat, basSaat).doubleValue()), vardiyaGun.getYarimYuvarla());
 						if (toplamSure < kisaDonemSaat.doubleValue()) {
-							yaz = Boolean.FALSE;
+							yaz = Boolean.FALSE.booleanValue();
 							sb.append(PdksUtil.convertToDateString(bitSaat, "d MMMMMM EEEEE HH:ss") + " kısa çalışma olamaz! ");
 						}
 
 					}
 
-					oncekiVardiyaGunKontrol = vardiyaGun;
+					if (calismaPlanDenetimTarihKontrol) {
+						oncekiVardiyaGunKontrol = vardiyaGun;
+					}
 				}
-
 				if (vardiya.isCalisma() && vardiya.getGenel() && vardiyaMap != null && !vardiyaMap.containsKey(vardiya.getId())) {
 					if (vardiyaGun.isAyinGunu()) {
 						if (sbCalismaModeliUyumsuz.length() > 0)
@@ -1554,6 +1589,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 
 		}
+		if (geceVardiyaAdetMaxSaatStr != null)
+			sb.append(geceVardiyaAdetMaxSaatStr);
+		if (haftaTatilCalismaGunAdetMaxSaatStr != null)
+			sb.append(haftaTatilCalismaGunAdetMaxSaatStr);
 		if (yaz) {
 			List<VardiyaHafta> vardiyaHaftaList = plan.getVardiyaHaftaList();
 			if (vardiyaHaftaList == null) {
