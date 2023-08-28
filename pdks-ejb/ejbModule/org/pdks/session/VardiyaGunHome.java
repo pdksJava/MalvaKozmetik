@@ -1564,8 +1564,12 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							}
 							geceVardiyaAdetSaat = 0;
 						}
-					} else if (calismaPlanDenetimTarihKontrol)
-						geceVardiyaAdetSaat++;
+					} else if (calismaPlanDenetimTarihKontrol) {
+						if (vardiya.isAksamVardiyasi())
+							geceVardiyaAdetSaat++;
+						logger.debug(vardiyaGun.getVardiyaDateStr() + " " + vardiya.getKisaAdi() + " " + geceVardiyaAdetSaat);
+					}
+
 				}
 				if ((kisaDonemSaat != null) && (vardiya.isCalisma()) && (vardiyaGun.getIzin() == null)) {
 					if ((key.startsWith(donem)) && (oncekiVardiyaGunKontrol != null)) {

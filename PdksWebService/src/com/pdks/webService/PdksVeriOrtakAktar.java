@@ -1460,7 +1460,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					personelList = PdksUtil.sortListByAlanAdi(personelList, "iseBaslamaTarihi", Boolean.FALSE);
 				TreeMap<String, Personel> personelMap = new TreeMap<String, Personel>();
 				for (Personel personel : personelList) {
-					if ((tarih1 == null || personel.getSskCikisTarihi().getTime() >= tarih1.getTime()) && (tarih2 == null || personel.getIseBaslamaTarihi().getTime() <= tarih2.getTime())) {
+					if ((tarih1 == null || personel.getSskCikisTarihi().getTime() >=PdksUtil.getDate(tarih1).getTime()) && (tarih2 == null || personel.getIseBaslamaTarihi().getTime() <= PdksUtil.getDate(tarih2).getTime())) {
 						personelMap.put(personel.getPdksSicilNo(), personel);
 					}
 				}
@@ -2477,6 +2477,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 			String str = (String) mailMap.get("izinERPUpdate");
 			izinERPUpdate = str.equals("1");
 		}
+		boolean yoneticiERP1Kontrol = true;
+		if (mailMap.containsKey("yoneticiERP1Kontrol"))
+			yoneticiERP1Kontrol = ((String) mailMap.get("yoneticiERP1Kontrol")).equals("");
 		Date gecmisTarih = null;
 
 		int personelERPGecmisTarihKontrol = -1;
@@ -2570,6 +2573,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 			boolean calisiyor = false;
 			if (personelERPMap.containsKey(personelNo)) {
 				PersonelERP personelERP = personelERPMap.get(personelNo);
+				if (personelNo.equals("2919"))
+					logger.debug("");
 				Personel personelSecili = null;
 				Date iseBaslamaTarihi = getTarih(personelERP.getIseGirisTarihi(), FORMAT_DATE);
 				boolean genelMudurDurum = personelERP.getGorevKodu() != null && genelMudurERPKodlari.contains(personelERP.getGorevKodu());
@@ -3028,7 +3033,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								yoneticisi = null;
 							}
 
-							if (yoneticiERPKontrol.equals("1") || personel.getYoneticisi() == null || !personel.getYoneticisi().isCalisiyor())
+							if ((yoneticiERPKontrol.equals("1") && yoneticiERP1Kontrol) || personel.getYoneticisi() == null || !personel.getYoneticisi().isCalisiyor())
 								personel.setYoneticisi(yoneticisi);
 							personel.setAsilYonetici1(yoneticisi);
 
