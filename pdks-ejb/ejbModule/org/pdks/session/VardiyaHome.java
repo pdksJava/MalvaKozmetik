@@ -251,24 +251,26 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 		return title;
 	}
 
+	/**
+	 * @param pdksVardiya
+	 * @return
+	 */
 	public String kayitKopyala(Vardiya pdksVardiya) {
-
-		Vardiya pdksVardiyaYeni = (Vardiya) pdksVardiya.clone();
+ 		Vardiya pdksVardiyaYeni = (Vardiya) pdksVardiya.clone();
 		if (authenticatedUser.isIK())
 			pdksVardiyaYeni.setDepartman(authenticatedUser.getDepartman());
 		pdksVardiyaYeni.setId(null);
 		if (pdksVardiya.getKisaAdi() != null)
 			pdksVardiyaYeni.setKisaAdi(pdksVardiya.getKisaAdi() + " kopya");
 		pdksVardiyaYeni.setAdi(pdksVardiya.getAdi() + " kopya");
-		setInstance(pdksVardiyaYeni);
-		fillYemekList(pdksVardiyaYeni);
-		fillCalismaModeliList(pdksVardiyaYeni);
-		fillCalismaSekilleri();
-		fillVardiyaTipiList();
+		vardiyaAlanlariDoldur(pdksVardiyaYeni);
 		return "";
 
 	}
 
+	/**
+	 * @param pdksVardiya
+	 */
 	public void kayitGuncelle(Vardiya pdksVardiya) {
 		if (pdksVardiya == null) {
 			pdksVardiya = new Vardiya();
@@ -280,7 +282,13 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			pdksVardiya.setCikisErkenToleransDakika((short) 0);
 			pdksVardiya.setCikisGecikmeToleransDakika((short) 0);
 		}
+ 		vardiyaAlanlariDoldur(pdksVardiya);
+	}
 
+	/**
+	 * @param pdksVardiya
+	 */
+	private void vardiyaAlanlariDoldur(Vardiya pdksVardiya) {
 		fillYemekList(pdksVardiya);
 		fillCalismaModeliList(pdksVardiya);
 		setInstance(pdksVardiya);
