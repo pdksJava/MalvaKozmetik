@@ -264,6 +264,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 		fillYemekList(pdksVardiyaYeni);
 		fillCalismaModeliList(pdksVardiyaYeni);
 		fillCalismaSekilleri();
+		fillVardiyaTipiList();
 		return "";
 
 	}
