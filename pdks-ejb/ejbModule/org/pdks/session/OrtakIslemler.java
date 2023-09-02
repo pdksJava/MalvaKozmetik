@@ -10024,8 +10024,10 @@ public class OrtakIslemler implements Serializable {
 					Date vardiyaTelorans2BitZaman = PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -20);
 					if (vardiyaTelorans2BitZaman.after(islemVardiya.getVardiyaBitZaman()))
 						islemVardiya.setVardiyaTelorans2BitZaman(vardiyaTelorans2BitZaman);
-					// if (islemVardiya.isCalisma() == false)
-					islemVardiya.setVardiyaBitZaman(PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -40));
+
+					Date vardiyaBitZaman = PdksUtil.addTarih(islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -40);
+					if (islemVardiya.getVardiyaBitZaman().after(vardiyaBitZaman))
+						islemVardiya.setVardiyaBitZaman(vardiyaBitZaman);
 
 				}
 				if (islemVardiya != null)
@@ -14419,8 +14421,7 @@ public class OrtakIslemler implements Serializable {
 
 													}
 													double bayramCalisma = getSaatSure(tatilBasZaman, tatilBitZaman, yemekler, vardiyaGun, session) - (yemekSuresi / 60.0d);
-
-													String bayramKey = PdksUtil.convertToDateString(tatilBasZaman, "yyyyMMddHHmm");
+ 													String bayramKey = PdksUtil.convertToDateString(tatilBasZaman, "yyyyMMddHHmm");
 													if (yemekFarkMap.containsKey(bayramKey)) {
 														bayramCalisma += yemekFarkMap.get(bayramKey);
 														yemekFarkMap.remove(bayramKey);
@@ -14460,8 +14461,7 @@ public class OrtakIslemler implements Serializable {
 								}
 								oncekiCikisZaman = (Date) cikisZaman.clone();
 							}
-							if (vardiyaGun.getVardiyaDateStr().endsWith("20230501"))
-								logger.debug("");
+
 							if (sureHesapla && gunlukSaat > 0) {
 								boolean tatilYemekHesabiSureEkle = vardiyaGun.isYemekHesabiSureEkle();
 								double fark = toplamYemekSuresi - vardiyaYemekSuresi;
@@ -14532,7 +14532,6 @@ public class OrtakIslemler implements Serializable {
 						}
 						ArrayList<PersonelFazlaMesai> vardiyaFazlaMesailer = vardiyaGun.getFazlaMesailer();
 						if (vardiyaFazlaMesailer != null) {
-
 							if (session == null)
 								session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 							boolean flush = Boolean.FALSE;
@@ -15659,8 +15658,7 @@ public class OrtakIslemler implements Serializable {
 					vardiyaGun.setIzinler(null);
 					vardiyaGun.setIzin(null);
 					Vardiya vardiya = vardiyaGun.getVardiya();
-					if (vardiyaGun.getVardiyaKeyStr().equals("20230704"))
-						logger.debug("");
+
 					if (vardiya == null) {
 						Personel personel = vardiyaGun.getPdksPersonel();
 
