@@ -81,7 +81,7 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	private boolean projeMuduru = Boolean.FALSE, mudur = Boolean.FALSE, superVisor = Boolean.FALSE, IKDirektor = Boolean.FALSE, personel = Boolean.FALSE;
 	private boolean operatorSSK = Boolean.FALSE, yetkiSet = Boolean.FALSE, direktorSuperVisor = Boolean.FALSE, taseronAdmin = Boolean.FALSE;
 	private boolean browserIE, izinGirebilir = Boolean.FALSE, izinSSKGirebilir = Boolean.FALSE, izinOnaylayabilir = Boolean.FALSE, testLogin = Boolean.FALSE;
-	private boolean tesisYonetici;
+	private boolean tesisYonetici, raporKullanici = Boolean.FALSE;
 	private ArrayList<User> userVekaletList;
 
 	private List<Personel> yetkiliPersoneller, ikinciYoneticiPersonel;
@@ -1059,6 +1059,17 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 
 	public void setAnahtarKullanici(boolean anahtarKullanici) {
 		this.anahtarKullanici = anahtarKullanici;
+	}
+
+	@Transient
+	public boolean isRaporKullanici() {
+		if (!yetkiSet)
+			PdksUtil.setUserYetki(this);
+		return raporKullanici;
+	}
+
+	public void setRaporKullanici(boolean raporKullanici) {
+		this.raporKullanici = raporKullanici;
 	}
 
 }

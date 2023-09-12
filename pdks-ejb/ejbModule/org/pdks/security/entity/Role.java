@@ -57,6 +57,7 @@ public class Role extends BasePDKSObject implements Serializable {
 	public static final String TIPI_YEMEKHANE = "yemekHane";
 	public static final String TIPI_TASERON_ADMIN = "kontratliAdmin";
 	public static final String TIPI_ANAHTAR_KULLANICI = "keyUser";
+	public static final String TIPI_IK_YETKILI_RAPOR_KULLANICI = "raporKullanici";
 
 	private String rolename;
 	private String aciklama;

@@ -2193,10 +2193,13 @@ public class PdksUtil implements Serializable {
 			user.setPersonel(Boolean.FALSE);
 			user.setTaseronAdmin(Boolean.FALSE);
 			user.setTesisYonetici(Boolean.FALSE);
+			user.setRaporKullanici(Boolean.FALSE);
 			Personel pdksPersonel = user.getPdksPersonel();
 			if (user.getYetkiliRollerim() != null)
 				for (Role role : user.getYetkiliRollerim()) {
-					if (role.getRolename().equals(Role.TIPI_ADMIN))
+					if (role.getRolename().equals(Role.TIPI_IK_YETKILI_RAPOR_KULLANICI))
+						user.setRaporKullanici(Boolean.TRUE);
+					else if (role.getRolename().equals(Role.TIPI_ADMIN))
 						user.setAdmin(Boolean.TRUE);
 					else if (role.getRolename().equals(Role.TIPI_ANAHTAR_KULLANICI)) {
 						user.setIK(Boolean.TRUE);

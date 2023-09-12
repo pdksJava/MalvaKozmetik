@@ -86,12 +86,12 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private Departman departman;
-	private Long departmanId;
-	private Long sirketId;
+	private Long departmanId, sirketId;
 	private List<SelectItem> sirketList;
 	private Date basTarih, bitTarih;
 	private Kapi kapi;
 	private boolean pdksKapi = Boolean.TRUE, pdksHaricKapi = Boolean.FALSE, yemekKapi = Boolean.FALSE, guncellenmis = Boolean.FALSE, kgsUpdateGoster = Boolean.FALSE;
+	private boolean ikRole = false;
 	private String sicilNo = "", adi = "", soyadi = "", bolumAciklama;
 	private byte[] zipVeri;
 	private List<SelectItem> departmanList;
@@ -141,6 +141,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		if (!ayniSayfa)
 			authenticatedUser.setCalistigiSayfa("tumHareketler");
 		sayfaGiris(session);
+		ikRole = ortakIslemler.getIKRolSayfa(authenticatedUser);
 		setHareketList(new ArrayList<HareketKGS>());
 		HareketKGS hareket = new HareketKGS();
 		hareket.setPersonel(new PersonelView());
@@ -157,7 +158,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			setPdksKapi(Boolean.TRUE);
 		setKapiList(new ArrayList<Kapi>());
 		departmanId = null;
-		if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) {
+		if (authenticatedUser.isAdmin() || ikRole) {
 			filDepartmanList();
 			if (departmanList.size() == 1) {
 				departmanId = (Long) departmanList.get(0).getValue();
@@ -176,7 +177,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				departmanId = authenticatedUser.getDepartman().getId();
 			}
 
-			if (authenticatedUser.isIK())
+			if (ikRole)
 				fillSirketList();
 			else
 				sirketId = authenticatedUser.getPdksPersonel().getSirket().getId();
@@ -197,7 +198,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 		List<Sirket> list = new ArrayList<Sirket>();
 
-		if (departmanId != null && (authenticatedUser.isAdmin() || authenticatedUser.isIK())) {
+		if (departmanId != null && (authenticatedUser.isAdmin() || ikRole)) {
 			HashMap parametreMap = new HashMap();
 			parametreMap.put("id", departmanId);
 			if (session != null)
@@ -310,17 +311,17 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			ortakIslemler.digerPersoneller(tumPersoneller, yetkiTumPersonelNoList, basTarih, bitTarih, session);
 		sicilNo = ortakIslemler.getSicilNo(sicilNo);
 		if (authenticatedUser.isYoneticiKontratli()) {
-			if (!(authenticatedUser.isIK() || authenticatedUser.isAdmin()))
+			if (!(ikRole || authenticatedUser.isAdmin()))
 				sirketId = null;
 		}
-		boolean admin = authenticatedUser.isIK() || authenticatedUser.isAdmin() || authenticatedUser.isGenelMudur();
+		boolean admin = ikRole || authenticatedUser.isAdmin() || authenticatedUser.isGenelMudur();
 		if (sicilNo.trim().length() > 0 || adi.trim().length() > 0 || soyadi.trim().length() > 0) {
 			if (sicilNo.trim().length() > 0)
 				sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			// if (authenticatedUser.isAdmin() || (authenticatedUser.isIK() && authenticatedUser.getDepartman().isAdminMi()) || yetkiTumPersonelNoList.contains(sicilNo)) {
 			HashMap map = new HashMap();
 
-			if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
+			if (ikRole || authenticatedUser.isAdmin()) {
 
 				if (sirketId != null)
 					map.put("pdksPersonel.sirket.id=", sirketId);
@@ -364,7 +365,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 		} else {
 			devam = Boolean.TRUE;
-			if (!authenticatedUser.isAdmin() && !authenticatedUser.isIK() && !authenticatedUser.isGenelMudur()) {
+			if (!authenticatedUser.isAdmin() && !ikRole && !authenticatedUser.isGenelMudur()) {
 				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor."));
 				parametreMap.clear();
 				if (tumPersoneller != null && !tumPersoneller.isEmpty())
@@ -603,7 +604,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		} else
 			setHareketList(new ArrayList<HareketKGS>());
 		setZipVeri(null);
-		if (!hareketList.isEmpty() && sicilNo.trim().length() == 0 && (authenticatedUser.isAdmin() || authenticatedUser.isIK())) {
+		if (!hareketList.isEmpty() && sicilNo.trim().length() == 0 && (authenticatedUser.isAdmin() || ikRole)) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			String dosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
 			try {
@@ -907,7 +908,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		CellStyle styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0;
 		int col = 0;
-		boolean yonetici = authenticatedUser.isAdmin() || authenticatedUser.isIK();
+		boolean yonetici = authenticatedUser.isAdmin() || ikRole;
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Zaman");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
@@ -1003,7 +1004,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		return baos;
 	}
 
-	public void fillkapiList() {
+	public void fillKapiList() {
 		List<Kapi> kapiList = new ArrayList<Kapi>();
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("durum=", Boolean.TRUE);
@@ -1230,5 +1231,13 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 	public void setKgsUpdateGoster(boolean kgsUpdateGoster) {
 		this.kgsUpdateGoster = kgsUpdateGoster;
+	}
+
+	public boolean isIkRole() {
+		return ikRole;
+	}
+
+	public void setIkRole(boolean ikRole) {
+		this.ikRole = ikRole;
 	}
 }
