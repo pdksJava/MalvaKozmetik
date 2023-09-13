@@ -124,8 +124,10 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 							action = "service" + action + "_" + PdksUtil.convertToDateString(bugun, "yyyy-MM-") + bugun.getTime();
 
 						}
+						String xmlStr = null;
 						try {
-							PdksUtil.fileWrite(PdksUtil.formatXML(xml), action);
+							xmlStr = xml.indexOf("&amp;") > 0 ? PdksUtil.replaceAllManuel(xml, "&amp;", "&") : xml;
+							PdksUtil.fileWrite(PdksUtil.formatXML(xmlStr), action);
 						} catch (Exception eg) {
 							logger.error(eg);
 							eg.printStackTrace();
@@ -144,44 +146,53 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 									}
 								}
 								dizi = null;
-								JSONObject json = XML.toJSONObject(jsonStr);
-								Iterator<String> keys = json.keys();
-								String fonksiyonAdi = null;
+								JSONObject json = null;
+								try {
+									json = XML.toJSONObject(jsonStr);
+								} catch (Exception ej) {
+									logger.debug(ej);
+								}
 								HashMap<String, String> sonucMap = new HashMap<String, String>();
-								while (keys.hasNext()) {
-									String key1 = keys.next();
-									fonksiyonAdi = key1;
-									JSONObject jsonDatalar = (JSONObject) json.get(key1);
-									Iterator<String> keysData = jsonDatalar.keys();
-									while (keysData.hasNext()) {
-										String key = keysData.next();
-										if (key.equals("data") || key.equals("return")) {
-											JSONObject service = (JSONObject) jsonDatalar.get(key);
-											Iterator<String> keysVeriler = service.keys();
-											while (keysVeriler.hasNext()) {
-												String keyVeri = keysVeriler.next();
-												JSONObject jsonServiceObject = (JSONObject) service.get(keyVeri);
-												Iterator<String> keysService = jsonServiceObject.keys();
-												while (keysService.hasNext()) {
-													String keyService = keysService.next();
-													if (keyService.indexOf("Body") >= 0) {
-														try {
-															JSONObject jsonObject = (JSONObject) jsonServiceObject.get(keyService);
-															String jsonString = jsonObject.toString(4);
-															jsonString = PdksUtil.replaceAllManuel(PdksUtil.replaceAllManuel(jsonString, "\n", ""), "  ", " ");
-															sonucMap.put(key, jsonString);
-														} catch (Exception ex) {
-															logger.error(ex);
-														}
+								String fonksiyonAdi = null;
+								if (json != null) {
+									Iterator<String> keys = json.keys();
+									while (keys.hasNext()) {
+										String key1 = keys.next();
+										fonksiyonAdi = key1;
+										JSONObject jsonDatalar = (JSONObject) json.get(key1);
+										Iterator<String> keysData = jsonDatalar.keys();
+										while (keysData.hasNext()) {
+											String key = keysData.next();
+											if (key.equals("data") || key.equals("return")) {
+												JSONObject service = (JSONObject) jsonDatalar.get(key);
+												Iterator<String> keysVeriler = service.keys();
+												while (keysVeriler.hasNext()) {
+													String keyVeri = keysVeriler.next();
+													JSONObject jsonServiceObject = (JSONObject) service.get(keyVeri);
+													Iterator<String> keysService = jsonServiceObject.keys();
+													while (keysService.hasNext()) {
+														String keyService = keysService.next();
+														if (keyService.indexOf("Body") >= 0) {
+															try {
+																JSONObject jsonObject = (JSONObject) jsonServiceObject.get(keyService);
+																String jsonString = jsonObject.toString(4);
+																jsonString = PdksUtil.replaceAllManuel(PdksUtil.replaceAllManuel(jsonString, "\n", ""), "  ", " ");
+																if (jsonString.indexOf("&amp;") > 0)
+																	jsonString = PdksUtil.replaceAllManuel(jsonString, "&amp;", "&");
+																sonucMap.put(key, jsonString);
+															} catch (Exception ex) {
+																logger.error(ex);
+															}
 
+														}
 													}
+
 												}
 
 											}
-
 										}
-									}
 
+									}
 								}
 								if (!sonucMap.isEmpty()) {
 									ServiceData serviceData = new ServiceData(fonksiyonAdi);
@@ -198,6 +209,7 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 
 							} catch (Exception e) {
 								logger.error(e);
+								e.printStackTrace();
 							}
 					}
 

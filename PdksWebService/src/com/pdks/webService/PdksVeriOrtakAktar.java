@@ -1460,7 +1460,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					personelList = PdksUtil.sortListByAlanAdi(personelList, "iseBaslamaTarihi", Boolean.FALSE);
 				TreeMap<String, Personel> personelMap = new TreeMap<String, Personel>();
 				for (Personel personel : personelList) {
-					if ((tarih1 == null || personel.getSskCikisTarihi().getTime() >=PdksUtil.getDate(tarih1).getTime()) && (tarih2 == null || personel.getIseBaslamaTarihi().getTime() <= PdksUtil.getDate(tarih2).getTime())) {
+					if ((tarih1 == null || personel.getSskCikisTarihi().getTime() >= PdksUtil.getDate(tarih1).getTime()) && (tarih2 == null || personel.getIseBaslamaTarihi().getTime() <= PdksUtil.getDate(tarih2).getTime())) {
 						personelMap.put(personel.getPdksSicilNo(), personel);
 					}
 				}
@@ -1767,8 +1767,15 @@ public class PdksVeriOrtakAktar implements Serializable {
 										sb.append(" AND I." + PersonelIzin.COLUMN_NAME_ID + " <> " + personelIzin.getId());
 									fields.put("b1", personelIzin.getBaslangicZamani());
 									fields.put("b2", personelIzin.getBitisZamani());
-									List<IzinReferansERP> kayitList = pdksDAO.getNativeSQLList(fields, sb, IzinReferansERP.class);
-									if (!kayitList.isEmpty()) {
+									List<IzinReferansERP> kayitList = null;
+									try {
+										kayitList = pdksDAO.getNativeSQLList(fields, sb, IzinReferansERP.class);
+									} catch (Exception ek) {
+										logger.error(ek);
+										ek.printStackTrace();
+									}
+
+									if (kayitList != null && !kayitList.isEmpty()) {
 										IzinReferansERP izinReferansErp = kayitList.get(0);
 										PersonelIzin digerIzin = izinReferansErp != null ? izinReferansErp.getIzin() : null;
 										if (digerIzin != null) {
@@ -1799,7 +1806,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 												}
 											}
 										} else {
-											logger.error("hata : " + izinERP.getBasZaman() + " - " + izinERP.getBitZaman() + "\n" + sb.toString());
+											logger.debug("hata : " + izinERP.getBasZaman() + " - " + izinERP.getBitZaman() + "\n" + sb.toString());
 										}
 									}
 								}
@@ -3053,7 +3060,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 											saveList.add(personel);
 											listeKaydet(personelNo, saveList, null);
 										} catch (Exception e) {
-											logger.error(e);
+											logger.error(personelNo + "\n" + e);
+											e.printStackTrace();
 										}
 
 									}
