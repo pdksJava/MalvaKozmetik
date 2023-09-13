@@ -135,6 +135,10 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 						if (xmlStr.indexOf(newKey) > 0)
 							xml = PdksUtil.replaceAll(xmlStr, newKey, key);
 					}
+					if (xmlStr.indexOf("&") > 0)
+						xmlStr = PdksUtil.replaceAll(xmlStr, "&", "&amp;");
+					if (xmlStr.indexOf("&amp;amp;") > 0)
+						xmlStr = PdksUtil.replaceAllManuel(xmlStr, "&amp;amp;", "&amp;");
 					InputStream oss = PdksUtil.getInputStreamByString(xmlStr);
 					message.setContent(InputStream.class, oss);
 					StringBuffer sb = new StringBuffer();
@@ -155,6 +159,8 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 					sb.append("<stopTime/>");
 					sb.append("</" + soapAction + ">");
 					xml = sb.toString();
+
+
 					xml = PdksUtil.formatXML(xml);
 
 					soapAction = "service" + soapAction + "_" + PdksUtil.convertToDateString(bugun, "yyyy-MM-") + ekKey + (transactionId != null ? transactionId : +bugun.getTime());

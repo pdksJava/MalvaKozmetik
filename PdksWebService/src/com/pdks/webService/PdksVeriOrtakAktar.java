@@ -2303,6 +2303,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 					ekle = tanim.getId() == null || !tanim.getDurum().booleanValue();
 					if (aciklama != null) {
+						if (aciklama.indexOf("&amp;") > 0)
+							aciklama = PdksUtil.replaceAllManuel(aciklama, "&amp;", "&");
 						if (tanim.getAciklamatr() == null || !tanim.getAciklamatr().equalsIgnoreCase(aciklama))
 							ekle = true;
 						tanim.setAciklamaen(aciklama);
