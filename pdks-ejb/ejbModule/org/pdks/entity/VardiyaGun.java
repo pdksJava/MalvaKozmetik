@@ -789,6 +789,12 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	public void setIzin(PersonelIzin value) {
+		if (vardiyaDateStr.equals("20230904x")) {
+ 			if (value != null)
+				logger.debug(vardiyaDateStr + " " + value.getId() + " " + value.getAciklama());
+			else
+				logger.debug("");
+		}
 		this.izin = value;
 	}
 
@@ -1570,6 +1576,8 @@ public class VardiyaGun extends BaseObject {
 	public String getOzelAciklama(boolean durum) {
 		String aciklama = "";
 		boolean istifa = vardiya != null && vardiyaGorev != null && vardiyaGorev.isIstifa();
+		if (vardiyaDateStr.equals("20230904"))
+			logger.debug("");
 		if (vardiya == null || istifa) {
 			if (isAyinGunu() && (istifa || isCalismayiBirakti()))
 				aciklama = "ISTIFA";
@@ -1607,9 +1615,7 @@ public class VardiyaGun extends BaseObject {
 					aciklama = vardiya.getKisaAciklama();
 				} else if (!vardiya.isIzin()) {
 					aciklama = getHTveOFFAciklama();
-				}
-
-				else
+				} else
 					aciklama = vardiya.getKisaAdi();
 
 				if (vardiyaGorev != null) {

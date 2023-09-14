@@ -1702,7 +1702,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 							Boolean izinDegisti = null;
 							if (!mailEkle && personelIzin.getId() != null) {
 								boolean izinDurum = personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI;
-								izinDegisti = izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime() || bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
+								izinDegisti = !izinTipi.getId().equals(personelIzin.getIzinTipi().getId()) || izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime()
+										|| bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
 								mailEkle = izinDegisti && doktor;
 							}
 

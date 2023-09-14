@@ -13947,8 +13947,10 @@ public class OrtakIslemler implements Serializable {
 				vardiyaGun.setTatil(vardiyaGunSablon.getTatil());
 				vardiyaGun.setFiiliHesapla(fiiliHesapla);
 				puantajVardiyaGunleri.add(vardiyaGun);
-				if (!fiiliHesapla)
+				if (!fiiliHesapla) {
 					vardiyaGun.setIzin(null);
+				}
+
 				if (vardiyaGunMap != null)
 					vardiyaGunMap.put(vardiyaGun.getVardiyaDateStr(), vardiyaGun);
 
@@ -15197,8 +15199,9 @@ public class OrtakIslemler implements Serializable {
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
 		try {
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+			boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
 			if (personelIzin != null && vardiyaGun != null && islemVardiya != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
-				boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
+				
 				BordroDetayTipi bordroDetayTipi = null;
 				if (vardiyaIzin && PdksUtil.hasStringValue(islemVardiya.getStyleClass()))
 					bordroDetayTipi = BordroDetayTipi.fromValue(islemVardiya.getStyleClass());
@@ -15220,6 +15223,7 @@ public class OrtakIslemler implements Serializable {
 
 					} else
 						kontrol = bitisZamani.getTime() >= vardiyaDate.getTime() && baslangicZamani.getTime() <= vardiyaDate.getTime();
+
 					if (kontrol || vardiyaIzin) {
 						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
 						int gunlukOldu = 0;
@@ -15240,7 +15244,6 @@ public class OrtakIslemler implements Serializable {
 						PersonelIzin personelIzin2 = izin;
 						if (gunIzin) {
 							if (izinVardiyaKontrol) {
-
 								baslangicZamani = islemVardiya.getVardiyaBasZaman();
 								if (vardiyaGun.getOncekiVardiyaGun() != null && vardiyaGun.getOncekiVardiyaGun().getIzin() != null)
 									baslangicZamani = PdksUtil.tariheGunEkleCikar(vardiyaGun.getOncekiVardiyaGun().getIzin().getBaslangicZamani(), 1);
@@ -15250,10 +15253,11 @@ public class OrtakIslemler implements Serializable {
 
 							personelIzin2 = izin.setVardiyaIzin(vardiyaGun);
 							personelIzin2.setOrjIzin(personelIzin);
+						} else {
+	//						vardiyaGun.setIzin(null);
+
 						}
 
-						else
-							vardiyaGun.setIzin(null);
 						vardiyaGun.addPersonelIzin(personelIzin2);
 					}
 				}
