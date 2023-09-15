@@ -15497,15 +15497,16 @@ public class OrtakIslemler implements Serializable {
 									giris = !giris;
 									KapiKGS kapiKGS = hareketKGS.getKapiKGS();
 									Kapi kapi = kapiKGS.getKapi();
-									hareketHatali = kapi == null;
-									if (hareketHatali == false) {
+									boolean girisDurum = kapi == null;
+									if (girisDurum == false) {
 										if (giris)
-											hareketHatali = kapi.isGirisKapi() == false;
+											girisDurum = kapi.isGirisKapi() == false;
 										else
-											hareketHatali = kapi.isCikisKapi() == false;
+											girisDurum = kapi.isCikisKapi() == false;
 
 									}
-									if (hareketHatali) {
+									if (girisDurum && hareketKGS.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS) && kapiKGS.getBagliKapiKGS() != null) {
+										hareketHatali = true;
 										hareketKGS.setKapiKGS(kapiKGS.getBagliKapiKGS());
 										hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), hareketKGS.getKapiKGS());
 										logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + hareketKGS.getId());
