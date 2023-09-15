@@ -35,8 +35,13 @@ public class PersonelHareket extends BasePDKSObject implements Serializable {
 	private Date zaman;
 	private PersonelHareketIslem islem;
 	private String personelNo;
+	
 	private Integer durum = 1;
 	private Long kgsHareket;
+	
+	public PersonelHareket() {
+		super();
+	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	@JoinColumn(name = COLUMN_NAME_PERSONEL, nullable = false)

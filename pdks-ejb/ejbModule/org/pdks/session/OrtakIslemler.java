@@ -105,6 +105,7 @@ import org.pdks.entity.MailGrubu;
 import org.pdks.entity.MenuItem;
 import org.pdks.entity.Notice;
 import org.pdks.entity.Parameter;
+import org.pdks.entity.PdksLog;
 import org.pdks.entity.PdksPersonelView;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
@@ -9381,8 +9382,39 @@ public class OrtakIslemler implements Serializable {
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<Kapi> kapilar = pdksEntityController.getObjectByInnerObjectList(parametreMap, Kapi.class);
 		HashMap<Long, KapiView> kapiMap = new HashMap<Long, KapiView>();
-		for (Kapi kapi : kapilar)
-			kapiMap.put(kapi.getKapiKGS().getId(), kapi.getKapiNewView());
+		HashMap<String, HashMap<Integer, KapiKGS>> dMap = new HashMap<String, HashMap<Integer, KapiKGS>>();
+		for (Kapi kapi : kapilar) {
+			KapiKGS kapiKGS = kapi.getKapiKGS();
+			kapiKGS.setBagliKapiKGS(null);
+			if (kapiKGS.isKapiDegistirir() && kapiKGS.isManuel() == false && kapiKGS.getKapiSirket() != null && kapiKGS.getTerminalNo() != null) {
+				String key = kapiKGS.getKapiSirket().getId() + "_" + kapiKGS.getTerminalNo();
+				HashMap<Integer, KapiKGS> map = dMap.containsKey(key) ? dMap.get(key) : new HashMap<Integer, KapiKGS>();
+				if (map.isEmpty())
+					dMap.put(key, map);
+				if (!map.containsKey(kapiKGS.getKartYonu()))
+					map.put(kapiKGS.getKartYonu(), kapiKGS);
+				else
+					dMap.remove(key);
+			}
+			kapiMap.put(kapiKGS.getId(), kapi.getKapiNewView());
+		}
+		if (!dMap.isEmpty()) {
+			for (String key : dMap.keySet()) {
+				HashMap<Integer, KapiKGS> map = dMap.get(key);
+				if (map.size() == 2) {
+					for (Integer yon1 : map.keySet()) {
+						KapiKGS kapiKGS = map.get(yon1);
+						for (Integer yon2 : map.keySet()) {
+							if (yon1 != yon2) {
+								kapiKGS.setBagliKapiKGS(map.get(yon2));
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		dMap = null;
 		return kapiMap;
 	}
 
@@ -9396,14 +9428,19 @@ public class OrtakIslemler implements Serializable {
 	public HashMap<Long, ArrayList<HareketKGS>> fillPersonelKGSHareketMap(List<Long> kgsPerIdler, Date vardiyaBas, Date vardiyaBit, Session session) {
 		HashMap<Long, KapiView> kapiMap = fillPDKSKapilari(session);
 		List<Long> kapiIdIList = new ArrayList<Long>(kapiMap.keySet());
+		TreeMap<Long, KapiKGS> bagliMap = new TreeMap<Long, KapiKGS>();
 		if (vardiyaBas != null && vardiyaBit != null) {
 			try {
 				Date tarih1 = PdksUtil.tariheGunEkleCikar(vardiyaBas, -7);
 				Date tarih2 = PdksUtil.tariheGunEkleCikar(vardiyaBit, 7);
 				for (Iterator iterator = kapiIdIList.iterator(); iterator.hasNext();) {
 					Long key = (Long) iterator.next();
-					KapiSirket kapiSirket = kapiMap.get(key).getKapiKGS().getKapiSirket();
+					KapiKGS kapiKGS = kapiMap.get(key).getKapiKGS();
+
+					KapiSirket kapiSirket = kapiKGS.getKapiSirket();
 					if (kapiSirket != null) {
+						if (kapiKGS.getBagliKapiKGS() != null)
+							bagliMap.put(kapiKGS.getId(), kapiKGS.getBagliKapiKGS());
 						if (kapiSirket.getBitTarih() != null && tarih1.getTime() <= kapiSirket.getBitTarih().getTime() && kapiSirket.getBasTarih() != null && tarih2.getTime() >= kapiSirket.getBasTarih().getTime())
 							continue;
 						else
@@ -15201,7 +15238,7 @@ public class OrtakIslemler implements Serializable {
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 			boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
 			if (personelIzin != null && vardiyaGun != null && islemVardiya != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
-				
+
 				BordroDetayTipi bordroDetayTipi = null;
 				if (vardiyaIzin && PdksUtil.hasStringValue(islemVardiya.getStyleClass()))
 					bordroDetayTipi = BordroDetayTipi.fromValue(islemVardiya.getStyleClass());
@@ -15254,7 +15291,7 @@ public class OrtakIslemler implements Serializable {
 							personelIzin2 = izin.setVardiyaIzin(vardiyaGun);
 							personelIzin2.setOrjIzin(personelIzin);
 						} else {
-	//						vardiyaGun.setIzin(null);
+							// vardiyaGun.setIzin(null);
 
 						}
 
@@ -15311,6 +15348,7 @@ public class OrtakIslemler implements Serializable {
 		Long perNoId = denklestirmeMap.containsKey("perNoId") ? (Long) denklestirmeMap.get("perNoId") : null;
 		List<YemekIzin> yemekList = denklestirmeMap.containsKey("yemekList") ? (List<YemekIzin>) denklestirmeMap.get("yemekList") : null;
 		boolean testDurum = PdksUtil.getTestDurum() && false;
+		boolean hareketKopyala = getParameterKey("kapiGirisHareketKopyala").equals("1");
 		denklestirmeMap = null;
 		if (testDurum)
 			logger.info(perNoId + " denklestirmeOlustur 0100 " + new Date());
@@ -15364,7 +15402,7 @@ public class OrtakIslemler implements Serializable {
 		if (vardiyaGunList != null) {
 			DenklestirmeAy denklestirmeAy = personelDenklestirme.getDenklestirmeAy();
 			vardiyaIzinleriGuncelle(izinler, vardiyaGunList);
-
+			HashMap<Long, KapiKGS> hareketKapiUpdateMap = new HashMap<Long, KapiKGS>();
 			String donem = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
 			for (Iterator<VardiyaGun> iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = iterator.next();
@@ -15424,7 +15462,8 @@ public class OrtakIslemler implements Serializable {
 					// ekleniyor
 
 					if (perHareketList != null) {
-
+						boolean bagliKapiVar = false;
+						List<HareketKGS> hareketList = new ArrayList<HareketKGS>();
 						for (Iterator<HareketKGS> iterator5 = perHareketList.iterator(); iterator5.hasNext();) {
 							HareketKGS hareket = iterator5.next();
 							if (hareket.getIslem() != null && (hareket.getIslem().getIslemTipi() == null || hareket.getIslem().getIslemTipi().equals("D"))) {
@@ -15437,6 +15476,9 @@ public class OrtakIslemler implements Serializable {
 							}
 							try {
 								if (vardiyaGun.addHareket(hareket, Boolean.TRUE)) {
+									hareketList.add(hareket);
+									if (!bagliKapiVar)
+										bagliKapiVar = hareket.getKapiKGS() != null && hareket.getKapiKGS().getBagliKapiKGS() != null;
 									iterator5.remove();
 								}
 							} catch (Exception ex) {
@@ -15445,6 +15487,44 @@ public class OrtakIslemler implements Serializable {
 							}
 
 						}
+						if (denklestirmeAy.getDurum() && bagliKapiVar && vardiyaGun.isAyinGunu()) {
+							int adet = hareketList.size();
+							boolean hareketHatali = false;
+							if (adet > 0 && adet % 2 == 0) {
+								boolean giris = false;
+								for (Iterator iterator2 = hareketList.iterator(); iterator2.hasNext();) {
+									HareketKGS hareketKGS = (HareketKGS) iterator2.next();
+									giris = !giris;
+									KapiKGS kapiKGS = hareketKGS.getKapiKGS();
+									Kapi kapi = kapiKGS.getKapi();
+									hareketHatali = kapi == null;
+									if (hareketHatali == false) {
+										if (giris)
+											hareketHatali = kapi.isGirisKapi() == false;
+										else
+											hareketHatali = kapi.isCikisKapi() == false;
+
+									}
+									if (hareketHatali) {
+										hareketKGS.setKapiKGS(kapiKGS.getBagliKapiKGS());
+										hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), hareketKGS.getKapiKGS());
+										logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + hareketKGS.getId());
+									}
+
+								}
+							}
+							if (hareketHatali) {
+								vardiyaGun.setHareketler(null);
+								vardiyaGun.setYemekHareketleri(null);
+								vardiyaGun.setGirisHareketleri(null);
+								vardiyaGun.setCikisHareketleri(null);
+								for (Iterator iterator2 = hareketList.iterator(); iterator2.hasNext();) {
+									HareketKGS hareket = (HareketKGS) iterator2.next();
+									vardiyaGun.addHareket(hareket, Boolean.TRUE);
+								}
+							}
+						}
+						hareketList = null;
 						if (kartOkuyucuDurum && vardiyaGun.getIzin() == null && !vardiyaGun.isZamanGelmedi()) {
 							if (vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty()) {
 								if (vardiyaGun.getIslemVardiya() != null && vardiyaGun.getIslemVardiya().isCalisma() && bugun.after(vardiyaGun.getIslemVardiya().getVardiyaBitZaman())) {
@@ -15604,6 +15684,54 @@ public class OrtakIslemler implements Serializable {
 				oncekiVardiya = (VardiyaGun) vardiyaGun.clone();
 
 			}
+			if (!hareketKapiUpdateMap.isEmpty()) {
+				HashMap fields = new HashMap();
+				fields.put("id", new ArrayList(hareketKapiUpdateMap.keySet()));
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<PdksLog> list = pdksEntityController.getObjectByInnerObjectList(fields, PdksLog.class);
+				if (!list.isEmpty()) {
+					Tanim islemNeden = getOtomatikKapGirisiNeden(session);
+					User onaylayanUser = getSistemAdminUser(session);
+					Date guncellemeZamani = new Date();
+					for (PdksLog pdksLog : list) {
+						if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
+							KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
+							if (hareketKopyala) {
+								PdksLog pdksLog2 = (PdksLog) pdksLog.clone();
+								pdksLog2.setId(null);
+								pdksLog2.setGuncellemeZamani(null);
+								pdksLog2.setKapiId(kapiKGS.getKgsId());
+								session.saveOrUpdate(pdksLog2);
+								if (islemNeden != null) {
+									PersonelHareketIslem islem = new PersonelHareketIslem();
+									islem.setAciklama(pdksLog2.getKgsId() + " " + kapiKGS.getKapi().getAciklama() + " olarak güncellendi. [ " + pdksLog2.getId() + " ]");
+									islem.setOnayDurum(PersonelHareketIslem.ONAY_DURUM_ONAYLANDI);
+									islem.setOlusturmaTarihi(guncellemeZamani);
+									islem.setGuncelleyenUser(onaylayanUser);
+									islem.setOnaylayanUser(authenticatedUser);
+									islem.setZaman(pdksLog.getZaman());
+									islem.setIslemTipi("U");
+									islem.setNeden(islemNeden);
+									session.saveOrUpdate(islem);
+									pdksLog.setIslemId(islem.getId());
+								}
+								pdksLog.setGuncellemeZamani(guncellemeZamani);
+								pdksLog.setDurum(Boolean.FALSE);
+								session.saveOrUpdate(pdksLog);
+							} else {
+								pdksLog.setGuncellemeZamani(guncellemeZamani);
+								pdksLog.setKapiId(kapiKGS.getKgsId());
+								session.saveOrUpdate(pdksLog);
+							}
+
+						}
+					}
+					session.flush();
+				}
+				list = null;
+			}
+			hareketKapiUpdateMap = null;
 		}
 
 		if (personelDenklestirme.getVardiyaHaftaMap() != null) {

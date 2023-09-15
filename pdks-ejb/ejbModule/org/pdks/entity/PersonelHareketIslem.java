@@ -20,7 +20,7 @@ import org.pdks.session.PdksUtil;
 
 @Entity(name = PersonelHareketIslem.TABLE_NAME)
 @Immutable
-public class PersonelHareketIslem  extends BasePDKSObject implements Serializable {
+public class PersonelHareketIslem extends BasePDKSObject implements Serializable {
 
 	/**
 	 * 
@@ -28,10 +28,10 @@ public class PersonelHareketIslem  extends BasePDKSObject implements Serializabl
 	private static final long serialVersionUID = 2818559653323880265L;
 
 	public static final String TABLE_NAME = "PDKS_ISLEM";
- 	public static final int ONAY_DURUM_ISLEM_YAPILMADI = 0;
+	public static final int ONAY_DURUM_ISLEM_YAPILMADI = 0;
 	public static final int ONAY_DURUM_ONAYLANDI = 1;
 	public static final int ONAY_DURUM_ONAYLANMADI = 2;
- 
+
 	private User guncelleyenUser, onaylayanUser;
 	private Date zaman, olusturmaTarihi = new Date();
 	private String aciklama, islemTipi;
@@ -39,7 +39,9 @@ public class PersonelHareketIslem  extends BasePDKSObject implements Serializabl
 	private Tanim neden;
 	private boolean puantajOnayDurum = Boolean.TRUE;
 
- 
+	public PersonelHareketIslem() {
+		super();
+	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
 	@JoinColumn(name = "GUNCELLEYEN_PERSONEL_ID", nullable = false)

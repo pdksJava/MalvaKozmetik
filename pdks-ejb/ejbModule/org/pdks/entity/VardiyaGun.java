@@ -488,9 +488,7 @@ public class VardiyaGun extends BaseObject {
 				kapi = null;
 			}
 			if (kapi != null) {
-				if (!this.getIslemVardiya().isCalisma() && (oncekiVardiyaGun != null || sonrakiVardiya != null)) {
 
-				}
 				if (kapi.isYemekHaneKapi()) {
 					if (yemekHareketleri == null)
 						yemekHareketleri = new ArrayList<HareketKGS>();

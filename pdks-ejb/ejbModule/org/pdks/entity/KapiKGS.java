@@ -32,15 +32,23 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
 	public static final String COLUMN_NAME_KGS_ID = "KGS_ID";
 	public static final String COLUMN_NAME_KGS_SIRKET = "KGS_SIRKET_ID";
+	public static final String COLUMN_NAME_TERMINAL_NO = "TERMINAL_NO";
+	public static final String COLUMN_NAME_KART_YONU = "KART_YONU";
+	public static final String COLUMN_NAME_MANUEL = "MANUEL";
+	public static final String COLUMN_NAME_KAPI_DEGISTIR = "KAPI_DEGISTIR";
+	public static final String COLUMN_NAME_KAPI = "KAPI_ID";
+	public static final String COLUMN_NAME_DURUM = "DURUM";
+	public static final String COLUMN_NAME_ISLEM_ZAMAN = "ISLEM_ZAMAN";
 
 	private Long kgsId;
 	private KapiSirket kapiSirket;
 	private String aciklamaKGS;
 	private int kartYonu;
 	private Long terminalNo;
-	private Boolean durum = Boolean.FALSE, manuel = Boolean.FALSE;
+	private Boolean durum = Boolean.FALSE, manuel = Boolean.FALSE, kapiDegistir = Boolean.FALSE;
 	private Date islemZamani;
 	private Kapi kapi;
+	private KapiKGS bagliKapiKGS;
 
 	@Column(name = COLUMN_NAME_KGS_ID)
 	public Long getKgsId() {
@@ -71,7 +79,7 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 		this.aciklamaKGS = aciklamaKGS;
 	}
 
-	@Column(name = "KART_YONU")
+	@Column(name = COLUMN_NAME_KART_YONU)
 	public int getKartYonu() {
 		return kartYonu;
 	}
@@ -80,7 +88,7 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 		this.kartYonu = kartYonu;
 	}
 
-	@Column(name = "TERMINAL_NO")
+	@Column(name = COLUMN_NAME_TERMINAL_NO)
 	public Long getTerminalNo() {
 		return terminalNo;
 	}
@@ -90,7 +98,7 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 	}
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "ISLEM_ZAMAN")
+	@Column(name = COLUMN_NAME_ISLEM_ZAMAN)
 	public Date getIslemZamani() {
 		return islemZamani;
 	}
@@ -99,7 +107,7 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 		this.islemZamani = islemZamani;
 	}
 
-	@Column(name = "DURUM")
+	@Column(name = COLUMN_NAME_DURUM)
 	public Boolean getDurum() {
 		return durum;
 	}
@@ -108,7 +116,7 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 		this.durum = durum;
 	}
 
-	@Column(name = "MANUEL")
+	@Column(name = COLUMN_NAME_MANUEL)
 	public Boolean getManuel() {
 		return manuel;
 	}
@@ -117,8 +125,17 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 		this.manuel = manuel;
 	}
 
+	@Column(name = COLUMN_NAME_KAPI_DEGISTIR)
+	public Boolean getKapiDegistir() {
+		return kapiDegistir;
+	}
+
+	public void setKapiDegistir(Boolean kapiDegistir) {
+		this.kapiDegistir = kapiDegistir;
+	}
+
 	@OneToOne(cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "KAPI_ID", nullable = true, insertable = false, updatable = false)
+	@JoinColumn(name = COLUMN_NAME_KAPI, nullable = true, insertable = false, updatable = false)
 	@Fetch(FetchMode.JOIN)
 	public Kapi getKapi() {
 		return kapi;
@@ -134,11 +151,25 @@ public class KapiKGS extends BasePDKSObject implements Serializable {
 	}
 
 	@Transient
+	public boolean isKapiDegistirir() {
+		return kapiDegistir != null && kapiDegistir;
+	}
+
+	@Transient
 	public boolean isPdksManuel() {
 		boolean pdksManuel = false;
 		if (manuel != null && manuel)
 			pdksManuel = kapiSirket == null || kapiSirket.getId() <= 0L;
 		return pdksManuel;
+	}
+
+	@Transient
+	public KapiKGS getBagliKapiKGS() {
+		return bagliKapiKGS;
+	}
+
+	public void setBagliKapiKGS(KapiKGS bagliKapiKGS) {
+		this.bagliKapiKGS = bagliKapiKGS;
 	}
 
 	@Transient
