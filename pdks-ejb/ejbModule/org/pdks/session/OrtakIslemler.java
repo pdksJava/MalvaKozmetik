@@ -9428,7 +9428,6 @@ public class OrtakIslemler implements Serializable {
 	public HashMap<Long, ArrayList<HareketKGS>> fillPersonelKGSHareketMap(List<Long> kgsPerIdler, Date vardiyaBas, Date vardiyaBit, Session session) {
 		HashMap<Long, KapiView> kapiMap = fillPDKSKapilari(session);
 		List<Long> kapiIdIList = new ArrayList<Long>(kapiMap.keySet());
-		TreeMap<Long, KapiKGS> bagliMap = new TreeMap<Long, KapiKGS>();
 		if (vardiyaBas != null && vardiyaBit != null) {
 			try {
 				Date tarih1 = PdksUtil.tariheGunEkleCikar(vardiyaBas, -7);
@@ -9436,11 +9435,8 @@ public class OrtakIslemler implements Serializable {
 				for (Iterator iterator = kapiIdIList.iterator(); iterator.hasNext();) {
 					Long key = (Long) iterator.next();
 					KapiKGS kapiKGS = kapiMap.get(key).getKapiKGS();
-
 					KapiSirket kapiSirket = kapiKGS.getKapiSirket();
 					if (kapiSirket != null) {
-						if (kapiKGS.getBagliKapiKGS() != null)
-							bagliMap.put(kapiKGS.getId(), kapiKGS.getBagliKapiKGS());
 						if (kapiSirket.getBitTarih() != null && tarih1.getTime() <= kapiSirket.getBitTarih().getTime() && kapiSirket.getBasTarih() != null && tarih2.getTime() >= kapiSirket.getBasTarih().getTime())
 							continue;
 						else
@@ -15477,8 +15473,9 @@ public class OrtakIslemler implements Serializable {
 							try {
 								if (vardiyaGun.addHareket(hareket, Boolean.TRUE)) {
 									hareketList.add(hareket);
+									KapiKGS kapiKGS = hareket.getKapiKGS();
 									if (!bagliKapiVar)
-										bagliKapiVar = hareket.getKapiKGS() != null && hareket.getKapiKGS().getBagliKapiKGS() != null;
+										bagliKapiVar = kapiKGS != null && kapiKGS.getBagliKapiKGS() != null;
 									iterator5.remove();
 								}
 							} catch (Exception ex) {
