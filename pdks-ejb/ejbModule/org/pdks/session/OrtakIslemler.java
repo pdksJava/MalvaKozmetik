@@ -15493,19 +15493,22 @@ public class OrtakIslemler implements Serializable {
 									HareketKGS hareketKGS = (HareketKGS) iterator2.next();
 									giris = !giris;
 									KapiKGS kapiKGS = hareketKGS.getKapiKGS();
-									Kapi kapi = kapiKGS.getKapi();
-									boolean girisDurum = kapi != null && kapiKGS.getBagliKapiKGS() != null;
-									if (girisDurum) {
-										if (giris)
-											girisDurum = kapi.isGirisKapi() == false;
-										else
-											girisDurum = kapi.isCikisKapi() == false;
-									}
-									if (girisDurum && hareketKGS.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) {
-										hareketHatali = true;
-										hareketKGS.setKapiKGS(kapiKGS.getBagliKapiKGS());
-										hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), hareketKGS.getKapiKGS());
-										logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + hareketKGS.getId());
+									KapiKGS bagliKapiKGS = kapiKGS.getBagliKapiKGS();
+									if (bagliKapiKGS != null) {
+										Kapi kapi = kapiKGS.getKapi();
+										boolean girisDurum = kapi != null;
+										if (girisDurum) {
+											if (giris)
+												girisDurum = kapi.isGirisKapi() == false;
+											else
+												girisDurum = kapi.isCikisKapi() == false;
+										}
+										if (girisDurum && hareketKGS.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) {
+											hareketHatali = true;
+											hareketKGS.setKapiKGS(bagliKapiKGS);
+											hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), hareketKGS.getKapiKGS());
+											logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + hareketKGS.getId());
+										}
 									}
 
 								}
