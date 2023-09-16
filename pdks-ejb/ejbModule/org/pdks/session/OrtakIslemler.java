@@ -15506,7 +15506,7 @@ public class OrtakIslemler implements Serializable {
 										if (girisDurum && hareketKGS.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) {
 											hareketHatali = true;
 											hareketKGS.setKapiKGS(bagliKapiKGS);
-											hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), hareketKGS.getKapiKGS());
+											hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), kapiKGS);
 											logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + hareketKGS.getId());
 										}
 									}
