@@ -16,8 +16,10 @@ import java.util.StringTokenizer;
 import javax.faces.FacesException;
 import javax.persistence.EntityManager;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.lob.SerializableClob;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
@@ -265,15 +267,30 @@ public class StartupAction implements Serializable {
 		logger.debug("startupMethod : " + cal.getTime());
 		if (cal.get(Calendar.HOUR_OF_DAY) < 7)
 			savePrepareAllTableID(session);
-		HashMap<String, Object> veriMap = new HashMap<String, Object>();
+		viewRefresh(session);
+		fillStartMethod(null, session);
+	}
+
+	/**
+	 * @param session
+	 */
+	public void viewRefresh(Session session) {
+		LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
 		try {
+			veriMap.put("ekranYaz", 0);
 			veriMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			pdksEntityController.execSP(veriMap, new StringBuffer("SP_PDKS_VIEW_REFRESH"));
+			List hatalar = pdksEntityController.execSPList(veriMap, new StringBuffer("SP_PDKS_VIEW_REFRESH"), null);
+			if (hatalar != null && !hatalar.isEmpty()) {
+				SerializableClob clobComment = (SerializableClob) hatalar.get(0);
+				String aciklama = PdksUtil.replaceAllManuel(IOUtils.toString(clobComment.getAsciiStream(), "UTF-8"), "|", "\n");
+				if (PdksUtil.hasStringValue(aciklama))
+					throw new Exception("\n" + aciklama);
+			}
+
 		} catch (Exception e) {
 			logger.error(e);
 		}
 		veriMap = null;
-		fillStartMethod(null, session);
 	}
 
 	/**
