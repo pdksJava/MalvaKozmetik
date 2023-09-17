@@ -265,8 +265,14 @@ public class StartupAction implements Serializable {
 		logger.debug("startupMethod : " + cal.getTime());
 		if (cal.get(Calendar.HOUR_OF_DAY) < 7)
 			savePrepareAllTableID(session);
+		HashMap<String, Object> veriMap = new HashMap<String, Object>();
+		try {
+			veriMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			pdksEntityController.execSP(veriMap, new StringBuffer("SP_PDKS_VIEW_REFRESH"));
+		} catch (Exception e) {
+		}
+		veriMap = null;
 		fillStartMethod(null, session);
-
 	}
 
 	/**
