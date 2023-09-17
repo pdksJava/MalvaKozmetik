@@ -270,6 +270,7 @@ public class StartupAction implements Serializable {
 			veriMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			pdksEntityController.execSP(veriMap, new StringBuffer("SP_PDKS_VIEW_REFRESH"));
 		} catch (Exception e) {
+			logger.error(e);
 		}
 		veriMap = null;
 		fillStartMethod(null, session);
