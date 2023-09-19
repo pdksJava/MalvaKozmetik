@@ -1609,15 +1609,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							izinTipi.setMaxSaat(0d);
 							izinTipi.setMinSaat(0d);
 							izinTipi.setMesaj(aciklama);
-							String kisaAciklama = "";
-							if (aciklama != null && aciklama.trim().length() > 0) {
-								StringTokenizer st = new StringTokenizer(aciklama, " ");
-								while (st.hasMoreTokens()) {
-									String tk = st.nextToken();
-									kisaAciklama += tk.substring(0, 1).toUpperCase(Constants.TR_LOCALE);
-
-								}
-							}
+							String kisaAciklama = getIzinKisaAciklama(aciklama);
 							izinTipi.setKisaAciklama(kisaAciklama);
 							izinTipi.setOnaylayanTipi("0");
 							izinTipi.setPersonelGirisTipi("0");
@@ -1642,6 +1634,20 @@ public class PdksVeriOrtakAktar implements Serializable {
 						} else
 							addHatalist(izinERP.getHataList(), izinERP.getIzinTipi() + (izinERP.getIzinTipiAciklama() != null ? " - " + izinERP.getIzinTipiAciklama() : "") + " izin tipi tanımsız!");
 
+					} else {
+						IzinTipi izinTipi = izinTipiMap.get(izinERP.getIzinTipi());
+						Tanim izinTipiTanim =izinTipi.getIzinTipiTanim();
+						String aciklama = izinERP.getIzinTipiAciklama();
+						if (!izinTipiTanim.getAciklamatr().equals(aciklama)) {
+							String kisaAciklama = getIzinKisaAciklama(aciklama);
+							izinTipiTanim.setAciklamatr(aciklama);
+							izinTipiTanim.setAciklamaen(aciklama);
+							izinTipiTanim.setKodu(kisaAciklama);
+							izinTipi.setKisaAciklama(kisaAciklama);
+							izinTipi.setMesaj(aciklama);
+							saveList.add(izinTipiTanim);
+							saveList.add(izinTipi);
+						}
 					}
 					if (baslangicZamani == null) {
 						if (notEmptyStr(izinERP.getBasZaman()) == false)
@@ -2189,6 +2195,19 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 			}
 		}
+	}
+
+	private String getIzinKisaAciklama(String aciklama) {
+		String kisaAciklama = "";
+		if (aciklama != null && aciklama.trim().length() > 0) {
+			StringTokenizer st = new StringTokenizer(aciklama, " ");
+			while (st.hasMoreTokens()) {
+				String tk = st.nextToken();
+				kisaAciklama += tk.substring(0, 1).toUpperCase(Constants.TR_LOCALE);
+
+			}
+		}
+		return kisaAciklama;
 	}
 
 	/**
