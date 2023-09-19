@@ -15697,7 +15697,7 @@ public class OrtakIslemler implements Serializable {
 
 					StringBuffer sb = new StringBuffer();
 					sb.append("sp_pool_termainal_update_all");
-
+					LinkedHashMap map = new LinkedHashMap();
 					for (PdksLog pdksLog : list) {
 						if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
 							KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
@@ -15724,24 +15724,23 @@ public class OrtakIslemler implements Serializable {
 								pdksLog.setDurum(Boolean.FALSE);
 								session.saveOrUpdate(pdksLog);
 							} else {
-								LinkedHashMap map = new LinkedHashMap();
 								if (session != null)
 									map.put(PdksEntityController.MAP_KEY_SESSION, session);
 								map.put("eklenenId", pdksLog.getKgsId());
 								map.put("pdks", 1);
 								try {
 									pdksEntityController.execSP(map, sb);
-
 								} catch (Exception e) {
 									pdksLog.setGuncellemeZamani(guncellemeZamani);
 									pdksLog.setKapiId(kapiKGS.getKgsId());
 									session.saveOrUpdate(pdksLog);
 								}
-
+								map.clear();
 							}
 
 						}
 					}
+					map = null;
 					session.flush();
 				}
 				list = null;
