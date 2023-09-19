@@ -1987,7 +1987,7 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 */
 	public void kgsMasterUpdate(Session session) {
-		HashMap fields = new HashMap();
+		LinkedHashMap fields = new LinkedHashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("dbo.SP_GET_PDKS_ISLEM");
 		if (session != null)
@@ -15694,6 +15694,10 @@ public class OrtakIslemler implements Serializable {
 					Tanim islemNeden = getOtomatikKapGirisiNeden(session);
 					User onaylayanUser = getSistemAdminUser(session);
 					Date guncellemeZamani = new Date();
+
+					StringBuffer sb = new StringBuffer();
+					sb.append("sp_pool_termainal_update_all");
+
 					for (PdksLog pdksLog : list) {
 						if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
 							KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
@@ -15720,9 +15724,20 @@ public class OrtakIslemler implements Serializable {
 								pdksLog.setDurum(Boolean.FALSE);
 								session.saveOrUpdate(pdksLog);
 							} else {
-								pdksLog.setGuncellemeZamani(guncellemeZamani);
-								pdksLog.setKapiId(kapiKGS.getKgsId());
-								session.saveOrUpdate(pdksLog);
+								LinkedHashMap map = new LinkedHashMap();
+								if (session != null)
+									map.put(PdksEntityController.MAP_KEY_SESSION, session);
+								map.put("eklenenId", pdksLog.getKgsId());
+								map.put("pdks", 1);
+								try {
+									pdksEntityController.execSP(map, sb);
+
+								} catch (Exception e) {
+									pdksLog.setGuncellemeZamani(guncellemeZamani);
+									pdksLog.setKapiId(kapiKGS.getKgsId());
+									session.saveOrUpdate(pdksLog);
+								}
+
 							}
 
 						}

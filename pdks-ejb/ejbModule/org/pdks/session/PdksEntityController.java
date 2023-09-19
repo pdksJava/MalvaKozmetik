@@ -665,7 +665,7 @@ public class PdksEntityController implements Serializable {
 	 * @param veriMap
 	 * @param sp
 	 */
-	public int execSP(HashMap<String, Object> veriMap, StringBuffer sp) throws Exception {
+	public int execSP(LinkedHashMap<String, Object> veriMap, StringBuffer sp) throws Exception {
 		Session session = veriMap.containsKey(MAP_KEY_SESSION) ? (Session) veriMap.get(MAP_KEY_SESSION) : PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		String queryStr = "exec " + sp.toString();
 		List<String> list = null;
