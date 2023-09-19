@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -16,16 +17,6 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.pdks.entity.Personel;
-import org.pdks.entity.VardiyaGun;
-import org.pdks.entity.Dosya;
-import org.pdks.entity.IzinTipi;
-import org.pdks.entity.PersonelIzin;
-import org.pdks.entity.PersonelIzinDetay;
-import org.pdks.entity.PersonelIzinOnay;
-import org.pdks.entity.TempIzin;
-import org.pdks.quartz.IzinBakiyeGuncelleme;
-import org.pdks.security.entity.User;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
@@ -36,6 +27,16 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.Dosya;
+import org.pdks.entity.IzinTipi;
+import org.pdks.entity.Personel;
+import org.pdks.entity.PersonelIzin;
+import org.pdks.entity.PersonelIzinDetay;
+import org.pdks.entity.PersonelIzinOnay;
+import org.pdks.entity.TempIzin;
+import org.pdks.entity.VardiyaGun;
+import org.pdks.quartz.IzinBakiyeGuncelleme;
+import org.pdks.security.entity.User;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
@@ -401,14 +402,14 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 						int izinHakEdisYil = cal.get(Calendar.YEAR);
 						cal.set(Calendar.YEAR, yil);
 						long izinHakEdisTarihi = Long.parseLong(PdksUtil.convertToDateString(cal.getTime(), "yyyyMMdd"));
-						fields.clear();
-						fields.put("izinSahibiId", izinSahibiId);
-						fields.put("izinSahibiNewId", izinSahibiClone.getId());
-						fields.put("sistemAdminUserId", sistemAdminUser.getId());
-						fields.put(PdksEntityController.MAP_KEY_SQLPARAMS, params);
-						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+						LinkedHashMap map = new LinkedHashMap();
+						map.put("izinSahibiId", izinSahibiId);
+						map.put("izinSahibiNewId", izinSahibiClone.getId());
+						map.put("sistemAdminUserId", sistemAdminUser.getId());
+						map.put(PdksEntityController.MAP_KEY_SQLPARAMS, params);
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 						try {
-							pdksEntityController.execSP(fields, sb);
+							pdksEntityController.execSP(map, sb);
 							if (yil > izinHakEdisYil && bugun >= izinHakEdisTarihi)
 								ortakIslemler.getKidemHesabi(null, izinSahibiClone, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
 							session.flush();
@@ -442,8 +443,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 	 */
 	protected void eskiKayitlariSil(List<Long> idler) throws Exception {
 		if (idler != null && !idler.isEmpty()) {
-			HashMap fields = new HashMap();
-			StringBuffer sb = new StringBuffer();
+ 			StringBuffer sb = new StringBuffer();
 			for (Iterator iterator = idler.iterator(); iterator.hasNext();) {
 				Long long1 = (Long) iterator.next();
 				sb.append(long1.toString());
@@ -451,11 +451,12 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 					sb.append(", ");
 			}
 			List params = Arrays.asList(new String[] { "izinSahibiId" });
-			fields.put("izinSahibiId", sb.toString());
-			fields.put(PdksEntityController.MAP_KEY_SQLPARAMS, params);
-			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			pdksEntityController.execSP(fields, new StringBuffer("dbo.SP_IZINLERI_SIL"));
-			fields = null;
+			LinkedHashMap map = new LinkedHashMap();
+			map.put("izinSahibiId", sb.toString());
+			map.put(PdksEntityController.MAP_KEY_SQLPARAMS, params);
+			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+			pdksEntityController.execSP(map, new StringBuffer("dbo.SP_IZINLERI_SIL"));
+		 
 		}
 
 	}
