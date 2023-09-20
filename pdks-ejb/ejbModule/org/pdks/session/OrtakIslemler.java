@@ -15345,6 +15345,16 @@ public class OrtakIslemler implements Serializable {
 		List<YemekIzin> yemekList = denklestirmeMap.containsKey("yemekList") ? (List<YemekIzin>) denklestirmeMap.get("yemekList") : null;
 		boolean testDurum = PdksUtil.getTestDurum() && false;
 		boolean hareketKopyala = getParameterKey("kapiGirisHareketKopyala").equals("1");
+		boolean kapiDegistirKontrol = false;
+		if (perHareketList != null) {
+			for (HareketKGS hareketKGS : perHareketList) {
+				if (!kapiDegistirKontrol)
+					kapiDegistirKontrol = hareketKGS.getKapiKGS().isKapiDegistirir();
+				if (kapiDegistirKontrol)
+					break;
+
+			}
+		}
 		denklestirmeMap = null;
 		if (testDurum)
 			logger.info(perNoId + " denklestirmeOlustur 0100 " + new Date());
@@ -15473,9 +15483,11 @@ public class OrtakIslemler implements Serializable {
 							try {
 								if (vardiyaGun.addHareket(hareket, Boolean.TRUE)) {
 									hareketList.add(hareket);
-									KapiKGS kapiKGS = hareket.getKapiKGS();
-									if (!bagliKapiVar)
-										bagliKapiVar = kapiKGS != null && kapiKGS.getBagliKapiKGS() != null;
+									if (kapiDegistirKontrol) {
+										KapiKGS kapiKGS = hareket.getKapiKGS();
+										if (!bagliKapiVar)
+											bagliKapiVar = kapiKGS != null && kapiKGS.getBagliKapiKGS() != null;
+									}
 									iterator5.remove();
 								}
 							} catch (Exception ex) {
@@ -15484,7 +15496,7 @@ public class OrtakIslemler implements Serializable {
 							}
 
 						}
-						if (denklestirmeAy.getDurum() && bagliKapiVar && vardiyaGun.isAyinGunu()) {
+						if (bagliKapiVar && denklestirmeAy.getDurum() && vardiyaGun.isAyinGunu()) {
 							int adet = hareketList.size();
 							boolean hareketHatali = false;
 							if (adet > 0 && adet % 2 == 0) {
@@ -15697,7 +15709,7 @@ public class OrtakIslemler implements Serializable {
 
 					StringBuffer sb = new StringBuffer();
 					sb.append("sp_pool_termainal_update_all");
-					LinkedHashMap map = new LinkedHashMap();
+
 					for (PdksLog pdksLog : list) {
 						if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
 							KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
@@ -15724,6 +15736,7 @@ public class OrtakIslemler implements Serializable {
 								pdksLog.setDurum(Boolean.FALSE);
 								session.saveOrUpdate(pdksLog);
 							} else {
+								LinkedHashMap map = new LinkedHashMap();
 								if (session != null)
 									map.put(PdksEntityController.MAP_KEY_SESSION, session);
 								map.put("eklenenId", pdksLog.getKgsId());
@@ -15735,12 +15748,11 @@ public class OrtakIslemler implements Serializable {
 									pdksLog.setKapiId(kapiKGS.getKgsId());
 									session.saveOrUpdate(pdksLog);
 								}
-								map.clear();
+
 							}
 
 						}
 					}
-					map = null;
 					session.flush();
 				}
 				list = null;

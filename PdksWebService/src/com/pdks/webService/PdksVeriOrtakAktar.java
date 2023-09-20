@@ -1548,6 +1548,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				List<String> kayitIzinList = new ArrayList<String>();
 				for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
 					IzinERP izinERP = (IzinERP) iterator.next();
+					Date islemZamani = new Date();
 					kidemHataList.clear();
 					Date baslangicZamani = getTarih(izinERP.getBasZaman(), FORMAT_DATE_TIME);
 					Date bitisZamani = getTarih(izinERP.getBitZaman(), FORMAT_DATE_TIME);
@@ -1584,7 +1585,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								izinTipiTanim.setAciklamaen(aciklama);
 								izinTipiTanim.setDurum(Boolean.TRUE);
 								izinTipiTanim.setGuncelle(Boolean.FALSE);
-								izinTipiTanim.setIslemTarihi(new Date());
+								izinTipiTanim.setIslemTarihi(islemZamani);
 								izinTipiTanim.setIslemYapan(islemYapan);
 								saveList.add(izinTipiTanim);
 								izinTipiTanimMap.put(izinERP.getIzinTipi(), izinTipiTanim);
@@ -1624,7 +1625,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								tanim2.setKodu(BordroIzinGrubu.TANIMSIZ.value());
 								tanim2.setErpKodu(izinTipiTanim.getErpKodu());
 								tanim2.setIslemYapan(islemYapan);
-								tanim2.setIslemTarihi(new Date());
+								tanim2.setIslemTarihi(islemZamani);
 								izinGrupTanimMap.put(izinTipiTanim.getErpKodu(), tanim2);
 								saveList.add(tanim2);
 							}
@@ -1636,15 +1637,19 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 					} else {
 						IzinTipi izinTipi = izinTipiMap.get(izinERP.getIzinTipi());
-						Tanim izinTipiTanim =izinTipi.getIzinTipiTanim();
+						Tanim izinTipiTanim = izinTipi.getIzinTipiTanim();
 						String aciklama = izinERP.getIzinTipiAciklama();
-						if (!izinTipiTanim.getAciklamatr().equals(aciklama)) {
+						if (!PdksUtil.setTurkishStr(izinTipiTanim.getAciklamatr().toLowerCase(Constants.TR_LOCALE)).equals(PdksUtil.setTurkishStr(aciklama.toLowerCase(Constants.TR_LOCALE)))) {
 							String kisaAciklama = getIzinKisaAciklama(aciklama);
 							izinTipiTanim.setAciklamatr(aciklama);
 							izinTipiTanim.setAciklamaen(aciklama);
-							izinTipiTanim.setKodu(kisaAciklama);
-							izinTipi.setKisaAciklama(kisaAciklama);
+							if (!(izinTipi.isSenelikIzin() || izinTipi.isSutIzin()))
+								izinTipiTanim.setKodu(kisaAciklama);
+							izinTipiTanim.setIslemYapan(islemYapan);
+							izinTipiTanim.setIslemTarihi(islemZamani);
 							izinTipi.setMesaj(aciklama);
+							izinTipi.setGuncelleyenUser(islemYapan);
+							izinTipi.setGuncellemeTarihi(islemZamani);
 							saveList.add(izinTipiTanim);
 							saveList.add(izinTipi);
 						}
@@ -1808,7 +1813,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 												if (izinReferansERP2 != null) {
 													digerIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_REDEDILDI);
 													digerIzin.setGuncelleyenUser(islemYapan);
-													digerIzin.setGuncellemeTarihi(new Date());
+													digerIzin.setGuncellemeTarihi(islemZamani);
 													saveList.add(digerIzin);
 												}
 											}
@@ -1821,12 +1826,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 									saveList.add(personelIzin);
 									if (personelIzin.getId() == null) {
 										personelIzin.setOlusturanUser(islemYapan);
-										personelIzin.setOlusturmaTarihi(new Date());
+										personelIzin.setOlusturmaTarihi(islemZamani);
 										saveList.add(izinReferansERP);
 										if (donemKapali && kapaliDenklestirmeler != null)
 											saveList.addAll(kapaliDenklestirmeler);
 									} else if (izinDegisti != null && izinDegisti) {
-										personelIzin.setGuncellemeTarihi(new Date());
+										personelIzin.setGuncellemeTarihi(islemZamani);
 										personelIzin.setGuncelleyenUser(islemYapan);
 									}
 

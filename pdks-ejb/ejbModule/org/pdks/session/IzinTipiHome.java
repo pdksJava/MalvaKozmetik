@@ -66,7 +66,7 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 	private IzinTipi bakiyeIzinTipi;
 	public Tanim selectedDepartman, bilgiTipi;
 	private List<IzinTipiMailAdres> mailCCAdresList, mailBCCAdresList;
-	private String mailTipi, mailAdres;
+	private String mailTipi, mailAdres, kisaAdi = "";
 	private Session session;
 
 	public Session getSession() {
@@ -189,6 +189,7 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 		setInstance(izinTipi);
 		mailTipi = null;
 		mailAdres = "";
+
 		fillCinsiyetList();
 		fillBilgiTipiList();
 		if (mailGonderimDurumlari == null)
@@ -246,6 +247,10 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 				mailBCCAdresList.clear();
 
 		}
+		if (izinTipi.getKisaAciklama() != null)
+			kisaAdi = new String(izinTipi.getKisaAciklama().trim());
+		else
+			kisaAdi = "";
 		setBilgiTipi(izinTipi.getIzinTipiTanim().getParentTanim());
 		fillIzinTipiTanimList();
 		fillBakiyeIzinTipiTanimList(izinTipi.getIzinTipiTanim());
@@ -265,6 +270,7 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 		getInstance().setPersonelGirisTipi(IzinTipi.GIRIS_TIPI_PERSONEL);
 		setIzinTipiTanimList(new ArrayList<Tanim>());
 		fillIzinTipiTanimList();
+		kisaAdi = "";
 	}
 
 	@Transactional
@@ -369,6 +375,16 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 				pdksEntityController.saveOrUpdate(session, entityManager, izinTipi);
 				if (bakiyeIzinTipi != null)
 					pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzinTipi);
+				String deger = izinTipi.getKisaAciklama() != null ? izinTipi.getKisaAciklama().trim() : "";
+				Tanim izinTipiTanim = izinTipi.getIzinTipiTanim();
+				if (PdksUtil.isTanimDegisti(izinTipiTanim.getParentTanim(), bilgiTipi) || PdksUtil.hasStringValue(deger) && !kisaAdi.equals(deger)) {
+					Tanim tanim = izinTipi.getIzinTipiTanim();
+					izinTipiTanim.setParentTanim(bilgiTipi);
+					if (!(izinTipi.isSenelikIzin() || izinTipi.isSutIzin()))
+						tanim.setKodu(deger);
+					tanim.setIslemTarihi(new Date());
+					pdksEntityController.saveOrUpdate(session, entityManager, tanim);
+				}
 				HashMap fields = new HashMap();
 				fields.put(PdksEntityController.MAP_KEY_MAP, "getAdres");
 				fields.put("izinTipi.id", izinTipi.getId());
@@ -395,7 +411,7 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 					for (Iterator iterator = adresler.iterator(); iterator.hasNext();) {
 						IzinTipiMailAdres izinTipiMailAdres = (IzinTipiMailAdres) iterator.next();
 						pdksEntityController.deleteObject(session, entityManager, izinTipiMailAdres);
- 					}
+					}
 				}
 				adresler = null;
 				mailMap = null;
@@ -775,5 +791,13 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 
 	public void setDurumCGSList(List<SelectItem> durumCGSList) {
 		this.durumCGSList = durumCGSList;
+	}
+
+	public String getKisaAdi() {
+		return kisaAdi;
+	}
+
+	public void setKisaAdi(String kisaAdi) {
+		this.kisaAdi = kisaAdi;
 	}
 }

@@ -625,21 +625,15 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 	}
 
+	/**
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
 	private List<IzinTipi> sayfaGiris(Session session) throws Exception {
 		session.clear();
-		String uygulamaTipi = ortakIslemler.getParameterKey("uygulamaTipi");
-		List<String> tipler = null;
-		if (uygulamaTipi.equals("") || uygulamaTipi.equalsIgnoreCase("H"))
-			tipler = Arrays.asList(new String[] { IzinTipi.YILLIK_UCRETLI_IZIN, IzinTipi.SUA_IZNI });
-		else
-			tipler = Arrays.asList(new String[] { IzinTipi.YILLIK_UCRETLI_IZIN });
-		HashMap fields = new HashMap();
-		fields.put("durum=", Boolean.TRUE);
-		fields.put("bakiyeIzinTipi.izinTipiTanim.kodu", tipler);
-		if (session != null)
-			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
-		if (list != null && !list.isEmpty()) {
+		List<IzinTipi> izinTipiList = getYillikIzinTipleri(session);
+		if (izinTipiList != null && !izinTipiList.isEmpty()) {
 			iptalIzinleriGetir = Boolean.FALSE;
 			setGelecekIzinGoster(Boolean.FALSE);
 			izinBakiyeDosya.setDosyaIcerik(null);
@@ -656,6 +650,26 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 		}
 
+		return izinTipiList;
+	}
+
+	/**
+	 * @param session
+	 * @return
+	 */
+	private List<IzinTipi> getYillikIzinTipleri(Session session) {
+		String uygulamaTipi = ortakIslemler.getParameterKey("uygulamaTipi");
+		List<String> tipler = null;
+		if (uygulamaTipi.equals("") || uygulamaTipi.equalsIgnoreCase("H"))
+			tipler = Arrays.asList(new String[] { IzinTipi.YILLIK_UCRETLI_IZIN, IzinTipi.SUA_IZNI });
+		else
+			tipler = Arrays.asList(new String[] { IzinTipi.YILLIK_UCRETLI_IZIN });
+		HashMap fields = new HashMap();
+		fields.put("durum=", Boolean.TRUE);
+		fields.put("bakiyeIzinTipi.izinTipiTanim.kodu", tipler);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
 		return list;
 	}
 
@@ -1218,6 +1232,10 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					List<HashMap<Integer, org.apache.poi.ss.usermodel.Cell>> hucreler = new ArrayList<HashMap<Integer, org.apache.poi.ss.usermodel.Cell>>(hucreMap.values());
 					for (Iterator iterator = hucreler.iterator(); iterator.hasNext();) {
 						HashMap<Integer, org.apache.poi.ss.usermodel.Cell> veriMap = (HashMap<Integer, org.apache.poi.ss.usermodel.Cell>) iterator.next();
+						List<IzinTipi> izinTipiList = getYillikIzinTipleri(session);
+						HashMap<String, String> kodMap = new HashMap<String, String>();
+						for (IzinTipi izinTipi : izinTipiList)
+							kodMap.put(izinTipi.getKisaAciklama(), izinTipi.getIzinTipiTanim().getKodu());
 
 						int bakiyeYil = 0;
 						Personel personel = null;
@@ -1332,10 +1350,8 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 							}
 							String bakiyeIzinTipiKodu = "";
-							if (kod.equals("Yİ"))
-								bakiyeIzinTipiKodu = IzinTipi.YILLIK_UCRETLI_IZIN;
-							else if (kod.equals("ŞUA") || kod.equals("Şİ"))
-								bakiyeIzinTipiKodu = IzinTipi.SUA_IZNI;
+							if (kodMap.containsKey(kod))
+								bakiyeIzinTipiKodu = kodMap.get(kod);
 							PersonelIzin bakiyeIzin = izinMap.containsKey(bakiyeYil + "" + bakiyeIzinTipiKodu) ? izinMap.get(bakiyeYil + "" + bakiyeIzinTipiKodu) : null;
 							List<PersonelIzin> harcananDigerIzinler = null;
 							String key = tempIzin.getPersonel().getSirket().getDepartman().getId() + "_" + bakiyeIzinTip + "_" + bakiyeIzinTipiKodu;
