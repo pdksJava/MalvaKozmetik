@@ -390,7 +390,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 						sistemAdminUser = authenticatedUser;
 
 					// eskiKayitlariSil(idler);
-					sb = new StringBuffer("dbo.SP_IZIN_KOPYALA");
+					sb = new StringBuffer("SP_IZIN_KOPYALA");
 					List params = Arrays.asList(new String[] { "izinSahibiId", "izinSahibiNewId", "sistemAdminUserId" });
 					Calendar cal = Calendar.getInstance();
 					long bugun = Long.parseLong(PdksUtil.convertToDateString(cal.getTime(), "yyyyMMdd"));
@@ -416,7 +416,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 						} catch (Exception re) {
 							veriMap.get(izinSahibiId).setSecim(Boolean.FALSE);
 							re.printStackTrace();
-							logger.error("exec dbo.SP_IZIN_KOPYALA " + izinSahibiId + "," + izinSahibiClone.getId() + "," + sistemAdminUser.getId());
+							logger.error("exec SP_IZIN_KOPYALA " + izinSahibiId + "," + izinSahibiClone.getId() + "," + sistemAdminUser.getId());
 							PdksUtil.addMessageAvailableWarn(re.getMessage());
 						}
 					}
@@ -455,7 +455,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 			map.put("izinSahibiId", sb.toString());
 			map.put(PdksEntityController.MAP_KEY_SQLPARAMS, params);
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
-			pdksEntityController.execSP(map, new StringBuffer("dbo.SP_IZINLERI_SIL"));
+			pdksEntityController.execSP(map, new StringBuffer("SP_IZINLERI_SIL"));
 		 
 		}
 

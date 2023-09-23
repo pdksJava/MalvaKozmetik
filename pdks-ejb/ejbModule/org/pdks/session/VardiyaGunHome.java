@@ -4861,7 +4861,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		Long id = null;
 		LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
 		try {
-			StringBuffer sp = new StringBuffer("dbo.SP_HAREKET_EKLE_RETURN");
+			StringBuffer sp = new StringBuffer("SP_HAREKET_EKLE_RETURN");
 			veriMap.put("kapi", kapi.getId());
 			veriMap.put("personelKGS", personelKGS.getId());
 			veriMap.put("zaman", zaman);

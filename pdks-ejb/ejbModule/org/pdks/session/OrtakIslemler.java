@@ -1989,7 +1989,7 @@ public class OrtakIslemler implements Serializable {
 	public void kgsMasterUpdate(Session session) {
 		LinkedHashMap fields = new LinkedHashMap();
 		StringBuffer sb = new StringBuffer();
-		sb.append("dbo.SP_GET_PDKS_ISLEM");
+		sb.append("SP_GET_PDKS_ISLEM");
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		try {
