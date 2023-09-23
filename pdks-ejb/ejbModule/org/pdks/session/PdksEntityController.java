@@ -668,34 +668,24 @@ public class PdksEntityController implements Serializable {
 	public int execSP(LinkedHashMap<String, Object> veriMap, StringBuffer sp) throws Exception {
 		Session session = veriMap.containsKey(MAP_KEY_SESSION) ? (Session) veriMap.get(MAP_KEY_SESSION) : PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		String queryStr = "exec " + sp.toString();
-		List<String> list = null;
 		if (veriMap.containsKey(MAP_KEY_SESSION))
 			veriMap.remove(MAP_KEY_SESSION);
-		if (veriMap.containsKey(MAP_KEY_SQLPARAMS)) {
-			list = (List<String>) veriMap.get(MAP_KEY_SQLPARAMS);
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				String string = (String) iterator.next();
-				if (!veriMap.containsKey(string))
-					continue;
-				queryStr += " ?";
+		for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
+			String string = (String) iterator.next();
+			if (string != null) {
+				queryStr += " :" + string;
 				// queryStr += " :" + string;
 				if (iterator.hasNext())
 					queryStr += ",";
 			}
-			veriMap.remove(MAP_KEY_SQLPARAMS);
-		} else
-			veriMap.clear();
+		}
 		SQLQuery query = session.createSQLQuery(queryStr);
 		logger.debug(queryStr);
-		int sayac = 0;
-		if (list != null) {
-			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				String key1 = (String) iterator.next();
-				if (!veriMap.containsKey(key1))
-					continue;
+		for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
+			String key1 = (String) iterator.next();
+			if (key1 != null) {
 				Object veri = veriMap.get(key1);
-				logger.debug((sayac + 1) + ". " + key1 + " : " + veri.toString());
-				query.setParameter(sayac++, veri);
+				query.setParameter(key1, veri);
 			}
 		}
 		int sonuc = query.executeUpdate();
@@ -789,23 +779,22 @@ public class PdksEntityController implements Serializable {
 	 * @param nedenId
 	 * @param aciklama
 	 * @param sirketId
-	 * @param sirketStr
 	 * @param session
 	 * @return
 	 */
-	public Long hareketGuncelle(long kgsId, long pdksId, Date zaman, User guncelleyen, long nedenId, String aciklama, long sirketId, String sirketStr, Session session) {
+	public Long hareketGuncelle(long kgsId, long pdksId, Date zaman, User guncelleyen, long nedenId, String aciklama, long sirketId, Session session) {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
-		StringBuffer sp = new StringBuffer("SP_HAREKET_GUNCELLE" + sirketStr);
+		StringBuffer sp = new StringBuffer("SP_HAREKET_GUNCELLE_SIRKET");
 		veriMap.put("kgsId", kgsId);
 		veriMap.put("pdksId", pdksId);
 		veriMap.put("zaman", zaman);
 		veriMap.put("guncelleyen", guncelleyen.getId());
 		veriMap.put("nedenId", nedenId);
 		veriMap.put("aciklama", aciklama);
-		if (!sirketStr.equals(""))
-			veriMap.put("sirketId", sirketId);
+
+		veriMap.put("sirketId", sirketId);
 		if (session != null)
 			veriMap.put(MAP_KEY_SESSION, session);
 		Long sonuc = 0L;
@@ -826,22 +815,22 @@ public class PdksEntityController implements Serializable {
 	 * @param nedenId
 	 * @param aciklama
 	 * @param sirketId
-	 * @param sirketStr
+	 * 
 	 * @param session
 	 * @return
 	 */
-	public Long hareketSil(long kgsId, long pdksId, User guncelleyen, long nedenId, String aciklama, long sirketId, String sirketStr, Session session) {
+	public Long hareketSil(long kgsId, long pdksId, User guncelleyen, long nedenId, String aciklama, long sirketId, Session session) {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
-		StringBuffer sp = new StringBuffer("SP_HAREKET_SIL" + sirketStr);
+		StringBuffer sp = new StringBuffer("SP_HAREKET_SIL_SIRKET");
 		veriMap.put("kgsId", kgsId);
 		veriMap.put("pdksId", pdksId);
 		veriMap.put("guncelleyenId", guncelleyen.getId());
 		veriMap.put("nedenId", nedenId);
 		veriMap.put("aciklama", aciklama);
-		if (!sirketStr.equals(""))
-			veriMap.put("sirketId", sirketId);
+
+		veriMap.put("sirketId", sirketId);
 		if (session != null)
 			veriMap.put(MAP_KEY_SESSION, session);
 		Long sonuc = 0L;

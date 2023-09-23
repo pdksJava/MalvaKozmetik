@@ -1940,7 +1940,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							fields.clear();
 							sb = new StringBuffer();
 							sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
-							sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON " + birdenFazlaKGSSirketSQL);
+							sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K.PERSONEL_NO=P.PERSONEL_NO AND K.ID<>P.ID ");
+							if (!birdenFazlaKGSSirketSQL.equals(""))
+								sb.append(" AND " + birdenFazlaKGSSirketSQL);
 							sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
 							fields.put("p", new ArrayList(idMap.keySet()));
 							if (session != null)

@@ -4752,11 +4752,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 											if (sistemUser == null)
 												sistemUser = authenticatedUser;
 											String aciklama = islemFazlaMesaiTalep.getAciklama() != null && islemFazlaMesaiTalep.getAciklama().trim().length() > 0 ? islemFazlaMesaiTalep.getAciklama().trim() : "";
-											String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
-											String sirketStr = "";
-											if (!birdenFazlaKGSSirketSQL.equals(""))
-												sirketStr = "_SIRKET";
-											pdksEntityController.hareketSil(kgsId, pdksId, sistemUser, nedenId, aciklama + (referans != null ? " " + referans.trim() : ""), hareketKGS3.getKgsSirketId(), sirketStr, session);
+ 											pdksEntityController.hareketSil(kgsId, pdksId, sistemUser, nedenId, aciklama + (referans != null ? " " + referans.trim() : ""), hareketKGS3.getKgsSirketId(), session);
 											flush = true;
 										}
 									}

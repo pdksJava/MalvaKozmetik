@@ -627,11 +627,9 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			try {
 				String aciklama = kgsHareket.getKapiView().getKapi().getAciklama() + " güncellendi.";
 				KapiView terminalKapi = terminalKapiManuelUpdate(kgsHareket.getTerminalKapi());
-				String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
-				String sirketStr = "";
-				if (!birdenFazlaKGSSirketSQL.equals(""))
-					sirketStr = "_SIRKET";
-				pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, neden.getId(), "", kgsHareket.getKgsSirketId(), sirketStr, session);
+			 
+
+				pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, neden.getId(), "", kgsHareket.getKgsSirketId(), session);
 				pdksId = pdksEntityController.hareketEkle(terminalKapi, kgsHareket.getPersonel(), kgsHareket.getZaman(), authenticatedUser, neden.getId(), aciklama, session);
 				session.flush();
 				session.clear();
@@ -754,16 +752,14 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					else
 						pdksId = id;
 
-					String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
-					String sirketStr = "";
-					if (!birdenFazlaKGSSirketSQL.equals(""))
-						sirketStr = "_SIRKET";
+					 
+
 					if (islemTipi.equals("G")) {
 
 						if (bugun.after(zaman))
-							pdksEntityController.hareketGuncelle(kgsId, pdksId, zaman, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), kgsHareket.getKgsSirketIdLong(), sirketStr, session);
+							pdksEntityController.hareketGuncelle(kgsId, pdksId, zaman, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), kgsHareket.getKgsSirketIdLong(), session);
 					} else
-						pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), kgsHareket.getKgsSirketIdLong(), sirketStr, session);
+						pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, kgsHareket.getIslem().getNeden().getId(), kgsHareket.getIslem().getAciklama(), kgsHareket.getKgsSirketIdLong(), session);
 
 					parametreMap.clear();
 					if (kgsId != 0)
@@ -970,7 +966,6 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 				hareket1List.clear();
 		}
 
-		
 		setHareketList(hareket1List);
 		kgsUpdateGoster = false;
 		for (Iterator iterator = hareketList.iterator(); iterator.hasNext();) {

@@ -2065,10 +2065,7 @@ public class OrtakIslemler implements Serializable {
 	 * @throws Exception
 	 */
 	public List getHareketIdBilgileri(List<HareketKGS> hareketKGSList, HareketKGS hareketKGS, Date basTarih, Date bitTarih, Session session) throws Exception {
-		String birdenFazlaKGSSirketSQL = getBirdenFazlaKGSSirketSQL(basTarih, bitTarih, session);
-		String sirketStr = "";
-		if (!birdenFazlaKGSSirketSQL.equals(""))
-			sirketStr = "_SIRKET";
+
 		List<HareketKGS> idler = new ArrayList<HareketKGS>();
 		if (hareketKGSList != null && !hareketKGSList.isEmpty())
 			idler.addAll(hareketKGSList);
@@ -2100,7 +2097,7 @@ public class OrtakIslemler implements Serializable {
 			}
 			if (kgs.length() > 0 || pdks.length() > 0) {
 				StringBuffer sb = new StringBuffer();
-				sb.append("SP_GET_HAREKET_BY_ID" + sirketStr);
+				sb.append("SP_GET_HAREKET_BY_ID_SIRKET");
 				LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
 				fields.put("kgs", kgs.length() > 0 ? kgs.toString() : null);
 				fields.put("pdks", pdks.length() > 0 ? pdks.toString() : null);
@@ -2198,9 +2195,9 @@ public class OrtakIslemler implements Serializable {
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<KapiSirket> list = pdksEntityController.getObjectByInnerObjectListInLogic(map, KapiSirket.class);
 			if (!list.isEmpty())
-				sql = birdenFazlaKGSSirketSQL;
-
+				sql = PdksUtil.replaceAllManuel(birdenFazlaKGSSirketSQL, "K.PERSONEL_NO=P.PERSONEL_NO AND K.ID<>P.ID", "");
 		}
+
 		return sql;
 	}
 
@@ -2221,71 +2218,72 @@ public class OrtakIslemler implements Serializable {
 		TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
 		StringBuffer sb = new StringBuffer();
 		String birdenFazlaKGSSirketSQL = getBirdenFazlaKGSSirketSQL(PdksUtil.tariheGunEkleCikar(basTarih, -1), PdksUtil.tariheGunEkleCikar(bitTarih, 1), session);
-		String sirketStr = "";
+
 		LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
 		List list = new ArrayList();
 		String kapi = getListIdStr(kapiIdIList);
 		String basTarihStr = basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null;
 		String bitTarihStr = bitTarih != null ? PdksUtil.convertToDateString(bitTarih, formatStr) : null;
 		Class class2 = class1.getName().equals(HareketKGS.class.getName()) ? BasitHareket.class : class1;
-		if (!birdenFazlaKGSSirketSQL.equals("")) {
-			List<Long> idList = new ArrayList<Long>();
-			while (!personelIdList.isEmpty()) {
-				sb = new StringBuffer();
-				fields.clear();
-				sirketStr = "_SIRKET";
-				HashMap map = new HashMap();
-				sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
-				sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON " + birdenFazlaKGSSirketSQL);
-				sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " KS ON KS." + KapiSirket.COLUMN_NAME_ID + "=K." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
-				if (basTarih != null) {
-					sb.append(" AND KS." + KapiSirket.COLUMN_NAME_BIT_TARIH + ">=:b1 ");
-					map.put("b1", PdksUtil.tariheGunEkleCikar(basTarih, -1));
-				}
-				if (bitTarih != null) {
-					sb.append(" AND KS." + KapiSirket.COLUMN_NAME_BAS_TARIH + "<=:b2 ");
-					map.put("b2", PdksUtil.tariheGunEkleCikar(bitTarih, 1));
-				}
-				sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
-				for (Iterator iterator = personelIdList.iterator(); iterator.hasNext();) {
-					Long long1 = (Long) iterator.next();
-					idList.add(long1);
-					iterator.remove();
-					if (idList.size() + map.size() >= 1800)
-						break;
-				}
-				map.put("p", idList);
-				if (session != null)
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				try {
-					List<Object[]> perList = pdksEntityController.getObjectBySQLList(sb, map, null);
-					for (Object[] objects : perList) {
-						BigDecimal refId = (BigDecimal) objects[1], id = (BigDecimal) objects[0];
-						if (refId.longValue() != id.longValue())
-							iliskiMap.put(refId.longValue(), id.longValue());
-					}
-				} catch (Exception e) {
-					logger.error(sb.toString() + " " + e);
-				}
-				sb = new StringBuffer();
-				sb.append("SP_GET_HAREKET" + sirketStr);
-				fields.put("kapi", kapi);
-				fields.put("personel", getListIdStr(idList));
-				fields.put("basTarih", basTarihStr);
-				fields.put("bitTarih", bitTarihStr);
-				fields.put("df", null);
-				if (authenticatedUser != null && authenticatedUser.isAdmin()) {
-					Gson gson = new Gson();
-					logger.debug(gson.toJson(fields));
-				}
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List list1 = pdksEntityController.execSPList(fields, sb, class2);
-				if (!list1.isEmpty())
-					list.addAll(list1);
-				list1 = null;
-				idList.clear();
+
+		List<Long> idList = new ArrayList<Long>();
+		while (!personelIdList.isEmpty()) {
+			sb = new StringBuffer();
+			fields.clear();
+
+			HashMap map = new HashMap();
+			sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
+			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K.PERSONEL_NO=P.PERSONEL_NO AND K.ID<>P.ID ");
+			if (!birdenFazlaKGSSirketSQL.equals(""))
+				sb.append(" AND " + birdenFazlaKGSSirketSQL);
+			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " KS ON KS." + KapiSirket.COLUMN_NAME_ID + "=K." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
+			if (basTarih != null) {
+				sb.append(" AND KS." + KapiSirket.COLUMN_NAME_BIT_TARIH + ">=:b1 ");
+				map.put("b1", PdksUtil.tariheGunEkleCikar(basTarih, -1));
 			}
+			if (bitTarih != null) {
+				sb.append(" AND KS." + KapiSirket.COLUMN_NAME_BAS_TARIH + "<=:b2 ");
+				map.put("b2", PdksUtil.tariheGunEkleCikar(bitTarih, 1));
+			}
+			sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
+			for (Iterator iterator = personelIdList.iterator(); iterator.hasNext();) {
+				Long long1 = (Long) iterator.next();
+				idList.add(long1);
+				iterator.remove();
+				if (idList.size() + map.size() >= 1800)
+					break;
+			}
+			map.put("p", idList);
+			if (session != null)
+				map.put(PdksEntityController.MAP_KEY_SESSION, session);
+			try {
+				List<Object[]> perList = pdksEntityController.getObjectBySQLList(sb, map, null);
+				for (Object[] objects : perList) {
+					BigDecimal refId = (BigDecimal) objects[1], id = (BigDecimal) objects[0];
+					if (refId.longValue() != id.longValue())
+						iliskiMap.put(refId.longValue(), id.longValue());
+				}
+			} catch (Exception e) {
+				logger.error(sb.toString() + " " + e);
+			}
+			sb = new StringBuffer();
+			sb.append("SP_GET_HAREKET_SIRKET");
+			fields.put("kapi", kapi);
+			fields.put("personel", getListIdStr(idList));
+			fields.put("basTarih", basTarihStr);
+			fields.put("bitTarih", bitTarihStr);
+			fields.put("df", null);
+			if (authenticatedUser != null && authenticatedUser.isAdmin()) {
+				Gson gson = new Gson();
+				logger.debug(gson.toJson(fields));
+			}
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List list1 = pdksEntityController.execSPList(fields, sb, class2);
+			if (!list1.isEmpty())
+				list.addAll(list1);
+			list1 = null;
+			idList.clear();
 		}
 
 		if (!iliskiMap.isEmpty()) {
@@ -15707,9 +15705,6 @@ public class OrtakIslemler implements Serializable {
 					User onaylayanUser = getSistemAdminUser(session);
 					Date guncellemeZamani = new Date();
 
-					StringBuffer sb = new StringBuffer();
-					sb.append("sp_pool_termainal_update_all");
-
 					for (PdksLog pdksLog : list) {
 						if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
 							KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
@@ -15736,6 +15731,8 @@ public class OrtakIslemler implements Serializable {
 								pdksLog.setDurum(Boolean.FALSE);
 								session.saveOrUpdate(pdksLog);
 							} else {
+								StringBuffer sb = new StringBuffer();
+								sb.append("SP_POOL_TERMINAL_UPDATE");
 								LinkedHashMap map = new LinkedHashMap();
 								if (session != null)
 									map.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -15748,7 +15745,7 @@ public class OrtakIslemler implements Serializable {
 									pdksLog.setKapiId(kapiKGS.getKgsId());
 									session.saveOrUpdate(pdksLog);
 								}
-
+								sb = null;
 							}
 
 						}
