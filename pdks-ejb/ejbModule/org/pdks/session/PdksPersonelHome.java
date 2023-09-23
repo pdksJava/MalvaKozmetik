@@ -1935,43 +1935,41 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				if (!idMap.isEmpty()) {
 					try {
 						String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
-						if (!birdenFazlaKGSSirketSQL.equals("")) {
-							TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
+
+						TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
+						fields.clear();
+						sb = new StringBuffer();
+						sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
+						sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " AND K." + PersonelKGS.COLUMN_NAME_ID + "<>P." + PersonelKGS.COLUMN_NAME_ID + " " + birdenFazlaKGSSirketSQL);
+						sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
+						fields.put("p", new ArrayList(idMap.keySet()));
+						if (session != null)
+							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+						List<Object[]> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+						for (Object[] objects : perList) {
+							BigDecimal refId = (BigDecimal) objects[1], id = (BigDecimal) objects[0];
+							if (refId.longValue() != id.longValue())
+								iliskiMap.put(refId.longValue(), id.longValue());
+						}
+						if (!iliskiMap.isEmpty()) {
 							fields.clear();
-							sb = new StringBuffer();
-							sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
-							sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K.PERSONEL_NO=P.PERSONEL_NO AND K.ID<>P.ID ");
-							if (!birdenFazlaKGSSirketSQL.equals(""))
-								sb.append(" AND " + birdenFazlaKGSSirketSQL);
-							sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
-							fields.put("p", new ArrayList(idMap.keySet()));
+							fields.put("id", new ArrayList<Long>(iliskiMap.keySet()));
 							if (session != null)
 								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-							List<Object[]> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
-							for (Object[] objects : perList) {
-								BigDecimal refId = (BigDecimal) objects[1], id = (BigDecimal) objects[0];
-								if (refId.longValue() != id.longValue())
-									iliskiMap.put(refId.longValue(), id.longValue());
-							}
-							if (!iliskiMap.isEmpty()) {
-								fields.clear();
-								fields.put("id", new ArrayList<Long>(iliskiMap.keySet()));
-								if (session != null)
-									fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-								List<PersonelKGS> personelKGSList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelKGS.class);
-								for (PersonelKGS personelKGS : personelKGSList) {
-									if (personelKGS.getKapiSirket().getDurum()) {
-										Long id = iliskiMap.get(personelKGS.getId());
-										PersonelKGS personelKGS2 = id != null ? idMap.get(id) : null;
-										if (personelKGS2 != null && !personelKGS.getKapiSirket().getId().equals(personelKGS2.getKapiSirket().getId()) && personelKGS2.getAdSoyad().equals(personelKGS.getAdSoyad()))
-											personelKGSMap.put(id, personelKGS);
-									}
-
+							List<PersonelKGS> personelKGSList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelKGS.class);
+							for (PersonelKGS personelKGS : personelKGSList) {
+								if (personelKGS.getKapiSirket().getDurum()) {
+									Long id = iliskiMap.get(personelKGS.getId());
+									PersonelKGS personelKGS2 = id != null ? idMap.get(id) : null;
+									if (personelKGS2 != null && !personelKGS.getKapiSirket().getId().equals(personelKGS2.getKapiSirket().getId()) && personelKGS2.getAdSoyad().equals(personelKGS.getAdSoyad()))
+										personelKGSMap.put(id, personelKGS);
 								}
+
 							}
-							iliskiMap = null;
-							sb = new StringBuffer();
 						}
+						iliskiMap = null;
+						sb = new StringBuffer();
+
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}

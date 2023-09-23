@@ -2194,8 +2194,12 @@ public class OrtakIslemler implements Serializable {
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<KapiSirket> list = pdksEntityController.getObjectByInnerObjectListInLogic(map, KapiSirket.class);
-			if (!list.isEmpty())
-				sql = PdksUtil.replaceAllManuel(birdenFazlaKGSSirketSQL, "K.PERSONEL_NO=P.PERSONEL_NO AND K.ID<>P.ID", "");
+			if (!list.isEmpty()) {
+				String str = "K." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " AND K." + PersonelKGS.COLUMN_NAME_ID + "<>P." + PersonelKGS.COLUMN_NAME_ID;
+				sql = birdenFazlaKGSSirketSQL;
+				if (sql.indexOf(str) >= 0)
+					sql = PdksUtil.replaceAllManuel(sql, str, "");
+			}
 		}
 
 		return sql;
@@ -2233,9 +2237,7 @@ public class OrtakIslemler implements Serializable {
 
 			HashMap map = new HashMap();
 			sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
-			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K.PERSONEL_NO=P.PERSONEL_NO AND K.ID<>P.ID ");
-			if (!birdenFazlaKGSSirketSQL.equals(""))
-				sb.append(" AND " + birdenFazlaKGSSirketSQL);
+			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " AND K." + PersonelKGS.COLUMN_NAME_ID + "<>P." + PersonelKGS.COLUMN_NAME_ID + " " + birdenFazlaKGSSirketSQL);
 			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " KS ON KS." + KapiSirket.COLUMN_NAME_ID + "=K." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
 			if (basTarih != null) {
 				sb.append(" AND KS." + KapiSirket.COLUMN_NAME_BIT_TARIH + ">=:b1 ");
