@@ -631,30 +631,8 @@ public class PdksEntityController implements Serializable {
 	 * @throws Exception
 	 */
 	public List execSPList(LinkedHashMap<String, Object> veriMap, StringBuffer sp, Class class1) throws Exception {
-		String queryStr = "exec " + sp.toString();
-		Session session = veriMap.containsKey(MAP_KEY_SESSION) ? (Session) veriMap.get(MAP_KEY_SESSION) : PdksUtil.getSessionUser(entityManager, authenticatedUser);
-		if (veriMap.containsKey(MAP_KEY_SESSION))
-			veriMap.remove(MAP_KEY_SESSION);
-		for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
-			String string = (String) iterator.next();
-			if (string != null) {
-				queryStr += " :" + string;
-				// queryStr += " :" + string;
-				if (iterator.hasNext())
-					queryStr += ",";
-			}
-		}
-		SQLQuery query = session.createSQLQuery(queryStr);
-		logger.debug(queryStr);
-		for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
-			String key1 = (String) iterator.next();
-			if (key1 != null) {
-				Object veri = veriMap.get(key1);
-				query.setParameter(key1, veri);
-			}
-		}
-
-		if (class1 != null)
+		SQLQuery query = prepareProcedure(veriMap, sp);
+ 		if (class1 != null)
 			query.addEntity(class1);
 		List sonucList = query.list();
 		return sonucList;
@@ -666,8 +644,20 @@ public class PdksEntityController implements Serializable {
 	 * @param sp
 	 */
 	public int execSP(LinkedHashMap<String, Object> veriMap, StringBuffer sp) throws Exception {
-		Session session = veriMap.containsKey(MAP_KEY_SESSION) ? (Session) veriMap.get(MAP_KEY_SESSION) : PdksUtil.getSessionUser(entityManager, authenticatedUser);
+		SQLQuery query = prepareProcedure(veriMap, sp);
+		int sonuc = query.executeUpdate();
+		return sonuc;
+
+	}
+
+	/**
+	 * @param veriMap
+	 * @param sp
+	 * @return
+	 */
+	private SQLQuery prepareProcedure(LinkedHashMap<String, Object> veriMap, StringBuffer sp) {
 		String queryStr = "exec " + sp.toString();
+		Session session = veriMap.containsKey(MAP_KEY_SESSION) ? (Session) veriMap.get(MAP_KEY_SESSION) : PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		if (veriMap.containsKey(MAP_KEY_SESSION))
 			veriMap.remove(MAP_KEY_SESSION);
 		for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
@@ -688,9 +678,7 @@ public class PdksEntityController implements Serializable {
 				query.setParameter(key1, veri);
 			}
 		}
-		int sonuc = query.executeUpdate();
-		return sonuc;
-
+		return query;
 	}
 
 	/**
