@@ -1935,12 +1935,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				if (!idMap.isEmpty()) {
 					try {
 						String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
-
 						TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
 						fields.clear();
 						sb = new StringBuffer();
 						sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
-						sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON K." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " AND K." + PersonelKGS.COLUMN_NAME_ID + "<>P." + PersonelKGS.COLUMN_NAME_ID + " " + birdenFazlaKGSSirketSQL);
+						sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON " + birdenFazlaKGSSirketSQL);
 						sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
 						fields.put("p", new ArrayList(idMap.keySet()));
 						if (session != null)
