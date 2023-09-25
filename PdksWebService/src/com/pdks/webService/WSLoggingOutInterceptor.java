@@ -113,9 +113,9 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 						logger.debug(action + " --> " + xml);
 						if (inputXML != null) {
 							if (inputXML.indexOf("<return/>") > 0)
-								xml = PdksUtil.replaceAll(inputXML, "<return/>", "<return>" + xml + "</return>");
+								xml = PdksUtil.replaceAllManuel(inputXML, "<return/>", "<return>" + xml + "</return>");
 							if (inputXML.indexOf("<stopTime/>") > 0)
-								xml = PdksUtil.replaceAll(xml, "<stopTime/>", "<stopTime>" + PdksUtil.convertToDateString(new Date(), "yyyy-MM-dd HH:mm:ss") + "</stopTime>");
+								xml = PdksUtil.replaceAllManuel(xml, "<stopTime/>", "<stopTime>" + PdksUtil.convertToDateString(new Date(), "yyyy-MM-dd HH:mm:ss") + "</stopTime>");
 						}
 						if (!action.startsWith("service")) {
 							if (action.length() > 1)
@@ -124,10 +124,10 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 							action = "service" + action + "_" + PdksUtil.convertToDateString(bugun, "yyyy-MM-") + bugun.getTime();
 
 						}
-						String xmlStr = null;
-						try {
-							xmlStr = xml.indexOf("&amp;") > 0 ? PdksUtil.replaceAllManuel(xml, "&amp;", "&") : xml;
-							PdksUtil.fileWrite(PdksUtil.formatXML(xmlStr), action);
+ 						try {
+							xml = PdksUtil.formatXML(xml);
+							String xmlStr = xml.indexOf("&amp;") > 0 ? PdksUtil.replaceAllManuel(xml, "&amp;", "&") : xml;
+							PdksUtil.fileWrite(xmlStr, action);
 						} catch (Exception eg) {
 							logger.error(eg);
 							eg.printStackTrace();
