@@ -10662,14 +10662,15 @@ public class OrtakIslemler implements Serializable {
 		if (dataMap == null)
 			dataMap = new HashMap();
 		personel.setIzinBakiyeMap(new HashMap<String, Double>());
-		if (personel.getSirket().isPdksMi()==false)
-			return dataMap;
+
 		String departmanKey = personel.getSirket().getDepartman().getId() + "_";
 		Calendar cal = Calendar.getInstance();
 		int buYil = cal.get(Calendar.YEAR);
 		if (bugun == null)
 			bugun = (Date) cal.getTime().clone();
 		HashMap<Integer, Integer> kidemMap = getTarihMap(personel != null ? personel.getIzinHakEdisTarihi() : null, bugun);
+		if (personel.getSirket().isPdksMi() == false)
+			return kidemMap;
 		int kidemYili = 0;
 		String izinERPUpdate = getParameterKey("izinERPUpdate");
 		if (!izinERPUpdate.equals("1") || personel.getSirket().getDepartman().getIzinGirilebilir()) {
