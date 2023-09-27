@@ -3364,7 +3364,8 @@ public class OrtakIslemler implements Serializable {
 		cal.setTime(donem);
 		int yil = cal.get(Calendar.YEAR);
 		int sayac = 0;
-
+		if (personel.getSirket().isPdksMi() == false)
+			bakiyeIzin = null;
 		while (bakiyeIzin == null || sayac > 3) {
 			++sayac;
 			String bakiyeTarih = " convert(datetime,'" + PdksUtil.convertToDateString(donem, "yyyyMMdd") + "', 112)";
@@ -10661,6 +10662,8 @@ public class OrtakIslemler implements Serializable {
 		if (dataMap == null)
 			dataMap = new HashMap();
 		personel.setIzinBakiyeMap(new HashMap<String, Double>());
+		if (personel.getSirket().isPdksMi()==false)
+			return dataMap;
 		String departmanKey = personel.getSirket().getDepartman().getId() + "_";
 		Calendar cal = Calendar.getInstance();
 		int buYil = cal.get(Calendar.YEAR);

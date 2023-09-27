@@ -2877,7 +2877,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 		setIzinIptalGoster(Boolean.FALSE);
 		PersonelIzin personelIzin = getInstance();
-		// boolean senelikIzin = personelIzin.getIzinTipi().isSenelikIzin();
+		IzinTipi izinTipi = personelIzin.getIzinTipi();
+		// boolean senelikIzin = izinTipi.isSenelikIzin();
 		Boolean hekim = null;
 		try {
 			hekim = personelIzin != null && personelIzin.getIzinSahibi() != null ? personelIzin.getIzinSahibi().isHekim() : Boolean.FALSE;
@@ -2888,7 +2889,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			hekim = Boolean.FALSE;
 		Double artikGun = null;
 		try {
-			artikGun = personelIzin.getIzinTipi().getArtikIzinGun();
+			artikGun = izinTipi.getArtikIzinGun();
 		} catch (Exception e) {
 			artikGun = null;
 		}
@@ -2905,7 +2906,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			getIstirahatIzni(izinSahibi);
 			personelIzin.setIzinTipi(seciliIzinTipi);
 		}
-		IzinTipi izinTipi = personelIzin.getIzinTipi();
+
 		PersonelIzinDetay izinDetay = null;
 		List<PersonelIzinDetay> izinDetayList = new ArrayList<PersonelIzinDetay>();
 
@@ -2939,11 +2940,11 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		VardiyaGun pdksVardiyaGun1 = new VardiyaGun(izinliSahibi, null, personelIzin.getBaslangicZamani());
 		VardiyaGun pdksVardiyaGun2 = new VardiyaGun(izinliSahibi, null, personelIzin.getBitisZamani());
 
-		if (personelIzin.getIzinTipi() == null) {
+		if (izinTipi == null) {
 			durum = "";
 			PdksUtil.addMessageWarn("İzin Tipi Seçiniz!");
 		} else {
-			if (!izinTipi.getTakvimGunumu() || personelIzin.getIzinTipi().getSaatGosterilecek()) {
+			if (!izinTipi.getTakvimGunumu() || izinTipi.getSaatGosterilecek()) {
 				String oncekiBasGunTarihStr = personelIzin.getIzinSahibi().getPdksSicilNo() + "_" + PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar(pdksVardiyaGun1.getVardiyaDate(), -1), "yyyyMMdd");
 				VardiyaGun pdksVardiyaGunBasOncesi = vardiyaMap.containsKey(oncekiBasGunTarihStr) ? (VardiyaGun) vardiyaMap.get(oncekiBasGunTarihStr) : null;
 				if (pdksVardiyaGunBasOncesi != null && !pdksVardiyaGunBasOncesi.getVardiya().isCalisma())
@@ -3067,10 +3068,10 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 				}
 			}
-			if (!durum.equals("") && !personelIzin.getIzinTipi().getTakvimGunumu())
+			if (!durum.equals("") && !izinTipi.getTakvimGunumu())
 				durum = isHaftaTatilKontrolIzin(personelIzin);
 		}
-		if (!durum.equals("") && (personelIzin.getIzinTipi().isSenelikIzin() || personelIzin.getIzinTipi().isMazeretIzin())) {
+		if (!durum.equals("") && (izinTipi.isSenelikIzin() || izinTipi.isMazeretIzin())) {
 			List tarihAraligiIzinList = null;
 			HashMap param = new HashMap();
 			param.put("izinSahibi=", izinSahibi);
@@ -3175,7 +3176,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		// KONTROL 3 ardarda gelen yillik ve mazeret izni olamaz. Kontrol
 		// edelim.
 
-		if (personelIzin.getIzinTipi() == null && guncellenecekIzin != null && guncellenecekIzin.getIzinTipi() != null)
+		if (izinTipi == null && guncellenecekIzin != null && guncellenecekIzin.getIzinTipi() != null)
 			personelIzin.setIzinTipi(guncellenecekIzin.getIzinTipi());
 		if (getHesapTipi() == PersonelIzin.HESAP_TIPI_GUN && !durum.equals("")) {
 			boolean ardisikIzinVar = ardisikIzinKontrol(getInstance());
@@ -3186,7 +3187,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		if (!durum.equals("")) {
 
 			Date basDate = PdksUtil.getDate(personelIzin.getBaslangicZamani()), bitDate = PdksUtil.getDate(personelIzin.getBitisZamani());
-			if (personelIzin.getIzinTipi().isSenelikIzin()) {
+			if (izinTipi.isSenelikIzin()) {
 
 				basDate = PdksUtil.tariheGunEkleCikar(basDate, -6);
 
@@ -3195,10 +3196,10 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			List<Personel> perList = new ArrayList<Personel>();
 			perList.add(personelIzin.getIzinSahibi());
 			TreeMap resmiTatilGunleri = ortakIslemler.getTatilGunleri(perList, basDate, bitDate, session);
-			if (personelIzin.getIzinTipi().isSenelikIzin()) {
+			if (izinTipi.isSenelikIzin()) {
 
 				try {
-					izinSuresiGun = izinSaatSuresiHesapla(vardiyaMap, personelIzin, personelIzin.getIzinTipi().getHesapTipi(), resmiTatilGunleri);
+					izinSuresiGun = izinSaatSuresiHesapla(vardiyaMap, personelIzin, izinTipi.getHesapTipi(), resmiTatilGunleri);
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
 
@@ -3213,7 +3214,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					personelIzin.setIzinSuresi(izinSuresiGun);
 
 				// burada detay hesaplayan kisim vardi.
-			} else if (personelIzin.getIzinTipi().isMazeretIzin()) {
+			} else if (izinTipi.isMazeretIzin()) {
 				// mazeret kontrol bulunulan yıl dışında mazeret giremesin.
 				cal = Calendar.getInstance();
 				cal.setTime(new Date());
@@ -3224,7 +3225,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				} else {
 
 					try {
-						izinSuresiSaat = izinSaatSuresiHesapla(vardiyaMap, personelIzin, personelIzin.getIzinTipi().getHesapTipi(), resmiTatilGunleri);
+						izinSuresiSaat = izinSaatSuresiHesapla(vardiyaMap, personelIzin, izinTipi.getHesapTipi(), resmiTatilGunleri);
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -3239,9 +3240,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				// yillik ve mazeret disindakiler icin izintipine gore izin
 				// suresi hesaplayalim
 				// girilen izin max saat max gun degerlerini asmis mi?
-				if (personelIzin.getIzinTipi().getSaatGosterilecek() && hesapTipi == PersonelIzin.HESAP_TIPI_SAAT) {
+				if (izinTipi.getSaatGosterilecek() && hesapTipi == PersonelIzin.HESAP_TIPI_SAAT) {
 					try {
-						izinSuresiSaat = izinSaatSuresiHesapla(vardiyaMap, personelIzin, personelIzin.getIzinTipi().getHesapTipi(), resmiTatilGunleri);
+						izinSuresiSaat = izinSaatSuresiHesapla(vardiyaMap, personelIzin, izinTipi.getHesapTipi(), resmiTatilGunleri);
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -3249,9 +3250,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 					}
 					personelIzin.setIzinSuresi(izinSuresiSaat);
-				} else if (!personelIzin.getIzinTipi().getTakvimGunumu()) {
+				} else if (!izinTipi.getTakvimGunumu()) {
 					try {
-						izinSuresiGun = izinSaatSuresiHesapla(vardiyaMap, personelIzin, personelIzin.getIzinTipi().getHesapTipi(), resmiTatilGunleri);
+						izinSuresiGun = izinSaatSuresiHesapla(vardiyaMap, personelIzin, izinTipi.getHesapTipi(), resmiTatilGunleri);
 					} catch (Exception e) {
 						logger.error("Pdks hata in : \n");
 						e.printStackTrace();
@@ -3439,14 +3440,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 				if (izinDetay == null) {
 					durum = "";
-					PdksUtil.addMessageWarn(personelIzin.getIzinTipi().getIzinTipiTanim().getAciklama() + " için bakiye oluşturulacak yıl bulunamadı! ");
+					PdksUtil.addMessageWarn(izinTipi.getIzinTipiTanim().getAciklama() + " için bakiye oluşturulacak yıl bulunamadı! ");
 				}
 
 			}
 
 		}
 		boolean resmiTatilIzni = false;
-		// resmiTatilIzni = personelIzin.getIzinTipi().isResmiTatilIzin();
+		// resmiTatilIzni = izinTipi.isResmiTatilIzin();
 		if (resmiTatilIzni) {
 			Boolean tatil = Boolean.FALSE;
 			TreeMap<String, Tatil> tatilMap = ortakIslemler.getTatilGunleri(null, personelIzin.getBaslangicZamani(), personelIzin.getBitisZamani(), session);
@@ -3491,23 +3492,23 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 		}
 		if (!durum.equals("")) {
-			Integer izinHesapTipi = personelIzin.getIzinTipi().getHesapTipi();
-			String mesaj = "Bir defada girilecek " + personelIzin.getIzinTipi().getIzinTipiTanim().getAciklama() + " süresi ";
+			Integer izinHesapTipi = izinTipi.getHesapTipi();
+			String mesaj = "Bir defada girilecek " + izinTipi.getIzinTipiTanim().getAciklama() + " süresi ";
 			Double izinSure = personelIzin.getIzinSuresi();
 			if ((izinHesapTipi != null && izinHesapTipi == PersonelIzin.HESAP_TIPI_SAAT) || (izinHesapTipi == null && (hesapTipi == PersonelIzin.HESAP_TIPI_SAAT || hesapTipi == PersonelIzin.HESAP_TIPI_GUN_SAAT_SECILDI))) {
-				if (izinSure < personelIzin.getIzinTipi().getMinSaat()) {
-					PdksUtil.addMessageWarn(mesaj + personelIzin.getIzinTipi().getMinSaat() + " saat'ten küçük olamaz!");
+				if (izinSure < izinTipi.getMinSaat()) {
+					PdksUtil.addMessageWarn(mesaj + izinTipi.getMinSaat() + " saat'ten küçük olamaz!");
 					durum = "";
-				} else if (izinSure > personelIzin.getIzinTipi().getMaxSaat()) {
-					PdksUtil.addMessageWarn(mesaj + personelIzin.getIzinTipi().getMaxSaat() + " saat'ten büyük olamaz!");
+				} else if (izinSure > izinTipi.getMaxSaat()) {
+					PdksUtil.addMessageWarn(mesaj + izinTipi.getMaxSaat() + " saat'ten büyük olamaz!");
 					durum = "";
 				}
 			} else {
-				if (izinSure < personelIzin.getIzinTipi().getMinGun()) {
-					PdksUtil.addMessageWarn(mesaj + personelIzin.getIzinTipi().getMinGun() + " gün'den küçük olamaz!");
+				if (izinSure < izinTipi.getMinGun()) {
+					PdksUtil.addMessageWarn(mesaj + izinTipi.getMinGun() + " gün'den küçük olamaz!");
 					durum = "";
-				} else if (izinSure > personelIzin.getIzinTipi().getMaxGun()) {
-					PdksUtil.addMessageWarn(mesaj + personelIzin.getIzinTipi().getMaxGun() + " gün'den büyük olamaz!");
+				} else if (izinSure > izinTipi.getMaxGun()) {
+					PdksUtil.addMessageWarn(mesaj + izinTipi.getMaxGun() + " gün'den büyük olamaz!");
 					durum = "";
 				}
 
@@ -3528,7 +3529,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 							parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 						ilkYoneticiUser = (User) pdksEntityController.getObjectByInnerObject(parametreMap, User.class);
 					}
-					String onaylayanTipi = personelIzin.getIzinTipi().getOnaylayanTipi();
+					String onaylayanTipi = izinTipi.getOnaylayanTipi();
 					if (yonetici == null && (onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI1) || onaylayanTipi.equals(IzinTipi.ONAYLAYAN_TIPI_YONETICI2))) {
 						PdksUtil.addMessageWarn(ortakIslemler.yoneticiAciklama() + " tanımsızdır.");
 						durum = "";
@@ -3541,9 +3542,11 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					}
 
 				}
-				if (!(personelIzin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_IK)) && personelIzin.getIzinSahibi().getPdksYonetici() == null) {
-					durum = "";
-					PdksUtil.addMessageWarn(personelIzin.getIzinSahibi().getAdSoyad() + " ait yönetici alanı tanımsızdır!");
+				if (izinTipi.isOnaysiz() == false) {
+					if (!(izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_IK)) && personelIzin.getIzinSahibi().getPdksYonetici() == null) {
+						durum = "";
+						PdksUtil.addMessageWarn(personelIzin.getIzinSahibi().getAdSoyad() + " ait yönetici alanı tanımsızdır!");
+					}
 				}
 			}
 			if (!durum.equals(""))
