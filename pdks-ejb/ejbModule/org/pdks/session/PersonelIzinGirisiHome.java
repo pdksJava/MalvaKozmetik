@@ -4638,52 +4638,57 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 							bagliPersonel = bagliPersoneller.get(0);
 						bagliPersoneller = null;
 					}
+					if (!izinSahibi.getSirket().isPdksMi())
+						list.clear();
 					for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 						IzinTipi izinTipi = (IzinTipi) iterator.next();
 						if (izinTipi.isFazlaMesai()) {
 							if (!(izinSahibi.getFazlaMesaiIzinKullan() != null && izinSahibi.getFazlaMesaiIzinKullan()))
 								iterator.remove();
 							continue;
-						} else
-
-						if (izinTipi.isSutIzin() && !izinSahibi.isSutIzniKullan()) {
-							iterator.remove();
-							continue;
-						} else if (izinTipi.isGebelikMuayeneIzin() && !izinSahibi.isGebelikMuayeneIzniKullan()) {
-							iterator.remove();
-							continue;
-						} else if (!izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_IK) && izinTipi.getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK) && !(izinSahibi.isHekim() || (izinSahibi.getOnaysizIzinKullanilir() != null && izinSahibi.getOnaysizIzinKullanilir()))) {
-
-							iterator.remove();
-							continue;
-						} else if (izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YONETICI1) && bagliPersonel == null) {
-							iterator.remove();
-							continue;
-						} else if (izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_IK) && !authenticatedUser.isIK() && !authenticatedUser.isAdmin()) {
-							iterator.remove();
-							continue;
 						} else if (izinTipi.isSenelikIzin()) {
 							if ((izinSahibi.isSuaOlur() && !senelikKullan) || izinSahibi.getSenelikIzin() == 0 || !senelikIzin)
 								iterator.remove();
 							else
 								getInstance().setIzinTipi(izinTipi);
-						} else if (izinTipi.isFazlaMesai() && izinSahibi.getFazlaMesaiIzin() == 0) {
-							iterator.remove();
-							continue;
+						} else {
+							if (izinTipi.isSutIzin() && !izinSahibi.isSutIzniKullan()) {
+								iterator.remove();
+								continue;
+							} else if (izinTipi.isGebelikMuayeneIzin() && !izinSahibi.isGebelikMuayeneIzniKullan()) {
+								iterator.remove();
+								continue;
+							} else if (!izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_IK) && izinTipi.getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK) && !(izinSahibi.getOnaysizIzinKullanilir() != null && izinSahibi.getOnaysizIzinKullanilir())) {
+								iterator.remove();
+								continue;
+							} else if (izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YONETICI1) && bagliPersonel == null) {
+								iterator.remove();
+								continue;
+							} else if (izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_IK) && !authenticatedUser.isIK() && !authenticatedUser.isAdmin()) {
+								iterator.remove();
+								continue;
+							} else if (izinTipi.isSenelikIzin()) {
+								if ((izinSahibi.isSuaOlur() && !senelikKullan) || izinSahibi.getSenelikIzin() == 0 || !senelikIzin)
+									iterator.remove();
+								else
+									getInstance().setIzinTipi(izinTipi);
+							} else if (izinTipi.isFazlaMesai() && izinSahibi.getFazlaMesaiIzin() == 0) {
+								iterator.remove();
+								continue;
 
-						} else if (izinTipi.getBakiyeDevirTipi().equals(IzinTipi.BAKIYE_DEVIR_SENELIK) && !izinSahibi.getIzinBakiyeMapKey(izinTipi.getIzinTipiTanim().getKodu())) {
-							iterator.remove();
-							continue;
-						} else if (izinTipi.isSuaIzin()) {
-							if (!izinSahibi.isSuaOlur() || !izinSahibi.getIzinBakiyeMapKey(izinTipi.getIzinTipiTanim().getKodu())) {
+							} else if (izinTipi.getBakiyeDevirTipi().equals(IzinTipi.BAKIYE_DEVIR_SENELIK) && !izinSahibi.getIzinBakiyeMapKey(izinTipi.getIzinTipiTanim().getKodu())) {
 								iterator.remove();
-							}
-						} else if (izinTipi.isResmiTatilIzin()) {
-							if (!izinSahibi.isHekim()) {
-								iterator.remove();
+								continue;
+							} else if (izinTipi.isSuaIzin()) {
+								if (!izinSahibi.isSuaOlur() || !izinSahibi.getIzinBakiyeMapKey(izinTipi.getIzinTipiTanim().getKodu())) {
+									iterator.remove();
+								}
+							} else if (izinTipi.isResmiTatilIzin()) {
+								if (!izinSahibi.isHekim()) {
+									iterator.remove();
+								}
 							}
 						}
-
 					}
 					if (!list.isEmpty()) {
 						if (list.size() > 1)
