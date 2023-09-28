@@ -1537,6 +1537,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		for (Iterator<String> iterator = vardiyaGunMap.keySet().iterator(); iterator.hasNext();) {
 			String key = iterator.next();
 			VardiyaGun vardiyaGun = vardiyaGunMap.get(key);
+			String str = vardiyaGun.getVardiyaDateStr();
+			vardiyaGun.setAyinGunu(str.startsWith(donem));
 			if (vardiyaGun.getVardiya() != null) {
 				Vardiya vardiya = vardiyaGun.getVardiya();
 				boolean calismaPlanDenetimTarihKontrol = (calismaPlanDenetimTarih != null) && (vardiyaGun.getVardiyaDate().after(calismaPlanDenetimTarih));
@@ -4752,7 +4754,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 											if (sistemUser == null)
 												sistemUser = authenticatedUser;
 											String aciklama = islemFazlaMesaiTalep.getAciklama() != null && islemFazlaMesaiTalep.getAciklama().trim().length() > 0 ? islemFazlaMesaiTalep.getAciklama().trim() : "";
- 											pdksEntityController.hareketSil(kgsId, pdksId, sistemUser, nedenId, aciklama + (referans != null ? " " + referans.trim() : ""), hareketKGS3.getKgsSirketId(), session);
+											pdksEntityController.hareketSil(kgsId, pdksId, sistemUser, nedenId, aciklama + (referans != null ? " " + referans.trim() : ""), hareketKGS3.getKgsSirketId(), session);
 											flush = true;
 										}
 									}
