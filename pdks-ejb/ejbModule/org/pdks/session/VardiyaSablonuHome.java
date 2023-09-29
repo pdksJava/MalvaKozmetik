@@ -219,6 +219,7 @@ public class VardiyaSablonuHome extends EntityHome<VardiyaSablonu> implements Se
 		try {
 			HashMap parametreMap = new HashMap();
 			parametreMap.put("durum", Boolean.TRUE);
+			parametreMap.put("toplamGunGuncelle", Boolean.FALSE);
 			if (pdksVardiyaSablonu.getDepartman() != null)
 				parametreMap.put("departman.id", pdksVardiyaSablonu.getDepartman().getId());
 			if (session != null)

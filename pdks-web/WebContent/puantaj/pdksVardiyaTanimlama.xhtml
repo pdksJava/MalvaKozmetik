@@ -41,11 +41,11 @@
 									</a4j:commandLink>
 								</rich:column>
 								<rich:column rendered="#{authenticatedUser.admin}" style="text-align: center;width: 30px;">
-							<f:facet name="header">
-								<h:outputText value="Id" />
-							</f:facet>
-							<h:outputText value="#{vardiyaView.id}" />
-						</rich:column>
+									<f:facet name="header">
+										<h:outputText value="Id" />
+									</f:facet>
+									<h:outputText value="#{vardiyaView.id}" />
+								</rich:column>
 								<rich:column style="text-align: center;width: 30px;">
 									<f:facet name="header">Yıl</f:facet>
 									#{vardiyaView.yil}
@@ -56,14 +56,16 @@
 								</rich:column>
 								<c:if test="#{vardiyaTanimlaHome.calismaModeliList!=null}">
 									<c:forEach items="#{vardiyaTanimlaHome.calismaModeliList}" var="cm">
-										<rich:column style="text-align: center;width: 40px;">
-											<f:facet name="header">#{cm.aciklama} Süre</f:facet>
+										<c:if test="#{cm.updateCGS==false or authenticatedUser.admin}">
+											<rich:column style="text-align: center;width: 40px;">
+												<f:facet name="header">#{cm.aciklama} Süre</f:facet>
 											#{authenticatedUser.sayiFormatliGoster(vardiyaView.getCalismaModeliAy(cm.id).sure)}
 										</rich:column>
-										<rich:column style="text-align: center;width: 40px;" rendered="#{authenticatedUser.admin}">
-											<f:facet name="header">#{cm.aciklama} Süt İzni</f:facet>
+											<rich:column style="text-align: center;width: 40px;" rendered="#{authenticatedUser.admin and cm.updateCGS==false}">
+												<f:facet name="header">#{cm.aciklama} Süt İzni</f:facet>
 											#{authenticatedUser.sayiFormatliGoster(vardiyaView.getCalismaModeliAy(cm.id).toplamIzinSure)}
 										</rich:column>
+										</c:if>
 									</c:forEach>
 								</c:if>
 								<rich:column style="text-align: center;width: 60px;" rendered="#{authenticatedUser.admin}">
@@ -137,34 +139,35 @@
 
 							<h:panelGrid columns="#{vardiyaTanimlaHome.girisKolonSayisi}">
 								<c:forEach items="#{vardiyaTanimlaHome.denklestirmeAy.modeller}" var="md">
-									<s:decorate template="/layout/edit.xhtml">
-										<ui:define name="label">#{md.calismaModeli.aciklama} Süre</ui:define>
-										<h:inputText value="#{md.sure}"
-											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or !(authenticatedUser.admin or authenticatedUser.IKAdmin)}" />
-									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml">
-										<ui:define name="label">#{md.calismaModeli.aciklama} Süt İzni</ui:define>
-										<h:inputText value="#{md.toplamIzinSure}"
-											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or !(authenticatedUser.admin or authenticatedUser.IKAdmin)}" />
-									</s:decorate>
+									<c:if test="#{md.calismaModeli.updateCGS==false or authenticatedUser.admin}">
+										<s:decorate template="/layout/edit.xhtml">
+											<ui:define name="label">#{md.calismaModeli.aciklama} Süre</ui:define>
+											<h:inputText value="#{md.sure}"
+												disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or !(authenticatedUser.admin or authenticatedUser.IKAdmin)}" />
+										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" rendered="#{md.calismaModeli.updateCGS==false}">
+											<ui:define name="label">#{md.calismaModeli.aciklama} Süt İzni</ui:define>
+											<h:inputText value="#{md.toplamIzinSure}"
+												disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or !(authenticatedUser.admin or authenticatedUser.IKAdmin)}" />
+										</s:decorate>
 
-									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.negatifBakiyeDenkSaat}">
-										<ui:define name="label">#{md.calismaModeli.aciklama} Negatif Bakiye Max (Saati)</ui:define>
-										<h:inputText required="true" value="#{md.negatifBakiyeDenkSaat}"
-											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or ( md.negatifBakiyeDenkSaat ge 0  and md.calismaModeli.negatifBakiyeDenkSaat ge 0)}" size="6"
-											validatorMessage="Negatif bakiye saati giriniz">
-											<f:validateDoubleRange maximum="0" />
-										</h:inputText>
-									</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.negatifBakiyeDenkSaat}">
+											<ui:define name="label">#{md.calismaModeli.aciklama} Negatif Bakiye Max (Saati)</ui:define>
+											<h:inputText required="true" value="#{md.negatifBakiyeDenkSaat}"
+												disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or ( md.negatifBakiyeDenkSaat ge 0  and md.calismaModeli.negatifBakiyeDenkSaat ge 0)}"
+												size="6" validatorMessage="Negatif bakiye saati giriniz">
+												<f:validateDoubleRange maximum="0" />
+											</h:inputText>
+										</s:decorate>
 
 
-									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.hareketKaydiVardiyaBul}">
-										<ui:define name="label">#{md.calismaModeli.aciklama} Hareket Kayıtlarından Vardiya Bul</ui:define>
-										<h:selectBooleanCheckbox value="#{md.hareketKaydiVardiyaBul}"
-											disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or (md.hareketKaydiVardiyaBulsunmu==false and md.calismaModeli.hareketKaydiVardiyaBulsunmu==false)}">
-										</h:selectBooleanCheckbox>
-									</s:decorate>
-
+										<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.hareketKaydiVardiyaBul}">
+											<ui:define name="label">#{md.calismaModeli.aciklama} Hareket Kayıtlarından Vardiya Bul</ui:define>
+											<h:selectBooleanCheckbox value="#{md.hareketKaydiVardiyaBul}"
+												disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or (md.hareketKaydiVardiyaBulsunmu==false and md.calismaModeli.hareketKaydiVardiyaBulsunmu==false)}">
+											</h:selectBooleanCheckbox>
+										</s:decorate>
+									</c:if>
 								</c:forEach>
 
 							</h:panelGrid>

@@ -102,9 +102,21 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="ÇGS Güncellenir" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.updateCGS)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Vardiya Kontrol Edilmez" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.ortakVardiya)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="Tüm Vardiyalar" />
 							</f:facet>
-							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.genelVardiya)}" />
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.genelVardiya and calismaModeli.ortakVardiya==false)}" />
 						</rich:column>
 						<rich:column
 							rendered="#{ortakIslemler.getParameterKey('aksamBordroBasZamani')!='' and ortakIslemler.getParameterKey('aksamBordroBitZamani')!=''}">
@@ -263,6 +275,18 @@
 
 							</h:selectBooleanCheckbox>
 						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">ÇGS Güncellenir</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.toplamGunGuncelle}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Vardiya Kontrol Edilmez</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.ortakVardiya}" disabled="#{authenticatedUser.admin==false}">
+								<a4j:support event="onclick" reRender="vardiyalar" status="ajaxStatus" ajaxSingle="true" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
 							rendered="#{ortakIslemler.getParameterKey('aksamBordroBasZamani')!='' and ortakIslemler.getParameterKey('aksamBordroBitZamani')!=''}">
 							<ui:define name="label">Gece Çalışması Öde</ui:define>
@@ -299,8 +323,9 @@
 					</h:panelGrid>
 					<a4j:outputPanel id="vardiyalar">
 
-						<rich:simpleTogglePanel rendered="#{calismaModeliHome.calismaModeli.genelVardiya==false}" switchType="client" label="Vardiyalar" height="110"
-							opened="true">
+						<rich:simpleTogglePanel
+							rendered="#{calismaModeliHome.calismaModeli.genelVardiya==false and calismaModeliHome.calismaModeli.ortakVardiya==false}" switchType="client"
+							label="Vardiyalar" height="110" opened="true">
 							<s:decorate>
 								<rich:listShuttle id="shuttle" sourceValue="#{calismaModeliHome.vardiyaList}" fastOrderControlsVisible="false" orderControlsVisible="false"
 									targetValue="#{calismaModeliHome.kayitliVardiyaList}" var="vardiya" copyControlLabel="#{messages['listShuttle.etiket.copyControlLabel']}"

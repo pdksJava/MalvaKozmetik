@@ -41,12 +41,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL = "HAREKET_KAYDI_VARDIYA_BUL";
 	public static final String COLUMN_NAME_MAAS_ODEME_TIPI = "MAAS_ODEME_TIPI";
 	public static final String COLUMN_NAME_FAZLA_MESAI_VAR = "FAZLA_MESAI_VAR";
+	public static final String COLUMN_NAME_ORTAK_VARDIYA = "ORTAK_VARDIYA";
+	public static final String COLUMN_NAME_TOPLAM_GUN_GUNCELLE = "TOPLAM_GUN_GUNCELLE";
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
 
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE;
+	private Boolean ortakVardiya = Boolean.FALSE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
 	private Boolean aylikMaas = Boolean.TRUE;
@@ -162,7 +165,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.durum = durum;
 	}
 
-	@Column(name = "TOPLAM_GUN_GUNCELLE")
+	@Column(name = COLUMN_NAME_TOPLAM_GUN_GUNCELLE)
 	public Boolean getToplamGunGuncelle() {
 		return toplamGunGuncelle;
 	}
@@ -196,6 +199,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	public void setFazlaMesaiVar(Boolean fazlaMesaiVar) {
 		this.fazlaMesaiVar = fazlaMesaiVar;
+	}
+
+	@Column(name = COLUMN_NAME_ORTAK_VARDIYA)
+	public Boolean getOrtakVardiya() {
+		return ortakVardiya;
+	}
+
+	public void setOrtakVardiya(Boolean ortakVardiya) {
+		this.ortakVardiya = ortakVardiya;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -328,14 +340,24 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 				izinSure = izinhaftaSonu;
 		}
 		if (this.isSaatlikOdeme()) {
-//			IzinTipi izinTipi = pdksVardiyaGun.getIzin() != null ? pdksVardiyaGun.getIzin().getIzinTipi() : null;
-//			if (izinTipi != null) {
-//				if (izinTipi.isUcretsizIzinTipi())
-//					izinSure = 0.0d;
-//			}
- 		}
+			// IzinTipi izinTipi = pdksVardiyaGun.getIzin() != null ? pdksVardiyaGun.getIzin().getIzinTipi() : null;
+			// if (izinTipi != null) {
+			// if (izinTipi.isUcretsizIzinTipi())
+			// izinSure = 0.0d;
+			// }
+		}
 
 		return izinSure;
 	}
 
+	@Transient
+	public boolean isUpdateCGS() {
+		boolean updateCGS = toplamGunGuncelle != null && toplamGunGuncelle;
+		return updateCGS;
+	}
+
+	@Transient
+	public boolean isOrtakVardiyadir() {
+		return ortakVardiya != null && ortakVardiya;
+	}
 }

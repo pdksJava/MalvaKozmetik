@@ -1592,7 +1592,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						oncekiVardiyaGunKontrol = vardiyaGun;
 
 				}
-				if (vardiya.isCalisma() && vardiya.getGenel() && vardiyaMap != null && !vardiyaMap.containsKey(vardiya.getId())) {
+				if (vardiya.isCalisma() && vardiya.getGenel() && calismaModeli.isOrtakVardiyadir() == false && vardiyaMap != null && !vardiyaMap.containsKey(vardiya.getId())) {
 					if (vardiyaGun.isAyinGunu()) {
 						if (sbCalismaModeliUyumsuz.length() > 0)
 							sbCalismaModeliUyumsuz.append(", ");
@@ -7335,7 +7335,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				if (pd.getCalismaModeliAy() != null) {
 					try {
 						CalismaModeliAy calismaModeliAy = pd.getCalismaModeliAy();
-						if (calismaModeliAy.getCalismaModeli().getGenelVardiya().equals(Boolean.FALSE)) {
+						CalismaModeli cm = calismaModeliAy.getCalismaModeli();
+						if (cm.getGenelVardiya().equals(Boolean.FALSE) && cm.isOrtakVardiyadir() == false) {
 							sb.append(" INNER JOIN " + CalismaModeliVardiya.TABLE_NAME + " CV ON CV." + CalismaModeliVardiya.COLUMN_NAME_CALISMA_MODELI + "=:cm  ");
 							sb.append(" AND CV." + CalismaModeliVardiya.COLUMN_NAME_VARDIYA + "=V." + Vardiya.COLUMN_NAME_ID);
 							map.put("cm", calismaModeliAy.getCalismaModeli().getId());

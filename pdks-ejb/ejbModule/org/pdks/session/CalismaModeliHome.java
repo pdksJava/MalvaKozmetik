@@ -232,6 +232,8 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 			if (calismaModeli.getHaftaTatilMesaiOde().equals(Boolean.FALSE))
 				calismaModeli.setGeceHaftaTatilMesaiParcala(Boolean.FALSE);
 			pdksEntityController.saveOrUpdate(session, entityManager, calismaModeli);
+			if (calismaModeli.getGenelVardiya() || calismaModeli.isOrtakVardiyadir())
+				kayitliVardiyaList.clear();
 			for (Iterator iterator = kayitliVardiyaList.iterator(); iterator.hasNext();) {
 				Vardiya kayitliVardiya = (Vardiya) iterator.next();
 				boolean ekle = true;

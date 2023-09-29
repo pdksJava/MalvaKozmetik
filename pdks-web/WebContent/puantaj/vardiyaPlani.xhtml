@@ -470,7 +470,7 @@
 						</a4j:repeat>
 					</table>
 
-					<h:panelGrid id="digerIslemler" columns="5" rendered="#{vardiyaGunHome.personelAylikPuantaj.kaydet  }">
+					<h:panelGrid id="digerIslemler" columns="5" rendered="#{vardiyaGunHome.personelAylikPuantaj.kaydet}">
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Çalışma Modeli</ui:define>
 							<h:selectOneMenu value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
@@ -482,7 +482,7 @@
 
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy!=null and vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.toplamGunGuncelle}">
+							rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy!=null and vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.updateCGS}">
 							<ui:define name="label">Planlan Süre</ui:define>
 							<h:inputText value="#{vardiyaGunHome.personelDenklestirme.planlanSure}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
 								validatorMessage="Hatalı giriş">
