@@ -116,7 +116,7 @@
 					</ui:fragment>
 				</ui:fragment>
 				<ui:fragment rendered="#{aylikPuantaj.yonetici==null or aylikPuantaj.yonetici.id==null}">
-					<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.sanalPersonel==false}">
+					<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.sanalPersonel==false and fazlaMesaiHesaplaHome.yoneticiERP1Kontrol}">
 						<SPAN style="color: red; font-weight: bold; font-size: 12px">#{ortakIslemler.yoneticiAciklama()} tanımsız!</SPAN>
 
 					</ui:fragment>

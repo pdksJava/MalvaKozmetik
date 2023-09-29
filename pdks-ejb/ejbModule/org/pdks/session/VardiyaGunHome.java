@@ -162,7 +162,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	private boolean fileImport = Boolean.FALSE, fazlaMesaiTalepVar = Boolean.FALSE, modelGoster = Boolean.FALSE, gebeGoster = Boolean.FALSE;
 
-	private Boolean manuelHareketEkle, vardiyaFazlaMesaiTalepGoster = Boolean.FALSE, bordroPuantajEkranindaGoster = Boolean.FALSE;
+	private Boolean manuelHareketEkle, vardiyaFazlaMesaiTalepGoster = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE,bordroPuantajEkranindaGoster = Boolean.FALSE;
 
 	private boolean adminRole, ikRole, gorevYeriGirisDurum, fazlaMesaiTarihGuncelle = Boolean.FALSE, offIzinGuncelle = Boolean.FALSE, gebeSutIzniGuncelle = Boolean.FALSE;
 
@@ -5357,7 +5357,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	@Transactional
 	private Boolean aylikPuantajOlusturuluyor() {
 		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
-
+		yoneticiERP1Kontrol = ortakIslemler.getParameterKey("yoneticiERP1Kontrol").equals("");
 		bordroAlanKapat();
 		Boolean kontrolDurum = false;
 		String donem = String.valueOf(yil * 100 + ay);
@@ -11246,5 +11246,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	public void setUcretiOdenenKod(Boolean ucretiOdenenKod) {
 		this.ucretiOdenenKod = ucretiOdenenKod;
+	}
+
+	/**
+	 * @return the yoneticiERP1Kontrol
+	 */
+	public Boolean getYoneticiERP1Kontrol() {
+		return yoneticiERP1Kontrol;
+	}
+
+	/**
+	 * @param yoneticiERP1Kontrol the yoneticiERP1Kontrol to set
+	 */
+	public void setYoneticiERP1Kontrol(Boolean yoneticiERP1Kontrol) {
+		this.yoneticiERP1Kontrol = yoneticiERP1Kontrol;
 	}
 }

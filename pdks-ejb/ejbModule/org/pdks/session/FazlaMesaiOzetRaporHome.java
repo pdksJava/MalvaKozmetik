@@ -122,7 +122,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	private Boolean sutIzniGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
 
 	private Boolean aksamGun = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
-	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE;
+	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE;
 	private boolean adminRole, ikRole;
 
 	private int ay, yil, maxYil;
@@ -663,6 +663,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	 */
 	public void fillFazlaMesaiOzetRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
 		fazlaMesaiVardiyaGun = null;
+		yoneticiERP1Kontrol = ortakIslemler.getParameterKey("yoneticiERP1Kontrol").equals("");
 		Map<String, String> map1 = null;
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
 		sabahVardiya = null;
@@ -1591,8 +1592,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 		CellStyle styleDay = null, styleGenel = null, styleTutar = null, styleStrDay = null;
 		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
- 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
- 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleEgitim = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleOff = ExcelUtil.getStyleDataCenter(wb);
 		ExcelUtil.setFontColor(styleOff, Color.WHITE);
@@ -2695,6 +2696,21 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public void setMaasKesintiGoster(Boolean maasKesintiGoster) {
 		this.maasKesintiGoster = maasKesintiGoster;
+	}
+
+	/**
+	 * @return the yoneticiERP1Kontrol
+	 */
+	public Boolean getYoneticiERP1Kontrol() {
+		return yoneticiERP1Kontrol;
+	}
+
+	/**
+	 * @param yoneticiERP1Kontrol
+	 *            the yoneticiERP1Kontrol to set
+	 */
+	public void setYoneticiERP1Kontrol(Boolean yoneticiERP1Kontrol) {
+		this.yoneticiERP1Kontrol = yoneticiERP1Kontrol;
 	}
 
 }

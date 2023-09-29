@@ -302,23 +302,18 @@
 
 											<table>
 												<TR>
+													<ui:fragment
+														rendered="#{vardiyaGunHome.kullaniciPersonel==false and (vardiyaGunHome.yoneticiERP1Kontrol==false or aylikPuantaj.yonetici.id!=null or aylikPuantaj.pdksPersonel.sanalPersonel)}">
 
-													<TD><ui:fragment
-															rendered="#{vardiyaGunHome.kullaniciPersonel==false and (aylikPuantaj.yonetici.id!=null or aylikPuantaj.pdksPersonel.sanalPersonel)}">
-															<h:selectBooleanCheckbox value="#{aylikPuantaj.onayDurum}">
+														<TD><h:selectBooleanCheckbox value="#{aylikPuantaj.onayDurum}">
 																<a4j:support event="onclick" />
-															</h:selectBooleanCheckbox>
-														</ui:fragment></TD>
-													<TD><ui:fragment
-															rendered="#{vardiyaGunHome.kullaniciPersonel==false and (aylikPuantaj.yonetici.id!=null or aylikPuantaj.pdksPersonel.sanalPersonel)}">
-															<a4j:commandLink id="editAylikLink" ajaxSingle="true" action="#{vardiyaGunHome.aylikPuantajSec(aylikPuantaj,'P')}"
+															</h:selectBooleanCheckbox></TD>
+														<TD><a4j:commandLink id="editAylikLink" ajaxSingle="true" action="#{vardiyaGunHome.aylikPuantajSec(aylikPuantaj,'P')}"
 																onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide();#{rich:component('editAylikPanel')}.show()"
 																reRender="editAylikPanel,secimler">
 																<h:graphicImage value="/img/clock_16.png" style="border:0" />
-															</a4j:commandLink>
-															<rich:toolTip for="editAylikLink" value="Plan Güncelle" />
-														</ui:fragment></TD>
-
+															</a4j:commandLink> <rich:toolTip for="editAylikLink" value="Plan Güncelle" /></TD>
+													</ui:fragment>
 													<ui:fragment rendered="#{vardiyaGunHome.fazlaMesaiTalepVar}">
 														<TD><ui:fragment rendered="#{aylikPuantaj.fazlaMesaiDurum}">
 																<a4j:commandLink id="mesaiAylikLink" ajaxSingle="true"
@@ -371,7 +366,7 @@
 
 										</ui:fragment>
 									</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.yonetici==null or aylikPuantaj.yonetici.id==null}">
-										<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.sanalPersonel==false}">
+										<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.sanalPersonel==false and vardiyaGunHome.yoneticiERP1Kontrol}">
 											<SPAN style="color: red; font-weight: bold; font-size: 12px">#{ortakIslemler.yoneticiAciklama()} tanımsız!</SPAN>
 
 										</ui:fragment>

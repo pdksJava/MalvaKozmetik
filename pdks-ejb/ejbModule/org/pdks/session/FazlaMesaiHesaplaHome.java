@@ -148,7 +148,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepSil = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
 	private Boolean sutIzniGoster = Boolean.FALSE, gebeGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
-	private Boolean kesilenSureGoster = Boolean.FALSE, checkBoxDurum;
+	private Boolean kesilenSureGoster = Boolean.FALSE, checkBoxDurum, yoneticiERP1Kontrol = Boolean.FALSE;
 	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE, gecenAyDurum = Boolean.FALSE, izinGoster = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
 	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
@@ -906,6 +906,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	public void fillPersonelDenklestirmeDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
 		denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
+		yoneticiERP1Kontrol = ortakIslemler.getParameterKey("yoneticiERP1Kontrol").equals("");
 		bordroAlanKapat();
 		eksikMaasGoster = false;
 		saveLastParameter();
@@ -6661,6 +6662,21 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	public void setUcretiOdenenKod(Boolean ucretiOdenenKod) {
 		this.ucretiOdenenKod = ucretiOdenenKod;
+	}
+
+	/**
+	 * @return the yoneticiERP1Kontrol
+	 */
+	public Boolean getYoneticiERP1Kontrol() {
+		return yoneticiERP1Kontrol;
+	}
+
+	/**
+	 * @param yoneticiERP1Kontrol
+	 *            the yoneticiERP1Kontrol to set
+	 */
+	public void setYoneticiERP1Kontrol(Boolean yoneticiERP1Kontrol) {
+		this.yoneticiERP1Kontrol = yoneticiERP1Kontrol;
 	}
 
 }

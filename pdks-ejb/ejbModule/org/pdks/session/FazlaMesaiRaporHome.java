@@ -121,7 +121,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	private boolean adminRole, ikRole;
 
 	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
-	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, fazlaMesaiSayfa = Boolean.TRUE;
+	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE, fazlaMesaiSayfa = Boolean.TRUE;
 
 	private int ay, yil, maxYil, maxFazlaMesaiRaporGun;
 
@@ -660,7 +660,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	 * @param denklestirmeDonemi
 	 */
 	public void fillPersonelDenklestirmeRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
-
+		yoneticiERP1Kontrol = ortakIslemler.getParameterKey("yoneticiERP1Kontrol").equals("");
 		fazlaMesaiVardiyaGun = null;
 		Map<String, String> map1 = null;
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
@@ -2367,6 +2367,21 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	/**
+	 * @return the yoneticiERP1Kontrol
+	 */
+	public Boolean getYoneticiERP1Kontrol() {
+		return yoneticiERP1Kontrol;
+	}
+
+	/**
+	 * @param yoneticiERP1Kontrol
+	 *            the yoneticiERP1Kontrol to set
+	 */
+	public void setYoneticiERP1Kontrol(Boolean yoneticiERP1Kontrol) {
+		this.yoneticiERP1Kontrol = yoneticiERP1Kontrol;
 	}
 
 }
