@@ -3079,8 +3079,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 							if (sanalPersonel == false && calisiyor) {
 								if (yoneticiKoduVar == false) {
 									if (personel.getId() != null && personel.getYoneticisi() != null) {
-										personel.setYoneticisi(null);
-										personel.setAsilYonetici1(null);
+										if (yoneticiERP1Kontrol) {
+											personel.setYoneticisi(null);
+											personel.setAsilYonetici1(null);
+										}
+
 										personel.setGuncellemeTarihi(new Date());
 										personel.setGuncelleyenUser(islemYapan);
 										try {
@@ -3092,7 +3095,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 										}
 
 									}
-									if (yoneticiRolVarmi) {
+									if (yoneticiRolVarmi && yoneticiERP1Kontrol) {
 										if (yoneticisi == null)
 											kidemHataList.add(yoneticiAciklama + " bilgisi boş olamaz!" + (personelERP.getGorevKodu() != null && personelERP.getGorevi() != null ? "[ " + personelERP.getGorevKodu() + " - " + personelERP.getGorevi() + " ]" : ""));
 										else if (yoneticisi != null)
