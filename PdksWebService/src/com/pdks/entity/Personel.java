@@ -870,16 +870,14 @@ public class Personel extends BaseObject {
 	}
 
 	@Transient
-	public Boolean getCinsiyetBay() {
-		Boolean cinsiyetDurum = cinsiyet != null && cinsiyet.getKodu().equalsIgnoreCase("e");
-
+	public boolean isCinsiyetBay() {
+		boolean cinsiyetDurum = cinsiyet != null && cinsiyet.getKodu().equalsIgnoreCase("e");
 		return cinsiyetDurum;
 	}
 
 	@Transient
-	public Boolean getCinsiyetBayan() {
-		Boolean cinsiyetDurum = cinsiyet != null && cinsiyet.getKodu().equalsIgnoreCase("k");
-
+	public boolean isCinsiyetBayan() {
+		boolean cinsiyetDurum = cinsiyet != null && cinsiyet.getKodu().equalsIgnoreCase("k");
 		return cinsiyetDurum;
 	}
 

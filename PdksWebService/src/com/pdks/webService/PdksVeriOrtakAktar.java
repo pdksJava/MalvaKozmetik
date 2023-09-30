@@ -2504,6 +2504,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		String personelERPGecmisTarihKontrolStr = mailMap.containsKey("personelERPGecmisTarihKontrol") ? (String) mailMap.get("personelERPGecmisTarihKontrol") : "0";
 		String yonetici2ERPKontrolStr = mailMap.containsKey("yonetici2ERPKontrol") ? (String) mailMap.get("yonetici2ERPKontrol") : "";
 		String sistemBaslangicYiliStr = mailMap.containsKey("sistemBaslangicYili") ? (String) mailMap.get("sistemBaslangicYili") : "0";
+		boolean bayanSoyadKontrol = mailMap.containsKey("bayanSoyadKontrol") && ((String) mailMap.get("bayanSoyadKontrol")).equals("1");
 		boolean yonetici2ERPKontrol = yonetici2ERPKontrolStr.equals("1");
 		Date calisanTarihi = PdksUtil.convertToJavaDate("99991231", "yyyyMMdd");
 		boolean izinERPUpdate = false, iskurManuelGiris = iskurManuelGirisStr != null && iskurManuelGirisStr.equals("1");
@@ -2602,13 +2603,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 			bosDepartman = (Tanim) pdksDAO.getObjectByInnerObject(fields, Tanim.class);
 		}
 		Date lastDate = getTarih(LAST_DATE, FORMAT_DATE);
+		Personel personelTest = new Personel();
 		for (String personelNo : personelList) {
 			kidemHataList.clear();
 			boolean calisiyor = false;
 			if (personelERPMap.containsKey(personelNo)) {
 				PersonelERP personelERP = personelERPMap.get(personelNo);
-				if (personelNo.equals("2919"))
-					logger.debug("");
+				Tanim cinsiyet = getTanim(null, Tanim.TIPI_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti(), dataMap, saveList);
+				String soyadi = personelERP.getSoyadi() != null ? new String(personelERP.getSoyadi()) : null;
+				personelTest.setCinsiyet(bayanSoyadKontrol ? cinsiyet : null);
+				boolean bayanSoyad = false;
 				Personel personelSecili = null;
 				Date iseBaslamaTarihi = getTarih(personelERP.getIseGirisTarihi(), FORMAT_DATE);
 				boolean genelMudurDurum = personelERP.getGorevKodu() != null && genelMudurERPKodlari.contains(personelERP.getGorevKodu());
@@ -2743,17 +2747,26 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				} else {
 					if (tip.equals("P")) {
+
 						String erpAdSoyad = PdksUtil.setTurkishStr(PdksUtil.getAdSoyad(personelERP.getAdi(), personelERP.getSoyadi()));
 						String kgsAdSoyad = PdksUtil.setTurkishStr(PdksUtil.getAdSoyad(personelKGSData.getAd(), personelKGSData.getSoyad()));
+
 						if (!kgsAdSoyad.equalsIgnoreCase(erpAdSoyad)) {
 							if (personelERP.getAdi() == null || personelERP.getSoyadi() == null) {
 								String mesaj = "adı ve soyadı";
-								if (personelERP.getAdi() != null)
+								if (personelERP.getAdi() != null) {
 									mesaj = "soyadı";
+									bayanSoyad = personelTest.isCinsiyetBayan();
+									if (bayanSoyad)
+										personelERP.setSoyadi(personelKGSData.getSoyad());
+
+								}
+
 								else if (personelERP.getSoyadi() != null)
 									mesaj = "adı";
+
 								mesaj = personelNo + " personel " + mesaj + " girilmemiş!  ";
-								addHatalist(personelERP.getHataList(), PdksUtil.replaceAllManuel(mesaj, "  ", " "));
+								addHatalist(bayanSoyad == false ? personelERP.getHataList() : kidemHataList, PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
 							} else {
 								PersonelKGS personel = personelKGSMap.get(personelNo);
@@ -2776,10 +2789,15 @@ public class PdksVeriOrtakAktar implements Serializable {
 									if (!adiUyumlu) {
 										mesaj = "adı";
 									} else if (!soyadiUyumlu) {
-										mesaj = "soyadı";
+										mesaj = "soyadi";
+										bayanSoyad = personelTest.isCinsiyetBayan();
+										if (bayanSoyad)
+											personelERP.setSoyadi(personel.getSoyad());
+
 									}
+
 									mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " <> " + personel.getAdSoyad() + " ) ";
-									addHatalist(personelERP.getHataList(), PdksUtil.replaceAllManuel(mesaj, "  ", " "));
+									addHatalist(bayanSoyad == false ? personelERP.getHataList() : kidemHataList, PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
 								}
 							}
@@ -2808,6 +2826,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					PersonelKGS personelKGS = personelKGSMap.get(personelNo);
 					Personel personel = personelPDKSMap.containsKey(personelNo) ? personelPDKSMap.get(personelNo) : null;
 					if (personel != null) {
+						personel.setCinsiyet(cinsiyet);
 						PersonelKGS personelKGS2 = personel.getPersonelKGS();
 						personel.setVeriDegisti(Boolean.FALSE);
 						if (kapiSirket != null && personelKGS2.getKapiSirket() != null && !personelKGS2.getId().equals(personelKGS.getId()) && !personelKGS2.getKapiSirket().getId().equals(kapiSirket.getId())) {
@@ -2818,8 +2837,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 								personel.setPersonelKGS(personelKGS);
 							else {
 								String uygulamaFark = kapiSirket.getAciklama() + " ile " + personelKGS2.getKapiSirket().getAciklama();
-								if (adBenzer)
-									personelERP.getHataList().add(uygulamaFark + " soyad uyumsuz!");
+								if (adBenzer) {
+									bayanSoyad = personelTest.isCinsiyetBayan();
+									if (bayanSoyad)
+										personelERP.setSoyadi(personelKGS2.getSoyad());
+									addHatalist(bayanSoyad == false ? personelERP.getHataList() : kidemHataList, PdksUtil.replaceAllManuel(uygulamaFark + " soyad uyumsuz!", "  ", " "));
+								}
+
 								else if (soyadBenzer)
 									personelERP.getHataList().add(uygulamaFark + " ad uyumsuz!");
 								else if (kimlikBenzer)
@@ -2878,6 +2902,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							personel.setMailTakip(Boolean.FALSE);
 					}
 					setPersonel(personel, personelERP, FORMAT_DATE);
+					personelERP.setSoyadi(soyadi);
 					personelSecili = personel;
 					Sirket sirket = sirketMap.get(personelERP.getSirketKodu());
 					if (sirket != null) {
@@ -2906,7 +2931,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 					Tanim bolum = getTanim(null, "ekSaha3", personelERP.getBolumKodu(), personelERP.getBolumAdi(), dataMap, saveList);
 					Tanim bordroAltAlan = getTanim(null, parentBordroTanimKoduStr, personelERP.getBordroAltAlanKodu(), personelERP.getBordroAltAlanAdi(), dataMap, saveList);
 					personel.setTesis(getTanim(personelERP.getSirketKodu(), Tanim.TIPI_TESIS, personelERP.getTesisKodu(), personelERP.getTesisAdi(), dataMap, saveList));
-					personel.setCinsiyet(getTanim(null, Tanim.TIPI_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti(), dataMap, saveList));
 					personel.setGorevTipi(getTanim(null, Tanim.TIPI_GOREV_TIPI, personelERP.getGorevKodu(), personelERP.getGorevi(), dataMap, saveList));
 					personel.setMasrafYeri(getTanim(null, Tanim.TIPI_ERP_MASRAF_YERI, personelERP.getMasrafYeriKodu(), personelERP.getMasrafYeriAdi(), dataMap, saveList));
 					Date dogumTarihi = getTarih(personelERP.getDogumTarihi(), FORMAT_DATE);
@@ -3182,9 +3206,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 
 				}
+
 			}
 
 		}
+		personelTest = null;
 		if (yoneticiBul) {
 			for (String personelNo : personelList) {
 				if (personelPDKSMap.containsKey(personelNo) && personelYoneticiERPMap.containsKey(personelNo)) {
