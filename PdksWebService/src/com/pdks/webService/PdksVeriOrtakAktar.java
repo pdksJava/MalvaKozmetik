@@ -2415,12 +2415,14 @@ public class PdksVeriOrtakAktar implements Serializable {
 		boolean benzer = false;
 		if (str1 != null && str2 != null && str1.trim().length() > 0 && str2.trim().length() > 0) {
 			benzer = str1.equals(str2);
-			if (sistemDestekVar && !benzer) {
-				str1 = PdksUtil.setTurkishStr(str1).toUpperCase(Locale.ENGLISH);
-				str2 = PdksUtil.setTurkishStr(str2).toUpperCase(Locale.ENGLISH);
-				benzer = str1.equals(str2) || str1.indexOf(str2) >= 0 || str2.indexOf(str1) >= 0;
+			if (!benzer) {
+				String strNew1 = PdksUtil.replaceAllManuel(PdksUtil.setTurkishStr(str1).toUpperCase(Locale.ENGLISH), " ", "");
+				String strNew2 = PdksUtil.replaceAllManuel(PdksUtil.setTurkishStr(str2).toUpperCase(Locale.ENGLISH), " ", "");
+				benzer = strNew1.equals(strNew2) || strNew1.indexOf(strNew2) >= 0 || strNew2.indexOf(strNew1) >= 0;
 			}
 		}
+		if (!benzer)
+			logger.debug("[ " + str1 + " <> " + str2 + " ]");
 		return benzer;
 	}
 
@@ -2796,7 +2798,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 									}
 
-									mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " <> " + personel.getAdSoyad() + " ) ";
+									mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " farklı " + personel.getAdSoyad() + " ) ";
 									addHatalist(bayanSoyad == false ? personelERP.getHataList() : kidemHataList, PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
 								}
