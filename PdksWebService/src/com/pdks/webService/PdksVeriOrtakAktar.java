@@ -2095,7 +2095,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 								mailMap.put("mailIcerik", sb.toString());
 								if (jsonStr != null) {
 									LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-									fileMap.put("saveIzinler.xml", PdksUtil.getJsonToXML(getJsonStr(jsonStr, "personel", IZIN_PROP_ORDER), "saveIzinler", null));
+									String str = getJsonToXML(jsonStr, "personel", IZIN_PROP_ORDER, "saveIzinler");
+									fileMap.put("saveIzinler.xml", str);
 									mailMap.put("fileMap", fileMap);
 								}
 								mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
@@ -3679,7 +3680,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 							sb.append("</TABLE>");
 							mailMap.put("mailIcerik", sb.toString());
 							LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-							fileMap.put("savePersoneller.xml", PdksUtil.getJsonToXML(getJsonStr(jsonStr, "personel", PERSONEL_PROP_ORDER), "savePersoneller", null));
+							String xml = getJsonToXML(jsonStr, "personel", PERSONEL_PROP_ORDER, "savePersoneller");
+							fileMap.put("savePersoneller.xml", xml);
 							mailMap.put("fileMap", fileMap);
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 							kullaniciIKYukle(mailMap, pdksDAO);
@@ -3711,9 +3713,10 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @param jsonStr
 	 * @param arrayTag
 	 * @param dizi
+	 * @param rootName
 	 * @return
 	 */
-	private String getJsonStr(String jsonStr, String arrayTag, String[] dizi) {
+	private String getJsonToXML(String jsonStr, String arrayTag, String[] dizi, String rootName) {
 		jsonStr = "{\"" + arrayTag + "\":" + jsonStr + "}";
 		Gson gson = new Gson();
 		LinkedHashMap<String, Object> headerMap = gson.fromJson(jsonStr, LinkedHashMap.class);
@@ -3721,26 +3724,46 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (headerMap != null) {
 			List<LinkedTreeMap> tableArray = (List<LinkedTreeMap>) headerMap.get(arrayTag);
 			if (tableArray != null) {
+				LinkedHashMap<String, String> map = WSLoggingOutInterceptor.getChangeMap();
 				String hataList = "hataList";
 				StringBuffer sb = new StringBuffer();
 				for (LinkedTreeMap linkedHashMap : tableArray) {
 					sb.append("<" + arrayTag + ">");
 					for (String key : dizi) {
 						if (linkedHashMap.containsKey(key)) {
-							sb.append("<" + key + ">" + linkedHashMap.get(key).toString());
+							String str = linkedHashMap.get(key).toString();
+							for (String pattern : map.keySet()) {
+								String replace = map.get(pattern);
+								if (str.indexOf(replace) >= 0)
+									str = PdksUtil.replaceAll(str, replace, pattern);
+							}
+							sb.append("<" + key + ">" + str);
 							sb.append("</" + key + ">");
 						}
 					}
 					if (linkedHashMap.containsKey(hataList)) {
 						List list1 = (List) linkedHashMap.get(hataList);
 						for (Object object : list1) {
-							sb.append("<" + hataList + ">" + object.toString());
+							String str = object.toString();
+							for (String pattern : map.keySet()) {
+								String replace = map.get(pattern);
+								if (str.indexOf(replace) >= 0)
+									str = PdksUtil.replaceAll(str, replace, pattern);
+							}
+							sb.append("<" + hataList + ">" + str);
 							sb.append("</" + hataList + ">");
 						}
 					}
 					sb.append("</" + arrayTag + ">");
 				}
-				jsonStr = sb.toString();
+
+				jsonStr = PdksUtil.getJsonToXML(sb.toString(), rootName, null);
+				for (String pattern : map.keySet()) {
+					String replace = map.get(pattern);
+					if (jsonStr.indexOf(pattern) >= 0)
+						jsonStr = PdksUtil.replaceAllManuel(jsonStr, pattern, replace);
+				}
+
 			}
 		}
 		return jsonStr;

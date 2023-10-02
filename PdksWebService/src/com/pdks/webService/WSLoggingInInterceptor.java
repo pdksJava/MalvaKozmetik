@@ -119,26 +119,28 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 					if (xml == null)
 						xml = PdksUtil.StringToByInputStream(ins);
 					String ekKey = "";
-					if (xml != null)
-						xml = PdksUtil.getXMLConvert(xml);
+					String orjinalXML = new String(xml);
+					message.put("requestOrjinalXML", orjinalXML);
+					// if (xml != null)
+					// xml = PdksUtil.getXMLConvert(xml);
 					if (soapAction.length() > 1)
 						soapAction = PdksUtil.setTurkishStr(soapAction.substring(0, 1)).toUpperCase(Locale.ENGLISH) + soapAction.substring(1);
 
 					if (soapAction.equalsIgnoreCase("saveIzinHakedisler") || soapAction.equalsIgnoreCase("getMesaiPDKS") || soapAction.equalsIgnoreCase("SavePersoneller") || soapAction.equalsIgnoreCase("SaveIzinler"))
 						ekKey = getParseKey(xml, soapAction);
 					String xmlStr = xml;
-					LinkedHashMap<String, String> map = getChangeMap();
-					for (String key : map.keySet()) {
-						String newKey = map.get(key);
-						if (xmlStr.indexOf(key) > 0)
-							xmlStr = PdksUtil.replaceAll(xmlStr, key, newKey);
-						if (xmlStr.indexOf(newKey) > 0)
-							xml = PdksUtil.replaceAll(xmlStr, newKey, key);
-					}
-					if (xmlStr.indexOf("&") > 0)
-						xmlStr = PdksUtil.replaceAll(xmlStr, "&", "&amp;");
-					if (xmlStr.indexOf("&amp;amp;") > 0)
-						xmlStr = PdksUtil.replaceAllManuel(xmlStr, "&amp;amp;", "&amp;");
+					// LinkedHashMap<String, String> map = getChangeMap();
+					// for (String key : map.keySet()) {
+					// String newKey = map.get(key);
+					// if (xmlStr.indexOf(key) > 0)
+					// xmlStr = PdksUtil.replaceAll(xmlStr, key, newKey);
+					// if (xmlStr.indexOf(newKey) > 0)
+					// xml = PdksUtil.replaceAll(xmlStr, newKey, key);
+					// }
+					// if (xmlStr.indexOf("&") > 0)
+					// xmlStr = PdksUtil.replaceAll(xmlStr, "&", "&amp;");
+					// if (xmlStr.indexOf("&amp;amp;") > 0)
+					// xmlStr = PdksUtil.replaceAllManuel(xmlStr, "&amp;amp;", "&amp;");
 					InputStream oss = PdksUtil.getInputStreamByString(xmlStr);
 					message.setContent(InputStream.class, oss);
 					StringBuffer sb = new StringBuffer();
@@ -152,14 +154,13 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 					sb.append("<remoteAddr>" + httpRequest.getRemoteAddr() + "</remoteAddr>");
 					if (endPoint != null)
 						sb.append("<endPoint>" + endPoint + "</endPoint>");
-					sb.append("<data>" + xml + "</data>");
+					sb.append("<data>" + orjinalXML + "</data>");
 					sb.append("<return/>");
 
 					sb.append("<startTime>" + PdksUtil.convertToDateString(bugun, "yyyy-MM-dd HH:mm:ss") + "</startTime>");
 					sb.append("<stopTime/>");
 					sb.append("</" + soapAction + ">");
 					xml = sb.toString();
-
 
 					xml = PdksUtil.formatXML(xml);
 
@@ -228,8 +229,8 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 		// XMLDecoder xmlDecoder = null;
 		try {
 			if (xmlString != null && xmlString.trim().length() > 0) {
-				if (xmlString.indexOf("&") > 0)
-					xmlString = PdksUtil.replaceAll(xmlString, "&", "&amp;");
+				// if (xmlString.indexOf("&") > 0)
+				// xmlString = PdksUtil.replaceAll(xmlString, "&", "&amp;");
 				document = DocumentHelper.parseText(xmlString);
 			}
 
@@ -288,14 +289,4 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 		return parseKey;
 	}
 
-	/**
-	 * @return
-	 */
-	private LinkedHashMap<String, String> getChangeMap() {
-		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		map.put(" & ", " &amp; ");
-		map.put(" < ", " &lt; ");
-		map.put(" > ", " &gt; ");
-		return map;
-	}
 }
