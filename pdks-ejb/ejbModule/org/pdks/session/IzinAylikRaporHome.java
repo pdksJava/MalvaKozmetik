@@ -124,7 +124,7 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 	public void fillSirketList() {
 		HashMap map = new HashMap();
 		map.put("durum", Boolean.TRUE);
-		map.put("pdks", Boolean.TRUE);
+		map.put("fazlaMesai", Boolean.TRUE);
 		if (!authenticatedUser.isAdmin())
 			map.put("departman", authenticatedUser.getDepartman());
 

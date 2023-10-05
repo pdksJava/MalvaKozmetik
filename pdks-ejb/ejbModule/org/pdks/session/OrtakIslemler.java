@@ -1570,7 +1570,7 @@ public class OrtakIslemler implements Serializable {
 		List<SelectItem> sirketItemList = new ArrayList<SelectItem>();
 		if (sirketList != null) {
 			for (Sirket sirket : sirketList) {
-				if (sirket.getDepartman().getIzinGirilebilir()) {
+				if (sirket.getDepartman().getIzinGirilebilir() && sirket.getFazlaMesai()) {
 					SelectItem selectItem = new SelectItem(sirket.getId(), sirket.getAd());
 					sirketItemList.add(selectItem);
 				}
@@ -7201,7 +7201,8 @@ public class OrtakIslemler implements Serializable {
 			HashMap hashMap = new HashMap();
 			if (!user.isIKAdmin() && user.isIK())
 				hashMap.put("departman.id=", authenticatedUser.getDepartman().getId());
-			hashMap.put("izinTipiTanim.kodu=", IzinTipi.SSK_ISTIRAHAT);
+			hashMap.put("izinTipiTanim.kodu like", "%I%");
+			// hashMap.put("izinTipiTanim.kodu=", IzinTipi.SSK_ISTIRAHAT);
 			hashMap.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
 			hashMap.put("durum=", Boolean.TRUE);
 			if (session != null)
@@ -13495,9 +13496,11 @@ public class OrtakIslemler implements Serializable {
 
 											}
 											if (pdksVardiyaGun.isIzinli()) {
-												if (izinSaat != null)
+												if (izinSaat != null) {
 													sure = izinSaat;
-												haftalikIzinSuresi += kontrolSure;
+													kontrolSure = izinSaat;
+												}
+ 												haftalikIzinSuresi += kontrolSure;
 											}
 
 											if (pdksVardiyaGun.getVardiya() != null && pdksVardiyaGun.isIzinli() == false && !pdksVardiyaGun.getVardiya().isCalisma()) {
@@ -13799,9 +13802,11 @@ public class OrtakIslemler implements Serializable {
 	private double getVardiyaIzinSuresi(Double gelenSure, VardiyaGun pdksVardiyaGun, PersonelDenklestirme personelDenklestirme, Date kontrolTarihi) {
 		double sure = gelenSure != null ? gelenSure.doubleValue() : 0.0d;
 		try {
+
 			if (kontrolTarihi != null && pdksVardiyaGun.getIzin() != null && personelDenklestirme != null) {
 				IzinTipi izinTipi = pdksVardiyaGun.getIzin().getIzinTipi();
-				if (izinTipi != null && !izinTipi.isRaporIzin()) {
+				boolean raporIzni = getParameterKey("raporIzniKontrolEt").equals("1") && izinTipi.isRaporIzin();
+				if (izinTipi != null && !raporIzni) {
 					// TODO İzin
 					CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 					if (calismaModeli != null) {

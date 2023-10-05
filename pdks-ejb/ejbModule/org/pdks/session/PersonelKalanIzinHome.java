@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.TreeMap;
 
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -577,8 +578,12 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		ortakIslemler.fillEkSahaTanimAramaSecenekAta(session, Boolean.FALSE, null, aramaSecenekleri);
 		HashMap sonucMap = ortakIslemler.fillEkSahaTanim(session, Boolean.FALSE, null);
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
-		if (aramaSecenekleri.getSirketIdList().size() == 1)
-			aramaSecenekleri.setSirketId((Long) aramaSecenekleri.getSirketIdList().get(0).getValue());
+		if (aramaSecenekleri.getSirketList() != null) {
+			List<SelectItem> sirketIdList = ortakIslemler.getIzinSirketItemList(aramaSecenekleri.getSirketList());
+			aramaSecenekleri.setSirketIdList(sirketIdList);
+			if (aramaSecenekleri.getSirketIdList().size() == 1)
+				aramaSecenekleri.setSirketId((Long) aramaSecenekleri.getSirketIdList().get(0).getValue());
+		}
 
 	}
 

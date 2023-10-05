@@ -499,7 +499,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	}
 
 	public void panelDurumDegistir() {
-		this.setVisibled(!this.isVisibled());
+		boolean durum = !this.isVisibled();
+		this.setVisibled(durum);
 	}
 
 	public String fillPersonelList(User user) {
@@ -976,7 +977,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			HashMap hashMap = new HashMap();
 			if (!authenticatedUser.isAdmin())
 				hashMap.put("departman.id", authenticatedUser.getDepartman().getId());
-			hashMap.put("izinTipiTanim.kodu=", IzinTipi.SSK_ISTIRAHAT);
+			// hashMap.put("izinTipiTanim.kodu like", IzinTipi.SSK_ISTIRAHAT);
+			hashMap.put("izinTipiTanim.kodu like", "%I%");
 			hashMap.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
 			hashMap.put("durum=", Boolean.TRUE);
 			if (session != null)
@@ -985,6 +987,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			setSeciliIzinTipi(izinTipi);
 			getInstance().setIzinTipi(izinTipi);
 			izinTipiDegisti(izinTipi);
+
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -1202,6 +1205,10 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		if (dosyaTipleri == null || dosyaTipleri.equals(""))
 			dosyaTipleri = "doc,docx,pd";
 		fillGirisEkSahaTanim();
+		if (visibled)
+			visibled = izinliSahibi != null && izinliSahibi.getSirket().isPdksMi();
+		if (!visibled)
+			izinliSahibi = null;
 	}
 
 	/**
@@ -2336,9 +2343,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					sb.append("SELECT DISTINCT P.* FROM " + IzinTipi.TABLE_NAME + " P WITH(nolock)");
 					if (isGirisSSK()) {
 						sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T ON T." + Tanim.COLUMN_NAME_ID + "=P." + IzinTipi.COLUMN_NAME_IZIN_TIPI);
-						sb.append(" AND T." + Tanim.COLUMN_NAME_TIPI + "=:tipi AND T." + Tanim.COLUMN_NAME_KODU + "=:kodu ");
+						sb.append(" AND T." + Tanim.COLUMN_NAME_TIPI + "=:tipi AND T." + Tanim.COLUMN_NAME_KODU + " like '%I%'");
 						paramMap.put("tipi", Tanim.TIPI_IZIN_TIPI);
-						paramMap.put("kodu", IzinTipi.SSK_ISTIRAHAT);
+						// paramMap.put("kodu", IzinTipi.SSK_ISTIRAHAT);
 					}
 					sb.append(" WHERE P." + IzinTipi.COLUMN_NAME_DURUM + "=1 ");
 					if (!isGirisSSK())
@@ -3561,7 +3568,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	private void getIstirahatIzni(Personel izinSahibi) {
 		HashMap hashMap = new HashMap();
 		hashMap.put("departman.id=", izinSahibi.getSirket().getDepartman().getId());
-		hashMap.put("izinTipiTanim.kodu=", IzinTipi.SSK_ISTIRAHAT);
+		hashMap.put("izinTipiTanim.kodu like", "%I%");
+		// hashMap.put("izinTipiTanim.kodu=", IzinTipi.SSK_ISTIRAHAT);
 		hashMap.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
 		hashMap.put("durum=", Boolean.TRUE);
 		if (session != null)

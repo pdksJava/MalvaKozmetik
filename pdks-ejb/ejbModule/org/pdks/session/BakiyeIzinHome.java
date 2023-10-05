@@ -95,9 +95,12 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 
 	private void fillEkSahaTanim() {
 		ortakIslemler.fillEkSahaTanimAramaSecenekAta(session, Boolean.FALSE, null, aramaSecenekleri);
-		if (aramaSecenekleri.getSirketIdList().size() == 1)
-			aramaSecenekleri.setSirketId((Long) aramaSecenekleri.getSirketIdList().get(0).getValue());
-
+		if (aramaSecenekleri.getSirketList() != null) {
+			List<SelectItem> sirketIdList = ortakIslemler.getIzinSirketItemList(aramaSecenekleri.getSirketList());
+			aramaSecenekleri.setSirketIdList(sirketIdList);
+			if (aramaSecenekleri.getSirketIdList().size() == 1)
+				aramaSecenekleri.setSirketId((Long) aramaSecenekleri.getSirketIdList().get(0).getValue());
+		}
 	}
 
 	public String guncelle(PersonelIzin izin) {
@@ -312,7 +315,7 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 		String izinAciklama = izinTipiTanim.getAciklama();
 		String adi = PdksUtil.setTurkishStr("Izin Listesi");
 		Sheet sheet = ExcelUtil.createSheet(wb, adi.length() <= 30 ? adi : adi.substring(0, 30), false);
- 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);

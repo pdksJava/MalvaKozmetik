@@ -497,7 +497,7 @@ public class IzinTipi extends BaseObject {
 
 	@Transient
 	public boolean isRaporIzin() {
-		return izinTipiTanim != null && (izinTipiTanim.getKodu().equals(SSK_ISTIRAHAT) || izinTipiTanim.getKodu().equals(ISTIRAHAT));
+		return izinTipiTanim != null && (izinTipiTanim.getKodu().startsWith("I"));
 	}
 
 	@Transient
