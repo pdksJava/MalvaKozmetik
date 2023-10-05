@@ -71,7 +71,7 @@ public class VardiyaGun extends BaseObject {
 	private Double calismaSuaSaati = PersonelDenklestirme.getCalismaSaatiSua();
 	private Boolean izinHaftaTatilDurum;
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
-	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE, fazlaMesaiTalepDurum = Boolean.FALSE;
+	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE, fazlaMesaiTalepDurum = Boolean.FALSE, ayarlamaBitti = false;
 	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
 	private String tdClass = "", style = "", manuelGirisHTML = "", vardiyaKisaAciklama, personelNo, vardiyaDateStr, donemStr;
@@ -788,7 +788,7 @@ public class VardiyaGun extends BaseObject {
 
 	public void setIzin(PersonelIzin value) {
 		if (vardiyaDateStr.equals("20230904x")) {
- 			if (value != null)
+			if (value != null)
 				logger.debug(vardiyaDateStr + " " + value.getId() + " " + value.getAciklama());
 			else
 				logger.debug("");
@@ -2259,6 +2259,15 @@ public class VardiyaGun extends BaseObject {
 
 	public void setYemekList(List<YemekIzin> yemekList) {
 		this.yemekList = yemekList;
+	}
+
+	@Transient
+	public boolean isAyarlamaBitti() {
+		return ayarlamaBitti;
+	}
+
+	public void setAyarlamaBitti(boolean ayarlamaBitti) {
+		this.ayarlamaBitti = ayarlamaBitti;
 	}
 
 }
