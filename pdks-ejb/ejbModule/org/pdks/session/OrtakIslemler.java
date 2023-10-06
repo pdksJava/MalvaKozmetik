@@ -13385,7 +13385,7 @@ public class OrtakIslemler implements Serializable {
 									}
 									if (calismayanSure > 0.0d) {
 										vardiyasizSure += calismayanSure;
-//										logger.info(pdksVardiyaGun.getVardiyaDateStr() + " " + vardiyasizSure + " " + calismayanSure);
+										// logger.info(pdksVardiyaGun.getVardiyaDateStr() + " " + vardiyasizSure + " " + calismayanSure);
 									}
 
 								}
@@ -13654,7 +13654,7 @@ public class OrtakIslemler implements Serializable {
 							if (vardiyasizSure > gunduzCalismaSaat)
 								vardiyasizSure = gunduzCalismaSaat;
 							izinSuresi += vardiyasizSure;
-//							logger.info(izinSuresi + " " + vardiyasizSure);
+							// logger.info(izinSuresi + " " + vardiyasizSure);
 						}
 						if (haftalikIzinSuresi > gunduzCalismaSaat) {
 							// logger.info(izinSuresi + " " +
@@ -15574,7 +15574,7 @@ public class OrtakIslemler implements Serializable {
 										if (girisDurum && hareketKGS.getId().startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS)) {
 											hareketHatali = true;
 											hareketKGS.setKapiKGS(bagliKapiKGS);
-											hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), kapiKGS);
+											hareketKapiUpdateMap.put(hareketKGS.getHareketTableId(), bagliKapiKGS);
 											logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + hareketKGS.getId());
 										}
 									}
@@ -15766,7 +15766,7 @@ public class OrtakIslemler implements Serializable {
 					for (PdksLog pdksLog : list) {
 						if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
 							KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
-							if (hareketKopyala) {
+							if (hareketKopyala || pdksLog.getKgsId() < 0l) {
 								PdksLog pdksLog2 = (PdksLog) pdksLog.clone();
 								pdksLog2.setId(null);
 								pdksLog2.setGuncellemeZamani(null);
