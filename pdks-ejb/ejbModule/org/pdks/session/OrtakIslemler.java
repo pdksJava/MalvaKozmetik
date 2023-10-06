@@ -13377,7 +13377,16 @@ public class OrtakIslemler implements Serializable {
 							}
 							if (pdksVardiyaGun.getVardiya() == null) {
 								if (calismaModeli != null && ayinGunleri.containsKey(key)) {
-									vardiyasizSure += getCalismayanSure(calismaModeli, pdksVardiyaGun);
+									if (pdksVardiyaGun.getVardiyaDateStr().equals("20231028") || pdksVardiyaGun.getVardiyaDateStr().equals("20231021"))
+										logger.debug(pdksVardiyaGun.getVardiyaDateStr());
+									double calismayanSure = getCalismayanSure(calismaModeli, pdksVardiyaGun);
+									if (pdksVardiyaGun.getTatil() != null && pdksVardiyaGun.getTatil().isYarimGunMu() == false) {
+										calismayanSure = 0;
+									}
+									if (calismayanSure > 0.0d) {
+										vardiyasizSure += calismayanSure;
+//										logger.info(pdksVardiyaGun.getVardiyaDateStr() + " " + vardiyasizSure + " " + calismayanSure);
+									}
 
 								}
 								continue;
@@ -13645,6 +13654,7 @@ public class OrtakIslemler implements Serializable {
 							if (vardiyasizSure > gunduzCalismaSaat)
 								vardiyasizSure = gunduzCalismaSaat;
 							izinSuresi += vardiyasizSure;
+//							logger.info(izinSuresi + " " + vardiyasizSure);
 						}
 						if (haftalikIzinSuresi > gunduzCalismaSaat) {
 							// logger.info(izinSuresi + " " +
@@ -13903,7 +13913,8 @@ public class OrtakIslemler implements Serializable {
 				calismayanSure = dayOfWeek != Calendar.SATURDAY ? calismaModeli.getHaftaIci() : calismaModeli.getHaftaSonu();
 			} else if (tatil.isYarimGunMu()) {
 				if (PdksUtil.tarihKarsilastirNumeric(vardiyaDate, tatil.getBasTarih()) == 0) {
-					calismayanSure = calismaModeli.getArife();
+					if (calismaModeli.getHaftaSonu() > 0 || dayOfWeek != Calendar.SATURDAY)
+						calismayanSure = calismaModeli.getArife();
 				}
 			}
 		}
