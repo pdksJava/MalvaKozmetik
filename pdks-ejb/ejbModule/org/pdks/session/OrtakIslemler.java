@@ -6645,7 +6645,7 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	public String getHostName() {
-		String str = PdksUtil.getHostName();
+		String str = PdksUtil.getHostName(true);
 		return str;
 	}
 
@@ -13528,7 +13528,7 @@ public class OrtakIslemler implements Serializable {
 										cal.setTime(pdksVardiyaGun.getVardiyaDate());
 										int dayOffWeek = cal.get(Calendar.DAY_OF_WEEK);
 										if (offIzinli == false) {
- 											if (pdksVardiyaGun.getVardiya().isOff()) {
+											if (pdksVardiyaGun.getVardiya().isOff()) {
 												if (haftaIciIzinGunTarih != null && pdksVardiyaGun.getVardiyaDate().after(haftaIciIzinGunTarih) && calismaModeli != null) {
 													if (dayOffWeek == Calendar.SATURDAY)
 														offIzinli = calismaModeli.getHaftaSonu() == calismaModeli.getHaftaIci();

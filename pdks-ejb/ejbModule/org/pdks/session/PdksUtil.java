@@ -568,7 +568,7 @@ public class PdksUtil implements Serializable {
 	 * @return
 	 */
 	public static boolean getTestDurum() {
-		String hostName = getHostName();
+		String hostName = getHostName(false);
 		String sunucu = canliSunucu != null ? canliSunucu.toLowerCase(Locale.ENGLISH) : "srvglf";
 		boolean test = !hostName.toLowerCase(Locale.ENGLISH).startsWith(sunucu);
 		return test;
@@ -578,7 +578,7 @@ public class PdksUtil implements Serializable {
 	 * @return
 	 */
 	public static boolean getCanliSunucuDurum() {
-		String hostName = getHostName();
+		String hostName = getHostName(false);
 		String sunucu = canliSunucu != null ? canliSunucu.toLowerCase(Locale.ENGLISH) : "srvglf";
 		boolean canli = hostName.toLowerCase(Locale.ENGLISH).startsWith(sunucu);
 		return canli;
@@ -588,20 +588,22 @@ public class PdksUtil implements Serializable {
 	 * @return
 	 */
 	public static boolean getTestSunucuDurum() {
-		String hostName = getHostName();
+		String hostName = getHostName(false);
 		String sunucu = testSunucu != null ? testSunucu.toLowerCase(Locale.ENGLISH) : "srvglf";
 		boolean test = hostName.toLowerCase(Locale.ENGLISH).startsWith(sunucu);
 		return test;
 	}
 
+	 
 	/**
+	 * @param orjinalName
 	 * @return
 	 */
-	public static String getHostName() {
+	public static String getHostName(boolean orjinalName) {
 		String hostName = null;
 		try {
 			InetAddress thisIp = InetAddress.getLocalHost();
-			hostName = thisIp.getHostName().toLowerCase(Locale.ENGLISH);
+			hostName = orjinalName ? thisIp.getHostName() : thisIp.getHostName().toLowerCase(Locale.ENGLISH);
 			logger.debug("hostName : " + hostName);
 		} catch (Exception e) {
 			hostName = "";
