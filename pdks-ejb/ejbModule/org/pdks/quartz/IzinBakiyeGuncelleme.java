@@ -78,63 +78,68 @@ public class IzinBakiyeGuncelleme {
 	public QuartzTriggerHandle izinBakiyeGuncellemeTimer(@Expiration Date when, @IntervalCron String interval) {
 		hataKonum = "izinBakiyeGuncellemeTimer başladı ";
 		if (pdksEntityController != null && !isCalisiyor()) {
-			ozelKontrol = Boolean.FALSE;
-
-			setCalisiyor(Boolean.TRUE);
-			boolean hataGonder = Boolean.FALSE;
 			Session session = null;
+			if (PdksUtil.getCanliSunucuDurum() || PdksUtil.getTestSunucuDurum())
+				izinGuncelemeCalistir(false, session);
+		}
+		return null;
+	}
 
-			try {
-				if (PdksUtil.getCanliSunucuDurum() || PdksUtil.getTestSunucuDurum()) {
-					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
-					hataKonum = "Paramatre okunuyor ";
-					Parameter parameter = null;
-					HashMap fields = new HashMap();
-					fields.put("durum=", Boolean.TRUE);
-					fields.put("departman.izinGirilebilir=", Boolean.TRUE);
-					fields.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
-					if (session != null)
-						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
-					if (!list.isEmpty())
-						parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
-					String value = (parameter != null) ? parameter.getValue() : null;
-					hataKonum = "Paramatre okundu ";
-					if (value != null) {
-						Date time = zamanlayici.getDbTime(session);
-						hataGonder = Boolean.TRUE;
-						hataKonum = "Zaman kontrolu yapılıyor ";
-						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(session);
+	/**
+	 * @param manuel
+	 * @param session
+	 */
+	public void izinGuncelemeCalistir(boolean manuel, Session session) {
+		setCalisiyor(Boolean.TRUE);
+		ozelKontrol = Boolean.FALSE;
+		boolean hataGonder = Boolean.FALSE;
+		try {
+ 			if (session == null)
+				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
+			hataKonum = "Paramatre okunuyor ";
+			Parameter parameter = null;
+			HashMap fields = new HashMap();
+			fields.put("durum=", Boolean.TRUE);
+			fields.put("departman.izinGirilebilir=", Boolean.TRUE);
+			fields.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
+			if (!list.isEmpty())
+				parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
+			String value = (parameter != null) ? parameter.getValue() : null;
+			hataKonum = "Paramatre okundu ";
+			if (value != null) {
+				Date time = zamanlayici.getDbTime(session);
+				hataGonder = Boolean.TRUE;
+				hataKonum = "Zaman kontrolu yapılıyor ";
+				boolean zamanDurum = manuel || PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(session);
 
-						// if (!zamanDurum)
-						// zamanDurum = PdksUtil.getTestDurum();
+				// if (!zamanDurum)
+				// zamanDurum = PdksUtil.getTestDurum();
 
-						if (zamanDurum)
-							izinBakiyeGuncellemeCalistir(session, true);
-
-					}
-				}
-			} catch (Exception e) {
-				logger.error("PDKS hata in : \n");
-				e.printStackTrace();
-				logger.error("PDKS hata out : " + e.getMessage());
-				if (hataGonder)
-					try {
-						zamanlayici.mailGonder(session, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmemiştir." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
-
-					} catch (Exception e2) {
-						logger.error("izinBakiyeGuncellemeTimer 2 : " + e2.getMessage());
-					}
-			} finally {
-				if (session != null)
-					session.close();
-				setCalisiyor(Boolean.FALSE);
+				if (zamanDurum)
+					izinBakiyeGuncellemeCalistir(session, true);
 
 			}
 
-		}
+		} catch (Exception e) {
+			logger.error("PDKS hata in : \n");
+			e.printStackTrace();
+			logger.error("PDKS hata out : " + e.getMessage());
+			if (hataGonder)
+				try {
+					zamanlayici.mailGonder(session, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmemiştir." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
 
-		return null;
+				} catch (Exception e2) {
+					logger.error("izinBakiyeGuncellemeTimer 2 : " + e2.getMessage());
+				}
+		} finally {
+			if (manuel == false && session != null)
+				session.close();
+			setCalisiyor(Boolean.FALSE);
+
+		}
 	}
 
 	/**
