@@ -31,6 +31,7 @@ import org.pdks.entity.Liste;
 import org.pdks.entity.NoteTipi;
 import org.pdks.entity.Notice;
 import org.pdks.entity.Parameter;
+import org.pdks.entity.PdksLog;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelGeciciYonetici;
 import org.pdks.entity.PersonelIzin;
@@ -1216,7 +1217,7 @@ public class IseGelmemeUyari implements Serializable {
 						hataGonder = Boolean.TRUE;
 						hataKonum = "Zaman kontrolu yapılıyor ";
 						Date time = zamanlayici.getDbTime(session);
-						boolean zamanDurum = PdksUtil.getTestDurum() == false && PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(session);
+						boolean zamanDurum = PdksUtil.getTestDurum() == false && PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(PdksLog.TABLE_NAME, session);
 						// if (!zamanDurum)
 						// zamanDurum = PdksUtil.getTestDurum();
 						if (zamanDurum)
@@ -1335,7 +1336,7 @@ public class IseGelmemeUyari implements Serializable {
 			}
 		}
 		sb = null;
-		
+
 		return "";
 	}
 

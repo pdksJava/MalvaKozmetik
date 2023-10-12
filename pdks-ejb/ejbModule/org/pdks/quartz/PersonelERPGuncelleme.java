@@ -104,7 +104,7 @@ public class PersonelERPGuncelleme {
 						hataGonder = Boolean.TRUE;
 						hataKonum = "Zaman kontrolu yapılıyor ";
 						Date tarih = zamanlayici.getDbTime(session);
-						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, tarih) && ortakIslemler.getGuncellemeDurum(session);
+						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, tarih) && ortakIslemler.getGuncellemeDurum(Personel.TABLE_NAME, session);
 						// if (!zamanDurum)
 						// zamanDurum = pdksUtil.getUrl() != null && pdksUtil.getUrl().indexOf("localhost") >= 0;
 
