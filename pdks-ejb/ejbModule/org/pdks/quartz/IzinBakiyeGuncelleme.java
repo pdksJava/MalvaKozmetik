@@ -94,7 +94,7 @@ public class IzinBakiyeGuncelleme {
 		ozelKontrol = Boolean.FALSE;
 		boolean hataGonder = Boolean.FALSE;
 		try {
- 			if (session == null)
+			if (session == null)
 				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 			hataKonum = "Paramatre okunuyor ";
 			Parameter parameter = null;
@@ -113,11 +113,7 @@ public class IzinBakiyeGuncelleme {
 				Date time = zamanlayici.getDbTime(session);
 				hataGonder = Boolean.TRUE;
 				hataKonum = "Zaman kontrolu yapılıyor ";
-				boolean zamanDurum = manuel || PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(session);
-
-				// if (!zamanDurum)
-				// zamanDurum = PdksUtil.getTestDurum();
-
+				boolean zamanDurum = manuel || (PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) || ortakIslemler.getGuncellemeDurum(PersonelIzin.TABLE_NAME, session));
 				if (zamanDurum)
 					izinBakiyeGuncellemeCalistir(session, true);
 

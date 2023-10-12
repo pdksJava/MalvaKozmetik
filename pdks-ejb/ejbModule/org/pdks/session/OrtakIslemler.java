@@ -3020,26 +3020,30 @@ public class OrtakIslemler implements Serializable {
 		return ikinciYoneticiPersoneller;
 	}
 
-	 
 	/**
 	 * @param tableName
 	 * @param session
 	 * @return
 	 */
-	public boolean getGuncellemeDurum(String tableName,Session session) {
+	public boolean getGuncellemeDurum(String tableName, Session session) {
 		boolean durum = false;
 		if (session != null) {
 			StringBuffer sb = new StringBuffer();
 			HashMap map = new HashMap();
 			try {
-				sb.append("select dbo.FN_PDKS_UPDATE_DURUM(:t) as DURUM");
+				sb.append("select dbo.FN_PDKS_TABLE_UPDATE_DURUM(:t) as DURUM");
 				map.put("t", tableName);
 				if (session != null)
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 				List list = pdksEntityController.getObjectBySQLList(sb, map, null);
 				if (list != null && !list.isEmpty()) {
-					String str = String.valueOf((Byte) list.get(0));
-					durum = str.equals("1");
+					Object sonuc = list.get(0);
+					if (sonuc != null) {
+						Byte byte1 = (Byte) sonuc;
+						String str = String.valueOf(byte1);
+						durum = str.equals("1");
+					}
+
 				}
 				list = null;
 			} catch (Exception e) {
