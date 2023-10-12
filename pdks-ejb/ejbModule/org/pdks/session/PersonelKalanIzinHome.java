@@ -1,8 +1,10 @@
 package org.pdks.session;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
@@ -50,8 +52,11 @@ import org.pdks.entity.TempIzin;
 import org.pdks.entity.VardiyaGun;
 import org.pdks.pdf.action.PDFUtils;
 import org.pdks.quartz.IzinBakiyeGuncelleme;
+import org.pdks.security.action.StartupAction;
 import org.pdks.security.entity.MenuItemConstant;
 import org.pdks.security.entity.User;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
@@ -87,6 +92,9 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	OrtakIslemler ortakIslemler;
 	@In(required = false, create = true)
 	IzinBakiyeGuncelleme izinBakiyeGuncelleme;
+
+	@In(required = false, create = true)
+	StartupAction startupAction;
 
 	@In(required = false)
 	FacesMessages facesMessages;
@@ -178,6 +186,17 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		updateTempIzin.bakiyeHesapla();
 		// pdfYaz();
 		return "/izin/izinKartiPdf.xhtml";
+	}
+
+	public Object getImage() {
+		InputStream is = startupAction.getProjeHeaderImage() != null ? new ByteArrayInputStream(startupAction.getProjeHeaderImage()) : null;
+		StreamedContent content = null;
+		try {
+			content = new DefaultStreamedContent(is);
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		return content;
 	}
 
 	public void pdfYaz() {

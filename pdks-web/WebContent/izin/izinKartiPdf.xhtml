@@ -1,14 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<p:document xmlns:p="http://jboss.com/products/seam/pdf" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
-	title="Pdf" pageSize="A4" orientation="landscape" xmlns:f="http://java.sun.com/jsf/core">
+<p:document xmlns:p="http://jboss.com/products/seam/pdf" xmlns:h="http://java.sun.com/jsf/html" xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets" title="Pdf" pageSize="A4" orientation="landscape" xmlns:f="http://java.sun.com/jsf/core">
 
 
 	<ui:repeat value="#{personelKalanIzinHome.updateTempIzin.yillikIzinler}" var="bakiyeIzin">
 
 
 		<ui:fragment rendered="#{personelKalanIzinHome.updateTempIzin.personel.sirket.departman.admin}">
-			<p:image value="/img/logo_ASM_Orj.png" alignment="left" height="80" width="120" />
+			<ui:fragment rendered="#{false and personelKalanIzinHome.updateTempIzin.personel.sirket.departman.admin}" >
+				<p:image value="/img/logo_ASM_Orj.png" alignment="left" height="80" width="120" />
+				 
+			</ui:fragment>
+
 		</ui:fragment>
 
 		<p:font name="helvetica" encoding="ISO-8859-9" size="10" style="bold">

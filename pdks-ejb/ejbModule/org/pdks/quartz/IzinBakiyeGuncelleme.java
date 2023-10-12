@@ -113,7 +113,7 @@ public class IzinBakiyeGuncelleme {
 				Date time = zamanlayici.getDbTime(session);
 				hataGonder = Boolean.TRUE;
 				hataKonum = "Zaman kontrolu yapılıyor ";
-				boolean zamanDurum = manuel || (PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) || ortakIslemler.getGuncellemeDurum(PersonelIzin.TABLE_NAME, session));
+				boolean zamanDurum = manuel || (PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(PersonelIzin.TABLE_NAME, session));
 				if (zamanDurum)
 					izinBakiyeGuncellemeCalistir(session, true);
 
