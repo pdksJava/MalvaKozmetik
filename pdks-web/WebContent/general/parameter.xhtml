@@ -131,8 +131,8 @@
 
 							<rich:toolTip for="addlink" value="Add" />
 							<a4j:commandButton status="ajaxStatus" value="Test Mail" action="#{parameterHome.testMail()}" />
-							<a4j:commandButton status="ajaxStatus" value="Test Zaman Mail" rendered="false"
-								action="#{zamanlayici.mailGonder(parameterHome.session,'test','deneme',null,false)}" />
+							<a4j:commandButton status="ajaxStatus" value="izinGuncelemeCalistir" rendered="#{ortakIslemler.testDurum}"
+								action="#{izinBakiyeGuncelleme.izinGuncelemeCalistir(true,parameterHome.session)}" />
 						</ui:fragment>
 					</a4j:outputPanel>
 				</rich:panel>
