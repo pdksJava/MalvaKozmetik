@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -387,7 +386,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					String characterEncoding = "ISO-8859-9";
 					response.setContentType("application/pdf;charset=" + characterEncoding);
 					response.setCharacterEncoding(characterEncoding);
-					String fileNameURL = URLEncoder.encode(fileName, characterEncoding);
+					String fileNameURL = PdksUtil.encoderURL(fileName, characterEncoding);
 					response.setHeader("Content-Disposition", "attachment;filename=" + fileNameURL);
 					response.setContentLength(baosPDF.size());
 					baosPDF.writeTo(sos);
@@ -477,7 +476,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 				else
 					response.setContentType("application/zip;charset=" + characterEncoding);
 				response.setCharacterEncoding(characterEncoding);
-				response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, characterEncoding));
+				response.setHeader("Content-Disposition", "attachment;filename=" + PdksUtil.encoderURL(fileName, characterEncoding));
 				response.setContentLength(baosPDF.size());
 				baosPDF.writeTo(sos);
 				sos.flush();

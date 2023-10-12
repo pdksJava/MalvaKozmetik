@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -12556,7 +12555,7 @@ public class OrtakIslemler implements Serializable {
 			HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType(dosya.getIcerikTipi().trim() + "; charset=UTF-8");
-			response.setHeader("Content-disposition", location + "; filename=" + URLEncoder.encode(dosya.getDosyaAdi().trim(), "UTF-8"));
+			response.setHeader("Content-disposition", location + "; filename=" + PdksUtil.encoderURL(dosya.getDosyaAdi().trim(), "UTF-8"));
 			response.setContentLength(dosya.getDosyaIcerik().length);
 			ServletOutputStream os = response.getOutputStream();
 			os.write(dosya.getDosyaIcerik());

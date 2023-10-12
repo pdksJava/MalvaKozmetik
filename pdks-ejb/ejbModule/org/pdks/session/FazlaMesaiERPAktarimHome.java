@@ -3,7 +3,6 @@ package org.pdks.session;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -531,7 +530,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 						response.setHeader("Expires", "0");
 						response.setHeader("Pragma", "cache");
 						response.setHeader("Cache-Control", "cache");
-						response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dosyaAdi, "UTF-8"));
+						response.setHeader("Content-Disposition", "attachment;filename=" + PdksUtil.encoderURL(dosyaAdi, "UTF-8"));
 						if (content != null) {
 							response.setContentLength(content.length());
 							byte[] bytes = content.getBytes();

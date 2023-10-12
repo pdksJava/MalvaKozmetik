@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -663,7 +662,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				response.setHeader("Expires", "0");
 				response.setHeader("Pragma", "cache");
 				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(dosyaAdi, "UTF-8") + ".zip");
+				response.setHeader("Content-Disposition", "attachment;filename=" + PdksUtil.encoderURL(dosyaAdi, "UTF-8") + ".zip");
 				response.setContentLength(bytes.length);
 				sos.write(bytes, 0, bytes.length);
 				sos.flush();
@@ -852,7 +851,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				response.setHeader("Expires", "0");
 				response.setHeader("Pragma", "cache");
 				response.setHeader("Cache-Control", "cache");
-				response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("tumHareketler.zip", "UTF-8"));
+				response.setHeader("Content-Disposition", "attachment;filename=" + PdksUtil.encoderURL("tumHareketler.zip", "UTF-8"));
 
 				response.setContentLength(bos.size());
 				bytes = bos.toByteArray();

@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -594,7 +595,6 @@ public class PdksUtil implements Serializable {
 		return test;
 	}
 
-	 
 	/**
 	 * @param orjinalName
 	 * @return
@@ -741,8 +741,8 @@ public class PdksUtil implements Serializable {
 				httpServletResponse.setHeader("Expires", "0");
 				httpServletResponse.setHeader("Pragma", "cache");
 				httpServletResponse.setHeader("Cache-Control", "cache");
-				String dosyaAdi = URLEncoder.encode(fileName, "UTF-8");
-				dosyaAdi = replaceAllManuel(dosyaAdi, "+", " ");
+				String dosyaAdi = encoderURL(fileName, "UTF-8");
+
 				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
 				writeByteArrayOutputStream(httpServletResponse, baos);
 			}
@@ -1607,6 +1607,25 @@ public class PdksUtil implements Serializable {
 		return matches;
 	}
 
+	/**
+	 * @param fileName
+	 * @param characterEncoding
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	public static String encoderURL(String fileName, String characterEncoding) throws UnsupportedEncodingException {
+		String url = URLEncoder.encode(fileName, characterEncoding);
+		if (url != null)
+			url = replaceAllManuel(url, "+", " ");
+		return url;
+	}
+
+	/**
+	 * @param str
+	 * @param pattern
+	 * @param replace
+	 * @return
+	 */
 	public static String replaceAll(String str, String pattern, String replace) {
 		if (str != null && pattern != null && replace != null)
 			str = str.replaceAll(pattern, replace);
