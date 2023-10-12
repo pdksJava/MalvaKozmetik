@@ -184,15 +184,15 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		}
 		updateTempIzin.setYillikIzinler(yillikIzinler);
 		updateTempIzin.bakiyeHesapla();
-		// pdfYaz();
-		return "/izin/izinKartiPdf.xhtml";
+		String sayfa = pdfTekAktar(updateTempIzin);
+		return sayfa;
 	}
 
 	public Object getImage() {
 		InputStream is = startupAction.getProjeHeaderImage() != null ? new ByteArrayInputStream(startupAction.getProjeHeaderImage()) : null;
 		StreamedContent content = null;
 		try {
-			content = new DefaultStreamedContent(is);
+			content = new DefaultStreamedContent(is, "/image/jpeg", authenticatedUser.getSession().getId());
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -351,9 +351,57 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	}
 
 	public String izinKartiPDF() {
+		String sayfa = pdfTekAktar(updateTempIzin);
 
-		String sayfa = MenuItemConstant.izinKartiPdf;
-		sayfa = "/izin/izinKartiPdf.xhtml";
+		return sayfa;
+	}
+
+	/**
+	 * @param tempIzin
+	 * @return
+	 */
+	private String pdfTekAktar(TempIzin tempIzin) {
+		String sayfa = "/izin/izinKartiPdf.xhtml";
+		if (tempIzin != null) {
+			List<TempIzin> list = new ArrayList<TempIzin>();
+			String bakiyeYil = PdksUtil.convertToDateString(tempIzin.getPersonelIzin().getBaslangicZamani(), "yyyy");
+			list.add(tempIzin);
+			ByteArrayOutputStream baosPDF = null;
+			/** *********** DOSYASI YARATMA KODLARI************ */
+			try {
+				baosPDF = ortakIslemler.izinBakiyeTopluITextPDF(Integer.parseInt(bakiyeYil), list, false, false);
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+			if (baosPDF != null && baosPDF.size() > 0) {
+				try {
+					String ek = "";
+					Personel personel = list.get(0).getPersonel();
+					if (personel != null)
+						ek = "_" + personel.getAdSoyad() + "_" + personel.getPdksSicilNo();
+
+					String fileName = "izinKarti" + ek + ".pdf";
+					HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+					ServletOutputStream sos = response.getOutputStream();
+					String characterEncoding = "ISO-8859-9";
+					response.setContentType("application/pdf;charset=" + characterEncoding);
+					response.setCharacterEncoding(characterEncoding);
+					String fileNameURL = URLEncoder.encode(fileName, characterEncoding);
+					response.setHeader("Content-Disposition", "attachment;filename=" + fileNameURL);
+					response.setContentLength(baosPDF.size());
+					baosPDF.writeTo(sos);
+					sos.flush();
+					sos.close();
+					FacesContext.getCurrentInstance().responseComplete();
+					sayfa = null;
+				} catch (Exception e) {
+					logger.error(e);
+				}
+
+			}
+			list = null;
+		}
 		return sayfa;
 	}
 

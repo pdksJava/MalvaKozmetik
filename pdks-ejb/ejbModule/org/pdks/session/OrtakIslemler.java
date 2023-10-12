@@ -156,6 +156,7 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
@@ -11985,12 +11986,14 @@ public class OrtakIslemler implements Serializable {
 		com.lowagie.text.Font fontH = new com.lowagie.text.Font(baseFont, 7f, Font.BOLD, null);
 		com.lowagie.text.Font fontBaslik = new com.lowagie.text.Font(baseFont, 14f, Font.BOLD, null);
 		com.lowagie.text.Font font = new com.lowagie.text.Font(baseFont, 7f, Font.NORMAL, null);
+		com.lowagie.text.Image image = getLowagieProjeImage();
 		for (TempIzin tempIzin : bakiyeList) {
 			if (tempIzin.getToplamBakiyeIzin() == 0.0d)
 				continue;
 			ByteArrayOutputStream baosPDF = new ByteArrayOutputStream();
 			com.lowagie.text.Document doc = new com.lowagie.text.Document(com.lowagie.text.PageSize.A4.rotate(), -60, -60, 30, 30);
 			com.lowagie.text.pdf.PdfWriter writer = com.lowagie.text.pdf.PdfWriter.getInstance(doc, baosPDF);
+
 			HeaderLowagie event = new HeaderLowagie();
 			writer.setPageEvent(event);
 			doc.open();
@@ -12083,6 +12086,9 @@ public class OrtakIslemler implements Serializable {
 					}
 					com.lowagie.text.Chunk chunk = new com.lowagie.text.Chunk(String.format("Sayfa : %d ", sayfa), fontH);
 					event.setHeader(new com.lowagie.text.Phrase(chunk));
+
+					if (image != null)
+						doc.add(image);
 					doc.newPage();
 
 				} catch (Exception e) {
@@ -12203,6 +12209,7 @@ public class OrtakIslemler implements Serializable {
 		Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
 		NumberFormat nf = DecimalFormat.getNumberInstance(locale);
 		Date bugun = new Date();
+		Image image = getProjeImage();
 		BaseFont baseFont = BaseFont.createFont("ARIAL.TTF", BaseFont.IDENTITY_H, true);
 		Font fontH = new Font(baseFont, 7f, Font.BOLD, BaseColor.BLACK);
 		Font fontBaslik = new Font(baseFont, 14f, Font.BOLD, BaseColor.BLACK);
@@ -12219,6 +12226,7 @@ public class OrtakIslemler implements Serializable {
 			writer.setPageEvent(event);
 			doc.open();
 			Date bitisZamani = null;
+
 			int sayfa = 0;
 			for (Iterator iterator = tempIzin.getYillikIzinler().iterator(); iterator.hasNext();) {
 				PersonelIzin bakiyeIzin = (PersonelIzin) iterator.next();
@@ -12230,6 +12238,9 @@ public class OrtakIslemler implements Serializable {
 					if (map == null)
 						map = new LinkedHashMap<String, Object>();
 					Personel personel = tempIzin.getPersonel();
+					if (image != null)
+						doc.add(image);
+
 					doc.add(PDFITextUtils.getParagraph("YILLIK ÜCRETLİ İZİN KARTI", fontBaslik, Element.ALIGN_CENTER));
 					table = new PdfPTable(15);
 					table.setSpacingBefore(20);
@@ -12328,6 +12339,44 @@ public class OrtakIslemler implements Serializable {
 
 		}
 		return list;
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	private Image getProjeImage() throws Exception {
+		String projeHeaderImageName = getParameterKey("projeHeaderImageName");
+		File projeHeader = new File("/opt/pdks/" + projeHeaderImageName);
+		Image image = null;
+		if (projeHeader.exists()) {
+			image = Image.getInstance(PdksUtil.getFileByteArray(projeHeader));
+			if (image != null) {
+				image.setAbsolutePosition(450f, 10f);
+				image.scaleToFit(450f, 450f);
+			}
+
+		}
+		return image;
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	private com.lowagie.text.Image getLowagieProjeImage() throws Exception {
+		String projeHeaderImageName = getParameterKey("projeHeaderImageName");
+		File projeHeader = new File("/opt/pdks/" + projeHeaderImageName);
+		com.lowagie.text.Image image = null;
+		if (projeHeader.exists()) {
+			image = com.lowagie.text.Image.getInstance(PdksUtil.getFileByteArray(projeHeader));
+			if (image != null) {
+				image.setAbsolutePosition(450f, 10f);
+				image.scaleToFit(450f, 450f);
+			}
+
+		}
+		return image;
 	}
 
 	/**
