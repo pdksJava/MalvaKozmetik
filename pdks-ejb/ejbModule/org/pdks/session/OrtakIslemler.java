@@ -12232,7 +12232,7 @@ public class OrtakIslemler implements Serializable {
 				try {
 					++sayfa;
 					String bakiyeYil = PdksUtil.convertToDateString(bakiyeIzin.getBaslangicZamani(), "yyyy");
-					if (Integer.parseInt(bakiyeYil) < baslangicYil)
+					if (baslangicYil > 0 && Integer.parseInt(bakiyeYil) < baslangicYil)
 						continue;
 					if (map == null)
 						map = new LinkedHashMap<String, Object>();
@@ -12344,15 +12344,26 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	private Image getProjeImage() throws Exception {
+	public Image getProjeImage() throws Exception {
 		String projeHeaderImageName = getParameterKey("projeHeaderImageName");
 		File projeHeader = new File("/opt/pdks/" + projeHeaderImageName);
 		Image image = null;
 		if (projeHeader.exists()) {
 			image = Image.getInstance(PdksUtil.getFileByteArray(projeHeader));
 			if (image != null) {
-				image.setAbsolutePosition(450f, 10f);
-				image.scaleToFit(450f, 450f);
+				float projeHeaderImageHeight = 450f, projeHeaderImageWidth = 450f;
+				if (parameterMap.containsKey("projeHeaderSize")) {
+					String deger = parameterMap.get("projeHeaderSize");
+					LinkedHashMap<String, String> map = PdksUtil.parametreAyikla(deger);
+					if (map.containsKey("width"))
+						projeHeaderImageWidth = new Double(map.get("width")).floatValue();
+					if (map.containsKey("height"))
+						projeHeaderImageHeight = new Double(map.get("height")).floatValue();
+				}
+				image.scaleToFit(projeHeaderImageHeight, projeHeaderImageWidth);
+
+				// image.setAbsolutePosition(450f, 10f);
+				// image.scaleToFit(450f, 450f);
 			}
 
 		}

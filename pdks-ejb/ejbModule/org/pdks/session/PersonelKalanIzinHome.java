@@ -363,12 +363,11 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		String sayfa = "/izin/izinKartiPdf.xhtml";
 		if (tempIzin != null) {
 			List<TempIzin> list = new ArrayList<TempIzin>();
-			String bakiyeYil = PdksUtil.convertToDateString(tempIzin.getPersonelIzin().getBaslangicZamani(), "yyyy");
 			list.add(tempIzin);
 			ByteArrayOutputStream baosPDF = null;
 			/** *********** DOSYASI YARATMA KODLARI************ */
 			try {
-				baosPDF = ortakIslemler.izinBakiyeTopluITextPDF(Integer.parseInt(bakiyeYil), list, false, false);
+				baosPDF = ortakIslemler.izinBakiyeTopluITextPDF(-1, list, false, false);
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();

@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.faces.FacesException;
 import javax.persistence.EntityManager;
@@ -488,7 +487,7 @@ public class StartupAction implements Serializable {
 		String fontSize = "22px";
 		if (parameterMap.containsKey("projeHeaderRenk")) {
 			String deger = parameterMap.get("projeHeaderRenk");
-			LinkedHashMap<String, String> map = parametreAyikla(deger);
+			LinkedHashMap<String, String> map = PdksUtil.parametreAyikla(deger);
 			if (map.containsKey("background-color"))
 				projeHeaderBackgroundColor = map.get("background-color");
 			if (map.containsKey("color"))
@@ -606,7 +605,7 @@ public class StartupAction implements Serializable {
 		Vardiya.setIntHaftaTatiliFazlaMesaiBasDakika(haftaTatiliFazlaMesaiBasDakika);
 		if (parameterMap.containsKey("projeHeaderSize")) {
 			String deger = parameterMap.get("projeHeaderSize");
-			LinkedHashMap<String, String> map = parametreAyikla(deger);
+			LinkedHashMap<String, String> map = PdksUtil.parametreAyikla(deger);
 			if (map.containsKey("width"))
 				projeHeaderImageWidth = map.get("width");
 			if (map.containsKey("height"))
@@ -887,23 +886,8 @@ public class StartupAction implements Serializable {
 	}
 
 	/**
-	 * @param deger
+	 * @param session
 	 */
-	private LinkedHashMap<String, String> parametreAyikla(String deger) {
-		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		StringTokenizer st = new StringTokenizer(deger, ";");
-		while (st.hasMoreTokens()) {
-			String str = st.nextToken();
-			if (str.indexOf(":") > 0) {
-				String veri[] = str.split(":");
-				if (veri.length == 2)
-					map.put(PdksUtil.replaceAll(veri[0], " ", ""), PdksUtil.replaceAll(veri[1], " ", ""));
-
-			}
-		}
-		return map;
-	}
-
 	public void setLDAPUserList(Session session) {
 		List saveList = new ArrayList(), list = new ArrayList();
 		if (session == null)

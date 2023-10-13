@@ -7,13 +7,7 @@
 	<ui:repeat value="#{personelKalanIzinHome.updateTempIzin.yillikIzinler}" var="bakiyeIzin">
 
 
-		<ui:fragment rendered="#{false and personelKalanIzinHome.updateTempIzin.personel.sirket.departman.admin}">
 
-			<p:image value="/img/logo_ASM_Orj.png" alignment="left" height="80" width="120" />
-
-
-
-		</ui:fragment>
 
 		<p:font name="helvetica" encoding="ISO-8859-9" size="10" style="bold">
 			<ui:fragment rendered="#{personelKalanIzinHome.suaVar==false}">

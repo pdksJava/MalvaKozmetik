@@ -428,24 +428,28 @@
 									<f:facet name="header">
 										<h:outputText value="" />
 									</f:facet>
-									<TABLE>
-										<TR>
-											<ui:fragment rendered="#{izinler.izinler!=null}">
-												<TD><a4j:commandButton status="ajaxStatus" value="İzin Detay" oncomplete="#{rich:component('izinDetayPanel')}.show()"
-														action="#{personelKalanIzinHome.izinGoster(izinler)}" reRender="izinDetayPanel" /></TD>
+									<ui:fragment rendered="#{izinler.toplamBakiyeIzin>0}">
+										<TABLE>
+											<TR>
+												<ui:fragment rendered="#{izinler.izinler!=null}">
+													<TD><a4j:commandButton status="ajaxStatus" value="İzin Detay" oncomplete="#{rich:component('izinDetayPanel')}.show()"
+															action="#{personelKalanIzinHome.izinGoster(izinler)}" reRender="izinDetayPanel" /></TD>
 
-												<ui:fragment rendered="#{authenticatedUser.admin or izinler.personel.sirket.departman.admin or authenticatedUser.IK}">
-													<TD><a4j:commandButton status="ajaxStatus" value="İzin Kartı" oncomplete="#{rich:component('izinKartiPanel')}.show()"
-															action="#{personelKalanIzinHome.izinKarti(izinler)}" reRender="izinKartiPanel" /></TD>
-													<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" action="#{personelKalanIzinHome.pdfAktar(izinler)}"
-															target="popupWindow" id="izinPDFLink3">
-															<h:graphicImage value="/img/pdf.jpg" />
-														</h:commandLink></TD>
+													<ui:fragment rendered="#{authenticatedUser.admin or izinler.personel.sirket.departman.admin or authenticatedUser.IK}">
+														<TD><a4j:commandButton status="ajaxStatus" value="İzin Kartı" oncomplete="#{rich:component('izinKartiPanel')}.show()"
+																action="#{personelKalanIzinHome.izinKarti(izinler)}" reRender="izinKartiPanel" /></TD>
+
+														<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" action="#{personelKalanIzinHome.pdfAktar(izinler)}"
+																target="popupWindow" id="izinPDFLink3">
+																<h:graphicImage value="/img/pdf.jpg" />
+															</h:commandLink></TD>
+													</ui:fragment>
 
 												</ui:fragment>
-											</ui:fragment>
-										</TR>
-									</TABLE>
+
+											</TR>
+										</TABLE>
+									</ui:fragment>
 
 								</rich:column>
 

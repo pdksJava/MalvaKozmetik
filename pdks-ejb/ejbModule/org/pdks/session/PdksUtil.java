@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -130,6 +131,25 @@ public class PdksUtil implements Serializable {
 	private static Integer yarimYuvarlaLast = 1;
 
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
+	
+	/**
+	 * @param deger
+	 */
+	public static LinkedHashMap<String, String> parametreAyikla(String deger) {
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		StringTokenizer st = new StringTokenizer(deger, ";");
+		while (st.hasMoreTokens()) {
+			String str = st.nextToken();
+			if (str.indexOf(":") > 0) {
+				String veri[] = str.split(":");
+				if (veri.length == 2)
+					map.put(PdksUtil.replaceAll(veri[0], " ", ""), PdksUtil.replaceAll(veri[1], " ", ""));
+
+			}
+		}
+		return map;
+	}
+
 
 	/**
 	 * @param ad
