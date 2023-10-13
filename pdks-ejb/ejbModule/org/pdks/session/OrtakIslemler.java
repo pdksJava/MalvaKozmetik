@@ -9161,8 +9161,13 @@ public class OrtakIslemler implements Serializable {
 				if (!tarihGelmedi)
 					izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
 				if (tarihGelmedi) {
-					izinHakedisHakki = new IzinHakedisHakki();
-					izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
+					if (yillikIzinMaxBakiye > 0) {
+						izinHakedisHakki = new IzinHakedisHakki();
+						izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
+					} else
+
+						izinHakedisHakki = getIzinHakedis(kidemYil + 1, hakedisMap, session, yasTipi, suaDurum, departman, map);
+
 				}
 
 				if (izinHakedisHakki != null && izinTipi != null) {
@@ -9201,7 +9206,7 @@ public class OrtakIslemler implements Serializable {
 							personelIzin.setOlusturanUser(user);
 						}
 						if (personelIzin.getIzinKagidiGeldi() == null) {
-							double izinSuresi = tarihGelmedi ? yillikIzinMaxBakiye : (double) izinHakedisHakki.getIzinSuresi();
+							double izinSuresi = tarihGelmedi && yillikIzinMaxBakiye > 0 ? yillikIzinMaxBakiye : (double) izinHakedisHakki.getIzinSuresi();
 							if (personelIzin.getGuncellemeTarihi() != null && !PdksUtil.getDate(bugun).after(PdksUtil.getDate(personelIzin.getGuncellemeTarihi())))
 								izinSuresi = personelIzin.getIzinSuresi().intValue();
 							if (genelDirektorIzinSuresi != 0)
@@ -9254,7 +9259,7 @@ public class OrtakIslemler implements Serializable {
 						double izinSuresi = (double) izinHakedisHakki.getIzinSuresi();
 						if (genelDirektorIzinSuresi != 0)
 							izinSuresi = genelDirektorIzinSuresi;
-						if (izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
+						if (izinSuresi > 0 && izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
 							if (personelIzin.getId() != null) {
 								if (user != null)
 									personelIzin.setGuncelleyenUser(user);
