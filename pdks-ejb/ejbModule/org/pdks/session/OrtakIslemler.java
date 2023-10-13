@@ -9156,8 +9156,19 @@ public class OrtakIslemler implements Serializable {
 			yasTipi = IzinHakedisHakki.YAS_TIPI_COCUK;
 		else if (departman.getYasliYasAltSiniri() <= yas)
 			yasTipi = IzinHakedisHakki.YAS_TIPI_YASLI;
+		boolean kidemEkle = false, yeniKidemBakiyeOlustur = true;
 		if (izinTipi != null) {
-			if (kidemYil > 0) {
+			if (yillikIzinMaxBakiye < 0 && (kidemYil == 0 || tarihGelmedi)) {
+				kidemEkle = kidemYil == 0;
+				kidemMap.put(Calendar.YEAR, kidemYil + 1);
+				if (kidemEkle)
+					kidemYil++;
+				else
+					yeniKidemBakiyeOlustur = false;
+
+			}
+
+			if (kidemYil > 0 || kidemEkle) {
 				if (!tarihGelmedi)
 					izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
 				if (tarihGelmedi) {
@@ -9165,20 +9176,22 @@ public class OrtakIslemler implements Serializable {
 						izinHakedisHakki = new IzinHakedisHakki();
 						izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
 					} else
-
 						izinHakedisHakki = getIzinHakedis(kidemYil + 1, hakedisMap, session, yasTipi, suaDurum, departman, map);
-
 				}
 
 				if (izinHakedisHakki != null && izinTipi != null) {
-					cal.set(yil, 0, 1);
+					cal.set((kidemEkle ? 1 : 0) + yil, 0, 1);
 					Date baslangicZamani = PdksUtil.getDate(cal.getTime());
 					cal.setTime(izinSahibi.getIzinHakEdisTarihi());
-					cal.set(Calendar.YEAR, yil);
+					cal.set(Calendar.YEAR, (kidemEkle ? 1 : 0) + yil);
 					izinHakEttigiTarihi = PdksUtil.getDate(cal.getTime());
 					Date kidemTarih = tarihGelmedi ? izinHakEttigiTarihi : PdksUtil.getDate(bugun);
 					kidemMap = getTarihMap(izinSahibi != null ? izinSahibi.getIzinHakEdisTarihi() : null, kidemTarih);
 					kidemYil = kidemMap.get(Calendar.YEAR);
+					if (kidemEkle) {
+						++kidemYil;
+
+					}
 					HashMap<Integer, Integer> yasMap = getTarihMap(izinSahibi != null ? izinSahibi.getDogumTarihi() : null, kidemTarih);
 					int yasYeni = yasMap.get(Calendar.YEAR);
 					if (yasYeni != yas) {
@@ -9228,8 +9241,8 @@ public class OrtakIslemler implements Serializable {
 					}
 				}
 			}
-			if (yeniBakiyeOlustur) {
-				if ((!tarihGelmedi && kidemYil > 0 && yillikIzinMaxBakiye > 0) || yil == girisYil)
+			if (yeniBakiyeOlustur && yeniKidemBakiyeOlustur) {
+				if (((tarihGelmedi == false || yillikIzinMaxBakiye < 0) && kidemYil > 0) || yil == girisYil)
 					++yil;
 				cal.set(yil, 0, 1);
 				Date baslangicZamani = PdksUtil.convertToJavaDate(yil + "0101", "yyyyMMdd");
@@ -9237,8 +9250,12 @@ public class OrtakIslemler implements Serializable {
 				cal.set(Calendar.YEAR, yil);
 				izinHakEttigiTarihi = PdksUtil.getDate(cal.getTime());
 				if (baslangicZamani.after(izinSahibi.getIzinHakEdisTarihi())) {
-					izinHakedisHakki = new IzinHakedisHakki();
-					izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
+					if (yillikIzinMaxBakiye > 0) {
+						izinHakedisHakki = new IzinHakedisHakki();
+						izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
+					} else
+						izinHakedisHakki = getIzinHakedis(kidemYil + 1, hakedisMap, session, yasTipi, suaDurum, departman, map);
+
 					HashMap<Integer, Integer> map1 = getTarihMap(izinSahibi != null ? izinSahibi.getIzinHakEdisTarihi() : null, izinHakEttigiTarihi);
 					kidemYil = map1.get(Calendar.YEAR);
 					String aciklama = String.valueOf(kidemYil);
