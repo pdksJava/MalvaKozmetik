@@ -686,6 +686,7 @@ public class MenuItemPermissionTanimlama extends EntityQuery<MenuItem> implement
 	/**
 	 * 
 	 */
+	@Transactional
 	public String deleteAccountPermissionFromModelPanel(AccountPermission selectedAccPermission) {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
