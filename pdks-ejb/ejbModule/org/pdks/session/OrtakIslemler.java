@@ -9229,7 +9229,7 @@ public class OrtakIslemler implements Serializable {
 				}
 			}
 			if (yeniBakiyeOlustur) {
-				if ((!tarihGelmedi && kidemYil > 0) || yil == girisYil)
+				if ((!tarihGelmedi && kidemYil > 0 && yillikIzinMaxBakiye > 0) || yil == girisYil)
 					++yil;
 				cal.set(yil, 0, 1);
 				Date baslangicZamani = PdksUtil.convertToJavaDate(yil + "0101", "yyyyMMdd");

@@ -807,6 +807,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 			}
 		}
 		if (gelecekIzinGoster) {
+			int yillikIzinMaxBakiye = PersonelIzin.getYillikIzinMaxBakiye();
 			Date tarih = PdksUtil.getDate(new Date());
 			if (donemSonu != null && donemSonu.after(tarih))
 				tarih = donemSonu;
@@ -820,7 +821,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 				for (PersonelIzin personelIzin : yillikIzinler) {
 					PersonelIzin personelIzinNew = (PersonelIzin) personelIzin.clone();
 					personelIzinNew.setKontrolIzin(personelIzin);
-					if (personelIzinNew.getBitisZamani().after(tarih)) {
+					if (personelIzinNew.getBitisZamani().after(tarih) && yillikIzinMaxBakiye > 0) {
 						guncelle = true;
 						double izinSuresi = personelIzinNew.getIzinSuresi(), harcanan = personelIzinNew.getHarcananIzin();
 						personelIzinNew.setDonemSonu(tarih);
