@@ -342,6 +342,8 @@ public class IzinBakiyeGuncelleme {
 		map.put("iseBaslamaTarihi<=", bugun);
 		map.put("dogumTarihi<>", null);
 		map.put("durum=", Boolean.TRUE);
+		map.put("sirket.fazlaMesai=", Boolean.TRUE);
+		map.put("sirket.departman.izinGirilebilir=", Boolean.TRUE);
 		if (siciller != null && !siciller.isEmpty())
 			map.put("pdksSicilNo", siciller);
 		else if (sirket != null)
@@ -349,7 +351,7 @@ public class IzinBakiyeGuncelleme {
 		else {
 			map.put("sirket.durum=", Boolean.TRUE);
 			if (!yeni && user != null && !user.isAdmin())
-				map.put("sirket.departman=", user.getDepartman());
+				map.put("sirket.departman.id=", user.getDepartman().getId());
 		}
 		List<Personel> list = pdksEntityController.getObjectByInnerObjectListInLogic(map, Personel.class);
 		String sicilNo = null;
