@@ -3374,7 +3374,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 						HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(izinBaslangicZamani, izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
 						int izinKidemYil = kidemHesabiMap.containsKey(Calendar.YEAR) ? kidemHesabiMap.get(Calendar.YEAR) : 0;
 						User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
-						ortakIslemler.getBakiyeIzin(sistemAdminUser, izinSahibi, izinBaslangicZamani, bakiyeIzinTip, izinKidemYil, session);
+						ortakIslemler.getBakiyeIzin(sistemAdminUser, izinSahibi, izinBaslangicZamani, bakiyeIzinTip, null, izinKidemYil, session);
 						map.put(PdksEntityController.MAP_KEY_MAP, "getBaslangicZamani");
 						if (session != null)
 							map.put(PdksEntityController.MAP_KEY_SESSION, session);
