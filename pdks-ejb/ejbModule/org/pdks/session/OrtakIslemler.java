@@ -150,6 +150,8 @@ import org.pdks.security.entity.UserVekalet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -12238,15 +12240,23 @@ public class OrtakIslemler implements Serializable {
 	 * @throws Exception
 	 */
 	private List<LinkedHashMap<String, Object>> getPDFITextYillikIzinKarti(int baslangicYil, List<TempIzin> bakiyeList, boolean zipDosya) throws Exception {
-		List<LinkedHashMap<String, Object>> list = new ArrayList<LinkedHashMap<String, Object>>();
-		Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-		NumberFormat nf = DecimalFormat.getNumberInstance(locale);
-		Date bugun = new Date();
-		Image image = getProjeImage();
 		BaseFont baseFont = BaseFont.createFont("ARIAL.TTF", BaseFont.IDENTITY_H, true);
 		Font fontH = new Font(baseFont, 7f, Font.BOLD, BaseColor.BLACK);
 		Font fontBaslik = new Font(baseFont, 14f, Font.BOLD, BaseColor.BLACK);
 		Font font = new Font(baseFont, 7f, Font.NORMAL, BaseColor.BLACK);
+		Image image = getProjeImage();
+		PdfPTable tableImage = null;
+		if (image != null) {
+			tableImage = new PdfPTable(1);
+			com.itextpdf.text.pdf.PdfPCell cellImage = new com.itextpdf.text.pdf.PdfPCell(image);
+			cellImage.setBorder(com.itextpdf.text.Rectangle.NO_BORDER);
+ 			tableImage.addCell(cellImage);
+		}
+		List<LinkedHashMap<String, Object>> list = new ArrayList<LinkedHashMap<String, Object>>();
+		Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+		NumberFormat nf = DecimalFormat.getNumberInstance(locale);
+		Date bugun = new Date();
+
 		for (TempIzin tempIzin : bakiyeList) {
 			if (tempIzin.getToplamBakiyeIzin() == 0.0d)
 				continue;
@@ -12271,8 +12281,8 @@ public class OrtakIslemler implements Serializable {
 					if (map == null)
 						map = new LinkedHashMap<String, Object>();
 					Personel personel = tempIzin.getPersonel();
-					if (image != null)
-						doc.add(image);
+					if (tableImage != null)
+						doc.add(tableImage);
 
 					doc.add(PDFITextUtils.getParagraph("YILLIK ÜCRETLİ İZİN KARTI", fontBaslik, Element.ALIGN_CENTER));
 					table = new PdfPTable(15);
@@ -12374,33 +12384,52 @@ public class OrtakIslemler implements Serializable {
 		return list;
 	}
 
+	public HashMap<String, Object> getProjeHeaderImageMap() {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		String projeHeaderImageName = getParameterKey("projeHeaderImageName");
+		File projeHeader = new File("/opt/pdks/" + projeHeaderImageName);
+		if (projeHeader.exists()) {
+			try {
+				byte[] projeHeaderImage = PdksUtil.getFileByteArray(projeHeader);
+				map.put("projeHeaderImage", projeHeaderImage);
+				float projeHeaderImageHeight = 450f, projeHeaderImageWidth = 450f;
+				if (parameterMap.containsKey("projeHeaderSize")) {
+					String deger = parameterMap.get("projeHeaderSize");
+					LinkedHashMap<String, String> map1 = PdksUtil.parametreAyikla(deger);
+					if (map1.containsKey("width"))
+						projeHeaderImageWidth = new Double(map1.get("width")).floatValue();
+					if (map1.containsKey("height"))
+						projeHeaderImageHeight = new Double(map1.get("height")).floatValue();
+				}
+				map.put("projeHeaderImageHeight", projeHeaderImageHeight);
+				map.put("projeHeaderImageWidth", projeHeaderImageWidth);
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			}
+		}
+		return map;
+	}
+
 	/**
 	 * @return
 	 * @throws Exception
 	 */
 	public Image getProjeImage() throws Exception {
-		String projeHeaderImageName = getParameterKey("projeHeaderImageName");
-		File projeHeader = new File("/opt/pdks/" + projeHeaderImageName);
+		HashMap<String, Object> projeImageMap = getProjeHeaderImageMap();
 		Image image = null;
-		if (projeHeader.exists()) {
-			image = Image.getInstance(PdksUtil.getFileByteArray(projeHeader));
+		if (projeImageMap.containsKey("projeHeaderImage")) {
+			byte[] projeHeaderImage = (byte[]) projeImageMap.get("projeHeaderImage");
+			image = Image.getInstance(projeHeaderImage);
+//			ImageData data = ImageDataFactory.create(projeHeaderImage);
+//	 		Image img = new Image(data); 
 			if (image != null) {
-				float projeHeaderImageHeight = 450f, projeHeaderImageWidth = 450f;
-				if (parameterMap.containsKey("projeHeaderSize")) {
-					String deger = parameterMap.get("projeHeaderSize");
-					LinkedHashMap<String, String> map = PdksUtil.parametreAyikla(deger);
-					if (map.containsKey("width"))
-						projeHeaderImageWidth = new Double(map.get("width")).floatValue();
-					if (map.containsKey("height"))
-						projeHeaderImageHeight = new Double(map.get("height")).floatValue();
-				}
+				float projeHeaderImageHeight = (Float) projeImageMap.get("projeHeaderImageHeight");
+				float projeHeaderImageWidth = (Float) projeImageMap.get("projeHeaderImageWidth");
 				image.scaleToFit(projeHeaderImageHeight, projeHeaderImageWidth);
-
-				// image.setAbsolutePosition(450f, 10f);
-				// image.scaleToFit(450f, 450f);
 			}
-
 		}
+
 		return image;
 	}
 
@@ -12408,15 +12437,16 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	private com.lowagie.text.Image getLowagieProjeImage() throws Exception {
-		String projeHeaderImageName = getParameterKey("projeHeaderImageName");
-		File projeHeader = new File("/opt/pdks/" + projeHeaderImageName);
+	public com.lowagie.text.Image getLowagieProjeImage() throws Exception {
+		HashMap<String, Object> projeImageMap = getProjeHeaderImageMap();
 		com.lowagie.text.Image image = null;
-		if (projeHeader.exists()) {
-			image = com.lowagie.text.Image.getInstance(PdksUtil.getFileByteArray(projeHeader));
+		if (projeImageMap.containsKey("projeHeaderImage")) {
+			byte[] projeHeaderImage = (byte[]) projeImageMap.get("projeHeaderImage");
+			image = com.lowagie.text.Image.getInstance(projeHeaderImage);
 			if (image != null) {
-				image.setAbsolutePosition(450f, 10f);
-				image.scaleToFit(450f, 450f);
+				float projeHeaderImageHeight = (Float) projeImageMap.get("projeHeaderImageHeight");
+				float projeHeaderImageWidth = (Float) projeImageMap.get("projeHeaderImageWidth");
+				image.scaleToFit(projeHeaderImageHeight, projeHeaderImageWidth);
 			}
 
 		}
