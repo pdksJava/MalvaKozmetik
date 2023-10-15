@@ -150,8 +150,6 @@ import org.pdks.security.entity.UserVekalet;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;

@@ -31,7 +31,7 @@ public final class LogRefresh extends QuartzJobBean {
 		Parameter parameter = (Parameter) pdksDAO.getObjectByInnerObject(fields, Parameter.class);
 		if (parameter != null && parameter.getValue().equals("2")) {
 			fields.clear();
-			fields.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_PDKS_ISLEM");
+			fields.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_PDKS_SIRKET_ISLEM");
 			try {
 				pdksDAO.execSP(fields);
 			} catch (Exception e) {
