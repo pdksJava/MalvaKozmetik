@@ -3401,7 +3401,7 @@ public class OrtakIslemler implements Serializable {
 				cal.setTime(personel.getIzinHakEdisTarihi());
 				cal.set(Calendar.YEAR, yil);
 				String hakedisTarih = "convert(datetime, '" + PdksUtil.convertToDateString(cal.getTime(), "yyyyMMdd") + "', 112)";
-				String aciklama = String.valueOf(kidemYil);
+				String aciklama = kidemYil > 0 ? String.valueOf(kidemYil) : "";
 				queryStr = new StringBuilder("INSERT INTO " + PersonelIzin.TABLE_NAME + " (" + PersonelIzin.COLUMN_NAME_DURUM + ",  " + PersonelIzin.COLUMN_NAME_OLUSTURMA_TARIHI + ", " + PersonelIzin.COLUMN_NAME_ACIKLAMA + ", " + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + ", "
 						+ PersonelIzin.COLUMN_NAME_BITIS_ZAMANI + ",");
 				queryStr.append(PersonelIzin.COLUMN_NAME_IZIN_SURESI + ", " + PersonelIzin.COLUMN_NAME_IZIN_DURUMU + "," + PersonelIzin.COLUMN_NAME_VERSION + "," + PersonelIzin.COLUMN_NAME_OLUSTURAN + ", " + PersonelIzin.COLUMN_NAME_PERSONEL + ", " + PersonelIzin.COLUMN_NAME_IZIN_TIPI + ")");
@@ -8468,7 +8468,7 @@ public class OrtakIslemler implements Serializable {
 					personelBakiyeIzin = new PersonelIzin();
 					personelBakiyeIzin.setBaslangicZamani(baslangicZamani);
 					personelBakiyeIzin.setBitisZamani(baslangicZamani);
-					personelBakiyeIzin.setAciklama("Bakiye Senelik Izin");
+					personelBakiyeIzin.setAciklama(kidemYil > 0 ? String.valueOf(kidemYil) : "");
 					personelBakiyeIzin.setIzinSahibi(izinSahibi);
 					personelBakiyeIzin.setIzinTipi(izinTipi);
 					personelBakiyeIzin.setOlusturanUser(authenticatedUser);
@@ -12248,7 +12248,7 @@ public class OrtakIslemler implements Serializable {
 			tableImage = new PdfPTable(1);
 			com.itextpdf.text.pdf.PdfPCell cellImage = new com.itextpdf.text.pdf.PdfPCell(image);
 			cellImage.setBorder(com.itextpdf.text.Rectangle.NO_BORDER);
- 			tableImage.addCell(cellImage);
+			tableImage.addCell(cellImage);
 		}
 		List<LinkedHashMap<String, Object>> list = new ArrayList<LinkedHashMap<String, Object>>();
 		Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
@@ -12419,8 +12419,8 @@ public class OrtakIslemler implements Serializable {
 		if (projeImageMap.containsKey("projeHeaderImage")) {
 			byte[] projeHeaderImage = (byte[]) projeImageMap.get("projeHeaderImage");
 			image = Image.getInstance(projeHeaderImage);
-//			ImageData data = ImageDataFactory.create(projeHeaderImage);
-//	 		Image img = new Image(data); 
+			// ImageData data = ImageDataFactory.create(projeHeaderImage);
+			// Image img = new Image(data);
 			if (image != null) {
 				float projeHeaderImageHeight = (Float) projeImageMap.get("projeHeaderImageHeight");
 				float projeHeaderImageWidth = (Float) projeImageMap.get("projeHeaderImageWidth");
