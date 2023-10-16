@@ -3401,7 +3401,9 @@ public class OrtakIslemler implements Serializable {
 				cal.setTime(personel.getIzinHakEdisTarihi());
 				cal.set(Calendar.YEAR, yil);
 				String hakedisTarih = "convert(datetime, '" + PdksUtil.convertToDateString(cal.getTime(), "yyyyMMdd") + "', 112)";
-				String aciklama = kidemYil > 0 ? String.valueOf(kidemYil) : "";
+				String aciklama = bakiyeIzinTipi != null ? bakiyeIzinTipi.getIzinTipiTanim().getAciklama() : "Bakiye İzin";
+				if (kidemYil >= 0)
+					aciklama = kidemYil > 0 ? String.valueOf(kidemYil) : "";
 				queryStr = new StringBuilder("INSERT INTO " + PersonelIzin.TABLE_NAME + " (" + PersonelIzin.COLUMN_NAME_DURUM + ",  " + PersonelIzin.COLUMN_NAME_OLUSTURMA_TARIHI + ", " + PersonelIzin.COLUMN_NAME_ACIKLAMA + ", " + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + ", "
 						+ PersonelIzin.COLUMN_NAME_BITIS_ZAMANI + ",");
 				queryStr.append(PersonelIzin.COLUMN_NAME_IZIN_SURESI + ", " + PersonelIzin.COLUMN_NAME_IZIN_DURUMU + "," + PersonelIzin.COLUMN_NAME_VERSION + "," + PersonelIzin.COLUMN_NAME_OLUSTURAN + ", " + PersonelIzin.COLUMN_NAME_PERSONEL + ", " + PersonelIzin.COLUMN_NAME_IZIN_TIPI + ")");
@@ -3414,8 +3416,11 @@ public class OrtakIslemler implements Serializable {
 				queryStr.append(" WHERE  T." + IzinTipi.COLUMN_NAME_ID + "= " + bakiyeIzinTipi.getId() + " AND I." + PersonelIzin.COLUMN_NAME_ID + " IS NULL");
 				String sqlStr = queryStr.toString();
 				try {
-					query1 = session.createSQLQuery(sqlStr);
-					query1.executeUpdate();
+					if (sure >= 0) {
+						query1 = session.createSQLQuery(sqlStr);
+						query1.executeUpdate();
+					}
+
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
 					e.printStackTrace();
@@ -8468,7 +8473,10 @@ public class OrtakIslemler implements Serializable {
 					personelBakiyeIzin = new PersonelIzin();
 					personelBakiyeIzin.setBaslangicZamani(baslangicZamani);
 					personelBakiyeIzin.setBitisZamani(baslangicZamani);
-					personelBakiyeIzin.setAciklama(kidemYil > 0 ? String.valueOf(kidemYil) : "");
+					String aciklama = izinTipi != null ? izinTipi.getIzinTipiTanim().getAciklama() : "Bakiye İzin";
+					if (kidemYil >= 0)
+						aciklama = kidemYil > 0 ? String.valueOf(kidemYil) : "";
+					personelBakiyeIzin.setAciklama(aciklama);
 					personelBakiyeIzin.setIzinSahibi(izinSahibi);
 					personelBakiyeIzin.setIzinTipi(izinTipi);
 					personelBakiyeIzin.setOlusturanUser(authenticatedUser);
@@ -9225,7 +9233,7 @@ public class OrtakIslemler implements Serializable {
 							personelIzin.setBaslangicZamani(baslangicZamani);
 							personelIzin.setBitisZamani(izinHakEttigiTarihi);
 							personelIzin.setIzinTipi(izinTipi);
-							personelIzin.setIzinSuresi(0D);
+							personelIzin.setIzinSuresi(izinSuresi);
 							personelIzin.setKullanilanIzinSuresi(0D);
 						}
 						if (personelIzin.getId() == null)
@@ -9281,7 +9289,7 @@ public class OrtakIslemler implements Serializable {
 						personelIzin.setBitisZamani(izinHakEttigiTarihi);
 						personelIzin.setAciklama(aciklama);
 						personelIzin.setIzinTipi(izinTipi);
-						personelIzin.setIzinSuresi(0D);
+						personelIzin.setIzinSuresi(izinSuresi);
 						personelIzin.setKullanilanIzinSuresi(0D);
 					}
 					if (personelIzin.getId() == null)
