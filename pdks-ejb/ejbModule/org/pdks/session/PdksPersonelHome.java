@@ -833,32 +833,32 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					}
 
 					if (mesajList.isEmpty() && !izinERPUpdate) {
-						if (!sirket.getDepartman().isAdminMi()) {
-							if (bakiyeIzin.getId() != null) {
-								if (bakiyeIzinSuresi.doubleValue() != bakiyeIzin.getIzinSuresi().doubleValue()) {
+						if (bakiyeIzin != null) {
+							if (!sirket.getDepartman().isAdminMi()) {
+								if (bakiyeIzin.getId() != null) {
+									if (bakiyeIzinSuresi.doubleValue() != bakiyeIzin.getIzinSuresi().doubleValue()) {
+										bakiyeIzin.setIzinSuresi(bakiyeIzinSuresi);
+										bakiyeIzin.setGuncelleyenUser(authenticatedUser);
+										bakiyeIzin.setGuncellemeTarihi(new Date());
+										pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzin);
+									}
+
+								} else if (bakiyeIzinSuresi != null && bakiyeIzinSuresi.doubleValue() != 0.0d) {
 									bakiyeIzin.setIzinSuresi(bakiyeIzinSuresi);
-									bakiyeIzin.setGuncelleyenUser(authenticatedUser);
-									bakiyeIzin.setGuncellemeTarihi(new Date());
-									// bakiyeIzin = (PersonelIzin)
-									// pdksEntityController.save(bakiyeIzin);
+									bakiyeIzin.setOlusturanUser(authenticatedUser);
+									bakiyeIzin.setOlusturmaTarihi(new Date());
+									bakiyeIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
+									// entityManager.persist();
 									pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzin);
 								}
-
-							} else if (bakiyeIzinSuresi != null && bakiyeIzinSuresi.doubleValue() != 0.0d) {
-								bakiyeIzin.setIzinSuresi(bakiyeIzinSuresi);
+							} else if (bakiyeIzin.getId() != null && bakiyeIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL) {
+								bakiyeIzin.setIzinSuresi(0d);
 								bakiyeIzin.setOlusturanUser(authenticatedUser);
 								bakiyeIzin.setOlusturmaTarihi(new Date());
-								bakiyeIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
+								bakiyeIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
 								// entityManager.persist();
 								pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzin);
 							}
-						} else if (bakiyeIzin.getId() != null && bakiyeIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL) {
-							bakiyeIzin.setIzinSuresi(0d);
-							bakiyeIzin.setOlusturanUser(authenticatedUser);
-							bakiyeIzin.setOlusturmaTarihi(new Date());
-							bakiyeIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
-							// entityManager.persist();
-							pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzin);
 						}
 					}
 					if (mesajList.isEmpty()) {
@@ -1192,8 +1192,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setOldUserName(personelView.getKullanici() != null ? personelView.getKullanici().getUsername() : null);
 		PersonelIzin izin = null;
 		try {
-			izin = ortakIslemler.getPersonelBakiyeIzin(0, authenticatedUser, pdksPersonel, session);
-			setBakiyeIzinSuresi(izin != null ? izin.getIzinSuresi() : null);
+			if (ortakIslemler.getParameterKey("gecmisBakiyeIzin").equals("1"))  
+				izin = ortakIslemler.getPersonelBakiyeIzin(0, authenticatedUser, pdksPersonel, session);
+ 			setBakiyeIzinSuresi(izin != null ? izin.getIzinSuresi() : null);
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
