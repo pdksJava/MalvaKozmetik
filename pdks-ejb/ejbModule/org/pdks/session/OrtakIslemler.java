@@ -16631,6 +16631,7 @@ public class OrtakIslemler implements Serializable {
 				Date sonGun = null;
 				if (calismayanPersonelYoneticiDurum && !aylikPuantajList.isEmpty())
 					sonGun = PdksUtil.tariheGunEkleCikar(aylikPuantajList.get(0).getSonGun(), 1);
+				String yoneticiTanimsizStr = getParameterKey("yoneticiTanimsiz");
 				for (AylikPuantaj aylikPuantaj : aylikPuantajList) {
 					boolean yoneticiKontrol = true;
 					Personel personel = aylikPuantaj.getPdksPersonel();
@@ -16679,7 +16680,8 @@ public class OrtakIslemler implements Serializable {
 					if (kontrolEtme)
 						yoneticiUser.setId(-1L);
 					yoneticiUser.setAd("");
-					yoneticiUser.setSoyad("kullanıcı tanımsız!");
+					if (!PdksUtil.hasStringValue(yoneticiTanimsizStr))
+						yoneticiUser.setSoyad("kullanıcı tanımsız!");
 
 					fields.clear();
 					fields.put(PdksEntityController.MAP_KEY_SELECT, "pdksPersonel");
