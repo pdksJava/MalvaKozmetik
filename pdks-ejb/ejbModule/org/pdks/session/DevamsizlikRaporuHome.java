@@ -287,12 +287,13 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			} else if (girisAdet > 0) {
 				Date zaman = vardiyaGun.getGirisHareket().getOrjinalZaman();
 				Vardiya vardiya = vardiyaGun.getIslemVardiya();
-				Date giris1 = vardiya.getVardiyaTelorans1BasZaman();
+				// Date giris1 = vardiya.getVardiyaTelorans1BasZaman();
 				Date giris2 = vardiya.getVardiyaTelorans2BasZaman();
-				if (girisAdet == 1 && zaman.after(giris1) && zaman.before(giris2))
+				if (zaman.before(giris2))
 					aciklama = "";
 				else
-					aciklama = "Hatalı Kart Basıldı.";
+					aciklama = "Geç Kart Basıldı.";
+
 			}
 		}
 		if (aciklama == null)
