@@ -285,7 +285,11 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			} else if (cikisAdet > girisAdet) {
 				aciklama = "Hatalı Kart Basıldı.";
 			} else if (girisAdet > 0) {
-				if (girisAdet == 1 && vardiyaGun.getGirisHareket().getZaman().before(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BasZaman()))
+				Date zaman = vardiyaGun.getGirisHareket().getOrjinalZaman();
+				Vardiya vardiya = vardiyaGun.getIslemVardiya();
+				Date giris1 = vardiya.getVardiyaTelorans1BasZaman();
+				Date giris2 = vardiya.getVardiyaTelorans2BasZaman();
+				if (girisAdet == 1 && zaman.after(giris1) && zaman.before(giris2))
 					aciklama = "";
 				else
 					aciklama = "Hatalı Kart Basıldı.";
@@ -324,6 +328,8 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			// iterator.remove();
 			// else
 			if (pdksPersonel.getPdks() == null || !pdksPersonel.getPdks())
+				iterator.remove();
+			else if (pdksPersonel.getSirket().isPdksMi() == false)
 				iterator.remove();
 
 		}
@@ -413,7 +419,25 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				}
 
 				try {
+					HashMap<Long, List<HareketKGS>> hareketMap = new HashMap<Long, List<HareketKGS>>();
+					HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
+					for (Iterator iterator2 = izinList.iterator(); iterator2.hasNext();) {
+						PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
+						Long id = personelIzin.getIzinSahibi().getId();
+						List<PersonelIzin> list = izinMap.containsKey(id) ? izinMap.get(id) : new ArrayList<PersonelIzin>();
+						if (list.isEmpty())
+							izinMap.put(id, list);
+						list.add(personelIzin);
 
+					}
+					for (Iterator iterator1 = kgsList.iterator(); iterator1.hasNext();) {
+						HareketKGS kgsHareket = (HareketKGS) iterator1.next();
+						Long id = kgsHareket.getPersonel().getPdksPersonel().getId();
+						List<HareketKGS> list = hareketMap.containsKey(id) ? hareketMap.get(id) : new ArrayList<HareketKGS>();
+						if (list.isEmpty())
+							hareketMap.put(id, list);
+						list.add(kgsHareket);
+					}
 					for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 						if (!vardiyaGun.getIslemVardiya().isCalisma()) {
@@ -423,29 +447,29 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 						vardiyaGun.setHareketler(null);
 						vardiyaGun.setGirisHareketleri(null);
 						vardiyaGun.setCikisHareketleri(null);
-
-						for (Iterator iterator1 = kgsList.iterator(); iterator1.hasNext();) {
-							HareketKGS kgsHareket = (HareketKGS) iterator1.next();
-							if (vardiyaGun.getPersonel().getId().equals(kgsHareket.getPersonel().getPdksPersonel().getId())) {
+						Long id = vardiyaGun.getPersonel().getId();
+						if (hareketMap.containsKey(id)) {
+							List<HareketKGS> list = hareketMap.get(id);
+							for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
+								HareketKGS kgsHareket = (HareketKGS) iterator1.next();
 								if (vardiyaGun.addHareket(kgsHareket, Boolean.TRUE))
 									iterator1.remove();
-
 							}
 						}
 
 						PersonelIzin izin = null;
-						for (Iterator iterator2 = izinList.iterator(); iterator2.hasNext();) {
-							PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-							if (vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
+						if (izinMap.containsKey(id)) {
+							List<PersonelIzin> list = izinMap.get(id);
+							for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {
+								PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
 								izin = ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
 								if (izin != null) {
 									iterator2.remove();
 									break;
 								}
-
 							}
-
 						}
+
 						boolean yaz = Boolean.TRUE;
 						if (vardiyaGun.getVardiya().isCalisma()) {
 							if (vardiyaGun.getHareketDurum()) {
