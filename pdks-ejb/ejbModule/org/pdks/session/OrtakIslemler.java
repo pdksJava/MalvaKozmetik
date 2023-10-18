@@ -16696,9 +16696,10 @@ public class OrtakIslemler implements Serializable {
 						for (AylikPuantaj aylikPuantaj : list) {
 							Long id = aylikPuantaj.getYonetici().getId();
 							Personel yonetici1 = personelMap.get(id);
+							Personel yoneticiUserClone = (Personel) yoneticiUser.clone();
 							if (yonetici1 == null) {
-								yoneticiUser.setAd(aylikPuantaj.getYonetici().getAdSoyad());
-								yonetici1 = yoneticiUser;
+								yoneticiUserClone.setAd(aylikPuantaj.getYonetici().getAdSoyad());
+								yonetici1 = yoneticiUserClone;
 							}
 							aylikPuantaj.setYonetici(yonetici1);
 						}
