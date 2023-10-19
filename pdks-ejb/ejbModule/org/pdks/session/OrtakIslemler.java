@@ -12702,9 +12702,8 @@ public class OrtakIslemler implements Serializable {
 		kodlar = null;
 		if (!izinTipiIdler.isEmpty()) {
 			parametreMap.clear();
-			parametreMap.put("bakiyeIzinTipi<>", null);
 			parametreMap.put("bakiyeIzinTipi.izinTipiTanim.id", izinTipiIdler);
-			parametreMap.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
+			parametreMap.put("personelGirisTipi=", IzinTipi.GIRIS_TIPI_YOK);
 			if (xSirket != null)
 				parametreMap.put("departman.id=", xSirket.getDepartman().getId());
 			if (session != null)

@@ -631,6 +631,48 @@
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatIzin)}" />
 						</ui:fragment>
 					</rich:column>
+					<rich:column rendered="#{fazlaMesaiHesaplaHome.ucretliIzinGunKod}" styleClass="#{aylikPuantaj.trSonucClass}"  headerClass="izinGrup"
+						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+						<f:facet name="header">
+							<ui:fragment>
+								<h:outputText value="#{ortakIslemler.ucretliIzinGunKod()}" id="baslik#{ortakIslemler.ucretliIzinGunKod()}" />
+								<rich:toolTip for="baslik#{ortakIslemler.ucretliIzinGunKod()}">
+									<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretli İzin Gün</B></SPAN>
+								</rich:toolTip>
+							</ui:fragment>
+						</f:facet>
+						<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.ucretliIzin!=0}">
+							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.ucretliIzin)}" />
+						</ui:fragment>
+					</rich:column>
+					<rich:column rendered="#{fazlaMesaiHesaplaHome.ucretsizIzinGunKod}" styleClass="#{aylikPuantaj.trSonucClass}" headerClass="izinGrup"
+						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+						<f:facet name="header">
+							<ui:fragment>
+								<h:outputText value="#{ortakIslemler.ucretsizIzinGunKod()}" id="baslik#{ortakIslemler.ucretsizIzinGunKod()}" />
+								<rich:toolTip for="baslik#{ortakIslemler.ucretsizIzinGunKod()}">
+									<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretsiz İzin Gün</B></SPAN>
+								</rich:toolTip>
+							</ui:fragment>
+						</f:facet>
+						<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.ucretsizIzin!=0}">
+							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.ucretsizIzin)}" />
+						</ui:fragment>
+					</rich:column>
+					<rich:column rendered="#{fazlaMesaiHesaplaHome.hastalikIzinGunKod}" styleClass="#{aylikPuantaj.trSonucClass}" headerClass="izinGrup"
+						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+						<f:facet name="header">
+							<ui:fragment>
+								<h:outputText value="#{ortakIslemler.hastalikIzinGunKod()}" id="baslik#{ortakIslemler.hastalikIzinGunKod()}" />
+								<rich:toolTip for="baslik#{ortakIslemler.hastalikIzinGunKod()}">
+									<SPAN style="font-size: 12px; font-weight: normal;"><B>Hastalık İzin Gün</B></SPAN>
+								</rich:toolTip>
+							</ui:fragment>
+						</f:facet>
+						<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.raporluIzin!=0}">
+							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.raporluIzin)}" />
+						</ui:fragment>
+					</rich:column>
 					<rich:column rendered="#{fazlaMesaiHesaplaHome.normalGunKod}" headerClass="bordroGun" styleClass="#{aylikPuantaj.trSonucClass}"
 						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
 						<f:facet name="header">
@@ -701,48 +743,7 @@
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.artikAdet)}" />
 						</ui:fragment>
 					</rich:column>
-					<rich:column rendered="#{fazlaMesaiHesaplaHome.ucretliIzinGunKod}" styleClass="#{aylikPuantaj.trSonucClass}"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background: #FFFFFF">
-						<f:facet name="header">
-							<ui:fragment>
-								<h:outputText value="#{ortakIslemler.ucretliIzinGunKod()}" id="baslik#{ortakIslemler.ucretliIzinGunKod()}" />
-								<rich:toolTip for="baslik#{ortakIslemler.ucretliIzinGunKod()}">
-									<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretli İzin Gün</B></SPAN>
-								</rich:toolTip>
-							</ui:fragment>
-						</f:facet>
-						<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.ucretliIzin!=0}">
-							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.ucretliIzin)}" />
-						</ui:fragment>
-					</rich:column>
-					<rich:column rendered="#{fazlaMesaiHesaplaHome.ucretsizIzinGunKod}" styleClass="#{aylikPuantaj.trSonucClass}" headerClass="izinGrup"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
-						<f:facet name="header">
-						<ui:fragment>
-							<h:outputText value="#{ortakIslemler.ucretsizIzinGunKod()}" id="baslik#{ortakIslemler.ucretsizIzinGunKod()}" />
-							<rich:toolTip for="baslik#{ortakIslemler.ucretsizIzinGunKod()}">
-								<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretsiz İzin Gün</B></SPAN>
-							</rich:toolTip>
-						</ui:fragment>
-						</f:facet>
-						<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.ucretsizIzin!=0}">
-							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.ucretsizIzin)}" />
-						</ui:fragment>
-					</rich:column>
-					<rich:column rendered="#{fazlaMesaiHesaplaHome.hastalikIzinGunKod}" styleClass="#{aylikPuantaj.trSonucClass}" headerClass="izinGrup"
-						style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
-						<f:facet name="header">
-						<ui:fragment>
-							<h:outputText value="#{ortakIslemler.hastalikIzinGunKod()}" id="baslik#{ortakIslemler.hastalikIzinGunKod()}" />
-							<rich:toolTip for="baslik#{ortakIslemler.hastalikIzinGunKod()}">
-								<SPAN style="font-size: 12px; font-weight: normal;"><B>Hastalık İzin Gün</B></SPAN>
-							</rich:toolTip>
-						</ui:fragment>
-						</f:facet>
-						<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.raporluIzin!=0}">
-							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.raporluIzin)}" />
-						</ui:fragment>
-					</rich:column>
+
 				</c:if>
 				<c:forEach items="#{fazlaMesaiHesaplaHome.izinTipiVardiyaList}" var="izinTipi">
 					<rich:column styleClass="#{aylikPuantaj.trSonucClass}" headerClass="tatilAylik"
