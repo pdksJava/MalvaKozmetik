@@ -1096,6 +1096,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		bosDepartman = null;
 		bosDepartmanKodu = ortakIslemler.getParameterKey("bosDepartmanKodu");
 		Personel pdksPersonel = personelView.getPdksPersonel();
+		if (pdksPersonel == null) {
+			pdksPersonel = new Personel();
+			personelView.setPdksPersonel(pdksPersonel);
+		}
+
 		if (!bosDepartmanKodu.equals("")) {
 			if (parentDepartman == null) {
 				fields.put("tipi", Tanim.TIPI_PERSONEL_EK_SAHA);
@@ -1144,7 +1149,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setInstance(pdksPersonel);
 		userMenuList(personelView.getKullanici());
 
-		Sirket sirket = pdksPersonel.getId() != null ? pdksPersonel.getSirket() : null;
+		Sirket sirket = pdksPersonel != null && pdksPersonel.getId() != null ? pdksPersonel.getSirket() : null;
 		User kullaniciPer = personelView.getKullanici();
 		onaysizIzinKullanilir = Boolean.FALSE;
 		ikinciYoneticiIzinOnayla = Boolean.FALSE;
@@ -1230,11 +1235,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			pdksPersonel.setAd(personelKGS.getAd());
 			pdksPersonel.setSoyad(personelKGS.getSoyad());
 			pdksPersonel.setDurum(personelKGS.getDurum());
-
-			pdksPersonel.setDogumTarihi(pdksPersonel.getDogumTarihi());
-			pdksPersonel.setIseBaslamaTarihi(pdksPersonel.getIseBaslamaTarihi());
-			pdksPersonel.setGrubaGirisTarihi(pdksPersonel.getIseBaslamaTarihi());
-			pdksPersonel.setIzinHakEdisTarihi(pdksPersonel.getIseBaslamaTarihi());
+			pdksPersonel.setDogumTarihi(personelKGS.getDogumTarihi());
+			pdksPersonel.setIseBaslamaTarihi(personelKGS.getIseBaslamaTarihi());
+			pdksPersonel.setGrubaGirisTarihi(personelKGS.getIseBaslamaTarihi());
+			pdksPersonel.setIzinHakEdisTarihi(personelKGS.getIseBaslamaTarihi());
 		} else {
 
 			if (personelView.getKullanici() == null) {
@@ -2309,9 +2313,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	}
 
 	public void instanceRefresh() {
-		if (getInstance().getId() != null) {
+		Personel pdksPersonel = getInstance();
+		if (pdksPersonel != null && pdksPersonel.getId() != null) {
 			try {
-				Personel pdksPersonel = getInstance();
 				if (pdksPersonel.getKullanici() != null && pdksPersonel.getKullanici().getId() != null)
 					session.refresh(pdksPersonel.getKullanici());
 				session.refresh(pdksPersonel);
@@ -2321,6 +2325,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				logger.error("PDKS hata out : " + e.getMessage());
 
 			}
+		} else {
+			personelView.setPdksPersonel(null);
+			personelView.setKullanici(null);
 		}
 
 	}

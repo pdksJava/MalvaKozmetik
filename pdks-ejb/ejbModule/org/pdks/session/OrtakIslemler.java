@@ -12703,7 +12703,7 @@ public class OrtakIslemler implements Serializable {
 		if (!izinTipiIdler.isEmpty()) {
 			parametreMap.clear();
 			parametreMap.put("bakiyeIzinTipi.izinTipiTanim.id", izinTipiIdler);
-			parametreMap.put("personelGirisTipi=", IzinTipi.GIRIS_TIPI_YOK);
+			parametreMap.put("bakiyeIzinTipi.personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
 			if (xSirket != null)
 				parametreMap.put("departman.id=", xSirket.getDepartman().getId());
 			if (session != null)
@@ -12715,18 +12715,15 @@ public class OrtakIslemler implements Serializable {
 		parametreMap.clear();
 		StringBuffer qsb = new StringBuffer();
 		qsb.append("SELECT S.* FROM " + PersonelIzin.TABLE_NAME + " S  WITH(nolock) ");
-
-		if (personeller != null && !personeller.isEmpty()) {
+ 		if (personeller != null && !personeller.isEmpty()) {
 			List<Long> idler = new ArrayList<Long>();
 			for (Personel p : personeller)
 				idler.add(p.getId());
-			// parametreMap.put("izinSahibi.id", idler);
-			parametreMap.put("p", idler);
+ 			parametreMap.put("p", idler);
 			qsb.append(" WHERE  S." + PersonelIzin.COLUMN_NAME_PERSONEL + " :p");
 			idler = null;
 			if (izinTipleri != null && !izinTipleri.isEmpty()) {
-
-				StringBuffer sb = new StringBuffer();
+ 				StringBuffer sb = new StringBuffer();
 				for (Iterator iterator = izinTipleri.iterator(); iterator.hasNext();) {
 					IzinTipi izinTipi = (IzinTipi) iterator.next();
 					sb.append(izinTipi.getId() + (iterator.hasNext() ? " , " : ""));
