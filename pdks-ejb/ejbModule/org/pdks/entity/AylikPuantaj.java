@@ -718,7 +718,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		if (value) {
 			if (personelDenklestirmeAylik == null || personelDenklestirmeAylik.isDenklestirme() == false)
 				value = false;
-			else if (pdksPersonel != null) {
+			else if (pdksPersonel != null && yonetici == null) {
 				Personel yoneticisi = pdksPersonel.getYoneticisi();
 				if (yoneticisi != null && (yonetici == null || yonetici.getId() == null)) {
 					String dateStr = (yil * 100 + ay) + "01";

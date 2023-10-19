@@ -16629,10 +16629,10 @@ public class OrtakIslemler implements Serializable {
 					yonetici.setSoyad("tanımsız!");
 				}
 				Date sonGun = null;
+				boolean yoneticiTanimli = !PdksUtil.hasStringValue(getParameterKey("yoneticiTanimsiz"));
 				if (calismayanPersonelYoneticiDurum && !aylikPuantajList.isEmpty())
 					sonGun = PdksUtil.tariheGunEkleCikar(aylikPuantajList.get(0).getSonGun(), 1);
 
-				boolean yoneticiTanimli = !PdksUtil.hasStringValue(getParameterKey("yoneticiTanimsiz"));
 				for (AylikPuantaj aylikPuantaj : aylikPuantajList) {
 					boolean yoneticiKontrol = true;
 					Personel personel = aylikPuantaj.getPdksPersonel();

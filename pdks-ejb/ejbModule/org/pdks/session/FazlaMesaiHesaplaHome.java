@@ -1368,6 +1368,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						manuelGirisGoster = "background-color: yellow;font-style: italic !important;";
 					kapiGirisSistemAdi = manuelGirisGoster.equals("") ? "" : ortakIslemler.getParameterKey("kapiGirisSistemAdi");
 				}
+				boolean yoneticiTanimli = !PdksUtil.hasStringValue(ortakIslemler.getParameterKey("yoneticiTanimsiz"));
 				for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 					AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
 					double negatifBakiyeDenkSaat = 0.0;
@@ -1715,6 +1716,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					puantaj.setAksamVardiyaSaatSayisi(aksamVardiyaSaatSayisi);
 					puantaj.setAksamVardiyaSayisi(aksamVardiyaSayisi);
 					puantaj.setFazlaMesaiHesapla(fazlaMesaiHesapla);
+					if (fazlaMesaiHesapla && puantaj.isFazlaMesaiHesapla() == false && puantaj.getYonetici() == null && yoneticiTanimli == false) {
+						puantaj.setYonetici(puantaj.getPdksPersonel());
+						puantaj.setFazlaMesaiHesapla(fazlaMesaiHesapla);
+						puantaj.setYonetici(null);
+					}
 					aylikPuantajSablon.setFazlaMesaiHesapla(fazlaMesaiHesapla);
 					ortakIslemler.puantajHaftalikPlanOlustur(Boolean.TRUE, null, vardiyalar, aylikPuantajSablon, puantaj);
 					personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
