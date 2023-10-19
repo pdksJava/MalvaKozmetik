@@ -1,6 +1,7 @@
 package org.pdks.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -9,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
@@ -27,7 +30,7 @@ public class PersonelKGS extends BasePDKSObject implements Serializable {
 	// public static final String TABLE_NAME = "PERSONEL_KGS";
 	public static final String TABLE_NAME = "PERSONEL_SIRKET_KGS";
 
- 	public static final String COLUMN_NAME_SICIL_NO = "PERSONEL_NO";
+	public static final String COLUMN_NAME_SICIL_NO = "PERSONEL_NO";
 	public static final String COLUMN_NAME_KIMLIK_NO = "TC_KIMLIK_NO";
 	public static final String COLUMN_NAME_PERSONEL_ID = "PERSONEL_ID";
 	public static final String COLUMN_NAME_KULLANICI_ID = "KULLANICI_ID";
@@ -37,12 +40,15 @@ public class PersonelKGS extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_ACIKLAMA = "AD_SOYAD";
 	public static final String COLUMN_NAME_KGS_ID = "KGS_ID";
 	public static final String COLUMN_NAME_KGS_SIRKET = "KGS_SIRKET_ID";
+	public static final String COLUMN_NAME_ISE_BASLAMA_TARIHI = "ISE_BASLAMA_TARIHI";
+	public static final String COLUMN_NAME_DOGUM_TARIHI = "DOGUM_TARIHI";
 
 	private Long kgsId;
 	private KapiSirket kapiSirket;
 	private String ad, soyad, sicilNo, kartNo, kimlikNo, adSoyad;
 	private Boolean durum = Boolean.FALSE;
 	private Personel pdksPersonel;
+	private Date dogumTarihi, iseBaslamaTarihi;
 	private User kullanici;
 
 	@Column(name = COLUMN_NAME_KGS_ID)
@@ -90,6 +96,26 @@ public class PersonelKGS extends BasePDKSObject implements Serializable {
 
 	public void setSicilNo(String sicilNo) {
 		this.sicilNo = sicilNo;
+	}
+
+	@Temporal(value = TemporalType.DATE)
+	@Column(name = COLUMN_NAME_DOGUM_TARIHI)
+	public Date getDogumTarihi() {
+		return dogumTarihi;
+	}
+
+	public void setDogumTarihi(Date dogumTarihi) {
+		this.dogumTarihi = dogumTarihi;
+	}
+
+	@Temporal(value = TemporalType.DATE)
+	@Column(name = COLUMN_NAME_ISE_BASLAMA_TARIHI)
+	public Date getIseBaslamaTarihi() {
+		return iseBaslamaTarihi;
+	}
+
+	public void setIseBaslamaTarihi(Date iseBaslamaTarihi) {
+		this.iseBaslamaTarihi = iseBaslamaTarihi;
 	}
 
 	@Column(name = COLUMN_NAME_DURUM)
