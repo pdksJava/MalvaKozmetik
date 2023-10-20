@@ -15731,8 +15731,7 @@ public class OrtakIslemler implements Serializable {
 		if (vardiyaGunList != null) {
 			DenklestirmeAy denklestirmeAy = personelDenklestirmeTasiyici.getDenklestirmeAy();
 			CalismaModeliAy calismaModeliAy = personelDenklestirmeTasiyici.getCalismaModeliAy();
-			CalismaModeli calismaModeli = calismaModeliAy.getCalismaModeli();
-			boolean otomatikFazlaCalismaOnaylansin = denklestirmeAy.isDurum(authenticatedUser) && calismaModeliAy != null && (calismaModeliAy.isOtomatikFazlaCalismaOnaylansinmi() || calismaModeli.isFazlaMesaiVarMi() == false);
+ 			boolean otomatikFazlaCalismaOnaylansin = denklestirmeAy.isDurum(authenticatedUser) && calismaModeliAy != null && calismaModeliAy.isOtomatikFazlaCalismaOnaylansinmi();
 			vardiyaIzinleriGuncelle(izinler, vardiyaGunList);
 			HashMap<Long, KapiKGS> hareketKapiUpdateMap = new HashMap<Long, KapiKGS>();
 			String donem = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
