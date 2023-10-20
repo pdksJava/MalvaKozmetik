@@ -173,24 +173,6 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private List<TempIzin> tempIzinList;
 
-	private Session session;
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
-	public PersonelIzin getMailIzin() {
-		return mailIzin;
-	}
-
-	public void setMailIzin(PersonelIzin mailIzin) {
-		this.mailIzin = mailIzin;
-	}
-
 	private Personel izinliSahibi;
 	private IzinTipi seciliIzinTipi;
 
@@ -1880,6 +1862,11 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	}
 
+	/**
+	 * @param personelIzinOnayId
+	 * @param onayDurum
+	 * @return
+	 */
 	public String izinOnayla(Long personelIzinOnayId, Integer onayDurum) {
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("id", personelIzinOnayId);
@@ -3595,12 +3582,18 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		return bakiyeYil;
 	}
 
+	/**
+	 * @param personelIzin
+	 * @param updateUser
+	 * @param izinDetayList
+	 * @return
+	 */
 	private String izniSistemKaydet(PersonelIzin personelIzin, User updateUser, List<PersonelIzinDetay> izinDetayList) {
 		String durum = "persist";
 		List<PersonelIzinDetay> list = null;
 
 		boolean isYeni = personelIzin.getId() == null;
-
+		IzinTipi izinTipi = personelIzin.getIzinTipi();
 		if (!isYeni) {
 			// izin detayları burada silelim, kontroller saglikli olabilsin diye
 			HashMap parametreMap = new HashMap();
@@ -3627,15 +3620,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_IK_ONAYINDA);
 
 			Integer izinHesapTipi = new Integer(hesapTipi);
-			if (personelIzin.getIzinTipi().getTakvimGunumu())
+			if (izinTipi.getTakvimGunumu())
 				izinHesapTipi = PersonelIzin.HESAP_TIPI_GUN;
-			else if (!personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK) && personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA && personelIzin.getIzinTipi().getHesapTipi() != null
-					&& seciliHesapTipi != personelIzin.getIzinTipi().getHesapTipi())
+			else if (!izinTipi.getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK) && personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA && izinTipi.getHesapTipi() != null && seciliHesapTipi != izinTipi.getHesapTipi())
 				izinHesapTipi = new Integer(seciliHesapTipi + 2);
-			if (personelIzin.getIzinTipi().getHesapTipi() != null)
-				izinHesapTipi = personelIzin.getIzinTipi().getHesapTipi();
+			if (izinTipi.getHesapTipi() != null)
+				izinHesapTipi = izinTipi.getHesapTipi();
 			personelIzin.setHesapTipi(izinHesapTipi);
-			if (personelIzin.getIzinTipi().isResmiTatilIzin())
+			if (izinTipi.isResmiTatilIzin())
 				personelIzin.setIzinSuresi(0D);
 
 			pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
@@ -3655,7 +3647,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				pdksEntityController.saveOrUpdate(session, entityManager, izinDetaytoSave);
 			}
 
-			if (personelIzin.getIzinTipi().isSSKIstirahat()) {
+			if (izinTipi.isSSKIstirahat()) {
 				istirahat.setAciklama(!istirahat.isHastane() ? istirahat.getVerenKurum() : istirahat.getVerenHekimAdi());
 				if (personelIzin.getId() != null) {
 					if (istirahat.getId() == null) {
@@ -3691,10 +3683,11 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 			}
 			boolean dosyaYazildi = Boolean.FALSE;
-			if (personelIzin.getIzinTipi().getDosyaEkle() != null && personelIzin.getIzinTipi().getDosyaEkle()) {
+
+			if (izinTipi.getDosyaEkle() != null && izinTipi.getDosyaEkle()) {
 				Dosya dosya = izinDosya.getDosya();
 				if (dosya != null) {
-					dosya.setAciklama(personelIzin.getIzinTipi().getIzinTipiTanim().getAciklama() + " dosyası");
+					dosya.setAciklama(izinTipi.getIzinTipiTanim().getAciklama() + " dosyası");
 					if (dosya.getDosyaIcerik() != null) {
 
 						pdksEntityController.saveOrUpdate(session, entityManager, dosya);
@@ -3805,8 +3798,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		boolean flush = Boolean.FALSE;
 		TreeMap<String, User> mailUserMap = new TreeMap<String, User>();
 		String mailPersonelAciklama = getMailPersonelAciklama(izinSahibi);
+		IzinTipi izinTipi = personelIzin.getIzinTipi();
 
-		if (personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK)) {
+		if (izinTipi.getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_YOK)) {
 			onayli = Boolean.FALSE;
 
 			if (izinSahibi.getPdksYonetici() != null) {
@@ -3875,7 +3869,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			onayliIzin = false;
 			personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 
-			if (personelIzin.getIzinTipi().isSSKIstirahat() && izinSahibi.getSirket().getDepartman().isAdminMi() && izinSahibi.getSirket().isErp()) {
+			if (izinTipi.isSSKIstirahat() && izinSahibi.getSirket().getDepartman().isAdminMi() && izinSahibi.getSirket().isErp()) {
 				List<User> bbcUser = ortakIslemler.getGenelMudurBul(session);
 
 				if (bbcUser != null) {
@@ -3888,12 +3882,13 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 				}
 			} else if (authenticatedUser.isAdmin() || authenticatedUser.isIK())
-				toList.add(authenticatedUser);
+				if (ccMailList.isEmpty())
+					ccMailList.add(authenticatedUser.getEmail());
 		} else {
 
 			if (!isGenelMudur && !isProjeMuduru)
 				toList = ortakIslemler.izinOnayIslemleri(personelIzin, authenticatedUser, session);
-			else if (isGenelMudur || isProjeMuduru || personelIzin.getIzinTipi().getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_IK)) {
+			else if (isGenelMudur || isProjeMuduru || izinTipi.getOnaylayanTipi().equals(IzinTipi.ONAYLAYAN_TIPI_IK)) {
 				PersonelIzinOnay yeniPersonelIzinOnay = new PersonelIzinOnay();
 				yeniPersonelIzinOnay.setOnayDurum(PersonelIzinOnay.ONAY_DURUM_ISLEM_YAPILMADI);
 				yeniPersonelIzinOnay.setDurum(Boolean.TRUE);
@@ -3945,6 +3940,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			ccIlebccMailKarsilastir();
 
 			String render = "/email/" + mailAdres;
+//			if (onayli == false && toList != null && !toList.isEmpty()) {
+//				List<String> list = new ArrayList<String>();
+//				for (User user : toList) {
+//					list.add(user.getEmail());
+//				}
+//				mailListesineEkle(ccMailList, list);
+//				list = null;
+//			}
 
 			if ((onayli && toList != null && !toList.isEmpty()) || (onayli == false && ccMailList != null && !ccMailList.isEmpty())) {
 				if (onayli && personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_IK_ONAYINDA) {
@@ -3953,7 +3956,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 				}
 				adminBcc();
-				if (personelIzin.getIzinTipi().getMailGonderimDurumu() != null)
+				if (izinTipi.getMailGonderimDurumu() != null)
 					bilgiMailleriniEkle(personelIzin);
 
 				if (flush)
@@ -5737,6 +5740,24 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	public void setServisAktarDurum(boolean servisAktarDurum) {
 		this.servisAktarDurum = servisAktarDurum;
+	}
+
+	private Session session;
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public PersonelIzin getMailIzin() {
+		return mailIzin;
+	}
+
+	public void setMailIzin(PersonelIzin mailIzin) {
+		this.mailIzin = mailIzin;
 	}
 
 }
