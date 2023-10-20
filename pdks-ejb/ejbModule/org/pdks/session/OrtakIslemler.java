@@ -14414,7 +14414,7 @@ public class OrtakIslemler implements Serializable {
 					cal.setTime(vardiyaGun.getVardiyaDate());
 					int ayinSonGunu = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 					Date digerAyinIlkGunu = vardiyaGun.isAyinGunu() && ayinSonGunu == Integer.parseInt(gun) ? PdksUtil.tariheGunEkleCikar(vardiyaGun.getVardiyaDate(), 1) : null;
-
+					boolean tatilGunu = tatilGunleriMap != null && tatilGunleriMap.containsKey(vGun);
 					vardiyaGun.setResmiTatilSure(0);
 					vardiyaGun.setHaftaTatilDigerSure(0);
 					vardiyaGun.setBayramCalismaSuresi(0);
@@ -14652,7 +14652,7 @@ public class OrtakIslemler implements Serializable {
 								if (girisZaman.before(ilkGun) && cikisId.equals(""))
 									continue;
 								PersonelFazlaMesai personelFazlaMesai = girisHareket.getPersonelFazlaMesai() != null ? girisHareket.getPersonelFazlaMesai() : cikisHareket.getPersonelFazlaMesai();
-								if (girisHareket.isOrjinalZamanGetir() || cikisHareket.isOrjinalZamanGetir()) {
+								if (tatilGunu == false && (girisHareket.isOrjinalZamanGetir() || cikisHareket.isOrjinalZamanGetir())) {
 									if (personelFazlaMesai == null) {
 										boolean devam = true;
 										List<String> idList = new ArrayList<String>();
@@ -14671,6 +14671,7 @@ public class OrtakIslemler implements Serializable {
 											fields = null;
 										}
 										idList = null;
+
 										if (devam) {
 											if (fazlaMesaiOnayDurum == null)
 												fazlaMesaiOnayDurum = otomatikFazlaMesaiOnayTanimGetir(session);
@@ -15742,9 +15743,9 @@ public class OrtakIslemler implements Serializable {
 				vardiyaGun.setFazlaMesailer(null);
 
 				String key = vardiyaGun.getVardiyaDateStr();
-				if (donem != null && !vardiyaGun.isAyinGunu())
+				if (donem != null)
 					vardiyaGun.setAyinGunu(key.startsWith(donem));
-
+				boolean otomatikOnayKontrol = vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().isCalisma();
 				HashMap<String, PersonelFazlaMesai> mesaiMap = new HashMap<String, PersonelFazlaMesai>();
 				for (Iterator<PersonelFazlaMesai> iterator4 = fazlaMesailer.iterator(); iterator4.hasNext();) {
 					PersonelFazlaMesai personelFazlaMesai = iterator4.next();
@@ -15809,7 +15810,7 @@ public class OrtakIslemler implements Serializable {
 									// TODO isOtomatikFazlaCalismaOnaylansinmi GETİR
 									List<HareketKGS> vardiyaHareketler = null;
 									hareket.setOrjinalZamanGetir(false);
- 									if (hareket.getKapiView() != null && hareket.getKapiView().getKapi() != null)
+									if (otomatikOnayKontrol && hareket.getKapiView() != null && hareket.getKapiView().getKapi() != null)
 										vardiyaHareketler = hareket.getKapiView().getKapi().isGirisKapi() ? vardiyaGun.getGirisHareketleri() : vardiyaGun.getCikisHareketleri();
 									if (vardiyaHareketler != null && !vardiyaHareketler.isEmpty()) {
 										HareketKGS yeniHareket = vardiyaHareketler.get(vardiyaHareketler.size() - 1);
@@ -15823,7 +15824,7 @@ public class OrtakIslemler implements Serializable {
 										}
 										hareket.setOrjinalZamanGetir(yeniHareket.isOrjinalZamanGetir());
 									}
- 									hareketList.add(hareket);
+									hareketList.add(hareket);
 									if (kapiDegistirKontrol) {
 										KapiKGS kapiKGS = hareket.getKapiKGS();
 										if (!bagliKapiVar)
