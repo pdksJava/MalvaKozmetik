@@ -3882,8 +3882,13 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 				}
 			} else if (authenticatedUser.isAdmin() || authenticatedUser.isIK())
-				if (ccMailList.isEmpty())
-					ccMailList.add(authenticatedUser.getEmail());
+				if (ccMailList.isEmpty()) {
+					User sistUser = ortakIslemler.getSistemAdminUser(session);
+					if (sistUser == null)
+						sistUser = authenticatedUser;
+					ccMailList.add(sistUser.getEmail());
+				}
+
 		} else {
 
 			if (!isGenelMudur && !isProjeMuduru)
@@ -3940,14 +3945,6 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			ccIlebccMailKarsilastir();
 
 			String render = "/email/" + mailAdres;
-//			if (onayli == false && toList != null && !toList.isEmpty()) {
-//				List<String> list = new ArrayList<String>();
-//				for (User user : toList) {
-//					list.add(user.getEmail());
-//				}
-//				mailListesineEkle(ccMailList, list);
-//				list = null;
-//			}
 
 			if ((onayli && toList != null && !toList.isEmpty()) || (onayli == false && ccMailList != null && !ccMailList.isEmpty())) {
 				if (onayli && personelIzin.getIzinDurumu() != PersonelIzin.IZIN_DURUMU_IK_ONAYINDA) {
