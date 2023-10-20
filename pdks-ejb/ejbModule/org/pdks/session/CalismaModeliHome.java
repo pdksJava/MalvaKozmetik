@@ -277,10 +277,10 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		if (!hareketKaydiVardiyaBul || !otomatikFazlaCalismaOnaylansinVar) {
 			for (CalismaModeli cm : calismaModeliList) {
 				if (cm.getDurum()) {
-					if (!hareketKaydiVardiyaBul)
-						hareketKaydiVardiyaBul = cm.isOtomatikFazlaCalismaOnaylansinmi();
 					if (!otomatikFazlaCalismaOnaylansinVar)
-						otomatikFazlaCalismaOnaylansinVar = cm.isHareketKaydiVardiyaBulsunmu();
+						otomatikFazlaCalismaOnaylansinVar = cm.isOtomatikFazlaCalismaOnaylansinmi();
+					if (!hareketKaydiVardiyaBul)
+						hareketKaydiVardiyaBul = cm.isHareketKaydiVardiyaBulsunmu();
 				}
 
 			}
