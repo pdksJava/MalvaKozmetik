@@ -23,8 +23,12 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 	 */
 	private static final long serialVersionUID = 4015750209129001721L;
 	public static final String TABLE_NAME = "CALISMA_MODELI_AY";
- 	public static final String COLUMN_NAME_DONEM = "DONEM_ID";
+
+	public static final String COLUMN_NAME_DONEM = "DONEM_ID";
 	public static final String COLUMN_NAME_CALISMA_MODELI = "CALISMA_MODELI_ID";
+	public static final String COLUMN_NAME_DURUM = "DURUM";
+	public static final String COLUMN_NAME_SURE = "SURE";
+	public static final String COLUMN_NAME_OTOMATIK_FAZLA_CALISMA_ONAYLANSIN = "OTOMATIK_FAZLA_CALISMA_ONAYLANSIN";
 	public static final String COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL = "HAREKET_KAYDI_VARDIYA_BUL";
 
 	private DenklestirmeAy denklestirmeAy;
@@ -33,7 +37,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 
 	private double sure = 0, toplamIzinSure = 0, negatifBakiyeDenkSaat = 0.0d;
 
-	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE;
+	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
 
 	public CalismaModeliAy() {
 		super();
@@ -107,6 +111,15 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 		this.hareketKaydiVardiyaBul = hareketKaydiVardiyaBul;
 	}
 
+	@Column(name = COLUMN_NAME_OTOMATIK_FAZLA_CALISMA_ONAYLANSIN)
+	public Boolean getOtomatikFazlaCalismaOnaylansin() {
+		return otomatikFazlaCalismaOnaylansin;
+	}
+
+	public void setOtomatikFazlaCalismaOnaylansin(Boolean otomatikFazlaCalismaOnaylansin) {
+		this.otomatikFazlaCalismaOnaylansin = otomatikFazlaCalismaOnaylansin;
+	}
+
 	@Transient
 	public static String getKey(DenklestirmeAy xDenklestirmeAy, CalismaModeli xCalismaModeli) {
 		String key = (xDenklestirmeAy != null ? xDenklestirmeAy.getId() : 0) + "_" + (xCalismaModeli != null ? xCalismaModeli.getId() : 0);
@@ -116,6 +129,11 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 	@Transient
 	public boolean isHareketKaydiVardiyaBulsunmu() {
 		return hareketKaydiVardiyaBul != null && hareketKaydiVardiyaBul.booleanValue();
+	}
+
+	@Transient
+	public boolean isOtomatikFazlaCalismaOnaylansinmi() {
+		return otomatikFazlaCalismaOnaylansin != null && otomatikFazlaCalismaOnaylansin.booleanValue();
 	}
 
 	@Transient

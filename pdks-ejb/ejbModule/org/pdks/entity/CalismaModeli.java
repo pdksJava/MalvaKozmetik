@@ -31,6 +31,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_GENEL_VARDIYA = "GENEL_VARDIYA";
 	public static final String COLUMN_NAME_HAFTA_TATIL_MESAI_ODE = "HAFTA_TATIL_MESAI_ODE";
 	public static final String COLUMN_NAME_GECE_HAFTA_TATIL_MESAI_PARCALA = "GECE_HAFTA_TATIL_MESAI_PARCALA";
+	public static final String COLUMN_NAME_OTOMATIK_FAZLA_CALISMA_ONAYLANSIN = "OTOMATIK_FAZLA_CALISMA_ONAYLANSIN";
 	public static final String COLUMN_NAME_GECE_CALISMA_ODEME_VAR = "GECE_CALISMA_ODEME_VAR";
 	public static final String COLUMN_NAME_OLUSTURAN = "OLUSTURANUSER_ID";
 	public static final String COLUMN_NAME_GUNCELLEYEN = "GUNCELLEYENUSER_ID";
@@ -48,7 +49,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
 
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
-	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE;
+	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
 	private Boolean ortakVardiya = Boolean.FALSE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
@@ -136,6 +137,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	public void setHaftaTatilMesaiOde(Boolean haftaTatilMesaiOde) {
 		this.haftaTatilMesaiOde = haftaTatilMesaiOde;
+	}
+
+	@Column(name = COLUMN_NAME_OTOMATIK_FAZLA_CALISMA_ONAYLANSIN)
+	public Boolean getOtomatikFazlaCalismaOnaylansin() {
+		return otomatikFazlaCalismaOnaylansin;
+	}
+
+	public void setOtomatikFazlaCalismaOnaylansin(Boolean otomatikFazlaCalismaOnaylansin) {
+		this.otomatikFazlaCalismaOnaylansin = otomatikFazlaCalismaOnaylansin;
 	}
 
 	@Column(name = COLUMN_NAME_GECE_HAFTA_TATIL_MESAI_PARCALA)
@@ -348,6 +358,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		}
 
 		return izinSure;
+	}
+
+	@Transient
+	public boolean isOtomatikFazlaCalismaOnaylansinmi() {
+		return otomatikFazlaCalismaOnaylansin != null && otomatikFazlaCalismaOnaylansin.booleanValue();
 	}
 
 	@Transient

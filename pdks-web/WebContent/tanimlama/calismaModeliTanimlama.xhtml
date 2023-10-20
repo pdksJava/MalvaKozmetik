@@ -132,7 +132,12 @@
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.hareketKaydiVardiyaBul)}" />
 						</rich:column>
-
+						<rich:column rendered="#{calismaModeliHome.otomatikFazlaCalismaOnaylansinVar}">
+							<f:facet name="header">
+								<h:outputText value="Fazla Çalışma Otomatik Onaylansın" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.otomatikFazlaCalismaOnaylansin)}" />
+						</rich:column>
 						<rich:column rendered="#{ortakIslemler.getParameterKey('haftaTatilDurum')=='1'}">
 							<f:facet name="header">
 								<h:outputText value="Hafta Sonu Fazla Mesai Ode" />
@@ -295,9 +300,16 @@
 							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{calismaModeliHome.hareketKaydiVardiyaBul or calismaModeliHome.calismaModeli.hareketKaydiVardiyaBul}">
+							rendered="#{calismaModeliHome.otomatikFazlaCalismaOnaylansinVar or calismaModeliHome.calismaModeli.otomatikFazlaCalismaOnaylansin}">
 							<ui:define name="label">Hareket Kayıtlarından Vardiya Bul</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.hareketKaydiVardiyaBul}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{calismaModeliHome.otomatikFazlaCalismaOnaylansinVar or calismaModeliHome.calismaModeli.otomatikFazlaCalismaOnaylansin}">
+							<ui:define name="label">Fazla Çalışma Otomatik Onaylansın</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.otomatikFazlaCalismaOnaylansin}" disabled="#{authenticatedUser.admin==false}">
 
 							</h:selectBooleanCheckbox>
 						</s:decorate>

@@ -54,6 +54,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 	private VardiyaGun sonVardiyaGun, oncekiVardiyaGun;
 	private CalismaModeli calismaModeli;
 	private DenklestirmeAy denklestirmeAy;
+	private CalismaModeliAy calismaModeliAy;
 	private Integer version = 0;
 
 	public PersonelDenklestirmeTasiyici() {
@@ -417,5 +418,25 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 
 	public Personel getPdksPersonel() {
 		return personel;
+	}
+
+	/**
+	 * @return the calismaModeliAy
+	 */
+	public CalismaModeliAy getCalismaModeliAy() {
+		return calismaModeliAy;
+	}
+
+	/**
+	 * @param calismaModeliAy
+	 *            the calismaModeliAy to set
+	 */
+	public void setCalismaModeliAy(CalismaModeliAy value) {
+		if (value != null) {
+			this.denklestirmeAy = value.getDenklestirmeAy();
+			this.calismaModeli = value.getCalismaModeli();
+		}
+
+		this.calismaModeliAy = value;
 	}
 }

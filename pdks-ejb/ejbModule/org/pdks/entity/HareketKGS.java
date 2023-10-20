@@ -74,7 +74,7 @@ public class HareketKGS implements Serializable, Cloneable {
 	private Boolean gecerliYemek;
 	private Long kapiId;
 	private Long personelId;
-	private boolean tatil = Boolean.FALSE, puantajOnayDurum, cokluOgun = Boolean.FALSE, gecerliDegil = Boolean.FALSE;
+	private boolean tatil = Boolean.FALSE, puantajOnayDurum, cokluOgun = Boolean.FALSE, gecerliDegil = Boolean.FALSE, orjinalZamanGetir = Boolean.FALSE;
 	private HareketKGS cikisHareket, girisHareket;
 	private YemekOgun yemekOgun;
 	private List<HareketKGS> yemekList;
@@ -172,7 +172,8 @@ public class HareketKGS implements Serializable, Cloneable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = COLUMN_NAME_ZAMAN, nullable = false)
 	public Date getZaman() {
-		return this.zaman;
+		Date date = orjinalZamanGetir == false || orjinalZaman == null ? zaman : orjinalZaman;
+		return date;
 	}
 
 	public void setZaman(Date vaue) {
@@ -609,6 +610,19 @@ public class HareketKGS implements Serializable, Cloneable {
 
 	public void setKapiSirket(KapiSirket kapiSirket) {
 		this.kapiSirket = kapiSirket;
+	}
+
+	@Transient
+	public boolean isOrjinalZamanGetir() {
+		return orjinalZamanGetir;
+	}
+
+	/**
+	 * @param orjinalZamanGetir
+	 *            the orjinalZamanGetir to set
+	 */
+	public void setOrjinalZamanGetir(boolean value) {
+		this.orjinalZamanGetir = value;
 	}
 
 }

@@ -564,6 +564,11 @@ public class PersonelDenklestirme extends BaseObject {
 	}
 
 	@Transient
+	public boolean isOtomatikFazlaCalismaOnaylansinmi() {
+		return calismaModeliAy != null && calismaModeliAy.isOtomatikFazlaCalismaOnaylansinmi();
+	}
+
+	@Transient
 	public PersonelDenklestirme getPersonelDenklestirmeDB() {
 		return personelDenklestirmeDB;
 	}

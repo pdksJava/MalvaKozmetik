@@ -159,12 +159,17 @@
 												<f:validateDoubleRange maximum="0" />
 											</h:inputText>
 										</s:decorate>
-
-
 										<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.hareketKaydiVardiyaBul}">
 											<ui:define name="label">#{md.calismaModeli.aciklama} Hareket Kayıtlarından Vardiya Bul</ui:define>
 											<h:selectBooleanCheckbox value="#{md.hareketKaydiVardiyaBul}"
 												disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or (md.hareketKaydiVardiyaBulsunmu==false and md.calismaModeli.hareketKaydiVardiyaBulsunmu==false)}">
+											</h:selectBooleanCheckbox>
+										</s:decorate>
+
+										<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin and vardiyaTanimlaHome.otomatikFazlaCalismaOnaylansinVar}">
+											<ui:define name="label">#{md.calismaModeli.aciklama}Fazla Çalışma Otomatik Onaylansın</ui:define>
+											<h:selectBooleanCheckbox value="#{md.hareketKaydiVardiyaBul}"
+												disabled="#{vardiyaTanimlaHome.denklestirmeAy.durum==false or (md.otomatikFazlaCalismaOnaylansin==false and md.calismaModeli.otomatikFazlaCalismaOnaylansin==false)}">
 											</h:selectBooleanCheckbox>
 										</s:decorate>
 									</c:if>
