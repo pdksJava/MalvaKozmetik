@@ -15731,7 +15731,8 @@ public class OrtakIslemler implements Serializable {
 		if (vardiyaGunList != null) {
 			DenklestirmeAy denklestirmeAy = personelDenklestirmeTasiyici.getDenklestirmeAy();
 			CalismaModeliAy calismaModeliAy = personelDenklestirmeTasiyici.getCalismaModeliAy();
-			boolean otomatikFazlaCalismaOnaylansin = denklestirmeAy.isDurum(authenticatedUser) && calismaModeliAy != null && calismaModeliAy.isOtomatikFazlaCalismaOnaylansinmi();
+			CalismaModeli calismaModeli = calismaModeliAy.getCalismaModeli();
+			boolean otomatikFazlaCalismaOnaylansin = denklestirmeAy.isDurum(authenticatedUser) && calismaModeliAy != null && (calismaModeliAy.isOtomatikFazlaCalismaOnaylansinmi() || calismaModeli.isFazlaMesaiVarMi() == false);
 			vardiyaIzinleriGuncelle(izinler, vardiyaGunList);
 			HashMap<Long, KapiKGS> hareketKapiUpdateMap = new HashMap<Long, KapiKGS>();
 			String donem = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
@@ -15745,7 +15746,7 @@ public class OrtakIslemler implements Serializable {
 				String key = vardiyaGun.getVardiyaDateStr();
 				if (donem != null)
 					vardiyaGun.setAyinGunu(key.startsWith(donem));
-				boolean otomatikOnayKontrol = vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().isCalisma();
+				boolean otomatikOnayKontrol = otomatikFazlaCalismaOnaylansin && vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().isCalisma();
 				HashMap<String, PersonelFazlaMesai> mesaiMap = new HashMap<String, PersonelFazlaMesai>();
 				for (Iterator<PersonelFazlaMesai> iterator4 = fazlaMesailer.iterator(); iterator4.hasNext();) {
 					PersonelFazlaMesai personelFazlaMesai = iterator4.next();
@@ -15809,6 +15810,7 @@ public class OrtakIslemler implements Serializable {
 								if (vardiyaGun.addHareket(hareket, Boolean.TRUE)) {
 									// TODO isOtomatikFazlaCalismaOnaylansinmi GETİR
 									List<HareketKGS> vardiyaHareketler = null;
+
 									hareket.setOrjinalZamanGetir(false);
 									if (otomatikOnayKontrol && hareket.getKapiView() != null && hareket.getKapiView().getKapi() != null)
 										vardiyaHareketler = hareket.getKapiView().getKapi().isGirisKapi() ? vardiyaGun.getGirisHareketleri() : vardiyaGun.getCikisHareketleri();
