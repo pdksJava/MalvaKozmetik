@@ -127,6 +127,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private String COL_AKSAM_SAAT_MESAI = "aksamSaatMesai";
 	private String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
 	private String COL_EKSIK_CALISMA = "eksikCalisma";
+	private String COL_CALISMA_MODELI = "calismaModeli";
 
 	private Sheet sheet;
 
@@ -144,7 +145,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private Dosya fazlaMesaiDosya = new Dosya();
-	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, hataliVeriGetir;
+	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, calismaModeliDurum = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, hataliVeriGetir;
 	private List<Vardiya> izinTipiVardiyaList;
 	private TreeMap<String, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap;
 	private TreeMap<String, Tanim> baslikMap;
@@ -467,6 +468,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		bordroAdres = null;
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
+		calismaModeliDurum = Boolean.FALSE;
 		haftaCalisma = Boolean.FALSE;
 		resmiTatilDurum = Boolean.FALSE;
 		maasKesintiGoster = Boolean.FALSE;
@@ -585,10 +587,20 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					}
 					List<Liste> listeler = PdksUtil.sortObjectStringAlanList(new ArrayList(listeMap.values()), "getId", null);
 					personelDenklestirmeList.clear();
+					List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>();
 					for (Liste liste : listeler) {
 						List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
-						personelDenklestirmeList.addAll(list);
+						for (AylikPuantaj aylikPuantaj : list) {
+							if (aylikPuantaj.getPersonelDenklestirmeAylik().getDurum().equals(Boolean.TRUE))
+								aktifList.add(aylikPuantaj);
+							else
+								personelDenklestirmeList.add(aylikPuantaj);
+						}
+
 					}
+					if (!aktifList.isEmpty())
+						personelDenklestirmeList.addAll(aktifList);
+					aktifList = null;
 					listeMap = null;
 					listeler = null;
 					fields.clear();
@@ -779,6 +791,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				DataFormat df = wb.createDataFormat();
 				numberStyle.setDataFormat(df.getFormat("###"));
 				int row = 0, col = 0;
+				calismaModeliDurum = Boolean.FALSE;
 				for (Iterator iterator = bordroAlanlari.iterator(); iterator.hasNext();) {
 					Tanim tanim = (Tanim) iterator.next();
 					String kodu = tanim.getKodu();
@@ -787,6 +800,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						iterator.remove();
 						continue;
 					}
+
 					if (kodu.startsWith(COL_KART_NO) && kartNoAciklamaGoster == false) {
 						iterator.remove();
 						continue;
@@ -839,7 +853,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					PersonelKGS personelKGS = personel.getPersonelKGS();
 					for (Tanim tanim : bordroAlanlari) {
 						String kodu = tanim.getKodu();
-						if (kodu.equals(COL_SIRA))
+						if (kodu.startsWith(COL_CALISMA_MODELI)) {
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ap.getCalismaModeli().getAciklama());
+						} else if (kodu.equals(COL_SIRA))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
 						else if (kodu.equals(COL_YIL))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
@@ -1666,5 +1682,35 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	public void setDenklestirmeAy(DenklestirmeAy denklestirmeAy) {
 		this.denklestirmeAy = denklestirmeAy;
+	}
+
+	/**
+	 * @return the cOL_CALISMA_MODELI
+	 */
+	public String getCOL_CALISMA_MODELI() {
+		return COL_CALISMA_MODELI;
+	}
+
+	/**
+	 * @param cOL_CALISMA_MODELI
+	 *            the cOL_CALISMA_MODELI to set
+	 */
+	public void setCOL_CALISMA_MODELI(String cOL_CALISMA_MODELI) {
+		COL_CALISMA_MODELI = cOL_CALISMA_MODELI;
+	}
+
+	/**
+	 * @return the calismaModeliDurum
+	 */
+	public Boolean getCalismaModeliDurum() {
+		return calismaModeliDurum;
+	}
+
+	/**
+	 * @param calismaModeliDurum
+	 *            the calismaModeliDurum to set
+	 */
+	public void setCalismaModeliDurum(Boolean calismaModeliDurum) {
+		this.calismaModeliDurum = calismaModeliDurum;
 	}
 }

@@ -127,7 +127,7 @@
 											<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20"
 												title="#{ortakIslemler.getMenuUserAdi(denklestirmeBordroRaporuHome.session,'fazlaMesaiHesapla')} Hatalı Göster" />
 										</ui:fragment>
- 									</a4j:commandLink>
+									</a4j:commandLink>
 
 
 
@@ -164,7 +164,13 @@
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.pdksYonetici.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
+								<rich:column style="text-align: left;">
+									<f:facet name="header">
+										<h:outputText value="Çalışma Modeli" />
 
+									</f:facet>
+									<h:outputText value="#{puantaj.calismaModeli.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+								</rich:column>
 								<rich:column style="text-align: center;" headerClass="bordroGun">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_ADET)}" />
