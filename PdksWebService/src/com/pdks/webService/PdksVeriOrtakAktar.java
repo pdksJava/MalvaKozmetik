@@ -2772,8 +2772,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 								addHatalist(bayanSoyad == false ? personelERP.getHataList() : kidemHataList, PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
 							} else {
-								PersonelKGS personel = personelKGSMap.get(personelNo);
-								String kgsAd = personel.getAd();
+								PersonelKGS personelKGS = personelKGSMap.get(personelNo);
+								String kgsAd = personelKGS.getAd();
 								if (sistemDestekVar && ad != null && kgsAd != null && !ad.equals(kgsAd)) {
 									if (ad.indexOf(" ") > 0 || kgsAd.indexOf(" ") > 0) {
 										if (ad.indexOf(" ") > 0)
@@ -2784,7 +2784,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								}
 
 								boolean adiUyumlu = isBenzer(ad, kgsAd);
-								boolean soyadiUyumlu = isBenzer(personel.getSoyad(), soyad);
+								boolean soyadiUyumlu = isBenzer(personelKGS.getSoyad(), soyad);
 								if (!adiUyumlu || !soyadiUyumlu) {
 									String mesaj = "";
 									if (!adiUyumlu && !soyadiUyumlu)
@@ -2795,11 +2795,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 										mesaj = "soyadi";
 										bayanSoyad = personelTest.isCinsiyetBayan();
 										if (bayanSoyad)
-											personelERP.setSoyadi(personel.getSoyad());
+											personelERP.setSoyadi(personelKGS.getSoyad());
 
 									}
 
-									mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " farklı " + personel.getAdSoyad() + " ) ";
+									mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " farklı " + personelKGS.getAdSoyad() + (personelKGS.getKapiSirket() != null ? " [ " + personelKGS.getKapiSirket().getAciklama() + " ] " : "") + " ) ";
 									addHatalist(bayanSoyad == false ? personelERP.getHataList() : kidemHataList, PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
 								}
