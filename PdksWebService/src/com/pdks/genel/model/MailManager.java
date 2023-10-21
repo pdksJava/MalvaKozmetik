@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.pdks.entity.ServiceData;
 import com.pdks.mail.model.MailFile;
 import com.pdks.mail.model.MailObject;
@@ -380,6 +381,7 @@ public class MailManager implements Serializable {
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("\\u003c", "<");
 			map.put("\\u003e", ">");
+			map.put("\\u0026", "&");
 			for (String pattern : map.keySet()) {
 				if (str.indexOf(pattern) > 0)
 					str = PdksUtil.replaceAll(str, pattern, map.get(pattern));

@@ -465,6 +465,7 @@ public class MailManager implements Serializable {
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("\\u003c", "<");
 			map.put("\\u003e", ">");
+			map.put("\\u0026", "&");
 			for (String pattern : map.keySet()) {
 				if (str.indexOf(pattern) > 0)
 					str = PdksUtil.replaceAllManuel(str, pattern, map.get(pattern));
