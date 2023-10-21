@@ -724,28 +724,29 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (kartNoAciklamaGoster == null)
 				kartNoAciklamaGoster = false;
 			List<AylikPuantaj> list = new ArrayList<AylikPuantaj>();
-
 			for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
 				if (aylikPuantaj.getPersonelDenklestirmeAylik().getDurum().equals(Boolean.FALSE))
 					continue;
 				list.add(aylikPuantaj);
-				Personel personel = aylikPuantaj.getPdksPersonel();
-				PersonelKGS personelKGS = personel.getPersonelKGS();
-				if (personelKGS != null) {
-					if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
-						kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
-						if (kartNoAciklamaGoster && kimlikNoGoster)
-							break;
-					}
-
-					if (!kimlikNoGoster) {
-						kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
-						if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
-							break;
-					}
-				}
 			}
 			if (!list.isEmpty()) {
+				for (AylikPuantaj aylikPuantaj : list) {
+					Personel personel = aylikPuantaj.getPdksPersonel();
+					PersonelKGS personelKGS = personel.getPersonelKGS();
+					if (personelKGS != null) {
+						if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
+							kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
+							if (kartNoAciklamaGoster && kimlikNoGoster)
+								break;
+						}
+
+						if (!kimlikNoGoster) {
+							kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
+							if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
+								break;
+						}
+					}
+				}
 				String ayAdi = null;
 				for (SelectItem si : aylar) {
 					if (si.getValue().equals(ay))
