@@ -4293,7 +4293,9 @@ public class OrtakIslemler implements Serializable {
 	@Transactional
 	public void saveLastParameter(LinkedHashMap<String, Object> map, Session session) {
 		String key = authenticatedUser.getCalistigiSayfa(), lastParameterValue = getParameterKey("lastParameterValue");
-		if (key != null && map != null && (authenticatedUser.isAdmin() || lastParameterValue.equals("1"))) {
+		if (map.containsKey("sayfaURL"))
+			key = (String) map.get("sayfaURL");
+ 		if (key != null && map != null && (authenticatedUser.isAdmin() || lastParameterValue.equals("1"))) {
 			try {
 				HashMap parametreMap = new HashMap();
 				StringBuffer sb = new StringBuffer();

@@ -118,6 +118,10 @@
 
 							</a4j:outputPanel>
 						</c:if>
+						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.linkBordroAdres!=null}">
+							<br />
+							<f:verbatim>#{bordroAdres}</f:verbatim>
+						</ui:fragment>
 					</h:panelGrid>
 					<rich:panel id="denklestirmeDonemiTable" style="overflow: auto;">
 						<a4j:outputPanel id="hareketTables">
@@ -265,7 +269,7 @@
 								<h:outputText value="Hareket No" />
 							</f:facet>
 							<SPAN id="hareket#{hareket.id}"> <h:outputText value="#{hareket.id}" /></SPAN>
-							 
+
 
 						</rich:column>
 						<rich:column>
