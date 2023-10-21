@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.pdks.entity.ServiceData;
 import com.pdks.mail.model.MailFile;
 import com.pdks.mail.model.MailObject;
