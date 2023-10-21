@@ -24,6 +24,8 @@ import javax.mail.internet.MimeUtility;
 import org.apache.log4j.Logger;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import com.google.gson.Gson;
+import com.pdks.entity.ServiceData;
 import com.pdks.mail.model.MailFile;
 import com.pdks.mail.model.MailObject;
 import com.pdks.mail.model.MailPersonel;
@@ -351,7 +353,7 @@ public class MailManager implements Serializable {
 
 			}
 			mailList = null;
-
+			saveLog(mailObject);
 			for (File file : dosyalar) {
 				if (file.exists())
 					file.delete();
@@ -362,6 +364,53 @@ public class MailManager implements Serializable {
 			}
 
 		}
+	}
+
+	/**
+	 * @param gsonObject
+	 * @param gson
+	 * @return
+	 */
+	private static String getJsonObject(Object object, Gson gson) {
+		String str = null;
+		if (object != null) {
+			if (gson == null)
+				gson = new Gson();
+			str = gson.toJson(object);
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("\\u003c", "<");
+			map.put("\\u003e", ">");
+			for (String pattern : map.keySet()) {
+				if (str.indexOf(pattern) > 0)
+					str = PdksUtil.replaceAll(str, pattern, map.get(pattern));
+			}
+		}
+		return str;
+	}
+
+	/**
+	 * @param mail
+	 */
+	private static void saveLog(MailObject mail) {
+		try {
+			MailObject mailObject = (MailObject) mail.clone();
+			mailObject.setSmtpPassword("");
+			ServiceData serviceData = new ServiceData("ePostaGonder");
+			Gson gson = new Gson();
+			serviceData.setInputData(mailObject.getSubject());
+			serviceData.setOutputData(getJsonObject(mailObject, gson));
+			try {
+				Constants.pdksDAO.saveObject(serviceData);
+			} catch (Exception ex) {
+				mailObject.getAttachmentFiles().clear();
+				serviceData.setOutputData(getJsonObject(mailObject, gson));
+				Constants.pdksDAO.saveObject(serviceData);
+			}
+			gson = null;
+		} catch (Exception e) {
+			logger.error(e);
+		}
+
 	}
 
 	/**

@@ -4571,7 +4571,7 @@ public class OrtakIslemler implements Serializable {
 			try {
 				mailStatu = mailManager.mailleriDuzenle(mailObject, session);
 				if (mailStatu.isDurum())
-					mailStatu = mailManager.ePostaGonder(mailObject);
+					mailStatu = mailManager.ePostaGonder(mailObject,session);
 			} catch (Exception e) {
 				logger.error(e);
 				try {

@@ -1,5 +1,6 @@
 package com.pdks.webservice;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -37,7 +38,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mailObject", propOrder = { "attachmentFiles", "bccList", "body", "ccList", "smtpPassword", "smtpUser", "subject", "toList" })
-public class MailObject {
+public class MailObject implements Serializable, Cloneable {
+
+	 
+	private static final long serialVersionUID = 5409112400274560540L;
 
 	@XmlElement(nillable = true)
 	protected List<MailFile> attachmentFiles;
@@ -238,6 +242,15 @@ public class MailObject {
 			toList = new ArrayList<MailPersonel>();
 		}
 		return this.toList;
+	}
+
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			// bu class cloneable oldugu icin buraya girilmemeli...
+			throw new InternalError();
+		}
 	}
 
 }

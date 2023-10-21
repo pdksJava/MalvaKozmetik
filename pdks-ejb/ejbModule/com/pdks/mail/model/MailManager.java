@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.pdks.entity.ServiceData;
 import org.pdks.security.entity.User;
 import org.pdks.session.PdksEntityController;
 import org.pdks.session.PdksUtil;
@@ -252,7 +253,7 @@ public class MailManager implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public MailStatu ePostaGonder(MailObject mailObject) throws Exception {
+	public MailStatu ePostaGonder(MailObject mailObject, Session sessionDB) throws Exception {
 		MailStatu mailStatu = new MailStatu();
 		Properties props = null;
 
@@ -424,7 +425,7 @@ public class MailManager implements Serializable {
 						} catch (Exception e2) {
 						}
 					}
-
+					saveLog(mailObject, sessionDB);
 					for (File file : dosyalar) {
 						if (file.exists())
 							file.delete();
@@ -448,6 +449,60 @@ public class MailManager implements Serializable {
 		if (mailStatu.isDurum() == false && mailStatu.getHataMesai() == null)
 			mailStatu.setHataMesai("Hata oluştu!!");
 		return mailStatu;
+	}
+
+	/**
+	 * @param gsonObject
+	 * @param gson
+	 * @return
+	 */
+	private String getJsonObject(Object object, Gson gson) {
+		String str = null;
+		if (object != null) {
+			if (gson == null)
+				gson = new Gson();
+			str = gson.toJson(object);
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("\\u003c", "<");
+			map.put("\\u003e", ">");
+			for (String pattern : map.keySet()) {
+				if (str.indexOf(pattern) > 0)
+					str = PdksUtil.replaceAllManuel(str, pattern, map.get(pattern));
+			}
+		}
+		return str;
+	}
+
+	/**
+	 * @param mailObject
+	 * @param sessionDB
+	 */
+	private void saveLog(MailObject mail, Session sessionDB) {
+		try {
+			if (sessionDB != null) {
+				MailObject mailObject = (MailObject) mail.clone();
+				mailObject.setSmtpPassword("");
+				ServiceData serviceData = new ServiceData("ePostaGonder");
+				Gson gson = new Gson();
+				serviceData.setInputData(mailObject.getSubject());
+				serviceData.setOutputData(getJsonObject(mailObject, gson));
+				if (pdksEntityController != null) {
+					try {
+						pdksEntityController.save(serviceData, sessionDB);
+					} catch (Exception ex) {
+						mailObject.getAttachmentFiles().clear();
+						serviceData.setOutputData(getJsonObject(mailObject, gson));
+						pdksEntityController.save(serviceData, sessionDB);
+					}
+				} else
+					sessionDB.flush();
+				gson = null;
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+		}
+
 	}
 
 	/**

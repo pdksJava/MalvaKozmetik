@@ -287,7 +287,7 @@ public class IseGelmemeUyari implements Serializable {
 					if (yonetici == null)
 						yonetici = yoneticiYok;
 
-					boolean islemDevam = true;
+					boolean islemDevam = yonetici != null;
 					if (yonetici == null || per.getSicilNo().trim().length() == 0 || per.getSirket() == null)
 						islemDevam = false;
 					else if (!pdksSirket.getDurum() || !pdksSirket.getPdks())
@@ -496,10 +496,11 @@ public class IseGelmemeUyari implements Serializable {
 									if (ekle && calisma == false)
 										ekle = pdksVardiyaGun.getHareketler() != null && !pdksVardiyaGun.getHareketler().isEmpty();
 								}
-								if (ekle) {
+								Personel yoneticisi = pdksPersonel.getYoneticisi() != null ? (Personel) pdksPersonel.getYoneticisi().clone() : yoneticiYok;
+								if (yoneticisi != null && ekle) {
 									if (!calisma)
 										logger.debug(PdksUtil.setTurkishStr(pdksVardiyaGun.getVardiyaKeyStr() + " " + pdksPersonel.getAdSoyad()));
-									Personel yoneticisi = pdksPersonel.getYoneticisi() != null ? (Personel) pdksPersonel.getYoneticisi().clone() : yoneticiYok;
+
 									if (geciciYoneticiMap.containsKey(pdksVardiyaGun.getPersonel().getId()))
 										yoneticisi = (Personel) geciciYoneticiMap.get(pdksVardiyaGun.getPersonel().getId()).getYeniYonetici().getPdksPersonel().clone();
 									if (vekaletMap.containsKey(yoneticisi.getId()))
@@ -532,7 +533,7 @@ public class IseGelmemeUyari implements Serializable {
 										yoneticiYok = depYoneticiMap.get(depId);
 									}
 
-									else {
+									else if (yoneticiYok != null) {
 										depYoneticiMap.put(depId, (Personel) yoneticiYok.clone());
 										String mailBoxStr = pdksVardiyaGun.getPersonel().getSirket().getDepartman().getMailBox();
 										if (mailBoxStr != null && mailBoxStr.indexOf("@") > 0) {
@@ -546,33 +547,35 @@ public class IseGelmemeUyari implements Serializable {
 										mailPersonelMap = new TreeMap<String, List<String>>();
 									if (hareketPersonelMap == null)
 										hareketPersonelMap = new TreeMap<String, List<String>>();
-									for (User user : userList) {
-										if (user.getId() != null) {
-											Personel personel = user.getPdksPersonel();
-											if (personel.getId() != null && !personel.getId().equals(yoneticisi.getId())) {
-												String mail = user.getEmail();
-												List<String> list = mailPersonelMap.containsKey(mail) ? mailPersonelMap.get(mail) : new ArrayList<String>();
-												if (list.isEmpty())
-													mailPersonelMap.put(mail, list);
-												if (mail.indexOf("@") > 1 && !list.contains(mail)) {
-													if (!list.contains(pdksSicilNo))
-														list.add(pdksSicilNo);
+									if (userList != null) {
+ 										for (User user : userList) {
+											if (user.getId() != null) {
+												Personel personel = user.getPdksPersonel();
+												if (personel.getId() != null && !personel.getId().equals(yoneticisi.getId())) {
+													String mail = user.getEmail();
+													List<String> list = mailPersonelMap.containsKey(mail) ? mailPersonelMap.get(mail) : new ArrayList<String>();
+													if (list.isEmpty())
+														mailPersonelMap.put(mail, list);
+													if (mail.indexOf("@") > 1 && !list.contains(mail)) {
+														if (!list.contains(pdksSicilNo))
+															list.add(pdksSicilNo);
 
+													}
+													Personel depYonetici = yoneticiMap.containsKey(personel.getId()) ? yoneticiMap.get(personel.getId()) : (Personel) personel.clone();
+													if (depYonetici.getPersonelVardiyalari() == null)
+														depYonetici.setPersonelVardiyalari(new ArrayList<VardiyaGun>());
+
+													List<String> mailList = hareketPersonelMap.containsKey(pdksSicilNo) ? hareketPersonelMap.get(pdksSicilNo) : new ArrayList<String>();
+													if (mailList.isEmpty())
+														hareketPersonelMap.put(pdksSicilNo, mailList);
+													if (!mailList.contains(mail))
+														mailList.add(mail);
+													// depYonetici.getPersonelVardiyalari().add(pdksVardiyaGun);
+													yoneticiMap.put(depYonetici.getId(), depYonetici);
 												}
-												Personel depYonetici = yoneticiMap.containsKey(personel.getId()) ? yoneticiMap.get(personel.getId()) : (Personel) personel.clone();
-												if (depYonetici.getPersonelVardiyalari() == null)
-													depYonetici.setPersonelVardiyalari(new ArrayList<VardiyaGun>());
-
-												List<String> mailList = hareketPersonelMap.containsKey(pdksSicilNo) ? hareketPersonelMap.get(pdksSicilNo) : new ArrayList<String>();
-												if (mailList.isEmpty())
-													hareketPersonelMap.put(pdksSicilNo, mailList);
-												if (!mailList.contains(mail))
-													mailList.add(mail);
-												// depYonetici.getPersonelVardiyalari().add(pdksVardiyaGun);
-												yoneticiMap.put(depYonetici.getId(), depYonetici);
 											}
-										}
 
+										}
 									}
 
 									if (hareketPersonelMap.containsKey(pdksSicilNo)) {
@@ -1052,6 +1055,8 @@ public class IseGelmemeUyari implements Serializable {
 					Personel yonetici = personel.getPdksYonetici();
 					if (yonetici == null)
 						yonetici = yoneticiYok;
+					if (yonetici == null)
+						continue;
 					renk = !renk;
 					String classTR = "class=\"" + (renk ? "odd" : "even") + "\"";
 					sb.append("<TR " + classTR + ">");

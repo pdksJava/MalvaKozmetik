@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MailObject implements Serializable {
+public class MailObject implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -95,4 +95,12 @@ public class MailObject implements Serializable {
 		this.smtpPassword = smtpPassword;
 	}
 
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			// bu class cloneable oldugu icin buraya girilmemeli...
+			throw new InternalError();
+		}
+	}
 }
