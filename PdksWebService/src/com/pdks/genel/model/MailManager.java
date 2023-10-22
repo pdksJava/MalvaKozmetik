@@ -21,6 +21,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -376,14 +377,15 @@ public class MailManager implements Serializable {
 		if (object != null) {
 			if (gson == null)
 				gson = new Gson();
-			str = gson.toJson(object);
+			str = PdksUtil.toPrettyFormat(gson.toJson(object));
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("\\u003c", "<");
 			map.put("\\u003e", ">");
 			map.put("\\u0026", "&");
+			map.put("\\u003d", "=");
 			for (String pattern : map.keySet()) {
 				if (str.indexOf(pattern) > 0)
-					str = PdksUtil.replaceAll(str, pattern, map.get(pattern));
+					str = PdksUtil.replaceAllManuel(str, pattern, map.get(pattern));
 			}
 		}
 		return str;
@@ -399,8 +401,29 @@ public class MailManager implements Serializable {
 			ServiceData serviceData = new ServiceData("ePostaGonder");
 			Gson gson = new Gson();
 			serviceData.setInputData(mailObject.getSubject());
-			serviceData.setOutputData(getJsonObject(mailObject, gson));
 			try {
+				List<MailFile> attachmentFiles = new ArrayList<MailFile>();
+				for (MailFile mailFile : mailObject.getAttachmentFiles()) {
+					if (mailFile.getIcerik() != null && mailFile.getDisplayName() != null && mailFile.getDisplayName().indexOf(".") > 0) {
+						String ext = FilenameUtils.getExtension(mailFile.getDisplayName());
+						if (ext != null) {
+							if (ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("xml")) {
+								MailFile mailFileNew = new MailFile();
+								mailFileNew.setDisplayName(mailFile.getDisplayName());
+								mailFileNew.setFile(new String(mailFile.getIcerik(), "UTF-8"));
+								attachmentFiles.add(mailFileNew);
+								continue;
+							}
+						}
+					}
+					attachmentFiles.add(mailFile);
+				}
+				if (!attachmentFiles.isEmpty()) {
+					mailObject.getAttachmentFiles().clear();
+					mailObject.getAttachmentFiles().addAll(attachmentFiles);
+				}
+				attachmentFiles = null;
+				serviceData.setOutputData(getJsonObject(mailObject, gson));
 				Constants.pdksDAO.saveObject(serviceData);
 			} catch (Exception ex) {
 				mailObject.getAttachmentFiles().clear();
