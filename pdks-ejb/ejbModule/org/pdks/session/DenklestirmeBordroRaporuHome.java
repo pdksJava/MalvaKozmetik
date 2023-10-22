@@ -179,34 +179,35 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 * @return
 	 */
 	public String saveLastParameter(AylikPuantaj aylikPuantaj) {
-		Map<String, String> map1 = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
-
-		String adres = map1.containsKey("host") ? map1.get("host") : "";
 		Personel personel = aylikPuantaj.getPdksPersonel();
-		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
-		lastMap.put("yil", "" + yil);
-		lastMap.put("ay", "" + ay);
-		if (departmanId != null)
-			lastMap.put("departmanId", "" + departmanId);
-		if (sirketId != null)
-			lastMap.put("sirketId", "" + sirketId);
-		if (tesisId != null)
-			lastMap.put("tesisId", "" + tesisId);
-		if (personel.getEkSaha3() != null)
+		String sayfa = personel.getEkSaha3() != null ? MenuItemConstant.fazlaMesaiHesapla : "";
+		if (!sayfa.equals("")) {
+			Map<String, String> map1 = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
+	 		String adres = map1.containsKey("host") ? map1.get("host") : "";
+			LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 			lastMap.put("bolumId", "" + personel.getEkSaha3().getId());
-		if (ekSaha4Tanim != null)
-			lastMap.put("altBolumId", "" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getId() : "-1"));
+			if (sirketId != null)
+				lastMap.put("sirketId", "" + sirketId);
+			if (tesisId != null)
+				lastMap.put("tesisId", "" + tesisId);
+			if (departmanId != null)
+				lastMap.put("departmanId", "" + departmanId);
+			if (ekSaha4Tanim != null)
+				lastMap.put("altBolumId", "" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getId() : "-1"));
+			lastMap.put("yil", "" + yil);
+			lastMap.put("ay", "" + ay);
+			lastMap.put("sicilNo", personel.getPdksSicilNo());
+			lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
+			bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + personel.getPdksSicilNo() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
+			try {
+				ortakIslemler.saveLastParameter(lastMap, session);
+			} catch (Exception e) {
 
-		lastMap.put("sicilNo", personel.getPdksSicilNo());
-		lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
-
-		bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + personel.getPdksSicilNo() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
-		try {
-			ortakIslemler.saveLastParameter(lastMap, session);
-		} catch (Exception e) {
-
+			}
+		} else {
+			PdksUtil.addMessageAvailableWarn(bolumAciklama + " tanımsız!");
 		}
-		return MenuItemConstant.fazlaMesaiHesapla;
+		return sayfa;
 	}
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
@@ -581,12 +582,18 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					HashMap<String, Liste> listeMap = new HashMap<String, Liste>();
 					for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
 						Personel personel = aylikPuantaj.getPdksPersonel();
-						String key = (tesisGoster && personel.getTesis() != null ? personel.getTesis().getAciklama() + "_" : "") + personel.getEkSaha3().getAciklama();
-						Liste liste = listeMap.containsKey(key) ? listeMap.get(key) : new Liste(key, new ArrayList<AylikPuantaj>());
-						List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
-						if (list.isEmpty())
-							listeMap.put(key, liste);
-						list.add(aylikPuantaj);
+						try {
+							String key = (tesisGoster && personel.getTesis() != null ? personel.getTesis().getAciklama() + "_" : "") + (personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
+							Liste liste = listeMap.containsKey(key) ? listeMap.get(key) : new Liste(key, new ArrayList<AylikPuantaj>());
+							List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
+							if (list.isEmpty())
+								listeMap.put(key, liste);
+							list.add(aylikPuantaj);
+						} catch (Exception e) {
+							logger.error(e);
+							e.printStackTrace();
+						}
+
 					}
 					List<Liste> listeler = PdksUtil.sortObjectStringAlanList(new ArrayList(listeMap.values()), "getId", null);
 					personelDenklestirmeList.clear();
