@@ -495,13 +495,12 @@ public class MailManager implements Serializable {
 							if (mailFile.getIcerik() != null && mailFile.getDisplayName() != null && mailFile.getDisplayName().indexOf(".") > 0) {
 								String ext = FilenameUtils.getExtension(mailFile.getDisplayName());
 								if (ext != null) {
-									if (ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("xml")) {
-										MailFile mailFileNew = new MailFile();
-										mailFileNew.setDisplayName(mailFile.getDisplayName());
-										mailFileNew.setFile(new String(mailFile.getIcerik()));
-										attachmentFiles.add(mailFileNew);
-										continue;
-									}
+									MailFile mailFileNew = new MailFile();
+									mailFileNew.setDisplayName(mailFile.getDisplayName());
+									if (ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("xml"))  
+ 										mailFileNew.setFile(new String(mailFile.getIcerik()));
+ 									attachmentFiles.add(mailFileNew);
+									continue;
 								}
 							}
 							attachmentFiles.add(mailFile);
