@@ -345,7 +345,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			sonDonem = (maxYil * 100) + cal.get(Calendar.MONTH) + 1;
 			aylikPuantajList = new ArrayList<AylikPuantaj>();
 			setInstance(new DepartmanDenklestirmeDonemi());
-			// setSirket(null);
 
 			if (authenticatedUser.isSuperVisor() || authenticatedUser.isProjeMuduru()) {
 				setSirket(authenticatedUser.getPdksPersonel().getSirket());
@@ -549,8 +548,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (tesisIdStr != null)
 					setTesisId(Long.parseLong(tesisIdStr));
 				bolumDoldur();
-			} else if (veriLastMap == null || linkBordroAdres != null)
+			} else if (veriLastMap == null || linkBordroAdres != null) {
 				fillPersonelDenklestirmeList();
+			}
+
 			eksikSaatYuzde = getDepartmanSaatlikIzin();
 			setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
 			if (denklestirmeAyDurum.equals(Boolean.FALSE))
@@ -990,7 +991,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			seciliAltBolum = null;
 			setSeciliVardiyaGun(null);
 			HashMap map = new HashMap();
-
 			List<String> perList = new ArrayList<String>();
 			sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, seciliEkSaha4Id, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, sadeceFazlaMesai, session);

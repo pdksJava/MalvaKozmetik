@@ -118,13 +118,15 @@
 
 							</a4j:outputPanel>
 						</c:if>
-						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.linkBordroAdres!=null}">
-							<br />
-							<f:verbatim>#{bordroAdres}</f:verbatim>
-						</ui:fragment>
+
 					</h:panelGrid>
 					<rich:panel id="denklestirmeDonemiTable" style="overflow: auto;">
 						<a4j:outputPanel id="hareketTables">
+							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.linkBordroAdres!=null}">
+								<br />
+ 								<SPAN style="font-size: 14px; font-weight: bold; color: black;"><f:verbatim>#{bordroAdres}</f:verbatim></SPAN>
+								<br />
+							</ui:fragment>
 							<c:if test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and  not empty fazlaMesaiHesaplaHome.gorevYeriList}">
 								<TABLE width="45%">
 									<TR>

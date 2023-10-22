@@ -95,6 +95,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private DenklestirmeAy denklestirmeAy;
 
+	private Tanim ekSaha4Tanim;
+
 	private String COL_SIRA = "sira";
 	private String COL_YIL = "yil";
 	private String COL_AY = "ay";
@@ -192,8 +194,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			lastMap.put("tesisId", "" + tesisId);
 		if (personel.getEkSaha3() != null)
 			lastMap.put("bolumId", "" + personel.getEkSaha3().getId());
-		if (personel.getEkSaha4() != null)
-			lastMap.put("altBolumId", "" + personel.getEkSaha3().getId());
+		if (ekSaha4Tanim != null)
+			lastMap.put("altBolumId", "" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getId() : "-1"));
 
 		lastMap.put("sicilNo", personel.getPdksSicilNo());
 		lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
@@ -483,6 +485,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		fields.put("yil", yil);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
 		personelDenklestirmeList.clear();
 		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
 		if (denklestirmeAy.getDurum().equals(Boolean.FALSE))
@@ -766,7 +769,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 				}
 				List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
-				Tanim ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
 
 				bordroAlanlari = PdksUtil.sortObjectStringAlanList(bordroAlanlari, "getErpKodu", null);
 
@@ -1712,5 +1714,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	public void setCalismaModeliDurum(Boolean calismaModeliDurum) {
 		this.calismaModeliDurum = calismaModeliDurum;
+	}
+
+	public Tanim getEkSaha4Tanim() {
+		return ekSaha4Tanim;
+	}
+
+	public void setEkSaha4Tanim(Tanim ekSaha4Tanim) {
+		this.ekSaha4Tanim = ekSaha4Tanim;
 	}
 }
