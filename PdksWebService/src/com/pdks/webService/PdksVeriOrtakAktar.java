@@ -2495,7 +2495,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		TreeMap<String, Personel> personelDigerMap = dataMap.get("personelDigerMap");
 		TreeMap<String, Sirket> sirketMap = dataMap.get("sirketMap");
 		String yoneticiAciklama = yoneticiAciklama();
-		boolean yoneticiBul = tip.equals("Y");
+		boolean yoneticiBul = tip.equals("Y"), kendiYonetici = false;
 		List saveList = new ArrayList();
 		HashMap<String, Boolean> map1 = new HashMap<String, Boolean>();
 		String genelMudurERPKoduStr = mailMap.containsKey("genelMudurERPKodu") ? (String) mailMap.get("genelMudurERPKodu") : "";
@@ -2612,6 +2612,10 @@ public class PdksVeriOrtakAktar implements Serializable {
 			boolean calisiyor = false;
 			if (personelERPMap.containsKey(personelNo)) {
 				PersonelERP personelERP = personelERPMap.get(personelNo);
+				String yoneticiNo = personelERP.getYoneticiPerNo() != null ? personelERP.getYoneticiPerNo().trim() : "";
+				String yonetici2No = personelERP.getYonetici2PerNo() != null ? personelERP.getYonetici2PerNo().trim() : "";
+				boolean yoneticiPersonel = yoneticiBul || yoneticiNo.equals(personelNo);
+
 				Tanim cinsiyet = getTanim(null, Tanim.TIPI_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti(), dataMap, saveList);
 				String soyadi = personelERP.getSoyadi() != null ? new String(personelERP.getSoyadi()) : null;
 				personelTest.setCinsiyet(bayanSoyadKontrol ? cinsiyet : null);
@@ -2624,7 +2628,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				Date grubaGirisTarihi = getTarih(personelERP.getGrubaGirisTarihi(), FORMAT_DATE);
 				Date istenAyrilisTarihi = getTarih(personelERP.getIstenAyrilmaTarihi(), FORMAT_DATE);
-				if (yoneticiBul) {
+				if (yoneticiPersonel) {
+					if (!kendiYonetici)
+						kendiYonetici = yoneticiNo.equals(personelNo);
 					personelYoneticiERPMap.put(personelNo, personelERP);
 					personelERPMap.remove(personelNo);
 				}
@@ -2782,7 +2788,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 											kgsAd = PdksUtil.replaceAllManuel(kgsAd, " ", "");
 									}
 								}
-
 								boolean adiUyumlu = isBenzer(ad, kgsAd);
 								boolean soyadiUyumlu = isBenzer(personelKGS.getSoyad(), soyad);
 								if (!adiUyumlu || !soyadiUyumlu) {
@@ -2798,7 +2803,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 											personelERP.setSoyadi(personelKGS.getSoyad());
 
 									}
-
 									mesaj = personelNo + " personel " + mesaj + " uyumsuz! ( " + adSoyadERP + " farklı " + personelKGS.getAdSoyad() + (personelKGS.getKapiSirket() != null ? " [ " + personelKGS.getKapiSirket().getAciklama() + " ] " : "") + " ) ";
 									addHatalist(bayanSoyad == false ? personelERP.getHataList() : kidemHataList, PdksUtil.replaceAllManuel(mesaj, "  ", " "));
 
@@ -2866,7 +2870,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (personel == null) {
 						personel = new Personel();
 						personel.setDurum(Boolean.TRUE);
-						if (!yoneticiBul || yoneticiMailKontrol.equals("1"))
+						if (!yoneticiPersonel || yoneticiMailKontrol.equals("1"))
 							personel.setMailTakip(Boolean.TRUE);
 						personel.setPdks(Boolean.TRUE);
 						personel.setPersonelKGS(personelKGS);
@@ -2901,7 +2905,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (!personelNo.equals(personelKGSKayitli.getSicilNo())) {
 							personel.setPersonelKGS(personelKGS);
 						}
-						if (yoneticiBul && !yoneticiMailKontrol.equals("1"))
+						if (yoneticiPersonel && !yoneticiMailKontrol.equals("1"))
 							personel.setMailTakip(Boolean.FALSE);
 					}
 					setPersonel(personel, personelERP, FORMAT_DATE);
@@ -3079,95 +3083,100 @@ public class PdksVeriOrtakAktar implements Serializable {
 						personel.setGrubaGirisTarihi(grubaGirisTarihi);
 					}
 
-					boolean yoneticiKoduVar = personelERP.getYoneticiPerNo() != null && personelERP.getYoneticiPerNo().trim().length() > 0;
+					boolean yoneticiKoduVar = yoneticiNo.trim().length() > 0;
 
-					Personel yoneticisi = null;
-					if (yoneticiKoduVar && personelPDKSMap.containsKey(personelERP.getYoneticiPerNo())) {
-						yoneticisi = personelPDKSMap.get(personelERP.getYoneticiPerNo());
-						yoneticiKoduVar = yoneticisi != null && yoneticisi.isCalisiyor();
-					}
-					if (yoneticiKoduVar) {
-						if (yoneticisi != null) {
-							if (yoneticisi.getId() == null) {
-								personel.setTmpYonetici(yoneticisi);
-								yoneticiList.add(personel);
-								yoneticisi = null;
-							}
+					Personel yoneticisi = yoneticiNo.equals(personelNo) && personel.getId() == null ? personel : null;
+					if (yoneticisi == null) {
+						if (yoneticiKoduVar && personelPDKSMap.containsKey(yoneticiNo)) {
+							yoneticisi = personelPDKSMap.get(yoneticiNo);
+							yoneticiKoduVar = yoneticisi != null && yoneticisi.isCalisiyor();
+						}
+						if (yoneticiKoduVar) {
+							if (yoneticisi != null) {
+								if (yoneticisi.getId() == null) {
+									personel.setTmpYonetici(yoneticisi);
+									yoneticiList.add(personel);
+									yoneticisi = null;
+								}
 
-							if ((yoneticiERPKontrol.equals("1") && yoneticiERP1Kontrol) || personel.getYoneticisi() == null || !personel.getYoneticisi().isCalisiyor())
-								personel.setYoneticisi(yoneticisi);
-							personel.setAsilYonetici1(yoneticisi);
+								if ((yoneticiERPKontrol.equals("1") && yoneticiERP1Kontrol) || personel.getYoneticisi() == null || !personel.getYoneticisi().isCalisiyor())
+									personel.setYoneticisi(yoneticisi);
+								personel.setAsilYonetici1(yoneticisi);
 
-						} else if (!(iskurManuelGiris && sanalPersonel))
-							map1.put(personelNo, yoneticiBul);
+							} else if (!(iskurManuelGiris && sanalPersonel))
+								map1.put(personelNo, yoneticiPersonel);
 
-					} else {
-						if (genelMudurDurum == false) {
-							if (sanalPersonel == false && calisiyor) {
-								if (yoneticiKoduVar == false) {
-									if (personel.getId() != null && personel.getYoneticisi() != null) {
-										if (yoneticiERP1Kontrol) {
-											personel.setYoneticisi(null);
-											personel.setAsilYonetici1(null);
+						} else {
+							if (genelMudurDurum == false) {
+								if (sanalPersonel == false && calisiyor) {
+									if (yoneticiKoduVar == false) {
+										if (personel.getId() != null && personel.getYoneticisi() != null) {
+											if (yoneticiERP1Kontrol) {
+												personel.setYoneticisi(null);
+												personel.setAsilYonetici1(null);
+											}
+
+											personel.setGuncellemeTarihi(new Date());
+											personel.setGuncelleyenUser(islemYapan);
+											try {
+												saveList.add(personel);
+												listeKaydet(personelNo, saveList, null);
+											} catch (Exception e) {
+												logger.error(personelNo + "\n" + e);
+												e.printStackTrace();
+											}
+
 										}
-
-										personel.setGuncellemeTarihi(new Date());
-										personel.setGuncelleyenUser(islemYapan);
-										try {
-											saveList.add(personel);
-											listeKaydet(personelNo, saveList, null);
-										} catch (Exception e) {
-											logger.error(personelNo + "\n" + e);
-											e.printStackTrace();
+										if (yoneticiRolVarmi && yoneticiERP1Kontrol) {
+											if (yoneticisi == null)
+												kidemHataList.add(yoneticiAciklama + " bilgisi boş olamaz!" + (personelERP.getGorevKodu() != null && personelERP.getGorevi() != null ? "[ " + personelERP.getGorevKodu() + " - " + personelERP.getGorevi() + " ]" : ""));
+											else if (yoneticisi != null)
+												kidemHataList.add(yoneticisi.getPdksSicilNo() + " " + yoneticisi.getAdSoyad() + " yönetici çalışmıyor!");
 										}
-
-									}
-									if (yoneticiRolVarmi && yoneticiERP1Kontrol) {
-										if (yoneticisi == null)
-											kidemHataList.add(yoneticiAciklama + " bilgisi boş olamaz!" + (personelERP.getGorevKodu() != null && personelERP.getGorevi() != null ? "[ " + personelERP.getGorevKodu() + " - " + personelERP.getGorevi() + " ]" : ""));
-										else if (yoneticisi != null)
-											kidemHataList.add(yoneticisi.getPdksSicilNo() + " " + yoneticisi.getAdSoyad() + " yönetici çalışmıyor!");
 									}
 								}
+							} else {
+								personel.setAsilYonetici1(null);
+								personel.setYoneticisi(null);
 							}
-						} else {
-							personel.setAsilYonetici1(null);
-							personel.setYoneticisi(null);
 						}
 					}
 					Personel yoneticisi2 = yonetici2ERPKontrol ? null : personel.getAsilYonetici2();
-					if (yonetici2ERPKontrol) {
-						boolean yoneticiKodu2Var = personelERP.getYonetici2PerNo() != null && personelERP.getYonetici2PerNo().trim().length() > 0;
-						if (yoneticiKodu2Var) {
-							String yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(personelERP.getYonetici2PerNo().trim(), '0', sicilNoUzunluk);
-							yoneticisi2 = personelPDKSMap.get(yonetici2PerNo);
-							if (yoneticisi2 != null) {
-								if (yoneticisi != null && yoneticisi.getYoneticisi() != null && yoneticisi2.getId().equals(yoneticisi.getYoneticisi().getId())) {
-									yoneticisi2 = null;
-								} else if (yoneticiRolVarmi && !yoneticisi2.isCalisiyor())
-									kidemHataList.add("2. yönetici " + personelERP.getYonetici2PerNo().trim() + " " + yoneticisi2.getAdSoyad() + " çalışmıyor!");
-							} else if (yoneticiRolVarmi && sanalPersonel == false && calisiyor)
-								kidemHataList.add(kapiGiris + " 2. yönetici " + personelERP.getYonetici2PerNo().trim() + " personel no bilgisi bulunamadı!");
-						}
-						if (yoneticisi2 != null)
-							logger.debug(yoneticisi2.getId());
-						if (personelERP.getHataList().isEmpty())
-							personel.setAsilYonetici2(yoneticisi2);
-					} else {
-						boolean yoneticiKodu2Var = personelERP.getYonetici2PerNo() != null && personelERP.getYonetici2PerNo().trim().length() > 0;
-						if (yoneticiKodu2Var) {
-							String yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(personelERP.getYonetici2PerNo().trim(), '0', sicilNoUzunluk);
-							yoneticisi2 = personelPDKSMap.get(yonetici2PerNo);
-							if (yoneticiRolVarmi) {
-								if (yoneticisi2 != null)
-									addHatalist(personelERP.getHataList(), "2. yönetici " + personelERP.getYonetici2PerNo().trim() + " " + yoneticisi2.getAdSoyad() + " güncellemesi sistemde açık değildir!");
-								else
-									addHatalist(personelERP.getHataList(), "2. yönetici güncellemesi sistemde açık değildir!");
+					if (personel.getId() == null && yonetici2No.equals(personelNo))
+						yoneticisi2 = personel;
+					else {
+						if (yonetici2ERPKontrol) {
+							boolean yoneticiKodu2Var = yonetici2No.trim().length() > 0;
+							if (yoneticiKodu2Var) {
+								String yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(yonetici2No.trim(), '0', sicilNoUzunluk);
+								yoneticisi2 = personelPDKSMap.get(yonetici2PerNo);
+								if (yoneticisi2 != null) {
+									if (yoneticisi != null && yoneticisi.getYoneticisi() != null && yoneticisi2.getId().equals(yoneticisi.getYoneticisi().getId())) {
+										yoneticisi2 = null;
+									} else if (yoneticiRolVarmi && !yoneticisi2.isCalisiyor())
+										kidemHataList.add("2. yönetici " + yonetici2No.trim() + " " + yoneticisi2.getAdSoyad() + " çalışmıyor!");
+								} else if (yoneticiRolVarmi && sanalPersonel == false && calisiyor)
+									kidemHataList.add(kapiGiris + " 2. yönetici " + yonetici2No.trim() + " personel no bilgisi bulunamadı!");
+							}
+							if (yoneticisi2 != null)
+								logger.debug(yoneticisi2.getId());
+							if (personelERP.getHataList().isEmpty())
+								personel.setAsilYonetici2(yoneticisi2);
+						} else {
+							boolean yoneticiKodu2Var = yonetici2No != null && yonetici2No.trim().length() > 0;
+							if (yoneticiKodu2Var) {
+								String yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(yonetici2No.trim(), '0', sicilNoUzunluk);
+								yoneticisi2 = personelPDKSMap.get(yonetici2PerNo);
+								if (yoneticiRolVarmi) {
+									if (yoneticisi2 != null)
+										addHatalist(personelERP.getHataList(), "2. yönetici " + yonetici2No.trim() + " " + yoneticisi2.getAdSoyad() + " güncellemesi sistemde açık değildir!");
+									else
+										addHatalist(personelERP.getHataList(), "2. yönetici güncellemesi sistemde açık değildir!");
+								}
 							}
 						}
 					}
 					if (personelERP.getHataList().isEmpty()) {
-
 						if (personel.getId() != null && personel.getVeriDegisti()) {
 							personel.setGuncellemeTarihi(new Date());
 							personel.setGuncelleyenUser(islemYapan);
@@ -3214,7 +3223,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 		}
 		personelTest = null;
-		if (yoneticiBul) {
+		if (yoneticiBul || kendiYonetici) {
 			for (String personelNo : personelList) {
 				if (personelPDKSMap.containsKey(personelNo) && personelYoneticiERPMap.containsKey(personelNo)) {
 					Personel personel = personelPDKSMap.get(personelNo);
@@ -3388,25 +3397,63 @@ public class PdksVeriOrtakAktar implements Serializable {
 					mesaj = personelList.size() + " adet personel bilgisi guncellenecektir.";
 				mesajInfoYaz("savePersoneller --> " + mesaj + " in " + new Date());
 				TreeMap<String, PersonelERP> perMap = new TreeMap<String, PersonelERP>();
-				List<String> yoneticiPerNoList = new ArrayList<String>();
+				List<String> yoneticiPerNoList = new ArrayList<String>(), kendiYoneticiPerNoList = new ArrayList<String>();
 				TreeMap<String, List<String>> veriSorguMap = new TreeMap<String, List<String>>();
 				TreeMap<String, TreeMap> dataMap = new TreeMap<String, TreeMap>();
 				dataMap.put("personelERPMap", perMap);
+				if (personelList.size() > 1) {
+					List<PersonelERP> list1 = new ArrayList<PersonelERP>(), list2 = new ArrayList<PersonelERP>();
+					List<String> yoneticiNoList = new ArrayList<String>();
+					for (PersonelERP personelERP : personelList) {
+						String yoneticiNo = personelERP.getYoneticiPerNo() != null ? personelERP.getYoneticiPerNo().trim() : "";
+						if (!yoneticiNo.equals("") && !yoneticiNoList.contains(yoneticiNo))
+							yoneticiNoList.add(yoneticiNo);
+					}
+					for (PersonelERP personelERP : personelList) {
+						String perNo = personelERP.getPersonelNo() != null ? personelERP.getPersonelNo().trim() : "";
+						String yoneticiNo = personelERP.getYoneticiPerNo() != null ? personelERP.getYoneticiPerNo().trim() : "";
+						if (perNo.equals(yoneticiNo) || yoneticiNoList.contains(perNo))
+							list1.add(personelERP);
+						else
+							list2.add(personelERP);
+
+					}
+					personelList.clear();
+					if (!list1.isEmpty())
+						personelList.addAll(list1);
+					if (!list2.isEmpty())
+						personelList.addAll(list2);
+					list1 = null;
+					list2 = null;
+					yoneticiNoList = null;
+				}
 
 				for (PersonelERP personelERP : personelList) {
 					try {
 						personelERP.setYazildi(false);
 						String yoneticiPerNo = personelERP.getYoneticiPerNo() != null ? personelERP.getYoneticiPerNo().trim() : "";
 						String yonetici2PerNo = personelERP.getYonetici2PerNo() != null ? personelERP.getYonetici2PerNo().trim() : "";
+						String perNo = personelERP.getPersonelNo() != null ? personelERP.getPersonelNo().trim() : "";
 						veriIsle("sirket", personelERP.getSirketKodu(), veriSorguMap);
-						veriIsle("personel", personelERP.getPersonelNo(), veriSorguMap);
-						if (!yoneticiPerNo.equals("") && !yoneticiPerNoList.contains(yoneticiPerNo)) {
-							yoneticiPerNoList.add(yoneticiPerNo);
-							veriIsle("personel", yoneticiPerNo, veriSorguMap);
-						}
-						if (!yonetici2PerNo.equals("") && !yoneticiPerNoList.contains(yonetici2PerNo)) {
-							yoneticiPerNoList.add(yonetici2PerNo);
-							veriIsle("personel", yonetici2PerNo, veriSorguMap);
+						veriIsle("personel", perNo, veriSorguMap);
+						if (perNo.equals(yoneticiPerNo)) {
+							if (!yoneticiPerNo.equals("") && !kendiYoneticiPerNoList.contains(yoneticiPerNo)) {
+								kendiYoneticiPerNoList.add(yoneticiPerNo);
+								veriIsle("personel", yoneticiPerNo, veriSorguMap);
+							}
+							if (!yonetici2PerNo.equals("") && !kendiYoneticiPerNoList.contains(yonetici2PerNo)) {
+								kendiYoneticiPerNoList.add(yonetici2PerNo);
+								veriIsle("personel", yonetici2PerNo, veriSorguMap);
+							}
+						} else {
+							if (!yoneticiPerNo.equals("") && !yoneticiPerNoList.contains(yoneticiPerNo)) {
+								yoneticiPerNoList.add(yoneticiPerNo);
+								veriIsle("personel", yoneticiPerNo, veriSorguMap);
+							}
+							if (!yonetici2PerNo.equals("") && !yoneticiPerNoList.contains(yonetici2PerNo)) {
+								yoneticiPerNoList.add(yonetici2PerNo);
+								veriIsle("personel", yonetici2PerNo, veriSorguMap);
+							}
 						}
 						perMap.put(personelERP.getPersonelNo(), personelERP);
 					} catch (Exception e) {
@@ -3507,10 +3554,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 				ayBasi = PdksUtil.tariheGunEkleCikar(calendar.getTime(), -6);
 				personelKontrolVerileriAyarla(pdksDAO);
 				updateYonetici2 = false;
-
+				// TODO Kendi yoneticisi personeller güncelleniyor
+				if (perMap != null && !perMap.isEmpty())
+					personelVeriYaz(yoneticiList, dataMap, kendiYoneticiPerNoList, "P");
+				// TODO Yoneticiler personeller güncelleniyor
 				if (!yoneticiPerNoList.isEmpty())
 					personelVeriYaz(yoneticiList, dataMap, yoneticiPerNoList, "Y");
-
+				// TODO Yonetici olmayan personeller güncelleniyor
 				if (perMap != null && !perMap.isEmpty())
 					personelVeriYaz(yoneticiList, dataMap, new ArrayList<String>(perMap.keySet()), "P");
 				if (!yoneticiList.isEmpty()) {
