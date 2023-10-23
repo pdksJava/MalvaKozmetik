@@ -538,10 +538,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 				}
 				sb.append(" INNER JOIN " + PersonelDenklestirmeBordro.TABLE_NAME + " B ON B." + PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME + "=V." + PersonelDenklestirme.COLUMN_NAME_ID);
-				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
-				sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1  AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
+				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
 				if (hataliVeriGetir == null || hataliVeriGetir == false)
-					sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1");
+					sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1 AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeBordro.class);
