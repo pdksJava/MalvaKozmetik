@@ -468,6 +468,7 @@ public class MailManager implements Serializable {
 			map.put("\\u003e", ">");
 			map.put("\\u0026", "&");
 			map.put("\\u003d", "=");
+			map.put("\\u0027", "'");
 			for (String pattern : map.keySet()) {
 				if (str.indexOf(pattern) > 0)
 					str = PdksUtil.replaceAllManuel(str, pattern, map.get(pattern));
