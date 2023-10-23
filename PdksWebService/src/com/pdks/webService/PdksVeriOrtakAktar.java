@@ -65,7 +65,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	public static final String FORMAT_DATE = "yyyy-MM-dd";
 	public static final String FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
 	public static final String FORMAT_TIME = "HH:mm";
-
+	private static final String HELP_DESK_STATUS = "helpDeskStatus";
 	public static final String[] HAKEDIS_IZIN_PROP_ORDER = { "hakedisList", "kidemBaslangicTarihi", "personelNo" };
 	public static final String[] IZIN_PROP_ORDER = { "aciklama", "basZaman", "bitZaman", "durum", "izinSuresi", "izinTipi", "izinTipiAciklama", "personelNo", "referansNoERP", "sureBirimi" };
 	public static final String[] PERSONEL_PROP_ORDER = { "adi", "bolumAdi", "bolumKodu", "bordroAltAlanAdi", "bordroAltAlanKodu", "cinsiyetKodu", "cinsiyeti", "departmanAdi", "departmanKodu", "dogumTarihi", "gorevKodu", "gorevi", "iseGirisTarihi", "istenAyrilmaTarihi", "kidemTarihi",
@@ -297,20 +297,24 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (dao != null) {
 			mesaj = null;
 			fields.clear();
-			fields.put("active", Boolean.TRUE);
+			// fields.put("active", Boolean.TRUE);
 			List<Parameter> list = dao.getObjectByInnerObjectList(fields, Parameter.class);
 			if (mailMap == null)
 				mailMap = new HashMap<String, Object>();
 			else
 				mailMap.clear();
 			sistemDestekVar = false;
-
+			HashMap<String, Parameter> pmMap = new HashMap<String, Parameter>();
 			List<String> helpDeskList = new ArrayList<String>();
 			for (Parameter parameter : list) {
 				String key = parameter.getName().trim(), deger = parameter.getValue().trim();
-				mailMap.put(key, deger);
-				if (parameter.isHelpDeskMi())
-					helpDeskList.add(key);
+				pmMap.put(key, parameter);
+				if (parameter.getActive() != null && parameter.getActive()) {
+					mailMap.put(key, deger);
+					if (parameter.isHelpDeskMi())
+						helpDeskList.add(key);
+				}
+
 			}
 			String testSunucu = "srvglftest";
 			if (mailMap.containsKey("testSunucu"))
@@ -366,14 +370,75 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 			}
 			helpDeskList = null;
+			PdksUtil.setSistemBaslangicYili(mailMap.containsKey("sistemBaslangicYili") ? Integer.parseInt((String) mailMap.get("sistemBaslangicYili")) : 2010);
 			PdksUtil.setSistemDestekVar(sistemDestekVar);
 			String sistemAdminUserName = mailMap.containsKey("sistemAdminUserName") ? (String) mailMap.get("sistemAdminUserName") : null;
 			if (sistemAdminUserName != null)
 				islemYapan = (User) dao.getObjectByInnerObject("username", sistemAdminUserName, User.class);
 			if (islemYapan == null)
 				islemYapan = (User) dao.getObjectByInnerObject("id", 1L, User.class);
-			// mailMap.put("bccTestMailAdres", "hasansayar58@gmail.com");
+			setHelpDeskParametre(pmMap, dao);
+			pmMap = null;
+
 		}
+
+	}
+
+	/**
+	 * @param pmMap
+	 * @param dao
+	 */
+	private void setHelpDeskParametre(HashMap<String, Parameter> pmMap, PdksDAO dao) {
+		Parameter helpDeskStatus = pmMap != null && pmMap.containsKey(HELP_DESK_STATUS) ? pmMap.get(HELP_DESK_STATUS) : new Parameter();
+		Date bugun = new Date();
+		if (helpDeskStatus.getId() == null) {
+			Date changeDate = null;
+			try {
+				changeDate = PdksUtil.convertToJavaDate(PdksUtil.getSistemBaslangicYili() + "0101", "yyyyMMdd");
+			} catch (Exception e) {
+			}
+			helpDeskStatus.setChangeDate(changeDate != null ? changeDate : bugun);
+			helpDeskStatus.setChangeUser(getSistemAdminUserByParamMap(dao));
+			helpDeskStatus.setVersion(0);
+			helpDeskStatus.setDescription("Sistem Desktek Durumu");
+			helpDeskStatus.setName(HELP_DESK_STATUS);
+			helpDeskStatus.setGuncelle(false);
+			helpDeskStatus.setHelpDesk(Boolean.TRUE);
+		}
+		Boolean durum = PdksUtil.isSistemDestekVar();
+		boolean degisti = helpDeskStatus.getId() == null || !helpDeskStatus.getActive().equals(durum);
+		helpDeskStatus.setActive(durum);
+		helpDeskStatus.setValue(durum ? "1" : "" + (helpDeskStatus.getId() != null ? -helpDeskStatus.getId() : 0));
+		if (degisti) {
+			if (helpDeskStatus.getId() != null)
+				helpDeskStatus.setChangeDate(bugun);
+			dao.saveObject(helpDeskStatus);
+		}
+	}
+
+	/**
+	 * @param dao
+	 * @return
+	 */
+	private User getSistemAdminUserByParamMap(PdksDAO dao) {
+		User user = null;
+
+		if (mailMap != null && mailMap.containsKey("sistemAdminUserName")) {
+			String sistemAdminUserName = (String) mailMap.get("sistemAdminUserName");
+			if (sistemAdminUserName != null && sistemAdminUserName.trim().length() > 0) {
+				fields.put("username", sistemAdminUserName);
+				user = (User) dao.getObjectByInnerObject(fields, User.class);
+			}
+		}
+		if (user == null) {
+			if (!fields.isEmpty())
+				fields.clear();
+			fields.put("id", 1L);
+			user = (User) dao.getObjectByInnerObject(fields, User.class);
+		}
+		fields = null;
+
+		return user;
 
 	}
 

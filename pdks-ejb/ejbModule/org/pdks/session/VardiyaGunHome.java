@@ -6648,8 +6648,12 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (sirket != null)
 				bordroVeriOlusturBasla(sirket, aylikPuantajList);
 		}
-		if (!aylikPuantajList.isEmpty())
+		if (!aylikPuantajList.isEmpty()) {
+			ortakIslemler.sortAylikPuantajList(aylikPuantajList, true);
+
 			modelGoster = ortakIslemler.getModelGoster(denklestirmeAy, session);
+		}
+
 		return kontrolDurum;
 	}
 
