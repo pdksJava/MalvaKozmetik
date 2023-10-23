@@ -2262,6 +2262,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 
 				else {
+					ortakIslemler.sortAylikPuantajList(puantajList, true);
 					if (flush)
 						session.flush();
 				}
