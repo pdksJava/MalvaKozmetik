@@ -2563,6 +2563,42 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param aylikPuantajList
+	 * @return
+	 */
+	public List<AylikPuantaj> sortAylikPuantajList(List<AylikPuantaj> aylikPuantajList, boolean adSoyadSirali) {
+		if (aylikPuantajList != null && aylikPuantajList.size() > 1) {
+			HashMap<String, Liste> listeMap = new HashMap<String, Liste>();
+			if (adSoyadSirali == false)
+				aylikPuantajList = PdksUtil.sortObjectStringAlanList(aylikPuantajList, "getAdSoyad", null);
+			for (AylikPuantaj aylikPuantaj : aylikPuantajList) {
+				Personel personel = aylikPuantaj.getPdksPersonel();
+				Sirket sirket = personel.getSirket();
+				CalismaModeli cm = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
+				String key = (sirket.getTesisDurum() && personel.getTesis() != null ? personel.getTesis().getAciklama() + "_" : "");
+				key += (personel.getEkSaha3() != null ? "_" + personel.getEkSaha3().getAciklama() : "");
+				key += (cm != null ? "_" + cm.getAciklama() : "");
+				Liste liste = listeMap.containsKey(key) ? listeMap.get(key) : new Liste(key, new ArrayList<AylikPuantaj>());
+				List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
+				if (list.isEmpty())
+					listeMap.put(key, liste);
+				list.add(aylikPuantaj);
+			}
+			List<Liste> listeler = PdksUtil.sortObjectStringAlanList(new ArrayList(listeMap.values()), "getId", null);
+			aylikPuantajList.clear();
+			for (Liste liste : listeler) {
+				List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
+				for (AylikPuantaj aylikPuantaj : list)
+					aylikPuantajList.add(aylikPuantaj);
+				list = null;
+			}
+			listeler = null;
+			listeMap = null;
+		}
+		return aylikPuantajList;
+	}
+
+	/**
 	 * @param perIdList
 	 * @param session
 	 * @return
@@ -4293,8 +4329,9 @@ public class OrtakIslemler implements Serializable {
 	@Transactional
 	public void saveLastParameter(LinkedHashMap<String, Object> map, Session session) {
 		String key = authenticatedUser.getCalistigiSayfa(), lastParameterValue = getParameterKey("lastParameterValue");
-		if (map.containsKey("sayfaURL"))
+		if (map.containsKey("sayfaURL")) {
 			key = (String) map.get("sayfaURL");
+		}
 		if (key != null && map != null && (authenticatedUser.isAdmin() || lastParameterValue.equals("1"))) {
 			try {
 				HashMap parametreMap = new HashMap();

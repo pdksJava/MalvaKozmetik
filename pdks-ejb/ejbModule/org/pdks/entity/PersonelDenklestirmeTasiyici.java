@@ -355,7 +355,10 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 	}
 
 	public String getAdSoyad() {
-		return personel != null ? personel.getAdSoyad() : "";
+		String key = personel != null ? personel.getAdSoyad() : "";
+//		CalismaModeli cm = calismaModeliAy != null ? calismaModeliAy.getCalismaModeli() : calismaModeli;
+//		key += (cm != null ? "_" + cm.getAciklama() : "");
+		return key;
 	}
 
 	public boolean isIptal(User user) {

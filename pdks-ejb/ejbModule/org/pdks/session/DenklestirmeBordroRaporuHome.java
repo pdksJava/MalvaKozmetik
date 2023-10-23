@@ -39,7 +39,6 @@ import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Dosya;
-import org.pdks.entity.Liste;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeBordro;
@@ -213,6 +212,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	public String sayfaGirisAction() {
 		aylar = PdksUtil.getAyListesi(Boolean.TRUE);
 		String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
+		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
+		if (!ayniSayfa)
+			authenticatedUser.setCalistigiSayfa(sayfaURL);
 		Calendar cal = Calendar.getInstance();
 		ortakIslemler.gunCikar(cal, 2);
 		modelGoster = Boolean.FALSE;
@@ -260,6 +262,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		String sirketIdStr = null;
 		String tesisIdStr = null;
 		String departmanIdStr = null;
+		String hataliVeriGetirStr = null;
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		String linkAdresKey = (String) req.getParameter("linkAdresKey");
 
@@ -276,7 +279,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (veriLastMap.containsKey("departmanId"))
 				departmanIdStr = (String) veriLastMap.get("departmanId");
 			if (veriLastMap.containsKey("hataliVeriGetir"))
-				hataliVeriGetir = new Boolean((String) veriLastMap.get("hataliVeriGetir"));
+				hataliVeriGetirStr = (String) veriLastMap.get("hataliVeriGetir");
 			if (yilStr != null && ayStr != null && sirketIdStr != null) {
 				yil = Integer.parseInt(yilStr);
 				ay = Integer.parseInt(ayStr);
@@ -307,6 +310,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 		// return ortakIslemler.yetkiIKAdmin(Boolean.FALSE);
 		fillEkSahaTanim();
+		if (hataliVeriGetirStr != null)
+			hataliVeriGetir = new Boolean(hataliVeriGetirStr);
+
 		if (linkAdresKey != null)
 			fillPersonelDenklestirmeList();
 		return "";
@@ -332,7 +338,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		if (hataliVeriGetir != null)
 			lastMap.put("hataliVeriGetir", "" + hataliVeriGetir);
 		try {
-
+			lastMap.put("sayfaURL", sayfaURL);
 			ortakIslemler.saveLastParameter(lastMap, session);
 		} catch (Exception e) {
 
@@ -576,36 +582,19 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						idMap.put(personelDenklestirmeBordro.getId(), personelDenklestirmeBordro);
 						personelDenklestirmeList.add(aylikPuantaj);
 					}
-					personelDenklestirmeList = PdksUtil.sortObjectStringAlanList(personelDenklestirmeList, "getAdSoyad", null);
-					boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
-					HashMap<String, Liste> listeMap = new HashMap<String, Liste>();
-					for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
-						Personel personel = aylikPuantaj.getPdksPersonel();
-						String key = (tesisGoster && personel.getTesis() != null ? personel.getTesis().getAciklama() + "_" : "") + personel.getEkSaha3().getAciklama();
-						Liste liste = listeMap.containsKey(key) ? listeMap.get(key) : new Liste(key, new ArrayList<AylikPuantaj>());
-						List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
-						if (list.isEmpty())
-							listeMap.put(key, liste);
-						list.add(aylikPuantaj);
-					}
-					List<Liste> listeler = PdksUtil.sortObjectStringAlanList(new ArrayList(listeMap.values()), "getId", null);
+					List<AylikPuantaj> puantajList = new ArrayList<AylikPuantaj>(ortakIslemler.sortAylikPuantajList(personelDenklestirmeList, false));
 					personelDenklestirmeList.clear();
 					List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>();
-					for (Liste liste : listeler) {
-						List<AylikPuantaj> list = (List<AylikPuantaj>) liste.getValue();
-						for (AylikPuantaj aylikPuantaj : list) {
-							if (aylikPuantaj.getPersonelDenklestirmeAylik().getDurum().equals(Boolean.TRUE))
-								aktifList.add(aylikPuantaj);
-							else
-								personelDenklestirmeList.add(aylikPuantaj);
-						}
-
+					for (AylikPuantaj aylikPuantaj : puantajList) {
+						if (aylikPuantaj.getPersonelDenklestirmeAylik().getDurum().equals(Boolean.TRUE))
+							aktifList.add(aylikPuantaj);
+						else
+							personelDenklestirmeList.add(aylikPuantaj);
 					}
 					if (!aktifList.isEmpty())
 						personelDenklestirmeList.addAll(aktifList);
+					puantajList = null;
 					aktifList = null;
-					listeMap = null;
-					listeler = null;
 					fields.clear();
 					fields.put("personelDenklestirmeBordro.id", new ArrayList(idMap.keySet()));
 					if (session != null)
