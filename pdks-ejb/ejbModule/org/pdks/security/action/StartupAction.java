@@ -82,6 +82,8 @@ public class StartupAction implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6954515802074767473L;
+
+	private static final String HELP_DESK_STATUS = "helpDeskStatus";
 	static Logger logger = Logger.getLogger(StartupAction.class);
 
 	@In(required = false)
@@ -388,7 +390,7 @@ public class StartupAction implements Serializable {
 		List<Parameter> parameterList = null;
 		parameterMap.clear();
 		try {
-			fields.put("active", Boolean.TRUE);
+			// fields.put("active", Boolean.TRUE);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			parameterList = (ArrayList<Parameter>) pdksEntityController.getObjectByInnerObjectList(fields, Parameter.class);
@@ -401,9 +403,12 @@ public class StartupAction implements Serializable {
 		for (Parameter parameter : parameterList) {
 			String key = parameter.getName().trim(), deger = parameter.getValue().trim();
 			pmMap.put(key, parameter);
-			parameterMap.put(key, deger);
-			if (parameter.isHelpDeskMi())
-				helpDeskList.add(key);
+			if (parameter != null && parameter.getActive()) {
+				parameterMap.put(key, deger);
+				if (parameter.isHelpDeskMi())
+					helpDeskList.add(key);
+			}
+
 		}
 		String dateFormat = null;
 		if (parameterMap.containsKey("dateFormat")) {
@@ -676,6 +681,50 @@ public class StartupAction implements Serializable {
 				logger.error("PDKS hata out : " + e.getMessage());
 			}
 		fillSirketList(session);
+		setHelpDeskParametre(session, pmMap);
+		pmMap = null;
+	}
+
+	/**
+	 * @param session
+	 * @param pmMap
+	 */
+	private void setHelpDeskParametre(Session session, HashMap<String, Parameter> pmMap) {
+		OrtakIslemler ortakIslemler = new OrtakIslemler();
+		try {
+			Parameter helpDeskStatus = pmMap.containsKey(HELP_DESK_STATUS) ? pmMap.get(HELP_DESK_STATUS) : new Parameter();
+			Date bugun = new Date();
+			if (helpDeskStatus.getId() == null) {
+				Date changeDate = null;
+				try {
+					changeDate = PdksUtil.convertToJavaDate(PdksUtil.getSistemBaslangicYili() + "0101", "yyyyMMdd");
+				} catch (Exception e) {
+				}
+				helpDeskStatus.setChangeDate(changeDate != null ? changeDate : bugun);
+				helpDeskStatus.setChangeUser(ortakIslemler.getSistemAdminUserByParamMap(parameterMap, pdksEntityController, session));
+				helpDeskStatus.setVersion(0);
+				helpDeskStatus.setDescription("Sistem Desktek Durumu");
+				helpDeskStatus.setName(HELP_DESK_STATUS);
+				helpDeskStatus.setGuncelle(false);
+				helpDeskStatus.setHelpDesk(Boolean.TRUE);
+			}
+
+			Boolean durum = PdksUtil.isSistemDestekVar();
+			boolean degisti = helpDeskStatus.getId() == null || !helpDeskStatus.getActive().equals(durum);
+			helpDeskStatus.setActive(durum);
+			helpDeskStatus.setValue(durum ? "1" : "" + (helpDeskStatus.getId() != null ? -helpDeskStatus.getId() : 0));
+			if (degisti) {
+				if (helpDeskStatus.getId() != null)
+					helpDeskStatus.setChangeDate(bugun);
+				session.saveOrUpdate(helpDeskStatus);
+				session.flush();
+			}
+
+		} catch (Exception ex) {
+			logger.error(ex);
+			ex.printStackTrace();
+		}
+		ortakIslemler = null;
 	}
 
 	private void setExcelColor() {

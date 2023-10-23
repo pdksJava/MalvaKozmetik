@@ -4295,7 +4295,7 @@ public class OrtakIslemler implements Serializable {
 		String key = authenticatedUser.getCalistigiSayfa(), lastParameterValue = getParameterKey("lastParameterValue");
 		if (map.containsKey("sayfaURL"))
 			key = (String) map.get("sayfaURL");
- 		if (key != null && map != null && (authenticatedUser.isAdmin() || lastParameterValue.equals("1"))) {
+		if (key != null && map != null && (authenticatedUser.isAdmin() || lastParameterValue.equals("1"))) {
 			try {
 				HashMap parametreMap = new HashMap();
 				StringBuffer sb = new StringBuffer();
@@ -4573,7 +4573,7 @@ public class OrtakIslemler implements Serializable {
 			try {
 				mailStatu = mailManager.mailleriDuzenle(mailObject, session);
 				if (mailStatu.isDurum())
-					mailStatu = mailManager.ePostaGonder(mailObject,session);
+					mailStatu = mailManager.ePostaGonder(mailObject, session);
 			} catch (Exception e) {
 				logger.error(e);
 				try {
@@ -15733,7 +15733,7 @@ public class OrtakIslemler implements Serializable {
 		if (vardiyaGunList != null) {
 			DenklestirmeAy denklestirmeAy = personelDenklestirmeTasiyici.getDenklestirmeAy();
 			CalismaModeliAy calismaModeliAy = personelDenklestirmeTasiyici.getCalismaModeliAy();
- 			boolean otomatikFazlaCalismaOnaylansin = denklestirmeAy.isDurum(authenticatedUser) && calismaModeliAy != null && calismaModeliAy.isOtomatikFazlaCalismaOnaylansinmi();
+			boolean otomatikFazlaCalismaOnaylansin = denklestirmeAy.isDurum(authenticatedUser) && calismaModeliAy != null && calismaModeliAy.isOtomatikFazlaCalismaOnaylansinmi();
 			vardiyaIzinleriGuncelle(izinler, vardiyaGunList);
 			HashMap<Long, KapiKGS> hareketKapiUpdateMap = new HashMap<Long, KapiKGS>();
 			String donem = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
@@ -16245,41 +16245,60 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param map
+	 * @param pec
 	 * @param session
 	 * @return
 	 */
-	public User getSistemAdminUser(Session session) {
+	public User getSistemAdminUserByParamMap(HashMap<String, String> map, PdksEntityController pec, Session session) {
 		User user = null;
 		HashMap fields = new HashMap();
-		if (parameterMap != null && parameterMap.containsKey("sistemAdminUserName")) {
-			String sistemAdminUserName = parameterMap.get("sistemAdminUserName");
+		boolean startUp = map != null;
+		if (startUp == false)
+			map = parameterMap;
+		if (pec == null)
+			pec = pdksEntityController;
+		if (map != null && map.containsKey("sistemAdminUserName")) {
+			String sistemAdminUserName = map.get("sistemAdminUserName");
 			if (sistemAdminUserName != null && sistemAdminUserName.trim().length() > 0) {
 				fields.put("username", sistemAdminUserName);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				user = (User) pdksEntityController.getObjectByInnerObject(fields, User.class);
+				user = (User) pec.getObjectByInnerObject(fields, User.class);
 			}
 		}
-		if (user == null) {
-			if (!fields.isEmpty())
-				fields.clear();
-			fields.put("id", 1L);
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			user = (User) pdksEntityController.getObjectByInnerObject(fields, User.class);
-		}
-		if (user != null)
-			try {
-				// logger.info(PdksUtil.setTurkishStr(user.getAdSoyad()));
-				setUserRoller(user, session);
-				user.setAdmin(Boolean.FALSE);
-				user.setIK(Boolean.FALSE);
-			} catch (Exception e) {
-				logger.error("Pdks hata in : \n");
-				e.printStackTrace();
-				logger.error("Pdks hata out : " + e.getMessage());
+		if (startUp == false) {
+			if (user == null) {
+				if (!fields.isEmpty())
+					fields.clear();
+				fields.put("id", 1L);
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				user = (User) pec.getObjectByInnerObject(fields, User.class);
 			}
-		fields = null;
+			if (user != null)
+				try {
+					// logger.info(PdksUtil.setTurkishStr(user.getAdSoyad()));
+					setUserRoller(user, session);
+					user.setAdmin(Boolean.FALSE);
+					user.setIK(Boolean.FALSE);
+				} catch (Exception e) {
+					logger.error("Pdks hata in : \n");
+					e.printStackTrace();
+					logger.error("Pdks hata out : " + e.getMessage());
+				}
+			fields = null;
+		}
+		return user;
+
+	}
+
+	/**
+	 * @param session
+	 * @return
+	 */
+	public User getSistemAdminUser(Session session) {
+		User user = getSistemAdminUserByParamMap(null, null, session);
 		return user;
 
 	}
