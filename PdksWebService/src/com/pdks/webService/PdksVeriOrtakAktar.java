@@ -370,6 +370,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 			}
 			helpDeskList = null;
+			PdksUtil.setSistemBaslangicYili(mailMap.containsKey("sistemBaslangicYili") ? Integer.parseInt((String) mailMap.get("sistemBaslangicYili")) : 2010);
 			PdksUtil.setSistemDestekVar(sistemDestekVar);
 			String sistemAdminUserName = mailMap.containsKey("sistemAdminUserName") ? (String) mailMap.get("sistemAdminUserName") : null;
 			if (sistemAdminUserName != null)
