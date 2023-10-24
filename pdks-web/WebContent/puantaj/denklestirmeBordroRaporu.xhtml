@@ -141,16 +141,31 @@
 								</f:facet>
 								<DIV id="personel#{puantaj.pdksPersonel.id}">
 									<ui:fragment rendered="#{puantaj.eksikCalismaSure==null}">
-										<h:outputText value="#{puantaj.pdksPersonel.sicilNo}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+										<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" />
 									</ui:fragment>
 									<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
-										<SPAN style="color: red;" id="perNo#{puantaj.pdksPersonel.id}"> <h:outputText value="#{puantaj.pdksPersonel.sicilNo}"
-												style="font-size: 9px;width:autostretch ;white-space: nowrap;" /></SPAN>
+										<SPAN style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}"><h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" /></SPAN>
 										<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
-											<rich:toolTip for="perNo#{puantaj.pdksPersonel.id}">
-												<SPAN style="color: black; font-size: 12px;"><B>ÇGS : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</SPAN>
+											<rich:toolTip for="personel#{puantaj.pdksPersonel.id}">
+												<SPAN style="color: blue; font-size: 12px;"> <h:panelGrid columns="2">
+														<ui:fragment>
+															<B>TÇS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.hesaplananSure)}
+													</ui:fragment>
+														<ui:fragment>
+															<B>ÇGS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
+													</ui:fragment>
+													</h:panelGrid>
+
+												</SPAN>
 											</rich:toolTip>
 										</ui:fragment>
+
 									</ui:fragment>
 
 
@@ -242,20 +257,26 @@
 									<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
 										<SPAN style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}"> <h:outputText
 												value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
-										<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
-											<SPAN style="color: black; font-size: 12px;">
-												<TABLE>
-													<TR>
-														<TD><B>TÇS</B></TD>
-														<TD><B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.normalSure)}</TD>
-													</TR>
-													<TR>
-														<TD><B>ÇGS</B></TD>
-														<TD><B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</TD>
-													</TR>
- 												</TABLE>
-											</SPAN>
-										</rich:toolTip>
+										<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
+											<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
+												<SPAN style="color: blue; font-size: 12px;"> <h:panelGrid columns="2">
+														<ui:fragment>
+															<B>TÇS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}
+													</ui:fragment>
+														<ui:fragment>
+															<B>ÇGS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
+													</ui:fragment>
+													</h:panelGrid>
+
+												</SPAN>
+											</rich:toolTip>
+										</ui:fragment>
 
 									</ui:fragment>
 								</ui:fragment>

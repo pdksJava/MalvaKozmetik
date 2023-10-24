@@ -679,7 +679,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
 							normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
 						} else {
-							normalSaat = pd.getFazlaMesaiSure().doubleValue();
+							normalSaat = pd.getHesaplananSure().doubleValue();
 						}
 					} catch (Exception e) {
 						normalSaat = 0.0d;
