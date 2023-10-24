@@ -664,10 +664,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>();
 			for (AylikPuantaj aylikPuantaj : puantajList) {
 				PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
-				boolean hataYok = pd.getDurum().equals(Boolean.TRUE), aktif = pd.getDurum().equals(Boolean.TRUE);
-
-				if (aylikPuantaj.getPdksPersonel().getPdksSicilNo().equals("1559") || aylikPuantaj.getPdksPersonel().getPdksSicilNo().equals("1567"))
-					logger.debug(aylikPuantaj.getPdksPersonel().getPdksSicilNo());
+				boolean hataYok = pd.getDurum().equals(Boolean.TRUE), aktif = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
 				CalismaModeli cm = hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
 				if (cm != null && cm.isSaatlikOdeme()) {
 					PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
@@ -678,7 +675,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						normalSaat = 0.0d;
 					}
 					try {
-						planlananSaaat = pd.getPlanlanSure().doubleValue();
+						planlananSaaat = pd.getPlanlanSure().doubleValue() - 9.0d;
 					} catch (Exception e) {
 						planlananSaaat = 0.0d;
 					}
@@ -687,7 +684,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					} catch (Exception e) {
 						hataYok = false;
 					}
+					donemBitti = hataYok;
 				}
+				aylikPuantaj.setDonemBitti(donemBitti);
 				if (hataYok)
 					aktifList.add(aylikPuantaj);
 				else if (aktif)

@@ -220,10 +220,10 @@
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_SAAT)}" />
 									</f:facet>
 									<ui:fragment rendered="#{puantaj.denklestirmeBordro.saatNormal!=0}">
-										<ui:fragment rendered="#{puantaj.denklestirmeBordro.saatNormal ge puantaj.personelDenklestirmeAylik.planlanSure}">
+										<ui:fragment rendered="#{puantaj.donemBitti}">
 											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" />
 										</ui:fragment>
-										<ui:fragment rendered="#{puantaj.denklestirmeBordro.saatNormal lt puantaj.personelDenklestirmeAylik.planlanSure}">
+										<ui:fragment rendered="#{puantaj.donemBitti==false}">
 											<SPAN style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}"> <h:outputText
 													value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
 											<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
