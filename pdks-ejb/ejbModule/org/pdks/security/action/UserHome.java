@@ -262,7 +262,7 @@ public class UserHome extends EntityHome<User> implements Serializable {
 					else if (authenticatedUser.getYetkiliRollerim() != null) {
 						for (Object obj : authenticatedUser.getYetkiliRollerim().toArray()) {
 							Role role = (Role) obj;
-							if (role.getRolename().equals(AccountPermission.IK_Tesis_ROLE)) {
+							if (role.getRolename().equals(Role.TIPI_IK_Tesis) || role.getRolename().equals(Role.TIPI_IK_DIREKTOR)) {
 								key = action + "-" + target + "-" + AccountPermission.IK_ROLE + "-" + AccountPermission.DISCRIMINATOR_ROLE;
 								if (accountPermissionMap.containsKey(key)) {
 									sonuc = getSonuc(target);

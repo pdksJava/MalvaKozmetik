@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BordroDetayTipi;
+import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Dosya;
@@ -326,6 +327,14 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	}
 
+	public String personelNoDegisti() {
+		if (personelDenklestirmeList != null)
+			personelDenklestirmeList.clear();
+		if (PdksUtil.hasStringValue(sicilNo))
+			fillPersonelDenklestirmeList();
+		return "";
+	}
+
 	/**
 	 * 
 	 */
@@ -587,19 +596,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						idMap.put(personelDenklestirmeBordro.getId(), personelDenklestirmeBordro);
 						personelDenklestirmeList.add(aylikPuantaj);
 					}
-					List<AylikPuantaj> puantajList = new ArrayList<AylikPuantaj>(ortakIslemler.sortAylikPuantajList(personelDenklestirmeList, false));
-					personelDenklestirmeList.clear();
-					List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>();
-					for (AylikPuantaj aylikPuantaj : puantajList) {
-						if (aylikPuantaj.getPersonelDenklestirmeAylik().getDurum().equals(Boolean.TRUE))
-							aktifList.add(aylikPuantaj);
-						else
-							personelDenklestirmeList.add(aylikPuantaj);
-					}
-					if (!aktifList.isEmpty())
-						personelDenklestirmeList.addAll(aktifList);
-					puantajList = null;
-					aktifList = null;
+
 					fields.clear();
 					fields.put("personelDenklestirmeBordro.id", new ArrayList(idMap.keySet()));
 					if (session != null)
@@ -662,6 +659,49 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			}
 			for (Tanim tanim : bordroAlanlari)
 				baslikMap.put(tanim.getKodu(), tanim);
+			List<AylikPuantaj> puantajList = new ArrayList<AylikPuantaj>(ortakIslemler.sortAylikPuantajList(personelDenklestirmeList, false));
+			personelDenklestirmeList.clear();
+			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>();
+			for (AylikPuantaj aylikPuantaj : puantajList) {
+				PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
+				boolean hataYok = pd.getDurum().equals(Boolean.TRUE), aktif = pd.getDurum().equals(Boolean.TRUE);
+
+				if (aylikPuantaj.getPdksPersonel().getPdksSicilNo().equals("1559") || aylikPuantaj.getPdksPersonel().getPdksSicilNo().equals("1567"))
+					logger.debug(aylikPuantaj.getPdksPersonel().getPdksSicilNo());
+				CalismaModeli cm = hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
+				if (cm != null && cm.isSaatlikOdeme()) {
+					PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
+					double normalSaat = 0.0d, planlananSaaat = 0.0d;
+					try {
+						normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
+					} catch (Exception e) {
+						normalSaat = 0.0d;
+					}
+					try {
+						planlananSaaat = pd.getPlanlanSure().doubleValue();
+					} catch (Exception e) {
+						planlananSaaat = 0.0d;
+					}
+					try {
+						hataYok = normalSaat >= planlananSaaat;
+					} catch (Exception e) {
+						hataYok = false;
+					}
+				}
+				if (hataYok)
+					aktifList.add(aylikPuantaj);
+				else if (aktif)
+					aktifEksikList.add(aylikPuantaj);
+				else
+					personelDenklestirmeList.add(aylikPuantaj);
+			}
+			if (!aktifEksikList.isEmpty())
+				personelDenklestirmeList.addAll(aktifEksikList);
+			if (!aktifList.isEmpty())
+				personelDenklestirmeList.addAll(aktifList);
+			puantajList = null;
+			aktifEksikList = null;
+			aktifList = null;
 
 		}
 		setInstance(denklestirmeAy);

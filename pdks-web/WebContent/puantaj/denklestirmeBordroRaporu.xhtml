@@ -67,15 +67,13 @@
 								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" ajaxSingle="true"
 									reRender="denklestirmeDonemiTable,anaForm" />
 							</h:selectOneMenu>
-						</s:decorate> 
+						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
 							<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
-								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable" rendered="#{denklestirmeBordroRaporuHome.sicilNo==''}"
-									action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" />
-								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable" rendered="#{denklestirmeBordroRaporuHome.sicilNo!=''}"
-									action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" />
- 							</h:inputText>
+								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable"
+									action="#{denklestirmeBordroRaporuHome.personelNoDegisti()}" />
+							</h:inputText>
 						</s:decorate>
 						<a4j:outputPanel id="hataliPuantajGoster">
 
@@ -221,8 +219,19 @@
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_SAAT)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}"
-										rendered="#{puantaj.denklestirmeBordro.saatNormal!=0}" />
+									<ui:fragment rendered="#{puantaj.denklestirmeBordro.saatNormal!=0}">
+										<ui:fragment rendered="#{puantaj.denklestirmeBordro.saatNormal ge puantaj.personelDenklestirmeAylik.planlanSure}">
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" />
+										</ui:fragment>
+										<ui:fragment rendered="#{puantaj.denklestirmeBordro.saatNormal lt puantaj.personelDenklestirmeAylik.planlanSure}">
+											<SPAN style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}"> <h:outputText
+													value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
+											<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
+												<SPAN style="color: black; font-size: 12px;"><B>ÇGS : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</SPAN>
+											</rich:toolTip>
+
+										</ui:fragment>
+									</ui:fragment>
 								</rich:column>
 								<rich:column style="text-align: center;" headerClass="izinAylik" rendered="#{denklestirmeBordroRaporuHome.haftaTatilSaatDurum}">
 									<f:facet name="header">
