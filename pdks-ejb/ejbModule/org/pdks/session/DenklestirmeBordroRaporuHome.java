@@ -199,7 +199,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		lastMap.put("sicilNo", personel.getPdksSicilNo());
 		lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
 
-		bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + personel.getPdksSicilNo() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
+		bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + aylikPuantaj.getPersonelDenklestirmeAylik().getId() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
 		try {
 			ortakIslemler.saveLastParameter(lastMap, session);
 		} catch (Exception e) {
@@ -215,6 +215,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
 		if (!ayniSayfa)
 			authenticatedUser.setCalistigiSayfa(sayfaURL);
+		if (personelDenklestirmeList != null)
+			personelDenklestirmeList.clear();
+		else
+			personelDenklestirmeList = new ArrayList<AylikPuantaj>();
 		Calendar cal = Calendar.getInstance();
 		ortakIslemler.gunCikar(cal, 2);
 		modelGoster = Boolean.FALSE;
@@ -314,9 +318,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		fillEkSahaTanim();
 		if (hataliVeriGetirStr != null)
 			hataliVeriGetir = new Boolean(hataliVeriGetirStr);
-
+		bordroAdres = null;
 		if (linkAdresKey != null)
 			fillPersonelDenklestirmeList();
+
 		return "";
 
 	}

@@ -87,19 +87,24 @@ public class IseGelmeyenPersonelHome extends EntityHome<PersonelIzin> implements
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
 		// default bugun icin ise gelmeyen raporu cekili olsun
-		Date dateBas = PdksUtil.buGun();
-		Date dateBit = PdksUtil.buGun();
-
-		setIseGelmeyenList(iseGelmeyenListeOlustur(dateBas, dateBit));
-		setDate(dateBas);
+		setDate(PdksUtil.buGun());
+		gelmeyenListOlustur();
 	}
 
-	public void iseGelmeyenListOlustur() {
-
-		setIseGelmeyenList(iseGelmeyenListeOlustur(getDate(), getDate()));
+	public String gelmeyenListOlustur() {
+		if (iseGelmeyenList != null)
+			iseGelmeyenList.clear();
+		List<IseGelmeyenDisplay> list = iseGelmeyenListeOlustur(getDate(), getDate());
+		setIseGelmeyenList(list);
+		return "";
 	}
 
-	public List<IseGelmeyenDisplay> iseGelmeyenListeOlustur(Date dateBas, Date dateBit) {
+	/**
+	 * @param dateBas
+	 * @param dateBit
+	 * @return
+	 */
+	private List<IseGelmeyenDisplay> iseGelmeyenListeOlustur(Date dateBas, Date dateBit) {
 		HashMap paramMap = new HashMap();
 		// paramMap.put(pdksEntityController.MAP_KEY_MAP, "getIzinUnique" );
 		paramMap.put("izinTipi.bakiyeIzinTipi=", null); // nullolmayanlar bakiye izinleri
@@ -119,7 +124,7 @@ public class IseGelmeyenPersonelHome extends EntityHome<PersonelIzin> implements
 			paramMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 
 		List<PersonelIzin> izinList = pdksEntityController.getObjectByInnerObjectListInLogic(paramMap, PersonelIzin.class);
-		
+
 		// setIzinList(izinList);
 
 		paramMap.clear();
@@ -127,7 +132,7 @@ public class IseGelmeyenPersonelHome extends EntityHome<PersonelIzin> implements
 		paramMap.put("zaman <=", dateBit);
 		if (session != null)
 			paramMap.put(PdksEntityController.MAP_KEY_SESSION, session);
- 		List<PersonelHareket> hareketList = pdksEntityController.getObjectByInnerObjectListInLogic(paramMap, PersonelHareket.class);
+		List<PersonelHareket> hareketList = pdksEntityController.getObjectByInnerObjectListInLogic(paramMap, PersonelHareket.class);
 		String key = "";
 		Map hareketMap = new HashMap();
 		for (Iterator iterator = hareketList.iterator(); iterator.hasNext();) {
@@ -147,8 +152,12 @@ public class IseGelmeyenPersonelHome extends EntityHome<PersonelIzin> implements
 		return displayList;
 	}
 
+	/**
+	 * @param izinList
+	 * @param raporGunu
+	 * @return
+	 */
 	private List<IseGelmeyenDisplay> izinListGrupla(List<PersonelIzin> izinList, Date raporGunu) {
-
 		String key = "";
 		Map<String, IseGelmeyenDisplay> grupMap = new HashMap<String, IseGelmeyenDisplay>();
 		int grupTotal = 0;
@@ -177,8 +186,9 @@ public class IseGelmeyenPersonelHome extends EntityHome<PersonelIzin> implements
 			tempDisplay.setPersonelSayisi(grupTotal);
 			grupMap.put(key, tempDisplay);
 		}
-
-		return new ArrayList(grupMap.values());
+		List<IseGelmeyenDisplay> list = new ArrayList(grupMap.values());
+		grupMap = null;
+		return list;
 	}
 
 	public void iseGelmeyenListeOlustur() {

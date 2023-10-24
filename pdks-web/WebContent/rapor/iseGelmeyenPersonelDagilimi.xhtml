@@ -10,110 +10,116 @@
 	<ui:define name="body">
 
 		<h:form>
+			<a4j:outputPanel ajaxRendered="true">
+				<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+			</a4j:outputPanel>
 
 			<rich:panel header="#{ortakIslemler.getMenuUserAdi(iseGelmeyenPersonelHome.session,'iseGelmeyenPersonelDagilimi')}">
-				<h:panelGrid columns="2">
+				<a4j:outputPanel id="isGelmeyenPanelForm">
+					<h:panelGrid columns="2">
 
-					<s:decorate template="/layout/edit.xhtml">
+						<s:decorate template="/layout/edit.xhtml">
 
-						<ui:define name="label">Tarih</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{iseGelmeyenPersonelHome.date}" id="dateFilter">
-							<f:validator validatorId="dateValidator" />
-						</rich:calendar>
-					</s:decorate>
+							<ui:define name="label">Tarih</ui:define>
+							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{iseGelmeyenPersonelHome.date}" id="dateFilter">
 
-					<a4j:commandButton status="ajaxStatus" value="İşe Gelmeyen Personel Sayısı Göster" action="#{iseGelmeyenPersonelHome.iseGelmeyenListOlustur}"
-						reRender="isGelmeyenPanel" />
-				</h:panelGrid>
+							</rich:calendar>
+						</s:decorate>
 
+						<a4j:commandButton status="ajaxStatus" value="İşe Gelmeyen Personel Sayısı Göster" action="#{iseGelmeyenPersonelHome.gelmeyenListOlustur()}"
+							reRender="gelmeyenPanel" />
+					</h:panelGrid>
+				</a4j:outputPanel>
 			</rich:panel>
 
-			<a4j:region>
-				<rich:panel id="isGelmeyenPanel">
-					<rich:dataTable rowClasses="acik,koyu" value="#{iseGelmeyenPersonelHome.iseGelmeyenList}" var="iseGelmeyenDisplay" rows="25" rowKeyVar="row"
-						id="hareketTable">
+
+			<a4j:outputPanel id="gelmeyenPanel">
+
+				<rich:dataTable rowClasses="acik,koyu" value="#{iseGelmeyenPersonelHome.iseGelmeyenList}"
+					rendered="#{not empty iseGelmeyenPersonelHome.iseGelmeyenList}" var="veri" rows="25" rowKeyVar="row" id="hareketTable">
+					<f:facet name="header">
+						<h:outputText value="İşe Gelmeyen Personellerin İzin Dağılım Raporu" />
+					</f:facet>
+					<rich:column width="100">
 						<f:facet name="header">
-							<h:outputText value="İşe Gelmeyen Personellerin İzin Dağılım Raporu" />
+							<h:outputText value="İzin Tipi" />
 						</f:facet>
-						<rich:column width="100">
+						<h:outputText value="#{veri.izinTipi.izinTipiTanim.aciklama}" />
+					</rich:column>
+
+					<rich:column width="60">
+						<f:facet name="header">
+							<h:outputText value="Personel Sayısı" />
+						</f:facet>
+						<h:outputText value="#{veri.personelSayisi}" />
+					</rich:column>
+
+					<rich:column width="100">
+						<f:facet name="header">
+							<h:outputText value="Tarih" />
+						</f:facet>
+						<h:outputText value="#{authenticatedUser.dateTimeFormatla(veri.date)}" />
+
+					</rich:column>
+
+					<rich:column width="60">
+						<f:facet name="header">
+							<h:outputText value="Personeller" />
+						</f:facet>
+						<a4j:commandButton status="ajaxStatus" value="Personeller" rendered="#{veri.personelList!=null}"
+							oncomplete="#{rich:component('personelDetayPanel')}.show()" action="#{iseGelmeyenPersonelHome.personelGoster(veri)}"
+							reRender="personelDetayPanel" />
+
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+					</f:facet>
+				</rich:dataTable>
+
+			</a4j:outputPanel>
+		</h:form>
+		<rich:modalPanel id="personelDetayPanel" autosized="true" width="450">
+
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="harekethidelink" styleClass="hidelink" />
+					<rich:componentControl for="personelDetayPanel" attachTo="harekethidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<h:panelGrid width="400">
+					<rich:dataTable rowClasses="acik,koyu" value="#{iseGelmeyenPersonelHome.personelList}" var="personel" rows="20" rowKeyVar="row">
+						<f:facet name="header">
+
+							<h:outputText value="Personel Listesi" />
+						</f:facet>
+						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="İzin Tipi" />
+								<h:outputText value="Adı Soyadı" />
 							</f:facet>
-							<h:outputText value="#{iseGelmeyenDisplay.izinTipi.izinTipiTanim.aciklama}" />
+							<h:outputText value="#{personel.adSoyad}" />
 						</rich:column>
-
-						<rich:column width="60">
+						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="Personel Sayısı" />
+								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 							</f:facet>
-							<h:outputText value="#{iseGelmeyenDisplay.personelSayisi}" />
+							<h:outputText value="#{personel.personelKGS.sicilNo}" />
 						</rich:column>
-
-						<rich:column width="100">
-							<f:facet name="header">
-								<h:outputText value="Tarih" />
-							</f:facet>
-							<h:outputText value="#{authenticatedUser.dateTimeFormatla(iseGelmeyenDisplay.date)}" />
-
-						</rich:column>
-
-						<rich:column width="60">
-							<f:facet name="header">
-								<h:outputText value="Personeller" />
-							</f:facet>
-							<a4j:commandButton status="ajaxStatus" value="Personeller" rendered="#{iseGelmeyenDisplay.personelList!=null}"
-								oncomplete="#{rich:component('personelDetayPanel')}.show()" action="#{iseGelmeyenPersonelHome.personelGoster(iseGelmeyenDisplay)}"
-								reRender="personelDetayPanel" />
-
-						</rich:column>
-
 						<f:facet name="footer">
 							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 						</f:facet>
 					</rich:dataTable>
-				</rich:panel>
-
-				<rich:modalPanel id="personelDetayPanel" autosized="true" width="450">
-
-					<f:facet name="controls">
-						<h:panelGroup>
-							<h:graphicImage value="/img/close.png" id="harekethidelink" styleClass="hidelink" />
-							<rich:componentControl for="personelDetayPanel" attachTo="harekethidelink" operation="hide" event="onclick" />
-						</h:panelGroup>
-					</f:facet>
-
-					<h:panelGrid width="400">
-						<rich:dataTable rowClasses="acik,koyu" value="#{iseGelmeyenPersonelHome.personelList}" var="personel" rows="20" rowKeyVar="row">
-							<f:facet name="header">
-
-								<h:outputText value="Personel Listesi" />
-							</f:facet>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="Adı Soyadı" />
-								</f:facet>
-								<h:outputText value="#{personel.adSoyad}" />
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
-								</f:facet>
-								<h:outputText value="#{personel.personelKGS.sicilNo}" />
-							</rich:column>
-							<f:facet name="footer">
-								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
-							</f:facet>
-						</rich:dataTable>
-					</h:panelGrid>
-
-				</rich:modalPanel>
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
 
 
 
-			</a4j:region>
 
 
-		</h:form>
+
+
 
 
 	</ui:define>

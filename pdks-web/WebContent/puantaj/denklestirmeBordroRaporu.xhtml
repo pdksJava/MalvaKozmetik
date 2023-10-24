@@ -67,13 +67,15 @@
 								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" ajaxSingle="true"
 									reRender="denklestirmeDonemiTable,anaForm" />
 							</h:selectOneMenu>
-						</s:decorate>
+						</s:decorate> 
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
 							<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
-								<a4j:support event="oncchange" reRender="secimler" status="ajaxStatus" />
-
-							</h:inputText>
+								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable" rendered="#{denklestirmeBordroRaporuHome.sicilNo==''}"
+									action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" />
+								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable" rendered="#{denklestirmeBordroRaporuHome.sicilNo!=''}"
+									action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" />
+ 							</h:inputText>
 						</s:decorate>
 						<a4j:outputPanel id="hataliPuantajGoster">
 
