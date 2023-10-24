@@ -278,6 +278,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				tesisIdStr = (String) veriLastMap.get("tesisId");
 			if (veriLastMap.containsKey("departmanId"))
 				departmanIdStr = (String) veriLastMap.get("departmanId");
+			if (veriLastMap.containsKey("sicilNo"))
+				sicilNo = (String) veriLastMap.get("sicilNo");
 			if (veriLastMap.containsKey("hataliVeriGetir"))
 				hataliVeriGetirStr = (String) veriLastMap.get("hataliVeriGetir");
 			if (yilStr != null && ayStr != null && sirketIdStr != null) {
@@ -332,7 +334,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			lastMap.put("sirketId", "" + sirketId);
 		if (tesisId != null)
 			lastMap.put("tesisId", "" + tesisId);
-
 		if (sicilNo != null && sicilNo.trim().length() > 0)
 			lastMap.put("sicilNo", sicilNo.trim());
 		if (hataliVeriGetir != null)

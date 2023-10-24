@@ -80,7 +80,8 @@
 							<s:decorate template="/layout/edit.xhtml" rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum}">
 								<ui:define name="label">Hatalı Personel Göster</ui:define>
 								<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.hataliVeriGetir}">
-									<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" />
+									<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
+										reRender="denklestirmeDonemiTable" />
 								</h:selectBooleanCheckbox>
 							</s:decorate>
 
