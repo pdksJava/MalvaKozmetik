@@ -664,32 +664,40 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>();
 			for (AylikPuantaj aylikPuantaj : puantajList) {
 				PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
-				boolean hataYok = pd.getDurum().equals(Boolean.TRUE), aktif = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
+				boolean hataYok = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
 				CalismaModeli cm = hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
-				if (cm != null && cm.isSaatlikOdeme()) {
-					PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
+				Double eksikCalismaSure = null;
+				if (cm != null) {
 					double normalSaat = 0.0d, planlananSaaat = 0.0d;
 					try {
-						normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
-					} catch (Exception e) {
-						normalSaat = 0.0d;
-					}
-					try {
-						planlananSaaat = pd.getPlanlanSure().doubleValue() - 9.0d;
+						planlananSaaat = pd.getPlanlanSure().doubleValue() - cm.getHaftaIci();
 					} catch (Exception e) {
 						planlananSaaat = 0.0d;
 					}
 					try {
+						if (cm.isSaatlikOdeme()) {
+							PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
+							normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
+						} else {
+							normalSaat = pd.getFazlaMesaiSure().doubleValue();
+						}
+					} catch (Exception e) {
+						normalSaat = 0.0d;
+					}
+					try {
 						hataYok = normalSaat >= planlananSaaat;
+						if (hataYok == false)
+							eksikCalismaSure = normalSaat - (planlananSaaat + cm.getHaftaIci());
 					} catch (Exception e) {
 						hataYok = false;
 					}
 					donemBitti = hataYok;
 				}
+				aylikPuantaj.setEksikCalismaSure(eksikCalismaSure);
 				aylikPuantaj.setDonemBitti(donemBitti);
 				if (hataYok)
 					aktifList.add(aylikPuantaj);
-				else if (aktif)
+				else if (eksikCalismaSure != null)
 					aktifEksikList.add(aylikPuantaj);
 				else
 					personelDenklestirmeList.add(aylikPuantaj);

@@ -140,7 +140,20 @@
 									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 								</f:facet>
 								<DIV id="personel#{puantaj.pdksPersonel.id}">
-									<h:outputText value="#{puantaj.pdksPersonel.sicilNo}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+									<ui:fragment rendered="#{puantaj.eksikCalismaSure==null}">
+										<h:outputText value="#{puantaj.pdksPersonel.sicilNo}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+									</ui:fragment>
+									<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
+										<SPAN style="color: red;" id="perNo#{puantaj.pdksPersonel.id}"> <h:outputText value="#{puantaj.pdksPersonel.sicilNo}"
+												style="font-size: 9px;width:autostretch ;white-space: nowrap;" /></SPAN>
+										<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
+											<rich:toolTip for="perNo#{puantaj.pdksPersonel.id}">
+												<SPAN style="color: black; font-size: 12px;"><B>ÇGS : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</SPAN>
+											</rich:toolTip>
+										</ui:fragment>
+									</ui:fragment>
+
+
 								</DIV>
 							</rich:column>
 							<rich:column style="text-align: left;">
@@ -223,14 +236,25 @@
 									<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_SAAT)}" />
 								</f:facet>
 								<ui:fragment rendered="#{puantaj.denklestirmeBordro.saatNormal!=0}">
-									<ui:fragment rendered="#{puantaj.donemBitti}">
+									<ui:fragment rendered="#{puantaj.eksikCalismaSure==null}">
 										<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" />
 									</ui:fragment>
-									<ui:fragment rendered="#{puantaj.donemBitti==false}">
+									<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
 										<SPAN style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}"> <h:outputText
 												value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
 										<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
-											<SPAN style="color: black; font-size: 12px;"><B>ÇGS : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</SPAN>
+											<SPAN style="color: black; font-size: 12px;">
+												<TABLE>
+													<TR>
+														<TD><B>TÇS</B></TD>
+														<TD><B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.normalSure)}</TD>
+													</TR>
+													<TR>
+														<TD><B>ÇGS</B></TD>
+														<TD><B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</TD>
+													</TR>
+ 												</TABLE>
+											</SPAN>
 										</rich:toolTip>
 
 									</ui:fragment>
