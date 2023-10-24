@@ -91,7 +91,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private List<SelectItem> aylar;
 
-	private String sicilNo = "", bolumAciklama;
+	private String sicilNo = "", bolumAciklama, linkAdresKey;
 
 	private DenklestirmeAy denklestirmeAy;
 
@@ -269,7 +269,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		String departmanIdStr = null;
 		String hataliVeriGetirStr = null;
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-		String linkAdresKey = (String) req.getParameter("linkAdresKey");
+		linkAdresKey = (String) req.getParameter("linkAdresKey");
 
 		departmanId = null;
 		if (veriLastMap != null) {
@@ -1755,5 +1755,20 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setEkSaha4Tanim(Tanim ekSaha4Tanim) {
 		this.ekSaha4Tanim = ekSaha4Tanim;
+	}
+
+	/**
+	 * @return the linkAdresKey
+	 */
+	public String getLinkAdresKey() {
+		return linkAdresKey;
+	}
+
+	/**
+	 * @param linkAdresKey
+	 *            the linkAdresKey to set
+	 */
+	public void setLinkAdresKey(String linkAdresKey) {
+		this.linkAdresKey = linkAdresKey;
 	}
 }
