@@ -543,9 +543,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 						sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
 					}
-					if (sicilNo != null && sicilNo.length() > 0) {
+					if (PdksUtil.hasStringValue(sicilNo)) {
 						sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo ");
-						fields.put("sicilNo", sicilNo);
+						fields.put("sicilNo", ortakIslemler.getSicilNo(sicilNo.trim()));
 					}
 				}
 				if (tesisId != null) {
