@@ -426,7 +426,7 @@ public class MailManager implements Serializable {
 						} catch (Exception e2) {
 						}
 					}
-					saveLog(mailObject, sessionDB);
+					saveLog(mailObject, parameterMap, sessionDB);
 					for (File file : dosyalar) {
 						if (file.exists())
 							file.delete();
@@ -453,22 +453,38 @@ public class MailManager implements Serializable {
 	}
 
 	/**
-	 * @param gsonObject
+	 * @param jsonMailStrings
+	 * @param object
 	 * @param gson
 	 * @return
 	 */
-	private String getJsonObject(Object object, Gson gson) {
+	private String getJsonObject(String jsonMailStrings, Object object, Gson gson) {
 		String str = null;
 		if (object != null) {
 			if (gson == null)
 				gson = new Gson();
 			str = PdksUtil.toPrettyFormat(gson.toJson(object));
 			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("\\u003c", "<");
-			map.put("\\u003e", ">");
-			map.put("\\u0026", "&");
-			map.put("\\u003d", "=");
-			map.put("\\u0027", "'");
+			if (PdksUtil.hasStringValue(jsonMailStrings)) {
+				List<String> list = PdksUtil.getListByString(jsonMailStrings, "|");
+				for (String string : list) {
+					if (string.indexOf("_") > 0 && string.length() > 2) {
+						String[] veri = string.split("_");
+						if (veri.length == 2) {
+							map.put(veri[0], veri[1]);
+						} else if (veri.length == 1)
+							map.put(veri[0], " ");
+					}
+				}
+				list = null;
+			} else {
+				map.put("\\u003c", "<");
+				map.put("\\u003e", ">");
+				map.put("\\u0026", "&");
+				map.put("\\u003d", "=");
+				map.put("\\u0027", "'");
+			}
+
 			for (String pattern : map.keySet()) {
 				if (str.indexOf(pattern) > 0)
 					str = PdksUtil.replaceAllManuel(str, pattern, map.get(pattern));
@@ -481,7 +497,7 @@ public class MailManager implements Serializable {
 	 * @param mailObject
 	 * @param sessionDB
 	 */
-	private void saveLog(MailObject mail, Session sessionDB) {
+	private void saveLog(MailObject mail, HashMap<String, String> map, Session sessionDB) {
 		try {
 			if (sessionDB != null) {
 				MailObject mailObject = (MailObject) mail.clone();
@@ -498,9 +514,9 @@ public class MailManager implements Serializable {
 								if (ext != null) {
 									MailFile mailFileNew = new MailFile();
 									mailFileNew.setDisplayName(mailFile.getDisplayName());
-									if (ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("xml"))  
- 										mailFileNew.setFile(new String(mailFile.getIcerik()));
- 									attachmentFiles.add(mailFileNew);
+									if (ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("xml"))
+										mailFileNew.setFile(new String(mailFile.getIcerik()));
+									attachmentFiles.add(mailFileNew);
 									continue;
 								}
 							}
@@ -511,12 +527,11 @@ public class MailManager implements Serializable {
 							mailObject.getAttachmentFiles().addAll(attachmentFiles);
 						}
 						attachmentFiles = null;
-						serviceData.setOutputData(getJsonObject(mailObject, gson));
+						String jsonMailStrings = map.containsKey("jsonMailStrings") ? map.get("jsonMailStrings") : null;
+						serviceData.setOutputData(getJsonObject(jsonMailStrings, mailObject, gson));
 						pdksEntityController.save(serviceData, sessionDB);
 					} catch (Exception ex) {
-						mailObject.getAttachmentFiles().clear();
-						serviceData.setOutputData(getJsonObject(mailObject, gson));
-						pdksEntityController.save(serviceData, sessionDB);
+
 					}
 				} else
 					sessionDB.flush();

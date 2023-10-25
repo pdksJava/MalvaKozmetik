@@ -354,7 +354,7 @@ public class MailManager implements Serializable {
 
 			}
 			mailList = null;
-			saveLog(mailObject);
+			saveLog(mailObject, parameterMap);
 			for (File file : dosyalar) {
 				if (file.exists())
 					file.delete();
@@ -368,22 +368,37 @@ public class MailManager implements Serializable {
 	}
 
 	/**
-	 * @param gsonObject
+	 * @param jsonMailStrings
+	 * @param object
 	 * @param gson
 	 * @return
 	 */
-	private static String getJsonObject(Object object, Gson gson) {
+	private static String getJsonObject(String jsonMailStrings, Object object, Gson gson) {
 		String str = null;
 		if (object != null) {
 			if (gson == null)
 				gson = new Gson();
 			str = PdksUtil.toPrettyFormat(gson.toJson(object));
 			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("\\u003c", "<");
-			map.put("\\u003e", ">");
-			map.put("\\u0026", "&");
-			map.put("\\u003d", "=");
-			map.put("\\u0027", "'");
+			if (PdksUtil.hasStringValue(jsonMailStrings)) {
+				List<String> list = PdksUtil.getListByString(jsonMailStrings, "|");
+				for (String string : list) {
+					if (string.indexOf("_") > 0 && string.length() > 2) {
+						String[] veri = string.split("_");
+						if (veri.length == 2) {
+							map.put(veri[0], veri[1]);
+						} else if (veri.length == 1)
+							map.put(veri[0], " ");
+					}
+				}
+				list = null;
+			} else {
+				map.put("\\u003c", "<");
+				map.put("\\u003e", ">");
+				map.put("\\u0026", "&");
+				map.put("\\u003d", "=");
+				map.put("\\u0027", "'");
+			}
 			for (String pattern : map.keySet()) {
 				if (str.indexOf(pattern) > 0)
 					str = PdksUtil.replaceAllManuel(str, pattern, map.get(pattern));
@@ -392,10 +407,7 @@ public class MailManager implements Serializable {
 		return str;
 	}
 
-	/**
-	 * @param mail
-	 */
-	private static void saveLog(MailObject mail) {
+	private static void saveLog(MailObject mail, HashMap<String, Object> map) {
 		try {
 			MailObject mailObject = (MailObject) mail.clone();
 			mailObject.setSmtpPassword("");
@@ -423,12 +435,11 @@ public class MailManager implements Serializable {
 					mailObject.getAttachmentFiles().addAll(attachmentFiles);
 				}
 				attachmentFiles = null;
-				serviceData.setOutputData(getJsonObject(mailObject, gson));
+				String jsonMailStrings = map.containsKey("jsonMailStrings") ? (String) map.get("jsonMailStrings") : null;
+				serviceData.setOutputData(getJsonObject(jsonMailStrings, mailObject, gson));
 				Constants.pdksDAO.saveObject(serviceData);
 			} catch (Exception ex) {
-				mailObject.getAttachmentFiles().clear();
-				serviceData.setOutputData(getJsonObject(mailObject, gson));
-				Constants.pdksDAO.saveObject(serviceData);
+
 			}
 			gson = null;
 		} catch (Exception e) {
