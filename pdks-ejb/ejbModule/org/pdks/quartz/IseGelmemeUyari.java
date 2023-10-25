@@ -288,7 +288,7 @@ public class IseGelmemeUyari implements Serializable {
 						yonetici = yoneticiYok;
 
 					boolean islemDevam = yonetici != null;
-					if (yonetici == null || per.getSicilNo().trim().length() == 0 || per.getSirket() == null)
+					if (yonetici == null || PdksUtil.hasStringValue(per.getSicilNo()) == false || per.getSirket() == null)
 						islemDevam = false;
 					else if (!pdksSirket.getDurum() || !pdksSirket.getPdks())
 						islemDevam = false;
@@ -548,7 +548,7 @@ public class IseGelmemeUyari implements Serializable {
 									if (hareketPersonelMap == null)
 										hareketPersonelMap = new TreeMap<String, List<String>>();
 									if (userList != null) {
- 										for (User user : userList) {
+										for (User user : userList) {
 											if (user.getId() != null) {
 												Personel personel = user.getPdksPersonel();
 												if (personel.getId() != null && !personel.getId().equals(yoneticisi.getId())) {

@@ -104,7 +104,7 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 				}
 
 			}
-			if (soapAction == null && xml != null && xml.trim().length() > 0) {
+			if (soapAction == null && PdksUtil.hasStringValue(xml)) {
 				logger.info(xml);
 				soapAction = "noAction";
 			}
@@ -188,7 +188,7 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 		Element root = null;
 		// XMLDecoder xmlDecoder = null;
 		try {
-			if (xmlString != null && xmlString.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(xmlString)) {
 				if (xmlString.indexOf("&") > 0)
 					xmlString = PdksUtil.replaceAll(xmlString, "&", "&amp;");
 				document = DocumentHelper.parseText(xmlString);
@@ -228,7 +228,7 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 		Element root = null;
 		// XMLDecoder xmlDecoder = null;
 		try {
-			if (xmlString != null && xmlString.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(xmlString)) {
 				// if (xmlString.indexOf("&") > 0)
 				// xmlString = PdksUtil.replaceAll(xmlString, "&", "&amp;");
 				document = DocumentHelper.parseText(xmlString);

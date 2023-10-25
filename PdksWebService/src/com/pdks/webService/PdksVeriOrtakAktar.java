@@ -425,7 +425,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 		if (mailMap != null && mailMap.containsKey("sistemAdminUserName")) {
 			String sistemAdminUserName = (String) mailMap.get("sistemAdminUserName");
-			if (sistemAdminUserName != null && sistemAdminUserName.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(sistemAdminUserName)) {
 				fields.put("username", sistemAdminUserName);
 				user = (User) dao.getObjectByInnerObject(fields, User.class);
 			}
@@ -450,7 +450,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	private void saveFonksiyonVeri(String fonksiyonAdi, Object object) throws Exception {
 		Gson gson = new Gson();
 		String dataStr = object != null ? gson.toJson(object) : "";
-		if (dataStr != null && dataStr.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(dataStr)) {
 			if (serviceData == null) {
 				if (fonksiyonAdi != null) {
 					serviceData = new ServiceData(fonksiyonAdi);
@@ -513,7 +513,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				if (pasifList.contains(mailPersonel.getePosta())) {
 					if (sb.length() > 0)
 						sb.append(", ");
-					sb.append((mailPersonel.getAdiSoyadi() != null && mailPersonel.getAdiSoyadi().trim().length() > 0 ? "<" + mailPersonel.getAdiSoyadi().trim() + "> " : "") + mailPersonel.getePosta());
+					sb.append((PdksUtil.hasStringValue(mailPersonel.getAdiSoyadi()) ? "<" + mailPersonel.getAdiSoyadi().trim() + "> " : "") + mailPersonel.getePosta());
 					iterator.remove();
 				}
 			}
@@ -820,7 +820,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @param msg
 	 */
 	private void mesajInfoYaz(String msg) {
-		if (msg != null && msg.trim().length() > 0)
+		if (PdksUtil.hasStringValue(msg))
 			logger.info(PdksUtil.setTurkishStr(msg));
 	}
 
@@ -848,7 +848,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				inputMap.put("donemKapat", donemKapat);
 			saveFonksiyonVeri("getMesaiPDKS", inputMap);
 
-			dosyaEkAdi = (sirketKodu != null && sirketKodu.trim().length() > 0 ? sirketKodu.trim() : "") + "-" + ((yil != null ? yil : 0) * 100 + (ay != null ? +ay : 0));
+			dosyaEkAdi = (PdksUtil.hasStringValue(sirketKodu) ? sirketKodu.trim() : "") + "-" + ((yil != null ? yil : 0) * 100 + (ay != null ? +ay : 0));
 
 			fields.clear();
 			fields.put("yil", yil);
@@ -856,7 +856,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksDAO.getObjectByInnerObject(fields, DenklestirmeAy.class);
 			if (denklestirmeAy != null) {
 				Sirket sirket = null;
-				if (sirketKodu != null && sirketKodu.trim().length() > 0) {
+				if (PdksUtil.hasStringValue(sirketKodu)) {
 					sirket = (Sirket) pdksDAO.getObjectByInnerObject("erpKodu", sirketKodu, Sirket.class);
 					if (sirket == null)
 						denklestirmeAy = null;
@@ -1441,7 +1441,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					IzinERP izinERP = (IzinERP) iterator.next();
 					if (izinCok) {
 						String personelNo = izinERP.getPersonelNo();
-						if (personelNo != null && personelNo.trim().length() > 0) {
+						if (PdksUtil.hasStringValue(personelNo)) {
 							String key = personelNo.trim() + "_" + (izinERP.getBasZaman() != null ? izinERP.getBasZaman().trim() : "") + "_" + (izinERP.getBitZaman() != null ? izinERP.getBitZaman().trim() : "");
 							int size = referansNoMap.size() + 1;
 							if (!referansNoMap.containsKey(key)) {
@@ -1451,7 +1451,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							}
 							referansSiraMap.put(size, izinERP);
 							String referansNoERP = izinERP.getReferansNoERP();
-							if (referansNoERP != null && referansNoERP.trim().length() > 0) {
+							if (PdksUtil.hasStringValue(referansNoERP)) {
 								List<String> list = izinPersonelERPMap.containsKey(personelNo) ? izinPersonelERPMap.get(personelNo) : new ArrayList<String>();
 								if (list.isEmpty())
 									izinPersonelERPMap.put(personelNo, list);
@@ -1617,7 +1617,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					kidemHataList.clear();
 					Date baslangicZamani = getTarih(izinERP.getBasZaman(), FORMAT_DATE_TIME);
 					Date bitisZamani = getTarih(izinERP.getBitZaman(), FORMAT_DATE_TIME);
-					if (izinERP.getReferansNoERP() == null || izinERP.getReferansNoERP().trim().length() == 0)
+					if (PdksUtil.hasStringValue(izinERP.getReferansNoERP()) == false)
 						addHatalist(izinERP.getHataList(), "Referans numarası boş!");
 					if (izinERP.getPersonelNo() == null)
 						addHatalist(izinERP.getHataList(), "Personel numarası boş!");
@@ -2270,7 +2270,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 	private String getIzinKisaAciklama(String aciklama) {
 		String kisaAciklama = "";
-		if (aciklama != null && aciklama.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(aciklama)) {
 			StringTokenizer st = new StringTokenizer(aciklama, " ");
 			while (st.hasMoreTokens()) {
 				String tk = st.nextToken();
@@ -2305,7 +2305,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	protected List<PersonelDenklestirme> getDenklestirmeList(String perNo, Date basTarih, Date bitTarih, boolean donemDurum) {
 		List<PersonelDenklestirme> list = null;
-		if (basTarih != null && bitTarih != null && perNo != null && perNo.trim().length() > 0) {
+		if (basTarih != null && bitTarih != null && PdksUtil.hasStringValue(perNo)) {
 			String d1 = PdksUtil.convertToDateString(basTarih, "yyyyMM"), d2 = PdksUtil.convertToDateString(bitTarih, "yyyyMM");
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
@@ -2369,7 +2369,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		Tanim tanim = null;
 		try {
 			boolean ekle = false;
-			if (tanimKodu != null && aciklama != null && tanimKodu.trim().length() > 0 && aciklama.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(tanimKodu) && PdksUtil.hasStringValue(aciklama)) {
 				TreeMap<String, Tanim> personelEKSahaMap = dataMap.get("personelEKSahaMap");
 				Tanim parentTanim = personelEKSahaMap.containsKey(parentKey) ? personelEKSahaMap.get(parentKey) : null;
 				String tipi = parentTanim != null ? Tanim.TIPI_PERSONEL_EK_SAHA_ACIKLAMA : parentKey;
@@ -2447,7 +2447,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @return
 	 */
 	private boolean notEmptyStr(String str) {
-		boolean empt = sistemDestekVar && str != null && str.trim().length() > 0;
+		boolean empt = sistemDestekVar && PdksUtil.hasStringValue(str);
 		return empt;
 
 	}
@@ -2479,7 +2479,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	private boolean isBenzer(String str1, String str2) {
 		boolean benzer = false;
-		if (str1 != null && str2 != null && str1.trim().length() > 0 && str2.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(str1) && PdksUtil.hasStringValue(str2)) {
 			benzer = str1.equals(str2);
 			if (!benzer) {
 				String strNew1 = PdksUtil.replaceAllManuel(PdksUtil.setTurkishStr(str1).toUpperCase(Locale.ENGLISH), " ", "");
@@ -2498,7 +2498,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	private Date getGrubaGirisTarihi(PersonelKGS personelKGS) {
 		Date date = null;
-		if (personelKGS != null && personelKGS.getKimlikNo() != null && personelKGS.getKimlikNo().trim().length() > 0) {
+		if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo())) {
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT  P.*   FROM  " + Personel.TABLE_NAME + "  P WITH(nolock) ");
@@ -2688,7 +2688,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				Personel personelSecili = null;
 				Date iseBaslamaTarihi = getTarih(personelERP.getIseGirisTarihi(), FORMAT_DATE);
 				boolean genelMudurDurum = personelERP.getGorevKodu() != null && genelMudurERPKodlari.contains(personelERP.getGorevKodu());
-				if (personelERP.getIstenAyrilmaTarihi() == null || personelERP.getIstenAyrilmaTarihi().trim().length() == 0 || personelERP.getIstenAyrilmaTarihi().equals(calisanIstenAyrilmaTarihi))
+				if (PdksUtil.hasStringValue(personelERP.getIstenAyrilmaTarihi()) == false || personelERP.getIstenAyrilmaTarihi().equals(calisanIstenAyrilmaTarihi))
 					personelERP.setIstenAyrilmaTarihi(LAST_DATE);
 
 				Date grubaGirisTarihi = getTarih(personelERP.getGrubaGirisTarihi(), FORMAT_DATE);
@@ -2703,7 +2703,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				if (vardiyaSablonu == null)
 					addHatalist(personelERP.getHataList(), "Beyaz yaka şablonu bulunamadı!");
 				if (personelERP.getSirketKodu() == null || !sirketMap.containsKey(personelERP.getSirketKodu())) {
-					if (personelERP.getSirketKodu() == null || personelERP.getSirketKodu().trim().length() == 0)
+					if (PdksUtil.hasStringValue(personelERP.getSirketKodu()) == false)
 						addHatalist(personelERP.getHataList(), sirketAciklama() + " kodu boş olamaz!");
 					else {
 						Sirket sirket = null;
@@ -2788,7 +2788,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							if (istenAyrilisTarihi != null && istenAyrilisTarihi.before(bugun))
 								ek = " (İşten ayrılma tarihi : " + personelERP.getIstenAyrilmaTarihi();
 
-							if (personelKGSBos != null && personelKGSBos.getSicilNo() != null && personelKGSBos.getSicilNo().trim().length() > 0) {
+							if (personelKGSBos != null && PdksUtil.hasStringValue(personelKGSBos.getSicilNo())) {
 								if (ek.equals(""))
 									ek += "(";
 								else
@@ -3148,7 +3148,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						personel.setGrubaGirisTarihi(grubaGirisTarihi);
 					}
 
-					boolean yoneticiKoduVar = yoneticiNo.trim().length() > 0;
+					boolean yoneticiKoduVar = PdksUtil.hasStringValue(yoneticiNo);
 
 					Personel yoneticisi = yoneticiNo.equals(personelNo) && personel.getId() == null ? personel : null;
 					if (yoneticisi == null) {
@@ -3211,7 +3211,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						yoneticisi2 = personel;
 					else {
 						if (yonetici2ERPKontrol) {
-							boolean yoneticiKodu2Var = yonetici2No.trim().length() > 0;
+							boolean yoneticiKodu2Var = PdksUtil.hasStringValue(yonetici2No);
 							if (yoneticiKodu2Var) {
 								String yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(yonetici2No.trim(), '0', sicilNoUzunluk);
 								yoneticisi2 = personelPDKSMap.get(yonetici2PerNo);
@@ -3228,7 +3228,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							if (personelERP.getHataList().isEmpty())
 								personel.setAsilYonetici2(yoneticisi2);
 						} else {
-							boolean yoneticiKodu2Var = yonetici2No != null && yonetici2No.trim().length() > 0;
+							boolean yoneticiKodu2Var = PdksUtil.hasStringValue(yonetici2No);
 							if (yoneticiKodu2Var) {
 								String yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(yonetici2No.trim(), '0', sicilNoUzunluk);
 								yoneticisi2 = personelPDKSMap.get(yonetici2PerNo);
@@ -3442,11 +3442,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (sicilNoUzunluk != null) {
 						String perNo = PdksUtil.textBaslangicinaKarakterEkle(personelERP.getPersonelNo(), '0', sicilNoUzunluk);
 						personelERP.setPersonelNo(perNo);
-						if (personelERP.getYoneticiPerNo() != null && personelERP.getYoneticiPerNo().trim().length() > 0) {
+						if (PdksUtil.hasStringValue(personelERP.getYoneticiPerNo())) {
 							String yoneticiPerNo = PdksUtil.textBaslangicinaKarakterEkle(personelERP.getYoneticiPerNo(), '0', sicilNoUzunluk);
 							personelERP.setYoneticiPerNo(yoneticiPerNo);
 						}
-						if (personelERP.getYonetici2PerNo() != null && personelERP.getYonetici2PerNo().trim().length() > 0) {
+						if (PdksUtil.hasStringValue(personelERP.getYonetici2PerNo())) {
 							String yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(personelERP.getYonetici2PerNo(), '0', sicilNoUzunluk);
 							personelERP.setYonetici2PerNo(yonetici2PerNo);
 						}
@@ -3889,10 +3889,10 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @param str
 	 */
 	private void addHatalist(List<String> list, String str) {
-		if (str != null && str.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(str)) {
 			list.add(str);
 		} else {
-			logger.info("aa");
+			logger.debug("aa");
 		}
 
 	}

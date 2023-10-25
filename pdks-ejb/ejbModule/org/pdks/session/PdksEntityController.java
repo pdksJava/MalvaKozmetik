@@ -81,7 +81,7 @@ public class PdksEntityController implements Serializable {
 				}
 			} else if (fieldValue instanceof String) {
 				String fieldValueStr = (String) fieldValue;
-				if (fieldValueStr.trim().length() > 0) {
+				if (PdksUtil.hasStringValue(fieldValueStr)) {
 					StringTokenizer st = new StringTokenizer(fieldValueStr, ",");
 					while (st.hasMoreTokens())
 						str.append(" " + SELECT_KARAKTER + "." + (String) st.nextToken() + (st.hasMoreTokens() ? "," : ""));
@@ -243,7 +243,7 @@ public class PdksEntityController implements Serializable {
 					break;
 			}
 			String query = " where " + SELECT_KARAKTER + "." + keyAlan + (parametreList.size() > 1 ? " in (" + strArray.toString() + ")" : "=" + strArray.toString());
-			String sql = MAP_KEY_SELECT + " " + (select.trim().length() == 0 ? " " + SELECT_KARAKTER + " " : select.trim()) + " from " + class1.getName() + " " + SELECT_KARAKTER + " " + query.toString();
+			String sql = MAP_KEY_SELECT + " " + (PdksUtil.hasStringValue(select) == false ? " " + SELECT_KARAKTER + " " : select.trim()) + " from " + class1.getName() + " " + SELECT_KARAKTER + " " + query.toString();
 			if (showSQL)
 				logger.info(sql + " in " + PdksUtil.convertToDateString(new Date(), PdksUtil.getDateFormat() + " H:mm:ss"));
 			else if (sessionYok) {
@@ -397,7 +397,7 @@ public class PdksEntityController implements Serializable {
 			}
 			if (session == null)
 				session = PdksUtil.getSession(pEntityManager == null ? entityManager : pEntityManager, Boolean.FALSE);
-			String sql = MAP_KEY_SELECT + " " + (select.trim().length() == 0 ? " " + SELECT_KARAKTER + " " : select.trim()) + " from " + class1.getName() + " " + SELECT_KARAKTER + " " + query.toString() + order;
+			String sql = MAP_KEY_SELECT + " " + (PdksUtil.hasStringValue(select) == false ? " " + SELECT_KARAKTER + " " : select.trim()) + " from " + class1.getName() + " " + SELECT_KARAKTER + " " + query.toString() + order;
 			if (query.indexOf(" and ") > 0 && or != null)
 				sql = replaceAll(sql, " and ", or);
 			select = null;
@@ -571,7 +571,7 @@ public class PdksEntityController implements Serializable {
 		TreeMap treeMap = new TreeMap();
 		if (map.containsKey(MAP_KEY_MAP)) {
 			String method = (String) map.get(MAP_KEY_MAP);
-			if (method != null && method.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(method)) {
 				map.remove(MAP_KEY_MAP);
 				List list = getObjectByInnerObjectList(map, class1);
 				if (!list.isEmpty())
@@ -586,7 +586,7 @@ public class PdksEntityController implements Serializable {
 		TreeMap treeMap = new TreeMap();
 		if (map.containsKey(MAP_KEY_MAP)) {
 			String method = (String) map.get(MAP_KEY_MAP);
-			if (method != null && method.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(method) ) {
 				map.remove(MAP_KEY_MAP);
 				List list = getObjectByInnerObjectListInLogic(map, class1);
 				if (!list.isEmpty())
@@ -632,7 +632,7 @@ public class PdksEntityController implements Serializable {
 	 */
 	public List execSPList(LinkedHashMap<String, Object> veriMap, StringBuffer sp, Class class1) throws Exception {
 		SQLQuery query = prepareProcedure(veriMap, sp);
- 		if (class1 != null)
+		if (class1 != null)
 			query.addEntity(class1);
 		List sonucList = query.list();
 		return sonucList;

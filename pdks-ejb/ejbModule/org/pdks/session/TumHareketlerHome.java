@@ -314,8 +314,8 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				sirketId = null;
 		}
 		boolean admin = ikRole || authenticatedUser.isAdmin() || authenticatedUser.isGenelMudur();
-		if (sicilNo.trim().length() > 0 || adi.trim().length() > 0 || soyadi.trim().length() > 0) {
-			if (sicilNo.trim().length() > 0)
+		if (PdksUtil.hasStringValue(sicilNo) || PdksUtil.hasStringValue(adi) || PdksUtil.hasStringValue(soyadi)) {
+			if (PdksUtil.hasStringValue(sicilNo))
 				sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			// if (authenticatedUser.isAdmin() || (authenticatedUser.isIK() && authenticatedUser.getDepartman().isAdminMi()) || yetkiTumPersonelNoList.contains(sicilNo)) {
 			HashMap map = new HashMap();
@@ -327,12 +327,12 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				else if (departmanId != null)
 					map.put("pdksPersonel.sirket.departman.id=", departmanId);
 			}
-			if (sicilNo.trim().length() > 0)
+			if (PdksUtil.hasStringValue(sicilNo))
 				map.put("pdksPersonel.pdksSicilNo=", sicilNo);
 			else {
-				if (adi.trim().length() > 0)
+				if (PdksUtil.hasStringValue(adi))
 					map.put("pdksPersonel.ad like ", "%" + adi.trim() + "%");
-				if (soyadi.trim().length() > 0)
+				if (PdksUtil.hasStringValue(soyadi))
 					map.put("pdksPersonel.soyad like ", "%" + soyadi.trim() + "%");
 			}
 
@@ -399,7 +399,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					ArrayList<String> list = authenticatedUser.getYetkiTumPersonelNoList();
 					parametreMap.put("ys", list);
 				}
-				if (sicilNo.trim().length() > 0) {
+				if (PdksUtil.hasStringValue(sicilNo)) {
 					sb.append(" AND  P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo");
 					parametreMap.put("sicilNo", sicilNo);
 				} else if (admin) {
@@ -603,7 +603,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		} else
 			setHareketList(new ArrayList<HareketKGS>());
 		setZipVeri(null);
-		if (!hareketList.isEmpty() && sicilNo.trim().length() == 0 && (authenticatedUser.isAdmin() || ikRole)) {
+		if (!hareketList.isEmpty() && PdksUtil.hasStringValue(sicilNo) == false && (authenticatedUser.isAdmin() || ikRole)) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			String dosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
 			try {

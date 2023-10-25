@@ -690,7 +690,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		if (seciliEkSaha3Id != null)
 			lastMap.put("bolumId", "" + seciliEkSaha3Id);
 
-		if ((authenticatedUser.isIK() || authenticatedUser.isAdmin()) && sicilNo != null && sicilNo.trim().length() > 0)
+		if ((authenticatedUser.isIK() || authenticatedUser.isAdmin()) && PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
 		try {
 
@@ -809,8 +809,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			if (sirket != null)
 				departmanBolumAyni = sirket.isTesisDurumu() == false;
 
-			if (pdksHaric || authenticatedUser.isAdmin() || authenticatedUser.isIK() || (sicilNo != null && sicilNo.trim().length() > 0)) {
-				if (sicilNo == null || sicilNo.trim().length() == 0) {
+			if (pdksHaric || authenticatedUser.isAdmin() || authenticatedUser.isIK() || (PdksUtil.hasStringValue(sicilNo))) {
+				if (PdksUtil.hasStringValue(sicilNo) == false) {
 					map.put(PdksEntityController.MAP_KEY_SELECT, "pdksSicilNo");
 
 					if (sirket != null) {
@@ -908,7 +908,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				List<VardiyaGorev> gorevliler = departman == null || departman.isAdminMi() ? ortakIslemler.getVardiyaGorevYerleri(authenticatedUser, aylikPuantajSablon.getIlkGun(), aylikPuantajSablon.getSonGun(), gorevYerileri, session) : new ArrayList<VardiyaGorev>();
 				for (VardiyaGorev vardiyaGorev : gorevliler) {
 					Personel personel = vardiyaGorev.getVardiyaGun().getPersonel();
-					if (personel.getPdksSicilNo() != null && personel.getPdksSicilNo().trim().length() > 0)
+					if (PdksUtil.hasStringValue(personel.getPdksSicilNo()))
 						gorevliPersonelMap.put(personel.getPdksSicilNo().trim(), personel);
 				}
 
@@ -1047,7 +1047,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						+ adres
 						+ "/fazlaMesaiHesapla?linkAdresKey="
 						+ PdksUtil.getEncodeStringByBase64("yil=" + yil + "&ay=" + ay + (seciliEkSaha3Id != null ? "&gorevYeriId=" + seciliEkSaha3Id : "") + (tesisId != null ? "&tesisId=" + tesisId : "") + (gorevTipiId != null ? "&gorevTipiId=" + gorevTipiId : "")
-								+ (sirket != null ? "&sirketId=" + sirket.getId() : "") + (sicilNo != null && sicilNo.trim().length() > 0 ? "&sicilNo=" + sicilNo.trim() : "")) + "'>" + ortakIslemler.getCalistiMenuAdi("fazlaMesaiOzetRapor") + " Ekranına Geri Dön</a>";
+								+ (sirket != null ? "&sirketId=" + sirket.getId() : "") + (PdksUtil.hasStringValue(sicilNo) ? "&sicilNo=" + sicilNo.trim() : "")) + "'>" + ortakIslemler.getCalistiMenuAdi("fazlaMesaiOzetRapor") + " Ekranına Geri Dön</a>";
 
 				List<String> gunList = new ArrayList<String>();
 				for (Iterator iterator = aylikPuantajDefault.getAyinVardiyalari().iterator(); iterator.hasNext();) {
@@ -1072,7 +1072,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				ayrikHareketVar = false;
 				String str = ortakIslemler.getParameterKey("addManuelGirisCikisHareketler");
 				boolean ayrikKontrol = false;
-				if (sicilNo != null && sicilNo.trim().length() > 0) {
+				if (PdksUtil.hasStringValue(sicilNo)) {
 					ayrikKontrol = str.equals("A") || str.equals("1");
 					if (!ayrikKontrol) {
 						if (authenticatedUser.isAdmin())

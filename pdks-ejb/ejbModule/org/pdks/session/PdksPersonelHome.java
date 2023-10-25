@@ -511,9 +511,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			pdksPersonel.setGuncelleyenUser(authenticatedUser);
 			pdksPersonel.setGuncellemeTarihi(new Date());
 		} else {
-			if (pdksPersonel.getAd() != null && pdksPersonel.getAd().trim().length() > 0)
+			if (PdksUtil.hasStringValue(pdksPersonel.getAd()))
 				pdksPersonel.setAd(pdksPersonel.getAd().toUpperCase(Constants.TR_LOCALE));
-			if (pdksPersonel.getSoyad() != null && pdksPersonel.getSoyad().trim().length() > 0)
+			if (PdksUtil.hasStringValue(pdksPersonel.getSoyad()))
 				pdksPersonel.setSoyad(pdksPersonel.getSoyad().toUpperCase(Constants.TR_LOCALE));
 			pdksPersonel.setOlusturanUser(authenticatedUser);
 		}
@@ -621,7 +621,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 		try {
 			boolean yeni = pdksPersonel.getId() == null;
-			boolean kullaniciYaz = kullanici.getUsername() != null && kullanici.getUsername().trim().length() > 0;
+			boolean kullaniciYaz = PdksUtil.hasStringValue(kullanici.getUsername());
 			if (kullaniciYaz) {
 				if (PdksUtil.isValidEMail(kullanici.getEmail()))
 					user = ortakIslemler.digerKullanici(kullanici, getOldUserName(), session);
@@ -640,9 +640,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						pdksPersonel.setGrubaGirisTarihi(pdksPersonel.getIzinHakEdisTarihi());
 					pdksPersonel.setOlusturanUser(authenticatedUser);
 					if (sirket != null && !sirket.isErp()) {
-						if (pdksPersonel.getAd() != null && pdksPersonel.getAd().trim().length() > 0)
+						if (PdksUtil.hasStringValue(pdksPersonel.getAd()))
 							pdksPersonel.setAd(pdksPersonel.getAd().toUpperCase(Constants.TR_LOCALE));
-						if (pdksPersonel.getSoyad() != null && pdksPersonel.getSoyad().trim().length() > 0)
+						if (PdksUtil.hasStringValue(pdksPersonel.getSoyad()))
 							pdksPersonel.setSoyad(pdksPersonel.getSoyad().toUpperCase(Constants.TR_LOCALE));
 					}
 				}
@@ -1275,7 +1275,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		String emailCC = ortakIslemler.getAktifMailAdress(pdksPersonel.getEmailCC(), session);
 		String emailBCC = ortakIslemler.getAktifMailAdress(pdksPersonel.getEmailBCC(), session);
 		String hareketMail = ortakIslemler.getAktifMailAdress(pdksPersonel.getHareketMail(), session);
-		if (emailCC != null && emailCC.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(emailCC)) {
 			pdksPersonel.setEmailCC(emailCC);
 			adresAyarla(null, MAIL_CC);
 			String yeniAdres = adresDuzelt(ccAdresList);
@@ -1283,7 +1283,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				pdksPersonel.setEmailCC(yeniAdres);
 			}
 		}
-		if (emailBCC != null && emailBCC.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(emailBCC)) {
 			pdksPersonel.setEmailBCC(emailBCC);
 			adresAyarla(null, MAIL_BCC);
 			String yeniAdres = adresDuzelt(bccAdresList);
@@ -1291,7 +1291,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				pdksPersonel.setEmailBCC(yeniAdres);
 			}
 		}
-		if (hareketMail != null && hareketMail.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(hareketMail)) {
 			pdksPersonel.setHareketMail(hareketMail);
 			adresAyarla(null, MAIL_HAREKET);
 			String yeniAdres = adresDuzelt(hareketAdresList);
@@ -1817,19 +1817,19 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		sb.append("SELECT V.*   FROM  " + PersonelKGS.TABLE_NAME + "  V WITH(nolock) ");
 		sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " Y ON Y." + Personel.COLUMN_NAME_KGS_PERSONEL + "=V." + PersonelKGS.COLUMN_NAME_ID);
 		String str = " WHERE ";
-		if (adi.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(adi)) {
 			fields.put("ad1", "%" + adi.trim() + "%");
 			fields.put("ad2", "%" + adi.trim() + "%");
 			sb.append(str + " (V." + PersonelKGS.COLUMN_NAME_AD + " like :ad1 or Y." + Personel.COLUMN_NAME_AD + " like :ad2 )");
 			str = " AND ";
 		}
-		if (soyadi.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(soyadi)) {
 			fields.put("soyad1", "%" + soyadi.trim() + "%");
 			fields.put("soyad2", "%" + soyadi.trim() + "%");
 			sb.append(str + " (V." + PersonelKGS.COLUMN_NAME_SOYAD + " like :soyad1 or Y." + Personel.COLUMN_NAME_SOYAD + " like :soyad2 )");
 			str = " AND ";
 		}
-		if (sicilNo.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(sicilNo)) {
 			sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			fields.put("sicilNo1", sicilNo.trim());
 			fields.put("sicilNo2", sicilNo.trim());
@@ -2526,9 +2526,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		if (yer > 0) {
 			String kod = deger.substring(0, yer).trim();
 			String aciklama = deger.substring(yer + 1).trim();
-			if (kod.trim().length() > 0)
+			if (PdksUtil.hasStringValue(kod))
 				map.put("kod", kod);
-			if (aciklama.trim().length() > 0)
+			if (PdksUtil.hasStringValue(aciklama))
 				map.put("aciklama", aciklama);
 		}
 	}
@@ -2593,8 +2593,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 * @param deger
 	 */
 	private void kontrolDosyaYaz(LinkedHashMap<String, TreeMap<String, LinkedHashMap<String, Liste>>> anaMap, String veriTip, String key, String deger) {
-		if (veriTip != null && veriTip.trim().length() > 0) {
-			if (key != null && key.trim().length() > 0 && deger != null) {
+		if (PdksUtil.hasStringValue(veriTip)) {
+			if (PdksUtil.hasStringValue(key) && deger != null) {
 				veriTip = veriTip.trim();
 
 				deger = deger.trim();
@@ -2846,13 +2846,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						String yoneticiPerNo = null, yonetici2PerNo = null;
 						if (COL_YONETICI_KODU >= 0)
 							yoneticiPerNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_YONETICI_KODU);
-						if (yoneticiPerNo != null && yoneticiPerNo.trim().length() > 0 && yoneticiPerNo.trim().length() < maxTextLength)
+						if (PdksUtil.hasStringValue(yoneticiPerNo) && yoneticiPerNo.trim().length() < maxTextLength)
 							yoneticiPerNo = PdksUtil.textBaslangicinaKarakterEkle(yoneticiPerNo.trim(), '0', maxTextLength);
 						personelERP.setYoneticiPerNo(yoneticiPerNo);
 
 						if (COL_YONETICI2_KODU >= 0)
 							yonetici2PerNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_YONETICI2_KODU);
-						if (yonetici2PerNo != null && yonetici2PerNo.trim().length() > 0 && yonetici2PerNo.trim().length() < maxTextLength)
+						if (PdksUtil.hasStringValue(yonetici2PerNo) && yonetici2PerNo.trim().length() < maxTextLength)
 							yonetici2PerNo = PdksUtil.textBaslangicinaKarakterEkle(yonetici2PerNo.trim(), '0', maxTextLength);
 						personelERP.setYonetici2PerNo(yonetici2PerNo);
 						Date izinHakEdisTarihi = null, iseBaslamaTarihi = null, istenAyrilmaTarihi = null, dogumTarihi = null, grubaGirisTarihi = null;
@@ -2990,7 +2990,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			Liste liste = (Liste) iterator.next();
 			try {
 				Tanim tanim = (Tanim) liste.getValue();
-				if (tanim.getErpKodu() != null && tanim.getKodu() != null && tanim.getKodu().trim().length() > 0 && tanim.getErpKodu().trim().length() > 0)
+				if (PdksUtil.hasStringValue(tanim.getErpKodu()))
 					alanMap.put(tanim.getKodu(), Integer.parseInt(tanim.getErpKodu().trim()));
 			} catch (Exception e) {
 

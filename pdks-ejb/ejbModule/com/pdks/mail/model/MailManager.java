@@ -398,7 +398,7 @@ public class MailManager implements Serializable {
 						if (mailObject.getToList() != null && mailObject.getToList().size() == 1) {
 							MailPersonel mailPersonel = mailObject.getToList().get(0);
 							mesajAlan = mailPersonel.getAdiSoyadi();
-							if (mesajAlan != null && mesajAlan.trim().length() == 0)
+							if (mesajAlan != null && PdksUtil.hasStringValue(mesajAlan) == false)
 								mesajAlan = null;
 
 						}
@@ -675,7 +675,7 @@ public class MailManager implements Serializable {
 				if (pasifList.contains(mailPersonel.getEPosta())) {
 					if (sb.length() > 0)
 						sb.append(", ");
-					sb.append((mailPersonel.getAdiSoyadi() != null && mailPersonel.getAdiSoyadi().trim().length() > 0 ? "<" + mailPersonel.getAdiSoyadi().trim() + "> " : "") + mailPersonel.getEPosta());
+					sb.append((PdksUtil.hasStringValue(mailPersonel.getAdiSoyadi()) ? "<" + mailPersonel.getAdiSoyadi().trim() + "> " : "") + mailPersonel.getEPosta());
 					iterator.remove();
 				}
 			}
@@ -697,7 +697,7 @@ public class MailManager implements Serializable {
 				if (email.indexOf("@") > 0) {
 					try {
 						InternetAddress ia = new InternetAddress(email);
-						if (mailUser.getAdiSoyadi() != null && mailUser.getAdiSoyadi().trim().length() > 0)
+						if (PdksUtil.hasStringValue(mailUser.getAdiSoyadi()))
 							ia.setPersonal(mailUser.getAdiSoyadi(), "UTF-8");
 						adreslerList.add(ia);
 						mailList.add(email);

@@ -627,7 +627,6 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			try {
 				String aciklama = kgsHareket.getKapiView().getKapi().getAciklama() + " güncellendi.";
 				KapiView terminalKapi = terminalKapiManuelUpdate(kgsHareket.getTerminalKapi());
-			 
 
 				pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, neden.getId(), "", kgsHareket.getKgsSirketId(), session);
 				pdksId = pdksEntityController.hareketEkle(terminalKapi, kgsHareket.getPersonel(), kgsHareket.getZaman(), authenticatedUser, neden.getId(), aciklama, session);
@@ -751,8 +750,6 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 						kgsId = id;
 					else
 						pdksId = id;
-
-					 
 
 					if (islemTipi.equals("G")) {
 
@@ -882,7 +879,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 						list = new ArrayList<HareketKGS>();
 
 					}
-					if (aramaSecenekleri.getSicilNo() != null && aramaSecenekleri.getSicilNo().trim().length() > 0) {
+					if (PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo())) {
 						if (personeller.size() == 1) {
 							map1.clear();
 							map1.put("personelKGS.id", personeller.get(0));
@@ -1000,11 +997,11 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			lastMap.put("ekSaha3Id", "" + aramaSecenekleri.getEkSaha3Id());
 		if (aramaSecenekleri.getEkSaha4Id() != null)
 			lastMap.put("ekSaha4Id", "" + aramaSecenekleri.getEkSaha4Id());
-		if (aramaSecenekleri.getSicilNo() != null && aramaSecenekleri.getSicilNo().trim().length() > 0)
+		if (PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo()))
 			lastMap.put("sicilNo", "" + aramaSecenekleri.getSicilNo().trim());
-		if (aramaSecenekleri.getAd() != null && aramaSecenekleri.getAd().trim().length() > 0)
+		if (PdksUtil.hasStringValue(aramaSecenekleri.getAd()))
 			lastMap.put("ad", "" + aramaSecenekleri.getAd().trim());
-		if (aramaSecenekleri.getSoyad() != null && aramaSecenekleri.getSoyad().trim().length() > 0)
+		if (PdksUtil.hasStringValue(aramaSecenekleri.getSoyad()))
 			lastMap.put("soyad", "" + aramaSecenekleri.getSoyad().trim());
 		if (tarih != null)
 			lastMap.put("tarih", PdksUtil.convertToDateString(tarih, "yyyy-MM-dd"));

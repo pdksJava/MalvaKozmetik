@@ -144,7 +144,7 @@ public class PdksUtil implements Serializable {
 	public static String getJsonToXML(String jsonStr, String rootName, String arrayTag) {
 		String str = "";
 		try {
-			if (arrayTag != null && arrayTag.trim().length() > 0) {
+			if (hasStringValue(arrayTag)) {
 				if (jsonStr.startsWith("["))
 					jsonStr = "{\"" + arrayTag + "\":" + jsonStr + "}";
 				else if (jsonStr.startsWith("{"))

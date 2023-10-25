@@ -106,7 +106,7 @@ public class IzinOnayHome extends EntityHome<PersonelIzin> implements Serializab
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
 		String fromAciklama = ortakIslemler.getParameterKey("fromName");
-		if (fromAciklama.trim().length() > 0)
+		if (PdksUtil.hasStringValue(fromAciklama))
 			setKullaniciIslemleriMailAciklama(fromAciklama);
 		personelIzinGirisiHome.setIzinIptalGoster(Boolean.FALSE);
 		fillIzinOnayList();

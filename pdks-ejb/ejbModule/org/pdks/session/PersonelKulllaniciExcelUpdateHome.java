@@ -465,7 +465,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 
 	public List<String> ccAdresList(String adres) {
 		List<String> adresler = new ArrayList<String>();
-		if (adres != null && adres.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(adres)) {
 			if (adres.indexOf(",") > 0)
 				adresler.addAll(Arrays.asList(adres.split(",")));
 			else
@@ -504,7 +504,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 
 			for (Iterator iterator = ccAdresList.iterator(); iterator.hasNext();) {
 				String adres = (String) iterator.next();
-				if (adres.trim().length() > 0)
+				if (PdksUtil.hasStringValue(adres))
 					sb.append((sb.length() > 0 ? "," : "") + adres.trim());
 			}
 		}

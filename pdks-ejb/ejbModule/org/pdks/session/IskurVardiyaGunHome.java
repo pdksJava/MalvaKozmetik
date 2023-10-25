@@ -1257,7 +1257,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		sablonGuncelle = authenticatedUser == null && denklestirmeAyDurum && personelAylikPuantaj.isKaydet() && aylikPuantaj.isKaydet();
 		if (sablonGuncelle) {
 			String sablonGuncelleStr = ortakIslemler.getParameterKey("sablonGuncellemeyenDepartmanlar");
-			if (sablonGuncelleStr != null && sablonGuncelleStr.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(sablonGuncelleStr)) {
 				List<String> depList = Arrays.asList(sablonGuncelleStr.split(","));
 				sablonGuncelle = !depList.contains(personel.getSirket().getDepartman().getId().toString());
 			}
@@ -2693,7 +2693,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 
 		}
 		if (adminRole || islemYapan.getYetkiTumPersonelNoList().contains(sicilNo))
-			if (sicilNo.trim().length() > 0)
+			if (PdksUtil.hasStringValue(sicilNo))
 				perList.add(sicilNo);
 
 		ArrayList<Long> perIdler = new ArrayList<Long>();
@@ -3201,7 +3201,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			lastMap.put("departmanId", "" + aramaSecenekleri.getDepartmanId());
 		if (aramaSecenekleri.getSirketId() != null)
 			lastMap.put("sirketId", "" + aramaSecenekleri.getSirketId());
-		if ((ikRole) && sicilNo != null && sicilNo.trim().length() > 0)
+		if ((ikRole) && PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
 		try {
 			ortakIslemler.saveLastParameter(lastMap, session);

@@ -10,8 +10,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.log.Log;
-
 import org.pdks.sap.entity.SAPSunucu;
+import org.pdks.session.PdksUtil;
+
 import com.sap.mw.jco.JCO;
 
 /**
@@ -93,8 +94,8 @@ public class SapRfcManager implements Serializable {
 			int maxConnections = Integer.parseInt(parameterMap.get("sapPoolMaxConnection"));
 			for (Iterator iterator = sapSunucuList.iterator(); iterator.hasNext();) {
 				SAPSunucu sapSunucu = (SAPSunucu) iterator.next();
-				sapPoolKey = "R3" + sapSunucu.getHostName() + "_" + userId + (sapSunucu.getDil() != null ? "_" + sapSunucu.getDil() : "");
-				boolean appServer = sapSunucu.getSystemNumber() != null && sapSunucu.getSystemNumber().trim().length() > 0;
+				sapPoolKey = "R3" + sapSunucu.getHostName() + "_" + userId + (PdksUtil.hasStringValue(sapSunucu.getDil()) ? "_" + sapSunucu.getDil() : "");
+				boolean appServer = PdksUtil.hasStringValue(sapSunucu.getSystemNumber());
 				try {
 					if (appServer)
 						sapPoolKey += "_" + sapSunucu.getSystemNumber().trim();

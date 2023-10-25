@@ -703,7 +703,7 @@ public class Vardiya extends BaseObject {
 
 	@Transient
 	public String getKisaAciklama() {
-		return kisaAdi != null && kisaAdi.trim().length() > 0 ? kisaAdi : getVardiyaAciklama();
+		return PdksUtil.hasStringValue(kisaAdi) ? kisaAdi : getVardiyaAciklama();
 	}
 
 	@Transient

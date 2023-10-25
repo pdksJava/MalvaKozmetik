@@ -333,7 +333,7 @@ public class StartupAction implements Serializable {
 			}
 			noticeList = null;
 			if (notice != null) {
-				if (notice.getValue() == null || notice.getValue().trim().length() == 0)
+				if (PdksUtil.hasStringValue(notice.getValue()) == false)
 					notice = null;
 			}
 
@@ -867,7 +867,7 @@ public class StartupAction implements Serializable {
 								str += "&";
 						}
 						String json = islemler.getJSONData(path + "?" + str, "POST", null, null, false);
-						if (json != null && json.trim().length() > 0) {
+						if (PdksUtil.hasStringValue(json)) {
 							JSONParser jsonParser = new JSONParser();
 							JSONObject jsonObject = (JSONObject) jsonParser.parse(json);
 							if (jsonObject.containsKey("data")) {

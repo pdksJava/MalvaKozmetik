@@ -764,7 +764,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 					list = new ArrayList<PersonelDenklestirmeTasiyici>();
 					for (Personel personel : personelList) {
-						if (sicilNo.trim().length() == 0 || personel.getPdksSicilNo().trim().equals(sicilNo.trim())) {
+						if (PdksUtil.hasStringValue(sicilNo) == false || personel.getPdksSicilNo().trim().equals(sicilNo.trim())) {
 							PersonelDenklestirmeTasiyici denklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
 							denklestirmeTasiyici.setPersonel(personel);
 							denklestirmeTasiyici.setCalismaModeli(personel.getCalismaModeli());
@@ -807,7 +807,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 							+ adres
 							+ "/fazlaMesaiRapor?linkAdresKey="
 							+ PdksUtil.getEncodeStringByBase64("yil=" + yil + "&ay=" + ay + (seciliEkSaha3Id != null ? "&gorevYeriId=" + seciliEkSaha3Id : "") + (tesisId != null ? "&tesisId=" + tesisId : "") + (gorevTipiId != null ? "&gorevTipiId=" + gorevTipiId : "")
-									+ (sirket != null ? "&sirketId=" + sirket.getId() : "") + (sicilNo != null && sicilNo.trim().length() > 0 ? "&sicilNo=" + sicilNo.trim() : "")) + "'>" + ortakIslemler.getCalistiMenuAdi("fazlaMesaiHesapla") + " Ekranına Geri Dön</a>";
+									+ (sirket != null ? "&sirketId=" + sirket.getId() : "") + (PdksUtil.hasStringValue(sicilNo) ? "&sicilNo=" + sicilNo.trim() : "")) + "'>" + ortakIslemler.getCalistiMenuAdi("fazlaMesaiHesapla") + " Ekranına Geri Dön</a>";
 
 					List<String> gunList = new ArrayList<String>();
 					vgList = aylikPuantajSablon.getVardiyalar();
@@ -834,7 +834,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					ayrikHareketVar = false;
 					String str = ortakIslemler.getParameterKey("addManuelGirisCikisHareketler");
 					boolean ayrikKontrol = false;
-					if (sicilNo != null && sicilNo.trim().length() > 0) {
+					if (PdksUtil.hasStringValue(sicilNo)) {
 						ayrikKontrol = str.equals("A") || str.equals("1");
 						if (!ayrikKontrol) {
 							if (authenticatedUser.isAdmin())
@@ -1081,7 +1081,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 							}
 						}
 						puantaj.setFazlaMesaiHesapla(puantajFazlaMesaiHesapla);
-						if (sicilNo.trim().length() > 0 || hataliPuantajGoster == false || puantaj.isFazlaMesaiHesapla() == false)
+						if (PdksUtil.hasStringValue(sicilNo) || hataliPuantajGoster == false || puantaj.isFazlaMesaiHesapla() == false)
 							puantajList.add(puantaj);
 					}
 
@@ -1152,7 +1152,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		if (seciliEkSaha3Id != null)
 			lastMap.put("bolumId", "" + seciliEkSaha3Id);
 
-		if ((authenticatedUser.isIK() || authenticatedUser.isAdmin()) && sicilNo != null && sicilNo.trim().length() > 0)
+		if ((authenticatedUser.isIK() || authenticatedUser.isAdmin()) && PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
 		try {
 

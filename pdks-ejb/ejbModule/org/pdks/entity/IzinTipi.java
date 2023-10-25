@@ -714,7 +714,7 @@ public class IzinTipi extends BaseObject {
 		vardiya.setKisaAdi(kisaAciklama);
 		vardiya.setVardiyaTipi(vardiyaTipi);
 		String str = izinTipiTanim.getAciklama();
-		vardiya.setAdi(str != null && str.trim().length() > 0 ? str : izinTipiTanim.getAciklamatr());
+		vardiya.setAdi(PdksUtil.hasStringValue(str) ? str : izinTipiTanim.getAciklamatr());
 		vardiya.setEkranSira(listeSira);
 		vardiya.setStyleClass(izinTipiTanim.getErpKodu());
 		return vardiya;

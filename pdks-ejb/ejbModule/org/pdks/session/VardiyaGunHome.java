@@ -811,7 +811,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		StringBuffer sb = new StringBuffer();
 		sb.append("<p>Sayın " + fmt.getGuncelleyenUser().getAdSoyad() + ",</p>");
 		sb.append("<p>" + ortakAciklama + " " + authenticatedUser.dateTimeFormatla(fmt.getBaslangicZamani()) + getTarihArasiBitisZamanString(fmt.getBaslangicZamani(), fmt.getBitisZamani()) + " arası " + authenticatedUser.sayiFormatliGoster(fmt.getMesaiSuresi()) + " saat ");
-		sb.append((fmt.getMesaiNeden() != null ? "<b>\"" + fmt.getMesaiNeden().getAciklama() + (fmt.getAciklama() != null && fmt.getAciklama().trim().length() > 0 ? " ( Açıklama : " + fmt.getAciklama().trim() + " ) " : "") + "\"</b> nedeniyle " : "") + " fazla mesai yapacaktır." + "</p>");
+		sb.append((fmt.getMesaiNeden() != null ? "<b>\"" + fmt.getMesaiNeden().getAciklama() + (PdksUtil.hasStringValue(fmt.getAciklama()) ? " ( Açıklama : " + fmt.getAciklama().trim() + " ) " : "") + "\"</b> nedeniyle " : "") + " fazla mesai yapacaktır." + "</p>");
 		mailIcerik = PdksUtil.replaceAll(sb.toString(), "  ", " ");
 		try {
 			MailStatu mailSatu = null;
@@ -852,7 +852,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		String aciklama = null;
 		if (tanim != null && tanim.getParentTanim() != null)
 			aciklama = tanim.getParentTanim().getAciklama();
-		if (ozelAciklama != null && (aciklama == null || aciklama.trim().length() == 0))
+		if (ozelAciklama != null && PdksUtil.hasStringValue(aciklama) == false)
 			aciklama = ozelAciklama;
 		if (aciklama != null)
 			aciklama = aciklama.trim().toLowerCase(PdksUtil.TR_LOCALE);
@@ -934,9 +934,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		StringBuffer sb = new StringBuffer();
 		sb.append("<p>Sayın " + fmt.getOlusturanUser().getAdSoyad() + ",</p>");
 		sb.append("<p>" + ortakAciklama + " " + fmt.getOlusturanUser().dateTimeFormatla(fmt.getBaslangicZamani()) + getTarihArasiBitisZamanString(fmt.getBaslangicZamani(), fmt.getBitisZamani()) + " arası " + fmt.getOlusturanUser().sayiFormatliGoster(fmt.getMesaiSuresi()) + " saat ");
-		sb.append((fmt.getMesaiNeden() != null ? "<b>\"" + fmt.getMesaiNeden().getAciklama() + (fmt.getAciklama() != null && fmt.getAciklama().trim().length() > 0 ? " ( Açıklama : " + fmt.getAciklama().trim() + " ) " : "") + "\"</b>" : " olması sebebiyle ") + " fazla mesai talebi "
+		sb.append((fmt.getMesaiNeden() != null ? "<b>\"" + fmt.getMesaiNeden().getAciklama() + (PdksUtil.hasStringValue(fmt.getAciklama()) ? " ( Açıklama : " + fmt.getAciklama().trim() + " ) " : "") + "\"</b>" : " olması sebebiyle ") + " fazla mesai talebi "
 				+ (onayDurum ? "onaylandı" : (fmt.getRedNedeni() != null ? "<b>\"" + fmt.getRedNedeni().getAciklama() + "\"</b> nedeniyle " : "") + (fmt.getDurum() ? " rededildi" : " iptal edildi")) + ".</p>");
-		if (fmt.getIptalAciklama() != null && fmt.getIptalAciklama().trim().length() > 0) {
+		if (PdksUtil.hasStringValue(fmt.getIptalAciklama())) {
 			sb.append("<p><b>İptal açıklama : " + "</b>" + fmt.getIptalAciklama().trim() + "</p>");
 		}
 		if (uyariNot != null)
@@ -2650,7 +2650,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		sablonGuncelle = authenticatedUser == null && denklestirmeAyDurum && personelAylikPuantaj.isKaydet() && aylikPuantaj.isKaydet();
 		if (sablonGuncelle) {
 			String sablonGuncelleStr = ortakIslemler.getParameterKey("sablonGuncellemeyenDepartmanlar");
-			if (sablonGuncelleStr != null && sablonGuncelleStr.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(sablonGuncelleStr)) {
 				List<String> depList = Arrays.asList(sablonGuncelleStr.split(","));
 				sablonGuncelle = !depList.contains(personel.getSirket().getDepartman().getId().toString());
 			}
@@ -2914,7 +2914,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			lastMap.put("altBolumId", "" + aramaSecenekleri.getEkSaha4Id());
 		if (aramaSecenekleri.getEkSaha3Id() != null)
 			lastMap.put("bolumId", "" + aramaSecenekleri.getEkSaha3Id());
-		if ((ikRole) && sicilNo != null && sicilNo.trim().length() > 0)
+		if ((ikRole) && PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
 		try {
 			ortakIslemler.saveLastParameter(lastMap, session);
@@ -4434,7 +4434,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 			}
 			String servisMailAdresleri = ortakIslemler.getParameterKey("servisMailAdresleri");
-			if (servisMailAdresleri != null && servisMailAdresleri.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(servisMailAdresleri)) {
 				List<String> mailList = PdksUtil.getListFromString(servisMailAdresleri, null);
 				for (String mail : mailList) {
 					User user = new User();
@@ -4759,7 +4759,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 											User sistemUser = ortakIslemler.getSistemAdminUser(session);
 											if (sistemUser == null)
 												sistemUser = authenticatedUser;
-											String aciklama = islemFazlaMesaiTalep.getAciklama() != null && islemFazlaMesaiTalep.getAciklama().trim().length() > 0 ? islemFazlaMesaiTalep.getAciklama().trim() : "";
+											String aciklama = PdksUtil.hasStringValue(islemFazlaMesaiTalep.getAciklama()) ? islemFazlaMesaiTalep.getAciklama().trim() : "";
 											pdksEntityController.hareketSil(kgsId, pdksId, sistemUser, nedenId, aciklama + (referans != null ? " " + referans.trim() : ""), hareketKGS3.getKgsSirketId(), session);
 											flush = true;
 										}
@@ -4768,7 +4768,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 								}
 							}
 
-							String aciklama = referans + " " + (islemFazlaMesaiTalep.getAciklama() != null && islemFazlaMesaiTalep.getAciklama().trim().length() > 0 ? islemFazlaMesaiTalep.getAciklama().trim() : "") + " hareket";
+							String aciklama = referans + " " + (PdksUtil.hasStringValue(islemFazlaMesaiTalep.getAciklama()) ? islemFazlaMesaiTalep.getAciklama().trim() : "") + " hareket";
 							User guncelleyen = ortakIslemler.getSistemAdminUser(session);
 							if (!authenticatedUser.isAdmin() && userHome.hasPermission("personelHareket", "view"))
 								guncelleyen = authenticatedUser;
@@ -5599,10 +5599,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					for (VardiyaGorev pdksVardiyaGorev : gorevliler) {
 						Personel personel = pdksVardiyaGorev.getVardiyaGun().getPersonel();
 						String perNo = personel.getPdksSicilNo();
-						if (perNo == null || perNo.trim().length() == 0)
+						if (PdksUtil.hasStringValue(perNo) == false)
 							continue;
 						perNo = perNo.trim();
-						if (!perList.contains(perNo) && (sicilNo.trim().length() == 0 || sicilNo.equals(perNo)))
+						if (!perList.contains(perNo) && (PdksUtil.hasStringValue(sicilNo) == false || sicilNo.equals(perNo)))
 							gorevliPersonelMap.put(personel.getPdksSicilNo().trim(), personel);
 					}
 
@@ -5614,7 +5614,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 		}
 		if (adminRole || islemYapan.getYetkiTumPersonelNoList().contains(sicilNo))
-			if (sicilNo.trim().length() > 0)
+			if (PdksUtil.hasStringValue(sicilNo))
 				perList.add(sicilNo);
 
 		ArrayList<Personel> personelList = null;
@@ -5661,7 +5661,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					fields.put("tesis.id=", aramaSecenekleri.getTesisId());
 				if (aramaSecenekleri.getEkSaha3Id() != null)
 					fields.put("ekSaha3.id=", aramaSecenekleri.getEkSaha3Id());
-				if ((!sicilNo.equals("") || (donusAdres != null && donusAdres.trim().length() > 0)) && perList != null && !perList.isEmpty())
+				if ((PdksUtil.hasStringValue(sicilNo) || PdksUtil.hasStringValue(donusAdres)) && perList != null && !perList.isEmpty())
 					fields.put("pdksSicilNo", perList);
 				if (departmanBolumAyni == false && aramaSecenekleri.getSirketId() != null)
 					fields.put("sirket.id=", aramaSecenekleri.getSirketId());
@@ -8060,7 +8060,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				lastMap.put("tesisId", "" + tesisId);
 			if (seciliEkSaha3Id != null)
 				lastMap.put("bolumId", "" + seciliEkSaha3Id);
-			if (sicilNo != null && sicilNo.trim().length() > 0)
+			if (PdksUtil.hasStringValue(sicilNo))
 				lastMap.put("sicilNo", sicilNo.trim());
 		}
 
@@ -8511,7 +8511,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getBitisZamani());
 					Double sure = ft.getMesaiSuresi();
 					ExcelUtil.getCell(sheet, row, col++, PdksUtil.isDoubleValueNotLong(sure) ? cellTutar : cellNumber).setCellValue(sure);
-					String neden = ft.getMesaiNeden().getAciklama() + (ft.getAciklama() != null && ft.getAciklama().trim().length() > 0 ? "\nAçıklama : " + ft.getAciklama().trim() : "");
+					String neden = ft.getMesaiNeden().getAciklama() + (PdksUtil.hasStringValue(ft.getAciklama()) ? "\nAçıklama : " + ft.getAciklama().trim() : "");
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ft.getOnayDurumAciklama());
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ft.getOlusturanUser().getAdSoyad());
 					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(ft.getOlusturmaTarihi());

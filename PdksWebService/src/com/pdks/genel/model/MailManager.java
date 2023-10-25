@@ -463,7 +463,7 @@ public class MailManager implements Serializable {
 				if (email.indexOf("@") > 0 && !mailList.contains(email)) {
 					try {
 						InternetAddress ia = new InternetAddress(email);
-						if (mailUser.getAdiSoyadi() != null && mailUser.getAdiSoyadi().trim().length() > 0)
+						if (PdksUtil.hasStringValue(mailUser.getAdiSoyadi()))
 							ia.setPersonal(mailUser.getAdiSoyadi(), "UTF-8");
 						adreslerList.add(ia);
 						mailList.add(email);

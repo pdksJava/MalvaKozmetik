@@ -131,7 +131,7 @@ public class PdksUtil implements Serializable {
 	private static Integer yarimYuvarlaLast = 1;
 
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
-	
+
 	/**
 	 * @param deger
 	 */
@@ -149,7 +149,6 @@ public class PdksUtil implements Serializable {
 		}
 		return map;
 	}
-
 
 	/**
 	 * @param ad
@@ -175,7 +174,7 @@ public class PdksUtil implements Serializable {
 	public static String getJsonToXML(String jsonStr, String rootName, String arrayTag) {
 		String str = "";
 		try {
-			if (arrayTag != null && arrayTag.trim().length() > 0) {
+			if (hasStringValue(arrayTag)) {
 				if (jsonStr.startsWith("["))
 					jsonStr = "{\"" + arrayTag + "\":" + jsonStr + "}";
 				else if (jsonStr.startsWith("{"))

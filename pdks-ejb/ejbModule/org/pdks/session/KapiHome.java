@@ -111,7 +111,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT P.*   FROM  VIEW_KAPI_SIRKET_KGS_LIST  P ");
 			String str = " INNER  JOIN " + Kapi.TABLE_NAME + " K ON K." + Kapi.COLUMN_NAME_KGS_ID + "=P." + KapiKGS.COLUMN_NAME_ID;
-			if (kapiView.getKapiAciklama() != null && kapiView.getKapiAciklama().trim().length() > 0) {
+			if (PdksUtil.hasStringValue(kapiView.getKapiAciklama())) {
 				sb.append(str);
 				sb.append(" AND K." + Kapi.COLUMN_NAME_ACIKLAMA + " LIKE :k");
 				parametreMap.put("k", "%" + kapiView.getKapiAciklama().trim() + "%");
@@ -123,7 +123,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 				parametreMap.put("t", kapiView.getKapi().getTipi().getId());
 				str = "";
 			}
-			if (kapiView.getKapiKGSAciklama() != null && kapiView.getKapiKGSAciklama().trim().length() > 0) {
+			if (PdksUtil.hasStringValue(kapiView.getKapiKGSAciklama())) {
 				sb.append(" WHERE P." + KapiKGS.COLUMN_NAME_ACIKLAMA + " LIKE :ka");
 				parametreMap.put("ka", "%" + kapiView.getKapiKGSAciklama().trim() + "%");
 			}

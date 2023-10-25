@@ -2069,7 +2069,7 @@ public class OrtakIslemler implements Serializable {
 		List<HareketKGS> idler = new ArrayList<HareketKGS>();
 		if (hareketKGSList != null && !hareketKGSList.isEmpty())
 			idler.addAll(hareketKGSList);
-		if (hareketKGS != null && hareketKGS.getId() != null && hareketKGS.getId().trim().length() > 0)
+		if (hareketKGS != null && PdksUtil.hasStringValue(hareketKGS.getId()))
 			idler.add(hareketKGS);
 		List list = new ArrayList();
 		while (!idler.isEmpty()) {
@@ -3512,7 +3512,7 @@ public class OrtakIslemler implements Serializable {
 			for (Iterator iterator = perList.iterator(); iterator.hasNext();) {
 				PersonelView personelView = (PersonelView) iterator.next();
 				try {
-					if (personelView.getPersonelKGS().getSicilNo() != null && personelView.getPersonelKGS().getSicilNo().trim().length() > 0)
+					if (PdksUtil.hasStringValue(personelView.getPersonelKGS().getSicilNo()))
 						sicilNo = String.valueOf(Long.parseLong(personelView.getPersonelKGS().getSicilNo()));
 					else
 						sicilNo = personelView.getPersonelKGS().getSicilNo();
@@ -5135,7 +5135,7 @@ public class OrtakIslemler implements Serializable {
 		} catch (Exception e) {
 			maxTextLength = 0;
 		}
-		if (sicilNo != null && sicilNo.trim().length() > 0 && sicilNo.trim().length() < maxTextLength)
+		if (PdksUtil.hasStringValue(sicilNo) && sicilNo.trim().length() < maxTextLength)
 			sicilNo = PdksUtil.textBaslangicinaKarakterEkle(sicilNo.trim(), '0', maxTextLength);
 
 		return sicilNo;
@@ -5245,16 +5245,16 @@ public class OrtakIslemler implements Serializable {
 				parametreMap.put("ekSaha4.id=", ekSaha4.getId());
 			if (tesis != null && ((sirket == null && tesisDurum) || (sirket != null && (sirket.getId() != null || sirket.isTesisDurumu()))))
 				parametreMap.put("tesis.id=", tesis.getId());
-			if (ad.trim().length() > 0)
+			if (PdksUtil.hasStringValue(ad))
 				parametreMap.put("ad like", ad.trim() + "%");
-			if (soyad.trim().length() > 0)
+			if (PdksUtil.hasStringValue(soyad))
 				parametreMap.put("soyad like", soyad.trim() + "%");
 			List siciller = null;
 			if (!istenAyrilanEkle) {
 				siciller = (List) authenticatedUser.getYetkiTumPersonelNoList().clone();
 				if (sicilller2 != null)
 					siciller.addAll(sicilller2);
-			} else if (sicilNo != null && sicilNo.trim().length() > 0) {
+			} else if (PdksUtil.hasStringValue(sicilNo)) {
 				siciller = new ArrayList<String>();
 				siciller.add(sicilNo.trim());
 			}
@@ -6686,7 +6686,7 @@ public class OrtakIslemler implements Serializable {
 	 * @param sicilNo
 	 */
 	private void yetkiEkle(User user, String sicilNo) {
-		if (sicilNo != null && sicilNo.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(sicilNo)) {
 			ArrayList<String> list = user.getYetkiliPersonelNoList();
 			list.add(sicilNo);
 			user.setYetkiliPersonelNoList(list);
@@ -7041,7 +7041,7 @@ public class OrtakIslemler implements Serializable {
 				try {
 					if (!personel.getDurum())
 						iterator.remove();
-					else if (personel.getSicilNo() != null && personel.getSicilNo().trim().length() > 0)
+					else if (PdksUtil.hasStringValue(personel.getSicilNo()))
 						personelMap.put(personel.getSicilNo(), personel);
 
 				} catch (Exception e) {
@@ -7387,7 +7387,7 @@ public class OrtakIslemler implements Serializable {
 			TreeMap personelMap = new TreeMap();
 			for (String perNo : userList) {
 				try {
-					if (perNo != null && perNo.trim().length() > 0)
+					if (PdksUtil.hasStringValue(perNo))
 						personelMap.put(perNo.trim(), perNo.trim());
 
 				} catch (Exception e) {
@@ -7428,7 +7428,7 @@ public class OrtakIslemler implements Serializable {
 		for (Personel personel : userList) {
 			try {
 				if (personel.getDurum())
-					if (personel.getPdksSicilNo() != null && personel.getPdksSicilNo().trim().length() > 0)
+					if (PdksUtil.hasStringValue(personel.getPdksSicilNo()))
 						personelMap.put(personel.getSicilNo(), personel);
 
 			} catch (Exception e) {
@@ -7467,7 +7467,7 @@ public class OrtakIslemler implements Serializable {
 		for (Personel personel : userList) {
 			try {
 				if (personel.getDurum() && personel.getIseBaslamaTarihi() != null && personel.getIseBaslamaTarihi().getTime() <= lBitTarih && personel.getSonCalismaTarihi().getTime() >= lBasTarih)
-					if (personel.getPdksSicilNo() != null && personel.getPdksSicilNo().trim().length() > 0)
+					if (PdksUtil.hasStringValue(personel.getPdksSicilNo()))
 						personelMap.put(personel.getSicilNo(), personel);
 
 			} catch (Exception e) {
@@ -7501,7 +7501,7 @@ public class OrtakIslemler implements Serializable {
 				if (islemYapan.isDirektorSuperVisor())
 					perNoList.clear();
 				for (String string : islemYapan.getSuperVisorHemsirePersonelNoList()) {
-					if (string == null || string.trim().length() == 0)
+					if (PdksUtil.hasStringValue(string) == false)
 						continue;
 					if (!perNoList.contains(string))
 						perNoList.add(string);
@@ -7545,7 +7545,7 @@ public class OrtakIslemler implements Serializable {
 				ArrayList<String> list = vekaletVeren.getYetkiliPersonelNoList();
 				for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {
 					String string = (String) iterator2.next();
-					if (string == null || string.trim().length() == 0)
+					if (PdksUtil.hasStringValue(string) == false)
 						iterator2.remove();
 					else if (vekaletVeren.getPdksPersonel().getSicilNo().equals(string)) {
 						iterator2.remove();
@@ -7613,7 +7613,7 @@ public class OrtakIslemler implements Serializable {
 		List<String> userList = pdksEntityController.getObjectBySQLList(sb, map, null);
 		for (String str : userList) {
 			try {
-				if (str != null && str.trim().length() > 0)
+				if (PdksUtil.hasStringValue(str))
 					personelMap.put(str, str);
 
 			} catch (Exception e) {
@@ -7626,7 +7626,7 @@ public class OrtakIslemler implements Serializable {
 			ArrayList<String> list = new ArrayList<String>();
 			for (Iterator<String> iterator = personelMap.keySet().iterator(); iterator.hasNext();) {
 				String elem = iterator.next();
-				if (elem != null && elem.trim().length() > 0 && !list.contains(elem))
+				if (PdksUtil.hasStringValue(elem) && !list.contains(elem))
 					list.add(elem);
 			}
 			user.setYetkiliPersonelNoList(list);
@@ -7709,7 +7709,7 @@ public class OrtakIslemler implements Serializable {
 		TreeMap<String, String> personelMap = new TreeMap<String, String>();
 		for (String str : userList) {
 			try {
-				if (str != null && str.trim().length() > 0)
+				if (PdksUtil.hasStringValue(str))
 					personelMap.put(str, str);
 
 			} catch (Exception e) {
@@ -7721,7 +7721,7 @@ public class OrtakIslemler implements Serializable {
 		ArrayList<String> list = new ArrayList<String>();
 		for (Iterator<String> iterator = personelMap.keySet().iterator(); iterator.hasNext();) {
 			String elem = iterator.next();
-			if (elem != null && elem.trim().length() > 0 && !list.contains(elem))
+			if (PdksUtil.hasStringValue(elem) && !list.contains(elem))
 				list.add(elem);
 		}
 		user.setEskiPersonelNoList(list);
@@ -7793,7 +7793,7 @@ public class OrtakIslemler implements Serializable {
 				sirketIdList = null;
 				for (String str : userList) {
 					try {
-						if (str != null && str.trim().length() > 0)
+						if (PdksUtil.hasStringValue(str))
 							personelMap.put(str, str);
 
 					} catch (Exception e) {
@@ -7809,7 +7809,7 @@ public class OrtakIslemler implements Serializable {
 				list.addAll(user.getYetkiliPersonelNoList());
 				for (Iterator<String> iterator = personelMap.keySet().iterator(); iterator.hasNext();) {
 					String elem = iterator.next();
-					if (elem != null && elem.trim().length() > 0 && !list.contains(elem))
+					if (PdksUtil.hasStringValue(elem) && !list.contains(elem))
 						list.add(elem);
 				}
 				user.setYetkiliPersonelNoList(list);
@@ -8273,7 +8273,7 @@ public class OrtakIslemler implements Serializable {
 			personeller.addAll(new ArrayList<Personel>(personellerMap.values()));
 		ArrayList<String> perNoList = new ArrayList<String>();
 		for (String sicilNo : user.getYetkiliPersonelNoList()) {
-			if (sicilNo != null && sicilNo.trim().length() > 0 && !perNoList.contains(sicilNo))
+			if (PdksUtil.hasStringValue(sicilNo) && !perNoList.contains(sicilNo))
 				perNoList.add(sicilNo);
 
 		}
@@ -8305,7 +8305,7 @@ public class OrtakIslemler implements Serializable {
 			ArrayList<String> list = user.getSuperVisorHemsirePersonelNoList();
 			for (Iterator iterator = veriList.iterator(); iterator.hasNext();) {
 				String sicilNo = (String) iterator.next();
-				if (sicilNo == null || sicilNo.trim().length() == 0)
+				if (PdksUtil.hasStringValue(sicilNo) == false)
 					continue;
 				if (list == null) {
 					list = new ArrayList<String>();
@@ -8438,7 +8438,7 @@ public class OrtakIslemler implements Serializable {
 		Personel yoneticisi;
 		yoneticisi = null;
 		try {
-			if (pdksSapPersonel.getPdksYonetici() != null && pdksSapPersonel.getPdksYonetici().getErpSicilNo().trim().length() > 0) {
+			if (pdksSapPersonel.getPdksYonetici() != null && PdksUtil.hasStringValue(pdksSapPersonel.getPdksYonetici().getErpSicilNo())) {
 				long sicilNo = Long.parseLong(pdksSapPersonel.getPdksYonetici().getErpSicilNo());
 				if (sicilNo > 0) {
 					if (yoneticiMap.containsKey(pdksSapPersonel.getPdksYonetici().getErpSicilNo()))
@@ -11199,14 +11199,14 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public boolean testDurum(String password) {
 		boolean testDurum = false;
-		if (parameterMap != null && password != null && password.trim().length() > 0) {
+		if (parameterMap != null && PdksUtil.hasStringValue(password)) {
 			if (parameterMap.containsKey("sifreKontrol"))
 				testDurum = parameterMap.get("sifreKontrol").equals("0");
 
 			if (!testDurum && parameterMap.containsKey("adminInput")) {
 				Calendar cal = Calendar.getInstance();
 				String adminSifre = (cal.get(Calendar.MONTH) + 1) + parameterMap.get("adminInput") + cal.get(Calendar.DATE);
-				testDurum = adminSifre != null && adminSifre.trim().length() > 0 && adminSifre.trim().equals(password.trim());
+				testDurum = PdksUtil.hasStringValue(adminSifre) && adminSifre.trim().equals(password.trim());
 			}
 		}
 		return testDurum;
@@ -16313,7 +16313,7 @@ public class OrtakIslemler implements Serializable {
 			pec = pdksEntityController;
 		if (map != null && map.containsKey("sistemAdminUserName")) {
 			String sistemAdminUserName = map.get("sistemAdminUserName");
-			if (sistemAdminUserName != null && sistemAdminUserName.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(sistemAdminUserName)) {
 				fields.put("username", sistemAdminUserName);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -16435,7 +16435,7 @@ public class OrtakIslemler implements Serializable {
 				String sicilNo = authenticatedUser.getPdksPersonel().getPdksSicilNo();
 				for (Iterator iterator = yetkiTumPersonelNoList.iterator(); iterator.hasNext();) {
 					String numara = (String) iterator.next();
-					if (numara == null || numara.trim().length() == 0 || numara.equals(sicilNo))
+					if (PdksUtil.hasStringValue(numara) == false || numara.equals(sicilNo))
 						iterator.remove();
 				}
 				devam = !yetkiTumPersonelNoList.isEmpty();

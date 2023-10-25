@@ -356,7 +356,7 @@ public class PersonelERPGuncelleme {
 				Personel pdksPersonel = (Personel) iterator.next();
 
 				try {
-					if (pdksPersonel.getSicilNo().trim().length() == 0) {
+					if (PdksUtil.hasStringValue(pdksPersonel.getSicilNo()) == false) {
 						iterator.remove();
 						continue;
 					}

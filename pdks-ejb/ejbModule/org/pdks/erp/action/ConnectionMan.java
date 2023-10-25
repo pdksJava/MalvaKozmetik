@@ -16,8 +16,8 @@ import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoDestinationManager;
 import com.sap.conn.jco.JCoFunction;
 import com.sap.conn.jco.ext.DestinationDataProvider;
-public class ConnectionMan implements Serializable {
 
+public class ConnectionMan implements Serializable {
 
 	static Logger logger = Logger.getLogger(ConnectionMan.class);
 	private static final long serialVersionUID = 6284445448701690000L;
@@ -95,7 +95,7 @@ public class ConnectionMan implements Serializable {
 			for (Iterator iterator = sapSunucuList.iterator(); iterator.hasNext();) {
 				SAPSunucu sapSunucu = (SAPSunucu) iterator.next();
 
-				boolean appServer = sapSunucu.getSystemNumber() != null && sapSunucu.getSystemNumber().trim().length() > 0;
+				boolean appServer = PdksUtil.hasStringValue(sapSunucu.getSystemNumber());
 				String key = "R3" + sapSunucu.getHostName() + "_" + userId + (sapSunucu.getDil() != null ? "_" + sapSunucu.getDil() : "");
 				try {
 					sapPoolKey = PdksUtil.encodePassword(key);
@@ -191,6 +191,5 @@ public class ConnectionMan implements Serializable {
 	public void setParameterMap(HashMap<String, String> parameterMap) {
 		this.parameterMap = parameterMap;
 	}
-
 
 }

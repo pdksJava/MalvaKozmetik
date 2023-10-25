@@ -368,7 +368,7 @@ public class IzinBakiyeGuncelleme {
 					continue;
 				}
 				try {
-					if (!(pdksPersonel.getSicilNo().trim().length() == 0 || pdksPersonel.getIzinHakEdisTarihi() == null || pdksPersonel.getDogumTarihi() == null)) {
+					if (!(PdksUtil.hasStringValue(pdksPersonel.getSicilNo()) == false || pdksPersonel.getIzinHakEdisTarihi() == null || pdksPersonel.getDogumTarihi() == null)) {
 						try {
 							sicilNo = String.valueOf(Long.parseLong(pdksPersonel.getSicilNo().trim()));
 						} catch (Exception e) {

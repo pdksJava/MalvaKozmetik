@@ -1203,7 +1203,7 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public String getTdClassYaz() {
 		String classAdi = tdClass;
-		if (vardiya != null && vardiya.getStyleClass() != null && vardiya.getStyleClass().trim().length() > 0)
+		if (vardiya != null && PdksUtil.hasStringValue(vardiya.getStyleClass()))
 			classAdi = vardiya.getStyleClass();
 		return classAdi;
 	}
@@ -1681,10 +1681,8 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public void addLinkAdresler(String value) {
-		if (value != null && value.trim().length() > 0) {
-			if (this.getVardiyaDateStr().equals("20210901"))
-				logger.debug(this.getId());
-			if (linkAdresler == null)
+		if (PdksUtil.hasStringValue(value)) {
+ 			if (linkAdresler == null)
 				linkAdresler = new ArrayList<String>();
 			if (!linkAdresler.contains(value))
 				linkAdresler.add(value);

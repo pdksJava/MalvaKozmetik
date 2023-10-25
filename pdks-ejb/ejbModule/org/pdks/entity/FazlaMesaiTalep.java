@@ -181,7 +181,7 @@ public class FazlaMesaiTalep extends BaseObject {
 				onayDurumAciklama = "Onaylandı.";
 				break;
 			case ONAY_DURUM_RED:
-				onayDurumAciklama = "Red Edildi." + (redNedeni != null ? " ( " + redNedeni.getAciklama() + (iptalAciklama != null && iptalAciklama.trim().length() > 0 ? " - " + iptalAciklama.trim() : "") + " )" : "");
+				onayDurumAciklama = "Red Edildi." + (redNedeni != null ? " ( " + redNedeni.getAciklama() + (PdksUtil.hasStringValue(iptalAciklama) ? " - " + iptalAciklama.trim() : "") + " )" : "");
 				break;
 			default:
 				onayDurumAciklama = "";

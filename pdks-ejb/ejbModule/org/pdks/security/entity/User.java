@@ -430,14 +430,14 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 			} catch (Exception e) {
 				ldapUser = null;
 			}
-			if (ldapUser != null && ldapUser.isDurum() && ldapUser.getEmail().trim().length() > 0) {
+			if (ldapUser != null && ldapUser.isDurum() && PdksUtil.hasStringValue(ldapUser.getEmail())) {
 				ePosta = ldapUser.getEmail();
 				username = ldapUser.getUsername();
 
 			}
 
 		}
-		if (email == null || email.trim().length() == 0)
+		if (PdksUtil.hasStringValue(email) == false)
 			ePosta = username;
 		return ePosta;
 	}

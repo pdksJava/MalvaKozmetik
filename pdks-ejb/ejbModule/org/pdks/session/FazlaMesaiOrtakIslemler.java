@@ -142,7 +142,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				if (!tanim.getKodu().equals(BordroDetayTipi.TANIMSIZ.value())) {
 					BordroDetayTipi bordroTipi = null;
 					try {
-						if (tanim.getKodu().trim().length() > 0)
+						if (PdksUtil.hasStringValue(tanim.getKodu()))
 							bordroTipi = BordroDetayTipi.fromValue(tanim.getKodu().trim());
 					} catch (Exception e) {
 					}
@@ -284,7 +284,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							if (artiGun > 0.0d && izinKodu != null) {
 								BordroDetayTipi bordroTipi = null;
 								try {
-									if (izinKodu.trim().length() > 0)
+									if (PdksUtil.hasStringValue(izinKodu))
 										bordroTipi = BordroDetayTipi.fromValue(izinKodu);
 								} catch (Exception e) {
 								}

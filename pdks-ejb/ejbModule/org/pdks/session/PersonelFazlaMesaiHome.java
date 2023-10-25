@@ -1280,11 +1280,11 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			lastMap.put("ekSaha3Id", "" + aramaSecenekleri.getEkSaha3Id());
 		if (aramaSecenekleri.getEkSaha4Id() != null)
 			lastMap.put("ekSaha4Id", "" + aramaSecenekleri.getEkSaha4Id());
-		if (aramaSecenekleri.getSicilNo() != null && aramaSecenekleri.getSicilNo().trim().length() > 0)
+		if (PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo()))
 			lastMap.put("sicilNo", "" + aramaSecenekleri.getSicilNo().trim());
-		if (aramaSecenekleri.getAd() != null && aramaSecenekleri.getAd().trim().length() > 0)
+		if (PdksUtil.hasStringValue(aramaSecenekleri.getAd()))
 			lastMap.put("ad", "" + aramaSecenekleri.getAd().trim());
-		if (aramaSecenekleri.getSoyad() != null && aramaSecenekleri.getSoyad().trim().length() > 0)
+		if (PdksUtil.hasStringValue(aramaSecenekleri.getSoyad()))
 			lastMap.put("soyad", "" + aramaSecenekleri.getSoyad().trim());
 		if (date != null)
 			lastMap.put("date", PdksUtil.convertToDateString(date, "yyyy-MM-dd"));

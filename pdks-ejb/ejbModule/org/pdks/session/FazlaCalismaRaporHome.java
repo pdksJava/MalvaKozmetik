@@ -1238,7 +1238,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			lastMap.put("bolumId", seciliEkSaha3Id + "");
 		lastMap.put("raporSecim", raporSecim);
 
-		if (((authenticatedUser.isIK()) || (authenticatedUser.isAdmin())) && (sicilNo != null) && (sicilNo.trim().length() > 0))
+		if (((authenticatedUser.isIK()) || (authenticatedUser.isAdmin())) && PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
 		try {
 			ortakIslemler.saveLastParameter(lastMap, session);

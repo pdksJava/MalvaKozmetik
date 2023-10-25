@@ -58,7 +58,7 @@ public class VardiyaGun extends BaseObject {
 	private VardiyaGun oncekiVardiya;
 
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
-	private double  normalSure = 0, resmiTatilSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0 ;
+	private double normalSure = 0, resmiTatilSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
 	private String tdClass = "";
 	private PersonelIzin izin;
@@ -231,8 +231,6 @@ public class VardiyaGun extends BaseObject {
 		this.izinler = izinler;
 	}
 
-	 
-
 	@Transient
 	public Date getVardiyaFazlaMesaiBasZaman() {
 		if (islemVardiya == null)
@@ -341,7 +339,6 @@ public class VardiyaGun extends BaseObject {
 		return vardiyaAdi;
 	}
 
- 
 	@Transient
 	public String getVardiyaZamanAdi() {
 		StringBuilder vardiyaAdi = new StringBuilder(PdksUtil.convertToDateString(vardiyaDate, "dd/MM/yyyy"));
@@ -428,8 +425,7 @@ public class VardiyaGun extends BaseObject {
 		return pazar;
 	}
 
-	 
-	 	@Transient
+	@Transient
 	private int getHaftaninGunu() {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(PdksUtil.getDate(vardiyaDate));
@@ -499,7 +495,7 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public String getTdClassYaz() {
 		String classAdi = tdClass;
-		if (vardiya != null && vardiya.getStyleClass() != null && vardiya.getStyleClass().trim().length() > 0)
+		if (vardiya != null && PdksUtil.hasStringValue(vardiya.getStyleClass()))
 			classAdi = vardiya.getStyleClass();
 		return classAdi;
 	}
@@ -522,15 +518,12 @@ public class VardiyaGun extends BaseObject {
 		this.guncellendi = guncellendi;
 	}
 
-	 
-
 	@Transient
 	public boolean isCalismayaBaslamadi() {
 		boolean iseBaslamadi = PdksUtil.tarihKarsilastirNumeric(personel.getIseBaslamaTarihi(), vardiyaDate) == 1;
 		return iseBaslamadi;
 	}
 
- 
 	// @Transient
 	// public String getAylikClassAdi() {
 	// String classAd = getAylikClassAdi(null);
@@ -620,7 +613,6 @@ public class VardiyaGun extends BaseObject {
 		return gorevli;
 	}
 
-	 
 	@Transient
 	public boolean isFiiliHesapla() {
 		return fiiliHesapla;
@@ -630,7 +622,7 @@ public class VardiyaGun extends BaseObject {
 		this.fiiliHesapla = fiiliHesapla;
 	}
 
-	 	@Transient
+	@Transient
 	public boolean isHataliDurum() {
 		return hataliDurum;
 	}
@@ -647,7 +639,7 @@ public class VardiyaGun extends BaseObject {
 
 	@Transient
 	public void addLinkAdresler(String value) {
-		if (value != null && value.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(value)) {
 			if (linkAdresler == null)
 				linkAdresler = new ArrayList<String>();
 			if (!linkAdresler.contains(value))
@@ -759,8 +751,6 @@ public class VardiyaGun extends BaseObject {
 		return planKey;
 	}
 
-	 
-
 	@Transient
 	public boolean isZamanGelmedi() {
 		return zamanGelmedi;
@@ -829,7 +819,6 @@ public class VardiyaGun extends BaseObject {
 		if (vale > 0.0d)
 			this.aksamVardiyaSaatSayisi += vale;
 	}
- 
 
 	@Transient
 	public void saklaVardiya() {

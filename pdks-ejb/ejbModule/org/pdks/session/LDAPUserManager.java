@@ -283,14 +283,14 @@ public class LDAPUserManager implements Serializable {
 							// attr.getID()+" "+(String)attr.get(0));
 							String deger = (String) attr.get(0);
 							if (attr.getID().equalsIgnoreCase(USER_ATTRIBUTES_PRINCIPAL_NAME)) {
-								if (deger != null && deger.trim().length() > 0)
+								if (PdksUtil.hasStringValue(deger))
 									deger = deger.toLowerCase(Locale.ENGLISH);
 								user.setUsername(deger);
 
 							} else if (attr.getID().equalsIgnoreCase(USER_ATTRIBUTES_GIVEN_NAME))
 								user.setFirstname(deger);
 							else if (attr.getID().equalsIgnoreCase(USER_ATTRIBUTES_DISPLAY_NAME))
-								user.setFullName(deger.trim().length() > 0 ? deger.toUpperCase(Constants.TR_LOCALE) : deger);
+								user.setFullName(PdksUtil.hasStringValue(deger) ? deger.toUpperCase(Constants.TR_LOCALE) : deger);
 							else if (attr.getID().equalsIgnoreCase(USER_ATTRIBUTES_SN))
 								user.setLastname(deger);
 							else if (attr.getID().equalsIgnoreCase(USER_ATTRIBUTES_MEMBER)) {
@@ -303,7 +303,7 @@ public class LDAPUserManager implements Serializable {
 							}
 
 							else if (attr.getID().equalsIgnoreCase(USER_ATTRIBUTES_MAIL)) {
-								if (deger != null && deger.trim().length() > 0)
+								if (PdksUtil.hasStringValue(deger))
 									deger = deger.toLowerCase(Locale.ENGLISH);
 								user.setEmail(deger);
 							} else if (attr.getID().equalsIgnoreCase(USER_ATTRIBUTES_SAM_ACCOUNT_NAME)) {

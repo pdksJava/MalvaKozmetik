@@ -495,17 +495,17 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		sb.append("SELECT P." + Personel.COLUMN_NAME_ID + " from " + Personel.TABLE_NAME + " P WITH(nolock)  ");
 		// sb.append(" WHERE P." + Personel.COLUMN_NAME_DOGUM_TARIHI + " IS NOT NULL  ");
 		String whereStr = " WHERE  ";
-		if (adi.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(adi)) {
 			sb.append(whereStr + " P." + Personel.COLUMN_NAME_AD + " LIKE :ad");
 			whereStr = " AND ";
 			parametreMap.put("ad", adi.trim() + "%");
 		}
-		if (soyadi.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(soyadi)) {
 			sb.append(whereStr + " P." + Personel.COLUMN_NAME_SOYAD + " LIKE :soyad");
 			whereStr = " AND ";
 			parametreMap.put("soyad", soyadi.trim() + "%");
 		}
-		if (sicilNo.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(sicilNo)) {
 			sb.append(whereStr + " P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " =:sicilNo");
 			whereStr = " AND ";
 			parametreMap.put("sicilNo", ortakIslemler.getSicilNo(sicilNo.trim()));
@@ -551,7 +551,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 		List<String> perNoList = new ArrayList<String>(ortakIslemler.getYetkiTumPersonelNoList());
 		if (linkAdres != null) {
-			if (sicilNo.trim().length() > 0 && !perNoList.contains(sicilNo.trim()))
+			if (PdksUtil.hasStringValue(sicilNo) && !perNoList.contains(sicilNo.trim()))
 				perNoList.add(sicilNo.trim());
 		}
 		if (parametreMap.isEmpty()) {
@@ -1337,7 +1337,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		}
 		mailIzin = null;
 		setOnayimaGelenIzinler(new ArrayList());
-		if (mId != null && mId.trim().length() > 0) {
+		if (PdksUtil.hasStringValue(mId)) {
 			try {
 				HashMap parametreMap = new HashMap();
 				parametreMap.put("id", new Long(mId));
@@ -2031,7 +2031,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				String iptalAciklama = "";
 				if (redSebebiTanim != null) {
 					iptalAciklama = redSebebiTanim.getAciklama();
-					if (redSebebi != null && redSebebi.trim().length() > 0) {
+					if (PdksUtil.hasStringValue(redSebebi)) {
 						iptalAciklama += " - " + redSebebi.trim();
 					}
 					iptalAciklama = iptalAciklama + " nedeniyle ";

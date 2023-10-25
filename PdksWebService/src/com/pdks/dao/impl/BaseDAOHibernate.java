@@ -281,7 +281,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 		TreeMap treeMap = new TreeMap();
 		if (map.containsKey(MAP_KEY_MAP)) {
 			String method = (String) map.get(MAP_KEY_MAP);
-			if (method != null && method.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(method)) {
 				map.remove(MAP_KEY_MAP);
 				List list = getObjectByInnerObjectListInLogic(map, class1);
 				if (!list.isEmpty())
@@ -302,7 +302,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 		TreeMap treeMap = new TreeMap();
 		if (map.containsKey(MAP_KEY_MAP)) {
 			String method = (String) map.get(MAP_KEY_MAP);
-			if (method != null && method.trim().length() > 0) {
+			if (PdksUtil.hasStringValue(method)) {
 				map.remove(MAP_KEY_MAP);
 				List list = getObjectByInnerObjectList(map, class1);
 				treeMap = getTreeMapByList(list, method, uzerineYaz);
@@ -531,7 +531,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 								parametreList.add(object);
 						}
 
-						query += (query.trim().length() > 0 ? " and " : " where ") + "(" + fieldValue + ")";
+						query += (PdksUtil.hasStringValue(query) ? " and " : " where ") + "(" + fieldValue + ")";
 						continue;
 					} else if (fieldName.toLowerCase().trim().equals(MAP_KEY_OR))
 						or = " or ";
@@ -546,7 +546,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 							str = esit + "?";
 							if (fieldValue instanceof Collection) {
 								if (((Collection) fieldValue).isEmpty()) {
-									query += (query.trim().length() > 0 ? " and" : " where") + " 1=2";
+									query += (PdksUtil.hasStringValue(query)? " and" : " where") + " 1=2";
 									continue;
 								}
 								StringBuffer sb = new StringBuffer();
@@ -564,7 +564,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 								parametreList.add(fieldValue);
 						} else
 							str = esit + "null";
-						query += (query.trim().length() > 0 ? " and " : " where ") + SELECT_KARAKTER + "." + fieldName + " " + str;
+						query += (PdksUtil.hasStringValue(query) ? " and " : " where ") + SELECT_KARAKTER + "." + fieldName + " " + str;
 						str = null;
 					}
 				}
@@ -798,7 +798,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 			}
 
 			int sayac = 0;
- 			SQLQuery query = session.createSQLQuery(queryStr);
+			SQLQuery query = session.createSQLQuery(queryStr);
 			for (Iterator iterator = fields.keySet().iterator(); iterator.hasNext();) {
 				String key1 = (String) iterator.next();
 				if (!fields.containsKey(key1))
