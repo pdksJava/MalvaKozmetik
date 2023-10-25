@@ -2599,9 +2599,18 @@ public class OrtakIslemler implements Serializable {
 					aylikPuantajList.add(aylikPuantaj);
 				list = null;
 			}
+
 			listeler = null;
 			listeMap = null;
 		}
+		if (aylikPuantajList != null) {
+			boolean renk = Boolean.TRUE;
+			for (AylikPuantaj puantaj : aylikPuantajList) {
+				puantaj.setTrClass(renk ? VardiyaGun.STYLE_CLASS_ODD : VardiyaGun.STYLE_CLASS_EVEN);
+				renk = !renk;
+			}
+		}
+
 		return aylikPuantajList;
 	}
 
