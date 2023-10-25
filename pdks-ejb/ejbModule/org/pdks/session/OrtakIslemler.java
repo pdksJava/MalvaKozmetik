@@ -2266,20 +2266,8 @@ public class OrtakIslemler implements Serializable {
 			} catch (Exception e) {
 				logger.error(sb.toString() + " " + e);
 			}
-			sb = new StringBuffer();
-			sb.append("SP_GET_HAREKET_SIRKET");
-			fields.put("kapi", kapi);
-			fields.put("personel", getListIdStr(idList));
-			fields.put("basTarih", basTarihStr);
-			fields.put("bitTarih", bitTarihStr);
-			fields.put("df", null);
-			if (authenticatedUser != null && authenticatedUser.isAdmin()) {
-				Gson gson = new Gson();
-				logger.debug(gson.toJson(fields));
-			}
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List list1 = pdksEntityController.execSPList(fields, sb, class2);
+
+			List list1 = getSPPersonelHareketList(idList, kapi, basTarihStr, bitTarihStr, class2, session);
 			if (!list1.isEmpty())
 				list.addAll(list1);
 			list1 = null;
@@ -2287,19 +2275,7 @@ public class OrtakIslemler implements Serializable {
 		}
 
 		if (!iliskiMap.isEmpty()) {
-			fields.clear();
-			fields.put("kapi", kapi);
-			fields.put("personel", getListIdStr(new ArrayList<Long>(iliskiMap.keySet())));
-			fields.put("basTarih", basTarihStr);
-			fields.put("bitTarih", bitTarihStr);
-			fields.put("df", null);
-			if (authenticatedUser != null && authenticatedUser.isAdmin()) {
-				Gson gson = new Gson();
-				logger.debug(gson.toJson(fields));
-			}
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List list2 = pdksEntityController.execSPList(fields, sb, class2);
+			List list2 = getSPPersonelHareketList(new ArrayList<Long>(iliskiMap.keySet()), kapi, basTarihStr, bitTarihStr, class2, session);
 			if (!list2.isEmpty())
 				list.addAll(list2);
 			list2 = null;
@@ -2324,6 +2300,36 @@ public class OrtakIslemler implements Serializable {
 		}
 		sb = null;
 		return list;
+	}
+
+	/**
+	 * @param personelList
+	 * @param kapi
+	 * @param basTarihStr
+	 * @param bitTarihStr
+	 * @param class2
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
+	private List getSPPersonelHareketList(List<Long> personelList, String kapi, String basTarihStr, String bitTarihStr, Class class2, Session session) throws Exception {
+		StringBuffer sb = new StringBuffer("SP_GET_HAREKET_SIRKET");
+		LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
+		fields.put("kapi", kapi);
+		fields.put("personel", getListIdStr(personelList));
+		fields.put("basTarih", basTarihStr);
+		fields.put("bitTarih", bitTarihStr);
+		fields.put("df", null);
+		if (authenticatedUser != null && authenticatedUser.isAdmin()) {
+			Gson gson = new Gson();
+			logger.debug(gson.toJson(fields));
+		}
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List list2 = pdksEntityController.execSPList(fields, sb, class2);
+		fields = null;
+		sb = null;
+		return list2;
 	}
 
 	/**
