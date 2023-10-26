@@ -143,7 +143,7 @@ public class PdksUtil implements Serializable {
 			if (str.indexOf(":") > 0) {
 				String veri[] = str.split(":");
 				if (veri.length == 2)
-					map.put(PdksUtil.replaceAll(veri[0], " ", ""), PdksUtil.replaceAll(veri[1], " ", ""));
+					map.put(replaceAll(veri[0], " ", ""), replaceAll(veri[1], " ", ""));
 
 			}
 		}
@@ -229,7 +229,7 @@ public class PdksUtil implements Serializable {
 			for (String pattern : map.keySet()) {
 				if (str.indexOf(pattern) >= 0) {
 					String replace = map.get(pattern);
-					str = PdksUtil.replaceAllManuel(str, pattern, replace);
+					str = replaceAllManuel(str, pattern, replace);
 				}
 			}
 			str = convertUTF8(str);
@@ -426,8 +426,8 @@ public class PdksUtil implements Serializable {
 		Date tarih = null;
 		if (date != null) {
 			String pattern = "yyyyMMddHHmm";
-			String dateStr = PdksUtil.convertToDateString(date, pattern);
-			tarih = PdksUtil.convertToJavaDate(dateStr, pattern);
+			String dateStr = convertToDateString(date, pattern);
+			tarih = convertToJavaDate(dateStr, pattern);
 		}
 		return tarih;
 	}
@@ -654,7 +654,7 @@ public class PdksUtil implements Serializable {
 	}
 
 	public static HashMap<String, String> getDecodeMapByBase64(String key) {
-		String planKey = PdksUtil.getDecodeStringByBase64(key);
+		String planKey = getDecodeStringByBase64(key);
 		StringTokenizer st = new StringTokenizer(planKey, "&");
 		HashMap<String, String> veriMap = new HashMap<String, String>();
 		while (st.hasMoreTokens()) {
@@ -923,12 +923,12 @@ public class PdksUtil implements Serializable {
 				Calendar cal = Calendar.getInstance();
 				int sayi = 0;
 				String pattern = "yyyyMMddHHmm";
-				long deger2 = Long.parseLong(PdksUtil.convertToDateString(tarih2, pattern));
-				long deger1 = Long.parseLong(PdksUtil.convertToDateString(tarih1, pattern));
+				long deger2 = Long.parseLong(convertToDateString(tarih2, pattern));
+				long deger1 = Long.parseLong(convertToDateString(tarih1, pattern));
 				while (deger2 > deger1) {
 					cal.setTime(tarih1);
 					cal.add(Calendar.DATE, sayi + 1);
-					deger1 = Long.parseLong(PdksUtil.convertToDateString(cal.getTime(), pattern));
+					deger1 = Long.parseLong(convertToDateString(cal.getTime(), pattern));
 					if (deger2 >= deger1)
 						sayi++;
 					// logger.info(deger1 + " " + deger2 + " " + sayi);
@@ -1139,8 +1139,8 @@ public class PdksUtil implements Serializable {
 				for (Iterator iterator = mailList.iterator(); iterator.hasNext();) {
 					String token = (String) iterator.next();
 					try {
-						String parca = PdksUtil.getInternetAdres(token.trim());
-						if (parca != null && !parca.trim().equals(""))
+						String parca = getInternetAdres(token.trim());
+						if (hasStringValue(parca))
 							list.add(parca);
 					} catch (Exception e) {
 						logger.error("PDKS hata in : \n");
@@ -1591,7 +1591,7 @@ public class PdksUtil implements Serializable {
 		ArrayList list = (ArrayList) veriList.clone();
 		veriList.clear();
 		int sayfaNo = 0;
-		if (request.getParameter("sayfaNo" + sonEk) != null && !request.getParameter("sayfaNo" + sonEk).trim().equals(""))
+		if (hasStringValue(request.getParameter("sayfaNo" + sonEk)))
 			sayfaNo = Integer.parseInt(request.getParameter("sayfaNo" + sonEk)) - 1;
 
 		request.setAttribute("sayfaNo" + sonEk, String.valueOf(sayfaNo + 1));
@@ -2709,9 +2709,9 @@ public class PdksUtil implements Serializable {
 		cal.set(cal.get(Calendar.YEAR), Calendar.JANUARY, 1);
 		for (int i = 0; i < 12; i++) {
 			if (sayisal)
-				list.add(new SelectItem(i + 1, PdksUtil.convertToDateString(cal.getTime(), "MMMMM")));
+				list.add(new SelectItem(i + 1, convertToDateString(cal.getTime(), "MMMMM")));
 			else
-				list.add(new SelectItem(String.valueOf(i), PdksUtil.convertToDateString(cal.getTime(), "MMMMM")));
+				list.add(new SelectItem(String.valueOf(i), convertToDateString(cal.getTime(), "MMMMM")));
 			cal.add(Calendar.MONTH, 1);
 		}
 		return list;
@@ -2827,7 +2827,7 @@ public class PdksUtil implements Serializable {
 			User kullaniciLDAP = null;
 			if (eMail.indexOf("@") > 0) {
 				eMail = getInternetAdres(eMail);
-				if (eMail != null && !eMail.equals("")) {
+				if (hasStringValue(eMail)) {
 					kullaniciLDAP = getLDAPKullanici(eMail, LDAPUserManager.USER_ATTRIBUTES_MAIL);
 					if (kullaniciLDAP == null)
 						kullaniciLDAP = getLDAPKullanici(eMail, LDAPUserManager.USER_ATTRIBUTES_PRINCIPAL_NAME);
@@ -2847,7 +2847,7 @@ public class PdksUtil implements Serializable {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(tarih);
 			cal.add(Calendar.DATE, 1);
-			cal.setTime(PdksUtil.getDate((Date) cal.getTime().clone()));
+			cal.setTime(getDate((Date) cal.getTime().clone()));
 			cal.set(Calendar.MILLISECOND, -2);
 			gunSonu = cal.getTime();
 		}
@@ -2894,7 +2894,7 @@ public class PdksUtil implements Serializable {
 	public static Date getBakiyeYil() {
 		Calendar date = Calendar.getInstance();
 		date.set(1900, 0, 1);
-		Date tarih = PdksUtil.getDate(date.getTime());
+		Date tarih = getDate(date.getTime());
 		return tarih;
 	}
 
@@ -2946,7 +2946,7 @@ public class PdksUtil implements Serializable {
 					if (run.getName().indexOf("get") < 0 || run.getName().equals("getClass"))
 						continue;
 					Object veri = run.invoke(at, parametre);
-					if (veri != null && !veri.toString().trim().equals("")) {
+					if (veri != null && hasStringValue(veri.toString())) {
 						String value = veri.toString();
 						String tagName = run.getName().substring(3).toUpperCase(Locale.ENGLISH);
 						veriMap.put(tagName, value);
@@ -3000,9 +3000,9 @@ public class PdksUtil implements Serializable {
 					}
 
 					xml = sb.toString() + "</" + name + ">";
-					if (!client.equals(""))
+					if (hasStringValue(client))
 						client = "_" + client;
-					if (!r3name.equals(""))
+					if (hasStringValue(r3name))
 						r3name = "_" + r3name;
 
 					fileWrite(xml, hata + name + client + r3name);
@@ -3104,7 +3104,7 @@ public class PdksUtil implements Serializable {
 						if (run.getName().indexOf("get") < 0 || run.getName().equals("getClass"))
 							continue;
 						Object veri = run.invoke(at, parametre);
-						if (veri != null && !veri.toString().trim().equals("")) {
+						if (veri != null && hasStringValue(veri.toString())) {
 							String value = veri.toString();
 							String tagName = run.getName().substring(3).toUpperCase(Locale.ENGLISH);
 							veriMap.put(tagName, value);
@@ -3113,7 +3113,7 @@ public class PdksUtil implements Serializable {
 					for (Iterator iterator = pr.keySet().iterator(); iterator.hasNext();) {
 						String key = (String) iterator.next();
 						String value = pr.getProperty(key).trim();
-						if (key.indexOf("passwd") >= 0 || value.equals(""))
+						if (key.indexOf("passwd") >= 0 || hasStringValue(value) == false)
 							continue;
 						String tagName = key.substring(key.lastIndexOf(".") + 1).toUpperCase(Locale.ENGLISH);
 						if (veriMap.containsKey(tagName))
@@ -3125,7 +3125,7 @@ public class PdksUtil implements Serializable {
 					for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
 						String key = (String) iterator.next();
 						String value = ((String) veriMap.get(key)).trim();
-						if (value.equals(""))
+						if (!hasStringValue(value))
 							continue;
 						if (tag != null) {
 							sb.append(tag);
@@ -3350,9 +3350,9 @@ public class PdksUtil implements Serializable {
 		if (value == null || value.trim().length() < 2) {
 			value = "dd/MM/yyyy";
 		}
-		PdksUtil.dateFormat = value;
-		PdksUtil.dateTimeFormat = value + " H:mm";
-		PdksUtil.dateTimeLongFormat = value + " H:mm:ss";
+		dateFormat = value;
+		dateTimeFormat = value + " H:mm";
+		dateTimeLongFormat = value + " H:mm:ss";
 	}
 
 	public static String getDateTimeFormat() {

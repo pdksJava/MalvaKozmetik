@@ -358,7 +358,7 @@ public class IzinTipiHome extends EntityHome<IzinTipi> implements Serializable {
 					pdksEntityController.saveOrUpdate(session, entityManager, bakiyeIzinTipi);
 				}
 			}
-			if (mesaj.equals("")) {
+			if (!PdksUtil.hasStringValue(mesaj)) {
 				izinTipi.setKotaBakiye(null);
 
 				if (izinTipi.getTakvimGunumu()) {

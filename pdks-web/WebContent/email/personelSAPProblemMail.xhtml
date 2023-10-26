@@ -5,7 +5,7 @@
 	<ui:repeat value="#{sapPersonelGuncelleme.toList}" var="toUser">
 		<m:to name="#{toUser.adSoyad}" address="#{toUser.email}" />
 	</ui:repeat>
-	<ui:fragment rendered="#{ortakIslemler.getParameterKey('bccAdres')!=''}">
+	<ui:fragment rendered="#{ortakIslemler.getParameterKeyHasStringValue('bccAdres')}">
 		<m:bcc address="#{ortakIslemler.getParameterKey('bccAdres')}" />
 	</ui:fragment>
 	<m:subject>Ana veri okuma problemi</m:subject>

@@ -358,7 +358,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	public String adresAyarla(String adres, String xAdresTipi) {
 		ccAdres = "";
 		setAdresTipi(xAdresTipi);
-		if (adres == null || adres.equals("")) {
+		if (!PdksUtil.hasStringValue(adres)) {
 			if (xAdresTipi.equals(MAIL_CC))
 				adres = getInstance().getEmailCC();
 			else if (xAdresTipi.equals(MAIL_BCC))
@@ -923,7 +923,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			body += "<p>Saygılarımla,</p>";
 			Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
 			String donusAdres = map.containsKey("host") ? map.get("host") : "";
-			if (!donusAdres.equals(""))
+			if (PdksUtil.hasStringValue(donusAdres))
 				body += "<p><a href=\"http://" + donusAdres + "/sifreDegistirme\">" + ortakIslemler.getParameterKey("fromName") + " uygulamasına girmek için buraya tıklayınız.</a></p>";
 
 			mailObject.setBody(body);
@@ -1101,7 +1101,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			personelView.setPdksPersonel(pdksPersonel);
 		}
 
-		if (!bosDepartmanKodu.equals("")) {
+		if (PdksUtil.hasStringValue(bosDepartmanKodu)) {
 			if (parentDepartman == null) {
 				fields.put("tipi", Tanim.TIPI_PERSONEL_EK_SAHA);
 				fields.put("kodu", "ekSaha1");
@@ -2461,7 +2461,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 		servisCalisti = Boolean.FALSE;
 		String adres = ortakIslemler.getParameterKey("pdksWebService");
-		if (adres.equals(""))
+		if (!PdksUtil.hasStringValue(adres))
 			adres = "http://localhost:9080/PdksWebService";
 
 		String url = adres + "/rest/services/savePersoneller";
@@ -2686,7 +2686,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				String sicilNoUzunlukStr = ortakIslemler.getParameterKey("sicilNoUzunluk");
 				int maxTextLength = 0;
 				try {
-					if (!sicilNoUzunlukStr.equals(""))
+					if (PdksUtil.hasStringValue(sicilNoUzunlukStr))
 						maxTextLength = Integer.parseInt(sicilNoUzunlukStr);
 				} catch (Exception e) {
 					maxTextLength = 0;
@@ -2699,7 +2699,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						try {
 							perSicilNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_SICIL_NO);
 							logger.debug(row + " " + perSicilNo);
-							if (perSicilNo == null || perSicilNo.trim().equals(""))
+							if (!PdksUtil.hasStringValue(perSicilNo))
 								break;
 							if (maxTextLength > 0 && perSicilNo.trim().length() < maxTextLength)
 								perSicilNo = PdksUtil.textBaslangicinaKarakterEkle(perSicilNo.trim(), '0', maxTextLength);
@@ -3124,7 +3124,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		if (yoneticiPersonelEngelleDurum && personel != null && personel.getId() != null) {
 			yoneticiOlmayanRoller = Arrays.asList(new String[] { Role.TIPI_PERSONEL, Role.TIPI_IK, Role.TIPI_IK_Tesis, Role.TIPI_IK_DIREKTOR, Role.TIPI_GENEL_MUDUR });
 			String yoneticiRolleriHaric = ortakIslemler.getParameterKey("yoneticiRolleriHaric");
-			if (!yoneticiRolleriHaric.equals(""))
+			if (PdksUtil.hasStringValue(yoneticiRolleriHaric))
 				yoneticiOlmayanRoller = PdksUtil.getListByString(yoneticiRolleriHaric, null);
 			Date bugun = PdksUtil.getDate(Calendar.getInstance().getTime());
 			HashMap parametreMap = new HashMap();
@@ -3408,7 +3408,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				parentBordroTanimKoduStr = parentBordroTanimKodu.toLowerCase(Constants.TR_LOCALE);
 				ekSaha1Disable = !admin;
 				if (admin == false) {
-					if (!parentBordroTanimKoduStr.equals("")) {
+					if (PdksUtil.hasStringValue(parentBordroTanimKoduStr)) {
 						if (!parentBordroTanimKoduStr.equals("eksaha2"))
 							ekSaha2Disable = false;
 						if (!parentBordroTanimKoduStr.equals("eksaha4"))

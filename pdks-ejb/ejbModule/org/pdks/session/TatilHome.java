@@ -116,7 +116,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 
 	public void tatilEkle() {
 		Tatil tatil = new Tatil();
-		tatil.setArifeSonraVardiyaDenklestirmeVar(ortakIslemler.getParameterKey("arifeSonraVardiyaDenklestirmeVar").equals(""));
+		tatil.setArifeSonraVardiyaDenklestirmeVar(!ortakIslemler.getParameterKeyHasStringValue("arifeSonraVardiyaDenklestirmeVar"));
 		setInstance(tatil);
 		setBasGunList(new ArrayList<SelectItem>());
 		setBitisGunList(new ArrayList<SelectItem>());
@@ -530,7 +530,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 		setInstance(pdksTatil);
 		yilSayisi = 1;
 		kopyala = Boolean.TRUE;
-		if (ortakIslemler.getParameterKey("cokluTatilKopyala").equals(""))
+		if (!ortakIslemler.getParameterKeyHasStringValue("cokluTatilKopyala"))
 			kayitKopyalaDevam();
 		return "";
 	}

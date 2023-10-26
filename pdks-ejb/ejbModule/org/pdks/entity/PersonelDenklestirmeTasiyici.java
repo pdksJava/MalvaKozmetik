@@ -150,7 +150,7 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 		else if (mesaiOdemeSekli.equals(MESAI_ODEME_SEKLI_PARA))
 			key = "puantaj.etiket.mesaiOdemeSekliPara";
 		String aciklama = "";
-		if (!key.equals(""))
+		if (PdksUtil.hasStringValue(key))
 			aciklama = PdksUtil.getMessageBundleMessage(key);
 		return aciklama;
 	}
@@ -356,8 +356,8 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 
 	public String getAdSoyad() {
 		String key = personel != null ? personel.getAdSoyad() : "";
-//		CalismaModeli cm = calismaModeliAy != null ? calismaModeliAy.getCalismaModeli() : calismaModeli;
-//		key += (cm != null ? "_" + cm.getAciklama() : "");
+		// CalismaModeli cm = calismaModeliAy != null ? calismaModeliAy.getCalismaModeli() : calismaModeli;
+		// key += (cm != null ? "_" + cm.getAciklama() : "");
 		return key;
 	}
 

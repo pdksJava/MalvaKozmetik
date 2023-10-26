@@ -238,7 +238,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			hastaneSuperVisor = Boolean.FALSE;
 			if (!(authenticatedUser.isIK() || authenticatedUser.isAdmin()) && authenticatedUser.getSuperVisorHemsirePersonelNoList() != null) {
 				String superVisorHemsireSayfalari = ortakIslemler.getParameterKey("superVisorHemsireSayfalari");
-				List<String> sayfalar = !superVisorHemsireSayfalari.equals("") ? PdksUtil.getListByString(superVisorHemsireSayfalari, null) : null;
+				List<String> sayfalar = PdksUtil.hasStringValue(superVisorHemsireSayfalari) ? PdksUtil.getListByString(superVisorHemsireSayfalari, null) : null;
 				hastaneSuperVisor = sayfalar != null && sayfalar.contains("fazlaMesaiKontrolRapor");
 
 			}
@@ -580,7 +580,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 	}
 
 	public String fillPersonelSicilDenklestirmeList() {
-		if (sicilNo.trim().equals(""))
+		if (!PdksUtil.hasStringValue(sicilNo))
 			aylikPuantajList.clear();
 		else {
 			sicilNo = ortakIslemler.getSicilNo(sicilNo);
@@ -641,9 +641,9 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			TreeMap<Long, Personel> idMap = pdksEntityController.getObjectByInnerObjectMap(fields, Personel.class, false);
 			try {
 				String ardisikGunStr = ortakIslemler.getParameterKey("ardisikGun");
-				if (ardisikGunStr.equals(""))
+				if (!PdksUtil.hasStringValue(ardisikGunStr))
 					ardisikGunStr = "15";
-				if (!ardisikGunStr.equals(""))
+				if (PdksUtil.hasStringValue(ardisikGunStr))
 					ardisik = Integer.parseInt(ardisikGunStr);
 
 			} catch (Exception e) {
@@ -764,7 +764,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				superVisorList = new ArrayList<String>();
 				for (Personel personel : authenticatedUser.getTumPersoneller()) {
 					String sicil = personel.getSicilNo();
-					if (sicil == null || sicil.trim().equals(""))
+					if (!PdksUtil.hasStringValue(sicil))
 						continue;
 					superVisorList.add(sicil);
 				}
@@ -961,7 +961,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				adres = requestHeaderMap.containsKey("host") ? requestHeaderMap.get("host") : "";
 				sabahVardiyalar = null;
 				String sabahVardiyaKisaAdlari = ortakIslemler.getParameterKey("sabahVardiyaKisaAdlari");
-				if (!sabahVardiyaKisaAdlari.equals(""))
+				if (PdksUtil.hasStringValue(sabahVardiyaKisaAdlari))
 					sabahVardiyalar = PdksUtil.getListByString(sabahVardiyaKisaAdlari, null);
 				else
 					sabahVardiyalar = Arrays.asList(new String[] { "S", "Sİ", "SI" });
@@ -1053,10 +1053,10 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 
 				List saveList = new ArrayList();
 				msgError = ortakIslemler.getParameterKey("msgErrorResim");
-				if (msgError.equals(""))
+				if (!PdksUtil.hasStringValue(msgError))
 					msgError = "msgerror.png";
 				msgFazlaMesaiError = ortakIslemler.getParameterKey("msgFazlaMesaiErrorResim");
-				if (msgFazlaMesaiError.equals(""))
+				if (!PdksUtil.hasStringValue(msgFazlaMesaiError))
 					msgFazlaMesaiError = "msgerror.png";
 				List<Long> vgIdList = new ArrayList<Long>();
 				ayrikHareketVar = false;
@@ -1092,13 +1092,13 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					puantajDenklestirmeList.add(puantaj);
 				}
 				String yoneticiPuantajKontrolStr = ortakIslemler.getParameterKey("yoneticiPuantajKontrol");
-				boolean yoneticiKontrolEtme = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || yoneticiPuantajKontrolStr.equals("");
+				boolean yoneticiKontrolEtme = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || PdksUtil.hasStringValue(yoneticiPuantajKontrolStr) == false;
 				ortakIslemler.yoneticiPuantajKontrol(puantajDenklestirmeList, Boolean.TRUE, session);
 
 				aksamCalismaSaati = null;
 				aksamCalismaSaatiYuzde = null;
 				try {
-					if (!ortakIslemler.getParameterKey("aksamCalismaSaatiYuzde").equals(""))
+					if (ortakIslemler.getParameterKeyHasStringValue("aksamCalismaSaatiYuzde"))
 						aksamCalismaSaatiYuzde = Double.parseDouble(ortakIslemler.getParameterKey("aksamCalismaSaatiYuzde"));
 
 				} catch (Exception e) {
@@ -1106,7 +1106,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				if (aksamCalismaSaatiYuzde != null && (aksamCalismaSaatiYuzde.doubleValue() < 0.0d || aksamCalismaSaatiYuzde.doubleValue() > 100.0d))
 					aksamCalismaSaatiYuzde = null;
 				try {
-					if (!ortakIslemler.getParameterKey("aksamCalismaSaati").equals(""))
+					if (ortakIslemler.getParameterKeyHasStringValue("aksamCalismaSaati"))
 						aksamCalismaSaati = Double.parseDouble(ortakIslemler.getParameterKey("aksamCalismaSaati"));
 
 				} catch (Exception e) {
@@ -1783,7 +1783,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				if (hastaneSuperVisor == null) {
 					String calistigiSayfa = authenticatedUser.getCalistigiSayfa();
 					String superVisorHemsireSayfalari = ortakIslemler.getParameterKey("superVisorHemsireSayfalari");
-					List<String> sayfalar = !superVisorHemsireSayfalari.equals("") ? PdksUtil.getListByString(superVisorHemsireSayfalari, null) : null;
+					List<String> sayfalar = PdksUtil.hasStringValue(superVisorHemsireSayfalari) ? PdksUtil.getListByString(superVisorHemsireSayfalari, null) : null;
 					hastaneSuperVisor = sayfalar != null && sayfalar.contains(calistigiSayfa);
 
 				}

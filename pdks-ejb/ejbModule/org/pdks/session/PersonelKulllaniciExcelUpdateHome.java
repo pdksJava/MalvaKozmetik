@@ -235,7 +235,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 
 						String yoneticiSicilNo = getSheetStringValue(sheet, j, hucre);
 						if (sicilNo != null && yoneticiSicilNo != null) {
-							if (!yoneticiSicilNo.equals("") && !yoneticiList.contains(yoneticiSicilNo))
+							if (PdksUtil.hasStringValue(yoneticiSicilNo) && !yoneticiList.contains(yoneticiSicilNo))
 								yoneticiList.add(yoneticiSicilNo);
 							yoneticiSicilMap.put(sicilNo, yoneticiSicilNo);
 						}
@@ -483,7 +483,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 				for (String adres : ccAdresList) {
 					try {
 						String eMail = PdksUtil.getInternetAdres(adres);
-						if (eMail != null && !eMail.equals(""))
+						if (PdksUtil.hasStringValue(eMail))
 							map1.put(eMail, eMail);
 					} catch (Exception e) {
 						logger.error("PDKS hata in : \n");

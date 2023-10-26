@@ -25,6 +25,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.pdks.session.PdksUtil;
 
+import com.pdks.notUse.IsKurVardiyaGun;
+
 @Entity(name = VardiyaGun.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI, VardiyaGun.COLUMN_NAME_PERSONEL }) })
 public class VardiyaGun extends BaseObject {
@@ -1539,9 +1541,9 @@ public class VardiyaGun extends BaseObject {
 							ekle = vardiyaGorev.getBolumKat().getKodu();
 						if (durum) {
 							if (this.getVardiyaGorev().isOzelIstek())
-								ekle += (ekle.equals("") ? "" : " - ") + "Ö";
+								ekle += (!PdksUtil.hasStringValue(ekle) ? "" : " - ") + "Ö";
 							else if (this.getVardiyaGorev().isEgitim())
-								ekle += (ekle.equals("") ? "" : " - ") + "E";
+								ekle += (!PdksUtil.hasStringValue(ekle) ? "" : " - ") + "E";
 
 						}
 						aciklama = aciklama + " (" + ekle + " )";
@@ -1623,9 +1625,9 @@ public class VardiyaGun extends BaseObject {
 							ekle = vardiyaGorev.getBolumKat().getKodu();
 						if (durum) {
 							if (this.getVardiyaGorev().isOzelIstek())
-								ekle += (ekle.equals("") ? "" : " - ") + "Ö";
+								ekle += (!PdksUtil.hasStringValue(ekle) ? "" : " - ") + "Ö";
 							else if (this.getVardiyaGorev().isEgitim())
-								ekle += (ekle.equals("") ? "" : " - ") + "E";
+								ekle += (!PdksUtil.hasStringValue(ekle) ? "" : " - ") + "E";
 
 						}
 						if (vardiyaGorev.isShiftGorevli())
@@ -1682,7 +1684,7 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public void addLinkAdresler(String value) {
 		if (PdksUtil.hasStringValue(value)) {
- 			if (linkAdresler == null)
+			if (linkAdresler == null)
 				linkAdresler = new ArrayList<String>();
 			if (!linkAdresler.contains(value))
 				linkAdresler.add(value);

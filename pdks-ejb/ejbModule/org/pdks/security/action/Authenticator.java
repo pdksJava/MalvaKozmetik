@@ -177,7 +177,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 			if (authenticatedUser != null) {
 				authenticatedUser.setLogin(Boolean.FALSE);
 				userName = authenticatedUser.getUsername();
-				if (kisaKullaniciAdi == null || kisaKullaniciAdi.equals(""))
+				if (!PdksUtil.hasStringValue(kisaKullaniciAdi))
 					kisaKullaniciAdi = authenticatedUser.getUsername();
 				else
 					kisaKullaniciAdi = kisaKullaniciAdi + " <---> " + authenticatedUser.getUsername();
@@ -191,7 +191,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 						try {
 							if (!sonuc)
 								sonuc = LDAPUserManager.authenticate(userName, password);
-							if (kisaKullaniciAdi.equals("")) {
+							if (!PdksUtil.hasStringValue(kisaKullaniciAdi)) {
 								ldapUser = LDAPUserManager.getLDAPUserAttributes(userName);
 								if (ldapUser != null)
 									kisaKullaniciAdi = ldapUser.getStaffId();

@@ -222,7 +222,7 @@ public class IseGelmemeUyari implements Serializable {
 		HashMap map = new HashMap();
 		tesisYetki = ortakIslemler.getParameterKey("tesisYetki").equals("1");
 		String yoneticiTanimsizStr = ortakIslemler.getParameterKey("yoneticiTanimsiz");
-		yoneticiTanimsiz = !yoneticiTanimsizStr.equals("");
+		yoneticiTanimsiz = PdksUtil.hasStringValue(yoneticiTanimsizStr);
 		boolean devam = tarih == null;
 
 		if (tarih == null)
@@ -1357,10 +1357,10 @@ public class IseGelmemeUyari implements Serializable {
 					unvan.append(user.getPdksPersonel().getEkSaha1().getAciklama());
 				String bolum = user.getPdksPersonel().getEkSaha3() != null ? user.getPdksPersonel().getEkSaha3().getAciklama() : "";
 				String altBolum = user.getPdksPersonel().getEkSaha4() != null ? user.getPdksPersonel().getEkSaha4().getAciklama() : "";
-				if (!bolum.equals(""))
+				if (PdksUtil.hasStringValue(bolum))
 					unvan.append((unvan.length() > 0 ? " - " : "") + bolum);
 				if (PdksUtil.isPuantajSorguAltBolumGir()) {
-					if (!altBolum.equals("") && !altBolum.equals(bolum))
+					if (PdksUtil.hasStringValue(altBolum) && !altBolum.equals(bolum))
 						unvan.append((unvan.length() > 0 ? " - " : "") + altBolum);
 				}
 				if (unvan.length() > 0)

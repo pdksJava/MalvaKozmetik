@@ -182,7 +182,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ay = -1;
 		fazlaMesaiVardiyaGun = null;
 		String maxFazlaMesaiRaporGunStr = ortakIslemler.getParameterKey("maxFazlaMesaiOnayGun");
-		if (!maxFazlaMesaiRaporGunStr.equals(""))
+		if (PdksUtil.hasStringValue(maxFazlaMesaiRaporGunStr))
 			try {
 				maxFazlaMesaiOnayGun = Integer.parseInt(maxFazlaMesaiRaporGunStr);
 			} catch (Exception e) {

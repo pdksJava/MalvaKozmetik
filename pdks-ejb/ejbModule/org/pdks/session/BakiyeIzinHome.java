@@ -277,7 +277,7 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 
 		HashMap<Long, TempIzin> izinMap = new HashMap<Long, TempIzin>();
 		String sicilNo = aramaSecenekleri.getSicilNo();
-		if (sicilNo.trim().equals("") && aramaSecenekleri.getSirketId() == null) {
+		if (PdksUtil.hasStringValue(sicilNo) == false && aramaSecenekleri.getSirketId() == null) {
 			PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		} else {
 			HashMap fields = new HashMap();

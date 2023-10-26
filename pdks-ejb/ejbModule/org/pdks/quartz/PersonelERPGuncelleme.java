@@ -513,7 +513,7 @@ public class PersonelERPGuncelleme {
 						if (user.getMailGrubuCC() != null) {
 							String mail = mailMap.get(user.getMailGrubuCC().getEmail());
 							if (!mail.equals(user.getMailGrubuCC().getEmail())) {
-								if (!mail.equals("")) {
+								if (PdksUtil.hasStringValue(mail)) {
 									user.setEmailCC(mail);
 									saveMailGrubuList.add(user.getMailGrubuCC());
 								} else if (user.getMailGrubuCC().getId() != null) {
@@ -527,7 +527,7 @@ public class PersonelERPGuncelleme {
 						if (user.getMailGrubuBCC() != null) {
 							String mail = mailMap.get(user.getMailGrubuBCC().getEmail());
 							if (!mail.equals(user.getMailGrubuBCC().getEmail())) {
-								if (!mail.equals("")) {
+								if (PdksUtil.hasStringValue(mail)) {
 									user.setEmailBCC(mail);
 									saveMailGrubuList.add(user.getMailGrubuBCC());
 								} else if (user.getMailGrubuBCC().getId() != null) {
@@ -540,7 +540,7 @@ public class PersonelERPGuncelleme {
 						if (user.getHareketMailGrubu() != null) {
 							String mail = mailMap.get(user.getHareketMailGrubu().getEmail());
 							if (!mail.equals(user.getHareketMailGrubu().getEmail())) {
-								if (!mail.equals("")) {
+								if (PdksUtil.hasStringValue(mail)) {
 									user.setEmailBCC(mail);
 									saveMailGrubuList.add(user.getHareketMailGrubu());
 								} else if (user.getHareketMailGrubu().getId() != null) {

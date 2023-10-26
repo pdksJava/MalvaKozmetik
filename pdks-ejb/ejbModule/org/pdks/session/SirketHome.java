@@ -262,7 +262,7 @@ public class SirketHome extends EntityHome<Sirket> implements Serializable {
 		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 			PersonelView personelView = (PersonelView) iterator.next();
 			Personel personel = personelView.getPdksPersonel();
-			if (personel == null || personel.getSicilNo() == null || personel.getSicilNo().trim().equals("")) {
+			if (personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false) {
 				iterator.remove();
 				continue;
 			}

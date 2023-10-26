@@ -185,12 +185,12 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 						perEskiSicilNo = getSheetStringValue(sheet, row, COL_ESKI_SICIL_NO);
 						perYeniSicilNo = getSheetStringValue(sheet, row, COL_YENI_SICIL_NO);
 						int sayac = 0;
-						if (perEskiSicilNo == null || perEskiSicilNo.trim().equals("")) {
+						if (!PdksUtil.hasStringValue(perEskiSicilNo)) {
 							++sayac;
 							sb.append("Eski");
 						}
 
-						if (perYeniSicilNo == null || perYeniSicilNo.trim().equals("")) {
+						if (!PdksUtil.hasStringValue(perYeniSicilNo)) {
 							sb.append(sayac > 0 ? ", yeni" : "Yeni");
 							++sayac;
 
@@ -383,7 +383,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 			}
 			fields.clear();
 			StringBuffer sb = new StringBuffer();
-			if (!idStr.equals("") && !idler.isEmpty()) {
+			if (PdksUtil.hasStringValue(idStr) && !idler.isEmpty()) {
 				try {
 					User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
 					if (sistemAdminUser == null)
@@ -443,7 +443,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 	 */
 	protected void eskiKayitlariSil(List<Long> idler) throws Exception {
 		if (idler != null && !idler.isEmpty()) {
- 			StringBuffer sb = new StringBuffer();
+			StringBuffer sb = new StringBuffer();
 			for (Iterator iterator = idler.iterator(); iterator.hasNext();) {
 				Long long1 = (Long) iterator.next();
 				sb.append(long1.toString());
@@ -456,7 +456,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 			map.put(PdksEntityController.MAP_KEY_SQLPARAMS, params);
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			pdksEntityController.execSP(map, new StringBuffer("SP_IZINLERI_SIL"));
-		 
+
 		}
 
 	}

@@ -206,14 +206,14 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		}
 		listeTemizle();
 
-		if (!ortakIslemler.getParameterKey("maxGunCalismaSaat").equals(""))
+		if (ortakIslemler.getParameterKeyHasStringValue(("maxGunCalismaSaat")))
 			raporList.add(new SelectItem("maxGunCalismaSaat", "Günlük Çalışmayı Aşanlar"));
 		raporList.add(new SelectItem("maxHaftaTatilCalismaGun", "Hafta Tatil Çalışanlar"));
-		if (!ortakIslemler.getParameterKey("maxHaftaCalismaSaat").equals(""))
+		if (ortakIslemler.getParameterKeyHasStringValue(("maxHaftaCalismaSaat")))
 			raporList.add(new SelectItem("maxHaftaCalismaSaat", "Haftalık Çalışmayı Aşanlar"));
-		if (!ortakIslemler.getParameterKey("maxGeceCalismaSaat").equals(""))
+		if (ortakIslemler.getParameterKeyHasStringValue(("maxGeceCalismaSaat")))
 			raporList.add(new SelectItem("maxGeceCalismaSaat", "Gece Çalışmasını Aşanlar"));
-		if (!ortakIslemler.getParameterKey("maxToplamMesai").equals(""))
+		if (ortakIslemler.getParameterKeyHasStringValue(("maxToplamMesai")))
 			raporList.add(new SelectItem("maxToplamMesai", "Fazla Mesai Yapanlar"));
 		if (raporList.isEmpty())
 			raporSecim = null;
@@ -221,7 +221,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			raporSecim = (String) raporList.get(0).getValue();
 
 		String maxFazlaCalismaGunStr = ortakIslemler.getParameterKey("maxFazlaCalismaGun");
-		if (!maxFazlaCalismaGunStr.equals("")) {
+		if (PdksUtil.hasStringValue(maxFazlaCalismaGunStr)) {
 			try {
 				maxFazlaCalismaGun = Integer.parseInt(maxFazlaCalismaGunStr);
 			} catch (Exception e) {

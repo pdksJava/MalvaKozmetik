@@ -293,7 +293,7 @@ public class PdksEntityController implements Serializable {
 	private List getObjectByInnerObjectList(HashMap fields, Class class1, String esit, EntityManager pEntityManager) {
 		if (esit == null)
 			esit = "";
-		else if (esit.equals(""))
+		else if (!PdksUtil.hasStringValue(esit))
 			esit = "=";
 		int parametreSayac = 1;
 		Object fieldValue;
@@ -586,7 +586,7 @@ public class PdksEntityController implements Serializable {
 		TreeMap treeMap = new TreeMap();
 		if (map.containsKey(MAP_KEY_MAP)) {
 			String method = (String) map.get(MAP_KEY_MAP);
-			if (PdksUtil.hasStringValue(method) ) {
+			if (PdksUtil.hasStringValue(method)) {
 				map.remove(MAP_KEY_MAP);
 				List list = getObjectByInnerObjectListInLogic(map, class1);
 				if (!list.isEmpty())

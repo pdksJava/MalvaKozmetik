@@ -149,7 +149,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 			String spName = ortakIslemler.getParameterKey("holdingIzinSPName");
 			if (istenAyrilanEkle)
 				spName = "SP_HOLDING_IZIN_RAPOR_AYRILANLARLA";
-			else if (spName == null || spName.trim().equals(""))
+			else if (!PdksUtil.hasStringValue(spName))
 				spName = "SP_HOLDING_IZIN_RAPOR_ALL";
 			String hakedisTarihiStr = hakedisTarihi != null ? PdksUtil.convertToDateString(hakedisTarihi, "yyyy-MM-dd") : "";
 			fields.clear();
@@ -287,7 +287,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Rapor", Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
- 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddTutar = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
@@ -339,7 +339,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 			Personel personel = tempIzin.getPersonel();
 			row++;
 			col = 0;
- 			CellStyle style = null, styleCenter = null, styleNumber = null, styleDate = null;
+			CellStyle style = null, styleCenter = null, styleNumber = null, styleDate = null;
 			if (renk) {
 				styleDate = styleOddDate;
 				styleNumber = styleOddTutar;

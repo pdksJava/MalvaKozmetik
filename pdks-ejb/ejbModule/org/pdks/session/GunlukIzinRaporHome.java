@@ -194,7 +194,7 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 			PdksUtil.addMessageWarn("Başlangıç tarihi bitiş tarihinden büyük olamaz!");
 		else if (fark > 31)
 			PdksUtil.addMessageWarn("31 günden fazla seçemezsiniz");
-		else if (sicilNo.trim().equals("") && sirket == null) {
+		else if (PdksUtil.hasStringValue(sicilNo) == false && sirket == null) {
 			PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		} else {
 			ArrayList<String> sicilNoList = ortakIslemler.getPersonelSicilNo(ad, soyad, sicilNo, sirket, seciliTesis, seciliEkSaha1, seciliEkSaha2, seciliEkSaha3, seciliEkSaha4, Boolean.FALSE, session);

@@ -211,15 +211,13 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 
-		
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
-		
-		
+
 		int row = 0;
 		ExcelUtil.getCell(sheet, row, 0, header).setCellValue("Yemek Zamanı");
 		ExcelUtil.getCell(sheet, row, 1, header).setCellValue("Adı Soyadı");
@@ -232,7 +230,8 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Yemek Yeri");
 		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Yemek Durum");
 		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Mükerrer Geçerli");
-		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Öncek Giriş Zamanı");	boolean renk = true;
+		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Öncek Giriş Zamanı");
+		boolean renk = true;
 		for (Iterator iter = hareketList.iterator(); iter.hasNext();) {
 			HareketKGS yemek = (HareketKGS) iter.next();
 			row++;
@@ -266,7 +265,7 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 				try {
 					if (yemek.getPersonel().getPdksPersonel().getMasrafYeri() != null) {
 						Tanim masrafYeri = yemek.getPersonel().getPdksPersonel().getMasrafYeri();
-						if (!masrafYeri.getKodu().trim().equals("")) {
+						if (PdksUtil.hasStringValue(masrafYeri.getKodu())) {
 							masrafYeriKodu = masrafYeri.getKodu();
 							masrafYeriAciklama = masrafYeri.getAciklama();
 

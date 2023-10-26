@@ -215,7 +215,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		fazlaMesaiVardiyaGun = null;
 		maxFazlaMesaiRaporGun = -1;
 		String maxFazlaMesaiRaporGunStr = ortakIslemler.getParameterKey("maxFazlaMesaiRaporGun");
-		if (!maxFazlaMesaiRaporGunStr.equals(""))
+		if (PdksUtil.hasStringValue(maxFazlaMesaiRaporGunStr))
 			try {
 				maxFazlaMesaiRaporGun = Integer.parseInt(maxFazlaMesaiRaporGunStr);
 			} catch (Exception e) {
@@ -280,7 +280,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			hastaneSuperVisor = Boolean.FALSE;
 			if (!(authenticatedUser.isIK() || authenticatedUser.isAdmin()) && authenticatedUser.getSuperVisorHemsirePersonelNoList() != null) {
 				String superVisorHemsireSayfalari = ortakIslemler.getParameterKey("superVisorHemsireSayfalari");
-				List<String> sayfalar = !superVisorHemsireSayfalari.equals("") ? PdksUtil.getListByString(superVisorHemsireSayfalari, null) : null;
+				List<String> sayfalar = PdksUtil.hasStringValue(superVisorHemsireSayfalari) ? PdksUtil.getListByString(superVisorHemsireSayfalari, null) : null;
 				hastaneSuperVisor = sayfalar != null && sayfalar.contains("fazlaMesaiRapor");
 
 			}
@@ -660,7 +660,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	 * @param denklestirmeDonemi
 	 */
 	public void fillPersonelDenklestirmeRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
-		yoneticiERP1Kontrol = ortakIslemler.getParameterKey("yoneticiERP1Kontrol").equals("");
+		yoneticiERP1Kontrol = !ortakIslemler.getParameterKeyHasStringValue("yoneticiERP1Kontrol");
 		fazlaMesaiVardiyaGun = null;
 		Map<String, String> map1 = null;
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
@@ -733,7 +733,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 				adres = requestHeaderMap.containsKey("host") ? requestHeaderMap.get("host") : "";
 				sabahVardiyalar = null;
 				String sabahVardiyaKisaAdlari = ortakIslemler.getParameterKey("sabahVardiyaKisaAdlari");
-				if (!sabahVardiyaKisaAdlari.equals(""))
+				if (PdksUtil.hasStringValue(sabahVardiyaKisaAdlari))
 					sabahVardiyalar = PdksUtil.getListByString(sabahVardiyaKisaAdlari, null);
 				else
 					sabahVardiyalar = Arrays.asList(new String[] { "S", "Sİ", "SI" });
@@ -825,10 +825,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					onayla = Boolean.FALSE;
 
 					msgError = ortakIslemler.getParameterKey("msgErrorResim");
-					if (msgError.equals(""))
+					if (!PdksUtil.hasStringValue(msgError))
 						msgError = "msgerror.png";
 					msgFazlaMesaiError = ortakIslemler.getParameterKey("msgFazlaMesaiErrorResim");
-					if (msgFazlaMesaiError.equals(""))
+					if (!PdksUtil.hasStringValue(msgFazlaMesaiError))
 						msgFazlaMesaiError = "msgerror.png";
 					List<Long> vgIdList = new ArrayList<Long>();
 					ayrikHareketVar = false;
@@ -857,13 +857,13 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						puantajDenklestirmeList.add(puantaj);
 					}
 					String yoneticiPuantajKontrolStr = ortakIslemler.getParameterKey("yoneticiPuantajKontrol");
-					boolean yoneticiKontrolEtme = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || yoneticiPuantajKontrolStr.equals("");
+					boolean yoneticiKontrolEtme = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || PdksUtil.hasStringValue(yoneticiPuantajKontrolStr);
 					ortakIslemler.yoneticiPuantajKontrol(puantajDenklestirmeList, Boolean.TRUE, session);
 					boolean kayitVar = false;
 					aksamCalismaSaati = null;
 					aksamCalismaSaatiYuzde = null;
 					try {
-						if (!ortakIslemler.getParameterKey("aksamCalismaSaatiYuzde").equals(""))
+						if (ortakIslemler.getParameterKeyHasStringValue("aksamCalismaSaatiYuzde"))
 							aksamCalismaSaatiYuzde = Double.parseDouble(ortakIslemler.getParameterKey("aksamCalismaSaatiYuzde"));
 
 					} catch (Exception e) {
@@ -871,7 +871,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					if (aksamCalismaSaatiYuzde != null && (aksamCalismaSaatiYuzde.doubleValue() < 0.0d || aksamCalismaSaatiYuzde.doubleValue() > 100.0d))
 						aksamCalismaSaatiYuzde = null;
 					try {
-						if (!ortakIslemler.getParameterKey("aksamCalismaSaati").equals(""))
+						if (ortakIslemler.getParameterKeyHasStringValue("aksamCalismaSaati"))
 							aksamCalismaSaati = Double.parseDouble(ortakIslemler.getParameterKey("aksamCalismaSaati"));
 
 					} catch (Exception e) {
@@ -1369,7 +1369,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
 
 			Personel personel = aylikPuantaj.getPdksPersonel();
-			if (!aylikPuantaj.isFazlaMesaiHesapla() || !aylikPuantaj.isSecili() || personel == null || personel.getSicilNo() == null || personel.getSicilNo().trim().equals(""))
+			if (!aylikPuantaj.isFazlaMesaiHesapla() || !aylikPuantaj.isSecili() || personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false)
 				continue;
 			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
 			row++;

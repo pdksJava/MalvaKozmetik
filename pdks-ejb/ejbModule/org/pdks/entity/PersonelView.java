@@ -16,6 +16,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
 import org.pdks.security.entity.User;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = PersonelView.VIEW_NAME)
 @Immutable
@@ -25,7 +26,7 @@ public class PersonelView implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6144167331942730263L;
-	
+
 	static Logger logger = Logger.getLogger(PersonelView.class);
 	protected static final String VIEW_NAME = "VIEW_PERSONEL_SIRKET";
 	private static final String COLUMN_NAME_ID = "ID";
@@ -56,7 +57,7 @@ public class PersonelView implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	@Column(name = COLUMN_NAME_AD)
 	public String getAdi() {
 		return adi;
@@ -193,7 +194,7 @@ public class PersonelView implements Serializable {
 
 	@Transient
 	public boolean isGuncelle(User user) {
-		boolean guncelle = !personelKGS.getSicilNo().trim().equals("");
+		boolean guncelle = PdksUtil.hasStringValue(personelKGS.getSicilNo());
 		if (!(user.isAdmin() || user.isIKAdmin()) && pdksPersonel != null)
 			guncelle = pdksPersonel.getPdksSicilNo() != null && pdksPersonel.getPdksSicilNo().trim().equals(personelKGS.getSicilNo().trim());
 		return guncelle;

@@ -225,7 +225,7 @@ public class LDAPUserManager implements Serializable {
 			// Specify the search scope
 			searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 			String objectClass = "&(objectClass=user)";
-			if (tip == null || tip.equals("")) {
+			if (!PdksUtil.hasStringValue(tip)) {
 				objectClass = "&";
 				tip = USER_ATTRIBUTES_MAIL;
 			}

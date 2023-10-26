@@ -16,6 +16,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
 import org.pdks.security.entity.User;
+import org.pdks.session.PdksUtil;
 
 @Entity(name = PdksPersonelView.TABLE_NAME)
 @Immutable
@@ -153,7 +154,7 @@ public class PdksPersonelView implements Serializable {
 
 	@Transient
 	public boolean isGuncelle(User user) {
-		boolean guncelle = !getPersonelKGS().getSicilNo().trim().equals("");
+		boolean guncelle = PdksUtil.hasStringValue(getPersonelKGS().getSicilNo());
 		if (!(user.isAdmin() || user.isIKAdmin()) && pdksPersonel != null)
 			guncelle = pdksPersonel.getPdksSicilNo() != null && pdksPersonel.getPdksSicilNo().trim().equals(getPersonelKGS().getSicilNo().trim());
 		return guncelle;
@@ -223,5 +224,5 @@ public class PdksPersonelView implements Serializable {
 	public String getKgsSicilNo() {
 		return getPersonelKGS().getSicilNo();
 	}
-	 
+
 }

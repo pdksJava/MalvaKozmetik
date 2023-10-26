@@ -362,7 +362,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 				setInstance(tempGeciciYonetici);
 				pdksEntityController.saveOrUpdate(session, entityManager, tempGeciciYonetici);
 				mailAciklamaUserList.append(pdksPersonel.getAdSoyad());
-				if (mailAciklamaTarih.equals(""))
+				if (!PdksUtil.hasStringValue(mailAciklamaTarih))
 					mailAciklamaTarih = PdksUtil.convertToDateString(tempGeciciYonetici.getBasTarih(), "yyyy") + "-" + PdksUtil.convertToDateString(tempGeciciYonetici.getBitTarih(), "yyyy");
 			}
 

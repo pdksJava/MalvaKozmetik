@@ -302,7 +302,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								if (!tatil.isYarimGunMu()) {
 									resmiTatilAdet += calismaGun;
 									calismaGun = 0;
-								} else if (!arifeGunuBordroYarim.equals("")) {
+								} else if (PdksUtil.hasStringValue(arifeGunuBordroYarim)) {
 									calismaGun = 0.5d;
 									resmiTatilAdet += calismaGun;
 								}
@@ -533,7 +533,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 			Double maxCalismaSaat = null;
 			try {
-				if (!maxCalismaSaatStr.equals(""))
+				if (PdksUtil.hasStringValue(maxCalismaSaatStr))
 					maxCalismaSaat = Double.parseDouble(maxCalismaSaatStr);
 			} catch (Exception e) {
 			}
@@ -652,9 +652,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		List<String> list = new ArrayList<String>();
 		try {
 			String maxToplamMesaiStr = ortakIslemler.getParameterKey("maxToplamMesai");
-			// if (authenticatedUser.isIK() && maxToplamMesaiStr.equals(""))
-			// maxToplamMesaiStr = "270";
-			if (!maxToplamMesaiStr.equals("")) {
+			if (PdksUtil.hasStringValue(maxToplamMesaiStr)) {
 				Double maxToplamMesai = null;
 				try {
 					maxToplamMesai = Double.parseDouble(maxToplamMesaiStr);
@@ -1739,7 +1737,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 			String key = ortakIslemler.getParameterKey("izinPersonelOzetGoster");
 
-			boolean devam = (authenticatedUser.isAdmin() && izinGoster) || key.equals("1") || (authenticatedUser.isIK() && !key.equals("")), htToplamiGuncelle = false;
+			boolean devam = (authenticatedUser.isAdmin() && izinGoster) || key.equals("1") || (authenticatedUser.isIK() && PdksUtil.hasStringValue(key)), htToplamiGuncelle = false;
 			if (vgList != null && (authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || devam)) {
 				TreeMap<String, Vardiya> izinTipiVardiyaMap = new TreeMap<String, Vardiya>();
 				TreeMap<Long, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap = new TreeMap<Long, TreeMap<String, List<VardiyaGun>>>();

@@ -200,7 +200,7 @@
 							</c:if>
 							<c:if test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
 								<c:choose>
-									<c:when test="#{ortakIslemler.getParameterKey('puantajPageSize')!=''}">
+									<c:when test="#{ortakIslemler.getParameterKeyHasStringValue('puantajPageSize')}">
 										<ui:include src="/puantaj/includes/aylikFazlaMesaiTable.xhtml" />
 									</c:when>
 									<c:otherwise>

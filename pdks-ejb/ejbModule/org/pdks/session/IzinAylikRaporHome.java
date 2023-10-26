@@ -184,7 +184,7 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 					value = "izin";
 
 				}
-				if (value.equals("") && gunler.containsKey(gun)) {
+				if (PdksUtil.hasStringValue(value) == false && gunler.containsKey(gun)) {
 					key = personel.getSicilNo() + "_" + gunler.get(gun);
 					if (vardiyaMap.containsKey(key)) {
 						VardiyaGun pdksVardiyaGun = vardiyaMap.get(key);

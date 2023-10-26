@@ -172,7 +172,7 @@ public class Personel extends BaseObject {
 		String kSicilNo = pdksSicilNo;
 		if (PdksUtil.hasStringValue(kSicilNo) == false)
 			kSicilNo = personelKGS != null ? personelKGS.getSicilNo() : "";
-		String sicilNo = erpSicilNo.equals("") ? kSicilNo : erpSicilNo;
+		String sicilNo = !PdksUtil.hasStringValue(erpSicilNo) ? kSicilNo : erpSicilNo;
 		return sicilNo.trim();
 	}
 
@@ -970,7 +970,7 @@ public class Personel extends BaseObject {
 
 	@Transient
 	public List<String> getEMailCCList() {
-		if (mailGrubuCC != null && (emailCC == null || emailCC.equals("")))
+		if (mailGrubuCC != null && (!PdksUtil.hasStringValue(emailCC)))
 			emailCC = mailGrubuCC.getEmail();
 		List<String> mailList = PdksUtil.getListFromString(emailCC, null);
 		return mailList;
@@ -978,7 +978,7 @@ public class Personel extends BaseObject {
 
 	@Transient
 	public List<String> getEMailHareketList() {
-		if (hareketMailGrubu != null && (hareketMail == null || hareketMail.equals("")))
+		if (hareketMailGrubu != null && (!PdksUtil.hasStringValue(hareketMail)))
 			hareketMail = hareketMailGrubu.getEmail();
 		List<String> mailList = PdksUtil.getListFromString(hareketMail, null);
 		return mailList;
@@ -986,7 +986,7 @@ public class Personel extends BaseObject {
 
 	@Transient
 	public List<String> getEMailBCCList() {
-		if (mailGrubuBCC != null && (emailBCC == null || emailBCC.equals("")))
+		if (mailGrubuBCC != null && (!PdksUtil.hasStringValue(emailBCC)))
 			emailBCC = mailGrubuBCC.getEmail();
 		List<String> mailList = PdksUtil.getListFromString(emailBCC, null);
 		return mailList;

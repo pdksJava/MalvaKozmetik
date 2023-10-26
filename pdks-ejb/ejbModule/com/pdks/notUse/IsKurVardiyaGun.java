@@ -1,4 +1,4 @@
-package org.pdks.entity;
+package com.pdks.notUse;
 
 import java.util.Date;
 
@@ -16,6 +16,10 @@ import javax.persistence.UniqueConstraint;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.pdks.entity.BaseObject;
+import org.pdks.entity.Personel;
+import org.pdks.entity.Vardiya;
+import org.pdks.entity.VardiyaGun;
 
 @Entity(name = IsKurVardiyaGun.TABLE_NAME)
 @Table(uniqueConstraints = { @UniqueConstraint(columnNames = { IsKurVardiyaGun.COLUMN_NAME_VARDIYA_TARIHI, IsKurVardiyaGun.COLUMN_NAME_PERSONEL }) })

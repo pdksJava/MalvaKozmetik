@@ -157,7 +157,7 @@ public class PdksUtil implements Serializable {
 		} catch (Exception e) {
 			str = jsonStr;
 		}
-		if (str.equals(""))
+		if (!hasStringValue(str))
 			str = jsonStr;
 		String xml = formatXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootName + ">" + str + "</" + rootName + ">");
 		return xml;
@@ -524,7 +524,7 @@ public class PdksUtil implements Serializable {
 		try {
 			if (in != null) {
 				str = IOUtils.toString(in, "utf-8");
-				if (str != null && str.trim().equals(""))
+				if (str != null && hasStringValue(str) == false)
 					str = null;
 			}
 
@@ -980,7 +980,7 @@ public class PdksUtil implements Serializable {
 					String token = (String) iterator.next();
 					try {
 						String parca = PdksUtil.getInternetAdres(token.trim());
-						if (parca != null && !parca.trim().equals(""))
+						if (hasStringValue(parca))
 							list.add(parca);
 					} catch (Exception e) {
 						logger.error("PDKS hata in : \n");
@@ -1343,7 +1343,7 @@ public class PdksUtil implements Serializable {
 		ArrayList list = (ArrayList) veriList.clone();
 		veriList.clear();
 		int sayfaNo = 0;
-		if (request.getParameter("sayfaNo" + sonEk) != null && !request.getParameter("sayfaNo" + sonEk).trim().equals(""))
+		if (hasStringValue(request.getParameter("sayfaNo" + sonEk)))
 			sayfaNo = Integer.parseInt(request.getParameter("sayfaNo" + sonEk)) - 1;
 
 		request.setAttribute("sayfaNo" + sonEk, String.valueOf(sayfaNo + 1));

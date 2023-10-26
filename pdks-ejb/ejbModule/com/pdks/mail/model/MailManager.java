@@ -201,12 +201,11 @@ public class MailManager implements Serializable {
 		if (subject != null)
 			logger.debug(subject + " in " + new Date());
 		StringBuffer sb = new StringBuffer();
-		if (mailObject.getSmtpUser() == null || mailObject.getSmtpUser().equals(""))
+		if (!PdksUtil.hasStringValue(mailObject.getSmtpUser()))
 			sb.append("Mail user belirtiniz!");
-		if (mailObject.getSmtpPassword() == null || mailObject.getSmtpPassword().equals(""))
+		if (!PdksUtil.hasStringValue(mailObject.getSmtpPassword()))
 			sb.append("Mail şifre belirtiniz!");
-
-		if (mailObject.getSubject() == null || mailObject.getSubject().equals(""))
+		if (!PdksUtil.hasStringValue(mailObject.getSubject()))
 			sb.append("Konu belirtiniz!");
 		if (sb.length() > 0)
 			mailStatu.setHataMesai(sb.toString());

@@ -541,7 +541,7 @@ public class StartupAction implements Serializable {
 		boolean menuKapali = false;
 		if (parameterMap.containsKey("menuKapali")) {
 			String menuKapaliStr = parameterMap.get("menuKapali");
-			menuKapali = !menuKapaliStr.equals("");
+			menuKapali = PdksUtil.hasStringValue(menuKapaliStr);
 
 		}
 		UserHome.setMenuKapali(menuKapali);

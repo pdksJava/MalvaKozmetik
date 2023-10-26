@@ -730,7 +730,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					PdksUtil.addMessageWarn(PdksUtil.convertToDateString(tarih, "d MMMMM yyyy HH:mm") + " tarihden büyük kayıt giremezsiniz");
 				}
 			}
-			if (authenticatedUser.isAdmin() || !islemTipi.equals("")) {
+			if (authenticatedUser.isAdmin() || PdksUtil.hasStringValue(islemTipi)) {
 				Date bugun = Calendar.getInstance().getTime();
 				long kgsId = 0, pdksId = 0;
 				if (islemTipi.equals("E")) {
@@ -781,7 +781,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			logger.error("Pdks hata out : " + e.getMessage());
 
 		}
-		if (islemTipi == null || !islemTipi.equals("")) {
+		if (islemTipi == null || PdksUtil.hasStringValue(islemTipi)) {
 
 			fillHareketList();
 		}
@@ -813,14 +813,14 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		denklestirmeAyDurum = fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy);
 		List<HareketKGS> hareket1List = new ArrayList<HareketKGS>();
 		String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo());
-		if (sicilNo.trim().equals("") && aramaSecenekleri.getSirketId() == null) {
+		if (PdksUtil.hasStringValue(sicilNo) == false && aramaSecenekleri.getSirketId() == null) {
 			if (ikRole)
 				PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		} else {
 			saveLastParameter();
 			List<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.FALSE, session);
 			terminalDegistir = false;
-			if ((fazlaMesaiVardiyaGun != null || visibled != null) && !sicilNo.equals("") && !sicilNoList.contains(sicilNo))
+			if ((fazlaMesaiVardiyaGun != null || visibled != null) && PdksUtil.hasStringValue(sicilNo) && !sicilNoList.contains(sicilNo))
 				sicilNoList.add(sicilNo);
 			List<Personel> perList = null;
 

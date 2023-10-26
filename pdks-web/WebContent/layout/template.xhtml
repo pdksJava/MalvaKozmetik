@@ -146,7 +146,7 @@ if (typeof window.event == 'undefined'){
 				#{authenticatedUser.timeLongFormatla(authenticatedUser.menuItemTime.lastTime)}</SPAN>
 		</rich:toolTip>
 	</ui:fragment>
-	<ui:fragment rendered="#{ortakIslemler.getParameterKey('poweredBy')!=''}">
+	<ui:fragment rendered="#{ortakIslemler.getParameterKeyHasStringValue('poweredBy')}">
 		<div class="footer">
 			<a>Powered by #{ortakIslemler.getParameterKey('poweredBy')}</a>
 		</div>

@@ -612,7 +612,7 @@ public class PdksSapController implements ERPController, Serializable {
 	private Tanim getTanim(TreeMap<String, Tanim> map, String tipi, String kodu, String aciklama, Tanim parentTanim) {
 		Tanim tanim = null;
 		kodu = kodu.trim();
-		if (!kodu.equals("")) {
+		if (PdksUtil.hasStringValue(kodu)) {
 			aciklama = aciklama.trim();
 			if (map.containsKey(kodu)) {
 				tanim = map.get(kodu);
@@ -837,7 +837,7 @@ public class PdksSapController implements ERPController, Serializable {
 									Personel p = (Personel) pdksPersonel.clone();
 									while (p.getPdksYonetici() != null) {
 										String ysicil = p.getPdksYonetici().getSicilNo();
-										if (!ysicil.equals("")) {
+										if (PdksUtil.hasStringValue(ysicil)) {
 											personelNo.add(ysicil);
 											p = p.getPdksYonetici();
 											yoneticiMap.put(ysicil, p);
@@ -933,7 +933,7 @@ public class PdksSapController implements ERPController, Serializable {
 						}
 						impParametre.setValue(izin.getBaslangicZamani(), "BEGDA");
 						impParametre.setValue(PdksUtil.tariheGunEkleCikar(izin.getBitisZamani(), -1), "ENDDA");
- 						PdksUtil.getXMLFunction(jcoClient, function, true);
+						PdksUtil.getXMLFunction(jcoClient, function, true);
 						StringBuilder sb = new StringBuilder();
 						if (cikanTable.getNumRows() > 0) {
 							mesaj = "";
@@ -953,7 +953,7 @@ public class PdksSapController implements ERPController, Serializable {
 							mesaj = ex.getMessage();
 					}
 
-					if (mesaj != null && mesaj.equals(""))
+					if (!PdksUtil.hasStringValue(mesaj))
 						izin.setGuncellemeTarihi(new Date());
 					izin.setMesaj(mesaj);
 					map.put(izin.getId(), "");

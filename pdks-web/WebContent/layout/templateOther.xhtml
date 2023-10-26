@@ -65,7 +65,7 @@ if (typeof window.event == 'undefined'){
 		<ui:insert name="body" />
 	</div>
 
-	<ui:fragment rendered="#{ortakIslemler.getParameterKey('poweredBy')!=''}">
+	<ui:fragment rendered="#{ortakIslemler.getParameterKeyHasStringValue('poweredBy')}">
 		<div class="footer">
 			<a>Powered by #{ortakIslemler.getParameterKey('poweredBy')}</a>
 		</div>

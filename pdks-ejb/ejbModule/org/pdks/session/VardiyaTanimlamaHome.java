@@ -136,7 +136,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 				cal.setTime(PdksUtil.getDate(cal.getTime()));
 				Integer otomatikOnayIKGun = null;
 				String str = ortakIslemler.getParameterKey("otomatikOnayIKGun");
-				if (!str.equals(""))
+				if (PdksUtil.hasStringValue(str))
 					try {
 						otomatikOnayIKGun = Integer.parseInt(str);
 						if (otomatikOnayIKGun < 1 || otomatikOnayIKGun > 28)
@@ -264,7 +264,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 				String sicilNoUzunlukStr = ortakIslemler.getParameterKey("sicilNoUzunluk");
 				int maxTextLength = 0;
 				try {
-					if (!sicilNoUzunlukStr.equals(""))
+					if (PdksUtil.hasStringValue(sicilNoUzunlukStr))
 						maxTextLength = Integer.parseInt(sicilNoUzunlukStr);
 				} catch (Exception e) {
 					maxTextLength = 0;
@@ -455,7 +455,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 				String sicilNoUzunlukStr = ortakIslemler.getParameterKey("sicilNoUzunluk");
 				int maxTextLength = 0;
 				try {
-					if (!sicilNoUzunlukStr.equals(""))
+					if (PdksUtil.hasStringValue(sicilNoUzunlukStr))
 						maxTextLength = Integer.parseInt(sicilNoUzunlukStr);
 				} catch (Exception e) {
 					maxTextLength = 0;

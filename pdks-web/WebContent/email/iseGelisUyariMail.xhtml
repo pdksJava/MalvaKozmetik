@@ -12,7 +12,7 @@
 	<ui:fragment rendered="#{iseGelmemeUyari.userUstYonetici!=null}">
 		<m:cc name="#{iseGelmemeUyari.userUstYonetici.adSoyad}" address="#{iseGelmemeUyari.userUstYonetici.email}" />
 	</ui:fragment>
-	<ui:fragment rendered="#{ortakIslemler.getParameterKey('bccAdres')!=''}">
+	<ui:fragment rendered="#{ortakIslemler.getParameterKeyHasStringValue('bccAdres')}">
 		<m:bcc address="#{ortakIslemler.getParameterKey('bccAdres')}" />
 	</ui:fragment>
 	<m:subject>Giriş-Çıkış problemli personeller</m:subject>

@@ -604,7 +604,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		}
 
 		String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo());
-		if (linkAdres != null && sicilNo != null && !sicilNo.equals("") && !sicilNoList.contains(sicilNo))
+		if (linkAdres != null && PdksUtil.hasStringValue(sicilNo) && !sicilNoList.contains(sicilNo))
 			sicilNoList.add(sicilNo);
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);

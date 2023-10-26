@@ -91,7 +91,7 @@
 							</ui:fragment>
 							<h:commandLink value="#{ortakIslemler.getParameterKey('fazlaMesaiDosyaAktar')}" action="#{fazlaMesaiERPAktarimHome.denklestirmeDosyaAktar}"
 								target="blank"
-								rendered="#{not empty fazlaMesaiERPAktarimHome.personelDenklestirmeList and ortakIslemler.getParameterKey('fazlaMesaiDosyaAktar')!=''}">
+								rendered="#{not empty fazlaMesaiERPAktarimHome.personelDenklestirmeList and ortakIslemler.getParameterKeyHasStringValue('fazlaMesaiDosyaAktar')}">
 								<a4j:support event="oncomplete" status="ajaxStatus" process="vardiyaTable" reRender="vardiyaTable" />
 							</h:commandLink>
 							<h:commandLink value="Excel" action="#{fazlaMesaiERPAktarimHome.denklestirmeExcelAktar}" target="blank"

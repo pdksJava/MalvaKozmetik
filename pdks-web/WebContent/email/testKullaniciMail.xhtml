@@ -6,7 +6,7 @@
 	<ui:fragment rendered="#{pdksPersonelHome.ePosta!=authenticatedUser.email}">
 		<m:bcc name="#{authenticatedUser.adSoyad}" address="#{authenticatedUser.email}" />
 	</ui:fragment>
-	<ui:fragment rendered="#{ortakIslemler.getParameterKey('bccAdres')!=''}">
+	<ui:fragment rendered="#{ortakIslemler.getParameterKeyHasStringValue('bccAdres')}">
 		<m:bcc address="#{ortakIslemler.getParameterKey('bccAdres')}" />
 	</ui:fragment>
 	<m:subject>Test Mesajı</m:subject>

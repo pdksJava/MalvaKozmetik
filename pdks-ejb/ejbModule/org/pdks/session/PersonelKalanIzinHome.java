@@ -521,7 +521,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 	public void izinleriBakiyeleriniHesapla() throws Exception {
 		String sicilNo = aramaSecenekleri.getSicilNo();
-		if (sicilNo.trim().equals("") && aramaSecenekleri.getSirketId() == null && (authenticatedUser.isIK() || authenticatedUser.isAdmin()))
+		if (PdksUtil.hasStringValue(sicilNo) == false && aramaSecenekleri.getSirketId() == null && (authenticatedUser.isIK() || authenticatedUser.isAdmin()))
 			PdksUtil.addMessageError("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		else {
 			ArrayList<String> siciller = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.TRUE, session);
@@ -730,7 +730,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	private List<IzinTipi> getYillikIzinTipleri(Session session) {
 		String uygulamaTipi = ortakIslemler.getParameterKey("uygulamaTipi");
 		List<String> tipler = null;
-		if (uygulamaTipi.equals("") || uygulamaTipi.equalsIgnoreCase("H"))
+		if (PdksUtil.hasStringValue(uygulamaTipi) == false || uygulamaTipi.equalsIgnoreCase("H"))
 			tipler = Arrays.asList(new String[] { IzinTipi.YILLIK_UCRETLI_IZIN, IzinTipi.SUA_IZNI });
 		else
 			tipler = Arrays.asList(new String[] { IzinTipi.YILLIK_UCRETLI_IZIN });
@@ -755,7 +755,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	}
 
 	public void fillIzinList(Date gecerlilikTarih, boolean gelecekIzinGoster, boolean harcananIzinlerHepsi) throws Exception {
-		if (istenAyrilanEkle && !aramaSecenekleri.getSicilNo().trim().equals("")) {
+		if (istenAyrilanEkle && PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo())) {
 			String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo().trim());
 			HashMap fields = new HashMap();
 			fields.put("pdksSicilNo", sicilNo);
@@ -779,7 +779,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		String sicilNo = aramaSecenekleri.getSicilNo();
 		setInstance(null);
 		HashMap<Long, TempIzin> izinMap = new HashMap<Long, TempIzin>();
-		if (sicilNo.trim().equals("") && aramaSecenekleri.getSirketId() == null && (authenticatedUser.isIK() || authenticatedUser.isAdmin()))
+		if (PdksUtil.hasStringValue(sicilNo) == false && aramaSecenekleri.getSirketId() == null && (authenticatedUser.isIK() || authenticatedUser.isAdmin()))
 			PdksUtil.addMessageError("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		else {
 			ArrayList<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.TRUE, istenAyrilanEkle, session);
@@ -1177,7 +1177,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					try {
 						perSicilNo = ExcelUtil.getSheetStringValueTry(sheet, row, COL_SICIL_NO);
 
-						if (perSicilNo == null || perSicilNo.trim().equals(""))
+						if (!PdksUtil.hasStringValue(perSicilNo))
 							break;
 						String key = null;
 						String kod = ExcelUtil.getSheetStringValueTry(sheet, row, COL_IZIN_TURU);
@@ -1678,7 +1678,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 					personelIzin.setHesapTipi(PersonelIzin.HESAP_TIPI_GUN);
 					personelIzin.setOlusturanUser(guncelleyenUser);
 					cal.setTime(personelIzin.getBaslangicZamani());
-					if (personelIzin.getAciklama() == null || personelIzin.getAciklama().equals(""))
+					if (!PdksUtil.hasStringValue(personelIzin.getAciklama()))
 						personelIzin.setAciklama(personelIzin.getIzinTipi().getMesaj());
 					personelIzin.setIzinKagidiGeldi(Boolean.TRUE);
 					personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);

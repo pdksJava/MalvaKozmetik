@@ -1,4 +1,4 @@
-package org.pdks.session;
+package com.pdks.notUse;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -56,7 +56,6 @@ import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
 import org.pdks.entity.Dosya;
 import org.pdks.entity.FazlaMesaiTalep;
-import org.pdks.entity.IsKurVardiyaGun;
 import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
@@ -77,6 +76,12 @@ import org.pdks.entity.VardiyaSablonu;
 import org.pdks.entity.YemekIzin;
 import org.pdks.security.entity.MenuItemConstant;
 import org.pdks.security.entity.User;
+import org.pdks.session.ExcelUtil;
+import org.pdks.session.FazlaMesaiOrtakIslemler;
+import org.pdks.session.OrtakIslemler;
+import org.pdks.session.PdksEntityController;
+import org.pdks.session.PdksUtil;
+import org.pdks.session.PersonelIzinGirisiHome;
 import org.primefaces.event.FileUploadEvent;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
@@ -502,7 +507,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 	 */
 	@Transactional
 	public String guncelle(VardiyaPlan plan) {
-		vardiyaGuncelle = ikRole || !ortakIslemler.getParameterKey("vardiyaGuncelle").equals("");
+		vardiyaGuncelle = ikRole || ortakIslemler.getParameterKeyHasStringValue("vardiyaGuncelle");
 		setVardiyaPlan(plan);
 		fillVardiyaSablonList(plan.getPersonel());
 		fillVardiyaList();

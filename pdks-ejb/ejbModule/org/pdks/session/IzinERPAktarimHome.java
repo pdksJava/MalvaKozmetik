@@ -219,7 +219,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 		}
 		izin.setMesaj("");
 		if (mesaj.equalsIgnoreCase("")) {
- 			yazildi = true;
+			yazildi = true;
 			izin.setCheckBoxDurum(Boolean.FALSE);
 			izin.setGuncelleyenUser(authenticatedUser);
 			izin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
@@ -260,7 +260,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 					PersonelIzin izin = (PersonelIzin) iterator.next();
 					if (sonucMap.containsKey(izin.getId())) {
 						String mesaj = izin.getMesaj();
-						if (mesaj != null && mesaj.equals("")) {
+						if (!PdksUtil.hasStringValue(mesaj)) {
 							izin.setGuncelleyenUser(authenticatedUser);
 							izin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
 							pdksEntityController.saveOrUpdate(session, entityManager, izin);
@@ -272,7 +272,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 
 				}
 				if (!list.isEmpty()) {
-					PdksUtil .addMessageInfo(list.size() + " adet izin aktarıldı.");
+					PdksUtil.addMessageInfo(list.size() + " adet izin aktarıldı.");
 					session.flush();
 				}
 				if (adet > 0)

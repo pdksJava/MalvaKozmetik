@@ -138,7 +138,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 			int uz = list.size() > LIST_MAX_SIZE ? LIST_MAX_SIZE : list.size();
 			for (int j = 0; j < uz; j++) {
 				String id = list.get(0).toString();
-				str += (!str.equals("") ? "," : "") + id;
+				str += (PdksUtil.hasStringValue(str) ? "," : "") + id;
 				list.remove(0);
 			}
 			String query = tesisKoduKontrol(class1, "from " + class1.getName() + " " + SELECT_KARAKTER + " where " + SELECT_KARAKTER + "." + fieldName + " " + (str.indexOf(",") > 0 ? "in (" + str + ")" : "=" + str), null, null);
@@ -546,7 +546,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 							str = esit + "?";
 							if (fieldValue instanceof Collection) {
 								if (((Collection) fieldValue).isEmpty()) {
-									query += (PdksUtil.hasStringValue(query)? " and" : " where") + " 1=2";
+									query += (PdksUtil.hasStringValue(query) ? " and" : " where") + " 1=2";
 									continue;
 								}
 								StringBuffer sb = new StringBuffer();

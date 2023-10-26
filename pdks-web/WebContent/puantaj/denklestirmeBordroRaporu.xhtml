@@ -76,14 +76,22 @@
 							</h:inputText>
 						</s:decorate>
 						<a4j:outputPanel id="hataliPuantajGoster">
-
-							<s:decorate template="/layout/edit.xhtml" rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum}">
-								<ui:define name="label">Hatalı Personel Göster</ui:define>
-								<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.hataliVeriGetir}">
-									<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
-										reRender="denklestirmeDonemiTable" />
-								</h:selectBooleanCheckbox>
-							</s:decorate>
+							<h:panelGrid columns="2" rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum}">
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Hatalı Personel Göster</ui:define>
+									<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.hataliVeriGetir}">
+										<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
+											reRender="denklestirmeDonemiTable" />
+									</h:selectBooleanCheckbox>
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Eksik Çalışan Personel Göster</ui:define>
+									<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.eksikCalisanVeriGetir}">
+										<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
+											reRender="denklestirmeDonemiTable" />
+									</h:selectBooleanCheckbox>
+								</s:decorate>
+							</h:panelGrid>
 
 						</a4j:outputPanel>
 					</h:panelGrid>
@@ -144,33 +152,27 @@
 										<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" />
 									</ui:fragment>
 									<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
-										<SPAN style="color: red;" id="personel#{puantaj.pdksPersonel.id}"><h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" /></SPAN>
-
-										<rich:toolTip for="personel#{puantaj.pdksPersonel.id}">
-											<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar==false}">
-												<SPAN style="color: green; font-size: 12px;"> <ui:fragment
-														rendered="#{puantaj.denklestirmeBordro.ucretliIzin + puantaj.denklestirmeBordro.ucretliIzin + puantaj.denklestirmeBordro.ucretsizIzin==0}">
-												
-														Eksik çalışma var izinleri kontrol ediniz.<br /> </ui:fragment> Fazla mesai yok! (#{authenticatedUser.sayiFormatliGoster(-puantaj.eksikCalismaSure)})
-												</SPAN>
-											</ui:fragment>
-											<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
-												<SPAN style="color: black; font-size: 12px;">
-													<TABLE>
-														<TR>
-															<TD><B>TÇS</B></TD>
-															<TD><B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.hesaplananSure)}</TD>
-														</TR>
-														<TR>
-															<TD><B>ÇGS</B></TD>
-															<TD><B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</TD>
-														</TR>
-													</TABLE>
+										<SPAN style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}"><h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" /></SPAN>
+										<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
+											<rich:toolTip for="personel#{puantaj.pdksPersonel.id}">
+												<SPAN style="color: blue; font-size: 12px;"> <h:panelGrid columns="2">
+														<ui:fragment>
+															<B>TÇS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.hesaplananSure)}
+													</ui:fragment>
+														<ui:fragment>
+															<B>ÇGS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
+													</ui:fragment>
+													</h:panelGrid>
 
 												</SPAN>
-											</ui:fragment>
-										</rich:toolTip>
-
+											</rich:toolTip>
+										</ui:fragment>
 
 									</ui:fragment>
 
@@ -261,18 +263,29 @@
 										<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" />
 									</ui:fragment>
 									<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
-										<SPAN id="saatNormal#{puantaj.pdksPersonel.id}" style="color: red;"> <h:outputText
+										<SPAN style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}"> <h:outputText
 												value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
-										<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
-											<DIV style="color: blue; font-size: 12px;">
-												<TABLE>
-													<TR>
-														<TD><B>ÇGS</B></TD>
-														<TD><B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}</TD>
-													</TR>
-												</TABLE>
-											</DIV>
-										</rich:toolTip>
+										<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
+											<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
+												<SPAN style="color: blue; font-size: 12px;"> <h:panelGrid columns="2">
+														<ui:fragment>
+															<B>TÇS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.saatNormal)}
+													</ui:fragment>
+														<ui:fragment>
+															<B>ÇGS</B>
+														</ui:fragment>
+														<ui:fragment>
+															<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
+													</ui:fragment>
+													</h:panelGrid>
+
+												</SPAN>
+											</rich:toolTip>
+										</ui:fragment>
+
 									</ui:fragment>
 								</ui:fragment>
 							</rich:column>

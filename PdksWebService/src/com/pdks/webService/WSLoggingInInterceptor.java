@@ -110,7 +110,7 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 			}
 			try {
 				// now get the request xml
-				if (soapAction != null && !soapAction.trim().equals("")) {
+				if (PdksUtil.hasStringValue(soapAction)) {
 					int index = soapAction.indexOf(":");
 					if (index > 0)
 						soapAction = soapAction.substring(index + 1);

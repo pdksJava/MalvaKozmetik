@@ -119,7 +119,7 @@
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.genelVardiya and calismaModeli.ortakVardiya==false)}" />
 						</rich:column>
 						<rich:column
-							rendered="#{ortakIslemler.getParameterKey('aksamBordroBasZamani')!='' and ortakIslemler.getParameterKey('aksamBordroBitZamani')!=''}">
+							rendered="#{ortakIslemler.getParameterKeyHasStringValue('aksamBordroBasZamani') and ortakIslemler.getParameterKeyHasStringValue('aksamBordroBitZamani')}">
 							<f:facet name="header">
 								<h:outputText value="Gece Çalışması Ode" />
 							</f:facet>
@@ -293,7 +293,7 @@
 							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{ortakIslemler.getParameterKey('aksamBordroBasZamani')!='' and ortakIslemler.getParameterKey('aksamBordroBitZamani')!=''}">
+							rendered="#{ortakIslemler.getParameterKeyHasStringValue('aksamBordroBasZamani') and ortakIslemler.getParameterKeyHasStringValue('aksamBordroBitZamani')}">
 							<ui:define name="label">Gece Çalışması Öde</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.geceCalismaOdemeVar}" disabled="#{authenticatedUser.admin==false}">
 

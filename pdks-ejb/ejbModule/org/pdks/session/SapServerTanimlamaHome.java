@@ -142,7 +142,7 @@ public class SapServerTanimlamaHome extends EntityHome<SAPSunucu> implements Ser
 			sunucuTipleri.clear();
 		for (int i = 0; i <= SAPSunucu.SUNUCU_TIPI_BW_TEST; i++) {
 			String aciklama = SAPSunucu.getSunucuTipiAciklama(i);
-			if (aciklama != null && !aciklama.equals(""))
+			if (PdksUtil.hasStringValue(aciklama))
 				sunucuTipleri.add(new SelectItem(i, aciklama));
 		}
 

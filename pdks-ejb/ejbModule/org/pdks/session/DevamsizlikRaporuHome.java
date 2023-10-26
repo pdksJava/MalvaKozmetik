@@ -521,14 +521,14 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 									} else {
 										String aciklama = getVardiyaAciklama(vardiyaGun);
-										yaz = (aciklama == null || !aciklama.equals("")) || gelenGoster || izinDurum;
+										yaz = (aciklama == null || PdksUtil.hasStringValue(aciklama)) || gelenGoster || izinDurum;
 									}
 
 									vardiyaGun.setNormalSure(calismaSaati);
 								}
 							} else {
 								String aciklama = getVardiyaAciklama(vardiyaGun);
-								yaz = (aciklama == null || !aciklama.equals("")) || gelenGoster;
+								yaz = (aciklama == null || PdksUtil.hasStringValue(aciklama)) || gelenGoster;
 							}
 
 						}

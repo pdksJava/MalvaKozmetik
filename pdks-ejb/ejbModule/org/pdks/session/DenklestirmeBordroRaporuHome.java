@@ -147,7 +147,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private Dosya fazlaMesaiDosya = new Dosya();
-	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, calismaModeliDurum = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, hataliVeriGetir;
+	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, calismaModeliDurum = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE;
+	private Boolean hataliVeriGetir, eksikCalisanVeriGetir;
 	private List<Vardiya> izinTipiVardiyaList;
 	private TreeMap<String, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap;
 	private TreeMap<String, Tanim> baslikMap;
@@ -268,6 +269,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		String tesisIdStr = null;
 		String departmanIdStr = null;
 		String hataliVeriGetirStr = null;
+		String eksikCalisanVeriGetirStr = null;
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		linkAdresKey = (String) req.getParameter("linkAdresKey");
 
@@ -287,6 +289,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				sicilNo = (String) veriLastMap.get("sicilNo");
 			if (veriLastMap.containsKey("hataliVeriGetir"))
 				hataliVeriGetirStr = (String) veriLastMap.get("hataliVeriGetir");
+			if (veriLastMap.containsKey("eksikCalisanVeriGetir"))
+				eksikCalisanVeriGetirStr = (String) veriLastMap.get("eksikCalisanVeriGetir");
+
 			if (yilStr != null && ayStr != null && sirketIdStr != null) {
 				yil = Integer.parseInt(yilStr);
 				ay = Integer.parseInt(ayStr);
@@ -319,6 +324,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		fillEkSahaTanim();
 		if (hataliVeriGetirStr != null)
 			hataliVeriGetir = new Boolean(hataliVeriGetirStr);
+		if (eksikCalisanVeriGetirStr != null)
+			eksikCalisanVeriGetir = new Boolean(eksikCalisanVeriGetirStr);
+
 		bordroAdres = null;
 		if (linkAdresKey != null)
 			fillPersonelDenklestirmeList();
@@ -352,6 +360,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			lastMap.put("sicilNo", sicilNo.trim());
 		if (hataliVeriGetir != null)
 			lastMap.put("hataliVeriGetir", "" + hataliVeriGetir);
+		if (eksikCalisanVeriGetir != null)
+			lastMap.put("eksikCalisanVeriGetir", "" + eksikCalisanVeriGetir);
+
 		try {
 			lastMap.put("sayfaURL", sayfaURL);
 			ortakIslemler.saveLastParameter(lastMap, session);
@@ -509,8 +520,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
 		personelDenklestirmeList.clear();
 		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
-		if (denklestirmeAy.getDurum().equals(Boolean.FALSE))
+		if (denklestirmeAy.getDurum().equals(Boolean.FALSE)) {
+			eksikCalisanVeriGetir = null;
 			hataliVeriGetir = null;
+		}
+
 		basGun = null;
 		bitGun = null;
 
@@ -526,7 +540,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			bitGun = PdksUtil.tariheAyEkleCikar(basGun, 1);
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 			saveLastParameter();
-			if (!str.equals("") && yil * 100 + ay >= Integer.parseInt(str)) {
+			if (yil * 100 + ay >= Integer.parseInt(str)) {
 				fields.clear();
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
@@ -534,7 +548,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
 				fields.put("basGun", basGun);
 				fields.put("bitGun", bitGun);
-				if (sirketId != null || (sicilNo != null && sicilNo.length() > 0)) {
+				if (sirketId != null || (PdksUtil.hasStringValue(sicilNo))) {
 					if (sirketId != null) {
 						HashMap parametreMap = new HashMap();
 						parametreMap.put("id", sirketId);
@@ -633,7 +647,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				boolean kimlikNoGoster = false;
 				String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
 				Boolean kartNoAciklamaGoster = null;
-				if (!kartNoAciklama.equals(""))
+				if (PdksUtil.hasStringValue(kartNoAciklama))
 					kartNoAciklamaGoster = false;
 
 				for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
@@ -667,7 +681,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				boolean hataYok = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
 				CalismaModeli cm = hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
 				Double eksikCalismaSure = null;
-				if (cm != null) {
+				if (cm != null && eksikCalisanVeriGetir != null && eksikCalisanVeriGetir) {
 					double normalSaat = 0.0d, planlananSaaat = 0.0d;
 					try {
 						planlananSaaat = pd.getPlanlanSure().doubleValue() - cm.getHaftaIci();
@@ -774,7 +788,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			Boolean kartNoAciklamaGoster = null;
 			String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
 
-			if (!kartNoAciklama.equals(""))
+			if (PdksUtil.hasStringValue(kartNoAciklama))
 				kartNoAciklamaGoster = false;
 
 			if (kartNoAciklamaGoster == null)
@@ -1778,5 +1792,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	public void setLinkAdresKey(String linkAdresKey) {
 		this.linkAdresKey = linkAdresKey;
+	}
+
+	public Boolean getEksikCalisanVeriGetir() {
+		return eksikCalisanVeriGetir;
+	}
+
+	public void setEksikCalisanVeriGetir(Boolean eksikCalisanVeriGetir) {
+		this.eksikCalisanVeriGetir = eksikCalisanVeriGetir;
 	}
 }

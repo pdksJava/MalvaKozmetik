@@ -149,7 +149,7 @@ public class KGSHareketHome extends EntityHome<HareketKGS> {
 		setIptalEdilir(true);
 
 		List<HareketKGS> hareket1List = new ArrayList<HareketKGS>();
-		if (sicilNo.trim().equals("") && sirket == null) {
+		if (PdksUtil.hasStringValue(sicilNo) == false && sirket == null) {
 			PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 			fillSirketList();
 		} else {

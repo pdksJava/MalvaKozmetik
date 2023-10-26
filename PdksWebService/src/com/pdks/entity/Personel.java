@@ -173,7 +173,7 @@ public class Personel extends BaseObject {
 		String kSicilNo = pdksSicilNo;
 		if (PdksUtil.hasStringValue(kSicilNo) == false)
 			kSicilNo = personelKGS != null ? personelKGS.getSicilNo() : "";
-		String sicilNo = erpSicilNo.equals("") ? kSicilNo : erpSicilNo;
+		String sicilNo = !PdksUtil.hasStringValue(erpSicilNo) ? kSicilNo : erpSicilNo;
 		return sicilNo.trim();
 	}
 
