@@ -1266,6 +1266,15 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param str
+	 * @return
+	 */
+	public boolean hasStringValue(String str) {
+		boolean durum = PdksUtil.hasStringValue(str);
+		return durum;
+	}
+
+	/**
 	 * 
 	 */
 	public boolean yoneticiRolKontrol(Session session) {
