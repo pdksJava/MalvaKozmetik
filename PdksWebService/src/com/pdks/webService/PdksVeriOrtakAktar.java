@@ -2118,6 +2118,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (izinERP.getHataList().isEmpty())
 							iterator.remove();
 					}
+					for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
+						IzinERP izinERP = (IzinERP) iterator.next();
+						if (izinERP == null || izinERP.getDurum() == null)
+							iterator.remove();
+					}
 					if (!hataList.isEmpty()) {
 						try {
 							Gson gson = new Gson();
@@ -2127,16 +2132,21 @@ public class PdksVeriOrtakAktar implements Serializable {
 							} catch (Exception e) {
 								jsonStr = null;
 							}
-
-							mailMap.put("konu", uygulamaBordro + " saveIzinler problem");
+							String konu = uygulamaBordro + " saveIzinler problem", konuEk = "";
+							if (hataList.size() == 1 && personelMap != null) {
+								IzinERP izinERP = hataList.get(0);
+								if (PdksUtil.hasStringValue(izinERP.getPersonelNo()) && personelMap.containsKey(izinERP.getPersonelNo())) {
+									Personel izinSahibi = personelMap.get(izinERP.getPersonelNo());
+									konuEk = " [ " + izinSahibi.getAd() + " ]";
+								}
+							}
+							mailMap.put("konu", konu + konuEk);
 							StringBuffer sb = new StringBuffer();
 							sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi saveIzinler fonksiyonunda hatalı veri var!</b></p>");
 							sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
 							boolean gonder = false, renkUyari = true;
 							for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
 								IzinERP izinERP = (IzinERP) iterator.next();
-								if (izinERP.getDurum() == null)
-									continue;
 								gonder = true;
 								String zaman = (izinERP.getBasZaman() != null ? izinERP.getBasZaman().trim() + " - " : "") + (izinERP.getBitZaman() != null ? izinERP.getBitZaman() + " " : " ") + (izinERP.getIzinTipiAciklama() != null ? izinERP.getIzinTipiAciklama() : " ");
 								Personel izinSahibi = izinERP.getPersonelNo() != null && personelMap.containsKey(izinERP.getPersonelNo()) ? personelMap.get(izinERP.getPersonelNo()) : null;
@@ -3737,7 +3747,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (!hataList.isEmpty()) {
 							Gson gson = new Gson();
 							String jsonStr = PdksUtil.toPrettyFormat(gson.toJson(hataList));
-							mailMap.put("konu", uygulamaBordro + " savePersoneller problem");
+							String konu = uygulamaBordro + " savePersoneller problem";
+							if (hataList.size() == 1) {
+								PersonelERP personelERP = hataList.get(0);
+								if (personelERP != null) {
+									String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
+									if (PdksUtil.hasStringValue(adSoyad))
+										konu += " [ " + adSoyad.trim() + " ]";
+								}
+							}
+							mailMap.put("konu", konu);
 							sb = new StringBuffer();
 							sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi savePersoneller fonksiyonunda hatalı veri var!</b></p>");
 							sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
