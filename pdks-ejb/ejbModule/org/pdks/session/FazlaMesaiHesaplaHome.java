@@ -158,7 +158,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private Boolean izinCalismayanMailGonder = Boolean.FALSE, hatalariAyikla = Boolean.FALSE, kismiOdemeGoster = Boolean.FALSE;
 	private String manuelGirisGoster = "", kapiGirisSistemAdi = "", birdenFazlaKGSSirketSQL = "";
-	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, bordroPuantajEkranindaGoster = false, planOnayDurum, eksikCalismaGoster, eksikMaasGoster = false;
+	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, saatlikCalismaGoster = false, izinBordoroGoster = false, bordroPuantajEkranindaGoster = false, planOnayDurum, eksikCalismaGoster, eksikMaasGoster = false;
 	private int ay, yil, maxYil, sonDonem, pageSize;
 
 	private List<User> toList, ccList, bccList;
@@ -304,6 +304,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public String sayfaGirisAction() {
 		bordroPuantajEkranindaGoster = false;
+		saatlikCalismaGoster = false;
+		izinBordoroGoster = false;
 		linkBordroAdres = null;
 		bordroAlanKapat();
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
@@ -2263,6 +2265,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 				else {
 					ortakIslemler.sortAylikPuantajList(puantajList, true);
+
 					if (flush)
 						session.flush();
 				}
@@ -2394,6 +2397,23 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		}
 		if (adminRole || denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle)) {
 			bordroVeriOlusturBasla(puantajList);
+		}
+		saatlikCalismaGoster = false;
+		izinBordoroGoster = false;
+		if (bordroPuantajEkranindaGoster) {
+			for (AylikPuantaj puantaj : puantajList) {
+				if (saatlikCalismaGoster == false) {
+					PersonelDenklestirme pd = puantaj.getPersonelDenklestirmeAylik();
+					CalismaModeli cm = pd != null ? pd.getCalismaModeli() : null;
+					saatlikCalismaGoster = cm != null && cm.isSaatlikOdeme();
+				}
+				if (izinBordoroGoster == false && puantaj.getDenklestirmeBordro() != null) {
+					PersonelDenklestirmeBordro pdb = puantaj.getDenklestirmeBordro();
+					izinBordoroGoster = pdb.getUcretliIzin().intValue() + pdb.getUcretsizIzin().intValue() + pdb.getRaporluIzin().intValue() > 0;
+				}
+				if (saatlikCalismaGoster && izinBordoroGoster)
+					break;
+			}
 		}
 		setAylikPuantajList(puantajList);
 	}
@@ -6716,6 +6736,36 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	public void setLinkBordroAdres(String linkBordroAdres) {
 		this.linkBordroAdres = linkBordroAdres;
+	}
+
+	/**
+	 * @return the saatlikCalismaGoster
+	 */
+	public boolean isSaatlikCalismaGoster() {
+		return saatlikCalismaGoster;
+	}
+
+	/**
+	 * @param saatlikCalismaGoster
+	 *            the saatlikCalismaGoster to set
+	 */
+	public void setSaatlikCalismaGoster(boolean saatlikCalismaGoster) {
+		this.saatlikCalismaGoster = saatlikCalismaGoster;
+	}
+
+	/**
+	 * @return the izinBordoroGoster
+	 */
+	public boolean isIzinBordoroGoster() {
+		return izinBordoroGoster;
+	}
+
+	/**
+	 * @param izinBordoroGoster
+	 *            the izinBordoroGoster to set
+	 */
+	public void setIzinBordoroGoster(boolean izinBordoroGoster) {
+		this.izinBordoroGoster = izinBordoroGoster;
 	}
 
 }

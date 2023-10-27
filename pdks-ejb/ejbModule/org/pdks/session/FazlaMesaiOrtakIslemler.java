@@ -268,17 +268,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 									}
 								}
 								izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
-								if (izinTipi.isUcretsizIzinTipi()) {
-									izinKodu = BordroDetayTipi.UCRETSIZ_IZIN.value();
-									calismaGun = 0;
-								}
 
-								else {
-									if (!izinGrupMap.containsKey(izinKodu))
-										izinKodu = null;
-									else
-										izinKodu = izinGrupMap.get(izinKodu);
-								}
+								if (!izinGrupMap.containsKey(izinKodu))
+									izinKodu = null;
+								else
+									izinKodu = izinGrupMap.get(izinKodu);
+
 							} else
 								izinKodu = vardiya.getStyleClass();
 							if (artiGun > 0.0d && izinKodu != null) {
