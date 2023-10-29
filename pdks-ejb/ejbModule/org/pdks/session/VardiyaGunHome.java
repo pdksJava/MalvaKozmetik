@@ -4199,6 +4199,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		boolean mesajYaz = true;
 		String genelMudurERPKoduStr = ortakIslemler.getParameterKey("genelMudurERPKodu");
 		boolean tumOnaylanPlanEkle = ortakIslemler.getParameterKey("tumOnaylanPlanEkle").equals("1");
+		boolean yoneticiTanimsiz = ortakIslemler.getParameterKey("yoneticiTanimsiz").equals("1");
 		List<String> genelMudurERPKodlari = !PdksUtil.hasStringValue(genelMudurERPKoduStr) ? new ArrayList<String>() : PdksUtil.getListByString(genelMudurERPKoduStr, null);
 		List<Long> eskiOnayList = new ArrayList<Long>();
 		TreeMap<Long, TreeMap<Long, Vardiya>> calismaModeliMap = getCalismaModeliMap(aylikPuantajList);
@@ -4214,7 +4215,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 			Personel personel = aylikPuantaj.getPdksPersonel();
 			if (denklestirmeAy.isDurumu() && !(authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi())) {
-				if (personel.isSanalPersonelMi() == false && (aylikPuantaj.getYonetici() == null || aylikPuantaj.getYonetici().getId() == null)) {
+				if (personel.isSanalPersonelMi() == false && (yoneticiTanimsiz == false && (aylikPuantaj.getYonetici() == null || aylikPuantaj.getYonetici().getId() == null))) {
 					aylikPuantaj.setOnayDurum(false);
 				}
 			}
