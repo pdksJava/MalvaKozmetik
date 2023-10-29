@@ -8938,7 +8938,7 @@ public class OrtakIslemler implements Serializable {
 										sayac++;
 										Double sure = getSaatSure(arifeBaslangicTarihi, islemVardiya.getVardiyaBitZaman(), yemekDataList, tmp, session);
 										cal.add(Calendar.MINUTE, 5);
-										if (sure * 60 == netSure) {
+										if (sure * 60.0d == netSure) {
 											list.add(new Liste(arifeBaslangicTarihi, sure));
 										}
 
@@ -8956,6 +8956,7 @@ public class OrtakIslemler implements Serializable {
 										}
 									} else
 										basArifeTarih = (Date) list.get(0).getId();
+									list = null;
 									if (arifeVardiyaDonemDB == null && !idMap.containsKey(vardiya.getId())) {
 										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
 										arifeVardiyaDonemDB.setVardiya(vardiya);
