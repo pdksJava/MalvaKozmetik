@@ -8954,8 +8954,11 @@ public class OrtakIslemler implements Serializable {
 											cal.add(Calendar.MINUTE, dakika);
 											arifeBaslangicTarihi = cal.getTime();
 										}
-									} else
-										basArifeTarih = (Date) list.get(0).getId();
+									} else {
+										arifeBaslangicTarihi = (Date) list.get(0).getId();
+										basArifeTarih = PdksUtil.getDate(arifeBaslangicTarihi);
+									}
+
 									list = null;
 									if (arifeVardiyaDonemDB == null && !idMap.containsKey(vardiya.getId())) {
 										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
