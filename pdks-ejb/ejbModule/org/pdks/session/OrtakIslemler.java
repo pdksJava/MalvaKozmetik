@@ -8924,21 +8924,21 @@ public class OrtakIslemler implements Serializable {
 								if (arifeNormalCalismaDakika == null)
 									arifeNormalCalismaDakika = (vardiya.getNetCalismaSuresi() * 60.0d + vardiya.getYemekSuresi()) * 0.5d;
 								if (arifeNormalCalismaDakika != null) {
-									Double netSure = vardiya.getNetCalismaSuresi() * 30;
+									double yarimGunSureDakika = vardiya.getNetCalismaSuresi() * 30;
+									Double netSure = yarimGunSureDakika;
 									if (netSure < arifeNormalCalismaDakika)
 										arifeNormalCalismaDakika = netSure;
 									Double arifeSureSaat = arifeNormalCalismaDakika / 60.0d;
 									double yemekSure = 0.0d;
 									cal.setTime(islemVardiya.getVardiyaBasZaman());
-									cal.add(Calendar.MINUTE, arifeNormalCalismaDakika.intValue() - 30);
-									int sayac = 0;
+									cal.add(Calendar.MINUTE, new Double(yarimGunSureDakika).intValue() - 30);
 									List<Liste> list = new ArrayList<Liste>();
-									while (sayac < 24) {
+									arifeBaslangicTarihi = cal.getTime();
+									while (arifeBaslangicTarihi.before(islemVardiya.getVardiyaBitZaman()) && list.isEmpty()) {
 										arifeBaslangicTarihi = cal.getTime();
-										sayac++;
-										Double sure = getSaatSure(arifeBaslangicTarihi, islemVardiya.getVardiyaBitZaman(), yemekDataList, tmp, session);
+										Double sure = getSaatSure(islemVardiya.getVardiyaBasZaman(), arifeBaslangicTarihi, yemekDataList, tmp, session) * 60.0d;
 										cal.add(Calendar.MINUTE, 5);
-										if (sure * 60.0d == netSure) {
+										if (sure == yarimGunSureDakika) {
 											list.add(new Liste(arifeBaslangicTarihi, sure));
 										}
 
@@ -8956,11 +8956,11 @@ public class OrtakIslemler implements Serializable {
 										}
 									} else {
 										arifeBaslangicTarihi = (Date) list.get(0).getId();
-										basArifeTarih = PdksUtil.getDate(arifeBaslangicTarihi);
 									}
 
 									list = null;
 									if (arifeVardiyaDonemDB == null && !idMap.containsKey(vardiya.getId())) {
+										basArifeTarih = PdksUtil.getDate(arifeBaslangicTarihi);
 										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
 										arifeVardiyaDonemDB.setVardiya(vardiya);
 										arifeVardiyaDonemDB.setBasTarih(basArifeTarih);
