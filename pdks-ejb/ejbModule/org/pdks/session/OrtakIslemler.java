@@ -8921,32 +8921,41 @@ public class OrtakIslemler implements Serializable {
 									arifeNormalCalismaDakika = vardiya.getArifeNormalCalismaDakika();
 								else if (arifeNormalCalismaDakika == null || arifeNormalCalismaDakika.doubleValue() == 0.0d)
 									arifeNormalCalismaDakika = null;
-								if (arifeNormalCalismaDakika == null) {
-									arifeNormalCalismaDakika = (vardiya.getNetCalismaSuresi() * 30.0d) + (vardiya.getYemekSuresi() * 0.5);
-
-								}
+								if (arifeNormalCalismaDakika == null)
+									arifeNormalCalismaDakika = (vardiya.getNetCalismaSuresi() * 60.0d + vardiya.getYemekSuresi()) * 0.5d;
 								if (arifeNormalCalismaDakika != null) {
 									Double netSure = vardiya.getNetCalismaSuresi() * 30;
 									if (netSure < arifeNormalCalismaDakika)
 										arifeNormalCalismaDakika = netSure;
-
 									Double arifeSureSaat = arifeNormalCalismaDakika / 60.0d;
 									double yemekSure = 0.0d;
-									// if (yemekDataList == null || yemekDataList.isEmpty()) {
-									// yemekSure = (islemVardiya.getYemekSuresi().doubleValue() - 30.0d) * 0.5;
-									// arifeNormalCalismaDakika += yemekSure;
-									// }
-
 									cal.setTime(islemVardiya.getVardiyaBasZaman());
-									cal.add(Calendar.MINUTE, arifeNormalCalismaDakika.intValue());
-									arifeBaslangicTarihi = cal.getTime();
-									Double sure = arifeSureSaat + (yemekSure / 60.0d) - getSaatSure(islemVardiya.getVardiyaBasZaman(), arifeBaslangicTarihi, yemekDataList, tmp, session);
-									if (sure.doubleValue() != 0.0d) {
-										cal.setTime(arifeBaslangicTarihi);
-										int dakika = new Double(sure * 60).intValue();
-										cal.add(Calendar.MINUTE, dakika);
+									cal.add(Calendar.MINUTE, arifeNormalCalismaDakika.intValue() - 30);
+									int sayac = 0;
+									List<Liste> list = new ArrayList<Liste>();
+									while (sayac < 24) {
 										arifeBaslangicTarihi = cal.getTime();
+										sayac++;
+										Double sure = getSaatSure(arifeBaslangicTarihi, islemVardiya.getVardiyaBitZaman(), yemekDataList, tmp, session);
+										cal.add(Calendar.MINUTE, 5);
+										if (sure * 60 == netSure) {
+											list.add(new Liste(arifeBaslangicTarihi, sure));
+										}
+
 									}
+									if (list.isEmpty()) {
+										cal.setTime(islemVardiya.getVardiyaBasZaman());
+										cal.add(Calendar.MINUTE, arifeNormalCalismaDakika.intValue());
+										arifeBaslangicTarihi = cal.getTime();
+										Double sure = arifeSureSaat + (yemekSure / 60.0d) - getSaatSure(islemVardiya.getVardiyaBasZaman(), arifeBaslangicTarihi, yemekDataList, tmp, session);
+										if (sure.doubleValue() != 0.0d) {
+											cal.setTime(arifeBaslangicTarihi);
+											int dakika = new Double(sure * 60).intValue();
+											cal.add(Calendar.MINUTE, dakika);
+											arifeBaslangicTarihi = cal.getTime();
+										}
+									} else
+										basArifeTarih = (Date) list.get(0).getId();
 									if (arifeVardiyaDonemDB == null && !idMap.containsKey(vardiya.getId())) {
 										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
 										arifeVardiyaDonemDB.setVardiya(vardiya);
