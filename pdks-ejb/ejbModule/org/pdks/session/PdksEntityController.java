@@ -645,7 +645,13 @@ public class PdksEntityController implements Serializable {
 	 */
 	public int execSP(LinkedHashMap<String, Object> veriMap, StringBuffer sp) throws Exception {
 		SQLQuery query = prepareProcedure(veriMap, sp);
-		int sonuc = query.executeUpdate();
+		Integer sonuc = null;
+		try {
+			sonuc = query.executeUpdate();
+		} catch (Exception e) {
+			logger.error(sp.toString() + "\n" + e);
+		}
+
 		return sonuc;
 
 	}
