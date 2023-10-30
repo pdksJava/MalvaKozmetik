@@ -8960,7 +8960,7 @@ public class OrtakIslemler implements Serializable {
 
 									list = null;
 									if (arifeVardiyaDonemDB == null && !idMap.containsKey(vardiya.getId())) {
-										basArifeTarih = PdksUtil.getDate(arifeBaslangicTarihi);
+										basArifeTarih = PdksUtil.getDate(tarihi);
 										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
 										arifeVardiyaDonemDB.setVardiya(vardiya);
 										arifeVardiyaDonemDB.setBasTarih(basArifeTarih);
