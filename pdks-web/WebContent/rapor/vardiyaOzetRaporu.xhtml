@@ -182,6 +182,27 @@
 											rendered="#{authenticatedUser.admin and vardiyaGun.izin!=null}"> (#{vardiyaGun.vardiya.adi})</ui:fragment></td>
 								</tr>
 							</a4j:repeat>
+							<a4j:repeat value="#{vardiyaOzetRaporuHome.calismayanVardiyaGunList}" var="vardiyaGun">
+								<tr>
+									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 30px">#{vardiyaGun.personel.pdksSicilNo}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.soyad}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.sirket.ad}</td>
+									<ui:fragment rendered="#{vardiyaOzetRaporuHome.tesisDurum}">
+										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									</ui:fragment>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama} <ui:fragment
+											rendered="#{vardiyaOzetRaporuHome.ekSaha4Tanim!=null and vardiyaGun.personel.ekSaha3.kodu==vardiyaOzetRaporuHome.altBolumGrupGoster and vardiyaGun.personel.ekSaha4!=null}">
+									   #{vardiyaGun.personel.ekSaha4.aciklama}
+									</ui:fragment>
+
+
+									</td>
+									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 40px">#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 40px"></td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 200px">#{vardiyaGun.vardiya.adi}</td>
+								</tr>
+							</a4j:repeat>
 							<a4j:repeat value="#{vardiyaOzetRaporuHome.gecGelenVardiyaGunList}" var="vardiyaGun">
 								<tr>
 									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 30px">#{vardiyaGun.personel.pdksSicilNo}</td>
