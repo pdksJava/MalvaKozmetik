@@ -16180,21 +16180,21 @@ public class OrtakIslemler implements Serializable {
 								}
 
 							} else {
-								StringBuffer sb = new StringBuffer();
-								sb.append("SP_POOL_TERMINAL_UPDATE");
+								StringBuffer sp = new StringBuffer();
+								sp.append("SP_POOL_TERMINAL_UPDATE");
 								LinkedHashMap map = new LinkedHashMap();
 								if (session != null)
 									map.put(PdksEntityController.MAP_KEY_SESSION, session);
 								map.put("eklenenId", pdksLog.getKgsId());
 								map.put("pdks", 1);
 								try {
-									pdksEntityController.execSP(map, sb);
+									pdksEntityController.execSPList(map, sp, null);
 								} catch (Exception e) {
 									pdksLog.setGuncellemeZamani(guncellemeZamani);
 									pdksLog.setKapiId(kapiKGS.getKgsId());
 									session.saveOrUpdate(pdksLog);
 								}
-								sb = null;
+								sp = null;
 							}
 
 						}
