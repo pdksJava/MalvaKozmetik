@@ -539,7 +539,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		else
 			personelDenklestirmeList.clear();
 		TreeMap<Long, AylikPuantaj> eksikCalismaMap = new TreeMap<Long, AylikPuantaj>();
-
+		baslikMap.clear();
 		if (denklestirmeAy != null) {
 			basGun = PdksUtil.getYilAyBirinciGun(yil, ay);
 			bitGun = PdksUtil.tariheAyEkleCikar(basGun, 1);
@@ -547,6 +547,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			saveLastParameter();
 			boolean sicilDolu = PdksUtil.hasStringValue(sicilNo);
 			if (yil * 100 + ay >= Integer.parseInt(str)) {
+
 				fields.clear();
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
@@ -729,7 +730,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				borDenklestirmeBordroList = null;
 			}
 		}
-		baslikMap.clear();
+
 		if (personelDenklestirmeList.isEmpty())
 			PdksUtil.addMessageWarn("İlgili döneme ait fazla mesai bulunamadı!");
 		else {
