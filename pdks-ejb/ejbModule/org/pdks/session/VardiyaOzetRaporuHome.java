@@ -160,6 +160,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				if (sirket.getDurum() && sirket.getFazlaMesai())
 					aramaSecenekleri.getSirketIdList().add(new SelectItem(sirket.getId(), sirket.getAd()));
 			}
+			if (aramaSecenekleri.getSirketIdList().size()==1)
+				sirketId = (Long) aramaSecenekleri.getSirketIdList().get(0).getValue();
 			aramaSecenekleri.setSirketId(sirketId);
 			fillTesisList();
 		} else {
