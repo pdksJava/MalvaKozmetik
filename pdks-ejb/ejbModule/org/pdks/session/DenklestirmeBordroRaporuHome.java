@@ -611,7 +611,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						bordroBilgiAciklamaOlustur(kimlikNoGoster, kartNoAciklama, kartNoAciklamaGoster, bordroAlanlari);
 					}
 					for (Tanim tanim : bordroAlanlari)
-						baslikMap.put(tanim.getKodu(), tanim);
+						if (tanim.getDurum())
+							baslikMap.put(tanim.getKodu(), tanim);
 					boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
 					boolean haftaTatilBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_HAFTA_TATIL_MESAI));
 					boolean aksamGunBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_GUN_MESAI));
