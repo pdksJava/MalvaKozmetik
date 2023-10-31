@@ -2577,8 +2577,10 @@ public class OrtakIslemler implements Serializable {
 			session.flush();
 	}
 
+	 
 	/**
 	 * @param aylikPuantajList
+	 * @param adSoyadSirali
 	 * @return
 	 */
 	public List<AylikPuantaj> sortAylikPuantajList(List<AylikPuantaj> aylikPuantajList, boolean adSoyadSirali) {

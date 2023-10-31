@@ -1074,9 +1074,9 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				}
 				List<AylikPuantaj> puantajDenklestirmeList = new ArrayList<AylikPuantaj>();
 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
-					PersonelDenklestirmeTasiyici denklestirme = (PersonelDenklestirmeTasiyici) iterator1.next();
+					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
-					PersonelDenklestirme valueBuAy = personelDenklestirmeMap.get(denklestirme.getPersonel().getId());
+					PersonelDenklestirme valueBuAy = personelDenklestirmeMap.get(denklestirmeTasiyici.getPersonel().getId());
 					puantaj.setPersonelDenklestirmeAylik(valueBuAy);
 					if (valueBuAy != null)
 						puantaj.setPersonelDenklestirmeGecenAy(valueBuAy.getPersonelDenklestirmeGecenAy());
@@ -1084,9 +1084,9 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 						iterator1.remove();
 						continue;
 					}
-					puantaj.setPersonelDenklestirme(denklestirme);
-					puantaj.setPdksPersonel(denklestirme.getPersonel());
-					puantaj.setVardiyalar(denklestirme.getVardiyalar());
+					puantaj.setPersonelDenklestirmeTasiyici(denklestirmeTasiyici);
+					puantaj.setPdksPersonel(denklestirmeTasiyici.getPersonel());
+					puantaj.setVardiyalar(denklestirmeTasiyici.getVardiyalar());
 					// personelDenklestirme.setPlanlanSure(puantaj.getPlanlananSure());
 					// personelDenklestirme.setHesaplananSure(puantaj.getSaatToplami());
 					puantajDenklestirmeList.add(puantaj);

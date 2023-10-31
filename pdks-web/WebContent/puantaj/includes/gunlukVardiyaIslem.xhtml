@@ -53,11 +53,23 @@
 								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.hatalariAyikla==false or aylikPuantaj.fazlaMesaiHesapla==false}">
 									<a4j:commandLink action="#{fazlaMesaiHesaplaHome.vardiyaGoster(vardiyaGun)}" ajaxSingle="true"
 										oncomplete="#{rich:component('hareketDetayPanel')}.show()" reRender="hareketDetayPanel">
-										<h:graphicImage value="/img/msgwarn.png" height="18" style="border:0" reRender="editPanel" />
+										<ui:fragment rendered="#{vardiyaGun.calismaSuresi!=0}">
+											<h:graphicImage value="/img/msgwarn.png" height="18" style="border:0" reRender="editPanel" />
+										</ui:fragment>
+										<ui:fragment rendered="#{vardiyaGun.calismaSuresi==0}">
+											<h:graphicImage value="/img/#{fazlaMesaiHesaplaHome.msgwarnImg}" title="Giriş ve çıkış bilgisi yok!" height="18" style="border:0"
+												reRender="editPanel" />
+										</ui:fragment>
 									</a4j:commandLink>
 								</ui:fragment>
 								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.hatalariAyikla and aylikPuantaj.fazlaMesaiHesapla}">
-									<h:graphicImage value="/img/msgwarn.png" height="18" style="border:0" reRender="editPanel" />
+									<ui:fragment rendered="#{vardiyaGun.calismaSuresi!=0}">
+										<h:graphicImage value="/img/msgwarn.png" height="18" style="border:0" reRender="editPanel" />
+									</ui:fragment>
+									<ui:fragment rendered="#{vardiyaGun.calismaSuresi==0}">
+										<h:graphicImage value="/img/#{fazlaMesaiHesaplaHome.msgwarnImg}" title="Giriş ve çıkış bilgisi yok!" height="18" style="border:0"
+											reRender="editPanel" />
+									</ui:fragment>
 								</ui:fragment>
 
 								<ui:fragment rendered="#{vardiyaGun.calismaSuresi>0}">
@@ -166,24 +178,22 @@
 						<s:formattedText value="#{vardiyaGun.titleStr}"></s:formattedText>
 
 					</ui:fragment> <ui:fragment rendered="#{vardiyaGun.manuelGirisHTML!=''}">
-						 <rich:dataTable rowClasses="acik,koyu" style="background-color: white !important;"
-								value="#{vardiyaGun.orjinalHareketler}" var="hareket" rows="20" rowKeyVar="row">
-								<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}" style="text-align:center;">
-									<f:facet name="header">
-										<h:outputText value="Hareket No" />
-									</f:facet>
-									<SPAN style="font-size: 8px">
-									<h:outputText value="#{hareket.id}" /></SPAN>
+						<rich:dataTable rowClasses="acik,koyu" style="background-color: white !important;" value="#{vardiyaGun.orjinalHareketler}" var="hareket"
+							rows="20" rowKeyVar="row">
+							<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}" style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Hareket No" />
+								</f:facet>
+								<SPAN style="font-size: 8px"> <h:outputText value="#{hareket.id}" /></SPAN>
 
-								</rich:column>
-								<rich:column>
-									<f:facet name="header">
-										<h:outputText value="Kapı" />
-									</f:facet><SPAN style="font-size: 8px">
-									<ui:fragment rendered="#{hareket.islem==null}">
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="Kapı" />
+								</f:facet>
+								<SPAN style="font-size: 8px"> <ui:fragment rendered="#{hareket.islem==null}">
 										<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
-									</ui:fragment>
-									<ui:fragment rendered="#{hareket.islem!=null}">
+									</ui:fragment> <ui:fragment rendered="#{hareket.islem!=null}">
 										<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole==false and fazlaMesaiHesaplaHome.adminRole==false}">
 											<h:outputText value="#{hareket.kapiView.kapi.aciklama}" />
 										</ui:fragment>
@@ -193,55 +203,52 @@
 
 										</ui:fragment>
 									</ui:fragment>
-</SPAN>
-								</rich:column>
+								</SPAN>
+							</rich:column>
 
-								<rich:column style="text-align:center;">
-									<f:facet name="header">
-										<h:outputText value="Zamanı" />
-									</f:facet><SPAN style="font-size: 8px">
-									<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.orjinalZaman)}" /></SPAN>
-								</rich:column>
-								<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}">
-									<f:facet name="header">
-										<h:outputText value="İşlem Yapan" />
-									</f:facet>
-<SPAN style="font-size: 8px">
-									<h:outputText value="#{hareket.islemYapan}" /></SPAN>
+							<rich:column style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Zamanı" />
+								</f:facet>
+								<SPAN style="font-size: 8px"> <h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.orjinalZaman)}" /></SPAN>
+							</rich:column>
+							<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}">
+								<f:facet name="header">
+									<h:outputText value="İşlem Yapan" />
+								</f:facet>
+								<SPAN style="font-size: 8px"> <h:outputText value="#{hareket.islemYapan}" /></SPAN>
 
-								</rich:column>
-								<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}">
-									<f:facet name="header">
-										<h:outputText value="Neden" />
-									</f:facet>
-									<ui:fragment rendered="#{hareket.islem!=null and hareket.islem.neden.durum}">
-									<SPAN style="font-size: 8px">
-										<h:outputText value="#{hareket.islem.neden.aciklama}" /> -
-										#{authenticatedUser.dateTimeFormatla(hareket.islem.olusturmaTarihi)}</SPAN>
-									 
+							</rich:column>
+							<rich:column rendered="#{fazlaMesaiHesaplaHome.ikRole}">
+								<f:facet name="header">
+									<h:outputText value="Neden" />
+								</f:facet>
+								<ui:fragment rendered="#{hareket.islem!=null and hareket.islem.neden.durum}">
+									<SPAN style="font-size: 8px"> <h:outputText value="#{hareket.islem.neden.aciklama}" /> -
+										#{authenticatedUser.dateTimeFormatla(hareket.islem.olusturmaTarihi)}
+									</SPAN>
+
 								</ui:fragment>
-								</rich:column>
-								<rich:column rendered="#{not empty vardiyaGun.fazlaMesailer}" style="text-align:center;">
-									<f:facet name="header">
-										<h:outputText value="Fazla Çalışma (Saat)" />
-									</f:facet>
+							</rich:column>
+							<rich:column rendered="#{not empty vardiyaGun.fazlaMesailer}" style="text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Fazla Çalışma (Saat)" />
+								</f:facet>
 
-									<ui:fragment
-										rendered="#{hareket.personelFazlaMesai!=null and hareket.personelFazlaMesai.onaylandi and hareket.personelFazlaMesai.fazlaMesaiSaati!=0}">
-										<SPAN style="font-size: 8px">
-										<A href="#"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(hareket.personelFazlaMesai.fazlaMesaiSaati)} " />
-										</A>
-
-										<ui:fragment rendered="#{hareket.personelFazlaMesai.tatilDurum!=null}">
+								<ui:fragment
+									rendered="#{hareket.personelFazlaMesai!=null and hareket.personelFazlaMesai.onaylandi and hareket.personelFazlaMesai.fazlaMesaiSaati!=0}">
+									<SPAN style="font-size: 8px"> <A href="#"> <h:outputText
+												value="#{authenticatedUser.sayiFormatliGoster(hareket.personelFazlaMesai.fazlaMesaiSaati)} " />
+									</A> <ui:fragment rendered="#{hareket.personelFazlaMesai.tatilDurum!=null}">
 											<h:outputText title="Resmi Tatil" value="(*)" />
 										</ui:fragment></SPAN>
-									</ui:fragment>
+								</ui:fragment>
 
-								</rich:column>
-								<f:facet name="footer">
-									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
-								</f:facet>
-							</rich:dataTable> 
+							</rich:column>
+							<f:facet name="footer">
+								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+							</f:facet>
+						</rich:dataTable>
 
 					</ui:fragment>
 				</SPAN>

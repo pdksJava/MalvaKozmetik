@@ -319,7 +319,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.sonGun = sonGun;
 	}
 
-	public void setPersonelDenklestirme(PersonelDenklestirmeTasiyici denklestirme) {
+	public void setPersonelDenklestirmeTasiyici(PersonelDenklestirmeTasiyici denklestirme) {
 		pdksPersonel = denklestirme.getPersonel();
 		TreeMap<String, VardiyaGun> map = bosVardiya();
 		if (denklestirme.getPersonelDenklestirmeleri() != null) {
