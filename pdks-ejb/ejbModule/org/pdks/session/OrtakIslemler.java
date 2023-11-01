@@ -15648,9 +15648,11 @@ public class OrtakIslemler implements Serializable {
 	 * @param personelIzin
 	 */
 	public PersonelIzin setIzinDurum(VardiyaGun vardiyaGun, PersonelIzin personelIzinInput) {
-		String izinVardiyaKontrolStr = getParameterKey("izinVardiyaKontrol");
-		boolean izinVardiyaKontrol = PdksUtil.hasStringValue(izinVardiyaKontrolStr), izinERPUpdate = getParameterKey("izinERPUpdate").equals("1");
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
+		String izinVardiyaKontrolStr = getParameterKey("izinVardiyaKontrol");
+		IzinTipi izinTipi = personelIzinInput != null ? personelIzinInput.getIzinTipi() : null;
+		boolean cumaCumartesiTekIzinSay = izinTipi != null ? izinTipi.isCumaCumartesiTekIzinSaysin() : false;
+		boolean izinVardiyaKontrol = PdksUtil.hasStringValue(izinVardiyaKontrolStr), izinERPUpdate = getParameterKey("izinERPUpdate").equals("1");
 		boolean takvimGunu = personelIzin != null && personelIzin.getIzinTipi().isTakvimGunuMu();
 		boolean offDahil = takvimGunu == false && personelIzin != null && personelIzin.getIzinTipi().isOffDahilMi();
 		boolean offVardiya = offDahil && vardiyaGun != null && vardiyaGun.getVardiya().isOff();
@@ -15702,7 +15704,7 @@ public class OrtakIslemler implements Serializable {
 						izin.setGunlukOldu(gunIzin);
 						PersonelIzin personelIzin2 = izin;
 						boolean izinDurum = true;
-						if (gunIzin && offVardiya && sure.intValue() == 1) {
+						if (cumaCumartesiTekIzinSay && gunIzin && offVardiya && sure.intValue() == 1) {
 							if (vardiyaGun.getTatil() != null || PdksUtil.getDate(personelIzinInput.getBitisZamani()).getTime() == vardiyaGun.getVardiyaDate().getTime()) {
 								izinDurum = false;
 								gunIzin = false;
