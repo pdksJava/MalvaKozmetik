@@ -4333,11 +4333,17 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			Date tarih = null;
 			StringBuffer sb = new StringBuffer();
 			Double yemekMolasiYuzdesi = ortakIslemler.getYemekMolasiYuzdesi(null, session);
+			boolean cumaBasla = false;
+			if (izinTipi.isCumaCumartesiTekIzinSaysin() && izinTipi.isOffDahilMi())
+				cumaBasla = PdksUtil.getDateField(izinBasTarih, Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
+			int cumartesi = 0;
 			ortakIslemler.setVardiyaYemekList(new ArrayList<VardiyaGun>(vardiyalar.values()), yemekGenelList);
 			while (PdksUtil.tarihKarsilastirNumeric(personelIzin.getBitisZamani(), vardiyaDate) >= durum) {
 				pdksVardiyaGun.setVardiyaDate(vardiyaDate);
 				tarih = (Date) vardiyaDate.clone();
 				int haftaGunu = PdksUtil.getDateField(vardiyaDate, Calendar.DAY_OF_WEEK);
+				if (cumaBasla && haftaGunu == Calendar.SATURDAY)
+					++cumartesi;
 				tatilGunuKey = PdksUtil.convertToDateString(vardiyaDate, "yyyyMMdd");
 				vardiyaKey = pdksVardiyaGun.getVardiyaKeyStr();
 
@@ -4461,6 +4467,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				cal.add(Calendar.DATE, 1);
 				vardiyaDate = cal.getTime();
 			}
+
 			if (!authenticatedUser.isIKAdmin() && sb.length() > 0) {
 				String str = sb.toString();
 				sb = null;
@@ -4491,7 +4498,13 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				}
 			}
 			artiklarMap = null;
-
+			if (cumartesi == 1 && izinSuresiSaatGun == 2) {
+				izinSuresiSaatGun = 1;
+				cal.setTime(personelIzin.getBaslangicZamani());
+				cal.add(Calendar.DATE, 1);
+				Date bitisZamani = cal.getTime();
+				personelIzin.setBitisZamani(bitisZamani);
+			}
 		} else if (personelIzin.getIzinTipi().getTakvimGunumu()) {
 			// 2 tarih arasindaki gun sayısı kadar izinden dusulur
 			// takvim gunu secilen bir izni saatlik girilecek sekilde
