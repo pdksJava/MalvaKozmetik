@@ -255,7 +255,6 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		session.clear();
 		Date oncekiGun = PdksUtil.tariheGunEkleCikar(date, -1);
 		HashMap map = new HashMap();
-		map.put("pdks=", Boolean.TRUE);
 		map.put("durum=", Boolean.TRUE);
 		if (PdksUtil.hasStringValue(sicilNo))
 			map.put("pdksSicilNo=", sicilNo);
@@ -279,20 +278,15 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		Date tarih1 = null;
 		Date tarih2 = null;
-
+		List<Personel> kgsIptaller = new ArrayList<Personel>();
 		for (Iterator iterator = tumPersoneller.iterator(); iterator.hasNext();) {
 			Personel pdksPersonel = (Personel) iterator.next();
-			if (pdksPersonel.getPdks() == null || !pdksPersonel.getPdks())
-				iterator.remove();
-			else {
-				PersonelKGS personelKGS = pdksPersonel.getPersonelKGS();
-				if (personelKGS == null || personelKGS.getDurum() == null || personelKGS.getDurum().equals(Boolean.FALSE)) {
-					iterator.remove();
-					continue;
-				}
+			PersonelKGS personelKGS = pdksPersonel.getPersonelKGS();
+			if (personelKGS == null || personelKGS.getDurum() == null || personelKGS.getDurum().equals(Boolean.FALSE)) {
+				kgsIptaller.add(pdksPersonel);
 			}
-
 		}
+
 		if (!tumPersoneller.isEmpty()) {
 			Date basTarih = PdksUtil.tariheGunEkleCikar(date, -1);
 			Date bitTarih = date;
@@ -305,11 +299,10 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			try {
 				boolean islem = ortakIslemler.getVardiyaHareketIslenecekList(vardiyaGunList, date, session);
 				if (islem)
-					vardiyaGunList = getVardiyalariOku(oncekiGun, tumPersoneller, basTarih, bitTarih);
+					vardiyaGunList = getVardiyalariOku(oncekiGun, tumPersoneller, date, date);
 			} catch (Exception e) {
 			}
 			Date bugun = new Date();
-			int gunDurum = PdksUtil.tarihKarsilastirNumeric(date, bugun);
 			List<Long> perIdList = new ArrayList<Long>();
 
 			HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
@@ -368,29 +361,29 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 					}
 				}
-				boolean sil = false;
-				if (gunDurum == 1 || islemVardiya == null || vardiya.getId() == null || perIdList.contains(personelId)) {
-					sil = true;
-				} else if (islemVardiya.isCalisma() == false) {
-					sil = PdksUtil.tarihKarsilastirNumeric(pdksVardiyaGun.getVardiyaDate(), date) != 0;
-				} else {
-					if (pdksVardiyaGun.getVardiyaDate().before(date)) {
-						if (!(islemVardiya.getBitSaat() < islemVardiya.getBasSaat() && gunDurum == 0) || pdksVardiyaGun.getIzin() != null)
-							sil = true;
-
-					} else {
-						if (islemVardiya.getBitSaat() < islemVardiya.getBasSaat() && gunDurum == 0 && bugun.before(islemVardiya.getVardiyaBasZaman()))
-							sil = true;
-					}
-				}
-				if (pdksVardiyaGun.getIzin() != null && sil) {
-					sil = !PdksUtil.tarihKarsilastir(pdksVardiyaGun.getVardiyaDate(), date);
-				}
-				if (sil) {
-					iterator.remove();
-					continue;
-				} else if (islemVardiya.isCalisma())
-					logger.debug(pdksVardiyaGun.getVardiyaDateStr() + " " + islemVardiya.getAdi());
+				// boolean sil = false;
+				// if (gunDurum == 1 || islemVardiya == null || vardiya.getId() == null || perIdList.contains(personelId)) {
+				// sil = true;
+				// } else if (islemVardiya.isCalisma() == false) {
+				// sil = PdksUtil.tarihKarsilastirNumeric(pdksVardiyaGun.getVardiyaDate(), date) != 0;
+				// } else {
+				// if (pdksVardiyaGun.getVardiyaDate().before(date)) {
+				// if (!(islemVardiya.getBitSaat() < islemVardiya.getBasSaat() && gunDurum == 0) || pdksVardiyaGun.getIzin() != null)
+				// sil = true;
+				//
+				// } else {
+				// if (islemVardiya.getBitSaat() < islemVardiya.getBasSaat() && gunDurum == 0 && bugun.before(islemVardiya.getVardiyaBasZaman()))
+				// sil = true;
+				// }
+				// }
+				// if (pdksVardiyaGun.getIzin() != null && sil) {
+				// sil = !PdksUtil.tarihKarsilastir(pdksVardiyaGun.getVardiyaDate(), date);
+				// }
+				// if (sil) {
+				// iterator.remove();
+				// continue;
+				// } else if (islemVardiya.isCalisma())
+				// logger.debug(pdksVardiyaGun.getVardiyaDateStr() + " " + islemVardiya.getAdi());
 				perIdList.add(personelId);
 				if (islemVardiya.isCalisma()) {
 					if (tarih1 == null || pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans1BasZaman().getTime() < tarih1.getTime())
@@ -452,18 +445,13 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 						for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 							VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
 							VardiyaGun vardiyaGun = (VardiyaGun) pdksVardiyaGun.clone();
+							if (vardiyaGun.getVardiyaDate().getTime() != date.getTime())
+								continue;
+
 							Vardiya vardiya = vardiyaGun.getIslemVardiya();
-							// if (vardiya.isCalisma() == false) {
-							// if (vardiya.isFMI() || vardiya.isIzin())
-							// logger.debug("");
-							// else if (vardiyaGun.getHareketler() == null || vardiyaGun.getHareketler().isEmpty())
-							// continue;
-							//
-							// }
 
 							Personel personel = vardiyaGun.getPersonel();
-							if (personel.getPdksSicilNo().equals("2688"))
-								logger.debug("");
+
 							vardiyaGun.setHareketler(null);
 							vardiyaGun.setGirisHareketleri(null);
 							vardiyaGun.setCikisHareketleri(null);
@@ -548,10 +536,16 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 								gelmedi = false;
 								gecGeldi = false;
 								erkenCikti = false;
-							} else if (girisAdet == null && pdksVardiyaGun.getVardiya().isCalisma() == false) {
-								calismayanVardiyaGunList.add(pdksVardiyaGun);
-							}
+							} else {
+								if (pdksVardiyaGun.getVardiya().isCalisma() == false) {
+									if (girisAdet == null) {
 
+										calismayanVardiyaGunList.add(pdksVardiyaGun);
+									}
+								} else if (gelmedi) {
+									gelmedi = vardiya.getVardiyaTelorans2BasZaman().before(bugun);
+								}
+							}
 							Long calismaSekliId = personel.getCalismaModeli() != null ? personel.getCalismaModeli().getId() : 0L;
 							Tanim bolum = personel.getEkSaha3(), altBolum = null;
 							Long bolumId = bolum != null ? bolum.getId() : 0L, altBolumId = 0L;
@@ -860,6 +854,12 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 								PdksUtil.addMessageAvailableWarn(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
 							}
 
+						}
+						if (!kgsIptaller.isEmpty()) {
+							PdksUtil.addMessageAvailableInfo("Aşağıdaki personel" + (kgsIptaller.size() > 1 ? "ler" : "") + " " + ortakIslemler.getParameterKey("kapiGirisUygulama") + "  bilgileri aktif değildir.");
+							for (Personel personel : kgsIptaller) {
+								PdksUtil.addMessageAvailableWarn(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
+							}
 						}
 						kartBastMayanList = null;
 					} catch (Exception e) {
