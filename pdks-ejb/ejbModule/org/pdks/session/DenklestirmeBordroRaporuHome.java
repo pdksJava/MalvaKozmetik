@@ -534,6 +534,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(PdksUtil.getDateFromString((yil * 100 + ay) + "01"));
 		cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+		cal.add(Calendar.DATE, 1);
 		sonGun = cal.getTime();
 		basGun = null;
 		bitGun = null;
