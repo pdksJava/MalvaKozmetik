@@ -261,11 +261,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 											artiGun = 0.0d;
 
 									}
-									if (izinTipi.getUcretli()) {
-										if (vardiyaGun.isHaftaIci() && resmiTatil == false)
-											izinGunAdet += 1.0d;
+									if (izinTipi.getUcretli())
+										izinGunAdet += 1;
 
-									}
 								}
 								izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
 
