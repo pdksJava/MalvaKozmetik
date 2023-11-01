@@ -157,7 +157,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private TreeMap<String, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap;
 	private TreeMap<String, Tanim> baslikMap;
 	private TreeMap<Long, Personel> izinTipiPersonelMap;
-	private Date sonGun;
+
+	private Date sonGun, ilkGun;
 	private Session session;
 
 	@Override
@@ -531,11 +532,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			eksikCalisanVeriGetir = null;
 			hataliVeriGetir = null;
 		}
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(PdksUtil.getDateFromString((yil * 100 + ay) + "01"));
-		cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
-		cal.add(Calendar.DATE, 1);
-		sonGun = cal.getTime();
+		Date tarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
+		ilkGun = PdksUtil.tariheGunEkleCikar(tarih, -1);
+		sonGun = PdksUtil.tariheAyEkleCikar(tarih, 1);
 		basGun = null;
 		bitGun = null;
 
@@ -987,7 +986,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						} else if (kodu.equals(COL_SIRA))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
 						else if (kodu.equals(COL_ISE_BASLAMA_TARIHI))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(authenticatedUser.dateFormatla(personel.getIseBaslamaTarihi()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ilkGun.before(personel.getIseBaslamaTarihi()) ? authenticatedUser.dateFormatla(personel.getIseBaslamaTarihi()) : "");
 						else if (kodu.equals(COL_SSK_CIKIS_TARIHI))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.isCalisiyorGun(sonGun) ? "" : authenticatedUser.dateFormatla(personel.getSskCikisTarihi()));
 						else if (kodu.equals(COL_YIL))
@@ -1923,5 +1922,20 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	public void setSonGun(Date sonGun) {
 		this.sonGun = sonGun;
+	}
+
+	/**
+	 * @return the ilkGun
+	 */
+	public Date getIlkGun() {
+		return ilkGun;
+	}
+
+	/**
+	 * @param ilkGun
+	 *            the ilkGun to set
+	 */
+	public void setIlkGun(Date ilkGun) {
+		this.ilkGun = ilkGun;
 	}
 }

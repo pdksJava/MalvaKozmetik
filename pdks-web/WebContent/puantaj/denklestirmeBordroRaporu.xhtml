@@ -220,13 +220,15 @@
 							</rich:column>
 							<rich:column style="text-align:center">
 								<f:facet name="header">
-									<h:outputText value="İşe Giriş Tarihi" />
+									<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_ISE_BASLAMA_TARIHI)}" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.dateFormatla(puantaj.pdksPersonel.iseBaslamaTarihi)}" />
+								<ui:fragment rendered="#{puantaj.pdksPersonel.iseBaslamaTarihi.after(denklestirmeBordroRaporuHome.ilkGun)}">
+									<h:outputText value="#{authenticatedUser.dateFormatla(puantaj.pdksPersonel.iseBaslamaTarihi)}" />
+								</ui:fragment>
 							</rich:column>
 							<rich:column style="text-align:center">
 								<f:facet name="header">
-									<h:outputText value="İşten Ayrılma Tarihi" />
+									<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_SSK_CIKIS_TARIHI)}" />
 								</f:facet>
 								<ui:fragment rendered="#{puantaj.pdksPersonel.isCalisiyorGun(denklestirmeBordroRaporuHome.sonGun)==false}">
 									<h:outputText value="#{authenticatedUser.dateFormatla(puantaj.pdksPersonel.istenAyrilisTarihi)}" />
