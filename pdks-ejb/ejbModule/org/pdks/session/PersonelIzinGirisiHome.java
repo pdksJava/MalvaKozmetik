@@ -3090,34 +3090,32 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			boolean kesisenTarihteIzinVar = Boolean.FALSE;
 			// bu durumda vekil transfer gibi islem yapiacak
 			if (tarihAraligiIzinList != null && (getHesapTipi() == PersonelIzin.HESAP_TIPI_GUN || saatFark >= 24)) {
+				if (!authenticatedUser.isIK()) {
+ 					for (Iterator iterator = tarihAraligiIzinList.iterator(); iterator.hasNext();) {
+						PersonelIzin tempIzin = (PersonelIzin) iterator.next();
+						if (tempIzin.getIzinTipi().isSenelikIzin() || tempIzin.getIzinTipi().isMazeretIzin()) {
+							double saatIzinFark = Math.abs(PdksUtil.getSaatFarki(tempIzin.getBitisZamani(), tempIzin.getBaslangicZamani()));
+							if (saatIzinFark < 24)
+								continue;
+							double saatFark1 = Math.abs(PdksUtil.getSaatFarki(personelIzin.getBitisZamani(), tempIzin.getBaslangicZamani()));
+							if (saatFark1 < 24) {
+								kesisenTarihteIzinVar = Boolean.TRUE;
+								PdksUtil.addMessageWarn("İki izin arası 1 günden az olamaz! " + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), "yyy/MM/dd") + "-" + PdksUtil.convertToDateString(tempIzin.getBaslangicZamani(), "yyy/MM/dd"));
+							} else {
+								double saatFark2 = Math.abs(PdksUtil.getSaatFarki(tempIzin.getBitisZamani(), personelIzin.getBaslangicZamani()));
+								if (saatFark2 < 24) {
+									kesisenTarihteIzinVar = Boolean.TRUE;
+									PdksUtil.addMessageWarn("İki izin arası 1 günden az olamaz! " + PdksUtil.convertToDateString(tempIzin.getBitisZamani(), "yyy/MM/dd") + "-" + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyy/MM/dd"));
 
-				// for (Iterator iterator = tarihAraligiIzinList.iterator(); iterator.hasNext();) {
-				// PersonelIzin tempIzin = (PersonelIzin) iterator.next();
-				// if (tempIzin.getIzinTipi().isSenelikIzin() || tempIzin.getIzinTipi().isMazeretIzin()) {
-				// double saatIzinFark = Math.abs(PdksUtil.getSaatFarki(tempIzin.getBitisZamani(), tempIzin.getBaslangicZamani()));
-				// if (saatIzinFark < 24)
-				// continue;
-				// double saatFark1 = Math.abs(PdksUtil.getSaatFarki(personelIzin.getBitisZamani(), tempIzin.getBaslangicZamani()));
-				// if (saatFark1 < 24) {
-				// kesisenTarihteIzinVar = Boolean.TRUE;
-				// PdksUtil.addMessageWarn("İki izin arası 1 günden az olamaz! " + PdksUtil.convertToDateString(personelIzin.getBitisZamani(), "yyy/MM/dd") + "-" + PdksUtil.convertToDateString(tempIzin.getBaslangicZamani(), "yyy/MM/dd"));
-				// } else {
-				// double saatFark2 = Math.abs(PdksUtil.getSaatFarki(tempIzin.getBitisZamani(), personelIzin.getBaslangicZamani()));
-				// if (saatFark2 < 24) {
-				// kesisenTarihteIzinVar = Boolean.TRUE;
-				// PdksUtil.addMessageWarn("İki izin arası 1 günden az olamaz! " + PdksUtil.convertToDateString(tempIzin.getBitisZamani(), "yyy/MM/dd") + "-" + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyy/MM/dd"));
-				//
-				// }
-				//
-				// }
-				// if (kesisenTarihteIzinVar)
-				// break;
-				//
-				// }
+								}
+ 							}
+							if (kesisenTarihteIzinVar)
+								break;
+ 						}
 
-				// }
+					}
+				}
 			}
-
 			if (kesisenTarihteIzinVar) {
 				durum = "";
 			}
