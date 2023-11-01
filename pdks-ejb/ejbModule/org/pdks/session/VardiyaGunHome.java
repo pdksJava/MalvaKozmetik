@@ -9530,7 +9530,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							for (int i = 0; i < maxGun; i++) {
 								vardiyaAdi = ExcelUtil.getSheetStringValueTry(sheet, row, COL_ADI_SOYADI + i + 2);
 								String key = null;
-								if (!PdksUtil.hasStringValue(vardiyaAdi)) {
+								if (PdksUtil.hasStringValue(vardiyaAdi)) {
 									key = PdksUtil.setTurkishStr(vardiyaAdi).toLowerCase(Locale.ENGLISH);
 									if (!vardiyaMap.containsKey(key))
 										key = vardiyaAdi;
