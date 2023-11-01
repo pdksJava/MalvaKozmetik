@@ -15660,9 +15660,9 @@ public class OrtakIslemler implements Serializable {
 
 		try {
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+
 			boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
 			if (personelIzin != null && vardiyaGun != null && islemVardiya != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
-
 				BordroDetayTipi bordroDetayTipi = null;
 				if (vardiyaIzin && PdksUtil.hasStringValue(islemVardiya.getStyleClass()))
 					bordroDetayTipi = BordroDetayTipi.fromValue(islemVardiya.getStyleClass());
@@ -16346,6 +16346,13 @@ public class OrtakIslemler implements Serializable {
 						continue;
 					if (oncekiVardiyaGun.getVardiya().isHaftaTatil()) {
 						oncekiVardiyaGun.setIzin(null);
+						// PersonelIzin izin = oncekiVardiyaGun.getIzin();
+						// if (izin != null) {
+						// IzinTipi izinTipi = izin.getIzinTipi();
+						// if (!(izinTipi.isTakvimGunuMu() || izinTipi.isHTDahil()))
+						// oncekiVardiyaGun.setIzin(null);
+						// }
+
 					}
 
 				}
