@@ -218,6 +218,20 @@
 								</f:facet>
 								<h:outputText value="#{puantaj.calismaModeli.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 							</rich:column>
+							<rich:column style="text-align:center">
+								<f:facet name="header">
+									<h:outputText value="İşe Giriş Tarihi" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateFormatla(puantaj.pdksPersonel.iseBaslamaTarihi)}" />
+							</rich:column>
+							<rich:column style="text-align:center">
+								<f:facet name="header">
+									<h:outputText value="İşten Ayrılma Tarihi" />
+								</f:facet>
+								<ui:fragment rendered="#{puantaj.pdksPersonel.isCalisiyorGun(denklestirmeBordroRaporuHome.sonGun)==false}">
+									<h:outputText value="#{authenticatedUser.dateFormatla(puantaj.pdksPersonel.istenAyrilisTarihi)}" />
+								</ui:fragment>
+							</rich:column>
 							<rich:column style="text-align: center;" headerClass="bordroGun">
 								<f:facet name="header">
 									<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_ADET)}" />

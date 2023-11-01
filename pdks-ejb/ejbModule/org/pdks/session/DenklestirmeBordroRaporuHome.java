@@ -132,6 +132,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private String COL_EKSIK_CALISMA = "eksikCalisma";
 	private String COL_CALISMA_MODELI = "calismaModeli";
 
+	private String COL_ISE_BASLAMA_TARIHI = "iseBaslamaTarihi";
+	private String COL_SSK_CIKIS_TARIHI = "istenAyrilisTarihi";
+
 	private Sheet sheet;
 
 	private CellStyle tutarStyle, numberStyle;
@@ -154,6 +157,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private TreeMap<String, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap;
 	private TreeMap<String, Tanim> baslikMap;
 	private TreeMap<Long, Personel> izinTipiPersonelMap;
+	private Date sonGun;
 	private Session session;
 
 	@Override
@@ -527,7 +531,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			eksikCalisanVeriGetir = null;
 			hataliVeriGetir = null;
 		}
-
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(PdksUtil.getDateFromString((yil * 100 + ay) + "01"));
+		cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+		sonGun = cal.getTime();
 		basGun = null;
 		bitGun = null;
 
@@ -978,6 +985,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ap.getCalismaModeli().getAciklama());
 						} else if (kodu.equals(COL_SIRA))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
+						else if (kodu.equals(COL_ISE_BASLAMA_TARIHI))
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(authenticatedUser.dateFormatla(personel.getIseBaslamaTarihi()));
+						else if (kodu.equals(COL_SSK_CIKIS_TARIHI))
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.isCalisiyorGun(sonGun) ? "" : authenticatedUser.dateFormatla(personel.getSskCikisTarihi()));
+						else if (kodu.equals(COL_YIL))
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
 						else if (kodu.equals(COL_YIL))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
 						else if (kodu.equals(COL_AY))
@@ -1864,5 +1877,50 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setEksikCalisanVeriGetir(Boolean eksikCalisanVeriGetir) {
 		this.eksikCalisanVeriGetir = eksikCalisanVeriGetir;
+	}
+
+	/**
+	 * @return the cOL_ISE_BASLAMA_TARIHI
+	 */
+	public String getCOL_ISE_BASLAMA_TARIHI() {
+		return COL_ISE_BASLAMA_TARIHI;
+	}
+
+	/**
+	 * @param cOL_ISE_BASLAMA_TARIHI
+	 *            the cOL_ISE_BASLAMA_TARIHI to set
+	 */
+	public void setCOL_ISE_BASLAMA_TARIHI(String cOL_ISE_BASLAMA_TARIHI) {
+		COL_ISE_BASLAMA_TARIHI = cOL_ISE_BASLAMA_TARIHI;
+	}
+
+	/**
+	 * @return the cOL_SSK_CIKIS_TARIHI
+	 */
+	public String getCOL_SSK_CIKIS_TARIHI() {
+		return COL_SSK_CIKIS_TARIHI;
+	}
+
+	/**
+	 * @param cOL_SSK_CIKIS_TARIHI
+	 *            the cOL_SSK_CIKIS_TARIHI to set
+	 */
+	public void setCOL_SSK_CIKIS_TARIHI(String cOL_SSK_CIKIS_TARIHI) {
+		COL_SSK_CIKIS_TARIHI = cOL_SSK_CIKIS_TARIHI;
+	}
+
+	/**
+	 * @return the sonGun
+	 */
+	public Date getSonGun() {
+		return sonGun;
+	}
+
+	/**
+	 * @param sonGun
+	 *            the sonGun to set
+	 */
+	public void setSonGun(Date sonGun) {
+		this.sonGun = sonGun;
 	}
 }
