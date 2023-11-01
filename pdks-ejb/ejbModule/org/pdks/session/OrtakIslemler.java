@@ -2577,7 +2577,6 @@ public class OrtakIslemler implements Serializable {
 			session.flush();
 	}
 
-	 
 	/**
 	 * @param aylikPuantajList
 	 * @param adSoyadSirali
@@ -15652,6 +15651,11 @@ public class OrtakIslemler implements Serializable {
 		String izinVardiyaKontrolStr = getParameterKey("izinVardiyaKontrol");
 		boolean izinVardiyaKontrol = PdksUtil.hasStringValue(izinVardiyaKontrolStr), izinERPUpdate = getParameterKey("izinERPUpdate").equals("1");
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
+		boolean takvimGunu = personelIzin != null && personelIzin.getIzinTipi().isTakvimGunuMu();
+		boolean offDahil = takvimGunu == false && personelIzin != null && personelIzin.getIzinTipi().isOffDahilMi();
+		boolean offVardiya = offDahil && vardiyaGun != null && vardiyaGun.getVardiya().isOff();
+		Double sure = personelIzin.getIzinSuresi();
+
 		try {
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 			boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
@@ -15697,6 +15701,14 @@ public class OrtakIslemler implements Serializable {
 						boolean gunIzin = gunlukOldu == 2;
 						izin.setGunlukOldu(gunIzin);
 						PersonelIzin personelIzin2 = izin;
+						boolean izinDurum = true;
+						if (gunIzin && offVardiya && sure.intValue() == 1) {
+							if (vardiyaGun.getTatil() != null || PdksUtil.getDate(personelIzinInput.getBitisZamani()).getTime() == vardiyaGun.getVardiyaDate().getTime()) {
+								izinDurum = false;
+								gunIzin = false;
+							}
+
+						}
 						if (gunIzin) {
 							if (izinVardiyaKontrol) {
 								baslangicZamani = islemVardiya.getVardiyaBasZaman();
@@ -15712,8 +15724,8 @@ public class OrtakIslemler implements Serializable {
 							// vardiyaGun.setIzin(null);
 
 						}
-
-						vardiyaGun.addPersonelIzin(personelIzin2);
+						if (izinDurum)
+							vardiyaGun.addPersonelIzin(personelIzin2);
 					}
 				}
 			}
