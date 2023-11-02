@@ -960,10 +960,10 @@ public class IseGelmemeUyari implements Serializable {
 		header = ExcelUtil.getStyleHeader(wb);
 		styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-		styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
 		styleEven = ExcelUtil.getStyleEven(null, wb);
 		styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-		styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		boolean mesajGonder = false;
 		TreeMap<String, List<VardiyaGun>> sirketParcalaMap = new TreeMap<String, List<VardiyaGun>>();
 		List<Liste> listeler = new ArrayList<Liste>();
@@ -1056,9 +1056,21 @@ public class IseGelmemeUyari implements Serializable {
 				String baslik = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? " " + tesis.getAciklama() + " " + tesisAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
 				baslik += (bolum != null && bolum.getId() > 0L ? " " + bolum.getAciklama() + " " + bolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
 				baslik += (altBolum != null && altBolum.getId() > 0L ? " " + altBolum.getAciklama() + " " + altBolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
-				Sheet sheet = ExcelUtil.createSheet(wb, "baslik", false);
+				Sheet sheet = ExcelUtil.createSheet(wb, baslik, false);
 				int row = 0;
 				int col = 0;
+				ExcelUtil.getCell(sheet, row, col, header).setCellValue(baslik);
+				int uz = 4 + (hariciPersonelPlandaVar ? 1 : 0) + (bolumVar ? 1 : 0) + (altBolumVar ? 1 : 0);
+				for (int i = 0; i < uz; i++)
+					ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");
+
+				try {
+					sheet.addMergedRegion(ExcelUtil.getRegion((int) row, (int) 0, (int) row, (int) uz));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				++row;
+				col = 0;
 				if (hariciPersonelPlandaVar)
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yoneticiAciklama);
 
@@ -1113,6 +1125,8 @@ public class IseGelmemeUyari implements Serializable {
 						yonetici = yoneticiYok;
 					if (yonetici == null)
 						continue;
+					++row;
+					col = 0;
 					CellStyle style = null, styleCenter = null, cellStyleDate = null;
 					if (renk) {
 						cellStyleDate = styleOddDate;
