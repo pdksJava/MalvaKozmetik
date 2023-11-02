@@ -12,6 +12,9 @@ import java.util.TreeMap;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
@@ -44,6 +47,7 @@ import org.pdks.entity.VardiyaGun;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserVekalet;
+import org.pdks.session.ExcelUtil;
 import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksEntityController;
 import org.pdks.session.PdksUtil;
@@ -87,6 +91,14 @@ public class IseGelmemeUyari implements Serializable {
 	private boolean statuGoster = Boolean.FALSE, hariciPersonelVar, yoneticiTanimsiz = Boolean.FALSE, yoneticiMailGonderme = Boolean.FALSE, izinVar = Boolean.FALSE, tesisVar = Boolean.FALSE, hataliHareketVar = Boolean.FALSE;
 
 	private Tanim ekSaha1, ekSaha2, ekSaha3, ekSaha4;
+
+	private CellStyle header = null;
+	private CellStyle styleOdd = null;
+	private CellStyle styleOddCenter = null;
+	private CellStyle styleOddDate = null;
+	private CellStyle styleEven = null;
+	private CellStyle styleEvenCenter = null;
+	private CellStyle styleEvenDate = null;
 
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
@@ -590,6 +602,14 @@ public class IseGelmemeUyari implements Serializable {
 							}
 
 							if (kayitVar && !yoneticiMap.isEmpty()) {
+								Workbook wb = new XSSFWorkbook();
+								header = ExcelUtil.getStyleHeader(wb);
+								styleOdd = ExcelUtil.getStyleOdd(null, wb);
+								styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+								styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+								styleEven = ExcelUtil.getStyleEven(null, wb);
+								styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+								styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
 								uyariNot = ortakIslemler.getNotice(NoteTipi.MAIL_CEVAPLAMAMA.value(), Boolean.TRUE, session);
 								ikMailList.clear();
 								fillEkSahaTanim(session);
