@@ -361,7 +361,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					}
 					if (izinGunAdet > 0) {
 						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);
-						normalGunAdet -= izinGunAdet;
+						if (calismaModeli.isSaatlikOdeme() == false)
+							normalGunAdet -= izinGunAdet;
 					}
 
 					if (normalCalisma != 0)
