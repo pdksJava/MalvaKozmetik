@@ -125,7 +125,7 @@ public class IzinBakiyeGuncelleme {
 			logger.error("PDKS hata out : " + e.getMessage());
 			if (hataGonder)
 				try {
-					zamanlayici.mailGonder(session, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmemiştir." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
+					zamanlayici.mailGonder(session, null, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmemiştir." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
 
 				} catch (Exception e2) {
 					logger.error("izinBakiyeGuncellemeTimer 2 : " + e2.getMessage());
@@ -152,7 +152,7 @@ public class IzinBakiyeGuncelleme {
 			sistemAdminUser.setLogin(Boolean.FALSE);
 		izinleriHesapla(sistemAdminUser, session);
 		if (mailGonder)
-			zamanlayici.mailGonder(session, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmiştir.", null, Boolean.TRUE);
+			zamanlayici.mailGonder(session, null, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmiştir.", null, Boolean.TRUE);
 		logger.info("izinleriHesapla bitti " + new Date());
 	}
 

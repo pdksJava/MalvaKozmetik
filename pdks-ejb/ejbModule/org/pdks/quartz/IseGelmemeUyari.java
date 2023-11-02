@@ -1,5 +1,6 @@
 package org.pdks.quartz;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +14,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
@@ -52,6 +54,7 @@ import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksEntityController;
 import org.pdks.session.PdksUtil;
 
+import com.pdks.webservice.MailFile;
 import com.pdks.webservice.MailObject;
 import com.pdks.webservice.MailStatu;
 
@@ -602,14 +605,7 @@ public class IseGelmemeUyari implements Serializable {
 							}
 
 							if (kayitVar && !yoneticiMap.isEmpty()) {
-								Workbook wb = new XSSFWorkbook();
-								header = ExcelUtil.getStyleHeader(wb);
-								styleOdd = ExcelUtil.getStyleOdd(null, wb);
-								styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-								styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
-								styleEven = ExcelUtil.getStyleEven(null, wb);
-								styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-								styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+
 								uyariNot = ortakIslemler.getNotice(NoteTipi.MAIL_CEVAPLAMAMA.value(), Boolean.TRUE, session);
 								ikMailList.clear();
 								fillEkSahaTanim(session);
@@ -922,13 +918,20 @@ public class IseGelmemeUyari implements Serializable {
 				sb.append("<p>Aşağıdaki personel giriş çıkışlarında problem vardır.</p>");
 				sb.append("<p></p>");
 				sb.append("<p>Saygılarımla,</p>");
-				if (mesajIcerikOlustur(userYonetici, sb, list, null, session)) {
+				Workbook wb = new XSSFWorkbook();
+				if (mesajIcerikOlustur(userYonetici, sb, list, null, wb, session)) {
 					if (uyariNot != null)
 						sb.append(uyariNot.getValue());
 					mail.setBody(sb.toString());
 					try {
 						if (tesisYetki && tesisVar)
 							mail.getCcList().clear();
+						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						wb.write(baos);
+						MailFile mailFile = new MailFile();
+						mailFile.setIcerik(baos.toByteArray());
+						mailFile.setDisplayName(userYonetici.getAdSoyad() + ".xlsx");
+						mail.getAttachmentFiles().add(mailFile);
 						mailSatu = ortakIslemler.mailSoapServisGonder(true, mail, renderer, renderAdres, session);
 					} catch (Exception e) {
 						logger.error(e);
@@ -946,11 +949,21 @@ public class IseGelmemeUyari implements Serializable {
 	 * @param user
 	 * @param sb
 	 * @param list
+	 * @param map1
+	 * @param wb
 	 * @param session
+	 * @return
 	 */
-	private boolean mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, TreeMap<String, String> map1, Session session) {
-		// if (user == null || user.getPdksPersonel() == null || user.getPersonelId().longValue() != 1517)
-		// return false;
+	private boolean mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, TreeMap<String, String> map1, Workbook wb, Session session) {
+		if (wb == null)
+			wb = new XSSFWorkbook();
+		header = ExcelUtil.getStyleHeader(wb);
+		styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		styleEven = ExcelUtil.getStyleEven(null, wb);
+		styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
 		boolean mesajGonder = false;
 		TreeMap<String, List<VardiyaGun>> sirketParcalaMap = new TreeMap<String, List<VardiyaGun>>();
 		List<Liste> listeler = new ArrayList<Liste>();
@@ -1043,6 +1056,29 @@ public class IseGelmemeUyari implements Serializable {
 				String baslik = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? " " + tesis.getAciklama() + " " + tesisAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
 				baslik += (bolum != null && bolum.getId() > 0L ? " " + bolum.getAciklama() + " " + bolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
 				baslik += (altBolum != null && altBolum.getId() > 0L ? " " + altBolum.getAciklama() + " " + altBolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
+				Sheet sheet = ExcelUtil.createSheet(wb, "baslik", false);
+				int row = 0;
+				int col = 0;
+				if (hariciPersonelPlandaVar)
+					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yoneticiAciklama);
+
+				if (bolumVar)
+					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
+
+				if (altBolumVar)
+					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(altBolumAciklama);
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(personelNoAciklama);
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Zamanı");
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Giriş Zamanı");
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çıkış Zamanı");
+
+				if (hataliHareketGundeVar)
+					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Hatalı Giriş/Çıkış");
+
+				if (izinGirisVar)
+					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İzin Durum");
+
 				sb.append("<H3>" + PdksUtil.replaceAllManuel(baslik, "  ", " ") + "</H3>");
 				sb.append("<TABLE class=\"mars\" style=\"border: solid 1px\" cellpadding=\"5\" cellspacing=\"0\"><THEAD> <TR>");
 				if (hariciPersonelPlandaVar)
@@ -1077,7 +1113,58 @@ public class IseGelmemeUyari implements Serializable {
 						yonetici = yoneticiYok;
 					if (yonetici == null)
 						continue;
+					CellStyle style = null, styleCenter = null, cellStyleDate = null;
+					if (renk) {
+						cellStyleDate = styleOddDate;
+						style = styleOdd;
+						styleCenter = styleOddCenter;
+					} else {
+						cellStyleDate = styleEvenDate;
+						style = styleEven;
+						styleCenter = styleEvenCenter;
+					}
+					if (hariciPersonelPlandaVar)
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yonetici != null && degisti ? yonetici.getAdSoyad() : "");
+
+					if (bolumVar)
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null && degisti ? personel.getEkSaha3().getAciklama() : "");
+					if (altBolumVar)
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null && degisti ? personel.getEkSaha4().getAciklama() : "");
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(degisti ? personel.getAdSoyad() : "");
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(degisti ? personel.getSicilNo() : "");
+					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(vg.getVardiyaZamanAdi());
+					if (vg.getIlkGiris() != null)
+						ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(vg.getIlkGiris().getOrjinalZaman());
+
+					else
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
+					if (vg.getSonCikis() != null)
+						ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(vg.getSonCikis().getOrjinalZaman());
+
+					else
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
+
+					if (hataliHareketGundeVar) {
+						StringBuffer sbMesaj = new StringBuffer();
+						if (vg.getHareketler() != null && !vg.getHareketler().isEmpty()) {
+							for (HareketKGS hareketKGS : vg.getHareketler()) {
+								sbMesaj.append(hareketKGS.getKapiView().getAciklama() + " " + (hareketKGS.getZaman() != null ? user.getTarihFormatla(hareketKGS.getZaman(), PdksUtil.getDateFormat() + " H:mm") : "") + "\n");
+							}
+						}
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(sbMesaj.toString());
+					}
+
+					if (izinGirisVar) {
+						StringBuffer sbMesaj = new StringBuffer();
+						if (vg.getIzin() != null) {
+							String aciklama = vg.getIzin().getIzinTipiAciklama();
+							sbMesaj.append(aciklama);
+						}
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(sbMesaj.toString());
+
+					}
 					renk = !renk;
+
 					String classTR = "class=\"" + (renk ? "odd" : "even") + "\"";
 					sb.append("<TR " + classTR + ">");
 					if (hariciPersonelPlandaVar)
@@ -1118,8 +1205,12 @@ public class IseGelmemeUyari implements Serializable {
 					sb.append("</TR>");
 
 				}
+				for (int i = 0; i < col; i++)
+					sheet.autoSizeColumn(i);
+
 				sb.append("</TBODY></TABLE><BR/><BR/>");
 			}
+
 		}
 		user.getPdksPersonel().setPersonelVardiyalari(yeniList);
 		return mesajGonder;
@@ -1303,7 +1394,7 @@ public class IseGelmemeUyari implements Serializable {
 				logger.error("iseGelmeDurumuTimer : " + e.getMessage());
 				if (hataGonder)
 					try {
-						zamanlayici.mailGonder(session, "İşe gelme durumu", "İşe gelme durumu kontrolü tamamlanmadı." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
+						zamanlayici.mailGonder(session, null, "İşe gelme durumu", "İşe gelme durumu kontrolü tamamlanmadı." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
 
 					} catch (Exception e2) {
 						logger.error("iseGelmeDurumuTimer 2 : " + e.getMessage());
@@ -1345,6 +1436,7 @@ public class IseGelmemeUyari implements Serializable {
 		StringBuffer sb = new StringBuffer();
 		sb.append("İşe gelme durumu kontrolü tamamlandı.");
 		if (userYoneticiList != null && !userYoneticiList.isEmpty()) {
+			MailObject mail = new MailObject();
 			HashMap fields = new HashMap();
 			sb = new StringBuffer();
 			sb.append("WITH BUGUN AS ( ");
@@ -1386,10 +1478,18 @@ public class IseGelmemeUyari implements Serializable {
 				if (unvan.length() > 0)
 					sbUser.append(" [ " + unvan.toString() + " ]");
 				unvan = null;
+
 				if (user.getPdksPersonel() != null && user.getPdksPersonel().getPersonelVardiyalari() != null && !user.getPdksPersonel().getPersonelVardiyalari().isEmpty()) {
 					List<VardiyaGun> list = user.getPdksPersonel().getPersonelVardiyalari();
-					if (mesajIcerikOlustur(user, sbUser, list, map1, session)) {
+					Workbook wb = new XSSFWorkbook();
+					if (mesajIcerikOlustur(user, sbUser, list, map1, wb, session)) {
 						sb.append(sbUser.toString());
+						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						wb.write(baos);
+						MailFile mailFile = new MailFile();
+						mailFile.setIcerik(baos.toByteArray());
+						mailFile.setDisplayName(sirket.getAd() + "_" + user.getPdksPersonel().getAdSoyad() + ".xlsx");
+						mail.getAttachmentFiles().add(mailFile);
 					} else
 						iterator.remove();
 				}
@@ -1403,7 +1503,7 @@ public class IseGelmemeUyari implements Serializable {
 					userList = new ArrayList<User>();
 					userList.add(islemYapan);
 				}
-				zamanlayici.mailGonder(session, "İşe gelme durumu", new String(sb), userList, Boolean.TRUE);
+				zamanlayici.mailGonder(session, mail, "İşe gelme durumu", new String(sb), userList, Boolean.TRUE);
 				ortakIslemler.gunlukFazlaCalisanlar(session);
 			}
 		}

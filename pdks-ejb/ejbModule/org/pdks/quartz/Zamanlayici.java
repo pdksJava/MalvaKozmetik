@@ -96,14 +96,18 @@ public class Zamanlayici implements Serializable {
 
 	/**
 	 * @param session
+	 * @param mail
 	 * @param xkonu
 	 * @param xaciklama
 	 * @param userList
 	 * @param xDosya
+	 * @param adresEkle
 	 * @throws Exception
 	 */
-	public void mailGonderDosya(Session session, String xkonu, String xaciklama, List<User> userList, Dosya xDosya, Boolean adresEkle) throws Exception {
+	public void mailGonderDosya(Session session, MailObject mail, String xkonu, String xaciklama, List<User> userList, Dosya xDosya, Boolean adresEkle) throws Exception {
 		setDosya(xDosya);
+		if (mail == null)
+			mail = new MailObject();
 		Boolean yeni = authenticatedUser == null;
 		InetAddress thisIp = adresEkle == null || adresEkle ? InetAddress.getLocalHost() : null;
 
@@ -125,8 +129,6 @@ public class Zamanlayici implements Serializable {
 			MailStatu mailSatu = null;
 			try {
 				// ortakIslemler.mailGonder(renderer, "/email/" + sayfaAdi);
-
-				MailObject mail = new MailObject();
 
 				mail.setSubject(xkonu);
 				mail.setBody(aciklama);
@@ -183,14 +185,16 @@ public class Zamanlayici implements Serializable {
 
 	/**
 	 * @param session
+	 * @param mailx
 	 * @param xkonu
 	 * @param xaciklama
 	 * @param userList
 	 * @param adresEkle
 	 * @throws Exception
 	 */
-	public void mailGonder(Session session, String xkonu, String xaciklama, List<User> userList, Boolean adresEkle) throws Exception {
-		mailGonderDosya(session, xkonu, xaciklama, userList, null, adresEkle);
+	public void mailGonder(Session session, MailObject mailx, String xkonu, String xaciklama, List<User> userList, Boolean adresEkle) throws Exception {
+
+		mailGonderDosya(session, mailx, xkonu, xaciklama, userList, null, adresEkle);
 
 	}
 

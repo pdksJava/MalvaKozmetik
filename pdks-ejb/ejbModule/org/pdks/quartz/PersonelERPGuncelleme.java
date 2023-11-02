@@ -123,7 +123,7 @@ public class PersonelERPGuncelleme {
 				logger.error("personelERPGuncelle hata " + e.getMessage() + " " + new Date());
 				if (hataGonder)
 					try {
-						zamanlayici.mailGonder(session, "ERP personel bilgileri güncellemesi", "ERP personel bilgileri güncelleme tamamlanmadı." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
+						zamanlayici.mailGonder(session, null, "ERP personel bilgileri güncellemesi", "ERP personel bilgileri güncelleme tamamlanmadı." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
 
 					} catch (Exception e2) {
 						logger.error("personelERPGuncellemeTimer 2 : " + e2.getMessage());
@@ -204,9 +204,9 @@ public class PersonelERPGuncelleme {
 		}
 		if (mailGonder) {
 			if (dosya != null)
-				zamanlayici.mailGonderDosya(session, "SAP personel bilgileri güncellemesi", "SAP personel bilgileri güncelleme tamamlandı.", null, dosya, Boolean.TRUE);
+				zamanlayici.mailGonderDosya(session, null, "SAP personel bilgileri güncellemesi", "SAP personel bilgileri güncelleme tamamlandı.", null, dosya, Boolean.TRUE);
 			else
-				zamanlayici.mailGonder(session, "SAP personel bilgileri güncellemesi", "SAP personel bilgileri güncelleme tamamlandı.", null, Boolean.TRUE);
+				zamanlayici.mailGonder(session, null, "SAP personel bilgileri güncellemesi", "SAP personel bilgileri güncelleme tamamlandı.", null, Boolean.TRUE);
 		}
 		logger.info("personelERPGuncelle bitti " + new Date());
 	}

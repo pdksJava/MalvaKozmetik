@@ -91,7 +91,7 @@ public class YemekMukkerrerBilgilendirme implements Serializable {
 						Date tarih2 = (Date) cal.getTime().clone();
 						Date tarih1 = PdksUtil.getDate(cal.getTime());
 						yemekMukkerrerBilgilendirmeBul(session, tarih1, tarih2);
-						zamanlayici.mailGonder(session, "Yemek mükerrer kontrolü", "Yemek mükerrer kontrolü tamamlandı.", null, Boolean.TRUE);
+						zamanlayici.mailGonder(session, null, "Yemek mükerrer kontrolü", "Yemek mükerrer kontrolü tamamlandı.", null, Boolean.TRUE);
 
 					}
 				}
@@ -103,7 +103,7 @@ public class YemekMukkerrerBilgilendirme implements Serializable {
 				logger.error("yemekMukkerrerBilgilendirmeTimer : " + e.getMessage());
 				if (hataGonder)
 					try {
-						zamanlayici.mailGonder(session, "Yemek mükerrer kontrolü", "Yemek mükerrer kontrolü tamamlanmadı." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
+						zamanlayici.mailGonder(session, null, "Yemek mükerrer kontrolü", "Yemek mükerrer kontrolü tamamlanmadı." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
 
 					} catch (Exception e2) {
 						logger.error("yemekMukkerrerBilgilendirmeTimer 2 : " + e.getMessage());
@@ -182,7 +182,7 @@ public class YemekMukkerrerBilgilendirme implements Serializable {
 
 					sb.append("</TABLE>");
 					Collections.reverse(kgsList);
-					zamanlayici.mailGonder(session, "Yemek mükerrer listesi", sb.toString(), kullanicilar, Boolean.TRUE);
+					zamanlayici.mailGonder(session, null, "Yemek mükerrer listesi", sb.toString(), kullanicilar, Boolean.TRUE);
 					sb = null;
 				}
 
