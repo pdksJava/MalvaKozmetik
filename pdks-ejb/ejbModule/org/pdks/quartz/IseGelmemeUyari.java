@@ -29,6 +29,7 @@ import org.jboss.seam.annotations.async.Expiration;
 import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
 import org.jboss.seam.faces.Renderer;
+import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiView;
@@ -1010,12 +1011,16 @@ public class IseGelmemeUyari implements Serializable {
 				listeler = PdksUtil.sortObjectStringAlanList(listeler, "getSelected", null);
 			for (Liste liste : listeler) {
 				List<VardiyaGun> sirketSubeList = PdksUtil.sortObjectStringAlanList((List<VardiyaGun>) liste.getValue(), "getSortBolumKey", null);
-				boolean hataliHareketGundeVar = Boolean.FALSE, izinGirisVar = Boolean.FALSE, hariciPersonelPlandaVar = Boolean.FALSE, altBolumVar = Boolean.FALSE, altBolumDurum = PdksUtil.isPuantajSorguAltBolumGir();
+				boolean calismaModeliVar = Boolean.FALSE, hataliHareketGundeVar = Boolean.FALSE, izinGirisVar = Boolean.FALSE, hariciPersonelPlandaVar = Boolean.FALSE, altBolumVar = Boolean.FALSE, altBolumDurum = PdksUtil.isPuantajSorguAltBolumGir();
 				HashMap<Long, Tanim> bolumMap = new HashMap<Long, Tanim>();
+				HashMap<Long, CalismaModeli> calismaModeliMap = new HashMap<Long, CalismaModeli>();
 				HashMap<String, Tanim> altBolumMap = new HashMap<String, Tanim>();
 				for (VardiyaGun vardiya : sirketSubeList) {
 					Personel personel = vardiya.getPersonel();
 					Tanim bolum = personel != null && personel.getEkSaha3() != null ? personel.getEkSaha3() : new Tanim(0L);
+					CalismaModeli calismaModeli = personel.getCalismaModeli();
+					if (calismaModeli != null && !calismaModeliMap.containsKey(calismaModeli.getId()))
+						calismaModeliMap.put(calismaModeli.getId(), calismaModeli);
 					if (!bolumMap.containsKey(bolum.getId()))
 						bolumMap.put(bolum.getId(), bolum);
 					if (altBolumDurum) {
@@ -1042,6 +1047,16 @@ public class IseGelmemeUyari implements Serializable {
 					}
 
 				}
+				String calismaModeliAciklama = "";
+				if (!calismaModeliMap.isEmpty()) {
+					List<CalismaModeli> calismaModeliList = new ArrayList<CalismaModeli>(calismaModeliMap.values());
+					if (calismaModeliList.size() == 1)
+						calismaModeliAciklama = " " + calismaModeliList.get(0).getAciklama();
+					else
+						calismaModeliVar = true;
+					calismaModeliList = null;
+				}
+				calismaModeliMap = null;
 				if (altBolumMap.size() < 2)
 					altBolumVar = false;
 				boolean bolumVar = bolumMap.size() > 1;
@@ -1056,17 +1071,17 @@ public class IseGelmemeUyari implements Serializable {
 					altBolum = null;
 				String baslik = sirketBaslik + (tesis != null ? " " + tesis.getAciklama() + " " + tesisAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
 				baslik += (bolum != null && bolum.getId() > 0L ? " " + bolum.getAciklama() + " " + bolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
-				baslik += (altBolum != null && altBolum.getId() > 0L ? " " + altBolum.getAciklama() + " " + altBolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
+				baslik += calismaModeliAciklama + (altBolum != null && altBolum.getId() > 0L ? " " + altBolum.getAciklama() + " " + altBolumAciklama.toLowerCase(PdksUtil.TR_LOCALE) : "");
 				Sheet sheet = ExcelUtil.createSheet(wb, sirketBaslik, false);
 				int row = 0;
 				int col = 0;
-				int uz = 5 + (hariciPersonelPlandaVar ? 1 : 0) + (bolumVar ? 1 : 0) + (altBolumVar ? 1 : 0) + (hataliHareketGundeVar ? 1 : 0) + (izinGirisVar ? 1 : 0);
+				int uz = 5 + (hariciPersonelPlandaVar ? 1 : 0) + (bolumVar ? 1 : 0) + (calismaModeliVar ? 1 : 0) + (altBolumVar ? 1 : 0) + (hataliHareketGundeVar ? 1 : 0) + (izinGirisVar ? 1 : 0);
 				baslik = PdksUtil.replaceAllManuel(baslik, "  ", " ");
 				ExcelUtil.getCell(sheet, row, col, header).setCellValue("");
 				for (int i = 1; i < uz; i++)
 					ExcelUtil.getCell(sheet, row, i, header).setCellValue("");
 				ExcelUtil.getCell(sheet, row, col, header).setCellValue(baslik);
- 				try {
+				try {
 					sheet.addMergedRegion(ExcelUtil.getRegion((int) row, (int) 0, (int) row, (int) uz - 1));
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1078,7 +1093,8 @@ public class IseGelmemeUyari implements Serializable {
 
 				if (bolumVar)
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
-
+				if (calismaModeliVar)
+					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
 				if (altBolumVar)
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue(altBolumAciklama);
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
@@ -1099,6 +1115,8 @@ public class IseGelmemeUyari implements Serializable {
 					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + yoneticiAciklama + "</b></TH>");
 				if (bolumVar)
 					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + bolumAciklama + "</b></TH>");
+				if (calismaModeliVar)
+					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Çalışma Modeli</b></TH>");
 				if (altBolumVar)
 					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + altBolumAciklama + "</b></TH>");
 				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Adı Soyadı</b></TH>");
@@ -1144,6 +1162,8 @@ public class IseGelmemeUyari implements Serializable {
 
 					if (bolumVar)
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null && degisti ? personel.getEkSaha3().getAciklama() : "");
+					if (calismaModeliVar)
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getCalismaModeli() != null && degisti ? personel.getCalismaModeli().getAciklama() : "");
 					if (altBolumVar)
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null && degisti ? personel.getEkSaha4().getAciklama() : "");
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(degisti ? personel.getAdSoyad() : "");
@@ -1187,6 +1207,9 @@ public class IseGelmemeUyari implements Serializable {
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (yonetici != null && degisti ? yonetici.getAdSoyad() : "") + "</td>");
 					if (bolumVar)
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null && degisti ? personel.getEkSaha3().getAciklama() : "") + "</td>");
+					if (calismaModeliVar)
+						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getCalismaModeli() != null && degisti ? personel.getCalismaModeli().getAciklama() : "") + "</td>");
+
 					if (altBolumVar)
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha4() != null && degisti ? personel.getEkSaha4().getAciklama() : "") + "</td>");
 					sb.append("<td nowrap style=\"border: 1px solid;\">" + (degisti ? personel.getAdSoyad() : "") + "</td>");
