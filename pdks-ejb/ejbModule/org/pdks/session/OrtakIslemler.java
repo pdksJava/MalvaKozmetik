@@ -14149,7 +14149,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return personelDenklestirme
 	 * @return kontrolTarihi
 	 */
-	private double getVardiyaIzinSuresi(Double gelenSure, VardiyaGun pdksVardiyaGun, PersonelDenklestirme personelDenklestirme, Date kontrolTarihi) {
+	public double getVardiyaIzinSuresi(Double gelenSure, VardiyaGun pdksVardiyaGun, PersonelDenklestirme personelDenklestirme, Date kontrolTarihi) {
 		double sure = gelenSure != null ? gelenSure.doubleValue() : 0.0d;
 		try {
 

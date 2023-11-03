@@ -247,8 +247,13 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 									if (izinTipi.isUcretsizIzinTipi())
 										calismaGun = 0;
 									else if (saatlikCalisma) {
-										if (vardiyaGun.isHaftaIci())
-											izinGunSaat += resmiTatil == false ? vardiyaGun.getSaatCalisanIzinGunKatsayisi() : 0;
+										if (resmiTatil == false) {
+											Double sure = ortakIslemler.getVardiyaIzinSuresi(vardiyaGun.getSaatCalisanIzinGunKatsayisi(), vardiyaGun, personelDenklestirme, vardiyaGun.getVardiyaDate());
+											if (sure > 0.0d)
+												izinGunSaat += sure;
+										}
+										// if (vardiyaGun.isHaftaIci())
+										// izinGunSaat += resmiTatil == false ? vardiyaGun.getSaatCalisanIzinGunKatsayisi() : 0;
 									}
 								}
 
