@@ -226,8 +226,7 @@ public class OrtakIslemler implements Serializable {
 				boolean sil = false;
 				try {
 					sil = tarih.before(vardiyaGun.getVardiyaDate());
-
-				} catch (Exception e) {
+ 				} catch (Exception e) {
 					sil = true;
 				}
 				if (sil)
