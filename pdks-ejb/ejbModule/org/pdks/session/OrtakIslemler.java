@@ -216,6 +216,29 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param tarih
+	 * @param vardiyaList
+	 */
+	public void sonrakiGunVardiyalariAyikla(Date tarih, List<VardiyaGun> vardiyaList) {
+		if (vardiyaList != null && tarih != null) {
+			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
+				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+				boolean sil = false;
+				try {
+					sil = tarih.before(vardiyaGun.getVardiyaDate());
+
+				} catch (Exception e) {
+					sil = true;
+				}
+				if (sil)
+					iterator.remove();
+
+			}
+		}
+
+	}
+
+	/**
 	 * @param session
 	 * @return
 	 */

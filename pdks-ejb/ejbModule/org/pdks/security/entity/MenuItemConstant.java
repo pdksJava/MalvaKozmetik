@@ -61,7 +61,6 @@ public class MenuItemConstant implements Serializable {
 	public static String yemekIzinTanimlama = "/tanimlama/yemekIzinTanimlama.xhtml";
 	public static String yemekKartsizTanimlama = "/tanimlama/yemekKartsizTanimlama.xhtml";
 	public static String yemekTanimlama = "/tanimlama/yemekTanimlama.xhtml";
-	public static String hareketGiris = "/tanimlama/hareketGiris.xhtml";
 	public static String detaysizPersonelTanimlama = "/tanimlama/detaysizPersonelTanimlama.xhtml";
 
 	public static String personelIzinGirisi = "/izin/personelIzinGirisi.xhtml";
@@ -75,6 +74,7 @@ public class MenuItemConstant implements Serializable {
 	public static String bakiyeGuncelle = "/izin/bakiyeGuncelle.xhtml";
 	public static String personelIzinKopyala = "/izin/personelIzinKopyala.xhtml";
 
+	public static String hareketGiris = "/puantaj/hareketGiris.xhtml";
 	public static String vardiyaPlani = "/puantaj/vardiyaPlani.xhtml";
 	public static String isKurVardiyaPlani = "/puantaj/isKurVardiyaPlani.xhtml";
 	public static String pdksVardiyaTanimlama = "/puantaj/pdksVardiyaTanimlama.xhtml";

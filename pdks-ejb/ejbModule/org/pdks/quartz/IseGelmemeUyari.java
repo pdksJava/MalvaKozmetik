@@ -338,7 +338,7 @@ public class IseGelmemeUyari implements Serializable {
 					// ortakIslemler.fazlaMesaiSaatiAyarla(vardiyalar);
 					Date vardiyaBas = null;
 					List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>(vardiyalar.values());
-
+					ortakIslemler.sonrakiGunVardiyalariAyikla(tarih, vardiyaList);
 					HareketKGS arifeCikis = null;
 					Date vardiyaBitTar = (Date) tarih.clone();
 					// İlk vardiya başlangıç zamanı okunuyor

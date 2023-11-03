@@ -81,7 +81,7 @@
 								<a4j:commandButton id="dosyaOku" value="Dosya Oku" status="ajaxStatus" ajaxSingle="true" action="#{hareketGirisHome.dosyaOku}"
 									rendered="#{hareketGirisHome.dosya.dosyaIcerik!=null and hareketGirisHome.tarih!=null and hareketGirisHome.dosyaTamam==false}"
 									reRender="excelPanel,personelDosya"></a4j:commandButton>
-								<a4j:commandButton value="Dosya Aktar" status="ajaxStatus" action="#{hareketGirisHome.save()}" rendered="#{hareketGirisHome.dosyaTamam }"
+								<a4j:commandButton value="Dosya Aktar" status="ajaxStatus" action="#{hareketGirisHome.save()}" rendered="#{hareketGirisHome.dosyaTamam}"
 									reRender="dosyaPanel,excelPanel" />
 							</ui:fragment>
 						</a4j:outputPanel>
@@ -90,6 +90,9 @@
 				</h:panelGrid>
 
 			</rich:panel>
+			<a4j:outputPanel ajaxRendered="true">
+				<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+			</a4j:outputPanel>
 			<a4j:outputPanel id="excelPanel">
 				<rich:panel>
 					<rich:dataTable rowClasses="acik,koyu" value="#{hareketGirisHome.vardiyaGunleri}" var="vg" rows="25" rowKeyVar="row">
