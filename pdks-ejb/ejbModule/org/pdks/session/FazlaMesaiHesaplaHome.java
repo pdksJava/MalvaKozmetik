@@ -4711,7 +4711,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_AKSAM_SAAT, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz gece mesai saati");
 		}
 		if (modelGoster)
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 		if (denklestirmeDinamikAlanlar != null && !denklestirmeDinamikAlanlar.isEmpty()) {
 			for (Tanim alan : denklestirmeDinamikAlanlar) {
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(alan.getAciklama());

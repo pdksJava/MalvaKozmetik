@@ -615,8 +615,9 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
+
 		if (modelGoster)
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 		if (bordroAltAlani)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bordro Alt Birimi");
 		if (PdksUtil.hasStringValue(sanalPersonelAciklama))
@@ -747,7 +748,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
 		if (modelGoster)
-			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 		if (bordroAltAlani)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bordro Alt Birimi");
 		if (PdksUtil.hasStringValue(sanalPersonelAciklama))

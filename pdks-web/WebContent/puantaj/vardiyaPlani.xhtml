@@ -472,7 +472,7 @@
 
 					<h:panelGrid id="digerIslemler" columns="5" rendered="#{vardiyaGunHome.personelAylikPuantaj.kaydet}">
 						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Çalışma Modeli</ui:define>
+							<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()}</ui:define>
 							<h:selectOneMenu value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
 								styleClass="size10" required="true" style="width:85px" requiredMessage="Çalışma Şekli Seciniz">
 								<s:selectItems var="comp" value="#{vardiyaGunHome.modelList}" label="#{comp.calismaModeli.aciklama}" noSelectionLabel="Lutfen Seciniz" />

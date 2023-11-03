@@ -185,7 +185,7 @@
 								</rich:column>
 								<rich:column rendered="#{fazlaMesaiOzetRaporHome.modelGoster}" style="width: 40px;width:autostretch ;white-space: nowrap;">
 									<f:facet name="header">
-										<h:outputText value="Çalışma Modeli" />
+										<h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" />
 									</f:facet>
 									<SPAN style="width: autostretch; white-space: nowrap;"> <ui:fragment
 											rendered="#{aylikPuantaj.personelDenklestirmeAylik!=null and aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy!=null}">

@@ -90,7 +90,7 @@ public class IseGelmemeUyari implements Serializable {
 
 	private static boolean calisiyor = Boolean.FALSE;
 
-	private String hataKonum, personelNoAciklama, tesisAciklama, bolumAciklama, altBolumAciklama, yoneticiAciklama;
+	private String hataKonum, personelNoAciklama, tesisAciklama, bolumAciklama, altBolumAciklama, yoneticiAciklama, calismaModeliBaslikAciklama;
 
 	private boolean statuGoster = Boolean.FALSE, hariciPersonelVar, yoneticiTanimsiz = Boolean.FALSE, yoneticiMailGonderme = Boolean.FALSE, izinVar = Boolean.FALSE, tesisVar = Boolean.FALSE, hataliHareketVar = Boolean.FALSE;
 
@@ -127,6 +127,7 @@ public class IseGelmemeUyari implements Serializable {
 		altBolumAciklama = (String) sonucMap.get("altBolumAciklama");
 		personelNoAciklama = ortakIslemler.personelNoAciklama();
 		yoneticiAciklama = ortakIslemler.yoneticiAciklama();
+		calismaModeliBaslikAciklama = ortakIslemler.calismaModeliAciklama();
 
 	}
 
@@ -1112,7 +1113,7 @@ public class IseGelmemeUyari implements Serializable {
 					if (bolumVar)
 						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 					if (calismaModeliVar)
-						ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
+						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(calismaModeliBaslikAciklama);
 					if (altBolumVar)
 						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(altBolumAciklama);
 					ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
@@ -1134,7 +1135,7 @@ public class IseGelmemeUyari implements Serializable {
 				if (bolumVar)
 					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + bolumAciklama + "</b></TH>");
 				if (calismaModeliVar)
-					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Çalışma Modeli</b></TH>");
+					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + calismaModeliBaslikAciklama + "</b></TH>");
 				if (altBolumVar)
 					sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>" + altBolumAciklama + "</b></TH>");
 				sb.append("<TH align=\"center\" style=\"border: 1px solid;\"><b>Adı Soyadı</b></TH>");

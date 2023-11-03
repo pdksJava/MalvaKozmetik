@@ -103,7 +103,7 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="Çalışma Modeli" />
+								<h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.calismaModeli.aciklama}" id="calismaModeli" />
 						</rich:column>
@@ -208,7 +208,7 @@
 						</h:inputText>
 					</s:decorate>
 					<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaSablonuHome.modelList!=null}">
-						<ui:define name="label">Çalışma Modeli</ui:define>
+						<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()}</ui:define>
 						<h:selectOneMenu value="#{vardiyaSablonuHome.instance.calismaModeli}" style="text-align : left" disabled="#{authenticatedUser.admin==false}">
 							<s:selectItems var="calismaModeli" value="#{vardiyaSablonuHome.modelList}" label="#{calismaModeli.aciklama}" noSelectionLabel="Lütfen seçiniz" />
 							<a4j:support event="onchange" ajaxSingle="true" />

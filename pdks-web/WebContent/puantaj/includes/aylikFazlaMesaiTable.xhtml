@@ -138,7 +138,7 @@
 			<rich:column class="#{aylikPuantaj.trSonucClass}" style="width: 40px;width:autostretch ;white-space: nowrap;"
 				rendered="#{fazlaMesaiHesaplaHome.modelGoster}">
 				<f:facet name="header">
-					<h:outputText value="Çalışma Modeli" />
+					<h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" />
 				</f:facet>
 				<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik!=null and aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy!=null}">
 

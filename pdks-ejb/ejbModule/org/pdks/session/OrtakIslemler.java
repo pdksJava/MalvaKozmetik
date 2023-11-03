@@ -226,7 +226,7 @@ public class OrtakIslemler implements Serializable {
 				boolean sil = false;
 				try {
 					sil = tarih.before(vardiyaGun.getVardiyaDate());
- 				} catch (Exception e) {
+				} catch (Exception e) {
 					sil = true;
 				}
 				if (sil)
@@ -5092,6 +5092,14 @@ public class OrtakIslemler implements Serializable {
 	public String personelNoAciklama() {
 		String personelNoAciklama = getBaslikAciklama("personelNoAciklama", "Personel No");
 		return personelNoAciklama;
+	}
+
+	/**
+	 * @return
+	 */
+	public String calismaModeliAciklama() {
+		String calismaModeliAciklama = getBaslikAciklama("calismaModeliAciklama", "Çalışma Modeli");
+		return calismaModeliAciklama;
 	}
 
 	/**
@@ -11708,7 +11716,7 @@ public class OrtakIslemler implements Serializable {
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yonetici2Aciklama() + " " + personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yonetici2Aciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya Şablon");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(calismaModeliAciklama());
 		if (!izinERPUpdate)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(kidemBasTarihiAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşe Giriş Tarihi");

@@ -172,7 +172,7 @@
 							</rich:column>
 							<rich:column>
 								<f:facet name="header">
-									<h:outputText value="Çalışma Modeli" />
+									<h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.calismaModeli.aciklama}" id="calismaModeli" />
 							</rich:column>
@@ -742,7 +742,7 @@
 									<c:if test="#{pdksPersonelHome.instance.sirket.fazlaMesai}">
 
 										<s:decorate template="/layout/edit.xhtml" id="modeller">
-											<ui:define name="label">Çalışma Modeli</ui:define>
+											<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()}</ui:define>
 											<h:selectOneMenu value="#{pdksPersonelHome.instance.calismaModeli}" required="#{pdksPersonelHome.instance.pdks}"
 												disabled="#{pdksPersonelHome.calismaModeliList.size()==1 and pdksPersonelHome.instance.calismaModeli!=null}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.calismaModeliList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />

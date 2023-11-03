@@ -1989,7 +1989,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
 			}
 			if (modelGoster)
-				ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Modeli");
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 			CellStyle headerIzinTipi = (XSSFCellStyle) header.clone();
 			ExcelUtil.setFillForegroundColor(headerIzinTipi, 255, 153, 204);
 
