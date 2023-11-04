@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
 import org.jboss.seam.faces.Renderer;
 import org.pdks.entity.CalismaModeli;
+import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiView;
@@ -39,6 +40,7 @@ import org.pdks.entity.Notice;
 import org.pdks.entity.Parameter;
 import org.pdks.entity.PdksLog;
 import org.pdks.entity.Personel;
+import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelGeciciYonetici;
 import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.PersonelKGS;
@@ -95,7 +97,7 @@ public class IseGelmemeUyari implements Serializable {
 	private boolean statuGoster = Boolean.FALSE, hariciPersonelVar, yoneticiTanimsiz = Boolean.FALSE, yoneticiMailGonderme = Boolean.FALSE, izinVar = Boolean.FALSE, tesisVar = Boolean.FALSE, hataliHareketVar = Boolean.FALSE;
 
 	private Tanim ekSaha1, ekSaha2, ekSaha3, ekSaha4;
-
+	private HashMap<String, PersonelDenklestirme> donemPerDenkMap;
 	private CellStyle header = null;
 	private CellStyle styleOdd = null;
 	private CellStyle styleOddCenter = null;
@@ -478,6 +480,7 @@ public class IseGelmemeUyari implements Serializable {
 						// Hareket kayıtları vardiya günlerine işleniyor
 						boolean kayitVar = false;
 						if ((!izinler.isEmpty() || (personelHareketMap != null && !personelHareketMap.isEmpty())) || (!mailGonder)) {
+
 							TreeMap<Long, List<PersonelIzin>> izinMap = new TreeMap<Long, List<PersonelIzin>>();
 							for (PersonelIzin personelIzin : izinler) {
 								Long key = personelIzin.getIzinSahibi().getId();
@@ -486,6 +489,7 @@ public class IseGelmemeUyari implements Serializable {
 									izinMap.put(key, list1);
 								list1.add(personelIzin);
 							}
+							HashMap<String, List<Long>> donemPerMap = new HashMap<String, List<Long>>();
 							for (Iterator iterator1 = vardiyaList.iterator(); iterator1.hasNext();) {
 								VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator1.next();
 								pdksVardiyaGun.setIlkGiris(null);
@@ -541,6 +545,13 @@ public class IseGelmemeUyari implements Serializable {
 									} catch (Exception e) {
 										logger.error(e);
 									}
+									String donem = pdksVardiyaGun.getVardiyaDateStr().substring(0, 6);
+									Long perId = pdksVardiyaGun.getPdksPersonel().getId();
+									List<Long> idList = donemPerMap.containsKey(donem) ? donemPerMap.get(donem) : new ArrayList<Long>();
+									if (idList.isEmpty())
+										donemPerMap.put(donem, idList);
+									if (!idList.contains(perId))
+										idList.add(perId);
 
 									yoneticisi.getPersonelVardiyalari().add(pdksVardiyaGun);
 									String pdksSicilNo = pdksVardiyaGun.getPersonel().getPdksSicilNo();
@@ -608,6 +619,32 @@ public class IseGelmemeUyari implements Serializable {
 							}
 
 							if (kayitVar && !yoneticiMap.isEmpty()) {
+								donemPerDenkMap = new HashMap<String, PersonelDenklestirme>();
+								if (!donemPerMap.isEmpty()) {
+									for (String key : donemPerMap.keySet()) {
+										int yil = Integer.parseInt(key.substring(0, 4)), ay = Integer.parseInt(key.substring(4));
+										map.clear();
+										map.put("yil", yil);
+										map.put("ay", ay);
+										map.put(PdksEntityController.MAP_KEY_SESSION, session);
+										DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(map, DenklestirmeAy.class);
+										if (denklestirmeAy != null) {
+											map.clear();
+											StringBuffer sb = new StringBuffer();
+											sb.append(" SELECT R.* FROM " + PersonelDenklestirme.TABLE_NAME + " R  WITH(nolock)");
+											sb.append("		WHERE R." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND R." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
+											List<Long> list = donemPerMap.get(key);
+											map.put("p", list);
+											if (session != null)
+												map.put(PdksEntityController.MAP_KEY_SESSION, session);
+											List<PersonelDenklestirme> veriList = pdksEntityController.getObjectBySQLList(sb, map, PersonelDenklestirme.class);
+											for (PersonelDenklestirme personelDenklestirme : veriList)
+												donemPerDenkMap.put(key + "_" + personelDenklestirme.getPersonelId(), personelDenklestirme);
+											veriList = null;
+										}
+
+									}
+								}
 
 								uyariNot = ortakIslemler.getNotice(NoteTipi.MAIL_CEVAPLAMAMA.value(), Boolean.TRUE, session);
 								ikMailList.clear();
@@ -616,6 +653,7 @@ public class IseGelmemeUyari implements Serializable {
 								dataMap.put("hareketHataliMap", hareketHataliMap);
 								yoneticiyeMailGonder(islemYapan, userMap, yoneticiMap, dataMap, manuel, session, mailGonder);
 							}
+							donemPerMap = null;
 						}
 						hareketHataliMap = null;
 						dataMap = null;
@@ -626,6 +664,7 @@ public class IseGelmemeUyari implements Serializable {
 
 		}
 		logger.info("iseGelmeDurumu out " + new Date());
+		donemPerDenkMap = null;
 		if (!manuel)
 			calisiyor = Boolean.FALSE;
 
@@ -1020,10 +1059,15 @@ public class IseGelmemeUyari implements Serializable {
 				HashMap<Long, Tanim> bolumMap = new HashMap<Long, Tanim>();
 				HashMap<Long, CalismaModeli> calismaModeliMap = new HashMap<Long, CalismaModeli>();
 				HashMap<String, Tanim> altBolumMap = new HashMap<String, Tanim>();
-				for (VardiyaGun vardiya : sirketSubeList) {
-					Personel personel = vardiya.getPersonel();
+				for (VardiyaGun vardiyaGun : sirketSubeList) {
+					Personel personel = vardiyaGun.getPersonel();
+					String donemStr = vardiyaGun.getVardiyaDateStr().substring(0, 6) + "_" + personel.getId();
+					if (donemPerDenkMap.containsKey(donemStr)) {
+						PersonelDenklestirme personelDenklestirme = donemPerDenkMap.get(donemStr);
+						vardiyaGun.setCalismaModeli(personelDenklestirme.getCalismaModeli());
+					}
 					Tanim bolum = personel != null && personel.getEkSaha3() != null ? personel.getEkSaha3() : new Tanim(0L);
-					CalismaModeli calismaModeli = personel.getCalismaModeli();
+					CalismaModeli calismaModeli = vardiyaGun.getCalismaModeli();
 					if (calismaModeli != null && !calismaModeliMap.containsKey(calismaModeli.getId()))
 						calismaModeliMap.put(calismaModeli.getId(), calismaModeli);
 					if (!bolumMap.containsKey(bolum.getId()))
@@ -1046,9 +1090,9 @@ public class IseGelmemeUyari implements Serializable {
 						}
 					}
 					if (!hataliHareketGundeVar)
-						hataliHareketGundeVar = vardiya.isHareketHatali() && vardiya.getHareketler() != null && !vardiya.getHareketler().isEmpty();
+						hataliHareketGundeVar = vardiyaGun.isHareketHatali() && vardiyaGun.getHareketler() != null && !vardiyaGun.getHareketler().isEmpty();
 					if (!izinGirisVar) {
-						izinGirisVar = vardiya.getIzin() != null;
+						izinGirisVar = vardiyaGun.getIzin() != null;
 					}
 
 				}
@@ -1154,6 +1198,7 @@ public class IseGelmemeUyari implements Serializable {
 				for (Iterator iterator2 = sirketSubeList.iterator(); iterator2.hasNext();) {
 					VardiyaGun vg = (VardiyaGun) iterator2.next();
 					Personel personel = vg.getPersonel();
+
 					boolean degisti = false;
 					if (id == null || !personel.getId().equals(id)) {
 						id = personel.getId();
@@ -1183,7 +1228,7 @@ public class IseGelmemeUyari implements Serializable {
 						if (bolumVar)
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null && degisti ? personel.getEkSaha3().getAciklama() : "");
 						if (calismaModeliVar)
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getCalismaModeli() != null && degisti ? personel.getCalismaModeli().getAciklama() : "");
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(vg.getCalismaModeli() != null && degisti ? vg.getCalismaModeli().getAciklama() : "");
 						if (altBolumVar)
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null && degisti ? personel.getEkSaha4().getAciklama() : "");
 						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(degisti ? personel.getAdSoyad() : "");
@@ -1229,7 +1274,7 @@ public class IseGelmemeUyari implements Serializable {
 					if (bolumVar)
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha3() != null && degisti ? personel.getEkSaha3().getAciklama() : "") + "</td>");
 					if (calismaModeliVar)
-						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getCalismaModeli() != null && degisti ? personel.getCalismaModeli().getAciklama() : "") + "</td>");
+						sb.append("<td nowrap style=\"border: 1px solid;\">" + (vg.getCalismaModeli() != null && degisti ? vg.getCalismaModeli().getAciklama() : "") + "</td>");
 
 					if (altBolumVar)
 						sb.append("<td nowrap style=\"border: 1px solid;\">" + (personel.getEkSaha4() != null && degisti ? personel.getEkSaha4().getAciklama() : "") + "</td>");
