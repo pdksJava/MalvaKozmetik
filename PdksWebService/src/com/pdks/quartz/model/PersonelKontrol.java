@@ -185,7 +185,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 			logger.info("Personel Kontrol start " + new Date());
 			fields.clear();
 			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT D.* FROM " + HataliPersonel.VIEW_NAME + " D ");
+			sb.append("SELECT D.* FROM " + HataliPersonel.VIEW_NAME + " D WITH(nolock)");
 			sb.append(" ORDER BY D." + HataliPersonel.COLUMN_NAME_TIP + ",D." + HataliPersonel.COLUMN_NAME_PERSONEL_NO + ", D." + HataliPersonel.COLUMN_NAME_ID);
 			List<HataliPersonel> hataliPersonelList = pdksDAO.getNativeSQLList(fields, sb, HataliPersonel.class);
 			if (hataliPersonelList != null && !hataliPersonelList.isEmpty()) {

@@ -159,11 +159,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 		sb.append("		select 1 AS ID ");
 		sb.append("	),");
 		sb.append("	DEP_YONETICI AS (");
-		sb.append("		SELECT R.ROLENAME DEP_YONETICI_ROL_ADI FROM " + Role.TABLE_NAME + " R");
+		sb.append("		SELECT R.ROLENAME DEP_YONETICI_ROL_ADI FROM " + Role.TABLE_NAME + " R WITH(nolock)");
 		sb.append("		WHERE R." + Role.COLUMN_NAME_ROLE_NAME + "='" + Role.TIPI_DEPARTMAN_SUPER_VISOR + "' AND R." + Role.COLUMN_NAME_STATUS + "=1");
 		sb.append("	),");
 		sb.append("	IZIN_DURUM AS (");
-		sb.append("		SELECT COUNT(I.ID) AS IZIN_TIPI_ADET FROM " + IzinTipi.TABLE_NAME + " I");
+		sb.append("		SELECT COUNT(I.ID) AS IZIN_TIPI_ADET FROM " + IzinTipi.TABLE_NAME + " I WITH(nolock)");
 		sb.append("			INNER JOIN " + Departman.TABLE_NAME + " D ON D." + Departman.COLUMN_NAME_ID + "=I." + IzinTipi.COLUMN_NAME_DEPARTMAN + " AND D." + Departman.COLUMN_NAME_ADMIN_DURUM + "=1 AND D." + Departman.COLUMN_NAME_DURUM + "=1");
 		sb.append("		WHERE I." + IzinTipi.COLUMN_NAME_DURUM + "=1  AND I." + IzinTipi.COLUMN_NAME_BAKIYE_IZIN_TIPI + " IS NULL AND I." + IzinTipi.COLUMN_NAME_GIRIS_TIPI + "<>'" + IzinTipi.GIRIS_TIPI_YOK + "'");
 		sb.append("	)");
@@ -2320,7 +2320,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("WITH DENKAY AS ( ");
-			sb.append(" SELECT " + DenklestirmeAy.COLUMN_NAME_YIL + "*100+" + DenklestirmeAy.COLUMN_NAME_AY + " AS DONEM,* FROM " + DenklestirmeAy.TABLE_NAME + " ");
+			sb.append(" SELECT " + DenklestirmeAy.COLUMN_NAME_YIL + "*100+" + DenklestirmeAy.COLUMN_NAME_AY + " AS DONEM,* FROM " + DenklestirmeAy.TABLE_NAME + " WITH(nolock) ");
 			sb.append("	 WHERE " + DenklestirmeAy.COLUMN_NAME_DURUM + "=" + (donemDurum ? "1" : "0"));
 			sb.append(" ) ");
 			sb.append(" SELECT  PD.* FROM  DENKAY D WITH(nolock) ");
@@ -3701,14 +3701,14 @@ public class PdksVeriOrtakAktar implements Serializable {
 					sb = new StringBuffer();
 					sb.append(" WITH VERI AS ( ");
 					if (ikinciYoneticiOlmaz != null) {
-						sb.append(" SELECT  D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " AS ID FROM " + PersonelDinamikAlan.TABLE_NAME + " D ");
+						sb.append(" SELECT  D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " AS ID FROM " + PersonelDinamikAlan.TABLE_NAME + " D WITH(nolock)");
 						sb.append(" INNER JOIN " + Personel.TABLE_NAME + " Y ON Y. " + Personel.COLUMN_NAME_YONETICI + " =D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL);
 						sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P. " + Personel.COLUMN_NAME_YONETICI + " =Y." + Personel.COLUMN_NAME_ID);
 						sb.append(" WHERE  D." + PersonelDinamikAlan.COLUMN_NAME_ALAN + "=" + ikinciYoneticiOlmaz.getId());
 						sb.append(" AND  " + PersonelDinamikAlan.COLUMN_NAME_DURUM_SECIM + "=1");
 						sb.append(" UNION ");
 					}
-					sb.append(" SELECT U." + User.COLUMN_NAME_PERSONEL + " AS ID FROM " + User.TABLE_NAME + " U ");
+					sb.append(" SELECT U." + User.COLUMN_NAME_PERSONEL + " AS ID FROM " + User.TABLE_NAME + " U WITH(nolock)");
 					sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=U." + User.COLUMN_NAME_PERSONEL);
 					sb.append(" AND P." + Personel.COLUMN_NAME_DURUM + "=1 AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=convert(datetime,Convert(CHAR(8),GETDATE(), 112),112) ");
 					sb.append(" AND P.IKINCI_YONETICI_IZIN_ONAYLA=0");

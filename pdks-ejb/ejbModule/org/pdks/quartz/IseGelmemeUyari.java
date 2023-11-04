@@ -664,7 +664,6 @@ public class IseGelmemeUyari implements Serializable {
 
 		}
 		logger.info("iseGelmeDurumu out " + new Date());
-		donemPerDenkMap = null;
 		if (!manuel)
 			calisiyor = Boolean.FALSE;
 
@@ -1062,7 +1061,7 @@ public class IseGelmemeUyari implements Serializable {
 				for (VardiyaGun vardiyaGun : sirketSubeList) {
 					Personel personel = vardiyaGun.getPersonel();
 					String donemStr = vardiyaGun.getVardiyaDateStr().substring(0, 6) + "_" + personel.getId();
-					if (donemPerDenkMap.containsKey(donemStr)) {
+					if (donemPerDenkMap != null && donemPerDenkMap.containsKey(donemStr)) {
 						PersonelDenklestirme personelDenklestirme = donemPerDenkMap.get(donemStr);
 						vardiyaGun.setCalismaModeli(personelDenklestirme.getCalismaModeli());
 					}
@@ -1558,7 +1557,7 @@ public class IseGelmemeUyari implements Serializable {
 			sb.append("		select 1 AS ID ");
 			sb.append("	),");
 			sb.append("	DEP_YONETICI AS (");
-			sb.append("		SELECT R.ROLENAME DEP_YONETICI_ROL_ADI FROM " + Role.TABLE_NAME + " R");
+			sb.append("		SELECT R.ROLENAME DEP_YONETICI_ROL_ADI FROM " + Role.TABLE_NAME + " R WITH(nolock)");
 			sb.append("		WHERE R." + Role.COLUMN_NAME_ROLE_NAME + "='" + Role.TIPI_DEPARTMAN_SUPER_VISOR + "' AND R." + Role.COLUMN_NAME_STATUS + "=1");
 			sb.append("	) ");
 			sb.append("	SELECT COALESCE(DY.DEP_YONETICI_ROL_ADI,'') DEP_YONETICI_ROL_ADI, GETDATE() AS TARIH FROM BUGUN B ");
@@ -1623,6 +1622,7 @@ public class IseGelmemeUyari implements Serializable {
 			}
 		}
 		sb = null;
+		donemPerDenkMap = null;
 
 		return "";
 	}

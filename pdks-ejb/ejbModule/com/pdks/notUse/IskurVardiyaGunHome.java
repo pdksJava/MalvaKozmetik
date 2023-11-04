@@ -2011,7 +2011,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		StringBuffer sb = new StringBuffer();
 		sb.append("WITH PER_TARIH AS ( ");
 		sb.append(" SELECT YEAR(" + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + ")*100+MONTH(" + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + ") AS D1,");
-		sb.append(" YEAR(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ")*100+MONTH(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ") AS D2 FROM " + Personel.TABLE_NAME);
+		sb.append(" YEAR(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ")*100+MONTH(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ") AS D2 FROM " + Personel.TABLE_NAME+" WITH(nolock)");
 		sb.append(" WHERE " + Personel.COLUMN_NAME_ISKUR_SABLON + " IS NOT NULL )");
 		sb.append(" select DISTINCT D.* from " + DenklestirmeAy.TABLE_NAME + " D WITH(nolock) ");
 		sb.append(" INNER  JOIN PER_TARIH PD ON PD.D1<=(D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + " AND PD.D2>=(D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY);

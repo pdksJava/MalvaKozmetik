@@ -1657,7 +1657,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					if (!yIdList.contains(personel.getId()))
 						idList.add(personel.getId());
 				StringBuffer sb = new StringBuffer();
-				sb.append(" SELECT D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " FROM " + PersonelDinamikAlan.TABLE_NAME + " D ");
+				sb.append(" SELECT D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " FROM " + PersonelDinamikAlan.TABLE_NAME + " D WITH(nolock) ");
 				sb.append(" WHERE  D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + ":p AND  " + PersonelDinamikAlan.COLUMN_NAME_ALAN + "=" + ikinciYoneticiOlmaz.getId());
 				sb.append(" AND  " + PersonelDinamikAlan.COLUMN_NAME_DURUM_SECIM + "=1");
 				fields.clear();
