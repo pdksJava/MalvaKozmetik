@@ -218,21 +218,74 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @param tarih
 	 * @param vardiyaList
+	 * @param session
 	 */
-	public void sonrakiGunVardiyalariAyikla(Date tarih, List<VardiyaGun> vardiyaList) {
-		if (vardiyaList != null && tarih != null) {
+	public void sonrakiGunVardiyalariAyikla(Date tarih, List<VardiyaGun> vardiyaList, Session session) {
+		if (vardiyaList != null) {
+			HashMap<String, List<Long>> donemPerMap = new HashMap<String, List<Long>>();
 			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 				boolean sil = false;
-				try {
-					sil = tarih.before(vardiyaGun.getVardiyaDate());
-				} catch (Exception e) {
-					sil = true;
+				if (tarih != null) {
+					try {
+						sil = tarih.before(vardiyaGun.getVardiyaDate());
+					} catch (Exception e) {
+						sil = true;
+					}
 				}
+
 				if (sil)
 					iterator.remove();
+				else {
+					String donem = vardiyaGun.getVardiyaDateStr().substring(0, 6);
+					Long perId = vardiyaGun.getPdksPersonel().getId();
+					List<Long> idList = donemPerMap.containsKey(donem) ? donemPerMap.get(donem) : new ArrayList<Long>();
+					if (idList.isEmpty())
+						donemPerMap.put(donem, idList);
+					if (!idList.contains(perId))
+						idList.add(perId);
+				}
 
 			}
+			if (!donemPerMap.isEmpty()) {
+				HashMap<String, PersonelDenklestirme> donemPerDenkMap = new HashMap<String, PersonelDenklestirme>();
+				if (!donemPerMap.isEmpty()) {
+					for (String key : donemPerMap.keySet()) {
+						int yil = Integer.parseInt(key.substring(0, 4)), ay = Integer.parseInt(key.substring(4));
+						HashMap map = new HashMap();
+						map.put("yil", yil);
+						map.put("ay", ay);
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+						DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(map, DenklestirmeAy.class);
+						if (denklestirmeAy != null) {
+							map.clear();
+							StringBuffer sb = new StringBuffer();
+							sb.append(" SELECT R.* FROM " + PersonelDenklestirme.TABLE_NAME + " R  WITH(nolock)");
+							sb.append("		WHERE R." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND R." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
+							List<Long> list = donemPerMap.get(key);
+							map.put("p", list);
+							if (session != null)
+								map.put(PdksEntityController.MAP_KEY_SESSION, session);
+							List<PersonelDenklestirme> veriList = pdksEntityController.getObjectBySQLList(sb, map, PersonelDenklestirme.class);
+							for (PersonelDenklestirme personelDenklestirme : veriList)
+								donemPerDenkMap.put(key + "_" + personelDenklestirme.getPersonelId(), personelDenklestirme);
+							veriList = null;
+						}
+ 					}
+					if (!donemPerDenkMap.isEmpty()) {
+						for (VardiyaGun vardiyaGun : vardiyaList) {
+							Personel personel = vardiyaGun.getPersonel();
+							String donemStr = vardiyaGun.getVardiyaDateStr().substring(0, 6) + "_" + personel.getId();
+							if (donemPerDenkMap != null && donemPerDenkMap.containsKey(donemStr)) {
+								PersonelDenklestirme personelDenklestirme = donemPerDenkMap.get(donemStr);
+								vardiyaGun.setCalismaModeli(personelDenklestirme.getCalismaModeli());
+							}
+						}
+					}
+				}
+				donemPerDenkMap = null;
+			}
+			donemPerMap = null;
 		}
 
 	}

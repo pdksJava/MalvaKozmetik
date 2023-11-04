@@ -442,6 +442,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 						List<VardiyaGun> kartBastMayanList = new ArrayList<VardiyaGun>();
 						ekSaha4Tanim = ortakIslemler.getEkSaha4(null, aramaSecenekleri.getSirketId(), session);
 						boolean altBolumVar = false;
+						ortakIslemler.sonrakiGunVardiyalariAyikla(null, vardiyaGunList, session);
 						for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 							VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
 							VardiyaGun vardiyaGun = (VardiyaGun) pdksVardiyaGun.clone();
@@ -546,7 +547,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									gelmedi = vardiya.getVardiyaTelorans2BasZaman().before(bugun);
 								}
 							}
-							Long calismaSekliId = personel.getCalismaModeli() != null ? personel.getCalismaModeli().getId() : 0L;
+							Long calismaSekliId = pdksVardiyaGun.getCalismaModeli() != null ? pdksVardiyaGun.getCalismaModeli().getId() : 0L;
 							Tanim bolum = personel.getEkSaha3(), altBolum = null;
 							Long bolumId = bolum != null ? bolum.getId() : 0L, altBolumId = 0L;
 							if (ekSaha4Tanim != null && bolumId.longValue() > 0L && bolum.getKodu().equals(altBolumGrupGoster)) {
@@ -567,9 +568,10 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 								aylikPuantaj = new AylikPuantaj();
 								aylikPuantaj.setIzinSuresi(0.0d);
 								liste = new Liste(veriKey, aylikPuantaj);
-								String str = personel.getCalismaModeli() != null ? personel.getCalismaModeli().getAciklama() : "";
+								String str = pdksVardiyaGun.getCalismaModeli() != null ? pdksVardiyaGun.getCalismaModeli().getAciklama() : "";
 								liste.setSelected(str + " " + (bolum != null ? bolum.getAciklama() : "") + (altBolum != null ? " " + altBolum.getAciklama() : ""));
 								Personel pdksPersonel = (Personel) personel.clone();
+								pdksPersonel.setCalismaModeli(pdksVardiyaGun.getCalismaModeli());
 								pdksPersonel.setId(null);
 								pdksPersonel.setAd(bolum != null ? bolum.getAciklama() : "");
 								pdksPersonel.setSoyad(altBolum != null && altBolumId != null && altBolumId.longValue() > 0L ? " " + altBolum.getAciklama() : "");
@@ -578,6 +580,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 								if (pdksPersonel.getCalismaModeli() == null)
 									pdksPersonel.setCalismaModeli(new CalismaModeli());
 								aylikPuantaj.setPdksPersonel(pdksPersonel);
+								aylikPuantaj.setCalismaModeli(pdksVardiyaGun.getCalismaModeli());
 								veriMap.put(veriKey, liste);
 							}
 							double adet = 1.0d;
@@ -710,7 +713,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									aylikDepPuantaj.setTrClass(VardiyaGun.STYLE_CLASS_EVEN);
 									aylikDepPuantaj.setVardiyalar(new ArrayList<VardiyaGun>());
 									Personel pdksPersonel = new Personel();
-									pdksPersonel.setCalismaModeli(personel.getCalismaModeli());
+									pdksPersonel.setCalismaModeli(aylikPuantaj.getCalismaModeli());
 									aylikDepPuantaj.setPdksPersonel(pdksPersonel);
 									toplamCalismaSekliId = calismaSekliId;
 								} else {

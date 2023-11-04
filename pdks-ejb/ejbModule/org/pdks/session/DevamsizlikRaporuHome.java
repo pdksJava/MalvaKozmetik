@@ -346,7 +346,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			} catch (Exception e) {
 			}
 			vardiyaList = new ArrayList<VardiyaGun>(vardiyaMap.values());
-			ortakIslemler.sonrakiGunVardiyalariAyikla(date, vardiyaList);
+			ortakIslemler.sonrakiGunVardiyalariAyikla(date, vardiyaList, session);
 			// butun personeller icin hareket cekerken bu en kucuk tarih ile en
 			// buyuk tarih araligini kullanacaktir
 			// bu araliktaki tum hareketleri cekecektir.
