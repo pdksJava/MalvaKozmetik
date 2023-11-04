@@ -971,7 +971,7 @@ public class IseGelmemeUyari implements Serializable {
 						wb.write(baos);
 						MailFile mailFile = new MailFile();
 						mailFile.setIcerik(baos.toByteArray());
-						mailFile.setDisplayName("Işe Gelmeme Durum_" + PdksUtil.convertToDateString(islemTarihi, "yyyy-mm-dd") + ".xlsx");
+						mailFile.setDisplayName("Işe Gelmeme Durum_" + PdksUtil.convertToDateString(islemTarihi, "yyyy-MM-dd") + ".xlsx");
 						mail.getAttachmentFiles().add(mailFile);
 						mailSatu = ortakIslemler.mailSoapServisGonder(true, mail, renderer, renderAdres, session);
 					} catch (Exception e) {
@@ -1602,7 +1602,7 @@ public class IseGelmemeUyari implements Serializable {
 						wb.write(baos);
 						MailFile mailFile = new MailFile();
 						mailFile.setIcerik(baos.toByteArray());
-						mailFile.setDisplayName("Işe Gelmeme Durum_" + sirket.getAd() + "_" + PdksUtil.convertToDateString(tarih, "yyyy-mm-dd") + "_" + personel.getPdksSicilNo() + "_" + personel.getAdSoyad() + ".xlsx");
+						mailFile.setDisplayName("Işe Gelmeme Durum_" + sirket.getAd() + "_" + PdksUtil.convertToDateString(tarih, "yyyy-MM-dd") + "_" + personel.getPdksSicilNo() + "_" + personel.getAdSoyad() + ".xlsx");
 						mail.getAttachmentFiles().add(mailFile);
 					} else
 						iterator.remove();
