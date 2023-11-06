@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -30,7 +31,6 @@ import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
 import org.jboss.seam.faces.Renderer;
 import org.pdks.entity.CalismaModeli;
-import org.pdks.entity.Departman;
 import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiView;
@@ -270,53 +270,6 @@ public class IseGelmemeUyari implements Serializable {
 				map.put("sirket.departman.id=", islemYapan.getDepartman().getId());
 			List<Personel> personeller = pdksEntityController.getObjectByInnerObjectListInLogic(map, Personel.class);
 			if (!personeller.isEmpty()) {
-				HashMap<String, Liste> listMap = new HashMap<String, Liste>();
-				for (Personel personel : personeller) {
-					Sirket sirket = personel.getSirket();
-					if (sirket.isPdksMi()) {
-						Departman departman = sirket.getDepartman();
-						Long departmanId = null, sirketId = null;
-						String sirketIdStr = null;
-						String tesisIdStr = null;
-						if (sirket != null) {
-							if (sirket.isTesisDurumu() && personel.getTesis() != null)
-								tesisIdStr = personel.getTesis().getAciklama();
-							departmanId = departman != null ? departman.getId() : null;
-							if (sirket.getSirketGrup() != null)
-								sirketId = -sirket.getSirketGrup().getId();
-							else
-								sirketId = sirket.getId();
-						}
-						if (departmanId == null)
-							departmanId = 0L;
-						if (sirketId != null)
-							sirketIdStr = (sirketId > 0L ? "S-" + sirket.getAd() : "G-" + sirket.getSirketGrup().getAciklama());
-						if (sirketIdStr == null)
-							sirketIdStr = "";
-
-						String id = departmanId + "_" + sirketIdStr + (PdksUtil.hasStringValue(tesisIdStr) ? "_" + tesisIdStr : "");
-						Liste liste = listMap.containsKey(id) ? listMap.get(id) : new Liste(id, null);
-						List<Personel> perList = null;
-						if (liste.getValue() != null)
-							perList = (List<Personel>) liste.getValue();
-						else {
-							perList = new ArrayList<Personel>();
-							liste.setValue(perList);
-							listMap.put(id, liste);
-						}
-						perList.add(personel);
-					}
-				}
-				if (!listMap.isEmpty()) {
-					List<Liste> list = PdksUtil.sortObjectStringAlanList(new ArrayList(listMap.values()), "getId", null);
-					personeller.clear();
-					for (Liste liste : list) {
-						List<Personel> perList = (List<Personel>) liste.getValue();
-						personeller.addAll(perList);
-					}
-					list = null;
-				}
-				listMap = null;
 				HashMap<Long, Long> yoneticiler = new HashMap<Long, Long>();
 				HashMap<Long, Personel> kgsPerMap = new HashMap<Long, Personel>();
 				if (yoneticiTanimsiz) {
@@ -385,10 +338,11 @@ public class IseGelmemeUyari implements Serializable {
 					} catch (Exception e) {
 					}
 
-					// ortakIslemler.fazlaMesaiSaatiAyarla(vardiyalar);
-					Date vardiyaBas = null;
 					List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>(vardiyalar.values());
 					ortakIslemler.sonrakiGunVardiyalariAyikla(tarih, vardiyaList, session);
+
+					Date vardiyaBas = null;
+
 					HareketKGS arifeCikis = null;
 					Date vardiyaBitTar = (Date) tarih.clone();
 					// İlk vardiya başlangıç zamanı okunuyor
@@ -400,7 +354,6 @@ public class IseGelmemeUyari implements Serializable {
 							iterator.remove();
 							continue;
 						}
-
 						if (pdksVardiyaGun.getIslemVardiya() != null && pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman().getTime() > vardiyaBitTar.getTime())
 							vardiyaBitTar = (Date) pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman().clone();
 						// Long yoneticisiId = pdksVardiyaGun.getPersonel().getYoneticisi().getId();
@@ -1043,10 +996,13 @@ public class IseGelmemeUyari implements Serializable {
 			}
 
 			Sirket sirket = personel.getSirket();
+			Long departmanId = null;
+			if (sirket.getDepartman() != null)
+				departmanId = sirket.getDepartman().getId();
 			Tanim tesis = sirket.isTesisDurumu() ? personel.getTesis() : null;
 			if (tesisList != null && tesis != null && !tesisList.contains(tesis.getId()))
 				continue;
-			String key = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? "_" + tesis.getAciklama() : "");
+			String key = (departmanId != null ? departmanId : 0L) + "_" + (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? "_" + tesis.getAciklama() : "");
 			List<VardiyaGun> ozelList = sirketParcalaMap.containsKey(key) ? sirketParcalaMap.get(key) : new ArrayList<VardiyaGun>();
 			if (ozelList.isEmpty()) {
 				Liste liste = new Liste(key, ozelList);
@@ -1251,15 +1207,17 @@ public class IseGelmemeUyari implements Serializable {
 
 						else
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
-
+						Cell hareketCell = null;
 						if (hataliHareketGundeVar) {
 							StringBuffer sbMesaj = new StringBuffer();
 							if (vg.getHareketler() != null && !vg.getHareketler().isEmpty()) {
 								for (HareketKGS hareketKGS : vg.getHareketler()) {
-									sbMesaj.append(hareketKGS.getKapiView().getAciklama() + " " + (hareketKGS.getZaman() != null ? user.getTarihFormatla(hareketKGS.getZaman(), PdksUtil.getDateFormat() + " H:mm") : "") + "\n");
+									sbMesaj.append((sbMesaj.length() > 0 ? "\n" : "") + hareketKGS.getKapiView().getAciklama() + " " + (hareketKGS.getZaman() != null ? user.getTarihFormatla(hareketKGS.getZaman(), PdksUtil.getDateFormat() + " H:mm") : ""));
 								}
 							}
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sbMesaj.toString());
+							hareketCell = ExcelUtil.getCell(sheet, row, col++, style);
+							hareketCell.setCellValue(sbMesaj.toString());
+
 						}
 
 						if (izinGirisVar) {
@@ -1271,6 +1229,9 @@ public class IseGelmemeUyari implements Serializable {
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sbMesaj.toString());
 
 						}
+						if (hareketCell != null)
+							hareketCell.getRow().setHeight((short) -1);
+
 					}
 					renk = !renk;
 
@@ -1327,6 +1288,7 @@ public class IseGelmemeUyari implements Serializable {
 					}
 					for (int i = 0; i < uz; i++)
 						sheet.autoSizeColumn(i);
+
 				}
 				sheetSatirMap.put(sirketIdStr, row);
 				sheetSutunMap.put(sirketIdStr, uz);
