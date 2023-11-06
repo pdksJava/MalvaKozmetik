@@ -216,6 +216,59 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param personeller
+	 */
+	public void personelSirketTesisSirala(List<Personel> personeller) {
+		HashMap<String, Liste> listMap = new HashMap<String, Liste>();
+		for (Personel personel : personeller) {
+			Sirket sirket = personel.getSirket();
+			if (sirket.isPdksMi()) {
+				Departman departman = sirket.getDepartman();
+				Long departmanId = null, sirketId = null;
+				String sirketIdStr = null;
+				String tesisIdStr = null;
+				if (sirket != null) {
+					if (sirket.isTesisDurumu() && personel.getTesis() != null)
+						tesisIdStr = personel.getTesis().getAciklama();
+					departmanId = departman != null ? departman.getId() : null;
+					if (sirket.getSirketGrup() != null)
+						sirketId = -sirket.getSirketGrup().getId();
+					else
+						sirketId = sirket.getId();
+				}
+				if (departmanId == null)
+					departmanId = 0L;
+				if (sirketId != null)
+					sirketIdStr = (sirketId > 0L ? "S-" + sirket.getAd() : "G-" + sirket.getSirketGrup().getAciklama());
+				if (sirketIdStr == null)
+					sirketIdStr = "";
+
+				String id = departmanId + "_" + sirketIdStr + (PdksUtil.hasStringValue(tesisIdStr) ? "_" + tesisIdStr : "");
+				Liste liste = listMap.containsKey(id) ? listMap.get(id) : new Liste(id, null);
+				List<Personel> perList = null;
+				if (liste.getValue() != null)
+					perList = (List<Personel>) liste.getValue();
+				else {
+					perList = new ArrayList<Personel>();
+					liste.setValue(perList);
+					listMap.put(id, liste);
+				}
+				perList.add(personel);
+			}
+		}
+		if (!listMap.isEmpty()) {
+			List<Liste> list = PdksUtil.sortObjectStringAlanList(new ArrayList(listMap.values()), "getId", null);
+			personeller.clear();
+			for (Liste liste : list) {
+				List<Personel> perList = (List<Personel>) liste.getValue();
+				personeller.addAll(perList);
+			}
+			list = null;
+		}
+		listMap = null;
+	}
+
+	/**
 	 * @param tarih
 	 * @param vardiyaList
 	 * @param session
@@ -3295,7 +3348,7 @@ public class OrtakIslemler implements Serializable {
 							}
 						}
 					}
- 					String spAdi = "SP_GET_FAZLA_MESAI_DATA_ALT";
+					String spAdi = "SP_GET_FAZLA_MESAI_DATA_ALT";
 					StringBuffer sp = new StringBuffer(spAdi);
 					LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 					Long denklestirmeDeger = 0L;
