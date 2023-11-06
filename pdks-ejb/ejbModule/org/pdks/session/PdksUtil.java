@@ -1632,7 +1632,9 @@ public class PdksUtil implements Serializable {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static String encoderURL(String fileName, String characterEncoding) throws UnsupportedEncodingException {
+	public static String encoderURL(String fileName, String characterEncoding) throws Exception {
+		if (characterEncoding == null)
+			characterEncoding = "UTF-8";
 		String url = URLEncoder.encode(fileName, characterEncoding);
 		if (url != null)
 			url = replaceAllManuel(url, "+", " ");
