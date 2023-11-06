@@ -37,6 +37,7 @@ import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.CalismaModeli;
+import org.pdks.entity.CalismaModeliAy;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Dosya;
@@ -558,7 +559,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				fields.clear();
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
-				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
+				sb.append(" INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON CMA." + CalismaModeliAy.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY);
+				sb.append(" INNER JOIN " + CalismaModeli.TABLE_NAME + " CM  ON CM." + CalismaModeli.COLUMN_NAME_ID + "=CMA." + CalismaModeliAy.COLUMN_NAME_CALISMA_MODELI);
+ 				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
 				fields.put("basGun", basGun);
 				fields.put("bitGun", bitGun);
@@ -583,7 +586,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				sb.append(" INNER JOIN " + PersonelDenklestirmeBordro.TABLE_NAME + " B ON B." + PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME + "=V." + PersonelDenklestirme.COLUMN_NAME_ID);
 				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
 				if (sicilDolu == false && (hataliVeriGetir == null || hataliVeriGetir == false))
-					sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1 AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
+					sb.append(" AND (V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1 OR CM." + CalismaModeli.COLUMN_NAME_FAZLA_MESAI_VAR + "=0) AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeBordro.class);

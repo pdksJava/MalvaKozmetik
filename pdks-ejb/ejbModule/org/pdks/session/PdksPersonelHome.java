@@ -447,9 +447,30 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				}
 				if (!sablonList.isEmpty()) {
 					sablonlar.addAll(sablonList);
-					if (sablonlar.size() == 1) {
-						pdksPersonel.setSablon(sablonlar.get(0));
-						sablonDegisti();
+					boolean degistir = pdksPersonel.getId() == null;
+					if (!degistir) {
+						VardiyaSablonu sablon = pdksPersonel.getSablon();
+						degistir = true;
+						for (VardiyaSablonu vardiyaSablonu : sablonList) {
+							if (sablon.getId().equals(vardiyaSablonu.getId()))
+								degistir = false;
+						}
+					}
+					if (degistir) {
+						VardiyaSablonu sablon = null;
+						if (sablonlar.size() == 1) {
+							sablon = sablonlar.get(0);
+						} else if (pdksPersonel.getSablon() == null) {
+							for (VardiyaSablonu vardiyaSablonu : sablonList) {
+								if (vardiyaSablonu.getBeyazYakaDefault() != null && vardiyaSablonu.getBeyazYakaDefault())
+									sablon = vardiyaSablonu;
+
+							}
+						}
+						if (sablon != null) {
+							pdksPersonel.setSablon(sablon);
+							sablonDegisti();
+						}
 					}
 
 				}

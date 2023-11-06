@@ -3295,8 +3295,7 @@ public class OrtakIslemler implements Serializable {
 							}
 						}
 					}
-					// String spAdi = PdksUtil.isPuantajSorguAltBolumGir() || bolumId != null ? "SP_GET_FAZLA_MESAI_DATA_ALT" : "SP_GET_FAZLA_MESAI_DATA";
-					String spAdi = "SP_GET_FAZLA_MESAI_DATA_ALT";
+ 					String spAdi = "SP_GET_FAZLA_MESAI_DATA_ALT";
 					StringBuffer sp = new StringBuffer(spAdi);
 					LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 					Long denklestirmeDeger = 0L;
