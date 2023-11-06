@@ -1885,9 +1885,26 @@ public class VardiyaGun extends BaseObject {
 	@Transient
 	public String getSortBolumKey() {
 		Personel yonetici = this.getPersonel().getPdksYonetici();
+		Sirket sirket = this.getPersonel().getSirket();
+		Long departmanId = null, sirketId = null;
+		String sirketIdStr = null;
+		if (sirket != null) {
+			Departman departman = sirket.getDepartman();
+			departmanId = departman != null ? departman.getId() : null;
+			if (sirket.getSirketGrup() != null)
+				sirketId = -sirket.getSirketGrup().getId();
+			else
+				sirketId = sirket.getId();
+		}
+		if (departmanId == null)
+			departmanId = 0L;
+		if (sirketId != null)
+			sirketIdStr = sirketId > 0L ? "S" + sirketId : "G" + (-sirketId);
+		if (sirketIdStr == null)
+			sirketIdStr = "";
 		Tanim bolum = this.getPersonel().getEkSaha3(), altBolum = this.getPersonel().getEkSaha4();
 		CalismaModeli calismaModeli = this.getPersonel().getCalismaModeli();
-		String sortKey = (yonetici != null ? "_" + yonetici.getAdSoyad() : "") + "_" + (bolum != null ? "_" + bolum.getAciklama() : "") + "_" + (calismaModeli != null ? "_" + calismaModeli.getAciklama() : "");
+		String sortKey = departmanId + "_" + sirketIdStr + "_" + (yonetici != null ? "_" + yonetici.getAdSoyad() : "") + "_" + (bolum != null ? "_" + bolum.getAciklama() : "") + "_" + (calismaModeli != null ? "_" + calismaModeli.getAciklama() : "");
 		sortKey += "_" + (altBolum != null ? "_" + altBolum.getAciklama() : "") + "_" + this.getPersonel().getAdSoyad() + "_" + this.getVardiyaKeyStr();
 		return sortKey;
 	}
