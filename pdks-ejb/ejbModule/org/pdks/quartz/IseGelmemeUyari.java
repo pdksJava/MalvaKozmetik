@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.jboss.seam.ScopeType;
@@ -1158,6 +1159,10 @@ public class IseGelmemeUyari implements Serializable {
 				yeniList.addAll(sirketSubeList);
 				Long id = null;
 				boolean renk = false;
+				CellStyle styleOddWrap = (CellStyle) ((XSSFCellStyle) styleOdd).clone();
+				CellStyle styleEvenWrap = (CellStyle) ((XSSFCellStyle) styleEven).clone();
+				styleOddWrap.setWrapText(true);
+				styleEvenWrap.setWrapText(true);
 				for (Iterator iterator2 = sirketSubeList.iterator(); iterator2.hasNext();) {
 					VardiyaGun vg = (VardiyaGun) iterator2.next();
 					Personel personel = vg.getPersonel();
@@ -1175,14 +1180,16 @@ public class IseGelmemeUyari implements Serializable {
 					if (sheet != null) {
 						++row;
 						col = 0;
-						CellStyle style = null, styleCenter = null, cellStyleDate = null;
+						CellStyle style = null, styleWrap = null, styleCenter = null, cellStyleDate = null;
 						if (renk) {
 							cellStyleDate = styleOddDate;
 							style = styleOdd;
+							styleWrap = styleOddWrap;
 							styleCenter = styleOddCenter;
 						} else {
 							cellStyleDate = styleEvenDate;
 							style = styleEven;
+							styleWrap = styleEvenWrap;
 							styleCenter = styleEvenCenter;
 						}
 						if (hariciPersonelPlandaVar)
@@ -1215,7 +1222,7 @@ public class IseGelmemeUyari implements Serializable {
 									sbMesaj.append((sbMesaj.length() > 0 ? "\n" : "") + hareketKGS.getKapiView().getAciklama() + " " + (hareketKGS.getZaman() != null ? user.getTarihFormatla(hareketKGS.getZaman(), PdksUtil.getDateFormat() + " H:mm") : ""));
 								}
 							}
-							hareketCell = ExcelUtil.getCell(sheet, row, col++, style);
+							hareketCell = ExcelUtil.getCell(sheet, row, col++, styleWrap);
 							hareketCell.setCellValue(sbMesaj.toString());
 
 						}
@@ -1226,11 +1233,9 @@ public class IseGelmemeUyari implements Serializable {
 								String aciklama = vg.getIzin().getIzinTipiAciklama();
 								sbMesaj.append(aciklama);
 							}
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sbMesaj.toString());
+							ExcelUtil.getCell(sheet, row, col++, styleWrap).setCellValue(sbMesaj.toString());
 
 						}
-						if (hareketCell != null)
-							hareketCell.getRow().setHeight((short) -1);
 
 					}
 					renk = !renk;
