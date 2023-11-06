@@ -236,7 +236,7 @@ public class OrtakIslemler implements Serializable {
 
 				if (sil)
 					iterator.remove();
-				else {
+				else if (vardiyaGun.getVardiya() != null) {
 					String donem = vardiyaGun.getVardiyaDateStr().substring(0, 6);
 					Long perId = vardiyaGun.getPdksPersonel().getId();
 					List<Long> idList = donemPerMap.containsKey(donem) ? donemPerMap.get(donem) : new ArrayList<Long>();
@@ -6132,7 +6132,7 @@ public class OrtakIslemler implements Serializable {
 								vardiyaGun.setAyinGunu(donem.length() > 0 && key.startsWith(donem));
 								if (cm != null && vardiyaGun.isAyinGunu())
 									vardiyaGun.setCalismaModeli(cm);
-								else if (denklestirmeAy != null && vardiyaGun.getId() != null) {
+								else if (denklestirmeAy != null && vardiyaGun.getVardiya() != null) {
 									vardiyaGunModelGuncelleList.add(vardiyaGun);
 								}
 								vardiyaGun.setZamanGuncelle(zamanGuncelle);
@@ -6219,9 +6219,9 @@ public class OrtakIslemler implements Serializable {
 						}
 						personelDenklestirmeMap.put(personel.getId(), personelDenklestirmeTasiyici);
 					}
-					if (!vardiyaGunModelGuncelleList.isEmpty())  
+					if (!vardiyaGunModelGuncelleList.isEmpty())
 						sonrakiGunVardiyalariAyikla(null, vardiyaGunModelGuncelleList, session);
-					 
+
 					vardiyaGunModelGuncelleList = null;
 					Date tarih1 = PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBaslangicTarih(), -1);
 					Date tarih2 = PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBitisTarih(), 1);
