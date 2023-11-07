@@ -248,6 +248,7 @@ public class IseGelmemeUyari implements Serializable {
 			tarih = (Date) bugun.clone();
 		else
 			devam = bugun.getTime() > tarih.getTime();
+		islemTarihi = tarih;
 		if (devam) {
 			if (session == null)
 				session = PdksUtil.getSession(entityManager, islemYapan == null);
@@ -1508,7 +1509,7 @@ public class IseGelmemeUyari implements Serializable {
 	 */
 	public String iseGelmemeDurumuCalistir(Date tarih, Session session, User islemYapan, boolean manuel, boolean mailGonder) throws Exception {
 		uyariNot = null;
-		islemTarihi = tarih;
+
 		if (userYoneticiList == null)
 			userYoneticiList = new ArrayList<User>();
 		else
@@ -1516,7 +1517,7 @@ public class IseGelmemeUyari implements Serializable {
 		hataKonum = "iseGelmeDurumu basladı ";
 
 		try {
-			iseGelmeDurumu(islemTarihi, islemYapan, manuel, session, mailGonder);
+			iseGelmeDurumu(tarih, islemYapan, manuel, session, mailGonder);
 		} catch (Exception e) {
 			e.printStackTrace();
 			userYoneticiList = null;
