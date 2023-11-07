@@ -670,6 +670,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 				if (pdksPersonel.getId() == null || authenticatedUser.isAdmin())
 					pdksPersonel.setPdksSicilNo(pdksPersonel.getPersonelKGS().getSicilNo());
+				boolean personelERPGuncellemeDurum = personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("M");
 				if (asilYonetici1 != null && sirket != null) {
 					if (!sirket.isErp()) {
 						pdksPersonel.setAsilYonetici1(asilYonetici1);
@@ -677,6 +678,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						if (asilYonetici1 == null && pdksPersonel.getAsilYonetici1() != null)
 							asilYonetici1 = pdksPersonel.getAsilYonetici1();
 					}
+					if (personelERPGuncellemeDurum)
+						pdksPersonel.setAsilYonetici1(asilYonetici1);
 					pdksPersonel.setYoneticisi(asilYonetici1);
 
 				} else if (pdksPersonel.getAsilYonetici1() != null) {
@@ -694,7 +697,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				try {
 					if (pdksPersonel.getIcapciOlabilir() && !sirket.getDepartman().getIcapciOlabilir())
 						pdksPersonel.setIcapciOlabilir(Boolean.FALSE);
-
 					if (kullaniciYaz) {
 						ortakIslemler.setUserRoller(kullanici, session);
 						if (kullanici.isProjeMuduru() && pdksPersonel.getYoneticisi() == null) {

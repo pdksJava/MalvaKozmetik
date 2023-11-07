@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
@@ -133,7 +134,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 
 				Workbook wb = ortakIslemler.getWorkbook(dosya);
 
-				TreeMap<String, String> sicilMap = new TreeMap<String, String>();
+				LinkedHashMap<String, String> sicilMap = new LinkedHashMap<String, String>();
 				if (wb != null) {
 					try {
 						Sheet sheet = wb.getSheetAt(0);
@@ -158,21 +159,44 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 				if (!sicilMap.isEmpty()) {
 					HashMap parametreMap = new HashMap();
 					parametreMap.put("pdksSicilNo", new ArrayList(sicilMap.keySet()));
-					parametreMap.put("kullanici.id>", 0L);
-					parametreMap.put("kullanici.durum=", Boolean.TRUE);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					personelList = ortakIslemler.getPersonelViewList(pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PdksPersonelView.class));
+					List<PersonelView> list = ortakIslemler.getPersonelViewList(pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PdksPersonelView.class));
+					TreeMap<String, PersonelView> map1 = new TreeMap<String, PersonelView>();
+					for (PersonelView personelView : list) {
+						if (personelView.getPdksPersonel() != null) {
+							personelView.setCcAdres(null);
+							personelView.setBccAdres(null);
+							personelView.setHareketAdres(null);
+							map1.put(personelView.getSicilNo(), personelView);
+						}
+					}
+					for (String key : sicilMap.keySet()) {
+						if (map1.containsKey(key))
+							personelList.add(map1.get(key));
+
+					}
+					map1 = null;
+					sicilMap = null;
+					list = null;
 					parametreMap = null;
 					boolean bcc = islemTipi.indexOf(MailGrubu.TIPI_BCC) >= 0;
 					boolean cc = !bcc && islemTipi.indexOf(MailGrubu.TIPI_CC) >= 0;
 					boolean hareket = islemTipi.indexOf(MailGrubu.TIPI_HAREKET) >= 0;
-					boolean ekle = ekleSil.equals("+");
-					boolean cikar = ekleSil.equals("-");
+					boolean ekle = ekleSil != null && ekleSil.equals("+");
+					boolean cikar = ekleSil != null && ekleSil.equals("-");
 					for (PersonelView personelView : personelList) {
 						// User kullanici = personelView.getKullanici();
 						Personel personel = personelView.getPdksPersonel();
-						List<String> kullaniciAdresler = bcc ? ccAdresList(personel.getEmailBCC()) : ccAdresList(personel.getEmailCC());
+						List<String> kullaniciAdresler = null;
+						if (hareket)
+							kullaniciAdresler = ccAdresList(personel.getHareketMail());
+						else if (cc)
+							kullaniciAdresler = ccAdresList(personel.getEmailCC());
+						else if (bcc)
+							kullaniciAdresler = ccAdresList(personel.getEmailBCC());
+						else
+							kullaniciAdresler = new ArrayList<String>();
 						for (String eMail : dogruAdresler) {
 							if (ekle) {
 								if (!kullaniciAdresler.contains(eMail))
@@ -182,9 +206,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 									kullaniciAdresler.remove(eMail);
 							}
 						}
-						personelView.setCcAdres(null);
-						personelView.setBccAdres(null);
-						personelView.setHareketAdres(null);
+
 						if (bcc)
 							personelView.setBccAdres(adresGuncelle(kullaniciAdresler));
 						else if (cc)
@@ -207,8 +229,6 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 			PdksUtil.addMessageWarn("Mail adreslerini kontrol ediniz!");
 		adresler = null;
 		dogruAdresler = null;
-		if (personelList.size() > 1)
-			personelList = PdksUtil.sortObjectStringAlanList(personelList, "getAdSoyad", null);
 		setPersonelList(personelList);
 		return "";
 	}
@@ -218,7 +238,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 			Dosya dosya = ortakIslemler.getDosyaFromFileUpload(file);
 			Workbook wb = ortakIslemler.getWorkbook(dosya);
 			List<String> yoneticiList = new ArrayList<String>();
-			TreeMap<String, String> yoneticiSicilMap = new TreeMap<String, String>();
+			LinkedHashMap<String, String> yoneticiSicilMap = new LinkedHashMap<String, String>();
 			int hucre = -1;
 			boolean yonetici1 = islemTipi.equals("Y1");
 			boolean yonetici2 = islemTipi.equals("Y2");
@@ -232,10 +252,9 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 					String sicilNo = "";
 					try {
 						sicilNo = getSheetStringValue(sheet, j, 0);
-
 						String yoneticiSicilNo = getSheetStringValue(sheet, j, hucre);
-						if (sicilNo != null && yoneticiSicilNo != null) {
-							if (PdksUtil.hasStringValue(yoneticiSicilNo) && !yoneticiList.contains(yoneticiSicilNo))
+						if (sicilNo != null && PdksUtil.hasStringValue(yoneticiSicilNo)) {
+							if (!yoneticiList.contains(yoneticiSicilNo))
 								yoneticiList.add(yoneticiSicilNo);
 							yoneticiSicilMap.put(sicilNo, yoneticiSicilNo);
 						}
@@ -254,8 +273,6 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 				parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getPdksSicilNo");
 				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "pdksPersonel");
 				parametreMap.put("pdksSicilNo", yoneticiList);
-				parametreMap.put("kullanici.id>", 0L);
-				parametreMap.put("kullanici.durum=", Boolean.TRUE);
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				yoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(parametreMap, PdksPersonelView.class, Boolean.FALSE);
@@ -264,37 +281,48 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 					parametreMap.put("sicilNo", new ArrayList(yoneticiSicilMap.keySet()));
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					personelList = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectList(parametreMap, PersonelKGS.class));
-					for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
-						PersonelView personelView = (PersonelView) iterator.next();
+					List<PersonelView> list = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectList(parametreMap, PersonelKGS.class));
+					TreeMap<String, PersonelView> map1 = new TreeMap<String, PersonelView>();
+					for (PersonelView personelView : list) {
 						if (personelView.getPdksPersonel() != null) {
 							personelView.setYonetici1(null);
 							personelView.setYonetici2(null);
-							String yoneticiSicilNo = yoneticiSicilMap.containsKey(personelView.getPdksPersonel().getPdksSicilNo()) ? yoneticiSicilMap.get(personelView.getPdksPersonel().getPdksSicilNo()) : "";
-							if (yoneticiMap.containsKey(yoneticiSicilNo)) {
+							map1.put(personelView.getSicilNo(), personelView);
+						}
+					}
+					for (String key : yoneticiSicilMap.keySet()) {
+						if (map1.containsKey(key))
+							personelList.add(map1.get(key));
+
+					}
+					map1 = null;
+					list = null;
+					for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
+						PersonelView personelView = (PersonelView) iterator.next();
+						String yoneticiSicilNo = yoneticiSicilMap.containsKey(personelView.getPdksPersonel().getPdksSicilNo()) ? yoneticiSicilMap.get(personelView.getPdksPersonel().getPdksSicilNo()) : "";
+						if (yoneticiMap.containsKey(yoneticiSicilNo)) {
+							Personel yonetici = yoneticiMap.get(yoneticiSicilNo);
+							if (yonetici.isCalisiyor()) {
 								if (yonetici1)
-									personelView.setYonetici1(yoneticiMap.get(yoneticiSicilNo));
+									personelView.setYonetici1(yonetici);
 								else if (yonetici2)
-									personelView.setYonetici2(yoneticiMap.get(yoneticiSicilNo));
-							} else {
-								if (yonetici1)
-									iterator.remove();
-								PdksUtil.addMessageAvailableWarn(personelView.getKgsSicilNo() + " " + personelView.getAdSoyad() + " yönetici bilgisi tanımsız!");
+									personelView.setYonetici2(yonetici);
 							}
 
 						} else {
-							PdksUtil.addMessageAvailableWarn(personelView.getKgsSicilNo() + " " + personelView.getAdSoyad() + " personel bilgisi tanımsız!");
+
+							PdksUtil.addMessageAvailableWarn(personelView.getKgsSicilNo() + " " + personelView.getAdSoyad() + " yönetici bilgisi tanımsız!");
+						}
+						if (personelView.getYonetici1() == null && personelView.getYonetici2() == null) {
 							iterator.remove();
+
 						}
 
 					}
 				}
 				parametreMap = null;
 			}
-			// fos.close();
-			// fileinputStreamXLS.close();
-			if (personelList.size() > 1)
-				personelList = PdksUtil.sortObjectStringAlanList(personelList, "getAdSoyad", null);
+
 			setPersonelList(personelList);
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
@@ -346,8 +374,11 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 		boolean yonetici1 = islemTipi.equals("Y1");
 		boolean yonetici2 = islemTipi.equals("Y2");
 		Date guncellemeTarihi = Calendar.getInstance().getTime();
+		String personelERPGuncelleme = ortakIslemler.getParameterKey("personelERPOku");
+		boolean personelERPGuncellemeDurum = personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("M");
 		boolean flush = Boolean.FALSE;
 		session.clear();
+
 		for (PersonelView personelView : personelList) {
 			Personel pdksPersonel = personelView.getPdksPersonel();
 			try {
@@ -355,7 +386,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 				if (yonetici1) {
 					if (pdksPersonel.getPdksYonetici() == null || !pdksPersonel.getPdksYonetici().getId().equals(personelView.getYonetici1().getId())) {
 						pdksPersonel.setYoneticisi(personelView.getYonetici1());
-						if (pdksPersonel.getAsilYonetici1() == null)
+						if (pdksPersonel.getAsilYonetici1() == null || personelERPGuncellemeDurum)
 							pdksPersonel.setAsilYonetici1(personelView.getYonetici1());
 						update = Boolean.TRUE;
 					}
@@ -390,6 +421,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 						break;
 					}
 				}
+				personelList.clear();
 			} catch (Exception ee) {
 
 				flush = Boolean.FALSE;
@@ -460,6 +492,7 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 			PdksUtil.addMessageInfo("CC mail adresleri güncellenmiştir.");
 		else if (hareket)
 			PdksUtil.addMessageInfo("Hareket mail adresleri güncellenmiştir.");
+		personelList.clear();
 		return "";
 	}
 
