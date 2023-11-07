@@ -377,8 +377,6 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 		String personelERPGuncelleme = ortakIslemler.getParameterKey("personelERPOku");
 		boolean personelERPGuncellemeDurum = personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("M");
 		boolean flush = Boolean.FALSE;
-		session.clear();
-
 		for (PersonelView personelView : personelList) {
 			Personel pdksPersonel = personelView.getPdksPersonel();
 			try {
@@ -416,19 +414,20 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 						pdksEntityController.saveOrUpdate(session, entityManager, pdksPersonel);
 						flush = Boolean.TRUE;
 					} catch (Exception e) {
+						logger.error(e);
 						flush = Boolean.FALSE;
 						e.printStackTrace();
 						break;
 					}
 				}
-				personelList.clear();
 			} catch (Exception ee) {
-
-				flush = Boolean.FALSE;
+				logger.error(ee);
 				ee.printStackTrace();
+				flush = Boolean.FALSE;
 				break;
 			}
 		}
+		personelList.clear();
 		if (flush)
 			session.flush();
 		if (yonetici1)
