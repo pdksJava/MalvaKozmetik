@@ -2682,6 +2682,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 		}
 		Date lastDate = getTarih(LAST_DATE, FORMAT_DATE);
 		Personel personelTest = new Personel();
+		String personelERPGuncelleme = mailMap.containsKey("personelERPOku") ? (String) mailMap.get("personelERPOku") : "";
+		boolean personelERPGuncellemeDurum = personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("M");
+
 		for (String personelNo : personelList) {
 			kidemHataList.clear();
 			boolean calisiyor = false;
@@ -3174,7 +3177,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 									yoneticisi = null;
 								}
 
-								if ((yoneticiERPKontrol.equals("1") && yoneticiERP1Kontrol) || personel.getYoneticisi() == null || !personel.getYoneticisi().isCalisiyor())
+								if ((yoneticiERPKontrol.equals("1") && yoneticiERP1Kontrol) || personelERPGuncellemeDurum || personel.getYoneticisi() == null || !personel.getYoneticisi().isCalisiyor())
 									personel.setYoneticisi(yoneticisi);
 								personel.setAsilYonetici1(yoneticisi);
 
@@ -3306,9 +3309,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 					boolean durum = map1.containsKey(personelNo) && map1.get(personelNo);
 					if (durum && personelPDKSMap.containsKey(personelERP.getYoneticiPerNo())) {
 						Personel yoneticisi = personelPDKSMap.get(personelERP.getYoneticiPerNo());
-						if (personel.getYoneticisi() == null && yoneticisi.getId() != null)
+						if ((personelERPGuncellemeDurum || personel.getYoneticisi() == null) && yoneticisi.getId() != null)
 							personel.setYoneticisi(yoneticisi);
-						personel.setAsilYonetici1(personel);
+						personel.setAsilYonetici1(yoneticisi);
 						saveList.add(personel);
 					}
 				}
