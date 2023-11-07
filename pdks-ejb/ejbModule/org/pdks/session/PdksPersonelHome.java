@@ -2425,11 +2425,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 */
 	private void dosyaGuncelleDurum() {
 		dosyaGuncellemeYetki = ortakIslemler.getTestDurum() && (authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIK());
-		if (dosyaGuncellemeYetki) {
-			if (authenticatedUser.isIK()) {
-				String dosyaGuncellemeYetkiStr = ortakIslemler.getParameterKey("dosyaGuncellemeYetki");
-				dosyaGuncellemeYetki = dosyaGuncellemeYetkiStr.equals("1");
-			}
+		if (dosyaGuncellemeYetki == false) {
+
+			String dosyaGuncellemeYetkiStr = ortakIslemler.getParameterKey("dosyaGuncellemeYetki").trim();
+			dosyaGuncellemeYetki = dosyaGuncellemeYetkiStr.equals("1");
 
 		}
 	}

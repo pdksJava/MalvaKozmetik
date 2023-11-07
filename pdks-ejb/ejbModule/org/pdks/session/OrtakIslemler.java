@@ -5285,9 +5285,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public String kidemBasTarihiAciklama() {
-		String kidemBasTarihiAciklama = getParameterKey("kidemBasTarihiAciklama");
-		if (PdksUtil.hasStringValue(kidemBasTarihiAciklama))
-			kidemBasTarihiAciklama = "Kıdem Başlangıç Tarihi";
+		String kidemBasTarihiAciklama = getBaslikAciklama("kidemBasTarihiAciklama", "Kıdem Başlangıç Tarihi");
 		return kidemBasTarihiAciklama;
 	}
 
