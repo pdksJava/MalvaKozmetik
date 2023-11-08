@@ -814,26 +814,26 @@
 										<ui:define name="label">İşe Giriş Tarihi</ui:define>
 										<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.iseBaslamaTarihi}"
 											datePattern="#{authenticatedUser.dateFormat}"
-											disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.personelERPGuncelleme!='M' and pdksPersonelHome.instance.sanalPersonel==false}"
+											disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.manuelTanimla and pdksPersonelHome.instance.sanalPersonel==false}"
 											required="true" requiredMessage="İşe Giriş Tarihi Seçiniz" />
 									</s:decorate>
 									<c:if test="#{pdksPersonelHome.instance.sirket.fazlaMesai}">
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">Grup'ta Başlama Tarihi</ui:define>
 											<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.grubaGirisTarihi}"
-												datePattern="#{authenticatedUser.dateFormat}" disabled="#{authenticatedUser.admin and pdksPersonelHome.instance.id!=null}"
+												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.manuelTanimla  and pdksPersonelHome.instance.id!=null}"
 												required="#{pdksPersonelHome.instance.sirket.erp}" requiredMessage="Grup'ta Başlama Tarihi Seçiniz" />
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">Doğum Tarihi</ui:define>
 											<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.dogumTarihi}"
-												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
+												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.manuelTanimla and pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
 												required="#{pdksPersonelHome.izinGirisiVar}" requiredMessage="Doğum tarihini giriniz" />
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">#{ortakIslemler.kidemBasTarihiAciklama()}</ui:define>
 											<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.izinHakEdisTarihi}"
-												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
+												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.manuelTanimla and pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
 												required="#{pdksPersonelHome.izinGirisiVar and pdksPersonelHome.instance.sanalPersonel==false}"
 												requiredMessage="#{ortakIslemler.kidemBasTarihiAciklama()}ni seçiniz" />
 										</s:decorate>
