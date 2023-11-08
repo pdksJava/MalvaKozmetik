@@ -744,17 +744,19 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					sb.append(list.get(0));
 				sb.append("</p>");
 			}
-			if (vardiyaGun.getTatil() != null && (authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isAdmin())) {
+			if (islemVardiya.isCalisma()) {
 				Tatil tatil = vardiyaGun.getTatil();
-				if (tatil.isYarimGunMu()) {
-					Date arifeGun = vardiyaGun.getTatil().getBasTarih();
-					if (PdksUtil.tarihKarsilastirNumeric(arifeGun, vardiyaGun.getVardiyaDate()) == 0) {
-						sb.append("<p align=\"left\">");
-						sb.append("<B>Arife Başlama Saati : </B>" + authenticatedUser.getTarihFormatla(arifeGun, authenticatedUser.getDateTimeFormat()));
-						sb.append("</p>");
+				if (tatil != null && (authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isAdmin())) {
+					if (tatil.isYarimGunMu()) {
+						Date arifeGun = tatil.getBasTarih();
+						if (PdksUtil.tarihKarsilastirNumeric(arifeGun, vardiyaGun.getVardiyaDate()) == 0) {
+							sb.append("<p align=\"left\">");
+							sb.append("<B>Arife Başlama Saati : </B>" + authenticatedUser.getTarihFormatla(arifeGun, authenticatedUser.getDateTimeFormat()));
+							sb.append("</p>");
+						}
 					}
-				}
 
+				}
 			}
 			list = null;
 		}

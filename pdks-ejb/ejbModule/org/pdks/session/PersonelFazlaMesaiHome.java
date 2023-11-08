@@ -650,7 +650,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			boolean fazlaMesaiYemekHesapla = ortakIslemler.getParameterKey("fazlaMesaiYemekHesapla").equals("1");
 			List<YemekIzin> yemekGenelList = null;
 			if (fazlaMesaiYemekHesapla)
-				yemekGenelList = ortakIslemler.getYemekList(session);
+				yemekGenelList = ortakIslemler.getYemekList(date, null, session);
 			else
 				yemekGenelList = new ArrayList<YemekIzin>();
 

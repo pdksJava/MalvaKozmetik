@@ -416,7 +416,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			DenklestirmeAy da = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(parametreMap2, DenklestirmeAy.class);
 			Double yemekMolasiYuzdesi = ortakIslemler.getYemekMolasiYuzdesi(da, session);
 
-			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(session);
+			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(tarih1, tarih2,session);
 			ortakIslemler.setVardiyaYemekList(vardiyaList, yemekGenelList);
 			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();

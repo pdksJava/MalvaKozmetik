@@ -3091,7 +3091,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			// bu durumda vekil transfer gibi islem yapiacak
 			if (tarihAraligiIzinList != null && (getHesapTipi() == PersonelIzin.HESAP_TIPI_GUN || saatFark >= 24)) {
 				if (!authenticatedUser.isIK()) {
- 					for (Iterator iterator = tarihAraligiIzinList.iterator(); iterator.hasNext();) {
+					for (Iterator iterator = tarihAraligiIzinList.iterator(); iterator.hasNext();) {
 						PersonelIzin tempIzin = (PersonelIzin) iterator.next();
 						if (tempIzin.getIzinTipi().isSenelikIzin() || tempIzin.getIzinTipi().isMazeretIzin()) {
 							double saatIzinFark = Math.abs(PdksUtil.getSaatFarki(tempIzin.getBitisZamani(), tempIzin.getBaslangicZamani()));
@@ -3108,10 +3108,10 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 									PdksUtil.addMessageWarn("İki izin arası 1 günden az olamaz! " + PdksUtil.convertToDateString(tempIzin.getBitisZamani(), "yyy/MM/dd") + "-" + PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyy/MM/dd"));
 
 								}
- 							}
+							}
 							if (kesisenTarihteIzinVar)
 								break;
- 						}
+						}
 
 					}
 				}
@@ -4322,7 +4322,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			Date izinBitTarih = (Date) personelIzin.getBitisZamani().clone();
 			boolean ilkGun = Boolean.FALSE;
 			int durum = hesapTipiMethod == PersonelIzin.HESAP_TIPI_SAAT ? 0 : 1;
-			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(session);
+			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(izinBasTarih, izinBitTarih, session);
 
 			int hafta = 0;
 			boolean artikIizinVar = senelikIzin && artikIzinGun != 0D;

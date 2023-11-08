@@ -3810,7 +3810,7 @@ public class OrtakIslemler implements Serializable {
 					if (vardiyaGun != null && vardiyaGun.getId() != null)
 						yemekList = vardiyaGun.getYemekList();
 					else
-						yemekList = getYemekList(session);
+						yemekList = getYemekList(basTarih, bitTarih, session);
 				}
 
 				if (!yemekList.isEmpty()) {
@@ -3849,7 +3849,7 @@ public class OrtakIslemler implements Serializable {
 						for (int i = 0; i < basList.size(); i++) {
 							if (aralikList.contains(i))
 								continue;
-							aralikList.add(i);
+
 							cal.setTime((Date) basList.get(i));
 							cal.set(Calendar.HOUR_OF_DAY, yemekIzin.getBaslangicSaat());
 							cal.set(Calendar.MINUTE, yemekIzin.getBaslangicDakika());
@@ -3867,7 +3867,7 @@ public class OrtakIslemler implements Serializable {
 								yemekSure += PdksUtil.getSaatFarki(bitZamanYemek, basZamanYemek).doubleValue();
 								if (!yarimdenFazla)
 									cik = Boolean.TRUE;
-
+								aralikList.add(i);
 							}
 
 							if (yemekSaat > 0 && yemekSure > yemekSaat)
@@ -6039,7 +6039,7 @@ public class OrtakIslemler implements Serializable {
 		TreeMap<String, Boolean> gunMap = new TreeMap<String, Boolean>();
 
 		boolean yenidenCalistir = false;
-		List<YemekIzin> yemekAraliklari = getYemekList(session);
+		List<YemekIzin> yemekAraliklari = getYemekList(denklestirmeDonemi.getBaslangicTarih(), denklestirmeDonemi.getBitisTarih(), session);
 
 		List<PersonelDenklestirmeTasiyici> personelDenklestirmeTasiyiciList = new ArrayList<PersonelDenklestirmeTasiyici>();
 		HashMap parametreMap = new HashMap();
@@ -6305,7 +6305,7 @@ public class OrtakIslemler implements Serializable {
 					}
 
 					personelVardiyaBulMap = null;
-					List<YemekIzin> yemekList = getYemekList(session);
+					List<YemekIzin> yemekList = getYemekList(tarih2, tarih2, session);
 					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
 					HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
 					KapiView girisView = manuelKapiMap != null ? manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS) : null;
@@ -8753,15 +8753,23 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param basTarih
+	 * @param bitTarih
 	 * @param session
 	 * @return
 	 */
-	public List<YemekIzin> getYemekList(Session session) {
+	public List<YemekIzin> getYemekList(Date basTarih, Date bitTarih, Session session) {
+		if (bitTarih == null && basTarih != null)
+			bitTarih = PdksUtil.tariheGunEkleCikar(basTarih, 1);
 		HashMap map = new HashMap();
-		map.put("durum", Boolean.TRUE);
+		if (basTarih != null && bitTarih != null) {
+			map.put("bitTarih>=", basTarih);
+			map.put("basTarih<=", bitTarih);
+		}
+		map.put("durum=", Boolean.TRUE);
 		if (session != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<YemekIzin> list = pdksEntityController.getObjectByInnerObjectList(map, YemekIzin.class);
+		List<YemekIzin> list = pdksEntityController.getObjectByInnerObjectListInLogic(map, YemekIzin.class);
 		if (!list.isEmpty()) {
 			HashMap<Long, YemekIzin> yemekMap = new HashMap<Long, YemekIzin>();
 			if (list.size() > 1)
@@ -8794,6 +8802,7 @@ public class OrtakIslemler implements Serializable {
 
 		map = null;
 		return list;
+
 	}
 
 	/**
@@ -9036,7 +9045,7 @@ public class OrtakIslemler implements Serializable {
 					List<Vardiya> vardiyalar = pdksEntityController.getObjectBySQLList(sb, map, Vardiya.class);
 					HashMap<Long, Vardiya> vardiyaMap = new HashMap<Long, Vardiya>();
 					Personel p = new Personel();
-					List<YemekIzin> yemekDataList = getYemekList(session);
+					List<YemekIzin> yemekDataList = getYemekList(tarihi, null, session);
 					Date basArifeTarih = PdksUtil.tariheGunEkleCikar(tarihi, -1), bitArifeTarih = PdksUtil.convertToJavaDate("99991231", "yyyyMMdd");
 					User sistemUser = null;
 					List saveList = new ArrayList();

@@ -5821,7 +5821,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 				TreeMap<Long, List> bagliIdMap = new TreeMap<Long, List>();
 				if (!vardiyaGunList.isEmpty()) {
-					List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(session);
+					List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(basTarih, bitTarih, session);
 					ortakIslemler.setVardiyaYemekList(vardiyaGunList, yemekGenelList);
 					fazlaMesaiTalepVar = false;
 					List<Long> vardiyaIdList = new ArrayList<Long>();

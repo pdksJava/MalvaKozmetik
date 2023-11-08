@@ -91,7 +91,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 
 	public void fillYemekList(Vardiya pdksVardiya) {
 		if (pdksVardiya.getId() == null || pdksVardiya.isCalisma()) {
-			yemekIzinList = ortakIslemler.getYemekList(session);
+			yemekIzinList = ortakIslemler.getYemekList(new Date(), null, session);
 			if (pdksVardiya.getId() != null) {
 				HashMap parametreMap = new HashMap();
 				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "yemekIzin");
@@ -256,7 +256,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 	 * @return
 	 */
 	public String kayitKopyala(Vardiya pdksVardiya) {
- 		Vardiya pdksVardiyaYeni = (Vardiya) pdksVardiya.clone();
+		Vardiya pdksVardiyaYeni = (Vardiya) pdksVardiya.clone();
 		if (authenticatedUser.isIK())
 			pdksVardiyaYeni.setDepartman(authenticatedUser.getDepartman());
 		pdksVardiyaYeni.setId(null);
@@ -282,7 +282,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			pdksVardiya.setCikisErkenToleransDakika((short) 0);
 			pdksVardiya.setCikisGecikmeToleransDakika((short) 0);
 		}
- 		vardiyaAlanlariDoldur(pdksVardiya);
+		vardiyaAlanlariDoldur(pdksVardiya);
 	}
 
 	/**
@@ -435,7 +435,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			manuelVardiyaIzinGir = ortakIslemler.isVardiyaIzinGir(session, authenticatedUser.getDepartman());
 			List<Vardiya> vardiyalar = pdksEntityController.getObjectByInnerObjectList(parametreMap, Vardiya.class);
-			yemekList = ortakIslemler.getYemekList(session);
+			yemekList = ortakIslemler.getYemekList(new Date(), null, session);
 			HashMap<Long, Vardiya> vardiyaMap = new HashMap<Long, Vardiya>();
 			Calendar cal = Calendar.getInstance();
 			VardiyaGun vardiyaGun = new VardiyaGun();
