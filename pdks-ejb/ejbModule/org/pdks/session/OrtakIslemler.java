@@ -3837,13 +3837,19 @@ public class OrtakIslemler implements Serializable {
 							vardiyaId = vardiyaGun.getVardiya().getId();
 					} catch (Exception ex) {
 					}
+					List<Integer> aralikList = new ArrayList<Integer>();
 					for (Iterator iterator = yemekList.iterator(); iterator.hasNext();) {
 						YemekIzin yemekIzin = (YemekIzin) iterator.next();
 						if (yemekIzin.isOzelMolaVarmi() && !yemekIzin.containsKey(vardiyaId))
 							continue;
+						if (!(yemekIzin.getBitTarih().getTime() >= basTarih.getTime() && yemekIzin.getBasTarih().getTime() <= bitTarih.getTime()))
+							continue;
 						double yemekSure = 0;
 						double yemekSaat = (double) yemekIzin.getMaxSure() / 60;
 						for (int i = 0; i < basList.size(); i++) {
+							if (aralikList.contains(i))
+								continue;
+							aralikList.add(i);
 							cal.setTime((Date) basList.get(i));
 							cal.set(Calendar.HOUR_OF_DAY, yemekIzin.getBaslangicSaat());
 							cal.set(Calendar.MINUTE, yemekIzin.getBaslangicDakika());
@@ -3864,14 +3870,16 @@ public class OrtakIslemler implements Serializable {
 
 							}
 
+							if (yemekSaat > 0 && yemekSure > yemekSaat)
+								yemekSure = yemekSaat;
+							sure -= yemekSure;
 						}
-						if (yemekSaat > 0 && yemekSure > yemekSaat)
-							yemekSure = yemekSaat;
-						sure -= yemekSure;
+
 						if (cik)
 							break;
 
 					}
+					aralikList = null;
 				} else if (vardiyaGun != null && vardiyaGun.getVardiya() != null && vardiyaGun.getVardiya().getYemekSuresi() != null && vardiyaGun.getVardiya().getYemekSuresi() > 0) {
 					double yemekSuresi = (double) vardiyaGun.getVardiya().getYemekSuresi() / 60.0d;
 					if (sure > vardiyaGun.getVardiya().getNetCalismaSuresi()) {
@@ -9067,8 +9075,12 @@ public class OrtakIslemler implements Serializable {
 
 							} else if ((calismaSekli != null || (vardiya.getArifeNormalCalismaDakika() != null && vardiya.getArifeNormalCalismaDakika() != 0.0d))) {
 								arifeNormalCalismaDakika = calismaSekli != null ? calismaSekli.getArifeNormalCalismaDakika() : null;
-								if (vardiya.getArifeNormalCalismaDakika() != null && vardiya.getArifeNormalCalismaDakika() != 0.0d)
+								boolean sureTanimli = false;
+								if (vardiya.getArifeNormalCalismaDakika() != null && vardiya.getArifeNormalCalismaDakika() != 0.0d) {
+									sureTanimli = true;
 									arifeNormalCalismaDakika = vardiya.getArifeNormalCalismaDakika();
+								}
+
 								else if (arifeNormalCalismaDakika == null || arifeNormalCalismaDakika.doubleValue() == 0.0d)
 									arifeNormalCalismaDakika = null;
 								if (arifeNormalCalismaDakika == null)
@@ -9076,7 +9088,9 @@ public class OrtakIslemler implements Serializable {
 								if (arifeNormalCalismaDakika != null) {
 									double yarimGunSureDakika = vardiya.getNetCalismaSuresi() * 30;
 									Double netSure = yarimGunSureDakika;
-									if (netSure < arifeNormalCalismaDakika)
+									if (sureTanimli) {
+										yarimGunSureDakika = arifeNormalCalismaDakika;
+									} else if (netSure < arifeNormalCalismaDakika)
 										arifeNormalCalismaDakika = netSure;
 									Double arifeSureSaat = arifeNormalCalismaDakika / 60.0d;
 									double yemekSure = 0.0d;
@@ -9084,9 +9098,10 @@ public class OrtakIslemler implements Serializable {
 									cal.add(Calendar.MINUTE, new Double(yarimGunSureDakika).intValue() - 30);
 									List<Liste> list = new ArrayList<Liste>();
 									arifeBaslangicTarihi = cal.getTime();
-									while (arifeBaslangicTarihi.before(islemVardiya.getVardiyaBitZaman()) && list.isEmpty()) {
+									Date baslangicZaman = islemVardiya.getVardiyaBasZaman(), bitisZaman = islemVardiya.getVardiyaBitZaman();
+									while (arifeBaslangicTarihi.before(bitisZaman) && list.isEmpty()) {
 										arifeBaslangicTarihi = cal.getTime();
-										Double sure = getSaatSure(islemVardiya.getVardiyaBasZaman(), arifeBaslangicTarihi, yemekDataList, tmp, session) * 60.0d;
+										Double sure = getSaatSure(baslangicZaman, arifeBaslangicTarihi, yemekDataList, tmp, session) * 60.0d;
 										cal.add(Calendar.MINUTE, 5);
 										if (sure == yarimGunSureDakika) {
 											list.add(new Liste(arifeBaslangicTarihi, sure));

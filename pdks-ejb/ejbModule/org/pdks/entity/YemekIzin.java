@@ -5,11 +5,14 @@ import java.util.TreeMap;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.pdks.security.entity.User;
+import org.pdks.session.PdksUtil;
 
-@Entity(name = "YEMEKIZIN")
+@Entity(name = YemekIzin.TABLE_NAME)
 public class YemekIzin extends BaseObject {
 	// seam-gen attributes (you should probably edit these)
 
@@ -17,10 +20,14 @@ public class YemekIzin extends BaseObject {
 	 * 
 	 */
 	private static final long serialVersionUID = -2645411245304870287L;
+	public static final String TABLE_NAME = "YEMEKIZIN";
+	public static final String COLUMN_NAME_BAS_TARIHI = "BAS_TARIHI";
+	public static final String COLUMN_NAME_BIT_TARIHI = "BIT_TARIHI";
 	private String yemekAciklama = "";
 	private int baslangicSaat, baslangicDakika, bitisSaat, bitisDakika, maxSure = 30;
 	private Boolean ozelMola = Boolean.FALSE;
 	private Integer version = 0;
+	private Date basTarih = PdksUtil.convertToJavaDate((PdksUtil.getSistemBaslangicYili() * 100 + 1) + "01", "yyyyMMdd"), bitTarih = PdksUtil.getSonSistemTarih();
 	// private Set<VardiyaYemekIzin> vardiyaList;
 	private TreeMap<Long, Vardiya> vardiyaMap;
 
@@ -94,6 +101,26 @@ public class YemekIzin extends BaseObject {
 
 	public void setOzelMola(Boolean ozelMola) {
 		this.ozelMola = ozelMola;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = COLUMN_NAME_BAS_TARIHI)
+	public Date getBasTarih() {
+		return basTarih;
+	}
+
+	public void setBasTarih(Date basTarih) {
+		this.basTarih = basTarih;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = COLUMN_NAME_BIT_TARIHI)
+	public Date getBitTarih() {
+		return bitTarih;
+	}
+
+	public void setBitTarih(Date bitTarih) {
+		this.bitTarih = bitTarih;
 	}
 
 	// @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "yemekIzin", targetEntity = VardiyaYemekIzin.class)

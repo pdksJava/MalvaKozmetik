@@ -613,9 +613,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @throws Exception
 	 */
 	private void mailAdresKontrol(MailObject mailObject, StringBuffer pasifPersonelSB) throws Exception {
+		if (PdksUtil.isSistemDestekVar()) {
+			addMailAdresBCC(mailObject, "bccAdres");
+			addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
+		}
 		addMailAdresBCC(mailObject, "bccAdres");
-		addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
-		HashMap<String, MailPersonel> mailDataMap = new HashMap<String, MailPersonel>();
+		addMailAdresBCC(mailObject, "bccEntegrasyonAdres");	HashMap<String, MailPersonel> mailDataMap = new HashMap<String, MailPersonel>();
 		mailListKontrol(mailObject.getToList(), mailDataMap);
 		mailListKontrol(mailObject.getCcList(), mailDataMap);
 		mailListKontrol(mailObject.getBccList(), mailDataMap);
