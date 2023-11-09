@@ -1152,7 +1152,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			List<PersonelDenklestirme> erpAktarilanlar = new ArrayList<PersonelDenklestirme>();
 			for (Iterator iterator = personelDenklestirmeList.iterator(); iterator.hasNext();) {
 				PersonelDenklestirme denklestirme = (PersonelDenklestirme) iterator.next();
-				if (!denklestirme.isOnaylandi() || !denklestirme.isDenklestirme())
+				if (!denklestirme.isOnaylandi() || !denklestirme.isDenklestirmeDurum())
 					iterator.remove();
 				else {
 					if (denklestirme.getPersonel().getSirket().isErp()) {

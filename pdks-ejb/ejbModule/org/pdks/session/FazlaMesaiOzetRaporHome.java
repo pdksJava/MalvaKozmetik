@@ -935,7 +935,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				}
 				personelDenklestirmeDonemMap.put(personelDenklestirme.getPersonelId(), personelDenklestirme);
 				personelDenklestirme.setGuncellendi(personelDenklestirme.getId() == null);
-				if (personelDenklestirme.isDenklestirme()) {
+				if (personelDenklestirme.isDenklestirmeDurum()) {
 					personelDenklestirmeMap.put(personelDenklestirme.getPersonelId(), personelDenklestirme);
 					perList.add(personelDenklestirme.getPersonel().getPdksSicilNo());
 				} else
@@ -1090,7 +1090,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					puantaj.setPersonelDenklestirmeAylik(valueBuAy);
 					if (valueBuAy != null)
 						puantaj.setPersonelDenklestirmeGecenAy(valueBuAy.getPersonelDenklestirmeGecenAy());
-					if (puantaj.getPersonelDenklestirmeAylik() == null || !puantaj.getPersonelDenklestirmeAylik().isDenklestirme()) {
+					if (puantaj.getPersonelDenklestirmeAylik() == null || !puantaj.getPersonelDenklestirmeAylik().isDenklestirmeDurum()) {
 						iterator1.remove();
 						continue;
 					}

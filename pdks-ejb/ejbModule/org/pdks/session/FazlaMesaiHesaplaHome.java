@@ -1076,7 +1076,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 				personelDenklestirmeDonemMap.put(personelDenklestirme.getPersonelId(), personelDenklestirme);
 				personelDenklestirme.setGuncellendi(personelDenklestirme.getId() == null);
-				if (personelDenklestirme.isDenklestirme() || sadeceFazlaMesai == false) {
+				if (personelDenklestirme.isDenklestirmeDurum() || sadeceFazlaMesai == false) {
 					personelDenklestirmeMap.put(personelDenklestirme.getPersonelId(), personelDenklestirme);
 					perList.add(personelDenklestirme.getPersonel().getPdksSicilNo());
 				} else
@@ -1327,7 +1327,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
 					puantaj.setPersonelDenklestirmeAylik(personelDenklestirmeMap.get(denklestirmeTasiyici.getPersonel().getId()));
-					if (puantaj.getPersonelDenklestirmeAylik() == null || !(puantaj.getPersonelDenklestirmeAylik().isDenklestirme() || sadeceFazlaMesai == false)) {
+					PersonelDenklestirme personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
+					if (personelDenklestirme == null || !(personelDenklestirme.isDenklestirmeDurum() || sadeceFazlaMesai == false)) {
 						iterator1.remove();
 						continue;
 					}
@@ -1448,7 +1449,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 						negatifBakiyeDenkSaat = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeliAy().getNegatifBakiyeDenkSaat() : 0.0d;
 						boolean ekle = (denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle));
-						fazlaMesaiHesapla = personelDenklestirme.isDenklestirme();
+						fazlaMesaiHesapla = personelDenklestirme.isDenklestirmeDurum();
 						CalismaModeli calismaModeli = puantaj.getCalismaModeli();
 						boolean cumartesiCalisiyor = calismaModeli != null && calismaModeli.getHaftaSonu() > 0.0d;
 						HashMap<Long, List<VardiyaGun>> bosGunMap = new HashMap<Long, List<VardiyaGun>>();
@@ -3965,7 +3966,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
 		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 			PersonelDenklestirme personelDenklestirme = (PersonelDenklestirme) iterator.next();
-			if (sadeceFazlaMesai && !personelDenklestirme.isDenklestirme())
+			if (sadeceFazlaMesai && !personelDenklestirme.isDenklestirmeDurum())
 				iterator.remove();
 		}
 		fields = null;
@@ -4811,7 +4812,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false)
 				continue;
 			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
-			boolean denklestirmeVar = personelDenklestirme.isDenklestirme();
+			boolean denklestirmeVar = personelDenklestirme.isDenklestirmeDurum();
 			if (denklestirmeVar) {
 				if (!aylikPuantaj.isFazlaMesaiHesapla() || !aylikPuantaj.isSecili())
 					continue;

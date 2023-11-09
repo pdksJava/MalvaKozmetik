@@ -617,6 +617,16 @@ public class PersonelDenklestirme extends BaseObject {
 	}
 
 	@Transient
+	public boolean isDenklestirmeDurum() {
+		boolean denkDurum = denklestirme;
+		if (!denkDurum) {
+			CalismaModeli calismaModeli = getCalismaModeli();
+			denkDurum = calismaModeli != null && calismaModeli.isFazlaMesaiVarMi() == false;
+		}
+		return denkDurum;
+	}
+
+	@Transient
 	public Personel getPdksPersonel() {
 		return personel;
 	}
