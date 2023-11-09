@@ -312,7 +312,18 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 	}
 
-	public void devamsizlikListeOlustur() throws Exception {
+	public String devamsizlikListeOlustur() {
+		try {
+			devamsizlikListeRaporuOlustur();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	private void devamsizlikListeRaporuOlustur() {
+
 		/*
 		 * yetkili oldugu Tum personellerin uzerinden dönülür,tek tarih icin cekilir. Vardiyadaki calismasi gereken saat ile hareketten calistigi saatler karsilastirilir. Eksik varsa izin var mi diye bakilir. Diyelim 4 saat eksik calisti 2 saat mazeret buldu. Hala 2 saat eksik vardir. Bunu
 		 * gosteririrz. Diyelim hic mazeret girmemiş 4 saat gösteririz
@@ -337,15 +348,18 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		if (!tumPersoneller.isEmpty()) {
 			Date basTarih = PdksUtil.tariheGunEkleCikar(date, -2);
 			Date bitTarih = PdksUtil.tariheGunEkleCikar(date, 1);
-			TreeMap<String, VardiyaGun> vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller, basTarih, bitTarih, Boolean.FALSE, session, Boolean.TRUE);
+			TreeMap<String, VardiyaGun> vardiyaMap = null;
 			try {
+				vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller, basTarih, bitTarih, Boolean.FALSE, session, Boolean.TRUE);
 				boolean islem = ortakIslemler.getVardiyaHareketIslenecekList(new ArrayList<VardiyaGun>(vardiyaMap.values()), date, session);
 				if (islem)
 					vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller, basTarih, bitTarih, Boolean.FALSE, session, Boolean.TRUE);
 
 			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
 			}
-			vardiyaList = new ArrayList<VardiyaGun>(vardiyaMap.values());
+			vardiyaList = vardiyaMap != null ? new ArrayList<VardiyaGun>(vardiyaMap.values()) : new ArrayList<VardiyaGun>();
 			ortakIslemler.sonrakiGunVardiyalariAyikla(date, vardiyaList, session);
 			// butun personeller icin hareket cekerken bu en kucuk tarih ile en
 			// buyuk tarih araligini kullanacaktir
@@ -396,9 +410,18 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					logger.debug(e.getMessage());
 				}
 				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
-				if (kapiIdler != null && !kapiIdler.isEmpty())
-					kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), tarih1, tarih2, HareketKGS.class, session);
-				else
+				kgsList = null;
+				if (kapiIdler != null && !kapiIdler.isEmpty()) {
+					try {
+						kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), tarih1, tarih2, HareketKGS.class, session);
+
+					} catch (Exception e) {
+						logger.error(e);
+						e.printStackTrace();
+					}
+
+				}
+				if (kgsList == null)
 					kgsList = new ArrayList<HareketKGS>();
 				if (!kgsList.isEmpty()) {
 					for (Iterator iterator = kgsList.iterator(); iterator.hasNext();) {

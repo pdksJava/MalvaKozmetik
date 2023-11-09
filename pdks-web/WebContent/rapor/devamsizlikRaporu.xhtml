@@ -20,7 +20,7 @@
 						<h:panelGrid columns="3">
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">Tarih</ui:define>
-								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{devamsizlikRaporuHome.date}" id="dateFilter" />
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" required="true" requiredMessage="Tarih seçiniz!" value="#{devamsizlikRaporuHome.date}" id="dateFilter" />
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
 								<ui:define name="label">İzinli Göster</ui:define>
