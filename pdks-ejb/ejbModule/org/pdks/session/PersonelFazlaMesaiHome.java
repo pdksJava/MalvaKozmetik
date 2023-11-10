@@ -500,7 +500,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				String key = pdksVardiyaGun.getVardiyaKey();
 				List<Personel> personeller = new ArrayList<Personel>();
 				personeller.add(pdksVardiyaGun.getPersonel());
-				TreeMap<String, VardiyaGun> vardiyalar = ortakIslemler.getVardiyalar(personeller, pdksVardiyaGun.getVardiyaDate(), pdksVardiyaGun.getVardiyaDate(), Boolean.TRUE, session, Boolean.FALSE);
+				TreeMap<String, VardiyaGun> vardiyalar = ortakIslemler.getVardiyalar(personeller, pdksVardiyaGun.getVardiyaDate(), pdksVardiyaGun.getVardiyaDate(), null, Boolean.TRUE, session, Boolean.FALSE);
 				if (vardiyalar.containsKey(key))
 					pdksVardiyaGun = vardiyalar.get(key);
 				fazlaMesai.setVardiyaGun(pdksVardiyaGun);

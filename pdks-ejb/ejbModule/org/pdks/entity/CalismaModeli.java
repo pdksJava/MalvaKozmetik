@@ -43,6 +43,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_MAAS_ODEME_TIPI = "MAAS_ODEME_TIPI";
 	public static final String COLUMN_NAME_FAZLA_MESAI_VAR = "FAZLA_MESAI_VAR";
 	public static final String COLUMN_NAME_ORTAK_VARDIYA = "ORTAK_VARDIYA";
+	public static final String COLUMN_NAME_FAZLA_CALISMA_GORUNTULENSIN = "FAZLA_CALISMA_GORUNTULENSIN";
 	public static final String COLUMN_NAME_TOPLAM_GUN_GUNCELLE = "TOPLAM_GUN_GUNCELLE";
 
 	private String aciklama = "";
@@ -50,7 +51,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
-	private Boolean ortakVardiya = Boolean.FALSE;
+	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
 	private Boolean aylikMaas = Boolean.TRUE;
@@ -220,6 +221,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.ortakVardiya = ortakVardiya;
 	}
 
+	@Column(name = COLUMN_NAME_FAZLA_CALISMA_GORUNTULENSIN)
+	public Boolean getFazlaMesaiGoruntulensin() {
+		return fazlaMesaiGoruntulensin;
+	}
+
+	public void setFazlaMesaiGoruntulensin(Boolean fazlaMesaiGoruntulensin) {
+		this.fazlaMesaiGoruntulensin = fazlaMesaiGoruntulensin;
+	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_BAGLI_VARDIYA_SABLON)
 	@Fetch(FetchMode.JOIN)
@@ -339,6 +349,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	}
 
 	@Transient
+	public boolean isFazlaMesaiGoruntulensinMi() {
+		return fazlaMesaiGoruntulensin != null && fazlaMesaiGoruntulensin.booleanValue();
+	}
+
+	@Transient
 	public double getIzinSaat(VardiyaGun pdksVardiyaGun) {
 		double izinSure = this.getIzin();
 		if (izinhaftaSonu > 0.0d) {
@@ -375,4 +390,5 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public boolean isOrtakVardiyadir() {
 		return ortakVardiya != null && ortakVardiya;
 	}
+
 }

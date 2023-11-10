@@ -391,7 +391,24 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<PersonelIzin> personelizinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PersonelIzin.class);
-			vardiyaMap = ortakIslemler.getVardiyalar((List<Personel>) personelList.clone(), basDate, bitDate, Boolean.FALSE, session, Boolean.TRUE);
+			HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
+			for (Iterator iterator = personelizinList.iterator(); iterator.hasNext();) {
+				PersonelIzin personelIzin = (PersonelIzin) iterator.next();
+				IzinTipi izinTipi = personelIzin.getIzinTipi();
+				if (izinTipi.getBakiyeIzinTipi() != null)
+					iterator.remove();
+				else {
+					Long key = personelIzin.getIzinSahibi().getId();
+					List<PersonelIzin> list = izinMap.containsKey(key) ? izinMap.get(key) : new ArrayList<PersonelIzin>();
+					if (list.isEmpty())
+						izinMap.put(key, list);
+					list.add(personelIzin);
+				}
+
+			}
+			
+			
+			vardiyaMap = ortakIslemler.getVardiyalar((List<Personel>) personelList.clone(), basDate, bitDate, izinMap, Boolean.FALSE, session, Boolean.TRUE);
 			if (!personelizinList.isEmpty()) {
 				TreeMap<String, Tatil> tatilGunleriMap = ortakIslemler.getTatilGunleri(personelList, basDate, bitDate, session);
 

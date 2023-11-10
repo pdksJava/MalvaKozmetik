@@ -621,7 +621,7 @@ public class PersonelDenklestirme extends BaseObject {
 		boolean denkDurum = denklestirme;
 		if (!denkDurum) {
 			CalismaModeli calismaModeli = getCalismaModeli();
-			denkDurum = calismaModeli != null && calismaModeli.isFazlaMesaiVarMi() == false;
+			denkDurum = calismaModeli != null && calismaModeli.isHareketKaydiVardiyaBulsunmu();
 		}
 		return denkDurum;
 	}

@@ -101,7 +101,7 @@ public class ServiceRestful implements Serializable {
 				Date baslamaTarih = PdksUtil.getDateFromString(basTarih);
 				Date bitisTarih = PdksUtil.getDateFromString(bitTarih);
 				if (baslamaTarih != null && bitisTarih != null) {
-					TreeMap<String, VardiyaGun> vgunMap = ortakIslemler.getVardiyalar(personeller, baslamaTarih, bitisTarih, false, sessionSQL, false);
+					TreeMap<String, VardiyaGun> vgunMap = ortakIslemler.getVardiyalar(personeller, baslamaTarih, bitisTarih, null, false, sessionSQL, false);
 					if (vgunMap != null && !vgunMap.isEmpty())
 						map = new LinkedHashMap<String, Object>();
 					for (String key : vgunMap.keySet()) {

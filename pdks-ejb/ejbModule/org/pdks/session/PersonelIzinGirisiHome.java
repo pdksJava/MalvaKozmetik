@@ -210,7 +210,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				if (izinSuresi > 0.0d) {
 					List<Personel> personeller = new ArrayList<Personel>();
 					personeller.add(izinSahibi);
-					TreeMap<String, VardiyaGun> vardiyalar = ortakIslemler.getVardiyalar(personeller, PdksUtil.tariheGunEkleCikar(yilBasiIzin.getBaslangicZamani(), -7), PdksUtil.tariheGunEkleCikar(yilBasiIzin.getBitisZamani(), 1), Boolean.FALSE, session, Boolean.TRUE);
+					TreeMap<String, VardiyaGun> vardiyalar = ortakIslemler.getVardiyalar(personeller, PdksUtil.tariheGunEkleCikar(yilBasiIzin.getBaslangicZamani(), -7), PdksUtil.tariheGunEkleCikar(yilBasiIzin.getBitisZamani(), 1), null, Boolean.FALSE, session, Boolean.TRUE);
 					try {
 						Date guncellemeTarihi = new Date();
 						Tatil tatil = tatilMap.get(key);

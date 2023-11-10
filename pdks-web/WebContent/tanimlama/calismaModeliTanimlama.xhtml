@@ -102,6 +102,12 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="Fazla Mesai Görüntülensin" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.fazlaMesaiGoruntulensin)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="ÇGS Güncellenir" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.updateCGS)}" />
@@ -277,6 +283,12 @@
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Fazla Mesai Var</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.fazlaMesaiVar}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Fazla Mesai Görüntülensin</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.fazlaMesaiGoruntulensin}" disabled="#{authenticatedUser.admin==false}">
 
 							</h:selectBooleanCheckbox>
 						</s:decorate>
