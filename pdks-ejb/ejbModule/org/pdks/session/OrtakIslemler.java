@@ -220,7 +220,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public boolean ileriTarihSeciliDegil(Date date) {
-		boolean hata = true;
+		boolean hata = false;
 		if (date == null)
 			PdksUtil.addMessageWarn("Tarih seçiniz!");
 		else if (date.after(new Date()))
