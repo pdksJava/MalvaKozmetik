@@ -117,7 +117,21 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 
 	}
 
-	public void fillHareketList() {
+	public String fillHareketList() {
+		try {
+			if (hareketList != null)
+				hareketList.clear();
+			else
+				hareketList = new ArrayList<HareketKGS>();
+ 			fillHareketListOlustur();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	private void fillHareketListOlustur() {
 
 		List<HareketKGS> hareket1List = new ArrayList<HareketKGS>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
@@ -207,13 +221,13 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleOddDateTime= ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
- 	 
+
 		int row = 0, col = 0;
- 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		boolean tesisDurum = ortakIslemler.getListTesisDurum(hareketList);
 		if (tesisDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());

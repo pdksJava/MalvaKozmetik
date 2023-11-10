@@ -216,6 +216,21 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param date
+	 * @return
+	 */
+	public boolean ileriTarihSeciliDegil(Date date) {
+		boolean hata = true;
+		if (date == null)
+			PdksUtil.addMessageWarn("Tarih seçiniz!");
+		else if (date.after(new Date()))
+			PdksUtil.addMessageWarn("İleri tarihi seçmeyiniz!");
+		else
+			hata = true;
+		return hata;
+	}
+
+	/**
 	 * @param personeller
 	 */
 	public void personelSirketTesisSirala(List<Personel> personeller) {

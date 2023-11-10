@@ -314,7 +314,12 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 	public String devamsizlikListeOlustur() {
 		try {
-			devamsizlikListeRaporuOlustur();
+			if (vardiyaGunList != null)
+				vardiyaGunList.clear();
+			else
+				vardiyaGunList = new ArrayList<VardiyaGun>();
+			if (ortakIslemler.ileriTarihSeciliDegil(date))
+				devamsizlikListeRaporuOlustur();
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();

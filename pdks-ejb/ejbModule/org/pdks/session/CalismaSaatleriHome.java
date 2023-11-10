@@ -153,6 +153,8 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 				if (sirket.getDurum() && sirket.getFazlaMesai())
 					aramaSecenekleri.getSirketIdList().add(new SelectItem(sirket.getId(), sirket.getAd()));
 			}
+			if (aramaSecenekleri.getSirketIdList().size()==1)
+				sirketId = (Long) aramaSecenekleri.getSirketIdList().get(0).getValue();
 			aramaSecenekleri.setSirketId(sirketId);
 			fillTesisList();
 		} else {
@@ -235,7 +237,20 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 
 	}
 
-	public void fillHareketList() throws Exception {
+	public String fillHareketList() {
+		try {
+			clearVardiyaList();
+			if (ortakIslemler.ileriTarihSeciliDegil(date))
+				fillHareketListOlustur();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return "";
+
+	}
+
+	public void fillHareketListOlustur() {
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
@@ -303,8 +318,17 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			}
 			izinList = null;
 		}
+		TreeMap<String, VardiyaGun> vardiyaMap = null;
+		try {
+			if (!tumPersoneller.isEmpty())
+				vardiyaMap = ortakIslemler.getIslemVardiyalar(tumPersoneller, PdksUtil.tariheGunEkleCikar(date, -1), date, Boolean.FALSE, session, Boolean.TRUE);
 
-		TreeMap<String, VardiyaGun> vardiyaMap = !tumPersoneller.isEmpty() ? ortakIslemler.getIslemVardiyalar(tumPersoneller, PdksUtil.tariheGunEkleCikar(date, -1), date, Boolean.FALSE, session, Boolean.TRUE) : new TreeMap<String, VardiyaGun>();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		if (vardiyaMap == null)
+			vardiyaMap = new TreeMap<String, VardiyaGun>();
 		vardiyaList = new ArrayList<VardiyaGun>(vardiyaMap.values());
 		Collections.reverse(vardiyaList);
 		Date bugun = new Date();
@@ -369,8 +393,15 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 		List<Long> kapiIdler = !tumPersoneller.isEmpty() ? ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session) : null;
 
 		if (kapiIdler != null && !kapiIdler.isEmpty())
-			kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, tumPersoneller, tarih1, tarih2, HareketKGS.class, session);
-		else
+			try {
+				kgsList = null;
+				kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, tumPersoneller, tarih1, tarih2, HareketKGS.class, session);
+
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+		if (kgsList == null)
 			kgsList = new ArrayList<HareketKGS>();
 		tumPersoneller = null;
 		if (!kgsList.isEmpty())
@@ -416,7 +447,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			DenklestirmeAy da = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(parametreMap2, DenklestirmeAy.class);
 			Double yemekMolasiYuzdesi = ortakIslemler.getYemekMolasiYuzdesi(da, session);
 
-			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(tarih1, tarih2,session);
+			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(tarih1, tarih2, session);
 			ortakIslemler.setVardiyaYemekList(vardiyaList, yemekGenelList);
 			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();

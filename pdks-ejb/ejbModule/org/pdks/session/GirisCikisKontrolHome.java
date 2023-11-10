@@ -148,6 +148,8 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 				if (sirket.getDurum() && sirket.getFazlaMesai())
 					aramaSecenekleri.getSirketIdList().add(new SelectItem(sirket.getId(), sirket.getAd()));
 			}
+			if (aramaSecenekleri.getSirketIdList().size() == 1)
+				sirketId = (Long) aramaSecenekleri.getSirketIdList().get(0).getValue();
 			aramaSecenekleri.setSirketId(sirketId);
 			fillTesisList();
 		} else {
@@ -230,7 +232,24 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 
 	}
 
-	public void fillHareketList() throws Exception {
+	public String fillHareketList() {
+
+		try {
+			if (vardiyaGunList != null)
+				vardiyaGunList.clear();
+			else
+				vardiyaGunList = new ArrayList<VardiyaGun>();
+			if (ortakIslemler.ileriTarihSeciliDegil(date))
+				fillHareketListOlustur();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return "";
+
+	}
+
+	private void fillHareketListOlustur() {
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
@@ -266,9 +285,17 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 			else
 				iterator.remove();
 		}
+		TreeMap<String, VardiyaGun> vardiyalarMap = null;
+		try {
+			vardiyalarMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller.clone(), PdksUtil.tariheGunEkleCikar(date, -3), PdksUtil.tariheGunEkleCikar(date, 3), Boolean.FALSE, session, Boolean.TRUE);
 
-		TreeMap<String, VardiyaGun> vardiyalar = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller.clone(), PdksUtil.tariheGunEkleCikar(date, -3), PdksUtil.tariheGunEkleCikar(date, 3), Boolean.FALSE, session, Boolean.TRUE);
-		vardiyaList = new ArrayList<VardiyaGun>(vardiyalar.values());
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		if (vardiyalarMap == null)
+			vardiyalarMap = new TreeMap<String, VardiyaGun>();
+		vardiyaList = new ArrayList<VardiyaGun>(vardiyalarMap.values());
 
 		Date tarih1 = null;
 		Date tarih2 = null;
@@ -311,8 +338,15 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 		tarih2 = PdksUtil.tariheGunEkleCikar(tarih2, 1);
 		List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 		if (kapiIdler != null && !kapiIdler.isEmpty())
-			kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), tarih1, tarih2, HareketKGS.class, session);
-		else
+			try {
+				kgsList = null;
+				kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), tarih1, tarih2, HareketKGS.class, session);
+
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+		if (kgsList == null)
 			kgsList = new ArrayList<HareketKGS>();
 		if (!kgsList.isEmpty())
 			kgsList = PdksUtil.sortListByAlanAdi(kgsList, "zaman", Boolean.FALSE);
@@ -402,7 +436,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 				if (!yaz)
 					iterator.remove();
 			}
-			ortakIslemler.otomatikHareketEkle(new ArrayList<VardiyaGun>(vardiyalar.values()), session);
+			ortakIslemler.otomatikHareketEkle(new ArrayList<VardiyaGun>(vardiyalarMap.values()), session);
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();

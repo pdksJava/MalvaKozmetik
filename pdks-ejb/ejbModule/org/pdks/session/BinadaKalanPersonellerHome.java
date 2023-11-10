@@ -103,11 +103,36 @@ public class BinadaKalanPersonellerHome extends EntityHome<VardiyaGun> implement
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
 	}
 
-	public void fillHareketList() throws Exception {
+	public String fillHareketList() {
+
+		try {
+			if (vardiyaGunList != null)
+				vardiyaGunList.clear();
+			else
+				vardiyaGunList = new ArrayList<VardiyaGun>();
+			if (ortakIslemler.ileriTarihSeciliDegil(date))
+				fillHareketListOlustur();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return "";
+
+	}
+
+	private void fillHareketListOlustur() {
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
+		TreeMap<String, VardiyaGun> vardiyaMap = null;
+		try {
+			vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) authenticatedUser.getTumPersoneller().clone(), date, PdksUtil.tariheGunEkleCikar(date, 1), Boolean.FALSE, session, Boolean.TRUE);
 
-		TreeMap<String, VardiyaGun> vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) authenticatedUser.getTumPersoneller().clone(), date, PdksUtil.tariheGunEkleCikar(date, 1), Boolean.FALSE, session, Boolean.TRUE);
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		if (vardiyaMap == null)
+			vardiyaMap = new TreeMap<String, VardiyaGun>();
 		vardiyaList = new ArrayList<VardiyaGun>(vardiyaMap.values());
 		Date tarih1 = null;
 		Date tarih2 = null;
