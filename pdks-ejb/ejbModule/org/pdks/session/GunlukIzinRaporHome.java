@@ -182,6 +182,7 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 	}
 
 	public void fillIzinList() {
+		Calendar cal = Calendar.getInstance();
 		izinlerMap = new HashMap<String, PersonelIzin>();
 		gunlerList = new ArrayList<Date>();
 		String izinTipiKodu = null;
@@ -210,8 +211,8 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 				izinDurumuList.add(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
 				parametreMap.clear();
 				parametreMap.put("izinSahibi", ((ArrayList<Personel>) personelList).clone());
-				parametreMap.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar(bitTarih, 1));
-				parametreMap.put("bitisZamani>=", PdksUtil.tariheGunEkleCikar(basTarih, -1));
+				parametreMap.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
+				parametreMap.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, basTarih, -1));
 				parametreMap.put("izinDurumu", izinDurumuList);
 				if (izinTipiKodu != null)
 					parametreMap.put("izinTipi.izinTipiTanim.kodu=", izinTipiKodu);
@@ -227,7 +228,7 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 				tarih2 = (Date) bitTarih.clone();
 				while (PdksUtil.tarihKarsilastirNumeric(tarih2, tarih1) >= 0) {
 					gunlerList.add(tarih1);
-					tarih1 = PdksUtil.tariheGunEkleCikar(tarih1, 1);
+					tarih1 = ortakIslemler.tariheGunEkleCikar(cal, tarih1, 1);
 				}
 				for (PersonelIzin personelIzin : izinList) {
 					double saat = PdksUtil.getSaatFarki(tarih1, tarih2);

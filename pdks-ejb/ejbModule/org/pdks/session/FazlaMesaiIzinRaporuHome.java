@@ -3,6 +3,7 @@ package org.pdks.session;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -230,7 +231,8 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 		 */
 		clearVardiyaList();
 		session.clear();
-		Date oncekiGun = PdksUtil.tariheGunEkleCikar(date, -1);
+		Calendar cal = Calendar.getInstance();
+		Date oncekiGun = ortakIslemler.tariheGunEkleCikar(cal, date, -1);
 		HashMap map = new HashMap();
 		map.put("pdks=", Boolean.TRUE);
 		map.put("durum=", Boolean.TRUE);
@@ -248,8 +250,8 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 		if (session != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
 		ArrayList<Personel> tumPersoneller = (ArrayList<Personel>) pdksEntityController.getObjectByInnerObjectListInLogic(map, Personel.class);
-		Date basTarih = PdksUtil.tariheGunEkleCikar(date, -7);
-		Date bitTarih = PdksUtil.tariheGunEkleCikar(date, 7);
+		Date basTarih = ortakIslemler.tariheGunEkleCikar(cal, date, -7);
+		Date bitTarih = ortakIslemler.tariheGunEkleCikar(cal, date, 7);
 		if (!tumPersoneller.isEmpty()) {
 			List<Long> idler = new ArrayList<Long>();
 			for (Iterator iterator = tumPersoneller.iterator(); iterator.hasNext();) {
@@ -361,8 +363,8 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 					List<IzinTipi> izinler = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinTipi.class);
 					if (!izinler.isEmpty()) {
 						HashMap parametreMap2 = new HashMap();
-						parametreMap2.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar(tarih2, 1));
-						parametreMap2.put("bitisZamani>=", PdksUtil.tariheGunEkleCikar(tarih2, -1));
+						parametreMap2.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, tarih2, 1));
+						parametreMap2.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, tarih2, -1));
 						parametreMap2.put("izinTipi", izinler);
 						parametreMap2.put("izinSahibi", tumPersoneller.clone());
 						if (session != null)
@@ -380,7 +382,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 				}
 				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 				if (kapiIdler != null && !kapiIdler.isEmpty())
-					kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), PdksUtil.tariheGunEkleCikar(tarih1, -1), PdksUtil.tariheGunEkleCikar(tarih2, 1), HareketKGS.class, session);
+					kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), ortakIslemler.tariheGunEkleCikar(cal, tarih1, -1), ortakIslemler.tariheGunEkleCikar(cal, tarih2, 1), HareketKGS.class, session);
 				else
 					kgsList = new ArrayList<HareketKGS>();
 				HashMap<Long, List<HareketKGS>> hMap = new HashMap<Long, List<HareketKGS>>();
@@ -534,11 +536,11 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			CellStyle header = ExcelUtil.getStyleHeader(wb);
 			XSSFCellStyle styleOdd = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
 			styleOdd.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.index);
-	 		XSSFCellStyle styleOddCenter = (XSSFCellStyle) ExcelUtil.setAlignment((CellStyle) styleOdd.clone(), CellStyle.ALIGN_CENTER);
+			XSSFCellStyle styleOddCenter = (XSSFCellStyle) ExcelUtil.setAlignment((CellStyle) styleOdd.clone(), CellStyle.ALIGN_CENTER);
 			XSSFCellStyle styleEven = (XSSFCellStyle) ExcelUtil.getStyleData(wb);
 			ExcelUtil.setFillForegroundColor(styleEven, 219, 248, 219);
- 			XSSFCellStyle styleEvenCenter = (XSSFCellStyle) ExcelUtil.setAlignment((CellStyle) styleEven.clone(),CellStyle.ALIGN_CENTER);
- 
+			XSSFCellStyle styleEvenCenter = (XSSFCellStyle) ExcelUtil.setAlignment((CellStyle) styleEven.clone(), CellStyle.ALIGN_CENTER);
+
 			int col = 0, row = 0;
 
 			if (izinVardiyaGunList.size() > 0) {

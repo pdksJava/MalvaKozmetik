@@ -207,23 +207,25 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (mailMap == null)
 			mailMap = mailDataMap;
 		if (!mailDataMap.containsKey("ikMailIptal")) {
-			HashMap fields = new HashMap();
-			sb.append("SELECT  U.* FROM " + Role.TABLE_NAME + " R WITH(nolock)");
-			sb.append(" INNER JOIN " + UserRoles.TABLE_NAME + " UR ON UR." + UserRoles.COLUMN_NAME_ROLE + "=R.ID ");
-			sb.append(" INNER JOIN " + User.TABLE_NAME + " U ON U.ID=UR." + UserRoles.COLUMN_NAME_USER + " AND U.DURUM=1 ");
-			sb.append(" INNER JOIN " + Departman.TABLE_NAME + " D ON D.ID=U." + User.COLUMN_NAME_DEPARTMAN + " AND D.ADMIN_DURUM=1 AND D.DURUM=1 ");
-			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P.ID=U." + User.COLUMN_NAME_PERSONEL + " AND P.DURUM=1 AND P." + Personel.COLUMN_NAME_ISTEN_AYRILIS_TARIHI + ">GETDATE() ");
-			sb.append(" WHERE R." + Role.COLUMN_NAME_ROLE_NAME + "=:r ");
-			fields.put("r", Role.TIPI_IK);
-			userList = dao.getNativeSQLList(fields, sb, User.class);
-			if (userList != null && !userList.isEmpty()) {
-				userList = PdksUtil.sortObjectStringAlanList(userList, "getAdSoyad", null);
-				for (Iterator iterator = userList.iterator(); iterator.hasNext();) {
-					User user = (User) iterator.next();
-					MailPersonel mailPersonel = new MailPersonel();
-					mailPersonel.setAdiSoyadi(user.getAdSoyad());
-					mailPersonel.setePosta(user.getEmail());
-					mailObject.getToList().add(mailPersonel);
+			if (PdksUtil.getCanliSunucuDurum()) {
+				HashMap fields = new HashMap();
+				sb.append("SELECT  U.* FROM " + Role.TABLE_NAME + " R WITH(nolock)");
+				sb.append(" INNER JOIN " + UserRoles.TABLE_NAME + " UR ON UR." + UserRoles.COLUMN_NAME_ROLE + "=R.ID ");
+				sb.append(" INNER JOIN " + User.TABLE_NAME + " U ON U.ID=UR." + UserRoles.COLUMN_NAME_USER + " AND U.DURUM=1 ");
+				sb.append(" INNER JOIN " + Departman.TABLE_NAME + " D ON D.ID=U." + User.COLUMN_NAME_DEPARTMAN + " AND D.ADMIN_DURUM=1 AND D.DURUM=1 ");
+				sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P.ID=U." + User.COLUMN_NAME_PERSONEL + " AND P.DURUM=1 AND P." + Personel.COLUMN_NAME_ISTEN_AYRILIS_TARIHI + ">GETDATE() ");
+				sb.append(" WHERE R." + Role.COLUMN_NAME_ROLE_NAME + "=:r ");
+				fields.put("r", Role.TIPI_IK);
+				userList = dao.getNativeSQLList(fields, sb, User.class);
+				if (userList != null && !userList.isEmpty()) {
+					userList = PdksUtil.sortObjectStringAlanList(userList, "getAdSoyad", null);
+					for (Iterator iterator = userList.iterator(); iterator.hasNext();) {
+						User user = (User) iterator.next();
+						MailPersonel mailPersonel = new MailPersonel();
+						mailPersonel.setAdiSoyadi(user.getAdSoyad());
+						mailPersonel.setePosta(user.getEmail());
+						mailObject.getToList().add(mailPersonel);
+					}
 				}
 			}
 		} else
@@ -618,7 +620,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 			addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
 		}
 		addMailAdresBCC(mailObject, "bccAdres");
-		addMailAdresBCC(mailObject, "bccEntegrasyonAdres");	HashMap<String, MailPersonel> mailDataMap = new HashMap<String, MailPersonel>();
+		addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
+		HashMap<String, MailPersonel> mailDataMap = new HashMap<String, MailPersonel>();
 		mailListKontrol(mailObject.getToList(), mailDataMap);
 		mailListKontrol(mailObject.getCcList(), mailDataMap);
 		mailListKontrol(mailObject.getBccList(), mailDataMap);

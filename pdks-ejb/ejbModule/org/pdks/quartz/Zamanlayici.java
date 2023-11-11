@@ -163,10 +163,11 @@ public class Zamanlayici implements Serializable {
 		String value = (parameterOzel != null) ? parameterOzel.getValue() : "";
 		boolean ozelKontrolDurum = value == null || !value.equals("0");
 		if (ozelKontrolDurum) {
-			Date tarih = PdksUtil.getDate(new Date());
+			Calendar cal = Calendar.getInstance();
+			Date tarih = PdksUtil.getDate(cal.getTime());
 			TreeMap<String, Tatil> resmiTatilMap = null;
 			try {
-				resmiTatilMap = ortakIslemler.getTatilGunleri(null, tarih, PdksUtil.tariheGunEkleCikar(tarih, 1), session);
+				resmiTatilMap = ortakIslemler.getTatilGunleri(null, tarih, ortakIslemler.tariheGunEkleCikar(cal, tarih, 1), session);
 			} catch (Exception e) {
 				resmiTatilMap = new TreeMap<String, Tatil>();
 			}

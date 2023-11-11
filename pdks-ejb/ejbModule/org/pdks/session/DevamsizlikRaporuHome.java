@@ -3,6 +3,7 @@ package org.pdks.session;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -351,8 +352,9 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 		}
 		if (!tumPersoneller.isEmpty()) {
-			Date basTarih = PdksUtil.tariheGunEkleCikar(date, -2);
-			Date bitTarih = PdksUtil.tariheGunEkleCikar(date, 1);
+			Calendar cal = Calendar.getInstance();
+			Date basTarih = ortakIslemler.tariheGunEkleCikar(cal, date, -2);
+			Date bitTarih = ortakIslemler.tariheGunEkleCikar(cal, date, 1);
 			TreeMap<String, VardiyaGun> vardiyaMap = null;
 			try {
 				vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller, basTarih, bitTarih, Boolean.FALSE, session, Boolean.TRUE);

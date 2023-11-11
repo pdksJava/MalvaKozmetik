@@ -1080,9 +1080,10 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 		sirket = null;
 		personelDenklestirmeler = null;
 		modelGoster = ortakIslemler.getModelGoster(denklestirmeAy, session);
+		Calendar cal = Calendar.getInstance();
 		if (denklestirmeAy != null) {
 			basGun = PdksUtil.getYilAyBirinciGun(yil, ay);
-			bitGun = PdksUtil.tariheAyEkleCikar(basGun, 1);
+			bitGun = ortakIslemler.tariheAyEkleCikar(cal, basGun, 1);
 
 			fields.clear();
 			StringBuffer sb = new StringBuffer();
@@ -1202,7 +1203,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 					personelDenklestirmeList = PdksUtil.sortObjectStringAlanList(personelDenklestirmeList, "getSortKey", null);
 				List<Long> perIdList = new ArrayList<Long>();
 				Date basTarih = PdksUtil.convertToJavaDate(denklestirmeAy.getYil() + "-" + denklestirmeAy.getAy() + "-01", "yyyy-M-dd");
-				Date bitTarih = PdksUtil.tariheAyEkleCikar(basTarih, 1);
+				Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
 
 				for (PersonelDenklestirme personelDenklestirme : personelDenklestirmeList) {
 					perIdList.add(personelDenklestirme.getPersonelId());

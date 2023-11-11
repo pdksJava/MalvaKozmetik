@@ -140,13 +140,13 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izinler", Boolean.TRUE);
-	 	CellStyle header = ExcelUtil.getStyleHeader(wb);
- 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleOddDateTime  = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleEvenDateTime  = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0;
 		int col = 0;
 		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(personelIzinList, null);
@@ -244,8 +244,8 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		if (authenticatedUser.isAdmin() == false || aramaSecenekleri == null)
 			aramaSecenekleri = new AramaSecenekleri(authenticatedUser);
 		aramaSecenekleri.setStajyerOlmayanSirket(Boolean.FALSE);
-		setBitTarih(PdksUtil.tariheAyEkleCikar(new Date(), 2));
 		Calendar cal = Calendar.getInstance();
+		setBitTarih(ortakIslemler.tariheAyEkleCikar(cal, new Date(), 2));
 		setTumIzinler(Boolean.FALSE);
 		cal.add(Calendar.YEAR, -1);
 		setBasTarih(cal.getTime());
@@ -337,7 +337,7 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 			}
 			Date bitisTarihi = (Date) bitTarih.clone();
 			if (PdksUtil.tarihKarsilastirNumeric(bitTarih, basTarih) == 0)
-				bitisTarihi = PdksUtil.tariheGunEkleCikar(bitisTarihi, 1);
+				bitisTarihi = ortakIslemler.tariheGunEkleCikar(null, bitisTarihi, 1);
 			parametreMap.put("baslangicZamani<=", bitisTarihi);
 			parametreMap.put("bitisZamani>=", basTarih);
 			List<Integer> izinDurumuList = new ArrayList<Integer>();
@@ -400,13 +400,13 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "SSK Izin Rapor", Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
- 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleOddDate  = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
-		CellStyle styleEvenDate  = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
- 		int row = 0, col = 0;
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		int row = 0, col = 0;
 		boolean ekSaha1 = false, ekSaha2 = false, ekSaha3 = false, ekSaha4 = false;
 		HashMap<String, Boolean> map = ortakIslemler.getListEkSahaDurumMap(personelIzinList, null);
 		if (authenticatedUser.isAdmin() || authenticatedUser.isIKAdmin()) {
@@ -538,7 +538,7 @@ public class KullanilanIzinlerHome extends EntityHome<PersonelIzin> implements S
 
 				Date bitisTarihi = (Date) bitTarih.clone();
 				if (PdksUtil.tarihKarsilastirNumeric(bitTarih, basTarih) == 0)
-					bitisTarihi = PdksUtil.tariheGunEkleCikar(bitisTarihi, 1);
+					bitisTarihi = ortakIslemler.tariheGunEkleCikar(null, bitisTarihi, 1);
 				parametreMap.put("baslangicZamani<=", bitisTarihi);
 				parametreMap.put("bitisZamani>=", basTarih);
 				List<Integer> izinDurumuList = new ArrayList<Integer>();

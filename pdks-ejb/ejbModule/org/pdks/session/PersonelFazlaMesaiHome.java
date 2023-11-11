@@ -633,7 +633,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 			personeller = (ArrayList<Personel>) pdksEntityController.getObjectByInnerObjectList(parametreMap, Personel.class);
 
 		}
-		tatilMap = ortakIslemler.getTatilGunleri(personeller, PdksUtil.tariheGunEkleCikar(date, -1), PdksUtil.tariheGunEkleCikar(date, 1), session);
+		tatilMap = ortakIslemler.getTatilGunleri(personeller, ortakIslemler.tariheGunEkleCikar(cal, date, -1), ortakIslemler.tariheGunEkleCikar(cal, date, 1), session);
 		tatil = null;
 		fazlaMesaiSistemOnayDurum = null;
 		if (!tatilMap.isEmpty()) {
@@ -665,7 +665,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				HashMap parametreMapIzin = new HashMap();
 				parametreMapIzin.put("izinTipi.bakiyeIzinTipi=", null);
 				parametreMapIzin.put("bitisZamani>=", date);
-				parametreMapIzin.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar(date, 1));
+				parametreMapIzin.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, date, 1));
 				parametreMapIzin.put("izinDurumu", ortakIslemler.getAktifIzinDurumList());
 				parametreMapIzin.put("izinSahibi.id", personelIdList);
 				if (session != null)
@@ -679,7 +679,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 				Date tarih3 = null;
 				Date tarih4 = null;
 				TreeMap<String, VardiyaGun> vardiyaMap = null;
-				Date basTarih = PdksUtil.tariheGunEkleCikar(date, -2), bitTarih = PdksUtil.tariheGunEkleCikar(date, 3);
+				Date basTarih = ortakIslemler.tariheGunEkleCikar(cal, date, -2), bitTarih = ortakIslemler.tariheGunEkleCikar(cal, date, 3);
 				try {
 					vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) personeller.clone(), basTarih, bitTarih, yaz, session, Boolean.FALSE);
 				} catch (Exception e) {
@@ -782,7 +782,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 						tarih4 = islemVardiya.getVardiyaBitZaman();
 						tarih2 = islemVardiya.getVardiyaFazlaMesaiBitZaman();
 						if (pdksVardiyaGun.getSonrakiVardiyaGun() == null)
-							tarih2 = PdksUtil.tariheGunEkleCikar(tarih1, 1);
+							tarih2 = ortakIslemler.tariheGunEkleCikar(cal, tarih1, 1);
 
 					}
 
@@ -1387,15 +1387,16 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 	 * @param bayramBitti
 	 */
 	private void bayramMesaiAyir(List<HareketKGS> kgsList, HareketKGS hareket, Boolean bayramBitti) {
+		Calendar cal = Calendar.getInstance();
 		double fazlaMesai = hareket.getFazlaMesai();
 		if (fazlaMesai > 0) {
 			Date orjCikisZaman = (Date) hareket.getCikisZaman().clone();
 			Date orjGirisZaman = (Date) hareket.getGirisZaman().clone();
 			Date girisZaman = PdksUtil.getDate(orjCikisZaman);
-			Date cikisZaman = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar(orjCikisZaman, -1), "yyyyMMdd") + " 23:59:00", "yyyyMMdd HH:mm:ss");
+			Date cikisZaman = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(ortakIslemler.tariheGunEkleCikar(cal, orjCikisZaman, -1), "yyyyMMdd") + " 23:59:00", "yyyyMMdd HH:mm:ss");
 			if (!bayramBitti) {
 				girisZaman = tatilMesai.getBasTarih();
-				cikisZaman = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar(orjCikisZaman, -1), "yyyyMMdd") + " 23:59:00", "yyyyMMdd HH:mm:ss");
+				cikisZaman = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(ortakIslemler.tariheGunEkleCikar(cal, orjCikisZaman, -1), "yyyyMMdd") + " 23:59:00", "yyyyMMdd HH:mm:ss");
 				if (tatilMesai.isYarimGunMu() && PdksUtil.tarihKarsilastirNumeric(orjGirisZaman, tatilMesai.getBasTarih()) == 0) {
 					cikisZaman = PdksUtil.addTarih(girisZaman, Calendar.MINUTE, -1);
 				}

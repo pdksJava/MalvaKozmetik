@@ -222,7 +222,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 					}
 
 					else
-						bitisTarihi = PdksUtil.tariheGunEkleCikar(tarih, 1);
+						bitisTarihi = ortakIslemler.tariheGunEkleCikar(cal, tarih, 1);
 				}
 				List yemekArifeList = new ArrayList();
 				islemVardiya.setArifeBaslangicTarihi(arifeBaslangicTarihi);

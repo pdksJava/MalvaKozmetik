@@ -329,7 +329,7 @@ public class IseGelmemeUyari implements Serializable {
 					map.put("pdksPersonel.id", new ArrayList<Long>(yoneticiler.values()));
 					TreeMap<Long, User> userMap = pdksEntityController.getObjectByInnerObjectMap(map, User.class, Boolean.FALSE);
 					TreeMap<String, Tatil> resmiTatilGunleri = ortakIslemler.getTatilGunleri(personeller, oncekiGun, tarih, session);
-					Date sonrakiGun = PdksUtil.tariheGunEkleCikar(tarih, 1);
+					Date sonrakiGun = ortakIslemler.tariheGunEkleCikar(cal, tarih, 1);
 					// Vardiya kayıtları okunuyor
 					TreeMap<String, VardiyaGun> vardiyalar = ortakIslemler.getIslemVardiyalar(personeller, oncekiGun, sonrakiGun, Boolean.FALSE, session, Boolean.TRUE);
 					try {
@@ -442,7 +442,7 @@ public class IseGelmemeUyari implements Serializable {
 						map.clear();
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 						map.put("durum=", Boolean.TRUE);
-						map.put("basTarih<=", PdksUtil.tariheGunEkleCikar((Date) tarih.clone(), 1));
+						map.put("basTarih<=", ortakIslemler.tariheGunEkleCikar(cal, (Date) tarih.clone(), 1));
 						map.put("bitTarih>=", vardiyaBas);
 						map.put(PdksEntityController.MAP_KEY_MAP, "getVekaletVerenId");
 						TreeMap<Long, UserVekalet> vekaletMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, UserVekalet.class, Boolean.FALSE);
@@ -450,7 +450,7 @@ public class IseGelmemeUyari implements Serializable {
 						map.clear();
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 						map.put("durum=", Boolean.TRUE);
-						map.put("basTarih<=", PdksUtil.tariheGunEkleCikar((Date) tarih.clone(), 1));
+						map.put("basTarih<=", ortakIslemler.tariheGunEkleCikar(cal, (Date) tarih.clone(), 1));
 						map.put("bitTarih>=", vardiyaBas);
 						map.put(PdksEntityController.MAP_KEY_MAP, "getPersonelGeciciId");
 						TreeMap<Long, PersonelGeciciYonetici> geciciYoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, PersonelGeciciYonetici.class, Boolean.FALSE);
@@ -464,7 +464,7 @@ public class IseGelmemeUyari implements Serializable {
 							perIdList.add(kgsPerMap.get(long1).getId());
 						map.clear();
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
-						map.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar((Date) tarih.clone(), 1));
+						map.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, (Date) tarih.clone(), 1));
 						map.put("bitisZamani>=", vardiyaBas);
 						map.put("izinTipi.bakiyeIzinTipi=", null);
 						map.put("izinSahibi.id", perIdList);

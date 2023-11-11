@@ -250,10 +250,11 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 	}
 
 	private void fillHareketListOlustur() {
+		Calendar cal = Calendar.getInstance();
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
-		Date oncekiGun = PdksUtil.tariheGunEkleCikar(date, -1);
+		Date oncekiGun = ortakIslemler.tariheGunEkleCikar(cal, date, -1);
 		HashMap map = new HashMap();
 		map.put("pdks=", Boolean.TRUE);
 		map.put("durum=", Boolean.TRUE);
@@ -287,7 +288,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 		}
 		TreeMap<String, VardiyaGun> vardiyalarMap = null;
 		try {
-			vardiyalarMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller.clone(), PdksUtil.tariheGunEkleCikar(date, -3), PdksUtil.tariheGunEkleCikar(date, 3), Boolean.FALSE, session, Boolean.TRUE);
+			vardiyalarMap = ortakIslemler.getIslemVardiyalar((List<Personel>) tumPersoneller.clone(), ortakIslemler.tariheGunEkleCikar(cal, date, -3), ortakIslemler.tariheGunEkleCikar(cal, date, 3), Boolean.FALSE, session, Boolean.TRUE);
 
 		} catch (Exception e) {
 			logger.error(e);
@@ -303,8 +304,8 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 		parametreMap.put("izinTipi.bakiyeIzinTipi=", null);
 		parametreMap.put("izinSahibi.id", perIdList);
 		parametreMap.put("izinDurumu not ", Arrays.asList(new Integer[] { PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL, PersonelIzin.IZIN_DURUMU_REDEDILDI }));
-		parametreMap.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar((Date) date.clone(), 1));
-		parametreMap.put("bitisZamani>=", PdksUtil.tariheGunEkleCikar((Date) date.clone(), -1));
+		parametreMap.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, (Date) date.clone(), 1));
+		parametreMap.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, (Date) date.clone(), -1));
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PersonelIzin.class);
@@ -334,8 +335,8 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 			tarih1 = date;
 		if (tarih2 == null)
 			tarih2 = date;
-		tarih1 = PdksUtil.tariheGunEkleCikar(tarih1, -1);
-		tarih2 = PdksUtil.tariheGunEkleCikar(tarih2, 1);
+		tarih1 = ortakIslemler.tariheGunEkleCikar(cal, tarih1, -1);
+		tarih2 = ortakIslemler.tariheGunEkleCikar(cal, tarih2, 1);
 		List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 		if (kapiIdler != null && !kapiIdler.isEmpty())
 			try {

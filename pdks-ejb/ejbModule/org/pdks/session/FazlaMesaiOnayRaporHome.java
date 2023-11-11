@@ -190,12 +190,11 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			}
 		// if (maxFazlaMesaiOnayGun < 1)
 		// maxFazlaMesaiOnayGun = 7;
-
+		Calendar cal = Calendar.getInstance();
 		if (basTarih == null) {
 			basTarih = PdksUtil.getDate(new Date());
 			if (maxFazlaMesaiOnayGun > 0) {
 
-				Calendar cal = Calendar.getInstance();
 				int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 				if (dayOfWeek != Calendar.MONDAY) {
 					cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -203,12 +202,12 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						cal.add(Calendar.DATE, -7);
 					basTarih = PdksUtil.getDate(cal.getTime());
 				}
-				basTarih = PdksUtil.tariheGunEkleCikar(basTarih, -7);
+				basTarih = ortakIslemler.tariheGunEkleCikar(cal, basTarih, -7);
 			}
 		}
 
 		if (bitTarih == null)
-			bitTarih = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiOnayGun > 0 ? maxFazlaMesaiOnayGun - 1 : 0);
+			bitTarih = ortakIslemler.tariheGunEkleCikar(cal, basTarih, maxFazlaMesaiOnayGun > 0 ? maxFazlaMesaiOnayGun - 1 : 0);
 
 		try {
 			modelGoster = Boolean.FALSE;
@@ -219,7 +218,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			setTesisList(null);
 			aylar = PdksUtil.getAyListesi(Boolean.TRUE);
 			seciliEkSaha3Id = null;
-			Calendar cal = Calendar.getInstance();
+			cal = Calendar.getInstance();
 			ortakIslemler.gunCikar(cal, 2);
 			ay = cal.get(Calendar.MONTH) + 1;
 			yil = cal.get(Calendar.YEAR);
@@ -421,7 +420,8 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		listeTemizle();
 
 		if (basTarih.getTime() <= bitTarih.getTime()) {
-			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiOnayGun);
+			Calendar cal = Calendar.getInstance();
+			Date sonGun = ortakIslemler.tariheGunEkleCikar(cal, basTarih, maxFazlaMesaiOnayGun);
 			if (maxFazlaMesaiOnayGun > 0 && sonGun.before(bitTarih))
 				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiOnayGun + " günden fazla işlem yapılmaz!");
 			else
@@ -561,9 +561,10 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	@Transactional
 	public String fillPersonelDenklestirmeRaporList() {
+		Calendar cal = Calendar.getInstance();
 		boolean devam = true;
 		if (basTarih.getTime() <= bitTarih.getTime()) {
-			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaMesaiOnayGun);
+			Date sonGun = ortakIslemler.tariheGunEkleCikar(cal, basTarih, maxFazlaMesaiOnayGun);
 			if (maxFazlaMesaiOnayGun > 0 && sonGun.before(bitTarih)) {
 				PdksUtil.addMessageAvailableWarn(maxFazlaMesaiOnayGun + " günden fazla işlem yapılmaz!");
 				devam = false;

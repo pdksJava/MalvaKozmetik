@@ -227,13 +227,14 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 
 	public void fillHareketList() {
 		fillYemekList();
+		Calendar cal = Calendar.getInstance();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		TreeMap<String, HareketKGS> yemekOzetZamanMap = new TreeMap<String, HareketKGS>();
 		TreeMap<String, HareketKGS> yemekMap = new TreeMap<String, HareketKGS>();
 		HashMap parametreMap = new HashMap();
 		ortakIslemler.showSQLQuery(parametreMap);
 		parametreMap.put("basTarih", PdksUtil.getDate(basTarih));
-		parametreMap.put("bitTarih", PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(bitTarih, 1)));
+		parametreMap.put("bitTarih", PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1)));
 		StringBuffer qsb = new StringBuffer();
 		qsb.append("SELECT S." + HareketKGS.COLUMN_NAME_ID + " S." + HareketKGS.COLUMN_NAME_TABLE_ID + " FROM " + HareketKGS.TABLE_NAME + " S  WITH(nolock) ");
 		qsb.append(" where  S." + HareketKGS.COLUMN_NAME_ZAMAN + " >=:basTarih AND S." + HareketKGS.COLUMN_NAME_ZAMAN + " <:bitTarih ");

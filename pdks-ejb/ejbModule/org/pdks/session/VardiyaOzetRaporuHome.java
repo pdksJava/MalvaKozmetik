@@ -3,6 +3,7 @@ package org.pdks.session;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -266,7 +267,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		 */
 		clearVardiyaList();
 		session.clear();
-		Date oncekiGun = PdksUtil.tariheGunEkleCikar(date, -1);
+		Calendar cal = Calendar.getInstance();
+		Date oncekiGun = ortakIslemler.tariheGunEkleCikar(cal, date, -1);
 		HashMap map = new HashMap();
 		map.put("durum=", Boolean.TRUE);
 		if (PdksUtil.hasStringValue(sicilNo))
@@ -301,7 +303,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		}
 
 		if (!tumPersoneller.isEmpty()) {
-			Date basTarih = PdksUtil.tariheGunEkleCikar(date, -1);
+			Date basTarih = ortakIslemler.tariheGunEkleCikar(cal, date, -1);
 			Date bitTarih = date;
 			List<VardiyaGun> vardiyaGunList = null;
 			try {
@@ -336,8 +338,8 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					List<IzinTipi> izinler = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinTipi.class);
 					if (!izinler.isEmpty()) {
 						HashMap parametreMap2 = new HashMap();
-						parametreMap2.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar(bitTarih, 1));
-						parametreMap2.put("bitisZamani>=", PdksUtil.tariheGunEkleCikar(basTarih, -1));
+						parametreMap2.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
+						parametreMap2.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, basTarih, -1));
 						parametreMap2.put("izinTipi", izinler);
 						parametreMap2.put("izinSahibi", tumPersoneller.clone());
 						if (session != null)
@@ -417,7 +419,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 						tarih1 = date;
 
 					if (tarih2 == null)
-						tarih2 = PdksUtil.tariheGunEkleCikar(date, 1);
+						tarih2 = ortakIslemler.tariheGunEkleCikar(cal, date, 1);
 				}
 			}
 			if (!vardiyaGunList.isEmpty()) {
@@ -438,7 +440,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					kgsList = null;
 					if (kapiIdler != null && !kapiIdler.isEmpty())
 						try {
-							kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), PdksUtil.tariheGunEkleCikar(tarih1, -1), PdksUtil.tariheGunEkleCikar(tarih2, 1), HareketKGS.class, session);
+							kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), ortakIslemler.tariheGunEkleCikar(cal, tarih1, -1), ortakIslemler.tariheGunEkleCikar(cal, tarih2, 1), HareketKGS.class, session);
 
 						} catch (Exception e) {
 							logger.error(e);

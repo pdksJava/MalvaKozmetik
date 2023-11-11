@@ -248,9 +248,9 @@ public class YemekCiftBasanRaporHome extends EntityHome<VardiyaGun> implements S
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		HashMap parametreMap = new HashMap();
 		ortakIslemler.showSQLQuery(parametreMap);
-
+		Calendar cal = Calendar.getInstance();
 		parametreMap.put("basTarih", PdksUtil.getDate(basTarih));
-		parametreMap.put("bitTarih", PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(bitTarih, 1)));
+		parametreMap.put("bitTarih", PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1)));
 
 		StringBuffer qsb = new StringBuffer();
 		qsb.append("SELECT S." + HareketKGS.COLUMN_NAME_ID + " FROM " + HareketKGS.TABLE_NAME + " S  WITH(nolock) ");

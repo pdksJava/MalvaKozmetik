@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -388,6 +389,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			devam = Boolean.FALSE;
 
 		if (devam) {
+			Calendar cal = Calendar.getInstance();
 			parametreMap.clear();
 			StringBuffer sb = null;
 			if ((personelId == null || personelId.isEmpty()) && (sirketId != null || departmanId != null)) {
@@ -447,14 +449,14 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				parametreMap.put("p", (ArrayList) personelId.clone());
 			}
 
-			parametreMap.put("vardiyaBit", PdksUtil.tariheGunEkleCikar(PdksUtil.getDate(bitTarih), 1));
+			parametreMap.put("vardiyaBit", ortakIslemler.tariheGunEkleCikar(cal, PdksUtil.getDate(bitTarih), 1));
 			parametreMap.put("vardiyaBas", basTarih);
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			try {
 				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket bilgileri okunuyor."));
 				if (personelId != null && !personelId.isEmpty()) {
-					kgsList = ortakIslemler.getHareketBilgileri(new ArrayList<Long>(kapiMap.keySet()), personelId, basTarih, PdksUtil.tariheGunEkleCikar(PdksUtil.getDate(bitTarih), 1), BasitHareket.class, session);
+					kgsList = ortakIslemler.getHareketBilgileri(new ArrayList<Long>(kapiMap.keySet()), personelId, basTarih, ortakIslemler.tariheGunEkleCikar(cal, PdksUtil.getDate(bitTarih), 1), BasitHareket.class, session);
 				} else {
 					List list = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
 					kgsList = ortakIslemler.getHareketIdBilgileri(list, null, basTarih, bitTarih, session);

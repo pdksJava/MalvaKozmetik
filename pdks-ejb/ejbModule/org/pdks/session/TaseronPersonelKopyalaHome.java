@@ -2,6 +2,7 @@ package org.pdks.session;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -195,11 +196,12 @@ public class TaseronPersonelKopyalaHome extends EntityHome<PersonelView> impleme
 					logger.error("PDKS hata out : " + e.getMessage());
 				}
 				if (!personelList.isEmpty()) {
+					Calendar cal = Calendar.getInstance();
 					HashMap map = new HashMap();
 					Date bugun = PdksUtil.getDate(new Date());
 					map.put("id>", 0L);
-					map.put("basTarih<=", PdksUtil.tariheGunEkleCikar(bugun, +7));
-					map.put("bitTarih>=", PdksUtil.tariheGunEkleCikar(bugun, -7));
+					map.put("basTarih<=", ortakIslemler.tariheGunEkleCikar(cal, bugun, +7));
+					map.put("bitTarih>=", ortakIslemler.tariheGunEkleCikar(cal, bugun, -7));
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					List<KapiSirket> list = pdksEntityController.getObjectByInnerObjectListInLogic(map, KapiSirket.class);
@@ -317,7 +319,7 @@ public class TaseronPersonelKopyalaHome extends EntityHome<PersonelView> impleme
 		}
 		if (!kgsIdList.isEmpty()) {
 			HashMap map = new HashMap();
-
+			Calendar cal = Calendar.getInstance();
 			map.put(PdksEntityController.MAP_KEY_MAP, "getPdksSicilNo");
 			map.put("personelKGS.id", kgsIdList);
 			if (session != null)
@@ -331,7 +333,7 @@ public class TaseronPersonelKopyalaHome extends EntityHome<PersonelView> impleme
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 				sirket = (Sirket) pdksEntityController.getObjectByInnerObject(map, Sirket.class);
 			}
-			Date istenAyrilisTarihi = basSirketTarih != null ? PdksUtil.tariheGunEkleCikar(basSirketTarih, -1) : null, olusturmaTarihi = new Date();
+			Date istenAyrilisTarihi = basSirketTarih != null ? ortakIslemler.tariheGunEkleCikar(cal, basSirketTarih, -1) : null, olusturmaTarihi = new Date();
 			User olusturanUser = ortakIslemler.getSistemAdminUser(session);
 			if (olusturanUser == null)
 				olusturanUser = authenticatedUser;

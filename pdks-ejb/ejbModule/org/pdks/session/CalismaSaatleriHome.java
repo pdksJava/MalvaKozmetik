@@ -153,7 +153,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 				if (sirket.getDurum() && sirket.getFazlaMesai())
 					aramaSecenekleri.getSirketIdList().add(new SelectItem(sirket.getId(), sirket.getAd()));
 			}
-			if (aramaSecenekleri.getSirketIdList().size()==1)
+			if (aramaSecenekleri.getSirketIdList().size() == 1)
 				sirketId = (Long) aramaSecenekleri.getSirketIdList().get(0).getValue();
 			aramaSecenekleri.setSirketId(sirketId);
 			fillTesisList();
@@ -251,12 +251,13 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 	}
 
 	public void fillHareketListOlustur() {
+		Calendar cal = Calendar.getInstance();
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		List<Long> perIdList = new ArrayList<Long>();
 		// List<Personel> tumPersoneller = new ArrayList<Personel>(authenticatedUser.getTumPersoneller());
-		Date oncekiGun = PdksUtil.tariheGunEkleCikar(date, -1);
+		Date oncekiGun = ortakIslemler.tariheGunEkleCikar(cal, date, -1);
 		HashMap map = new HashMap();
 		map.put("pdks=", Boolean.TRUE);
 		map.put("durum=", Boolean.TRUE);
@@ -295,8 +296,8 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 		TreeMap<Long, List<PersonelIzin>> izinMap = new TreeMap<Long, List<PersonelIzin>>();
 		if (!perIdList.isEmpty()) {
 			HashMap parametreMap2 = new HashMap();
-			parametreMap2.put("baslangicZamani<", PdksUtil.tariheGunEkleCikar(date, 1));
-			parametreMap2.put("bitisZamani>", PdksUtil.tariheGunEkleCikar(date, -1));
+			parametreMap2.put("baslangicZamani<", ortakIslemler.tariheGunEkleCikar(cal, date, 1));
+			parametreMap2.put("bitisZamani>", ortakIslemler.tariheGunEkleCikar(cal, date, -1));
 			parametreMap2.put("izinTipi.bakiyeIzinTipi=", null);
 			parametreMap2.put("izinSahibi.id", perIdList);
 			if (izinDurumList.size() > 1)
@@ -321,7 +322,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 		TreeMap<String, VardiyaGun> vardiyaMap = null;
 		try {
 			if (!tumPersoneller.isEmpty())
-				vardiyaMap = ortakIslemler.getIslemVardiyalar(tumPersoneller, PdksUtil.tariheGunEkleCikar(date, -1), date, Boolean.FALSE, session, Boolean.TRUE);
+				vardiyaMap = ortakIslemler.getIslemVardiyalar(tumPersoneller, ortakIslemler.tariheGunEkleCikar(cal, date, -1), date, Boolean.FALSE, session, Boolean.TRUE);
 
 		} catch (Exception e) {
 			logger.error(e);
@@ -437,7 +438,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 		}
 
 		try {
-			Calendar cal = Calendar.getInstance();
+
 			cal.setTime(date);
 			HashMap parametreMap2 = new HashMap();
 			parametreMap2.put("yil", cal.get(Calendar.YEAR));

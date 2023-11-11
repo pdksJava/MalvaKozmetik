@@ -326,8 +326,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 	 * @return
 	 */
 	public String bitTarihGuncelle(Date tarih) {
+		Calendar cal = Calendar.getInstance();
 		if (Calendar.MONDAY == PdksUtil.getDateField(tarih, Calendar.DAY_OF_WEEK))
-			setBitTarih(PdksUtil.tariheGunEkleCikar(tarih, 13));
+			setBitTarih(ortakIslemler.tariheGunEkleCikar(cal, tarih, 13));
 		else
 			setBitTarih(null);
 		return "";
@@ -674,8 +675,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 	public boolean vardiyaPlanKontrol(TreeMap<Long, Vardiya> vardiyaMap, VardiyaPlan plan, String mesaj, boolean excelAktar) {
 		boolean yaz = Boolean.TRUE;
 		boolean haftaTatil = Boolean.FALSE;
+		Calendar cal = Calendar.getInstance();
 		Date ilkGun = aylikPuantajDefault.getIlkGun(), iseBaslamaTarihi = null, istenAyrilmaTarihi = null;
-		Date sonGun = PdksUtil.tariheAyEkleCikar(ilkGun, 1);
+		Date sonGun = ortakIslemler.tariheAyEkleCikar(cal, ilkGun, 1);
 		boolean admin = ikRole;
 		StringBuffer sb = new StringBuffer();
 		if (vardiyaMap != null && vardiyaMap.isEmpty())
@@ -804,7 +806,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					Vardiya vardiya = (Vardiya) iterator.next();
 					Date vardiyaDate = vardiya.getVardiyaTarih();
 					if (vardiyaDate == null)
-						vardiyaDate = PdksUtil.tariheGunEkleCikar(vardiyaHafta.getBasTarih(), gunSayisi);
+						vardiyaDate = ortakIslemler.tariheGunEkleCikar(cal, vardiyaHafta.getBasTarih(), gunSayisi);
 					++gunSayisi;
 
 					if (vardiya.isCalisma() && vardiya.getGenel() && vardiyaMap != null && !vardiyaMap.containsKey(vardiya.getId())) {
@@ -1483,6 +1485,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			toplamVardiyaGun.setVardiya(toplamVardiya);
 
 		}
+		Calendar cal = Calendar.getInstance();
 		String haftaTatilDurum = ortakIslemler.getParameterKey("haftaTatilDurum");
 
 		VardiyaGun vardiyaGun = null;
@@ -1512,7 +1515,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			Vardiya vardiya = pdksVardiyaGun.getVardiya();
 			if (vardiya != null && vardiya.isAksamVardiyasi()) {
 				if (aksamVardiyaBitSaat != null && aksamVardiyaBitDakika != null) {
-					Calendar cal = Calendar.getInstance();
 					cal.setTime(pdksVardiyaGun.getVardiyaDate());
 					cal.set(Calendar.HOUR_OF_DAY, aksamVardiyaBitSaat);
 					cal.set(Calendar.MINUTE, aksamVardiyaBitDakika);
@@ -1521,7 +1523,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					aksamVardiyaBitisZamani = cal.getTime();
 				}
 				if (aksamVardiyaBasSaat != null && aksamVardiyaBasDakika != null) {
-					Calendar cal = Calendar.getInstance();
 					cal.setTime(pdksVardiyaGun.getVardiyaDate());
 					cal.set(Calendar.HOUR_OF_DAY, aksamVardiyaBasSaat);
 					cal.set(Calendar.MINUTE, aksamVardiyaBasDakika);
@@ -1556,7 +1557,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 									try {
 										if (pdksVardiyaGun.getSonrakiVardiya().isHaftaTatil() && (haftaTatilDurum.equals("1"))) {
 											double calismaToplamSuresi = islemVardiya.getNetCalismaSuresi();
-											Date haftaTatil = PdksUtil.tariheGunEkleCikar(pdksVardiyaGun.getVardiyaDate(), 1);
+											Date haftaTatil = ortakIslemler.tariheGunEkleCikar(cal, pdksVardiyaGun.getVardiyaDate(), 1);
 											String haftaGunStr = PdksUtil.convertToDateString(haftaTatil, "yyyyMMdd").substring(6);
 											double aksamSure = ortakIslemler.getSaatSure(islemVardiya.getVardiyaBasZaman(), haftaTatil, yemekler, pdksVardiyaGun, session);
 											haftaSuresi = ortakIslemler.getSaatSure(haftaTatil, islemVardiya.getVardiyaBitZaman(), yemekler, pdksVardiyaGun, session);
@@ -2011,7 +2012,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		StringBuffer sb = new StringBuffer();
 		sb.append("WITH PER_TARIH AS ( ");
 		sb.append(" SELECT YEAR(" + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + ")*100+MONTH(" + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + ") AS D1,");
-		sb.append(" YEAR(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ")*100+MONTH(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ") AS D2 FROM " + Personel.TABLE_NAME+" WITH(nolock)");
+		sb.append(" YEAR(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ")*100+MONTH(" + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ") AS D2 FROM " + Personel.TABLE_NAME + " WITH(nolock)");
 		sb.append(" WHERE " + Personel.COLUMN_NAME_ISKUR_SABLON + " IS NOT NULL )");
 		sb.append(" select DISTINCT D.* from " + DenklestirmeAy.TABLE_NAME + " D WITH(nolock) ");
 		sb.append(" INNER  JOIN PER_TARIH PD ON PD.D1<=(D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + " AND PD.D2>=(D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY);
@@ -2750,15 +2751,15 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				flush = vardiyaHaftaMap.isEmpty();
 
 			fields.clear();
-			fields.put("bitisZamani>=", PdksUtil.tariheGunEkleCikar(denklestirmeDonemiGecenAy.getBaslangicTarih(), -2));
-			fields.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar(bitTarih, 1));
+			fields.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemiGecenAy.getBaslangicTarih(), -2));
+			fields.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
 			fields.put("izinSahibi.id", perIdler.clone());
 			fields.put("izinDurumu", ortakIslemler.getAktifIzinDurumList());
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
 
-			List<VardiyaGun> vardiyaGunList = ortakIslemler.getIskurVardiyalar(perIdler, PdksUtil.tariheGunEkleCikar(basTarih, -7), PdksUtil.tariheGunEkleCikar(bitTarih, 7), session);
+			List<VardiyaGun> vardiyaGunList = ortakIslemler.getIskurVardiyalar(perIdler, ortakIslemler.tariheGunEkleCikar(cal, basTarih, -7), ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 7), session);
 
 			List<Long> idList = null;
 			if ((authenticatedUser.isYonetici() || authenticatedUser.isYoneticiKontratli()) && !authenticatedUser.isDirektorSuperVisor()) {
@@ -4051,6 +4052,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		if (vardiyaPlan != null)
 			list.add(vardiyaPlan);
 		if (!list.isEmpty()) {
+			Calendar cal = Calendar.getInstance();
 			HashMap<Long, VardiyaPlan> hashMap = new HashMap<Long, VardiyaPlan>();
 			for (VardiyaPlan pdksVardiyaPlan : list)
 				hashMap.put(pdksVardiyaPlan.getPersonel().getId(), pdksVardiyaPlan);
@@ -4059,7 +4061,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			denklestirmeDonemi.setDenklestirmeAyDurum(denklestirmeAyDurum);
 			for (int i = 0; i < 3; i++) {
 				if (denklestirmeDonemi.getBaslangicTarih() != null && PdksUtil.tarihKarsilastirNumeric(denklestirmeDonemi.getBitisTarih(), denklestirmeDonemi.getBaslangicTarih()) == 1) {
-					tatilGunleriMap = ortakIslemler.getTatilGunleri(new ArrayList<Personel>(), PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBaslangicTarih(), -1), PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBitisTarih(), 1), session);
+					tatilGunleriMap = ortakIslemler.getTatilGunleri(new ArrayList<Personel>(), ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBaslangicTarih(), -1), ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBitisTarih(), 1), session);
 					List<PersonelDenklestirmeTasiyici> personelDenklestirmeList = ortakIslemler.personelDenklestir(denklestirmeDonemi, tatilGunleriMap, "id", new ArrayList<Long>(hashMap.keySet()), Boolean.FALSE, Boolean.TRUE, Boolean.FALSE, session);
 					for (PersonelDenklestirmeTasiyici personelDenklestirme : personelDenklestirmeList) {
 						if (hashMap.containsKey(personelDenklestirme.getPersonel().getId())) {
@@ -4078,9 +4080,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 						}
 					}
 				}
-				Date tarih = PdksUtil.tariheGunEkleCikar(denklestirmeDonemi.getBitisTarih(), 7);
+				Date tarih = ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBitisTarih(), 7);
 				denklestirmeDonemi.setBitisTarih(tarih);
-				denklestirmeDonemi.setBaslangicTarih(PdksUtil.tariheGunEkleCikar(tarih, -6));
+				denklestirmeDonemi.setBaslangicTarih(ortakIslemler.tariheGunEkleCikar(cal, tarih, -6));
 
 			}
 
@@ -4159,7 +4161,8 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 	@Transactional
 	public String vardiyaPlanDosyaYaz() throws Exception {
 		boolean islemYapildi = Boolean.FALSE;
-		Date sonGun = PdksUtil.tariheAyEkleCikar(aylikPuantajDefault.getIlkGun(), 1);
+		Calendar cal = Calendar.getInstance();
+		Date sonGun = ortakIslemler.tariheAyEkleCikar(cal, aylikPuantajDefault.getIlkGun(), 1);
 		List<VardiyaGun> vardiyaGunleri = new ArrayList<VardiyaGun>();
 
 		List<String> perNoList = new ArrayList<String>();

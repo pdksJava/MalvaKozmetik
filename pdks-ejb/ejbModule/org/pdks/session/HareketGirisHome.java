@@ -307,9 +307,10 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 		List<Long> kapiIdList = new ArrayList<Long>();
 		kapiIdList.add(kapiId);
 		List<Long> personelId = new ArrayList<Long>();
+		Calendar cal = Calendar.getInstance();
 		for (VardiyaGun vg : vardiyaGunleri)
 			personelId.add(vg.getPersonel().getPersonelKGS().getId());
-		kgsList = ortakIslemler.getHareketAktifBilgileri(kapiIdList, personelId, tarih, PdksUtil.tariheGunEkleCikar(tarih, 1), HareketKGS.class, session);
+		kgsList = ortakIslemler.getHareketAktifBilgileri(kapiIdList, personelId, tarih, ortakIslemler.tariheGunEkleCikar(cal, tarih, 1), HareketKGS.class, session);
 		TreeMap<Long, List<HareketKGS>> hMap = new TreeMap<Long, List<HareketKGS>>();
 		for (HareketKGS hareketKGS : kgsList) {
 			Long key = hareketKGS.getPersonelId();

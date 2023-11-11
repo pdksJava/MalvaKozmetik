@@ -123,7 +123,7 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 				hareketList.clear();
 			else
 				hareketList = new ArrayList<HareketKGS>();
- 			fillHareketListOlustur();
+			fillHareketListOlustur();
 		} catch (Exception e) {
 			logger.error(e);
 			e.printStackTrace();
@@ -137,8 +137,9 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(basTarih, bitTarih, session);
 		try {
+			Calendar cal = Calendar.getInstance();
 			if (kapiIdler != null && !kapiIdler.isEmpty())
-				kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) authenticatedUser.getTumPersoneller().clone(), basTarih, PdksUtil.tariheGunEkleCikar(bitTarih, 1), HareketKGS.class, session);
+				kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) authenticatedUser.getTumPersoneller().clone(), basTarih, ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1), HareketKGS.class, session);
 			else
 				kgsList = new ArrayList<HareketKGS>();
 		} catch (Exception e) {

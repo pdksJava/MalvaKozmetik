@@ -420,7 +420,7 @@ public class IzinAylikRaporHome extends EntityHome<PersonelIzin> implements Seri
 					}
 					IzinTipi izinTipi = personelIzin.getIzinTipi();
 					long baslangicZamani = Long.parseLong(PdksUtil.convertToDateString(personelIzin.getBaslangicZamani(), "yyyyMMdd"));
-					long bitZamani = Long.parseLong(PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar((Date) personelIzin.getBitisZamani().clone(), -1), "yyyyMMdd"));
+					long bitZamani = Long.parseLong(PdksUtil.convertToDateString(ortakIslemler.tariheGunEkleCikar(cal, (Date) personelIzin.getBitisZamani().clone(), -1), "yyyyMMdd"));
 					Personel personel = personelIzin.getIzinSahibi();
 					for (Iterator iterator2 = gunler.keySet().iterator(); iterator2.hasNext();) {
 						Integer gun = (Integer) iterator2.next();

@@ -508,6 +508,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.clear();
+		Calendar cal = Calendar.getInstance();
 		bordroAdres = null;
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
@@ -534,8 +535,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			hataliVeriGetir = null;
 		}
 		Date tarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
-		ilkGun = PdksUtil.tariheGunEkleCikar(tarih, -1);
-		sonGun = PdksUtil.tariheAyEkleCikar(tarih, 1);
+		ilkGun = ortakIslemler.tariheGunEkleCikar(cal, tarih, -1);
+		sonGun = ortakIslemler.tariheAyEkleCikar(cal, tarih, 1);
 		basGun = null;
 		bitGun = null;
 
@@ -550,7 +551,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		baslikMap.clear();
 		if (denklestirmeAy != null) {
 			basGun = PdksUtil.getYilAyBirinciGun(yil, ay);
-			bitGun = PdksUtil.tariheAyEkleCikar(basGun, 1);
+			bitGun = ortakIslemler.tariheAyEkleCikar(cal, basGun, 1);
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 			saveLastParameter();
 			boolean sicilDolu = PdksUtil.hasStringValue(sicilNo);
@@ -561,7 +562,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
 				sb.append(" INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON CMA." + CalismaModeliAy.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY);
 				sb.append(" INNER JOIN " + CalismaModeli.TABLE_NAME + " CM  ON CM." + CalismaModeli.COLUMN_NAME_ID + "=CMA." + CalismaModeliAy.COLUMN_NAME_CALISMA_MODELI);
- 				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
+				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
 				fields.put("basGun", basGun);
 				fields.put("bitGun", bitGun);
@@ -719,7 +720,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					sb.append("   AND  V." + VardiyaGun.COLUMN_NAME_DURUM + " = 0 AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
 					sb.append("   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
 					Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
-					Date bitTarih = PdksUtil.tariheAyEkleCikar(basTarih, 1);
+					Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
 					map.put("p", new ArrayList(eksikCalismaMap.keySet()));
 					map.put("basTarih", basTarih);
 					map.put("bitTarih", bitTarih);

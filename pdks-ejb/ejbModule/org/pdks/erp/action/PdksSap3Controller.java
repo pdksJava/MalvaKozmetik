@@ -175,7 +175,7 @@ public class PdksSap3Controller implements ERPController, Serializable {
 
 	public String setIzinRFC(PersonelIzin izin) throws Exception {
 		ConnectionMan sapRfcManager = new ConnectionMan();
-
+		Calendar cal = Calendar.getInstance();
 		String mesaj = "Hata Olabilir";
 		JCoDestination jcoClient = sapRfcManager.getJCoDestination();
 		if (jcoClient != null) {
@@ -203,7 +203,7 @@ public class PdksSap3Controller implements ERPController, Serializable {
 					impParametre.setValue("PRM", "2");
 				}
 				impParametre.setValue("BEGDA", izin.getBaslangicZamani());
-				impParametre.setValue("ENDDA", PdksUtil.tariheGunEkleCikar(izin.getBitisZamani(), -1));
+				impParametre.setValue("ENDDA", ortakIslemler.tariheGunEkleCikar(cal, izin.getBitisZamani(), -1));
 
 				PdksUtil.getXMLFunction3(jcoClient, function, new String[] { "MESTAB" });
 				StringBuilder sb = new StringBuilder();
@@ -838,6 +838,7 @@ public class PdksSap3Controller implements ERPController, Serializable {
 				JCoParameterList ipl = function.getTableParameterList();
 				JCoParameterList impParametre = function.getImportParameterList();
 				JCoTable cikanTable = ipl.getTable("MESTAB");
+				Calendar cal = Calendar.getInstance();
 				for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
 					PersonelIzin izin = (PersonelIzin) iterator.next();
 					String mesaj = null;
@@ -860,7 +861,7 @@ public class PdksSap3Controller implements ERPController, Serializable {
 							impParametre.setValue("PRM", "2");
 						}
 						impParametre.setValue("BEGDA", izin.getBaslangicZamani());
-						impParametre.setValue("ENDDA", PdksUtil.tariheGunEkleCikar(izin.getBitisZamani(), -1));
+						impParametre.setValue("ENDDA", ortakIslemler.tariheGunEkleCikar(cal, izin.getBitisZamani(), -1));
 						PdksUtil.getXMLFunction3(jcoClient, function, new String[] { "MESTAB" });
 						StringBuilder sb = new StringBuilder();
 						if (cikanTable.getNumRows() > 0) {

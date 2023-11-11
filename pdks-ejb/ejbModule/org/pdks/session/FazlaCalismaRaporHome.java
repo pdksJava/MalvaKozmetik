@@ -219,7 +219,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			raporSecim = null;
 		else if (raporSecim == null)
 			raporSecim = (String) raporList.get(0).getValue();
-
+		Calendar cal = Calendar.getInstance();
 		String maxFazlaCalismaGunStr = ortakIslemler.getParameterKey("maxFazlaCalismaGun");
 		if (PdksUtil.hasStringValue(maxFazlaCalismaGunStr)) {
 			try {
@@ -234,7 +234,6 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			basTarih = PdksUtil.getDate(new Date());
 			if (maxFazlaCalismaGun > 0) {
 
-				Calendar cal = Calendar.getInstance();
 				int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 				if (dayOfWeek != Calendar.MONDAY) {
 					cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -242,12 +241,12 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 						cal.add(Calendar.DATE, -7);
 					basTarih = PdksUtil.getDate(cal.getTime());
 				}
-				basTarih = PdksUtil.tariheGunEkleCikar(basTarih, -7);
+				basTarih = ortakIslemler.tariheGunEkleCikar(cal, basTarih, -7);
 			}
 		}
 
 		if (bitTarih == null)
-			bitTarih = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaCalismaGun > 0 ? maxFazlaCalismaGun - 1 : 0);
+			bitTarih = ortakIslemler.tariheGunEkleCikar(cal, basTarih, maxFazlaCalismaGun > 0 ? maxFazlaCalismaGun - 1 : 0);
 		try {
 			modelGoster = Boolean.FALSE;
 			departmanBolumAyni = Boolean.FALSE;
@@ -257,7 +256,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			setTesisList(null);
 			aylar = PdksUtil.getAyListesi(Boolean.TRUE);
 			seciliEkSaha3Id = null;
-			Calendar cal = Calendar.getInstance();
+			cal = Calendar.getInstance();
 			ortakIslemler.gunCikar(cal, 2);
 			ay = cal.get(Calendar.MONTH) + 1;
 			yil = cal.get(Calendar.YEAR);
@@ -473,7 +472,8 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		listeTemizle();
 
 		if (basTarih.getTime() <= bitTarih.getTime()) {
-			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaCalismaGun);
+			Calendar cal = Calendar.getInstance();
+			Date sonGun = ortakIslemler.tariheGunEkleCikar(cal, basTarih, maxFazlaCalismaGun);
 			if (maxFazlaCalismaGun > 0 && sonGun.before(bitTarih))
 				PdksUtil.addMessageAvailableWarn(maxFazlaCalismaGun + " günden fazla işlem yapılmaz!");
 			else
@@ -637,7 +637,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			PdksUtil.addMessageAvailableWarn("Bitiş tarihi sistem tarihinden sonra olamaz!");
 			devam = false;
 		} else if (basTarih.getTime() <= bitTarih.getTime()) {
-			Date sonGun = PdksUtil.tariheGunEkleCikar(basTarih, maxFazlaCalismaGun);
+			Date sonGun = ortakIslemler.tariheGunEkleCikar(cal, basTarih, maxFazlaCalismaGun);
 			if (!raporSecim.equals("maxToplamMesai")) {
 				Long gun = Long.valueOf(PdksUtil.tarihFarki(basTarih, bitTarih).longValue() + 1L);
 				if ((raporSecim.equals("maxGunCalismaSaat")) || (raporSecim.equals("maxHaftaTatilCalismaGun")) || (raporSecim.equals("maxGeceCalismaSaat"))) {
@@ -837,9 +837,10 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 					}
 					if (!raporSecim.equals("maxToplamMesai")) {
+						Calendar cal = Calendar.getInstance();
 						HashMap fields = new HashMap();
-						fields.put("bitisZamani>=", PdksUtil.tariheGunEkleCikar(basTarih, -2));
-						fields.put("baslangicZamani<=", PdksUtil.tariheGunEkleCikar(bitTarih, 1));
+						fields.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, basTarih, -2));
+						fields.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
 						fields.put("izinSahibi.id", new ArrayList(vMaps.keySet()));
 						fields.put("izinDurumu", ortakIslemler.getAktifIzinDurumList());
 						if (session != null)

@@ -400,6 +400,7 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 		List<UserVekalet> IKTarafindanYapilanVekaletList = null;
 		Map totalMap = new HashMap();
 		girisSifirla();
+		Calendar cal = Calendar.getInstance();
 		if (authenticatedUser.isYonetici() || authenticatedUser.isMudur())
 			fillUserVekaletList();
 		List<UserVekalet> list = null;
@@ -408,7 +409,7 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 		if (!authenticatedUser.isIK())
 			if (authenticatedUser.isYonetici() || authenticatedUser.isMudur())
 				parametreMap.put("yeniYonetici.id=", authenticatedUser.getId());
-		parametreMap.put("basTarih<=", PdksUtil.tariheGunEkleCikar(PdksUtil.getDate(bitDate), 1));
+		parametreMap.put("basTarih<=", ortakIslemler.tariheGunEkleCikar(cal, PdksUtil.getDate(bitDate), 1));
 		parametreMap.put("bitTarih>=", PdksUtil.getDate(basDate));
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);

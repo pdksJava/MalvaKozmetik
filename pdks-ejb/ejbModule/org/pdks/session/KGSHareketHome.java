@@ -1,6 +1,7 @@
 package org.pdks.session;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -147,7 +148,7 @@ public class KGSHareketHome extends EntityHome<HareketKGS> {
 		session.clear();
 
 		setIptalEdilir(true);
-
+		Calendar cal = Calendar.getInstance();
 		List<HareketKGS> hareket1List = new ArrayList<HareketKGS>();
 		if (PdksUtil.hasStringValue(sicilNo) == false && sirket == null) {
 			PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
@@ -165,7 +166,7 @@ public class KGSHareketHome extends EntityHome<HareketKGS> {
 				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(basTarih, bitTarih, session);
 				try {
 					if (kapiIdler != null && !kapiIdler.isEmpty())
-						list = ortakIslemler.getHareketBilgileri(kapiIdler, null, PdksUtil.getDate(basTarih), PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(bitTarih, 1)), HareketKGS.class, session);
+						list = ortakIslemler.getHareketBilgileri(kapiIdler, null, PdksUtil.getDate(basTarih), PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1)), HareketKGS.class, session);
 					if (personelIdler.isEmpty())
 						list.clear();
 					for (Iterator iterator = list.iterator(); iterator.hasNext();) {

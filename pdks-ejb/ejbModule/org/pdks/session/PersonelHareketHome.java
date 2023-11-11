@@ -862,7 +862,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					try {
 						if (kapiIdler != null && !kapiIdler.isEmpty()) {
 							if (islemVardiyaGun == null)
-								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, PdksUtil.getDate(tarih), PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(tarih, 1)), HareketKGS.class, session);
+								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, PdksUtil.getDate(tarih), PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, tarih, 1)), HareketKGS.class, session);
 							else {
 								Vardiya vardiya = islemVardiyaGun.getIslemVardiya();
 								Date bitTarih = vardiya.getVardiyaFazlaMesaiBitZaman(), basTarih = vardiya.getVardiyaFazlaMesaiBasZaman();
@@ -1059,8 +1059,9 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		TreeMap<String, VardiyaGun> vardiyaMap = null;
 		List<Personel> personeller = new ArrayList<Personel>();
 		try {
+			Calendar cal = Calendar.getInstance();
 			personeller.add(personel);
-			vardiyaMap = ortakIslemler.getIslemVardiyalar(personeller, PdksUtil.tariheGunEkleCikar(tarih, -3), PdksUtil.tariheGunEkleCikar(tarih, 3), true, session, Boolean.FALSE);
+			vardiyaMap = ortakIslemler.getIslemVardiyalar(personeller, ortakIslemler.tariheGunEkleCikar(cal, tarih, -3), ortakIslemler.tariheGunEkleCikar(cal, tarih, 3), true, session, Boolean.FALSE);
 
 		} catch (Exception e) {
 			vardiyaMap = new TreeMap<String, VardiyaGun>();

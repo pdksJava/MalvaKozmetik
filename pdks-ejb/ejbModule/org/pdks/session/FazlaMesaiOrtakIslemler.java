@@ -1190,6 +1190,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		}
 		aylikPuantaj.setVardiyaHaftaList(vardiyaHaftaList);
 		boolean devam = Boolean.TRUE;
+		Calendar cal = Calendar.getInstance();
 		while (devam) {
 			++i;
 			VardiyaHafta vardiyaHafta = new VardiyaHafta();
@@ -1239,7 +1240,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						vardiyaGun.setTatil(tatillerMap.get(key));
 				}
 			}
-			tarih1 = PdksUtil.tariheGunEkleCikar(tarih1, 7);
+
+			tarih1 = ortakIslemler.tariheGunEkleCikar(cal, tarih1, 7);
 			if (PdksUtil.tarihKarsilastirNumeric(tarih1, donemi.getBitisTarih()) == 1)
 				devam = false;
 

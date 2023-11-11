@@ -103,14 +103,14 @@ public class IzinKagidiHome extends EntityHome<PersonelIzin> implements Serializ
 	}
 
 	public void fillIzinKagidiList() {
-
+		Calendar cal = Calendar.getInstance();
 		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<Integer> durumlar = new ArrayList<Integer>();
 		durumlar.add(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 		durumlar.add(PersonelIzin.IZIN_DURUMU_IK_ONAYINDA);
 		durumlar.add(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
 		HashMap parametreMap = new HashMap();
-		parametreMap.put("baslangicZamani>=", PdksUtil.tariheAyEkleCikar(Calendar.getInstance().getTime(), -6));
+		parametreMap.put("baslangicZamani>=", ortakIslemler.tariheAyEkleCikar(cal, Calendar.getInstance().getTime(), -6));
 		parametreMap.put("izinSahibi", authenticatedUser.getTumPersoneller().clone());
 		parametreMap.put("izinDurumu", durumlar);
 		if (session != null)

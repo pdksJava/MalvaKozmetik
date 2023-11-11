@@ -130,12 +130,13 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 
 	public String tarihDegisti() {
 		Tatil pdksTatil = getInstance();
+		Calendar cal = Calendar.getInstance();
 		if (pdksTatil.getBitTarih() == null) {
 			if (pdksTatil.getBasTarih() != null)
-				pdksTatil.setBitTarih(PdksUtil.tariheGunEkleCikar(pdksTatil.getBasTarih(), pdksTatil.isYarimGunMu() ? 1 : 0));
+				pdksTatil.setBitTarih(ortakIslemler.tariheGunEkleCikar(cal, pdksTatil.getBasTarih(), pdksTatil.isYarimGunMu() ? 1 : 0));
 		} else if (pdksTatil.getBasTarih() == null) {
 			if (pdksTatil.getBitTarih() != null)
-				pdksTatil.setBasTarih(PdksUtil.tariheGunEkleCikar(pdksTatil.getBitTarih(), pdksTatil.isYarimGunMu() ? -1 : 0));
+				pdksTatil.setBasTarih(ortakIslemler.tariheGunEkleCikar(cal, pdksTatil.getBitTarih(), pdksTatil.isYarimGunMu() ? -1 : 0));
 
 		}
 

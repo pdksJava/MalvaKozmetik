@@ -2,6 +2,7 @@ package org.pdks.session;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -125,7 +126,8 @@ public class BinadaKalanPersonellerHome extends EntityHome<VardiyaGun> implement
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		TreeMap<String, VardiyaGun> vardiyaMap = null;
 		try {
-			vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) authenticatedUser.getTumPersoneller().clone(), date, PdksUtil.tariheGunEkleCikar(date, 1), Boolean.FALSE, session, Boolean.TRUE);
+			Calendar cal = Calendar.getInstance();
+			vardiyaMap = ortakIslemler.getIslemVardiyalar((List<Personel>) authenticatedUser.getTumPersoneller().clone(), date, ortakIslemler.tariheGunEkleCikar(cal, date, 1), Boolean.FALSE, session, Boolean.TRUE);
 
 		} catch (Exception e) {
 			logger.error(e);
