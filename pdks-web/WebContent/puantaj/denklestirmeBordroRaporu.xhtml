@@ -127,19 +127,28 @@
 								<f:facet name="header">
 
 								</f:facet>
-								<a4j:commandLink ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.saveLastParameter(puantaj) }"
-									onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide(); ">
+								<DIV id="denk#{puantaj.pdksPersonel.id}">
+									<a4j:commandLink ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.saveLastParameter(puantaj) }"
+										onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide(); ">
 
-									<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum}">
-										<h:graphicImage value="/img/msginfo.png" style="border:0" height="16" width="16"
-											title="#{ortakIslemler.getMenuUserAdi(denklestirmeBordroRaporuHome.session,'fazlaMesaiHesapla')} Göster" />
-									</ui:fragment>
-									<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum==false}">
-										<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20"
-											title="#{ortakIslemler.getMenuUserAdi(denklestirmeBordroRaporuHome.session,'fazlaMesaiHesapla')} Hatalı Göster" />
-									</ui:fragment>
-								</a4j:commandLink>
-
+										<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum}">
+											<h:graphicImage value="/img/msginfo.png" style="border:0" height="16" width="16" />
+											<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
+											#{ortakIslemler.getMenuUserAdi(denklestirmeBordroRaporuHome.session,'fazlaMesaiHesapla')} Göster
+											</rich:toolTip>
+										</ui:fragment>
+										<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum==false}">
+											<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20" />
+											<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
+											#{ortakIslemler.getMenuUserAdi(denklestirmeBordroRaporuHome.session,'fazlaMesaiHesapla')} Hatalı Göster
+											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi==false}">
+													<br></br>
+													<span style="color: red; font-style: 14;">Çalışma planı onaylanmamıştır!</span>
+												</ui:fragment>
+											</rich:toolTip>
+										</ui:fragment>
+									</a4j:commandLink>
+								</DIV>
 
 
 

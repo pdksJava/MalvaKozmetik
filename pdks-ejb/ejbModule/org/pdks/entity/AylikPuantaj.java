@@ -716,7 +716,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public void setFazlaMesaiHesapla(boolean value) {
 		if (value) {
-			if (personelDenklestirmeAylik == null || personelDenklestirmeAylik.isDenklestirmeDurum() == false)
+			if (personelDenklestirmeAylik == null || personelDenklestirmeAylik.isDenklestirmeDurum() == false || personelDenklestirmeAylik.isOnaylandi() == false)
 				value = false;
 			else if (pdksPersonel != null && yonetici == null) {
 				Personel yoneticisi = pdksPersonel.getYoneticisi();

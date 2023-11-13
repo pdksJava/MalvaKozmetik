@@ -559,7 +559,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 				fields.clear();
 				StringBuffer sb = new StringBuffer();
-				sb.append("SELECT  B.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
+				sb.append("SELECT V.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
 				sb.append(" INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON CMA." + CalismaModeliAy.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY);
 				sb.append(" INNER JOIN " + CalismaModeli.TABLE_NAME + " CM  ON CM." + CalismaModeli.COLUMN_NAME_ID + "=CMA." + CalismaModeliAy.COLUMN_NAME_CALISMA_MODELI);
 				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
@@ -584,14 +584,31 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					sb.append(" AND  P." + Personel.COLUMN_NAME_TESIS + "= " + tesisId);
 
 				}
-				sb.append(" INNER JOIN " + PersonelDenklestirmeBordro.TABLE_NAME + " B ON B." + PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME + "=V." + PersonelDenklestirme.COLUMN_NAME_ID);
-				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
+				// sb.append(" INNER JOIN " + PersonelDenklestirmeBordro.TABLE_NAME + " B ON B." + PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME + "=V." + PersonelDenklestirme.COLUMN_NAME_ID);
+				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
 				if (sicilDolu == false && (hataliVeriGetir == null || hataliVeriGetir == false))
-					sb.append(" AND (V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1 OR CM." + CalismaModeli.COLUMN_NAME_FAZLA_MESAI_VAR + "=0) AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
+					sb.append(" AND (V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1   OR V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1 OR CM." + CalismaModeli.COLUMN_NAME_FAZLA_CALISMA_GORUNTULENSIN + "=1) AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
+				fields.put(PdksEntityController.MAP_KEY_MAP, "getId");
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeBordro.class);
-				if (!borDenklestirmeBordroList.isEmpty()) {
+				TreeMap<Long, PersonelDenklestirme> pdMap = pdksEntityController.getObjectBySQLMap(sb, fields, PersonelDenklestirme.class, false);
+				TreeMap<Long, AylikPuantaj> aylikPuantajMap = new TreeMap<Long, AylikPuantaj>();
+				if (!pdMap.isEmpty()) {
+					for (Long key : pdMap.keySet()) {
+						PersonelDenklestirme personelDenklestirme = pdMap.get(key);
+						AylikPuantaj aylikPuantaj = new AylikPuantaj();
+						aylikPuantaj.setPersonelDenklestirmeAylik(personelDenklestirme);
+						aylikPuantaj.setPdksPersonel(personelDenklestirme.getPdksPersonel());
+						aylikPuantajMap.put(personelDenklestirme.getId(), aylikPuantaj);
+						personelDenklestirmeList.add(aylikPuantaj);
+					}
+					fields.clear();
+					fields.put("personelDenklestirme.id", new ArrayList(pdMap.keySet()));
+					if (session != null)
+						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+
+					List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordro.class);
+
 					List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 					if (bordroAlanlari.isEmpty()) {
 						boolean kimlikNoGoster = false;
@@ -660,7 +677,15 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							setMaasKesintiGoster(pd.getEksikCalismaSure() != null && pd.getEksikCalismaSure().doubleValue() > 0.0d);
 
 						personelDenklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
-						AylikPuantaj aylikPuantaj = new AylikPuantaj(personelDenklestirmeBordro);
+						AylikPuantaj aylikPuantaj = null;
+						if (aylikPuantajMap.containsKey(pd.getId())) {
+							aylikPuantaj = aylikPuantajMap.get(pd.getId());
+							aylikPuantaj.setDenklestirmeBordro(personelDenklestirmeBordro);
+						} else {
+							aylikPuantaj = new AylikPuantaj(personelDenklestirmeBordro);
+							personelDenklestirmeList.add(aylikPuantaj);
+						}
+
 						idMap.put(personelDenklestirmeBordro.getId(), personelDenklestirmeBordro);
 						if (sicilDolu == false && pd.getDurum().equals(Boolean.TRUE) && (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir)) {
 							double normalSaat = 0.0d, planlananSaaat = 0.0d;
@@ -681,7 +706,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							}
 
 						}
-						personelDenklestirmeList.add(aylikPuantaj);
+						// personelDenklestirmeList.add(aylikPuantaj);
 					}
 
 					fields.clear();
@@ -729,17 +754,19 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					map.put(PdksEntityController.MAP_KEY_MAP, "getId");
 					try {
 						TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false);
-						for (Long key : eksikCalismaMap.keySet()) {
+						List<Long> list = new ArrayList<Long>(eksikCalismaMap.keySet());
+						for (Long key : list) {
 							if (!perMap.containsKey(key))
 								eksikCalismaMap.remove(key);
 						}
 						perMap = null;
+						list = null;
 					} catch (Exception e) {
 						logger.error(e + "\n" + sb.toString());
 					}
 
 				}
-				borDenklestirmeBordroList = null;
+
 			}
 		}
 

@@ -1937,7 +1937,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (calisiyor) {
 						kayitVar = true;
 						boolean eksikCalismaVar = false;
-						if (denklestirmeAyDurum && puantaj.isFazlaMesaiHesapla() && perCalismaModeli != null && perCalismaModeli.isFazlaMesaiVarMi() == false) {
+						if (denklestirmeAyDurum && puantaj.isFazlaMesaiHesapla() && perCalismaModeli != null && hataliPuantajGoster && bordroPuantajEkranindaGoster) {
 							eksikCalismaVar = puantaj.getPlanlananSure() > puantaj.getSaatToplami() + perCalismaModeli.getHaftaIci();
 						}
 						if (PdksUtil.hasStringValue(sicilNo) || denklestirmeAyDurum == false || hataliPuantajGoster == false || puantaj.isFazlaMesaiHesapla() == false || eksikCalismaVar)
