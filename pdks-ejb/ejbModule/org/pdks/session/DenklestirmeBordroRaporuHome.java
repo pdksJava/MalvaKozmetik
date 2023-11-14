@@ -2,6 +2,7 @@ package org.pdks.session;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +38,6 @@ import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.CalismaModeli;
-import org.pdks.entity.CalismaModeliAy;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Dosya;
@@ -556,14 +556,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			saveLastParameter();
 			boolean sicilDolu = PdksUtil.hasStringValue(sicilNo);
 			if (yil * 100 + ay >= Integer.parseInt(str)) {
-
 				fields.clear();
 				StringBuffer sb = new StringBuffer();
-				sb.append("SELECT V.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
-				sb.append(" INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON CMA." + CalismaModeliAy.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY);
-				sb.append(" INNER JOIN " + CalismaModeli.TABLE_NAME + " CM  ON CM." + CalismaModeli.COLUMN_NAME_ID + "=CMA." + CalismaModeliAy.COLUMN_NAME_CALISMA_MODELI);
-				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
-				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
+				sb.append("SELECT P." + Personel.COLUMN_NAME_ID + " FROM " + Personel.TABLE_NAME + " P WITH(nolock) ");
+				sb.append(" WHERE  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
 				fields.put("basGun", basGun);
 				fields.put("bitGun", bitGun);
 				if (sirketId != null || (PdksUtil.hasStringValue(sicilNo))) {
@@ -584,31 +580,59 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					sb.append(" AND  P." + Personel.COLUMN_NAME_TESIS + "= " + tesisId);
 
 				}
-				// sb.append(" INNER JOIN " + PersonelDenklestirmeBordro.TABLE_NAME + " B ON B." + PersonelDenklestirmeBordro.COLUMN_NAME_PERSONEL_DENKLESTIRME + "=V." + PersonelDenklestirme.COLUMN_NAME_ID);
-				sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
-				if (sicilDolu == false && (hataliVeriGetir == null || hataliVeriGetir == false))
-					sb.append(" AND (V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1   OR V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1 OR CM." + CalismaModeli.COLUMN_NAME_FAZLA_CALISMA_GORUNTULENSIN + "=1) AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
+
 				fields.put(PdksEntityController.MAP_KEY_MAP, "getId");
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				TreeMap<Long, PersonelDenklestirme> pdMap = pdksEntityController.getObjectBySQLMap(sb, fields, PersonelDenklestirme.class, false);
+				List<BigDecimal> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+				TreeMap<Long, PersonelDenklestirme> pdMap = new TreeMap<Long, PersonelDenklestirme>();
+				boolean hataliDurum = false;
 				TreeMap<Long, AylikPuantaj> aylikPuantajMap = new TreeMap<Long, AylikPuantaj>();
-				if (!pdMap.isEmpty()) {
-					for (Long key : pdMap.keySet()) {
-						PersonelDenklestirme personelDenklestirme = pdMap.get(key);
-						AylikPuantaj aylikPuantaj = new AylikPuantaj();
-						aylikPuantaj.setPersonelDenklestirmeAylik(personelDenklestirme);
-						aylikPuantaj.setPdksPersonel(personelDenklestirme.getPdksPersonel());
-						aylikPuantajMap.put(personelDenklestirme.getId(), aylikPuantaj);
-						personelDenklestirmeList.add(aylikPuantaj);
+				if (!perList.isEmpty()) {
+					List<Long> idList = new ArrayList<Long>();
+					for (Iterator iterator = perList.iterator(); iterator.hasNext();) {
+						BigDecimal bd = (BigDecimal) iterator.next();
+						idList.add(bd.longValue());
 					}
 					fields.clear();
-					fields.put("personelDenklestirme.id", new ArrayList(pdMap.keySet()));
+					sb = new StringBuffer();
+					sb.append("SELECT V.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
+					sb.append(" WHERE V." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
+
+					if (sicilDolu == false && (hataliVeriGetir == null || hataliVeriGetir == false)) {
+						hataliDurum = true;
+						// sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1  AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
+						// sb.append(" AND ( V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1 OR CM." + CalismaModeli.COLUMN_NAME_FAZLA_CALISMA_GORUNTULENSIN + "=1 )");
+					}
+					fields.put("p", idList);
+					// fields.put(PdksEntityController.MAP_KEY_MAP, "getId");
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+					List<PersonelDenklestirme> pdlist = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
+					for (PersonelDenklestirme pd : pdlist) {
+						boolean ekle = true;
+						if (hataliDurum) {
+							ekle = false;
+							if (pd.getDurum() && pd.isOnaylandi()) {
+								CalismaModeli cm = pd.getCalismaModeli();
+								ekle = cm.isFazlaMesaiGoruntulensinMi() || pd.isDenklestirme();
+							}
+						}
+						if (ekle) {
+							pdMap.put(pd.getId(), pd);
+							AylikPuantaj aylikPuantaj = new AylikPuantaj();
+							aylikPuantaj.setPersonelDenklestirmeAylik(pd);
+							aylikPuantaj.setPdksPersonel(pd.getPdksPersonel());
+							aylikPuantajMap.put(pd.getId(), aylikPuantaj);
+							personelDenklestirmeList.add(aylikPuantaj);
+						}
 
-					List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordro.class);
-
+					}
+					pdlist = null;
+					idList = null;
+				}
+				perList = null;
+				if (!pdMap.isEmpty()) {
 					List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 					if (bordroAlanlari.isEmpty()) {
 						boolean kimlikNoGoster = false;
@@ -646,6 +670,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					boolean aksamGunBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_GUN_MESAI));
 					boolean aksamSaatBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_SAAT_MESAI));
 					boolean eksikCalismaBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_EKSIK_CALISMA));
+					fields.clear();
+					fields.put("personelDenklestirme.id", new ArrayList(pdMap.keySet()));
+					if (session != null)
+						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+					List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordro.class);
 					TreeMap<Long, PersonelDenklestirmeBordro> idMap = new TreeMap<Long, PersonelDenklestirmeBordro>();
 					for (PersonelDenklestirmeBordro personelDenklestirmeBordro : borDenklestirmeBordroList) {
 						PersonelDenklestirme pd = personelDenklestirmeBordro.getPersonelDenklestirme();
