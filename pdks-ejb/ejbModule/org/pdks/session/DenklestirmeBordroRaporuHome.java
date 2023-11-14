@@ -716,7 +716,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						}
 
 						idMap.put(personelDenklestirmeBordro.getId(), personelDenklestirmeBordro);
-						if (sicilDolu == false && pd.getDurum().equals(Boolean.TRUE) && (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir)) {
+						if (pd.getDurum().equals(Boolean.TRUE) && (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir)) {
 							double normalSaat = 0.0d, planlananSaaat = 0.0d;
 							CalismaModeli cm = pd.getCalismaModeli();
 							if (cm != null) {
@@ -785,7 +785,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false);
 						List<Long> list = new ArrayList<Long>(eksikCalismaMap.keySet());
 						for (Long key : list) {
-							if (!perMap.containsKey(key))
+							if (perMap.containsKey(key))
 								eksikCalismaMap.remove(key);
 						}
 						perMap = null;
