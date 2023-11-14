@@ -634,7 +634,14 @@ public class PdksEntityController implements Serializable {
 		SQLQuery query = prepareProcedure(veriMap, sp);
 		if (class1 != null)
 			query.addEntity(class1);
-		List sonucList = query.list();
+		List sonucList = null;
+		try {
+			sonucList = query.list();
+		} catch (Exception e) {
+			logger.error(sp.toString() + "\n" + e);
+			throw new Exception(e);
+		}
+
 		return sonucList;
 
 	}

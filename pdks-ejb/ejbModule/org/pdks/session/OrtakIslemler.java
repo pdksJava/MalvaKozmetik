@@ -10183,14 +10183,14 @@ public class OrtakIslemler implements Serializable {
 				}
 
 				if (saveList != null && !saveList.isEmpty()) {
-					Exception e = null;
-					Boolean flush = false;
 					for (Iterator iterator = saveList.iterator(); iterator.hasNext();) {
 						Object oVardiya = (Object) iterator.next();
+						String vardiyaKey = null;
+						VardiyaGun vardiyaGun = null;
 						if (oVardiya instanceof VardiyaGun) {
-							VardiyaGun vardiyaGun = (VardiyaGun) oVardiya;
+							vardiyaGun = (VardiyaGun) oVardiya;
 							if (vardiyaGun.getId() == null) {
-								String vardiyaKey = vardiyaGun.getVardiyaKeyStr();
+								vardiyaKey = vardiyaGun.getVardiyaKeyStr();
 								if (vardiyaMap.containsKey(vardiyaKey)) {
 									VardiyaGun vardiyaGunDb = vardiyaMap.get(vardiyaKey);
 									if (vardiyaGunDb.getId() != null)
@@ -10202,21 +10202,18 @@ public class OrtakIslemler implements Serializable {
 						}
 						try {
 							pdksEntityController.saveOrUpdate(session, entityManager, oVardiya);
-							flush = true;
+							session.flush();
+							if (vardiyaGun != null)
+								vardiyaMap.put(vardiyaKey, vardiyaGun);
+
 						} catch (Exception e1) {
-							if (oVardiya instanceof VardiyaGun) {
-								VardiyaGun vardiyaGun = (VardiyaGun) oVardiya;
-								logger.info(vardiyaGun.getVardiyaKeyStr());
+							if (vardiyaGun != null) {
+								logger.error(vardiyaGun.getVardiyaKeyStr());
 							}
 							logger.error(e1);
-							e = e1;
+
 						}
 					}
-					if (e == null) {
-						if (flush)
-							session.flush();
-					} else
-						throw e;
 
 				}
 				if (saveList != null)
