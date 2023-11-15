@@ -441,7 +441,7 @@
 					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
 				</a4j:outputPanel>
 				<a4j:outputPanel id="dosyaPanel">
-					<rich:panel header="Dosya Ekleme" rendered="#{authenticatedUser.admin }">
+					<rich:panel header="Dosya Ekleme">
 						<h:panelGrid columns="2" style="width:700px;">
 							<rich:fileUpload id="fileUpload" fileUploadListener="#{pdksPersonelHome.listenerPersonelDosya}" listHeight="50px" listWidth="300px"
 								sizeErrorLabel="Dosya boyutu büyük" maxFilesQuantity="1" immediateUpload="true" acceptedTypes="xls,xlsx"
@@ -454,7 +454,7 @@
 									<thead>
 										<tr>
 											<a4j:repeat value="#{pdksPersonelHome.dosyaTanimList}" var="liste">
-												<th>#{liste.value.aciklama}</th>
+												<td class="rich-panel-header">#{liste.value.aciklama}</td>
 											</a4j:repeat>
 										</tr>
 									</thead>
@@ -827,13 +827,15 @@
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">Doğum Tarihi</ui:define>
 											<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.dogumTarihi}"
-												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.manuelTanimla and pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
+												datePattern="#{authenticatedUser.dateFormat}"
+												disabled="#{pdksPersonelHome.manuelTanimla and pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
 												required="#{pdksPersonelHome.izinGirisiVar}" requiredMessage="Doğum tarihini giriniz" />
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">#{ortakIslemler.kidemBasTarihiAciklama()}</ui:define>
 											<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.izinHakEdisTarihi}"
-												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.manuelTanimla and pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
+												datePattern="#{authenticatedUser.dateFormat}"
+												disabled="#{pdksPersonelHome.manuelTanimla and pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
 												required="#{pdksPersonelHome.izinGirisiVar and pdksPersonelHome.instance.sanalPersonel==false}"
 												requiredMessage="#{ortakIslemler.kidemBasTarihiAciklama()}ni seçiniz" />
 										</s:decorate>

@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
@@ -940,6 +941,8 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Izin Karti", Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		XSSFCellStyle headerOzel = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+		headerOzel.getFont().setColor(ExcelUtil.getXSSFColor(250, 196, 39));
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
@@ -950,14 +953,14 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0, col = 0;
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("ADI SOYADI");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("GRUBA GİRİŞ");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İŞE GİRİŞ TARİHİ");
+		ExcelUtil.getCell(sheet, row, col++, headerOzel).setCellValue("ADI SOYADI");
+		ExcelUtil.getCell(sheet, row, col++, headerOzel).setCellValue("GRUBA GİRİŞ");
+		ExcelUtil.getCell(sheet, row, col++, headerOzel).setCellValue("İŞE GİRİŞ TARİHİ");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İZİN HAKEDİŞ");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("DOĞUM TARİHİ");
+		ExcelUtil.getCell(sheet, row, col++, headerOzel).setCellValue("DOĞUM TARİHİ");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İZİN TÜRÜ");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("YIL");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("ÖNCEKİ HAKEDİŞ");
+		ExcelUtil.getCell(sheet, row, col++, headerOzel).setCellValue("ÖNCEKİ HAKEDİŞ");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("HAKETTİĞİ TARİH");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("KIDEM");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İZİN GÜN");
@@ -1264,9 +1267,12 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 								Personel personelExcel = bosPersonelMap.get(key);
 								personel.setIzinHakEdisTarihi(personelExcel.getIzinHakEdisTarihi());
 								if (!personel.getSirket().isErp()) {
-									personel.setGrubaGirisTarihi(personelExcel.getGrubaGirisTarihi());
-									personel.setIseBaslamaTarihi(personelExcel.getIseBaslamaTarihi());
-									personel.setDogumTarihi(personelExcel.getDogumTarihi());
+									if (personelExcel.getGrubaGirisTarihi() != null)
+										personel.setGrubaGirisTarihi(personelExcel.getGrubaGirisTarihi());
+									if (personelExcel.getIseBaslamaTarihi() != null)
+										personel.setIseBaslamaTarihi(personelExcel.getIseBaslamaTarihi());
+									if (personelExcel.getDogumTarihi() != null)
+										personel.setDogumTarihi(personelExcel.getDogumTarihi());
 								}
 								fields.clear();
 								fields.put("izinSahibi", personel);
