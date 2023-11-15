@@ -117,6 +117,36 @@ public class PdksVeriOrtakAktar implements Serializable {
 	}
 
 	/**
+	 * @param fonksiyonAdi
+	 * @param bilgi
+	 * @param list
+	 */
+	protected void mailBosGonder(String fonksiyonAdi, String bilgi, List list) {
+		if (PdksUtil.isSistemDestekVar()) {
+			if (list != null && list.size() > 1 && PdksUtil.hasStringValue(fonksiyonAdi) && PdksUtil.hasStringValue(bilgi)) {
+				if (PdksUtil.hasStringValue(uygulamaBordro) == false)
+					uygulamaBordro = mailMap.containsKey("uygulamaBordro") ? (String) mailMap.get("uygulamaBordro") : "Bordro Uygulaması ";
+				MailObject mailObject = new MailObject();
+				String subject = uygulamaBordro + " " + fonksiyonAdi + " fonksiyon " + bilgi + " güncellemesi";
+				String body = subject + " " + list.size() + " adet kayıt için başarılı olarak tamamlandı.";
+				mailObject.setSubject(subject);
+				mailObject.setBody(body);
+				try {
+					mailAdresKontrol(mailObject, null);
+					mailObject.getToList().clear();
+					mailMap.put("mailObject", mailObject);
+					MailManager.ePostaGonder(mailMap);
+				} catch (Exception e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
+
+			}
+		}
+
+	}
+
+	/**
 	 * @param kodu
 	 * @return
 	 */
@@ -2188,7 +2218,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 							logger.error(em);
 							em.printStackTrace();
 						}
-					}
+					} else
+						mailBosGonder("saveIzinler", "izin", izinList);
 				}
 				if (!izinMap.isEmpty()) {
 					List<Long> personelIdList = new ArrayList<Long>();
@@ -3829,13 +3860,15 @@ public class PdksVeriOrtakAktar implements Serializable {
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 							kullaniciIKYukle(mailMap, pdksDAO);
 							MailManager.ePostaGonder(mailMap);
-						}
+						} else
+							mailBosGonder("savePersoneller", "personel", personelList);
 					} catch (Exception em) {
 						logger.error(em);
 						em.printStackTrace();
 					}
 
-				}
+				} else
+					mailBosGonder("savePersoneller", "personel", personelList);
 				if (updateYonetici2)
 					setIkinciYoneticiSifirla();
 
