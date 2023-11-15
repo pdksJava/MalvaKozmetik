@@ -15,87 +15,96 @@
 					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
 				</a4j:outputPanel>
 				<a4j:outputPanel id="anaForm">
-					<h:panelGrid columns="2" width="50%">
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Yıl</ui:define>
-							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{denklestirmeBordroRaporuHome.minYil}"
-								maxValue="#{denklestirmeBordroRaporuHome.maxYil}" inputSize="1" value="#{denklestirmeBordroRaporuHome.yil}">
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
-									reRender="denklestirmeDonemiTable,anaForm" />
-							</rich:inputNumberSpinner>
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Ay</ui:define>
-							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.ay}" required="true" requiredMessage="Başlangıç ay seçiniz">
-								<f:selectItem itemLabel="Lütfen seçiniz" />
-								<f:selectItems value="#{denklestirmeBordroRaporuHome.aylar}" />
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
-									reRender="denklestirmeDonemiTable,anaForm" />
-							</h:selectOneMenu>
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and denklestirmeBordroRaporuHome.departmanList.size()>1}">
-							<ui:define name="label">PDKS Departman</ui:define>
-							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
-								<f:selectItem itemLabel="Lütfen seçiniz" />
-								<f:selectItems value="#{denklestirmeBordroRaporuHome.departmanList}" />
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
-									reRender="denklestirmeDonemiTable,anaForm" />
-							</h:selectOneMenu>
+					<TABLE>
+						<tr>
+							<TD style="width: 80%"><h:panelGrid columns="2" width="100%">
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Yıl</ui:define>
+										<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{denklestirmeBordroRaporuHome.minYil}"
+											maxValue="#{denklestirmeBordroRaporuHome.maxYil}" inputSize="1" value="#{denklestirmeBordroRaporuHome.yil}">
+											<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
+												reRender="denklestirmeDonemiTable,anaForm" />
+										</rich:inputNumberSpinner>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Ay</ui:define>
+										<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.ay}" required="true" requiredMessage="Başlangıç ay seçiniz">
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{denklestirmeBordroRaporuHome.aylar}" />
+											<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
+												reRender="denklestirmeDonemiTable,anaForm" />
+										</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and denklestirmeBordroRaporuHome.departmanList.size()>1}">
+										<ui:define name="label">PDKS Departman</ui:define>
+										<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{denklestirmeBordroRaporuHome.departmanList}" />
+											<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
+												reRender="denklestirmeDonemiTable,anaForm" />
+										</h:selectOneMenu>
 
 
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{(authenticatedUser.admin or authenticatedUser.IK) and (not empty denklestirmeBordroRaporuHome.sirketler)}">
-							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
-							<h:selectOneMenu id="sirketSec" value="#{denklestirmeBordroRaporuHome.sirketId}" required="true"
-								requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
-								<f:selectItem itemLabel="Lütfen seçiniz" />
-								<f:selectItems value="#{denklestirmeBordroRaporuHome.sirketler}" />
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillTesisList()}" ajaxSingle="true"
-									reRender="denklestirmeDonemiTable,anaForm" />
-							</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{(authenticatedUser.admin or authenticatedUser.IK) and (not empty denklestirmeBordroRaporuHome.sirketler)}">
+										<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+										<h:selectOneMenu id="sirketSec" value="#{denklestirmeBordroRaporuHome.sirketId}" required="true"
+											requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{denklestirmeBordroRaporuHome.sirketler}" />
+											<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillTesisList()}" ajaxSingle="true"
+												reRender="denklestirmeDonemiTable,anaForm" />
+										</h:selectOneMenu>
 
 
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{ortakIslemler.tesisDurumu and denklestirmeBordroRaporuHome.tesisList!=null and denklestirmeBordroRaporuHome.tesisList.size()>0}">
-							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
-							<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.tesisId}" disabled="#{denklestirmeBordroRaporuHome.tesisList.size()==1}">
-								<f:selectItem itemLabel="Lütfen seçiniz" />
-								<f:selectItems value="#{denklestirmeBordroRaporuHome.tesisList}" />
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" ajaxSingle="true"
-									reRender="denklestirmeDonemiTable,anaForm" />
-							</h:selectOneMenu>
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
-							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
-							<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
-								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable,hataliPuantajGoster"
-									action="#{denklestirmeBordroRaporuHome.personelNoDegisti()}" />
-							</h:inputText>
-						</s:decorate>
-						<a4j:outputPanel id="hataliPuantajGoster">
-							<h:panelGrid columns="2"
-								rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.sicilNo)==false}">
-								<s:decorate template="/layout/edit.xhtml">
-									<ui:define name="label">Hatalı Personel Göster</ui:define>
-									<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.hataliVeriGetir}">
-										<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
-											reRender="denklestirmeDonemiTable" />
-									</h:selectBooleanCheckbox>
-								</s:decorate>
-								<s:decorate template="/layout/edit.xhtml">
-									<ui:define name="label">Eksik Çalışan Personel Göster</ui:define>
-									<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.eksikCalisanVeriGetir}">
-										<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
-											reRender="denklestirmeDonemiTable" />
-									</h:selectBooleanCheckbox>
-								</s:decorate>
-							</h:panelGrid>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml"
+										rendered="#{ortakIslemler.tesisDurumu and denklestirmeBordroRaporuHome.tesisList!=null and denklestirmeBordroRaporuHome.tesisList.size()>0}">
+										<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+										<h:selectOneMenu value="#{denklestirmeBordroRaporuHome.tesisId}" disabled="#{denklestirmeBordroRaporuHome.tesisList.size()==1}">
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{denklestirmeBordroRaporuHome.tesisList}" />
+											<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" ajaxSingle="true"
+												reRender="denklestirmeDonemiTable,anaForm" />
+										</h:selectOneMenu>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+										<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+										<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
+											<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable,hataliPuantajGoster"
+												action="#{denklestirmeBordroRaporuHome.personelNoDegisti()}" />
+										</h:inputText>
+									</s:decorate>
+									<a4j:outputPanel id="hataliPuantajGoster">
+										<h:panelGrid columns="2"
+											rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.sicilNo)==false}">
+											<s:decorate template="/layout/edit.xhtml">
+												<ui:define name="label">Hatalı Personel Göster</ui:define>
+												<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.hataliVeriGetir}">
+													<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true"
+														action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" reRender="denklestirmeDonemiTable" />
+												</h:selectBooleanCheckbox>
+											</s:decorate>
+											<s:decorate template="/layout/edit.xhtml">
+												<ui:define name="label">Eksik Çalışan Personel Göster</ui:define>
+												<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.eksikCalisanVeriGetir}">
+													<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true"
+														action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}" reRender="denklestirmeDonemiTable" />
+												</h:selectBooleanCheckbox>
+											</s:decorate>
+										</h:panelGrid>
 
-						</a4j:outputPanel>
-					</h:panelGrid>
+									</a4j:outputPanel>
+								</h:panelGrid></TD>
+							<TD style="width: 20%" valign="middle" align="left"><ui:fragment rendered="#{authenticatedUser.admin==false}">
+ 									<SPAN style="color: red; font-size: 14px;"><B>#{ortakIslemler.getMenuAdi('fazlaMesaiHesapla')}</B> ekranında tüm <B>#{denklestirmeBordroRaporuHome.bolumAciklama}</B>(ler/lar) hesaplatma
+										yaptıktan sonra, veriler düzgün gelecektir.</SPAN>
+								</ui:fragment></TD>
+						</tr>
+
+					</TABLE>
 				</a4j:outputPanel>
 			</rich:panel>
 			<a4j:outputPanel id="denklestirmeDonemiTable">
