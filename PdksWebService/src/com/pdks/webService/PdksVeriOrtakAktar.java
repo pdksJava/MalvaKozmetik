@@ -2206,7 +2206,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								mailMap.put("mailIcerik", sb.toString());
 								if (jsonStr != null) {
 									LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-									String str = getJsonToXML(jsonStr, "personel", IZIN_PROP_ORDER, "saveIzinler");
+									String str = getJsonToXML(jsonStr, "izin", IZIN_PROP_ORDER, "saveIzinler");
 									fileMap.put("saveIzinler.xml", str);
 									mailMap.put("fileMap", fileMap);
 								}
