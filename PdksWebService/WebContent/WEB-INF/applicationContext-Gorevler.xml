@@ -18,7 +18,7 @@
 		</property>
 		<property name="cronExpression">
 		<!-- <value>0 0/5 * ? * MON-FRI</value> -->
- 			<value>0 0 7 ? * MON-FRI</value>
+ 			<value>0 0 6 ? * MON-FRI</value>
  			
  		</property>
 	</bean>
