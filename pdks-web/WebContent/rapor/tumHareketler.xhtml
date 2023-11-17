@@ -75,28 +75,29 @@
 			<a4j:region>
 				<rich:panel id="hareketPanel">
 					<h:panelGrid columns="1" width="800">
-						<rich:dataTable rowClasses="acik,koyu" value="#{tumHareketlerHome.hareketList}" var="hareketler" rows="25" rowKeyVar="row" id="hareketTable"
+						<rich:dataTable rowClasses="acik,koyu" value="#{tumHareketlerHome.hareketList}" var="hareketler" rows="50" rowKeyVar="row" id="hareketTable"
 							rendered="#{tumHareketlerHome.hareketList.size() le 65000}">
 							<f:facet name="header">
 								<h:outputText value="Tum Kapı Hareketleri" />
 							</f:facet>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="Zaman " />
-								</f:facet>
-								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareketler.zaman)}" />
-							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
-								</f:facet>
-								<h:outputText value="#{hareketler.personel.sicilNo}" />
-							</rich:column>
-							<rich:column filterBy="#{hareketler.personel.pdksPersonel.sirket.ad}" filterEvent="onkeyup">
+							<rich:column style="width:autostretch ;white-space: nowrap;">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{hareketler.personel.pdksPersonel.sirket.ad}" />
+							</rich:column>
+
+							<rich:column filterBy="#{hareketler.personel.pdksPersonel.ekSaha3.aciklama}" filterEvent="onkeyup">
+								<f:facet name="header">
+									<h:outputText value="#{tumHareketlerHome.bolumAciklama}" />
+								</f:facet>
+								<h:outputText value="#{hareketler.personel.pdksPersonel.ekSaha3.aciklama}" />
+							</rich:column>
+							<rich:column style="text-align:center" filterBy="#{hareketler.personel.pdksPersonel.sicilNo}" filterEvent="onkeyup">
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{hareketler.personel.sicilNo}" />
 							</rich:column>
 
 
@@ -106,7 +107,12 @@
 								</f:facet>
 								<h:outputText value="#{hareketler.personel.adSoyad}" />
 							</rich:column>
-
+							<rich:column style="text-align:center;width:autostretch ;white-space: nowrap;">
+								<f:facet name="header">
+									<h:outputText value="Zaman " />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareketler.zaman)}" />
+							</rich:column>
 							<rich:column filterBy="#{hareketler.kapiView.aciklama}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="Kapi" />
@@ -121,14 +127,9 @@
 								</f:facet>
 								<h:outputText value="#{hareketler.kapiSirket.aciklama}" />
 							</rich:column>
-							<rich:column>
-								<f:facet name="header">
-									<h:outputText value="#{tumHareketlerHome.bolumAciklama}" />
-								</f:facet>
-								<h:outputText value="#{hareketler.personel.pdksPersonel.ekSaha3.aciklama}" />
-							</rich:column>
+
 							<c:if test="#{tumHareketlerHome.guncellenmis}">
-								<rich:column>
+								<rich:column style="text-align:center;width:autostretch ;white-space: nowrap;">
 									<f:facet name="header">
 										<h:outputText value="Orjinal Zamanı " />
 									</f:facet>
@@ -145,7 +146,7 @@
 									</ui:fragment>
 								</rich:column>
 							</c:if>
-							
+
 							<rich:column>
 								<f:facet name="header">
 									<h:outputText value="Oluşturma Zamanı " />
