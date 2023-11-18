@@ -216,6 +216,39 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param userList
+	 * @param session
+	 */
+	public void setUserRoller(List<User> userList, Session session) {
+		if (userList != null && session != null) {
+			HashMap<Long, User> userMap = new HashMap<Long, User>();
+			for (User user : userList) {
+				if (user != null && user.getId() != null) {
+					user.setYetkiliRollerim(null);
+					user.setYetkiSet(Boolean.FALSE);
+					userMap.put(user.getId(), user);
+				}
+			}
+			if (!userMap.isEmpty()) {
+				HashMap fields = new HashMap();
+				fields.put("user.id", new ArrayList(userMap.keySet()));
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<UserRoles> userRoleList = pdksEntityController.getObjectByInnerObjectList(fields, UserRoles.class);
+				for (UserRoles userRoles : userRoleList) {
+					Long key = userRoles.getUser().getId();
+					User user = userMap.get(key);
+					if (user.getYetkiliRollerim() == null)
+						user.setYetkiliRollerim(new ArrayList<Role>());
+					user.getYetkiliRollerim().add(userRoles.getRole());
+				}
+				for (User user : userList)
+					PdksUtil.setUserYetki(user);
+			}
+		}
+
+	}
+
+	/**
 	 * @param date
 	 * @return
 	 */
