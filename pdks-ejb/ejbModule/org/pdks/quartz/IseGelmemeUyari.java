@@ -1481,7 +1481,7 @@ public class IseGelmemeUyari implements Serializable {
 						int row = 0;
 						int col = 0;
 						boolean sirketVar = sirketIdList.size() > 1;
-						boolean tesisVar = (sirketVar || tesisIdList.size() > 1);
+						boolean tesisVar = tesisIdList.size() > 0 && (sirketVar || tesisIdList.size() > 1);
 						boolean calismaModeliVar = calismaModeliIdList.size() > 1;
 						boolean altBolumVar = altBolumIdList.size() > 0;
 
@@ -1519,7 +1519,7 @@ public class IseGelmemeUyari implements Serializable {
 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue(personelNoAciklama);
 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Çalışma Zamanı");
 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Kapı");
- 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Zamanı");
+						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Zamanı");
 						boolean renk = true;
 						for (Iterator iterator = hareketList.iterator(); iterator.hasNext();) {
 							HareketKGS hareketKGS = (HareketKGS) iterator.next();
