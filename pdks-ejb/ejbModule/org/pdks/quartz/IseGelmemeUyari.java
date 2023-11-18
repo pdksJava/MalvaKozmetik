@@ -1019,10 +1019,10 @@ public class IseGelmemeUyari implements Serializable {
 	private boolean mesajIcerikOlustur(User user, StringBuffer sb, List<VardiyaGun> list, TreeMap<String, String> map1, Workbook wb, Session session) {
 		boolean mesajGonder = false;
 		try {
-
 			if (wb == null)
 				wb = new XSSFWorkbook();
 			boolean userIK = user != null ? user.isIK() : false;
+
 			header = ExcelUtil.getStyleHeader(wb);
 			styleOdd = ExcelUtil.getStyleOdd(null, wb);
 			styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
@@ -1033,7 +1033,7 @@ public class IseGelmemeUyari implements Serializable {
 			TreeMap<String, List<VardiyaGun>> sirketParcalaMap = new TreeMap<String, List<VardiyaGun>>();
 			List<Liste> listeler = new ArrayList<Liste>();
 			List<VardiyaGun> yeniList = new ArrayList<VardiyaGun>();
-			List<Long> yoneticiList = new ArrayList<Long>(), yoneticiPerIdList = new ArrayList<Long>();
+			List<Long> yoneticiPerIdList = new ArrayList<Long>();
 			List<Long> tesisList = null;
 			if (tesisYetki && session != null) {
 				ortakIslemler.setUserTesisler(user, session);
@@ -1046,6 +1046,45 @@ public class IseGelmemeUyari implements Serializable {
 
 			}
 
+			Long userId = user.getPersonelId();
+			if (userId != null && yoneticiPerListMap.containsKey(userId)) {
+				List<Long> yPerIdList = yoneticiPerListMap.get(userId);
+				if (yPerIdList != null && !yPerIdList.isEmpty()) {
+					for (Long key : yPerIdList) {
+						List<HareketKGS> hareketKGSList = perHareketListMap.get(key);
+						if (hareketKGSList != null && !hareketKGSList.isEmpty())
+							yoneticiPerIdList.add(key);
+					}
+
+				}
+
+			}
+
+			if (userIK) {
+				List<Long> perIKList = new ArrayList<Long>();
+				if (user.isIKAdmin())
+					perIKList.addAll(new ArrayList<Long>(perHareketListMap.keySet()));
+				else if (user.getDepartman() != null) {
+					Long deparmanId = user.getDepartman().getId();
+					for (Long key : perHareketListMap.keySet()) {
+						List<HareketKGS> hareketKGSList = perHareketListMap.get(key);
+						if (hareketKGSList != null && !hareketKGSList.isEmpty()) {
+							HareketKGS hareketKGS = hareketKGSList.get(0);
+							Personel personel = hareketKGS.getVardiyaGun().getPdksPersonel();
+							if (personel.getSirket().getDepartman().getId().equals(deparmanId))
+								perIKList.add(key);
+						}
+					}
+				}
+				for (Long key : perIKList) {
+					if (!yoneticiPerIdList.contains(key)) {
+						List<HareketKGS> hareketKGSList = perHareketListMap.get(key);
+						if (hareketKGSList != null && !hareketKGSList.isEmpty())
+							yoneticiPerIdList.add(key);
+					}
+
+				}
+			}
 			for (VardiyaGun vardiyaGun : list) {
 				Personel personel = vardiyaGun.getPersonel();
 				if (map1 != null) {
@@ -1235,41 +1274,6 @@ public class IseGelmemeUyari implements Serializable {
 							yonetici = yoneticiYok;
 						if (yonetici == null)
 							continue;
-						try {
-							Long yoneticiId = yonetici != null ? yonetici.getId() : null, userId = null;
-							if (userIK) {
-								List<Long> yPerIdList = null;
-								if (yoneticiId != null && !yoneticiList.contains(yoneticiId)) {
-									userId = user.getPersonelId();
-									if (user != null) {
-										if (userId.equals(yonetici.getId()) || !yoneticiPerListMap.containsKey(userId)) {
-											if (yoneticiPerListMap.containsKey(yoneticiId)) {
-												yPerIdList = yoneticiPerListMap.get(yoneticiId);
-												if (yPerIdList != null && !yPerIdList.isEmpty())
-													yoneticiPerIdList.addAll(yPerIdList);
-											}
-
-										}
-									}
-									yoneticiList.add(yoneticiId);
-								}
-
-								id = personel != null ? personel.getId() : null;
-								try {
-
-									if (id != null && !yoneticiPerIdList.contains(id) && perHareketListMap.containsKey(id))
-										yoneticiPerIdList.add(id);
-								} catch (Exception epx) {
-									logger.error(epx);
-									epx.printStackTrace();
-								}
-
-							}
-
-						} catch (Exception exx) {
-							logger.error(exx);
-							exx.printStackTrace();
-						}
 
 						if (sheet != null) {
 
@@ -1487,7 +1491,7 @@ public class IseGelmemeUyari implements Serializable {
 								baslik += " " + tesis.getAciklama();
 							if (calismaModeliIdList.size() == 1 && calismaModeli != null)
 								baslik += " [ " + calismaModeli.getAciklama() + " ]";
-							int uz = (hariciPersonelPlandaVar ? 1 : 0) + (sirketVar ? 1 : 0) + (tesisVar ? 1 : 0) + (calismaModeliVar ? 1 : 0) + (altBolumVar ? 1 : 0) + 4;
+							int uz = (hariciPersonelPlandaVar ? 1 : 0) + (sirketVar ? 1 : 0) + (tesisVar ? 1 : 0) + (calismaModeliVar ? 1 : 0) + (altBolumVar ? 1 : 0) + 6;
 							for (int i = 0; i < uz; i++) {
 								ExcelUtil.getCell(sheetHareket, row, i, header).setCellValue("");
 							}
@@ -1515,8 +1519,7 @@ public class IseGelmemeUyari implements Serializable {
 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue(personelNoAciklama);
 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Çalışma Zamanı");
 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Kapı");
-
-						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Zamanı");
+ 						ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Zamanı");
 						boolean renk = true;
 						for (Iterator iterator = hareketList.iterator(); iterator.hasNext();) {
 							HareketKGS hareketKGS = (HareketKGS) iterator.next();
@@ -1569,6 +1572,7 @@ public class IseGelmemeUyari implements Serializable {
 					}
 					listeMap = null;
 				}
+				yoneticiPerIdList = null;
 			}
 			mesajGonder = true;
 			user.getPdksPersonel().setPersonelVardiyalari(yeniList);
