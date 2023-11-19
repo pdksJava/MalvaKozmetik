@@ -80,6 +80,12 @@
 							<f:facet name="header">
 								<h:outputText value="Tum Kapı Hareketleri" />
 							</f:facet>
+							<rich:column style="text-align:center;width:autostretch ;white-space: nowrap;" rendered="#{authenticatedUser.admin}">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{hareketler.id}" />
+							</rich:column>
 							<rich:column style="width:autostretch ;white-space: nowrap;">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.sirketAciklama()}" />

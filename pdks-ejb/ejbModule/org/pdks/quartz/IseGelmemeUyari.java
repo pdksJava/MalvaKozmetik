@@ -119,6 +119,7 @@ public class IseGelmemeUyari implements Serializable {
 	private Date islemTarihi;
 	private HashMap<Long, List<Long>> yoneticiPerListMap;
 	private HashMap<Long, List<HareketKGS>> perHareketListMap;
+	private TreeMap<Long, User> userYoneticiMap;
 
 	/**
 	 * @param sessionx
@@ -185,7 +186,6 @@ public class IseGelmemeUyari implements Serializable {
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT P.*   FROM  " + Personel.TABLE_NAME + "  P WITH(nolock) ");
-			// sb.append(" INNER JOIN " + Parameter.TABLE_NAME + " PA ON PA." + Parameter.COLUMN_NAME_ADI + "=:ad  AND PA." + Parameter.COLUMN_NAME_DURUM + "=1 and PA." + Parameter.COLUMN_NAME_DEGER + "=:deger ");
 			sb.append(" where P." + Personel.COLUMN_NAME_DURUM + "=1 AND P." + Personel.COLUMN_NAME_HAREKET_MAIL_ID + " IS NOT NULL");
 			sb.append(" AND P." + Personel.COLUMN_NAME_MAIL_TAKIP + "=1 AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=CAST(GETDATE() AS date)");
 			if (session != null)
@@ -486,7 +486,9 @@ public class IseGelmemeUyari implements Serializable {
 						HashMap<Long, Personel> yoneticiMap = new HashMap<Long, Personel>();
 						// Hareket kayıtları vardiya günlerine işleniyor
 						boolean kayitVar = false;
+
 						if ((!izinler.isEmpty() || (personelHareketMap != null && !personelHareketMap.isEmpty())) || (!mailGonder)) {
+							userYoneticiMap = new TreeMap<Long, User>();
 							yoneticiPerListMap = new HashMap<Long, List<Long>>();
 							perHareketListMap = new HashMap<Long, List<HareketKGS>>();
 							TreeMap<Long, List<PersonelIzin>> izinMap = new TreeMap<Long, List<PersonelIzin>>();
@@ -508,7 +510,7 @@ public class IseGelmemeUyari implements Serializable {
 								pdksVardiyaGun.setHareketler(null);
 								pdksVardiyaGun.setHareketHatali(Boolean.FALSE);
 								Personel pdksPersonel = pdksVardiyaGun.getPersonel();
-								Long perNoId = pdksPersonel.getPersonelKGS().getId();
+								Long perNoId = pdksPersonel.getPersonelKGS().getId(), personelNoId = pdksPersonel.getId();
 								Long depId = pdksPersonel.getSirket().getDepartman().getId();
 								boolean hareketVar = personelHareketMap.containsKey(perNoId) && !personelHareketMap.get(perNoId).isEmpty();
 								if (!hareketVar) {
@@ -623,14 +625,19 @@ public class IseGelmemeUyari implements Serializable {
 
 										}
 									}
-
+									Long yoneticiId = yoneticisi.getId();
 									if (hareketPersonelMap.containsKey(pdksSicilNo)) {
 										List<VardiyaGun> list = hareketHataliMap.containsKey(pdksSicilNo) ? hareketHataliMap.get(pdksSicilNo) : new ArrayList<VardiyaGun>();
 										if (list.isEmpty())
 											hareketHataliMap.put(pdksSicilNo, list);
 										list.add(pdksVardiyaGun);
+										List<Long> list2 = yoneticiPerListMap.containsKey(yoneticiId) ? yoneticiPerListMap.get(yoneticiId) : new ArrayList<Long>();
+										if (list2.isEmpty())
+											yoneticiPerListMap.put(yoneticiId, list2);
+										if (!list2.contains(personelNoId))
+											list2.add(personelNoId);
 									}
-									yoneticiMap.put(yoneticisi.getId(), yoneticisi);
+									yoneticiMap.put(yoneticiId, yoneticisi);
 								}
 
 							}
@@ -774,22 +781,22 @@ public class IseGelmemeUyari implements Serializable {
 												list.add(userYonetici);
 											}
 										}
-										TreeMap<String, User> userYoneticiMap = null;
+										TreeMap<String, User> userYoneticilerMap = null;
 										if (!mailList.isEmpty()) {
 											HashMap fields = new HashMap();
 											fields.put("email", mailList);
 											fields.put(PdksEntityController.MAP_KEY_MAP, "getEmail");
 											fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-											userYoneticiMap = pdksEntityController.getObjectByInnerObjectMap(fields, User.class, false);
-											if (!userYoneticiMap.isEmpty())
-												ortakIslemler.setUserRoller(new ArrayList<User>(userYoneticiMap.values()), session);
+											userYoneticilerMap = pdksEntityController.getObjectByInnerObjectMap(fields, User.class, false);
+											if (!userYoneticilerMap.isEmpty())
+												ortakIslemler.setUserRoller(new ArrayList<User>(userYoneticilerMap.values()), session);
 
 										} else
-											userYoneticiMap = new TreeMap<String, User>();
+											userYoneticilerMap = new TreeMap<String, User>();
 
 										for (Iterator iterator2 = mailList.iterator(); iterator2.hasNext();) {
 											String mail = (String) iterator2.next();
-											User yoneticiUser = userYoneticiMap.containsKey(mail) ? userYoneticiMap.get(mail) : null;
+											User yoneticiUser = userYoneticilerMap.containsKey(mail) ? userYoneticilerMap.get(mail) : null;
 											if (yoneticiUser == null) {
 												yoneticiUser = new User();
 												yoneticiUser.setEmail(mail);
@@ -843,8 +850,12 @@ public class IseGelmemeUyari implements Serializable {
 						if (islemYapan != null) {
 							eposta = islemYapan.getEmail();
 						}
+						if (!userYoneticiMap.containsKey(user.getId())) {
+							userYoneticiList.add(user);
+							userYoneticiMap.put(user.getId(), user);
+						} else
+							logger.info(user.getId());
 
-						userYoneticiList.add(user);
 						user.setEmail(eposta);
 						user.setPdksPersonel(yoneticisi);
 						setUserYonetici(user);
@@ -895,15 +906,15 @@ public class IseGelmemeUyari implements Serializable {
 				fields.put("email", new ArrayList(mailPersonelMap.keySet()));
 				fields.put(PdksEntityController.MAP_KEY_MAP, "getEmail");
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				TreeMap<String, User> userYoneticiMap = pdksEntityController.getObjectByInnerObjectMap(fields, User.class, false);
-				if (!userYoneticiMap.isEmpty())
-					ortakIslemler.setUserRoller(new ArrayList<User>(userYoneticiMap.values()), session);
+				TreeMap<String, User> userYoneticilerMap = pdksEntityController.getObjectByInnerObjectMap(fields, User.class, false);
+				if (!userYoneticilerMap.isEmpty())
+					ortakIslemler.setUserRoller(new ArrayList<User>(userYoneticilerMap.values()), session);
 
 				boolean sort = false;
 				for (String email : mailPersonelMap.keySet()) {
 					personelVardiyalari.clear();
 					logger.debug(email);
-					User user = userYoneticiMap.containsKey(email) ? userYoneticiMap.get(email) : null;
+					User user = userYoneticilerMap.containsKey(email) ? userYoneticilerMap.get(email) : null;
 					if (user == null || !user.isDurum()) {
 						user = bosYonetici;
 						user.setEmail(email);
@@ -911,11 +922,12 @@ public class IseGelmemeUyari implements Serializable {
 						logger.error(PdksUtil.setTurkishStr(user.getAdSoyad() + " MAİL GÖNDERİLEMİYOR!"));
 						continue;
 					}
-					List<Role> yetkiliRollerim = user.getYetkiliRollerim();
+ 					List<Role> yetkiliRollerim = user.getYetkiliRollerim();
 					if (yetkiliRollerim == null || yetkiliRollerim.isEmpty())
 						yetkiliRollerim = user.getYetkiliRoller();
 					userYonetici = (User) user.clone();
 					userYonetici.setYetkiliRollerim(yetkiliRollerim);
+
 					if (islemYapan != null)
 						userYonetici.setEmail(islemYapan.getEmail());
 					userYonetici.getPdksPersonel().setPersonelVardiyalari(personelVardiyalari);
@@ -935,7 +947,13 @@ public class IseGelmemeUyari implements Serializable {
 							mailSatu = mailGonder(renderAdres, true, session);
 							if (mailSatu != null && mailSatu.isDurum())
 								logger.info(PdksUtil.setTurkishStr(userYonetici.getPdksPersonel().getSirket().getAd() + " " + userYonetici.getAdSoyad() + " " + userYonetici.getEmail() + " iseGelisUyariMail mesaj gönderildi! "));
-							userYoneticiList.add(userYonetici);
+
+							if (!userYoneticiMap.containsKey(userYonetici.getId())) {
+								userYoneticiList.add(userYonetici);
+								userYoneticiMap.put(userYonetici.getId(), userYonetici);
+							} else
+								logger.debug(userYonetici.getId());
+
 							sort = true;
 						} catch (Exception ex) {
 							if (islemYapan != null)
@@ -1093,7 +1111,9 @@ public class IseGelmemeUyari implements Serializable {
 						continue;
 					map1.put(vardiyaKey, vardiyaKey);
 				}
-
+				Long perId = personel.getId();
+				if (!yoneticiPerIdList.contains(perId))
+					yoneticiPerIdList.add(perId);
 				Sirket sirket = personel.getSirket();
 				Long departmanId = null;
 				if (sirket.getDepartman() != null)
@@ -1432,6 +1452,7 @@ public class IseGelmemeUyari implements Serializable {
 									yoneticiAdi = "";
 
 								sirket = personel.getSirket();
+								Long departmanId = sirket.getDepartman().getId();
 								Long sirketId = sirket.getSirketGrup() == null ? sirket.getId() : -sirket.getSirketGrup().getId();
 								if (!sirketIdList.contains(sirketId))
 									sirketIdList.add(sirketId);
@@ -1442,7 +1463,7 @@ public class IseGelmemeUyari implements Serializable {
 								altBolum = personel.getEkSaha4();
 								if (altBolum != null && !altBolumIdList.contains(altBolum.getId()))
 									altBolumIdList.add(altBolum.getId());
-								String key = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? "_" + tesis.getAciklama() : "");
+								String key = (departmanId != null ? departmanId : 0L) + "_" + (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + (tesis != null ? "_" + tesis.getAciklama() : "");
 								key += "_" + yoneticiAdi + (bolum != null ? "_" + bolum.getAciklama() : "") + (altBolum != null ? "_" + altBolum.getAciklama() : "");
 								key += (calismaModeli != null ? "_" + calismaModeli.getAciklama() : "") + "_" + personel.getAdSoyad() + "_" + personel.getSicilNo();
 								for (Iterator iterator = hareketList.iterator(); iterator.hasNext();) {
@@ -1835,11 +1856,35 @@ public class IseGelmemeUyari implements Serializable {
 			}
 			sb = new StringBuffer();
 			TreeMap<String, String> map1 = new TreeMap<String, String>();
+
+			logger.info("Toplu mail dosyasi hazirlaniyor in " + new Date());
+			TreeMap<Long, User> userMap = new TreeMap<Long, User>();
+			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
+				User user = (User) iterator.next();
+				List<VardiyaGun> list = user.getPdksPersonel().getPersonelVardiyalari();
+				Long key = user.getId();
+				if (userMap.containsKey(key)) {
+					User user2 = userMap.get(key);
+					List<VardiyaGun> list2 = user2.getPdksPersonel().getPersonelVardiyalari();
+					for (VardiyaGun vardiyaGun : list) {
+						boolean ekle = true;
+						for (VardiyaGun vardiyaGun2 : list2) {
+							if (vardiyaGun2.getId().equals(vardiyaGun.getId())) {
+								ekle = false;
+								break;
+							}
+						}
+						if (ekle)
+							list2.add(vardiyaGun);
+					}
+					iterator.remove();
+				} else if (list != null && !list.isEmpty())
+					userMap.put(key, user);
+			}
 			List<Dosya> fileList = new ArrayList<Dosya>();
 			int kayitAdet = userYoneticiList.size() + 1;
 			int maxTextLength = String.valueOf(kayitAdet).length();
 			int sira = 0;
-			logger.info("Toplu mail dosyasi hazirlaniyor in " + new Date());
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
 				StringBuffer sbUser = new StringBuffer();
@@ -1873,12 +1918,12 @@ public class IseGelmemeUyari implements Serializable {
 						wb.write(baos);
 						dosyaExcel.setDosyaIcerik(baos.toByteArray());
 						fileList.add(dosyaExcel);
-					} else
-						iterator.remove();
+					}
 				}
 				sbUser = null;
 
 			}
+			userMap = null;
 			String zipDosyaAdi = "IseGelmeDurum_" + PdksUtil.convertToDateString(islemTarihi, "yyyyMMdd") + ".zip";
 			File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, fileList);
 			if (file != null && file.exists()) {

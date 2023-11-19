@@ -909,7 +909,10 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		CellStyle styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0;
 		int col = 0;
-		boolean yonetici = authenticatedUser.isAdmin() || ikRole;
+		boolean admin = authenticatedUser.isAdmin();
+		boolean yonetici = admin || ikRole;
+		if (admin)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Id");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Zaman");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
@@ -950,7 +953,8 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				ex.printStackTrace();
 
 			}
-
+			if (admin)
+				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(hareket.getId());
 			try {
 				ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getZaman());
 				String sirket = "";
