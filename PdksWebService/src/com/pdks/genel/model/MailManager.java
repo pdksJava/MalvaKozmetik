@@ -4,9 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -27,6 +31,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.google.gson.Gson;
 import com.pdks.entity.ServiceData;
+import com.pdks.entity.User;
 import com.pdks.mail.model.MailFile;
 import com.pdks.mail.model.MailObject;
 import com.pdks.mail.model.MailPersonel;
@@ -167,6 +172,43 @@ public class MailManager implements Serializable {
 	}
 
 	/**
+	 * @param tarih
+	 * @param mailList
+	 * @param session
+	 * @return
+	 */
+	public static TreeMap<String, User> getUserRoller(Date tarih, List<String> mailList) {
+		TreeMap<String, User> userMap = new TreeMap<String, User>();
+		HashMap fields = new HashMap();
+		fields.put("email", mailList);
+
+		List<User> userList = Constants.pdksDAO.getObjectByInnerObjectList(fields, User.class);
+		if (!userList.isEmpty()) {
+			if (tarih == null)
+				tarih = PdksUtil.getDate(new Date());
+			for (Iterator iterator = userList.iterator(); iterator.hasNext();) {
+				User user = (User) iterator.next();
+
+				String ePosta = user.getEmail();
+				if (user.getPdksPersonel().isCalisiyorGun(tarih)) {
+					userMap.put(ePosta, user);
+					if (!mailList.contains(ePosta))
+						mailList.add(ePosta);
+				} else {
+					if (!userMap.containsKey(ePosta)) {
+						if (mailList.contains(ePosta))
+							mailList.remove(ePosta);
+					}
+					iterator.remove();
+				}
+
+			}
+
+		}
+		return userMap;
+	}
+
+	/**
 	 * @param parameterMap
 	 * @throws Exception
 	 */
@@ -301,13 +343,46 @@ public class MailManager implements Serializable {
 			// messageBodyPart.setText(mailIcerik);
 			mp.addBodyPart(messageBodyPart);
 			message.setContent(mp);
+
+			List<String> list = new ArrayList<String>();
+			LinkedHashMap<String, List<MailPersonel>> mailMap = new LinkedHashMap<String, List<MailPersonel>>();
+			if (uyariServisMailGonder) {
+				mailMap.put("to", mailObject.getToList());
+				mailMap.put("cc", mailObject.getCcList());
+			}
+			mailMap.put("bcc", mailObject.getBccList());
+			for (String key : mailMap.keySet()) {
+				List<MailPersonel> mailList = mailMap.get(key);
+				for (Iterator iterator = mailList.iterator(); iterator.hasNext();) {
+					MailPersonel mailPersonel = (MailPersonel) iterator.next();
+					if (!list.contains(mailPersonel.getePosta()))
+						list.add(mailPersonel.getePosta());
+					else
+						iterator.remove();
+				}
+			}
+			TreeMap<String, User> userMap = getUserRoller(null, list);
+			for (String key : mailMap.keySet()) {
+				List<MailPersonel> mailList = mailMap.get(key);
+				for (Iterator iterator = mailList.iterator(); iterator.hasNext();) {
+					MailPersonel mailPersonel = (MailPersonel) iterator.next();
+					String ePosta = mailPersonel.getePosta();
+					if (!list.contains(ePosta))
+						iterator.remove();
+					else if (PdksUtil.hasStringValue(mailPersonel.getAdiSoyadi()) == false) {
+						if (userMap.containsKey(ePosta))
+							mailPersonel.setAdiSoyadi(userMap.get(ePosta).getAdSoyad());
+					}
+
+				}
+			}
+
 			List<String> mailList = new ArrayList<String>();
 			if (uyariServisMailGonder) {
 				message.setRecipients(Message.RecipientType.TO, adresleriDuzenle(mailObject.getToList(), mailList));
 				message.setRecipients(Message.RecipientType.CC, adresleriDuzenle(mailObject.getCcList(), mailList));
 			}
 			message.setRecipients(Message.RecipientType.BCC, adresleriDuzenle(mailObject.getBccList(), mailList));
-
 			for (MailFile mailFile : mailObject.getAttachmentFiles()) {
 				DataSource fds = null;
 				File file = null;
