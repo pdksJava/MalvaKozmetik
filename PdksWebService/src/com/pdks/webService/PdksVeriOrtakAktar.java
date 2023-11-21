@@ -658,10 +658,10 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (!mailDataMap.isEmpty()) {
 			List<String> list = new ArrayList<String>();
 			for (String string : mailDataMap.keySet()) {
-				if (mailDataMap.size() > 1)
-					list.add("'" + string + "'");
-				else
-					list.add(string);
+				// if (mailDataMap.size() > 1)
+				// list.add("'" + string + "'");
+				// else
+				list.add(string);
 			}
 			HashMap map = new HashMap();
 			map.put("email", list.size() > 1 ? list : list.get(0));
@@ -1039,7 +1039,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					continue;
 				}
 				String perHakedisNo = PdksUtil.textBaslangicinaKarakterEkle(izinHakedis.getPersonelNo(), '0', sicilNoUzunluk);
-				izinKeyPersonelMap.put(perHakedisNo, "'" + perHakedisNo + "'");
+				// izinKeyPersonelMap.put(perHakedisNo, "'" + perHakedisNo + "'");
+				izinKeyPersonelMap.put(perHakedisNo, perHakedisNo);
 				for (Iterator iterator = izinHakedis.getHakedisList().iterator(); iterator.hasNext();) {
 					IzinHakedisDetay detay = (IzinHakedisDetay) iterator.next();
 					String key = perHakedisNo + "_" + detay.getHakEdisTarihi().substring(0, 4);
@@ -1048,8 +1049,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 						continue;
 					for (IzinERP izin : detay.getKullanilanIzinler()) {
 						String perNo = PdksUtil.textBaslangicinaKarakterEkle(izin.getPersonelNo(), '0', sicilNoUzunluk);
-						if (!izinKeyPersonelMap.containsKey(perNo))
-							izinKeyPersonelMap.put(perNo, "'" + perNo + "'");
+						if (!izinKeyPersonelMap.containsKey(perNo)) {
+							// izinKeyPersonelMap.put(perNo, "'" + perNo + "'");
+							izinKeyPersonelMap.put(perNo, perNo);
+						}
+
 						izinKeyAciklamaMap.put(izin.getReferansNoERP(), izin);
 					}
 				}
@@ -1058,8 +1062,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 			if (!izinKeyPersonelMap.isEmpty()) {
 				TreeMap<String, Personel> personelMap = pdksDAO.getObjectByInnerObjectMap("getPdksSicilNo", "pdksSicilNo", new ArrayList(izinKeyPersonelMap.values()), Personel.class, false);
 				List<String> list = new ArrayList<String>();
-				for (String string : izinKeyAciklamaMap.keySet())
-					list.add("'" + string + "'");
+				for (String string : izinKeyAciklamaMap.keySet()) {
+					// list.add("'" + string + "'");
+					list.add(string);
+				}
+
 				TreeMap<String, IzinReferansERP> izinMap = pdksDAO.getObjectByInnerObjectMap("getId", "id", list, IzinReferansERP.class, false);
 				List<Long> idList = new ArrayList<Long>();
 				for (String key : izinMap.keySet())
@@ -1612,7 +1619,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					fields.put("Map", "getErpKodu");
 					fields.put("tipi=", Tanim.TIPI_IZIN_KODU_GRUPLARI);
 					for (String key : izinTipiTanimMap.keySet()) {
-						saveList.add("'" + key + "'");
+						// saveList.add("'" + key + "'");
+						saveList.add(key);
 					}
 					fields.put("erpKodu", saveList);
 					izinGrupTanimMap = pdksDAO.getObjectByInnerObjectMapInLogic(fields, Tanim.class, false);
@@ -2388,7 +2396,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 			if (value instanceof String) {
 				String deger = ((String) value).trim();
 				if (deger.length() > 0)
-					str = "'" + deger + "'";
+					str = deger; // str = "'" + deger + "'";
+
 			} else
 				str = value.toString();
 			if (str != null) {

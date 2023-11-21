@@ -552,8 +552,14 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 								StringBuffer sb = new StringBuffer();
 								for (Iterator iter1 = ((List) fieldValue).iterator(); iter1.hasNext();) {
 									Object element = (Object) iter1.next();
-									if (element != null)
-										sb.append((sb.length() > 0 ? "," : "") + element.toString().trim());
+									if (element != null) {
+										if (element instanceof String) {
+											sb.append((sb.length() > 0 ? "," : "") + "?");
+											parametreList.add(element);
+										} else
+											sb.append((sb.length() > 0 ? "," : "") + element.toString());
+									}
+
 								}
 								String str1 = sb.toString();
 								str = str1.indexOf(",") > 0 ? "in (" + str1 + ")" : "= " + str1;

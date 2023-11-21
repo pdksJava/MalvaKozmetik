@@ -233,9 +233,8 @@ public class OrtakIslemler implements Serializable {
 				tarih = PdksUtil.getDate(new Date());
 			for (Iterator iterator = userList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
-
 				String ePosta = user.getEmail();
-				if (user.getPdksPersonel().isCalisiyorGun(tarih)) {
+				if (user.isDurum() && user.getPdksPersonel().isCalisiyorGun(tarih)) {
 					userMap.put(ePosta, user);
 					if (!mailList.contains(ePosta))
 						mailList.add(ePosta);
