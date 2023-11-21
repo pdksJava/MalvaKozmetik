@@ -336,11 +336,13 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
 				double normalCalisma = ap.getSaatToplami() > ap.getPlanlananSure() ? ap.getPlanlananSure() : ap.getSaatToplami();
-				if ((saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
-					if (ayGunSayisi == toplamAdet)
-						normalGunAdet += 30 - ayGunSayisi;
-					if (toplamAdet > 30) {
-						artikAdet = 1;
+				if (!detayMap.isEmpty() || (saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
+					if (toplamAdet > 0) {
+						if (ayGunSayisi == toplamAdet)
+							normalGunAdet += 30 - ayGunSayisi;
+						if (toplamAdet > 30) {
+							artikAdet = 1;
+						}
 					}
 
 					PersonelDenklestirmeBordro denklestirmeBordro = bordroMap.containsKey(personelDenklestirme.getId()) ? bordroMap.get(personelDenklestirme.getId()) : null;
