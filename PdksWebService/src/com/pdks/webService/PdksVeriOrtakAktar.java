@@ -1477,6 +1477,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				IzinERP erp = null;
 				boolean izinCok = izinList.size() > 1;
+				boolean mailBosGonder = izinCok;
 				HashMap<String, List<String>> izinPersonelERPMap = new HashMap<String, List<String>>();
 				HashMap<String, Integer> referansNoMap = new HashMap<String, Integer>();
 				TreeMap<Integer, IzinERP> referansSiraMap = new TreeMap<Integer, IzinERP>();
@@ -2221,13 +2222,14 @@ public class PdksVeriOrtakAktar implements Serializable {
 								mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 								kullaniciIKYukle(mailMap, pdksDAO);
 								MailManager.ePostaGonder(mailMap);
+								mailBosGonder = false;
 							}
 						} catch (Exception em) {
 							logger.error(em);
 							em.printStackTrace();
 						}
-					} else
-						mailBosGonder("saveIzinler", "izin", izinList);
+					}
+
 				}
 				if (!izinMap.isEmpty()) {
 					List<Long> personelIdList = new ArrayList<Long>();
@@ -2310,7 +2312,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 					doktorUserMap = null;
 				}
-
+				if (mailBosGonder)
+					mailBosGonder("saveIzinler", "izin", izinList);
 				hataList = null;
 				saveFonksiyonVeri(null, izinList);
 
@@ -3474,7 +3477,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 
 				}
-
+				boolean mailBosGonder = personelList.size() > 1;
 				altBolumDurum = false;
 				HashMap fields = new HashMap();
 				fields.put("tipi", Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
@@ -3869,14 +3872,15 @@ public class PdksVeriOrtakAktar implements Serializable {
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 							kullaniciIKYukle(mailMap, pdksDAO);
 							MailManager.ePostaGonder(mailMap);
-						} else
-							mailBosGonder("savePersoneller", "personel", personelList);
+							mailBosGonder = false;
+						}
 					} catch (Exception em) {
 						logger.error(em);
 						em.printStackTrace();
 					}
 
-				} else
+				}
+				if (mailBosGonder)
 					mailBosGonder("savePersoneller", "personel", personelList);
 				if (updateYonetici2)
 					setIkinciYoneticiSifirla();
