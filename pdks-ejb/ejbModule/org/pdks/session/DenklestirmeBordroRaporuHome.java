@@ -548,6 +548,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		else
 			personelDenklestirmeList.clear();
 		TreeMap<Long, AylikPuantaj> eksikCalismaMap = new TreeMap<Long, AylikPuantaj>();
+
 		baslikMap.clear();
 		if (denklestirmeAy != null) {
 			basGun = PdksUtil.getYilAyBirinciGun(yil, ay);
@@ -763,33 +764,56 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 				}
 				if (!eksikCalismaMap.isEmpty()) {
-					HashMap map = new HashMap();
-					sb = new StringBuffer();
-					sb.append("SELECT DISTINCT P.* FROM VARDIYA_GUN_SAAT_VIEW V WITH(nolock) ");
-					sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_PERSONEL);
-					sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn());
-					sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
-					sb.append(" INNER JOIN  " + Vardiya.TABLE_NAME + " VA ON VA." + Vardiya.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_VARDIYA + " AND VA.VARDIYATIPI=''");
-					sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
-					sb.append("   AND  V." + VardiyaGun.COLUMN_NAME_DURUM + " = 0 AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
-					sb.append("   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
-					Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
-					Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
-					map.put("p", new ArrayList(eksikCalismaMap.keySet()));
-					map.put("basTarih", basTarih);
-					map.put("bitTarih", bitTarih);
-					if (session != null)
-						map.put(PdksEntityController.MAP_KEY_SESSION, session);
-					map.put(PdksEntityController.MAP_KEY_MAP, "getId");
+					List<AylikPuantaj> list = new ArrayList<AylikPuantaj>();
+					TreeMap<Long, Long> perDMap = new TreeMap<Long, Long>();
+					for (Long key : eksikCalismaMap.keySet()) {
+						AylikPuantaj aylikPuantaj = eksikCalismaMap.get(key);
+						if (aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeli().isFazlaMesaiVarMi())
+							list.add(aylikPuantaj);
+						else
+							perDMap.put(aylikPuantaj.getPdksPersonel().getId(), key);
+					}
+
 					try {
-						TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false);
-						List<Long> list = new ArrayList<Long>(eksikCalismaMap.keySet());
-						for (Long key : list) {
-							if (perMap.containsKey(key))
-								eksikCalismaMap.remove(key);
+
+						if (!perDMap.isEmpty()) {
+							List<Long> perIdList = new ArrayList<Long>(perDMap.keySet());
+							HashMap map = new HashMap();
+							sb = new StringBuffer();
+							sb.append("SELECT DISTINCT P.* FROM VARDIYA_GUN_SAAT_VIEW V WITH(nolock) ");
+							sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_PERSONEL);
+							sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn());
+							sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
+							sb.append(" INNER JOIN  " + Vardiya.TABLE_NAME + " VA ON VA." + Vardiya.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_VARDIYA + " AND VA.VARDIYATIPI=''");
+							sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
+							sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <CONVERT(DATE, GETDATE() ) AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
+							sb.append("  AND  V." + VardiyaSaat.COLUMN_NAME_NORMAL_SURE + " > 0   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
+							Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
+							Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
+							map.put("p", perIdList);
+							map.put("basTarih", basTarih);
+							map.put("bitTarih", bitTarih);
+							if (session != null)
+								map.put(PdksEntityController.MAP_KEY_SESSION, session);
+							map.put(PdksEntityController.MAP_KEY_MAP, "getId");
+
+							TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false);
+
+							for (Long key : perMap.keySet()) {
+								list.add(eksikCalismaMap.get(perDMap.get(key)));
+
+							}
+							perMap = null;
 						}
-						perMap = null;
+						eksikCalismaMap.clear();
+
+						for (AylikPuantaj aylikPuantaj : list) {
+							eksikCalismaMap.put(aylikPuantaj.getPersonelDenklestirmeAylik().getId(), aylikPuantaj);
+						}
 						list = null;
+
+						perDMap = null;
+
 					} catch (Exception e) {
 						logger.error(e + "\n" + sb.toString());
 					}
