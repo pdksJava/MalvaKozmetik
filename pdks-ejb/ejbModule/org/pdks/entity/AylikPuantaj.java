@@ -93,7 +93,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private Double izinSuresi = 0d, saatlikIzinSuresi = 0d, eksikCalismaSure = 0d, gecenAyFazlaMesai = 0d, hesaplananSure = 0d, devredenSure = 0d, aksamVardiyaSaatSayisi = 0d, kesilenSure = 0d;
 
-	private boolean fazlaMesaiHesapla = Boolean.FALSE, vardiyaSua = Boolean.FALSE, denklestirilmeyenDevredenVar = Boolean.FALSE;
+	private boolean fazlaMesaiHesapla = Boolean.FALSE, vardiyaSua = Boolean.FALSE,  eksikGunVar = Boolean.FALSE, denklestirilmeyenDevredenVar = Boolean.FALSE;
 
 	private CalismaModeli calismaModeli;
 
@@ -1279,6 +1279,20 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public void setEksikCalismaSure(Double eksikCalismaSure) {
 		this.eksikCalismaSure = eksikCalismaSure;
+	}
+
+	/**
+	 * @return the eksikGunVar
+	 */
+	public boolean isEksikGunVar() {
+		return eksikGunVar;
+	}
+
+	/**
+	 * @param eksikGunVar the eksikGunVar to set
+	 */
+	public void setEksikGunVar(boolean eksikGunVar) {
+		this.eksikGunVar = eksikGunVar;
 	}
 
 }

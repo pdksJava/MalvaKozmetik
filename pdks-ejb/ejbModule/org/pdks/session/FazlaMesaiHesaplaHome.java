@@ -1403,6 +1403,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
 					double negatifBakiyeDenkSaat = 0.0;
 					offIzinliGunler.clear();
+					puantaj.setEksikGunVar(false);
 					PersonelDenklestirme personelDenklestirme = null;
 					puantaj.setDonemBitti(Boolean.FALSE);
 					puantaj.setAyrikHareketVar(false);
@@ -1935,10 +1936,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 					}
 					if (calisiyor) {
-						kayitVar = true;
 						boolean eksikCalismaVar = false;
 						if (denklestirmeAyDurum && puantaj.isFazlaMesaiHesapla() && perCalismaModeli != null && hataliPuantajGoster && bordroPuantajEkranindaGoster) {
-							eksikCalismaVar = puantaj.getPlanlananSure() > puantaj.getSaatToplami() + perCalismaModeli.getHaftaIci();
+							eksikCalismaVar = puantaj.isEksikGunVar();
+
 						}
 						if (PdksUtil.hasStringValue(sicilNo) || denklestirmeAyDurum == false || hataliPuantajGoster == false || puantaj.isFazlaMesaiHesapla() == false || eksikCalismaVar)
 							puantajList.add(puantaj);
@@ -3817,6 +3818,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		}
 		if (denklestirmeAyDurum && vardiya != null && vardiya.getId() != null && vGun.isAyinGunu() && vardiya.isHaftaTatil() && vGun.isHareketHatali()) {
 			logger.debug(vardiyaKey);
+		}
+		try {
+			if (hataliPuantajGoster && vardiya != null && vGun.isAyinGunu() && vardiya.isCalisma() && vGun.getIzin() == null && vGun.getCalismaSuresi() == 0.0 && vGun.getVardiyaDate().before(bugun)) {
+				islemPuantaj.setEksikGunVar(true);
+				logger.debug(vGun.getVardiyaKeyStr());
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 
 		paramsMap.put("fazlaMesaiHesapla", fazlaMesaiHesapla);

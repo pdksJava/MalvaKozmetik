@@ -768,12 +768,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					TreeMap<Long, Long> perDMap = new TreeMap<Long, Long>();
 					for (Long key : eksikCalismaMap.keySet()) {
 						AylikPuantaj aylikPuantaj = eksikCalismaMap.get(key);
-						PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
-						if (pd.getCalismaModeli().isFazlaMesaiVarMi()) {
-							if (pd.getDurum())
-								list.add(aylikPuantaj);
-						} else
-							perDMap.put(aylikPuantaj.getPdksPersonel().getId(), key);
+						// PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
+						// if (pd.getCalismaModeli().isFazlaMesaiVarMi()) {
+						// if (pd.getDurum())
+						// list.add(aylikPuantaj);
+						// } else
+						perDMap.put(aylikPuantaj.getPdksPersonel().getId(), key);
 					}
 					try {
 						if (!perDMap.isEmpty()) {
@@ -798,7 +798,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							map.put(PdksEntityController.MAP_KEY_MAP, "getId");
 							TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false);
 							for (Long key : perMap.keySet()) {
-								list.add(eksikCalismaMap.get(perDMap.get(key)));
+								Personel personel = perMap.get(key);
+								logger.info(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
+								list.add(eksikCalismaMap.get(perDMap.get(personel.getId())));
 							}
 							perMap = null;
 						}
@@ -847,7 +849,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						normalSaat = 0.0d;
 					}
 					try {
-						hataYok = normalSaat >= planlananSaaat;
+						hataYok = normalSaat >= planlananSaaat && cm.isSaatlikOdeme() == false;
 						if (hataYok == false)
 							eksikCalismaSure = normalSaat - (planlananSaaat + cm.getHaftaIci());
 					} catch (Exception e) {
