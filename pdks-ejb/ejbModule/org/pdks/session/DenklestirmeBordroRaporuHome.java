@@ -772,14 +772,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						if (pd.getCalismaModeli().isFazlaMesaiVarMi()) {
 							if (pd.getDurum())
 								list.add(aylikPuantaj);
-						}
-
-						else
+						} else
 							perDMap.put(aylikPuantaj.getPdksPersonel().getId(), key);
 					}
-
 					try {
-
 						if (!perDMap.isEmpty()) {
 							List<Long> perIdList = new ArrayList<Long>(perDMap.keySet());
 							HashMap map = new HashMap();
@@ -800,24 +796,18 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							if (session != null)
 								map.put(PdksEntityController.MAP_KEY_SESSION, session);
 							map.put(PdksEntityController.MAP_KEY_MAP, "getId");
-
 							TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false);
-
 							for (Long key : perMap.keySet()) {
 								list.add(eksikCalismaMap.get(perDMap.get(key)));
-
 							}
 							perMap = null;
 						}
 						eksikCalismaMap.clear();
-
 						for (AylikPuantaj aylikPuantaj : list) {
 							eksikCalismaMap.put(aylikPuantaj.getPersonelDenklestirmeAylik().getId(), aylikPuantaj);
 						}
 						list = null;
-
 						perDMap = null;
-
 					} catch (Exception e) {
 						logger.error(e + "\n" + sb.toString());
 					}
