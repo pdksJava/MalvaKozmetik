@@ -768,8 +768,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					TreeMap<Long, Long> perDMap = new TreeMap<Long, Long>();
 					for (Long key : eksikCalismaMap.keySet()) {
 						AylikPuantaj aylikPuantaj = eksikCalismaMap.get(key);
-						if (aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeli().isFazlaMesaiVarMi())
-							list.add(aylikPuantaj);
+						PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
+						if (pd.getCalismaModeli().isFazlaMesaiVarMi()) {
+							if (pd.getDurum())
+								list.add(aylikPuantaj);
+						}
+
 						else
 							perDMap.put(aylikPuantaj.getPdksPersonel().getId(), key);
 					}
