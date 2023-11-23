@@ -132,7 +132,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				mailObject.setSubject(subject);
 				mailObject.setBody(body);
 				try {
-					mailAdresKontrol(mailObject, null);
+//					mailAdresKontrol(mailObject, null);
 					mailObject.getToList().clear();
 					mailMap.put("mailObject", mailObject);
 					MailManager.ePostaGonder(mailMap);
@@ -277,11 +277,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 		}
 		sb = new StringBuffer();
-		try {
-			mailAdresKontrol(mailObject, sb);
-		} catch (Exception e) {
-			logger.error(e);
-		}
+//		try {
+//			mailAdresKontrol(mailObject, sb);
+//		} catch (Exception e) {
+//			logger.error(e);
+//		}
 		sb = null;
 
 		mailDataMap.put("mailObject", mailObject);
@@ -581,7 +581,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				if (mailObject.getSmtpUser().equals(smtpUserName) && mailObject.getSmtpPassword().equals(smtpPassword)) {
 					mailMap.put("mailObject", mailObject);
 
-					mailAdresKontrol(mailObject, pasifPersonelSB);
+//					mailAdresKontrol(mailObject, pasifPersonelSB);
 					String body = mailObject.getBody();
 					if (mailObject.getToList().size() == 1) {
 						MailPersonel mailPersonel = mailObject.getToList().get(0);
@@ -644,7 +644,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @param pasifPersonelSB
 	 * @throws Exception
 	 */
-	private void mailAdresKontrol(MailObject mailObject, StringBuffer pasifPersonelSB) throws Exception {
+	protected void mailAdresKontrol(MailObject mailObject, StringBuffer pasifPersonelSB) throws Exception {
 		if (PdksUtil.isSistemDestekVar()) {
 			addMailAdresBCC(mailObject, "bccAdres");
 			addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
@@ -970,7 +970,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							dataMap.put("getMesaiPDKSReturn", list);
 						else
 							dataMap.put("mesaj", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " dönemi " + (denklestirmeAy.getDurum() ? " ait kayıt bulunamadı!" : " kapatılmıştır!"));
-						mailAdresKontrol(mailObject, null);
+//						mailAdresKontrol(mailObject, null);
 						Gson gs = new Gson();
 						String xml = PdksUtil.getJsonToXML(gs.toJson(dataMap), "getMesaiPDKS", null);
 						MailFile mailFile = new MailFile();
@@ -1780,7 +1780,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 						IzinReferansERP izinReferansERP = izinERPMap.containsKey(izinERP.getReferansNoERP().trim()) ? izinERPMap.get(izinERP.getReferansNoERP().trim()) : new IzinReferansERP(izinERP.getReferansNoERP().trim());
 						PersonelIzin personelIzin = izinReferansERP.getIzin();
 						Personel izinSahibi = personelMap.get(izinERP.getPersonelNo());
-						personelIzin.setIzinSahibi(izinSahibi);
 						boolean doktor = izinSahibi.isHekim();
 						boolean mailEkle = doktor && personelIzin.getId() == null;
 						Date sonCalismaTarihi = izinSahibi.getSskCikisTarihi();
@@ -1823,8 +1822,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 							Boolean izinDegisti = null;
 							if (!mailEkle && personelIzin.getId() != null) {
 								boolean izinDurum = personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI;
-								izinDegisti = !izinTipi.getId().equals(personelIzin.getIzinTipi().getId()) || izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime()
-										|| bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
+								izinDegisti = !izinSahibi.getId().equals(personelIzin.getIzinSahibi().getId()) || !izinTipi.getId().equals(personelIzin.getIzinTipi().getId()) || izinDurum != izinERP.getDurum().booleanValue()
+										|| baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime() || bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
 								mailEkle = izinDegisti && doktor;
 							}
 
@@ -1870,6 +1869,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								izinlerBitTarih = bitisZamani;
 							if (personelIzin.getId() != null && (olusturmaTarih == null || olusturmaTarih.before(personelIzin.getOlusturmaTarihi())))
 								olusturmaTarih = personelIzin.getOlusturmaTarihi();
+							personelIzin.setIzinSahibi(izinSahibi);
 							personelIzin.setBaslangicZamani(baslangicZamani);
 							personelIzin.setBitisZamani(bitisZamani);
 							if (izinERP.getDurum().booleanValue() || personelIzin.getId() != null) {

@@ -1624,6 +1624,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 								}
 							}
+
 							if (saatEkle) {
 								VardiyaSaat vardiyaSaat = vardiyaGun.getVardiyaSaat();
 								if (vardiyaSaat == null)
@@ -1647,8 +1648,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									}
 								}
 
-								if (vardiyaSaat.getId() != null)
-									vardiyaSaat.setNormalSure(normalSure);
+								vardiyaSaat.setNormalSure(normalSure);
 								if (vardiyaSaat.isGuncellendi()) {
 									if (vardiyaSaat.getId() == null)
 										vardiyaSaat.setNormalSure(normalSure);
@@ -1937,7 +1937,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					}
 					if (calisiyor) {
 						boolean eksikCalismaVar = false;
-						if (denklestirmeAyDurum && puantaj.isFazlaMesaiHesapla() && perCalismaModeli != null && hataliPuantajGoster && bordroPuantajEkranindaGoster) {
+						if (denklestirmeAyDurum && puantaj.isFazlaMesaiHesapla() && perCalismaModeli != null && hataliPuantajGoster) {
 							eksikCalismaVar = puantaj.isEksikGunVar();
 
 						}

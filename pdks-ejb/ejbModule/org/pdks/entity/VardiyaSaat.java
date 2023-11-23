@@ -22,7 +22,7 @@ public class VardiyaSaat extends BasePDKSObject implements Serializable, Cloneab
 	static Logger logger = Logger.getLogger(VardiyaSaat.class);
 
 	public static final String TABLE_NAME = "VARDIYA_SAAT";
- 	public static final String COLUMN_NAME_NORMAL_SURE = "NORMAL_SURE";
+	public static final String COLUMN_NAME_NORMAL_SURE = "NORMAL_SURE";
 	public static final String COLUMN_NAME_CALISMA_SURESI = "CALISMA_SURESI";
 	public static final String COLUMN_NAME_RESMI_TATIL_SURESI = "RESMI_TATIL_SURESI";
 	public static final String COLUMN_NAME_AKSAM_VARDIYA = "AKSAM_VARDIYA_SURESI";
@@ -45,7 +45,7 @@ public class VardiyaSaat extends BasePDKSObject implements Serializable, Cloneab
 	}
 
 	public void setNormalSure(double value) {
-		if (id != null && !guncellendi)
+		if (!guncellendi)
 			guncellendi = value != normalSure;
 		this.normalSure = value;
 	}

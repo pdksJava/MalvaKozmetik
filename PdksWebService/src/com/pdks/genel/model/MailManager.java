@@ -406,7 +406,7 @@ public class MailManager implements Serializable {
 			}
 			Exception hata = null;
 			try {
-				if (!mailList.isEmpty())
+				if (!list.isEmpty())
 					Transport.send(message);
 			} catch (Exception e) {
 				hata = e;

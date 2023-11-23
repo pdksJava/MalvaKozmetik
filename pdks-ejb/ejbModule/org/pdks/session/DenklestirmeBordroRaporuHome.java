@@ -731,7 +731,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 								} catch (Exception e) {
 									planlananSaaat = 0.0d;
 								}
-								if (normalSaat <= planlananSaaat)
+								if (pd.getPdksPersonel().getPdksSicilNo().equals("2337"))
+									logger.debug(pd.getId());
+								if (normalSaat <= planlananSaaat || cm.isFazlaMesaiVarMi())
 									eksikCalismaMap.put(pd.getId(), aylikPuantaj);
 							}
 
@@ -831,6 +833,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				boolean hataYok = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
 				CalismaModeli cm = eksikCalismaMap.containsKey(pd.getId()) && hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
 				Double eksikCalismaSure = null;
+				if (pd.getPdksPersonel().getPdksSicilNo().equals("2337"))
+					logger.debug(pd.getId());
 				if (cm != null && eksikCalisanVeriGetir != null && eksikCalisanVeriGetir) {
 					double normalSaat = 0.0d, planlananSaaat = 0.0d;
 					try {
@@ -849,7 +853,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						normalSaat = 0.0d;
 					}
 					try {
-						hataYok = normalSaat >= planlananSaaat && cm.isSaatlikOdeme() == false;
+						hataYok = normalSaat >= planlananSaaat && cm.isSaatlikOdeme() == false && cm.getFazlaMesaiVar() == false;
 						if (hataYok == false)
 							eksikCalismaSure = normalSaat - (planlananSaaat + cm.getHaftaIci());
 					} catch (Exception e) {
