@@ -35,6 +35,7 @@ import com.pdks.entity.User;
 import com.pdks.mail.model.MailFile;
 import com.pdks.mail.model.MailObject;
 import com.pdks.mail.model.MailPersonel;
+import com.pdks.mail.model.MailStatu;
 import com.sun.mail.util.MailSSLSocketFactory;
 
 /**
@@ -211,7 +212,8 @@ public class MailManager implements Serializable {
 	 * @param parameterMap
 	 * @throws Exception
 	 */
-	public static void ePostaGonder(HashMap<String, Object> parameterMap) throws Exception {
+	public static MailStatu ePostaGonder(HashMap<String, Object> parameterMap) throws Exception {
+		MailStatu mailStatu = new MailStatu();
 		Properties props = null;
 		boolean uyariServisMailGonder = false;
 		if (parameterMap.containsKey("uyariServisMailGonder")) {
@@ -406,11 +408,19 @@ public class MailManager implements Serializable {
 			}
 			Exception hata = null;
 			try {
-				if (!list.isEmpty())
+				if (!list.isEmpty()) {
 					Transport.send(message);
+					mailStatu.setDurum(true);
+					mailStatu.setHataMesai("");
+				} else
+					mailStatu.setHataMesai("Mail gönderilecek e-posta yok!");
+
 			} catch (Exception e) {
 				hata = e;
+
 				try {
+					if (e.toString() != null)
+						mailStatu.setHataMesai(PdksUtil.replaceAll(e.toString(), "\n", ""));
 					if (e instanceof javax.mail.SendFailedException) {
 						javax.mail.SendFailedException se = (javax.mail.SendFailedException) e;
 						if (se.getInvalidAddresses() != null) {
@@ -439,6 +449,7 @@ public class MailManager implements Serializable {
 			}
 
 		}
+		return mailStatu;
 	}
 
 	/**

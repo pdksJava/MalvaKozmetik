@@ -132,7 +132,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				mailObject.setSubject(subject);
 				mailObject.setBody(body);
 				try {
-//					mailAdresKontrol(mailObject, null);
+					// mailAdresKontrol(mailObject, null);
 					mailObject.getToList().clear();
 					mailMap.put("mailObject", mailObject);
 					MailManager.ePostaGonder(mailMap);
@@ -277,11 +277,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 		}
 		sb = new StringBuffer();
-//		try {
-//			mailAdresKontrol(mailObject, sb);
-//		} catch (Exception e) {
-//			logger.error(e);
-//		}
+		// try {
+		// mailAdresKontrol(mailObject, sb);
+		// } catch (Exception e) {
+		// logger.error(e);
+		// }
 		sb = null;
 
 		mailDataMap.put("mailObject", mailObject);
@@ -581,7 +581,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				if (mailObject.getSmtpUser().equals(smtpUserName) && mailObject.getSmtpPassword().equals(smtpPassword)) {
 					mailMap.put("mailObject", mailObject);
 
-//					mailAdresKontrol(mailObject, pasifPersonelSB);
+					// mailAdresKontrol(mailObject, pasifPersonelSB);
 					String body = mailObject.getBody();
 					if (mailObject.getToList().size() == 1) {
 						MailPersonel mailPersonel = mailObject.getToList().get(0);
@@ -970,7 +970,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							dataMap.put("getMesaiPDKSReturn", list);
 						else
 							dataMap.put("mesaj", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " dönemi " + (denklestirmeAy.getDurum() ? " ait kayıt bulunamadı!" : " kapatılmıştır!"));
-//						mailAdresKontrol(mailObject, null);
+						// mailAdresKontrol(mailObject, null);
 						Gson gs = new Gson();
 						String xml = PdksUtil.getJsonToXML(gs.toJson(dataMap), "getMesaiPDKS", null);
 						MailFile mailFile = new MailFile();
@@ -1477,6 +1477,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				IzinERP erp = null;
 				boolean izinCok = izinList.size() > 1;
+				MailStatu mailStatu = null;
 				boolean mailBosGonder = izinCok;
 				HashMap<String, List<String>> izinPersonelERPMap = new HashMap<String, List<String>>();
 				HashMap<String, Integer> referansNoMap = new HashMap<String, Integer>();
@@ -2148,7 +2149,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								mailMap.put("ikMailIptal", testDurum);
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 							kullaniciIKYukle(mailMap, pdksDAO);
-							MailManager.ePostaGonder(mailMap);
+							mailStatu = MailManager.ePostaGonder(mailMap);
 						}
 						personelIzinList = null;
 					}
@@ -2221,7 +2222,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								}
 								mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 								kullaniciIKYukle(mailMap, pdksDAO);
-								MailManager.ePostaGonder(mailMap);
+								mailStatu = MailManager.ePostaGonder(mailMap);
 								mailBosGonder = false;
 							}
 						} catch (Exception em) {
@@ -2295,7 +2296,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 											mailMap.put("mailIcerik", sb.toString());
 											mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 											kullaniciIKYukle(mailMap, pdksDAO);
-											MailManager.ePostaGonder(mailMap);
+											mailStatu = MailManager.ePostaGonder(mailMap);
+											mailBosGonder = false;
 										} else
 											doktorUserMap.remove(personelId);
 
@@ -2312,7 +2314,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 					doktorUserMap = null;
 				}
-				if (mailBosGonder)
+				if (mailBosGonder && mailStatu == null)
 					mailBosGonder("saveIzinler", "izin", izinList);
 				hataList = null;
 				saveFonksiyonVeri(null, izinList);
@@ -3877,6 +3879,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					} catch (Exception em) {
 						logger.error(em);
 						em.printStackTrace();
+
 					}
 
 				}

@@ -401,7 +401,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						sadeceFazlaMesai = Boolean.TRUE;
 					if ((ikRole) && veriLastMap.containsKey("sicilNo"))
 						sicilNo = (String) veriLastMap.get("sicilNo");
-					if (PdksUtil.isSistemDestekVar() && veriLastMap.containsKey("hataliPuantajGoster"))
+					if (veriLastMap.containsKey("hataliPuantajGoster"))
 						hataliPuantajGoster = new Boolean((String) veriLastMap.get("hataliPuantajGoster"));
 					if (veriLastMap.containsKey("sayfaURL")) {
 						String str = (String) veriLastMap.get("sayfaURL");
@@ -433,7 +433,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						tesisIdStr = veriMap.get("tesisId");
 					if (veriMap.containsKey("sicilNo"))
 						sicilNo = veriMap.get("sicilNo");
-					if (PdksUtil.isSistemDestekVar() && veriMap.containsKey("hataliPuantajGoster"))
+					if (veriMap.containsKey("hataliPuantajGoster"))
 						hataliPuantajGoster = new Boolean((String) veriMap.get("hataliPuantajGoster"));
 					if (veriMap.containsKey("gorevYeriId"))
 						gorevYeriIdStr = veriMap.get("gorevYeriId");
