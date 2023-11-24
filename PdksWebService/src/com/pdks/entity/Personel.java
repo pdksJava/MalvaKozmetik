@@ -83,7 +83,7 @@ public class Personel extends BaseObject {
 	private Tanim gorevTipi, ekSaha1, ekSaha2, ekSaha3, ekSaha4, tesis, masrafYeri, ekSaha, cinsiyet, bordroAltAlan;
 	private Boolean pdks = Boolean.FALSE, mailTakip = Boolean.FALSE, icapciOlabilir = Boolean.FALSE, ustYonetici = Boolean.FALSE, sutIzni = Boolean.FALSE;
 	private Boolean suaOlabilir = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, sanalPersonel = Boolean.FALSE, onaysizIzinKullanilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE;
-	private Boolean partTime = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, gebeMi = Boolean.FALSE, veriDegisti = Boolean.FALSE;
+	private Boolean partTime = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, gebeMi = Boolean.FALSE;
 	private Personel yoneticisi, asilYonetici1, asilYonetici2, tmpYonetici;
 	private Date izinHakEdisTarihi, iseBaslamaTarihi, grubaGirisTarihi, istenAyrilisTarihi = PdksUtil.getSonSistemTarih(), sskCikisTarihi, dogumTarihi;
 	private VardiyaSablonu workSablon;
@@ -103,6 +103,7 @@ public class Personel extends BaseObject {
 
 	public Personel() {
 		super();
+		this.setDegisti(true);
 	}
 
 	@Column(name = "VERSION")
@@ -122,8 +123,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setPersonelKGS(PersonelKGS value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isLongDegisti(personelKGS != null ? personelKGS.getId() : null, value != null ? value.getId() : null);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(personelKGS != null ? personelKGS.getId() : null, value != null ? value.getId() : null));
 		this.personelKGS = value;
 	}
 
@@ -133,8 +134,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setAd(String value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isStrDegisti(ad, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isStrDegisti(ad, value));
 		value = PdksUtil.convertUTF8(value);
 		this.ad = value;
 	}
@@ -150,14 +151,14 @@ public class Personel extends BaseObject {
 	}
 
 	public void setPdksSicilNo(String value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isStrDegisti(pdksSicilNo, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isStrDegisti(pdksSicilNo, value));
 		this.pdksSicilNo = value;
 	}
 
 	public void setSoyad(String value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isStrDegisti(soyad, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isStrDegisti(soyad, value));
 		value = PdksUtil.convertUTF8(value);
 		this.soyad = value;
 	}
@@ -185,8 +186,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setSirket(Sirket value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isLongDegisti(sirket != null ? sirket.getId() : null, value != null ? value.getId() : null);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(sirket != null ? sirket.getId() : null, value != null ? value.getId() : null));
 		this.sirket = value;
 	}
 
@@ -209,8 +210,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setGorevTipi(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(gorevTipi, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(gorevTipi, value));
 		this.gorevTipi = value;
 	}
 
@@ -258,8 +259,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setEkSaha1(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(ekSaha1, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(ekSaha1, value));
 		this.ekSaha1 = value;
 	}
 
@@ -271,8 +272,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setEkSaha2(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(ekSaha2, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(ekSaha2, value));
 		this.ekSaha2 = value;
 	}
 
@@ -284,8 +285,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setEkSaha3(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(ekSaha3, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(ekSaha3, value));
 		this.ekSaha3 = value;
 	}
 
@@ -297,8 +298,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setEkSaha4(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(ekSaha4, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(ekSaha4, value));
 		this.ekSaha4 = value;
 	}
 
@@ -310,8 +311,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setBordroAltAlan(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(bordroAltAlan, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(bordroAltAlan, value));
 		this.bordroAltAlan = value;
 	}
 
@@ -323,8 +324,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setCinsiyet(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(cinsiyet, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(cinsiyet, value));
 		this.cinsiyet = value;
 	}
 
@@ -336,8 +337,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setTesis(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(tesis, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(tesis, value));
 		this.tesis = value;
 	}
 
@@ -349,8 +350,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setMasrafYeri(Tanim value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isTanimDegisti(masrafYeri, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(masrafYeri, value));
 		this.masrafYeri = value;
 	}
 
@@ -360,8 +361,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setMailTakip(Boolean value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isBooleanDegisti(mailTakip, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isBooleanDegisti(mailTakip, value));
 		this.mailTakip = value;
 	}
 
@@ -431,8 +432,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setYoneticisi(Personel value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isLongDegisti(yoneticisi != null ? yoneticisi.getId() : null, value != null ? value.getId() : null);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(yoneticisi != null ? yoneticisi.getId() : null, value != null ? value.getId() : null));
 		this.yoneticisi = value;
 	}
 
@@ -444,8 +445,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setAsilYonetici1(Personel value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isLongDegisti(asilYonetici1 != null ? asilYonetici1.getId() : null, value != null ? value.getId() : null);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(asilYonetici1 != null ? asilYonetici1.getId() : null, value != null ? value.getId() : null));
 		this.asilYonetici1 = value;
 	}
 
@@ -457,8 +458,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setAsilYonetici2(Personel value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isLongDegisti(asilYonetici2 != null ? asilYonetici2.getId() : null, value != null ? value.getId() : null);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(asilYonetici2 != null ? asilYonetici2.getId() : null, value != null ? value.getId() : null));
 		this.asilYonetici2 = value;
 	}
 
@@ -487,8 +488,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setIseBaslamaTarihi(Date value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isDateDegisti(iseBaslamaTarihi, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isDateDegisti(iseBaslamaTarihi, value));
 		this.iseBaslamaTarihi = value;
 	}
 
@@ -499,8 +500,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setGrubaGirisTarihi(Date value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isDateDegisti(grubaGirisTarihi, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isDateDegisti(grubaGirisTarihi, value));
 		this.grubaGirisTarihi = value;
 	}
 
@@ -511,8 +512,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setIstenAyrilisTarihi(Date value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isDateDegisti(istenAyrilisTarihi, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isDateDegisti(istenAyrilisTarihi, value));
 		this.istenAyrilisTarihi = value;
 	}
 
@@ -544,8 +545,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setIzinHakEdisTarihi(Date value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isDateDegisti(izinHakEdisTarihi, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isDateDegisti(izinHakEdisTarihi, value));
 		this.izinHakEdisTarihi = value;
 	}
 
@@ -600,8 +601,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setSanalPersonel(Boolean value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isBooleanDegisti(sanalPersonel, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isBooleanDegisti(sanalPersonel, value));
 		this.sanalPersonel = value;
 	}
 
@@ -629,8 +630,8 @@ public class Personel extends BaseObject {
 	}
 
 	public void setFazlaMesaiOde(Boolean value) {
-		if (this.getId() != null && !veriDegisti)
-			veriDegisti = PdksUtil.isBooleanDegisti(fazlaMesaiOde, value);
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isBooleanDegisti(fazlaMesaiOde, value));
 		this.fazlaMesaiOde = value;
 	}
 
@@ -858,15 +859,6 @@ public class Personel extends BaseObject {
 	public String getKontratliSortKey() {
 		String str = this.getAdSoyad() + "_" + this.getPdksSicilNo() + "_" + this.getId();
 		return str;
-	}
-
-	@Transient
-	public Boolean getVeriDegisti() {
-		return veriDegisti;
-	}
-
-	public void setVeriDegisti(Boolean veriDegisti) {
-		this.veriDegisti = veriDegisti;
 	}
 
 	@Transient

@@ -425,12 +425,40 @@ public class PdksUtil implements Serializable {
 	 * @param newId
 	 * @return
 	 */
+	public static boolean isIntegerDegisti(Integer oldId, Integer newId) {
+		if (oldId == null)
+			oldId = 0;
+		if (newId == null)
+			newId = 0;
+		boolean degisti = newId.intValue() != oldId.intValue();
+		return degisti;
+	}
+
+	/**
+	 * @param oldId
+	 * @param newId
+	 * @return
+	 */
 	public static boolean isLongDegisti(Long oldId, Long newId) {
 		if (oldId == null)
 			oldId = 0L;
 		if (newId == null)
 			newId = 0L;
 		boolean degisti = newId.longValue() != oldId.longValue();
+		return degisti;
+	}
+
+	/**
+	 * @param oldId
+	 * @param newId
+	 * @return
+	 */
+	public static boolean isDoubleDegisti(Double oldId, Double newId) {
+		if (oldId == null)
+			oldId = 0.0d;
+		if (newId == null)
+			newId = 0.0d;
+		boolean degisti = newId.doubleValue() != oldId.doubleValue();
 		return degisti;
 	}
 

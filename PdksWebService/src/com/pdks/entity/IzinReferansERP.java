@@ -41,7 +41,9 @@ public class IzinReferansERP implements Serializable {
 	public IzinReferansERP(String id) {
 		super();
 		this.id = id;
-		this.izin = new PersonelIzin();
+		PersonelIzin personelIzin = new PersonelIzin();
+		personelIzin.setDegisti(true);
+		this.izin = personelIzin;
 	}
 
 	@Id

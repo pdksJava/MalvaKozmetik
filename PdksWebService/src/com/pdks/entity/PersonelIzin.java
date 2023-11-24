@@ -113,8 +113,10 @@ public class PersonelIzin extends BaseObject {
 		return izinSahibi;
 	}
 
-	public void setIzinSahibi(Personel izinSahibi) {
-		this.izinSahibi = izinSahibi;
+	public void setIzinSahibi(Personel value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(value.getId(), izinSahibi.getId()));
+		this.izinSahibi = value;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
@@ -124,8 +126,10 @@ public class PersonelIzin extends BaseObject {
 		return gorevTipi;
 	}
 
-	public void setGorevTipi(Tanim gorevTipi) {
-		this.gorevTipi = gorevTipi;
+	public void setGorevTipi(Tanim value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(value, gorevTipi));
+		this.gorevTipi = value;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
@@ -135,8 +139,10 @@ public class PersonelIzin extends BaseObject {
 		return izinTipi;
 	}
 
-	public void setIzinTipi(IzinTipi izinTipi) {
-		this.izinTipi = izinTipi;
+	public void setIzinTipi(IzinTipi value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(value.getId(), izinTipi.getId()));
+		this.izinTipi = value;
 	}
 
 	@Temporal(value = TemporalType.TIMESTAMP)
@@ -145,8 +151,10 @@ public class PersonelIzin extends BaseObject {
 		return baslangicZamani;
 	}
 
-	public void setBaslangicZamani(Date baslangicZamani) {
-		this.baslangicZamani = baslangicZamani;
+	public void setBaslangicZamani(Date value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isDateDegisti(value, baslangicZamani));
+		this.baslangicZamani = value;
 	}
 
 	@Column(name = "HESAP_TIPI")
@@ -154,8 +162,10 @@ public class PersonelIzin extends BaseObject {
 		return hesapTipi;
 	}
 
-	public void setHesapTipi(Integer hesapTipi) {
-		this.hesapTipi = hesapTipi;
+	public void setHesapTipi(Integer value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isIntegerDegisti(hesapTipi, value));
+		this.hesapTipi = value;
 	}
 
 	@Column(name = COLUMN_NAME_PERSONEL_NO, insertable = false, updatable = false)
@@ -173,8 +183,10 @@ public class PersonelIzin extends BaseObject {
 		return bitisZamani;
 	}
 
-	public void setBitisZamani(Date bitisZamani) {
-		this.bitisZamani = bitisZamani;
+	public void setBitisZamani(Date value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isDateDegisti(value, bitisZamani));
+		this.bitisZamani = value;
 	}
 
 	@Column(name = COLUMN_NAME_IZIN_SURESI, nullable = false)
@@ -182,8 +194,10 @@ public class PersonelIzin extends BaseObject {
 		return izinSuresi;
 	}
 
-	public void setIzinSuresi(Double izinSuresi) {
-		this.izinSuresi = izinSuresi;
+	public void setIzinSuresi(Double value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isDoubleDegisti(value, izinSuresi));
+		this.izinSuresi = value;
 	}
 
 	@Column(name = "KULLANILAN_IZIN_SURESI")
@@ -209,8 +223,10 @@ public class PersonelIzin extends BaseObject {
 		return izinDurumu;
 	}
 
-	public void setIzinDurumu(int izinDurumu) {
-		this.izinDurumu = izinDurumu;
+	public void setIzinDurumu(int value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isIntegerDegisti(value, izinDurumu));
+		this.izinDurumu = value;
 	}
 
 	@Column(name = COLUMN_NAME_ACIKLAMA, length = ACIKLAMA_UZUNLUK)
@@ -218,8 +234,10 @@ public class PersonelIzin extends BaseObject {
 		return aciklama;
 	}
 
-	public void setAciklama(String aciklama) {
-		this.aciklama = aciklama;
+	public void setAciklama(String value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isStrDegisti(value, aciklama));
+		this.aciklama = value;
 	}
 
 	@Transient
@@ -490,4 +508,5 @@ public class PersonelIzin extends BaseObject {
 			kod = "";
 		return kod.trim();
 	}
+
 }

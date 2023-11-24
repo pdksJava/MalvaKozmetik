@@ -8,20 +8,23 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
+
 @MappedSuperclass
 public abstract class BasePDKSObject implements Serializable, Cloneable {
 
- 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3045809958792260856L;
 
+	static Logger logger = Logger.getLogger(BasePDKSObject.class);
 
 	public static final String COLUMN_NAME_ID = "ID";
 
- 
 	protected Long id;
+
+	protected boolean degisti = Boolean.FALSE;
 
 	@Id
 	@GeneratedValue
@@ -30,8 +33,24 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(Long value) {
+		if (value != null)
+			this.degisti = true;
+		this.id = value;
+	}
+
+	@Transient
+	public boolean isDegisti() {
+		return degisti;
+	}
+
+	public void setDegisti(boolean value) {
+		if (value) {
+//			if (id != null)
+//				logger.debug(id);
+		}
+
+		this.degisti = value;
 	}
 
 	@Transient
