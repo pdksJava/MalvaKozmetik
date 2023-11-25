@@ -2038,7 +2038,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					kayitIzinList.clear();
 					gecmisIzinKontrolAdet = kayitIzinList.size() + 1;
 				}
-				if (mailBosGonder && kayitIzinList.size() >= gecmisIzinKontrolAdet && izinlerBasTarih != null && izinlerBitTarih != null && izinlerBasTarih.before(izinlerBitTarih)) {
+				if (izinCok && kayitIzinList.size() >= gecmisIzinKontrolAdet && izinlerBasTarih != null && izinlerBitTarih != null && izinlerBasTarih.before(izinlerBitTarih)) {
 					Date tarih = PdksUtil.tariheAyEkleCikar(bugun, 2);
 					Date bTarih = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(PdksUtil.tariheAyEkleCikar(bugun, -2), "yyyyMM") + "01", "yyyyMMdd");
 					if (izinlerBasTarih.before(bTarih))
