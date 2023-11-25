@@ -52,6 +52,7 @@ import org.pdks.entity.Tanim;
 import org.pdks.entity.Tatil;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGun;
+import org.pdks.security.entity.DefaultPasswordGenerator;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserVekalet;
@@ -1928,11 +1929,8 @@ public class IseGelmemeUyari implements Serializable {
 					userMap.put(key, user);
 			}
 			List<Dosya> fileList = new ArrayList<Dosya>();
-			int kayitAdet = userYoneticiList.size() + 1;
-			int maxTextLength = String.valueOf(kayitAdet).length();
-			int sira = 0;
+ 			String pattern = DefaultPasswordGenerator.generate(8);
 			boolean hareketExcelGonder = PdksUtil.hasStringValue(hareketExcelGonderDurum);
-
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
 				boolean hareketExcelGonderEkle = false;
@@ -1963,7 +1961,7 @@ public class IseGelmemeUyari implements Serializable {
 						Workbook wb = new XSSFWorkbook();
 						if (mesajIcerikOlustur(user, sbUser, list, map1, wb, session)) {
 							String dosyaAdi = "IseGelmeDurum_" + (user.getDepartman().isAdminMi() ? "" : sirket.getAd() + "_") + PdksUtil.convertToDateString(islemTarihi, "yyyyMMdd");
-							dosyaAdi += "_" + PdksUtil.textBaslangicinaKarakterEkle("" + (kayitAdet - (++sira)), '0', maxTextLength) + "_" + personel.getAdSoyad() + ".xlsx";
+							dosyaAdi += "_" + pattern + "_" + personel.getAdSoyad() + ".xlsx";
 							sb.append(sbUser.toString());
 							Dosya dosyaExcel = new Dosya();
 							dosyaExcel.setDosyaAdi(dosyaAdi);
@@ -1978,19 +1976,30 @@ public class IseGelmemeUyari implements Serializable {
 
 			}
 			userMap = null;
-			String zipDosyaAdi = "IseGelmeDurum_" + PdksUtil.convertToDateString(islemTarihi, "yyyyMMdd") + ".zip";
-			File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, fileList);
-			if (file != null && file.exists()) {
-				Dosya dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
-				file.deleteOnExit();
-				MailFile mailFile = new MailFile();
-				mailFile.setIcerik(dosya.getDosyaIcerik());
-				mailFile.setDisplayName(zipDosyaAdi);
-				mail.getAttachmentFiles().add(mailFile);
-			}
-			sb.append("<br/>");
-			logger.info("Toplu mail dosyasi hazirlaniyor out " + new Date());
+			if (!fileList.isEmpty()) {
+				int sira = 0;
+				int kayitAdet = fileList.size();
+				int maxTextLength = String.valueOf(fileList.size()).length();
+				for (Dosya dosya : fileList) {
+					String dosyaAdi = PdksUtil.replaceAll(dosya.getDosyaAdi(), pattern, PdksUtil.textBaslangicinaKarakterEkle(String.valueOf(kayitAdet - sira), '0', maxTextLength));
+					++sira;
+					dosya.setDosyaAdi(dosyaAdi);
+				}
+				String zipDosyaAdi = "IseGelmeDurum_" + PdksUtil.convertToDateString(islemTarihi, "yyyyMMdd") + ".zip";
+				File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, fileList);
+				if (file != null && file.exists()) {
 
+					Dosya dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
+					file.deleteOnExit();
+					MailFile mailFile = new MailFile();
+					mailFile.setIcerik(dosya.getDosyaIcerik());
+					mailFile.setDisplayName(zipDosyaAdi);
+					mail.getAttachmentFiles().add(mailFile);
+				}
+				sb.append("<br/>");
+				logger.info("Toplu mail dosyasi hazirlaniyor out " + new Date());
+			}
+			fileList = null;
 			if (mailGonder) {
 				List<User> userList = null;
 				if (manuel && islemYapan != null) {
