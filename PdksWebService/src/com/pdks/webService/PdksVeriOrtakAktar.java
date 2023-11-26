@@ -133,7 +133,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 				mailObject.setBody(body);
 				try {
 					// mailAdresKontrol(mailObject, null);
-					mailObject.getToList().clear();
+					addMailAdresBCC(mailObject, "bccAdres");
+					addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
 					mailMap.put("mailObject", mailObject);
 					MailManager.ePostaGonder(mailMap);
 				} catch (Exception e) {
@@ -649,8 +650,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 			addMailAdresBCC(mailObject, "bccAdres");
 			addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
 		}
-		addMailAdresBCC(mailObject, "bccAdres");
-		addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
 		HashMap<String, MailPersonel> mailDataMap = new HashMap<String, MailPersonel>();
 		mailListKontrol(mailObject.getToList(), mailDataMap);
 		mailListKontrol(mailObject.getCcList(), mailDataMap);
@@ -3503,6 +3502,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 				}
 				boolean mailBosGonder = personelList.size() > 1;
+				MailStatu mailStatu = null;
 				altBolumDurum = false;
 				HashMap fields = new HashMap();
 				fields.put("tipi", Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
@@ -3896,7 +3896,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 							mailMap.put("fileMap", fileMap);
 							mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
 							kullaniciIKYukle(mailMap, pdksDAO);
-							MailManager.ePostaGonder(mailMap);
+							mailStatu = MailManager.ePostaGonder(mailMap);
 							mailBosGonder = false;
 						}
 					} catch (Exception em) {
@@ -3906,7 +3906,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 
 				}
-				if (mailBosGonder)
+				if (mailBosGonder && mailStatu == null)
 					mailBosGonder("savePersoneller", "personel", personelList);
 				if (updateYonetici2)
 					setIkinciYoneticiSifirla();
