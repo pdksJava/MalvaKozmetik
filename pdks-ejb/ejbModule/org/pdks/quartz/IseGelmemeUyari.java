@@ -878,7 +878,6 @@ public class IseGelmemeUyari implements Serializable {
 							eposta = islemYapan.getEmail();
 						}
 						if (!userYoneticiMap.containsKey(user.getId())) {
-							userYoneticiList.add(user);
 							userYoneticiMap.put(user.getId(), user);
 						} else
 							logger.debug(user.getId());
@@ -973,7 +972,6 @@ public class IseGelmemeUyari implements Serializable {
 								logger.info(PdksUtil.setTurkishStr(userYonetici.getPdksPersonel().getSirket().getAd() + " " + userYonetici.getAdSoyad() + " " + userYonetici.getEmail() + " iseGelisUyariMail mesaj gönderildi! "));
 
 							if (!userYoneticiMap.containsKey(userYonetici.getId())) {
-								userYoneticiList.add(userYonetici);
 								userYoneticiMap.put(userYonetici.getId(), userYonetici);
 							} else
 								logger.debug(userYonetici.getId());
@@ -988,8 +986,10 @@ public class IseGelmemeUyari implements Serializable {
 
 					}
 				}
-				if (sort)
-					userYoneticiList = (ArrayList<User>) PdksUtil.sortObjectStringAlanList(userYoneticiList, "getAdSoyad", null);
+				if (sort) {
+					// userYoneticiList = (ArrayList<User>) PdksUtil.sortObjectStringAlanList(userYoneticiList, "getAdSoyad", null);
+
+				}
 
 			}
 		}
@@ -1027,6 +1027,7 @@ public class IseGelmemeUyari implements Serializable {
 
 			Workbook wb = new XSSFWorkbook();
 			if (mesajIcerikOlustur(userYonetici, sb, list, null, wb, session)) {
+				userYoneticiList.add(userYonetici);
 				if (list == null || list.isEmpty()) {
 					sb.append("<p></p>");
 					sb.append("<p>Saygılarımla,</p>");
@@ -1071,6 +1072,15 @@ public class IseGelmemeUyari implements Serializable {
 			if (wb == null)
 				wb = new XSSFWorkbook();
 			boolean userIK = user != null ? user.isIK() : false;
+			if (userIK) {
+				userIK = false;
+				for (Role role : user.getYetkiliRollerim()) {
+					if (role.getRolename().equals(Role.TIPI_IK)) {
+						userIK = true;
+						break;
+					}
+				}
+			}
 			boolean hareketExcelEkle = false;
 			if (PdksUtil.hasStringValue(hareketExcelGonderDurum)) {
 				if (userIK)
@@ -1929,7 +1939,7 @@ public class IseGelmemeUyari implements Serializable {
 					userMap.put(key, user);
 			}
 			List<Dosya> fileList = new ArrayList<Dosya>();
- 			String pattern = DefaultPasswordGenerator.generate(8);
+			String pattern = DefaultPasswordGenerator.generate(8);
 			boolean hareketExcelGonder = PdksUtil.hasStringValue(hareketExcelGonderDurum);
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
