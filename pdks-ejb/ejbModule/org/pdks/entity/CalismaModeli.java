@@ -45,13 +45,14 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_ORTAK_VARDIYA = "ORTAK_VARDIYA";
 	public static final String COLUMN_NAME_FAZLA_CALISMA_GORUNTULENSIN = "FAZLA_CALISMA_GORUNTULENSIN";
 	public static final String COLUMN_NAME_TOPLAM_GUN_GUNCELLE = "TOPLAM_GUN_GUNCELLE";
+	public static final String COLUMN_NAME_ILK_PLAN_ONAYLI = "ILK_PLAN_ONAYLI";
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
 
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
-	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE;
+	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
 	private Boolean aylikMaas = Boolean.TRUE;
@@ -230,6 +231,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.fazlaMesaiGoruntulensin = fazlaMesaiGoruntulensin;
 	}
 
+	@Column(name = COLUMN_NAME_ILK_PLAN_ONAYLI)
+	public Boolean getIlkPlanOnayliDurum() {
+		return ilkPlanOnayliDurum;
+	}
+
+	public void setIlkPlanOnayliDurum(Boolean ilkPlanOnayliDurum) {
+		this.ilkPlanOnayliDurum = ilkPlanOnayliDurum;
+	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_BAGLI_VARDIYA_SABLON)
 	@Fetch(FetchMode.JOIN)
@@ -389,6 +399,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public boolean isOrtakVardiyadir() {
 		return ortakVardiya != null && ortakVardiya;
+	}
+
+	@Transient
+	public boolean isIlkPlanOnaylidir() {
+		return ilkPlanOnayliDurum != null && ilkPlanOnayliDurum;
 	}
 
 }

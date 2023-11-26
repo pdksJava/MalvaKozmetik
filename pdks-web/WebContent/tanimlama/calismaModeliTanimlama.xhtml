@@ -120,6 +120,12 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="İlk Plan Onaylı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.ilkPlanOnayliDurum)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="Tüm Vardiyalar" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.genelVardiya and calismaModeli.ortakVardiya==false)}" />
@@ -301,6 +307,12 @@
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Vardiya Kontrol Edilmez</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.ortakVardiya}" disabled="#{authenticatedUser.admin==false}">
+								<a4j:support event="onclick" reRender="vardiyalar" status="ajaxStatus" ajaxSingle="true" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İlk Plan Onaylı</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.ilkPlanOnayliDurum}" disabled="#{authenticatedUser.admin==false}">
 								<a4j:support event="onclick" reRender="vardiyalar" status="ajaxStatus" ajaxSingle="true" />
 							</h:selectBooleanCheckbox>
 						</s:decorate>

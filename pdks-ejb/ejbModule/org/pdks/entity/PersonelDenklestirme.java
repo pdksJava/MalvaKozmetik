@@ -81,11 +81,16 @@ public class PersonelDenklestirme extends BaseObject {
 		this.setGuncellendi(null);
 	}
 
-	public PersonelDenklestirme(Personel pdksPersonel, DenklestirmeAy denklestirmeAy, CalismaModeliAy calismaModeliAy) {
+	public PersonelDenklestirme(Personel pdksPersonel, DenklestirmeAy denklestirmeAy, CalismaModeliAy cmAy) {
 		super();
 		this.setPersonel(pdksPersonel);
 		this.denklestirmeAy = denklestirmeAy;
-		this.calismaModeliAy = calismaModeliAy;
+		this.calismaModeliAy = cmAy;
+		if (cmAy != null) {
+			CalismaModeli cm = cmAy.getCalismaModeli();
+			this.onaylandi = cm.isIlkPlanOnaylidir() || cm.isFazlaMesaiVarMi() == false;
+		}
+
 		this.setGuncellendi(Boolean.FALSE);
 
 	}
