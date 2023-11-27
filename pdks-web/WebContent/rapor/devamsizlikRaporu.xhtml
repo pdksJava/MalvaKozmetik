@@ -22,11 +22,11 @@
 								<ui:define name="label">Tarih</ui:define>
 								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" required="true" requiredMessage="Tarih seçiniz!" value="#{devamsizlikRaporuHome.date}" id="dateFilter" />
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 								<ui:define name="label">İzinli Göster</ui:define>
 								<h:selectBooleanCheckbox value="#{devamsizlikRaporuHome.izinliGoster}" />
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 								<ui:define name="label">Tümünü Göster</ui:define>
 								<h:selectBooleanCheckbox value="#{devamsizlikRaporuHome.gelenGoster}" />
 							</s:decorate>
@@ -73,7 +73,7 @@
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.yoneticisi.adSoyad}" />
 						</rich:column>
-						<rich:column width="150">
+						<rich:column width="150" filterBy="#{calismaPlani.personel.adSoyad}" filterEvent="onkeyup">
 							<f:facet name="header">
 								<h:outputText value="Personel" />
 							</f:facet>
@@ -88,7 +88,7 @@
 						</rich:column>
 
 
-						<rich:column width="60">
+						<rich:column width="60" filterBy="#{calismaPlani.personel.ekSaha3.aciklama}" filterEvent="onkeyup">
 							<f:facet name="header">
 								<h:outputText value="#{devamsizlikRaporuHome.bolumAciklama}" />
 							</f:facet>
