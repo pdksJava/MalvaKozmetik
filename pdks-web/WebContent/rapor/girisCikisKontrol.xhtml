@@ -68,14 +68,14 @@
 						<f:facet name="header">
 							<h:outputText value="Hareket Durumu" />
 						</f:facet>
-						<rich:column width="150">
+						<rich:column width="80">
 							<f:facet name="header">
 								<h:outputText value="Personel" />
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.adSoyad}" />
 						</rich:column>
 
-						<rich:column width="60">
+						<rich:column width="25" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 							</f:facet>
@@ -105,7 +105,7 @@
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.ekSaha3.aciklama}" />
 						</rich:column>
-						<rich:column width="100">
+						<rich:column width="50" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Vardiya" />
 
@@ -113,21 +113,21 @@
 							<h:outputText
 								value=" #{authenticatedUser.timeFormatla(calismaPlani.islemVardiya.vardiyaBasZaman)}- #{authenticatedUser.timeFormatla(calismaPlani.islemVardiya.vardiyaBitZaman)}" />
 						</rich:column>
-						<rich:column width="60">
+						<rich:column width="60" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Giriş" />
 							</f:facet>
 							<h:outputText title="#{calismaPlani.girisHareket.kapiView.kapi.aciklama}"
 								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.girisHareket.zaman)}" />
 						</rich:column>
-						<rich:column width="60">
+						<rich:column width="60" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Çıkış" />
 							</f:facet>
 							<h:outputText title="#{calismaPlani.cikisHareket.kapiView.kapi.aciklama}"
 								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.cikisHareket.zaman)}" />
 						</rich:column>
-						<rich:column width="60">
+						<rich:column width="20" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Hareketler" />
 							</f:facet>

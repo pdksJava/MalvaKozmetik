@@ -71,27 +71,27 @@
 						<f:facet name="header">
 							<h:outputText value="Hareket Durumu" />
 						</f:facet>
-						<rich:column width="60" style="text-align:center">
+						<rich:column width="30" style="text-align:center" filterBy="#{calismaPlani.personel.sicilNo}" filterEvent="onkeyup">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.sicilNo}" />
 						</rich:column>
 
-						<rich:column width="100">
+						<rich:column width="60" filterBy="#{calismaPlani.personel.adSoyad}" filterEvent="onkeyup">
 							<f:facet name="header">
 								<h:outputText value="Personel" />
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.adSoyad}" />
 						</rich:column>
 
-						<rich:column width="60">
+						<rich:column width="60" style="width:autostretch ;white-space: nowrap;">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.yoneticisi.adSoyad}" />
 						</rich:column>
-						<rich:column width="60">
+						<rich:column width="60" style="width:autostretch ;white-space: nowrap;">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
 							</f:facet>
@@ -104,13 +104,13 @@
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.tesis.aciklama}" />
 						</rich:column>
-						<rich:column width="60">
+						<rich:column width="60" filterBy="#{calismaPlani.personel.ekSaha3.aciklama}" filterEvent="onkeyup">
 							<f:facet name="header">
 								<h:outputText value="#{calismaSaatleriHome.bolumAciklama}" />
 							</f:facet>
 							<h:outputText value="#{calismaPlani.personel.ekSaha3.aciklama}" />
 						</rich:column>
-						<rich:column width="60" style="text-align:center">
+						<rich:column width="40" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Çalışma Süresi" />
 							</f:facet>
@@ -126,7 +126,7 @@
 							</ui:fragment>
 						</rich:column>
 
-						<rich:column width="100" style="text-align:center">
+						<rich:column width="50" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Vardiya" />
 
@@ -135,14 +135,14 @@
 								<h:outputText value="#{authenticatedUser.dateFormatla(calismaPlani.vardiyaDate)} #{calismaPlani.vardiya.aciklama}" />
 							</ui:fragment>
 						</rich:column>
-						<rich:column width="60" style="text-align:center">
+						<rich:column width="30" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="İlk Giriş" />
 							</f:facet>
 							<h:outputText title="#{calismaPlani.girisHareket.kapiView.kapi.aciklama}"
 								value=" #{authenticatedUser.dateTimeFormatla(calismaPlani.girisHareket.orjinalZaman)}" />
 						</rich:column>
-						<rich:column width="60" style="text-align:center">
+						<rich:column width="30" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Son Çıkış" />
 							</f:facet>
@@ -151,7 +151,7 @@
 						</rich:column>
 
 
-						<rich:column width="60">
+						<rich:column width="30" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Hareketler ve İzin Durumu" />
 							</f:facet>
