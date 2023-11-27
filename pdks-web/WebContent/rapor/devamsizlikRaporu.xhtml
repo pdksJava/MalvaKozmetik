@@ -80,7 +80,7 @@
 							<h:outputText value="#{calismaPlani.personel.adSoyad}" />
 						</rich:column>
 
-						<rich:column width="60" style="text-align:center">
+						<rich:column width="60" style="text-align:center"  filterBy="#{calismaPlani.personel.sicilNo}" filterEvent="onkeyup">
 							<f:facet name="header">
 								<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 							</f:facet>
@@ -166,7 +166,7 @@
 						<rich:dataTable rowClasses="acik,koyu" value="#{devamsizlikRaporuHome.hareketList}" var="hareket" rows="20" rowKeyVar="row">
 							<f:facet name="header">
 
-								<h:outputText value="Hatalı Hareketleri" />
+								<h:outputText value="Kapı Hareketleri" />
 							</f:facet>
 							<rich:column>
 								<f:facet name="header">
