@@ -1,6 +1,7 @@
 package org.pdks.session;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -939,261 +940,261 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	/**
 	 * @return
+	 * @throws IOException
 	 */
-	private ByteArrayOutputStream denklestirmeExcelAktarDevam() {
+	private ByteArrayOutputStream denklestirmeExcelAktarDevam() throws IOException {
 		ByteArrayOutputStream baos = null;
-		try {
-			boolean kimlikNoGoster = false;
-			Boolean kartNoAciklamaGoster = null;
-			String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
 
-			if (PdksUtil.hasStringValue(kartNoAciklama))
-				kartNoAciklamaGoster = false;
+		boolean kimlikNoGoster = false;
+		Boolean kartNoAciklamaGoster = null;
+		String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
 
-			if (kartNoAciklamaGoster == null)
-				kartNoAciklamaGoster = false;
-			List<AylikPuantaj> list = new ArrayList<AylikPuantaj>();
-			for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
-				if (aylikPuantaj.getPersonelDenklestirmeAylik().getDurum().equals(Boolean.FALSE))
-					continue;
-				list.add(aylikPuantaj);
-			}
-			if (!list.isEmpty()) {
-				for (AylikPuantaj aylikPuantaj : list) {
-					Personel personel = aylikPuantaj.getPdksPersonel();
-					PersonelKGS personelKGS = personel.getPersonelKGS();
-					if (personelKGS != null) {
-						if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
-							kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
-							if (kartNoAciklamaGoster && kimlikNoGoster)
-								break;
-						}
+		if (PdksUtil.hasStringValue(kartNoAciklama))
+			kartNoAciklamaGoster = false;
 
-						if (!kimlikNoGoster) {
-							kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
-							if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
-								break;
-						}
-					}
-				}
-				String ayAdi = null;
-				for (SelectItem si : aylar) {
-					if (si.getValue().equals(ay))
-						ayAdi = si.getLabel();
-
-				}
-				List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
-
-				bordroAlanlari = PdksUtil.sortObjectStringAlanList(bordroAlanlari, "getErpKodu", null);
-
-				boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
-				Workbook wb = new XSSFWorkbook();
-				sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
-				XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-				XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
-				CellStyle style = ExcelUtil.getStyleData(wb);
-				CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
-				tutarStyle = ExcelUtil.getCellStyleTutar(wb);
-				numberStyle = ExcelUtil.getCellStyleTutar(wb);
-				headerSiyah.getFont().setColor(ExcelUtil.getXSSFColor(255, 255, 255));
-				XSSFCellStyle headerSaat = (XSSFCellStyle) headerSiyah.clone();
-				XSSFCellStyle headerIzin = (XSSFCellStyle) headerSiyah.clone();
-				XSSFCellStyle headerBGun = (XSSFCellStyle) headerSiyah.clone();
-				XSSFCellStyle headerBTGun = (XSSFCellStyle) (XSSFCellStyle) headerSiyah.clone();
-				ExcelUtil.setFillForegroundColor(headerSaat, 146, 208, 62);
-				ExcelUtil.setFillForegroundColor(headerIzin, 255, 255, 255);
-				ExcelUtil.setFillForegroundColor(headerBGun, 255, 255, 0);
-				ExcelUtil.setFillForegroundColor(headerBTGun, 236, 125, 125);
-				DataFormat df = wb.createDataFormat();
-				numberStyle.setDataFormat(df.getFormat("###"));
-				int row = 0, col = 0;
-				calismaModeliDurum = Boolean.FALSE;
-				for (Iterator iterator = bordroAlanlari.iterator(); iterator.hasNext();) {
-					Tanim tanim = (Tanim) iterator.next();
-					String kodu = tanim.getKodu();
-					CellStyle baslikHeader = null;
-					if (kodu.startsWith(COL_TESIS) && tesisGoster == false) {
-						iterator.remove();
-						continue;
-					}
-
-					if (kodu.startsWith(COL_KART_NO) && kartNoAciklamaGoster == false) {
-						iterator.remove();
-						continue;
-					}
-					if (kodu.startsWith(COL_KIMLIK_NO) && kimlikNoGoster == false) {
-						iterator.remove();
-						continue;
-					}
-					if (kodu.startsWith(COL_HAFTA_TATIL_MESAI) && haftaCalisma == false) {
-						iterator.remove();
-						continue;
-					}
-					if (kodu.startsWith(COL_AKSAM_SAAT_MESAI) && aksamSaat == false) {
-						iterator.remove();
-						continue;
-					}
-					if (kodu.startsWith(COL_EKSIK_CALISMA) && maasKesintiGoster == false) {
-						iterator.remove();
-						continue;
-					}
-
-					if (kodu.startsWith(COL_AKSAM_GUN_MESAI) && aksamGun == false) {
-						iterator.remove();
-						continue;
-					}
-					if (kodu.startsWith(COL_ALT_BOLUM) && ekSaha4Tanim == null) {
-						iterator.remove();
-						continue;
-					}
-					if (baslikHeader == null)
-						baslikHeader = header;
-					if (kodu.equals(COL_UCRETLI_IZIN) || kodu.equals(COL_RAPORLU_IZIN) || kodu.equals(COL_UCRETSIZ_IZIN) || kodu.equals(COL_YILLIK_IZIN))
-						baslikHeader = headerIzin;
-					else if (kodu.equals(COL_NORMAL_GUN_SAAT) || kodu.equals(COL_HAFTA_TATIL_SAAT) || kodu.equals(COL_RESMI_TATIL_SAAT) || kodu.equals(COL_IZIN_SAAT))
-						baslikHeader = headerSaat;
-					else if (kodu.equals(COL_NORMAL_GUN_ADET) || kodu.equals(COL_HAFTA_TATIL_ADET) || kodu.equals(COL_RESMI_TATIL_ADET) || kodu.equals(COL_ARTIK_ADET))
-						baslikHeader = headerBGun;
-					else if (kodu.equals(COL_TOPLAM_ADET))
-						baslikHeader = headerBTGun;
-
-					ExcelUtil.getCell(sheet, row, col++, baslikHeader).setCellValue(tanim.getAciklama());
-
-				}
-
-				for (AylikPuantaj ap : list) {
-					Personel personel = ap.getPdksPersonel();
-					PersonelDenklestirmeBordro denklestirmeBordro = ap.getDenklestirmeBordro();
-					row++;
-					col = 0;
-					PersonelKGS personelKGS = personel.getPersonelKGS();
-					for (Tanim tanim : bordroAlanlari) {
-						String kodu = tanim.getKodu();
-						if (kodu.startsWith(COL_CALISMA_MODELI)) {
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ap.getCalismaModeli().getAciklama());
-						} else if (kodu.equals(COL_SIRA))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
-						else if (kodu.equals(COL_ISE_BASLAMA_TARIHI))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ilkGun.before(personel.getIseBaslamaTarihi()) ? authenticatedUser.dateFormatla(personel.getIseBaslamaTarihi()) : "");
-						else if (kodu.equals(COL_SSK_CIKIS_TARIHI))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.isCalisiyorGun(sonGun) ? "" : authenticatedUser.dateFormatla(personel.getSskCikisTarihi()));
-						else if (kodu.equals(COL_YIL))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
-						else if (kodu.equals(COL_YIL))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
-						else if (kodu.equals(COL_AY))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ay);
-						else if (kodu.equals(COL_AY_ADI))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ayAdi);
-						else if (kodu.equals(COL_PERSONEL_NO))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
-						else if (kodu.equals(COL_AD_SOYAD))
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
-						else if (kodu.equals(COL_AD))
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAd());
-						else if (kodu.equals(COL_SOYAD))
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSoyad());
-						else if (kodu.equals(COL_KART_NO)) {
-							String kartNo = "";
-							if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKartNo()))
-								kartNo = personelKGS.getKartNo();
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kartNo);
-						} else if (kodu.equals(COL_KIMLIK_NO)) {
-							String kimlikNo = "";
-							if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo()))
-								kimlikNo = personelKGS.getKimlikNo();
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kimlikNo);
-						} else if (kodu.startsWith(COL_SIRKET)) {
-							if (personel.getSirket() != null) {
-								if (kodu.startsWith(COL_SIRKET + "Kodu"))
-									ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSirket().getErpKodu());
-								else if (kodu.startsWith(COL_SIRKET))
-									ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
-							} else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-						} else if (kodu.startsWith(COL_TESIS)) {
-							if (personel.getTesis() != null) {
-								if (kodu.startsWith(COL_TESIS + "Kodu"))
-									ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getTesis().getErpKodu());
-								else if (kodu.startsWith(COL_TESIS))
-									ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis().getAciklama());
-							} else
-								ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
-						} else if (kodu.equals(COL_BOLUM))
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-						else if (kodu.equals(COL_ALT_BOLUM))
-							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
-						else if (kodu.equals(COL_NORMAL_GUN_ADET))
-							setExcelNumber(row, col++, denklestirmeBordro.getNormalGunAdet());
-						else if (kodu.equals(COL_HAFTA_TATIL_ADET))
-							setExcelNumber(row, col++, denklestirmeBordro.getHaftaTatilAdet());
-						else if (kodu.equals(COL_RESMI_TATIL_ADET))
-							setExcelNumber(row, col++, denklestirmeBordro.getResmiTatilAdet());
-						else if (kodu.equals(COL_ARTIK_ADET))
-							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getArtikAdet());
-						else if (kodu.equals(COL_TOPLAM_ADET))
-							setExcelNumber(row, col++, denklestirmeBordro.getBordroToplamGunAdet());
-						else if (kodu.equals(COL_NORMAL_GUN_SAAT))
-							setExcelNumber(row, col++, denklestirmeBordro.getSaatNormal());
-						else if (kodu.equals(COL_HAFTA_TATIL_SAAT))
-							setExcelNumber(row, col++, denklestirmeBordro.getSaatHaftaTatil());
-						else if (kodu.equals(COL_RESMI_TATIL_SAAT))
-							setExcelNumber(row, col++, denklestirmeBordro.getSaatResmiTatil());
-						else if (kodu.equals(COL_IZIN_SAAT))
-							setExcelNumber(row, col++, denklestirmeBordro.getSaatIzin());
-						else if (kodu.equals(COL_UCRETLI_IZIN))
-							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretliIzin());
-						else if (kodu.equals(COL_RAPORLU_IZIN))
-							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getRaporluIzin());
-						else if (kodu.equals(COL_UCRETSIZ_IZIN))
-							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretsizIzin());
-						else if (kodu.equals(COL_YILLIK_IZIN))
-							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getYillikIzin());
-						else if (kodu.equals(COL_RESMI_TATIL_MESAI)) {
-							if (denklestirmeBordro.getResmiTatilMesai() > 0)
-								setExcelNumber(row, col++, denklestirmeBordro.getResmiTatilMesai());
-							else
-								ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
-						} else if (kodu.equals(COL_UCRETI_ODENEN_MESAI)) {
-							if (denklestirmeBordro.getUcretiOdenenMesai() > 0)
-								setExcelNumber(row, col++, denklestirmeBordro.getUcretiOdenenMesai());
-							else
-								ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
-						} else if (kodu.equals(COL_HAFTA_TATIL_MESAI)) {
-							if (denklestirmeBordro.getHaftaTatilMesai() > 0)
-								setExcelNumber(row, col++, denklestirmeBordro.getHaftaTatilMesai());
-							else
-								ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
-
-						} else if (kodu.equals(COL_AKSAM_GUN_MESAI))
-							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getAksamGunMesai());
-						else if (kodu.equals(COL_AKSAM_SAAT_MESAI)) {
-							if (denklestirmeBordro.getAksamSaatMesai() > 0)
-								setExcelNumber(row, col++, denklestirmeBordro.getAksamSaatMesai());
-							else
-								ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
-
-						} else if (kodu.equals(COL_EKSIK_CALISMA)) {
-							if (denklestirmeBordro.getEksikCalismaSure() > 0)
-								setExcelNumber(row, col++, denklestirmeBordro.getEksikCalismaSure());
-							else
-								ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
-
-						}
-					}
-
-				}
-
-				for (int i = 0; i < col; i++)
-					sheet.autoSizeColumn(i);
-				baos = new ByteArrayOutputStream();
-				wb.write(baos);
-			} else
-				PdksUtil.addMessageWarn("Aktarılacak hatasız veri yok!");
-			list = null;
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (kartNoAciklamaGoster == null)
+			kartNoAciklamaGoster = false;
+		List<AylikPuantaj> list = new ArrayList<AylikPuantaj>();
+		for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
+			if (aylikPuantaj.getPersonelDenklestirmeAylik().getDurum().equals(Boolean.FALSE))
+				continue;
+			list.add(aylikPuantaj);
 		}
+		if (!list.isEmpty()) {
+			for (AylikPuantaj aylikPuantaj : list) {
+				Personel personel = aylikPuantaj.getPdksPersonel();
+				PersonelKGS personelKGS = personel.getPersonelKGS();
+				if (personelKGS != null) {
+					if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
+						kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
+						if (kartNoAciklamaGoster && kimlikNoGoster)
+							break;
+					}
+
+					if (!kimlikNoGoster) {
+						kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
+						if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
+							break;
+					}
+				}
+			}
+			String ayAdi = null;
+			for (SelectItem si : aylar) {
+				if (si.getValue().equals(ay))
+					ayAdi = si.getLabel();
+
+			}
+			List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
+
+			bordroAlanlari = PdksUtil.sortObjectStringAlanList(bordroAlanlari, "getErpKodu", null);
+
+			boolean tesisGoster = tesisList != null && !tesisList.isEmpty() && tesisId == null;
+			Workbook wb = new XSSFWorkbook();
+			sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(PdksUtil.convertToDateString(basGun, " MMMMM yyyy")) + " Liste", Boolean.TRUE);
+			XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+			XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+			CellStyle style = ExcelUtil.getStyleData(wb);
+			CellStyle styleCenter = ExcelUtil.getStyleDataCenter(wb);
+			tutarStyle = ExcelUtil.getCellStyleTutar(wb);
+			numberStyle = ExcelUtil.getCellStyleTutar(wb);
+			headerSiyah.getFont().setColor(ExcelUtil.getXSSFColor(255, 255, 255));
+			XSSFCellStyle headerSaat = (XSSFCellStyle) headerSiyah.clone();
+			XSSFCellStyle headerIzin = (XSSFCellStyle) headerSiyah.clone();
+			XSSFCellStyle headerBGun = (XSSFCellStyle) headerSiyah.clone();
+			XSSFCellStyle headerBTGun = (XSSFCellStyle) (XSSFCellStyle) headerSiyah.clone();
+			ExcelUtil.setFillForegroundColor(headerSaat, 146, 208, 62);
+			ExcelUtil.setFillForegroundColor(headerIzin, 255, 255, 255);
+			ExcelUtil.setFillForegroundColor(headerBGun, 255, 255, 0);
+			ExcelUtil.setFillForegroundColor(headerBTGun, 236, 125, 125);
+			DataFormat df = wb.createDataFormat();
+			numberStyle.setDataFormat(df.getFormat("###"));
+			int row = 0, col = 0;
+			calismaModeliDurum = Boolean.FALSE;
+			for (Iterator iterator = bordroAlanlari.iterator(); iterator.hasNext();) {
+				Tanim tanim = (Tanim) iterator.next();
+				String kodu = tanim.getKodu();
+				CellStyle baslikHeader = null;
+				if (kodu.startsWith(COL_TESIS) && tesisGoster == false) {
+					iterator.remove();
+					continue;
+				}
+
+				if (kodu.startsWith(COL_KART_NO) && kartNoAciklamaGoster == false) {
+					iterator.remove();
+					continue;
+				}
+				if (kodu.startsWith(COL_KIMLIK_NO) && kimlikNoGoster == false) {
+					iterator.remove();
+					continue;
+				}
+				if (kodu.startsWith(COL_HAFTA_TATIL_MESAI) && haftaCalisma == false) {
+					iterator.remove();
+					continue;
+				}
+				if (kodu.startsWith(COL_AKSAM_SAAT_MESAI) && aksamSaat == false) {
+					iterator.remove();
+					continue;
+				}
+				if (kodu.startsWith(COL_EKSIK_CALISMA) && maasKesintiGoster == false) {
+					iterator.remove();
+					continue;
+				}
+
+				if (kodu.startsWith(COL_AKSAM_GUN_MESAI) && aksamGun == false) {
+					iterator.remove();
+					continue;
+				}
+				if (kodu.startsWith(COL_ALT_BOLUM) && ekSaha4Tanim == null) {
+					iterator.remove();
+					continue;
+				}
+				if (baslikHeader == null)
+					baslikHeader = header;
+				if (kodu.equals(COL_UCRETLI_IZIN) || kodu.equals(COL_RAPORLU_IZIN) || kodu.equals(COL_UCRETSIZ_IZIN) || kodu.equals(COL_YILLIK_IZIN))
+					baslikHeader = headerIzin;
+				else if (kodu.equals(COL_NORMAL_GUN_SAAT) || kodu.equals(COL_HAFTA_TATIL_SAAT) || kodu.equals(COL_RESMI_TATIL_SAAT) || kodu.equals(COL_IZIN_SAAT))
+					baslikHeader = headerSaat;
+				else if (kodu.equals(COL_NORMAL_GUN_ADET) || kodu.equals(COL_HAFTA_TATIL_ADET) || kodu.equals(COL_RESMI_TATIL_ADET) || kodu.equals(COL_ARTIK_ADET))
+					baslikHeader = headerBGun;
+				else if (kodu.equals(COL_TOPLAM_ADET))
+					baslikHeader = headerBTGun;
+
+				ExcelUtil.getCell(sheet, row, col++, baslikHeader).setCellValue(tanim.getAciklama());
+
+			}
+			PersonelDenklestirmeBordro denklestirmeBordroBos = new PersonelDenklestirmeBordro();
+			for (AylikPuantaj ap : list) {
+				Personel personel = ap.getPdksPersonel();
+				PersonelDenklestirmeBordro denklestirmeBordro = ap.getDenklestirmeBordro();
+				if (denklestirmeBordro == null)
+					denklestirmeBordro = denklestirmeBordroBos;
+				row++;
+				col = 0;
+				PersonelKGS personelKGS = personel.getPersonelKGS();
+				for (Tanim tanim : bordroAlanlari) {
+					String kodu = tanim.getKodu();
+					if (kodu.startsWith(COL_CALISMA_MODELI)) {
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ap.getCalismaModeli().getAciklama());
+					} else if (kodu.equals(COL_SIRA))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
+					else if (kodu.equals(COL_ISE_BASLAMA_TARIHI))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ilkGun.before(personel.getIseBaslamaTarihi()) ? authenticatedUser.dateFormatla(personel.getIseBaslamaTarihi()) : "");
+					else if (kodu.equals(COL_SSK_CIKIS_TARIHI))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.isCalisiyorGun(sonGun) ? "" : authenticatedUser.dateFormatla(personel.getSskCikisTarihi()));
+					else if (kodu.equals(COL_YIL))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
+					else if (kodu.equals(COL_YIL))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
+					else if (kodu.equals(COL_AY))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ay);
+					else if (kodu.equals(COL_AY_ADI))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ayAdi);
+					else if (kodu.equals(COL_PERSONEL_NO))
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
+					else if (kodu.equals(COL_AD_SOYAD))
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
+					else if (kodu.equals(COL_AD))
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAd());
+					else if (kodu.equals(COL_SOYAD))
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSoyad());
+					else if (kodu.equals(COL_KART_NO)) {
+						String kartNo = "";
+						if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKartNo()))
+							kartNo = personelKGS.getKartNo();
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kartNo);
+					} else if (kodu.equals(COL_KIMLIK_NO)) {
+						String kimlikNo = "";
+						if (personelKGS != null && PdksUtil.hasStringValue(personelKGS.getKimlikNo()))
+							kimlikNo = personelKGS.getKimlikNo();
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(kimlikNo);
+					} else if (kodu.startsWith(COL_SIRKET)) {
+						if (personel.getSirket() != null) {
+							if (kodu.startsWith(COL_SIRKET + "Kodu"))
+								ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSirket().getErpKodu());
+							else if (kodu.startsWith(COL_SIRKET))
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
+						} else
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+					} else if (kodu.startsWith(COL_TESIS)) {
+						if (personel.getTesis() != null) {
+							if (kodu.startsWith(COL_TESIS + "Kodu"))
+								ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getTesis().getErpKodu());
+							else if (kodu.startsWith(COL_TESIS))
+								ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getTesis().getAciklama());
+						} else
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+					} else if (kodu.equals(COL_BOLUM))
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
+					else if (kodu.equals(COL_ALT_BOLUM))
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
+					else if (kodu.equals(COL_NORMAL_GUN_ADET))
+						setExcelNumber(row, col++, denklestirmeBordro.getNormalGunAdet() != null ? denklestirmeBordro.getNormalGunAdet() : 0.0d);
+					else if (kodu.equals(COL_HAFTA_TATIL_ADET))
+						setExcelNumber(row, col++, denklestirmeBordro.getHaftaTatilAdet() != null ? denklestirmeBordro.getHaftaTatilAdet() : 0.0d);
+					else if (kodu.equals(COL_RESMI_TATIL_ADET))
+						setExcelNumber(row, col++, denklestirmeBordro.getResmiTatilAdet() != null ? denklestirmeBordro.getResmiTatilAdet() : 0.0d);
+					else if (kodu.equals(COL_ARTIK_ADET))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getArtikAdet() != null ? denklestirmeBordro.getArtikAdet() : 0);
+					else if (kodu.equals(COL_TOPLAM_ADET))
+						setExcelNumber(row, col++, denklestirmeBordro.getBordroToplamGunAdet());
+					else if (kodu.equals(COL_NORMAL_GUN_SAAT))
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatNormal());
+					else if (kodu.equals(COL_HAFTA_TATIL_SAAT))
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatHaftaTatil());
+					else if (kodu.equals(COL_RESMI_TATIL_SAAT))
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatResmiTatil());
+					else if (kodu.equals(COL_IZIN_SAAT))
+						setExcelNumber(row, col++, denklestirmeBordro.getSaatIzin());
+					else if (kodu.equals(COL_UCRETLI_IZIN))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretliIzin());
+					else if (kodu.equals(COL_RAPORLU_IZIN))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getRaporluIzin());
+					else if (kodu.equals(COL_UCRETSIZ_IZIN))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretsizIzin());
+					else if (kodu.equals(COL_YILLIK_IZIN))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getYillikIzin());
+					else if (kodu.equals(COL_RESMI_TATIL_MESAI)) {
+						if (denklestirmeBordro.getResmiTatilMesai() > 0)
+							setExcelNumber(row, col++, denklestirmeBordro.getResmiTatilMesai());
+						else
+							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
+					} else if (kodu.equals(COL_UCRETI_ODENEN_MESAI)) {
+						if (denklestirmeBordro.getUcretiOdenenMesai() > 0)
+							setExcelNumber(row, col++, denklestirmeBordro.getUcretiOdenenMesai());
+						else
+							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
+					} else if (kodu.equals(COL_HAFTA_TATIL_MESAI)) {
+						if (denklestirmeBordro.getHaftaTatilMesai() > 0)
+							setExcelNumber(row, col++, denklestirmeBordro.getHaftaTatilMesai());
+						else
+							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
+
+					} else if (kodu.equals(COL_AKSAM_GUN_MESAI))
+						ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getAksamGunMesai());
+					else if (kodu.equals(COL_AKSAM_SAAT_MESAI)) {
+						if (denklestirmeBordro.getAksamSaatMesai() > 0)
+							setExcelNumber(row, col++, denklestirmeBordro.getAksamSaatMesai());
+						else
+							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
+
+					} else if (kodu.equals(COL_EKSIK_CALISMA)) {
+						if (denklestirmeBordro.getEksikCalismaSure() > 0)
+							setExcelNumber(row, col++, denklestirmeBordro.getEksikCalismaSure());
+						else
+							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(0);
+
+					}
+				}
+
+			}
+
+			for (int i = 0; i < col; i++)
+				sheet.autoSizeColumn(i);
+			baos = new ByteArrayOutputStream();
+			wb.write(baos);
+		} else
+			PdksUtil.addMessageWarn("Aktarılacak hatasız veri yok!");
+		list = null;
 
 		return baos;
 	}
