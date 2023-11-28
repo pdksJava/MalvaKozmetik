@@ -244,7 +244,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							IzinTipi senelikIzin = null;
 							if (vardiyaGun.getIzin() != null) {
 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
-
 								if (izinTipi != null) {
 									if (izinTipi.isUcretsizIzinTipi())
 										calismaGun = 0;
@@ -285,9 +284,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								izinKodu = vardiya.getStyleClass();
 							if (artiGun > 0.0d && izinKodu != null) {
 								calismaGun = izinDetayYaz(detayMap, calismaGun, izinKodu, artiGun);
-								if (senelikIzin != null)  
+								if (senelikIzin != null)
 									izinDetayYaz(detayMap, calismaGun, BordroDetayTipi.YILLIK_IZIN.value(), artiGun);
-								 
+
 							}
 
 						}
