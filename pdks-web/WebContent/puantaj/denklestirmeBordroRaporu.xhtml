@@ -99,8 +99,8 @@
 									</a4j:outputPanel>
 								</h:panelGrid></TD>
 							<TD style="width: 20%" valign="middle" align="left"><ui:fragment rendered="#{authenticatedUser.admin==false}">
- 									<SPAN style="color: red; font-size: 14px;"><B>#{ortakIslemler.getMenuAdi('fazlaMesaiHesapla')}</B> ekranında tüm <B>#{denklestirmeBordroRaporuHome.bolumAciklama}</B>(ler/lar) hesaplatma
-										yaptıktan sonra, veriler düzgün gelecektir.</SPAN>
+									<SPAN style="color: red; font-size: 14px;"><B>#{ortakIslemler.getMenuAdi('fazlaMesaiHesapla')}</B> ekranında tüm <B>#{denklestirmeBordroRaporuHome.bolumAciklama}</B>(ler/lar)
+										hesaplatma yaptıktan sonra, veriler düzgün gelecektir.</SPAN>
 								</ui:fragment></TD>
 						</tr>
 
@@ -367,6 +367,15 @@
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.ucretsizIzin)}"
 									rendered="#{puantaj.denklestirmeBordro.ucretsizIzin!=0}" />
+
+							</rich:column>
+							<rich:column style="text-align: center;" headerClass="izinGrup"
+								rendered="#{ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_YILLIK_IZIN))}">
+								<f:facet name="header">
+									<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_YILLIK_IZIN)}" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.yillikIzin)}"
+									rendered="#{puantaj.denklestirmeBordro.yillikIzin!=0}" />
 
 							</rich:column>
 							<rich:column style="text-align: center;">

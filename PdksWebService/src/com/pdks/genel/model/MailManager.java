@@ -209,6 +209,28 @@ public class MailManager implements Serializable {
 	}
 
 	/**
+	 * @param mailObject
+	 * @param bccAdresName
+	 * @param mailMap
+	 */
+	public static void addMailAdresBCC(MailObject mailObject, String bccAdresName, HashMap<String, Object> mailMap) {
+		if (mailObject != null && mailMap.containsKey(bccAdresName)) {
+			String bccAdres = (String) mailMap.get(bccAdresName);
+			if (bccAdres.indexOf("@") > 1) {
+				List<String> list = PdksUtil.getListByString(bccAdres, null);
+				for (String email : list) {
+					if (email.indexOf("@") > 1 && PdksUtil.isValidEmail(email)) {
+						MailPersonel mailPersonel = new MailPersonel();
+						mailPersonel.setePosta(email);
+						mailObject.getBccList().add(mailPersonel);
+					}
+
+				}
+			}
+		}
+	}
+
+	/**
 	 * @param parameterMap
 	 * @throws Exception
 	 */
@@ -350,6 +372,10 @@ public class MailManager implements Serializable {
 			if (uyariServisMailGonder) {
 				mailMap.put("to", mailObject.getToList());
 				mailMap.put("cc", mailObject.getCcList());
+			}
+			if (PdksUtil.isSistemDestekVar()) {
+				addMailAdresBCC(mailObject, "bccAdres", parameterMap);
+				addMailAdresBCC(mailObject, "bccEntegrasyonAdres", parameterMap);
 			}
 			mailMap.put("bcc", mailObject.getBccList());
 			for (String key : mailMap.keySet()) {

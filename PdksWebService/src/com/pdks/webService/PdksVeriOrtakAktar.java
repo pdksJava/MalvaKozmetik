@@ -129,12 +129,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 				MailObject mailObject = new MailObject();
 				String subject = uygulamaBordro + " " + fonksiyonAdi + " fonksiyon " + bilgi + " güncellemesi";
 				String body = subject + " " + list.size() + " adet kayıt için başarılı olarak tamamlandı.";
+				logger.info(PdksUtil.setTurkishStr(subject + "\n" + body));
 				mailObject.setSubject(subject);
 				mailObject.setBody(body);
 				try {
 					// mailAdresKontrol(mailObject, null);
-					addMailAdresBCC(mailObject, "bccAdres");
-					addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
+					if (PdksUtil.isSistemDestekVar()) {
+						MailManager.addMailAdresBCC(mailObject, "bccAdres", mailMap);
+						MailManager.addMailAdresBCC(mailObject, "bccEntegrasyonAdres", mailMap);
+					}
+
 					mailMap.put("mailObject", mailObject);
 					MailManager.ePostaGonder(mailMap);
 				} catch (Exception e) {
@@ -620,25 +624,24 @@ public class PdksVeriOrtakAktar implements Serializable {
 	}
 
 	/**
-	 * @param mailObject
-	 * @param bccAdresName
+	 * // * @param mailObject // * @param bccAdresName //
 	 */
-	private void addMailAdresBCC(MailObject mailObject, String bccAdresName) {
-		if (mailObject != null && mailMap.containsKey(bccAdresName)) {
-			String bccAdres = (String) mailMap.get(bccAdresName);
-			if (bccAdres.indexOf("@") > 1) {
-				List<String> list = PdksUtil.getListByString(bccAdres, null);
-				for (String email : list) {
-					if (email.indexOf("@") > 1 && PdksUtil.isValidEmail(email)) {
-						MailPersonel mailPersonel = new MailPersonel();
-						mailPersonel.setePosta(email);
-						mailObject.getBccList().add(mailPersonel);
-					}
-
-				}
-			}
-		}
-	}
+	// private void addMailAdresBCC(MailObject mailObject, String bccAdresName) {
+	// if (mailObject != null && mailMap.containsKey(bccAdresName)) {
+	// String bccAdres = (String) mailMap.get(bccAdresName);
+	// if (bccAdres.indexOf("@") > 1) {
+	// List<String> list = PdksUtil.getListByString(bccAdres, null);
+	// for (String email : list) {
+	// if (email.indexOf("@") > 1 && PdksUtil.isValidEmail(email)) {
+	// MailPersonel mailPersonel = new MailPersonel();
+	// mailPersonel.setePosta(email);
+	// mailObject.getBccList().add(mailPersonel);
+	// }
+	//
+	// }
+	// }
+	// }
+	// }
 
 	/**
 	 * @param mailObject
@@ -647,8 +650,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	protected void mailAdresKontrol(MailObject mailObject, StringBuffer pasifPersonelSB) throws Exception {
 		if (PdksUtil.isSistemDestekVar()) {
-			addMailAdresBCC(mailObject, "bccAdres");
-			addMailAdresBCC(mailObject, "bccEntegrasyonAdres");
+			MailManager.addMailAdresBCC(mailObject, "bccAdres", mailMap);
+			MailManager.addMailAdresBCC(mailObject, "bccEntegrasyonAdres", mailMap);
 		}
 		HashMap<String, MailPersonel> mailDataMap = new HashMap<String, MailPersonel>();
 		mailListKontrol(mailObject.getToList(), mailDataMap);
@@ -3829,106 +3832,105 @@ public class PdksVeriOrtakAktar implements Serializable {
 		// if (!PdksUtil.getCanliSunucuDurum())
 		// hataList.clear();
 		if (!hataList.isEmpty()) {
+			if (mailBosGonder)
+				logger.info("Hata kontrol ediliyor!");
+			for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
+				PersonelERP personelERP = (PersonelERP) iterator.next();
+				if (personelERP.getHataList().isEmpty())
+					iterator.remove();
+				else if (personelERPHataliMap.containsKey(personelERP.getPersonelNo())) {
+					ERPPersonel erpPersonel = personelERPHataliMap.get(personelERP.getPersonelNo());
+					if (!erpPersonel.getDurum()) {
+						personelERP.setHataList(null);
+						iterator.remove();
+
+					}
+				}
+			}
+		}
+		if (!hataList.isEmpty()) {
 			try {
+
+				Gson gson = new Gson();
+				String jsonStr = PdksUtil.toPrettyFormat(gson.toJson(hataList));
+				String konu = uygulamaBordro + " savePersoneller problem";
+				if (hataList.size() == 1) {
+					PersonelERP personelERP = hataList.get(0);
+					if (personelERP != null) {
+						String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
+						if (PdksUtil.hasStringValue(adSoyad))
+							konu += " [ " + adSoyad.trim() + " ]";
+					}
+				}
+				mailMap.put("konu", konu);
+				sb = new StringBuffer();
+				sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi savePersoneller fonksiyonunda hatalı veri var!</b></p>");
+				sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
+				boolean renkUyari = true;
+				Sirket bosSirket = new Sirket();
+				if (parentBordroTanimKoduStr == null)
+					parentBordroTanimKoduStr = "";
 
 				for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
 					PersonelERP personelERP = (PersonelERP) iterator.next();
-					if (personelERP.getHataList().isEmpty())
-						iterator.remove();
-					else if (personelERPHataliMap.containsKey(personelERP.getPersonelNo())) {
-						ERPPersonel erpPersonel = personelERPHataliMap.get(personelERP.getPersonelNo());
-						if (!erpPersonel.getDurum()) {
-							personelERP.setHataList(null);
-							iterator.remove();
-
-						}
-					}
-				}
-				if (!hataList.isEmpty()) {
-					Gson gson = new Gson();
-					String jsonStr = PdksUtil.toPrettyFormat(gson.toJson(hataList));
-					String konu = uygulamaBordro + " savePersoneller problem";
-					if (hataList.size() == 1) {
-						PersonelERP personelERP = hataList.get(0);
-						if (personelERP != null) {
-							String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
-							if (PdksUtil.hasStringValue(adSoyad))
-								konu += " [ " + adSoyad.trim() + " ]";
-						}
-					}
-					mailMap.put("konu", konu);
-					sb = new StringBuffer();
-					sb.append("<p><b>" + uygulamaBordro + " pdks entegrasyon servisi savePersoneller fonksiyonunda hatalı veri var!</b></p>");
-					sb.append("<TABLE class=\"mars\" style=\"width: 80%\">");
-					boolean renkUyari = true;
-					Sirket bosSirket = new Sirket();
-					if (parentBordroTanimKoduStr == null)
-						parentBordroTanimKoduStr = "";
-
-					for (Iterator iterator = hataList.iterator(); iterator.hasNext();) {
-						PersonelERP personelERP = (PersonelERP) iterator.next();
-						String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
-						String sirketBilgi = "";
-						boolean altBolumVar = altBolumDurum && personelERP.getBordroAltAlanAdi() != null;
-						if (personelERP.getSirketAdi() != null || personelERP.getBolumAdi() != null || altBolumVar) {
-							sirketBilgi += "";
-							if (personelERP.getSirketAdi() != null)
-								sirketBilgi = personelERP.getSirketAdi();
-							if (personelERP.getTesisAdi() != null) {
-								Sirket sirket = sirketMap != null && sirketMap.containsKey(personelERP.getSirketKodu()) ? sirketMap.get(personelERP.getSirketKodu()) : bosSirket;
-								if (sirket.isTesisDurumu()) {
-									if (PdksUtil.hasStringValue(sirketBilgi))
-										sirketBilgi += " - " + personelERP.getTesisAdi();
-									else
-										sirketBilgi = personelERP.getTesisAdi();
-								}
+					String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
+					String sirketBilgi = "";
+					boolean altBolumVar = altBolumDurum && personelERP.getBordroAltAlanAdi() != null;
+					if (personelERP.getSirketAdi() != null || personelERP.getBolumAdi() != null || altBolumVar) {
+						sirketBilgi += "";
+						if (personelERP.getSirketAdi() != null)
+							sirketBilgi = personelERP.getSirketAdi();
+						if (personelERP.getTesisAdi() != null) {
+							Sirket sirket = sirketMap != null && sirketMap.containsKey(personelERP.getSirketKodu()) ? sirketMap.get(personelERP.getSirketKodu()) : bosSirket;
+							if (sirket.isTesisDurumu()) {
+								if (PdksUtil.hasStringValue(sirketBilgi))
+									sirketBilgi += " - " + personelERP.getTesisAdi();
+								else
+									sirketBilgi = personelERP.getTesisAdi();
 							}
+						}
 
-							if (personelERP.getBolumAdi() != null || altBolumVar) {
-								if (personelERP.getBolumAdi() != null) {
-									if (!PdksUtil.hasStringValue(sirketBilgi))
-										sirketBilgi = personelERP.getBolumAdi();
-									else
-										sirketBilgi += " / " + personelERP.getBolumAdi();
-								}
-								if (altBolumVar && sirketBilgi.indexOf(personelERP.getBordroAltAlanAdi()) < 0) {
-									if (!PdksUtil.hasStringValue(sirketBilgi))
-										sirketBilgi = personelERP.getBordroAltAlanAdi();
-									else
-										sirketBilgi += (personelERP.getBolumAdi() != null ? " - " : " / ") + personelERP.getBordroAltAlanAdi();
-								}
+						if (personelERP.getBolumAdi() != null || altBolumVar) {
+							if (personelERP.getBolumAdi() != null) {
+								if (!PdksUtil.hasStringValue(sirketBilgi))
+									sirketBilgi = personelERP.getBolumAdi();
+								else
+									sirketBilgi += " / " + personelERP.getBolumAdi();
 							}
-
-							sirketBilgi = "( " + sirketBilgi + " )";
+							if (altBolumVar && sirketBilgi.indexOf(personelERP.getBordroAltAlanAdi()) < 0) {
+								if (!PdksUtil.hasStringValue(sirketBilgi))
+									sirketBilgi = personelERP.getBordroAltAlanAdi();
+								else
+									sirketBilgi += (personelERP.getBolumAdi() != null ? " - " : " / ") + personelERP.getBordroAltAlanAdi();
+							}
 						}
-						sb.append("<TR class=\"" + (renkUyari ? "odd" : "even") + "\"><TD colspan=2 nowrap><b>" + (personelERP.getPersonelNo() != null ? personelERP.getPersonelNo() + " " : "") + adSoyad + " " + sirketBilgi + "</b></TD></TR>");
-						List<String> veriHataList = personelERP.getHataList();
-						for (int i = 0; i < veriHataList.size(); i++) {
-							sb.append("<TR class=\"" + (renkUyari ? "odd" : "even") + "\"><TD width='10%'></TD><TD width='90%' nowrap>" + (veriHataList.size() > 1 ? (i + 1) + ". " : "") + veriHataList.get(i) + "</TD></TR>");
-						}
-						renkUyari = !renkUyari;
-						if (iterator.hasNext())
-							sb.append("<TR><TD colspan=2> </TD></TR>");
+						sirketBilgi = "( " + sirketBilgi + " )";
 					}
-
-					sb.append("</TABLE>");
-					mailMap.put("mailIcerik", sb.toString());
-					LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
-					String xml = getJsonToXML(jsonStr, "personel", PERSONEL_PROP_ORDER, "savePersoneller");
-					fileMap.put("savePersoneller.xml", xml);
-					mailMap.put("fileMap", fileMap);
-					mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
-					kullaniciIKYukle(mailMap, pdksDAO);
-					mailStatu = MailManager.ePostaGonder(mailMap);
-					mailBosGonder = false;
+					sb.append("<TR class=\"" + (renkUyari ? "odd" : "even") + "\"><TD colspan=2 nowrap><b>" + (personelERP.getPersonelNo() != null ? personelERP.getPersonelNo() + " " : "") + adSoyad + " " + sirketBilgi + "</b></TD></TR>");
+					List<String> veriHataList = personelERP.getHataList();
+					for (int i = 0; i < veriHataList.size(); i++) {
+						sb.append("<TR class=\"" + (renkUyari ? "odd" : "even") + "\"><TD width='10%'></TD><TD width='90%' nowrap>" + (veriHataList.size() > 1 ? (i + 1) + ". " : "") + veriHataList.get(i) + "</TD></TR>");
+					}
+					renkUyari = !renkUyari;
+					if (iterator.hasNext())
+						sb.append("<TR><TD colspan=2> </TD></TR>");
 				}
-			} catch (Exception em) {
-				logger.error(em);
-				em.printStackTrace();
-
+				sb.append("</TABLE>");
+				mailMap.put("mailIcerik", sb.toString());
+				LinkedHashMap<String, Object> fileMap = new LinkedHashMap<String, Object>();
+				String xml = getJsonToXML(jsonStr, "personel", PERSONEL_PROP_ORDER, "savePersoneller");
+				fileMap.put("savePersoneller.xml", xml);
+				mailMap.put("fileMap", fileMap);
+				mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
+				kullaniciIKYukle(mailMap, pdksDAO);
+				mailStatu = MailManager.ePostaGonder(mailMap);
+				mailBosGonder = false;
+			} catch (Exception ex) {
+				logger.error(ex);
+				ex.printStackTrace();
 			}
-
 		}
+
 		if (mailBosGonder && mailStatu == null)
 			mailBosGonder("savePersoneller", "personel", personelList);
 		if (updateYonetici2)

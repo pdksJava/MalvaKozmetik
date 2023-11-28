@@ -125,6 +125,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private String COL_UCRETLI_IZIN = "ucretliIzin";
 	private String COL_RAPORLU_IZIN = "raporluIzin";
 	private String COL_UCRETSIZ_IZIN = "ucretsizIzin";
+	private String COL_YILLIK_IZIN = "yillikIzin";
 	private String COL_RESMI_TATIL_MESAI = "resmiTatilMesai";
 	private String COL_UCRETI_ODENEN_MESAI = "ucretiOdenenMesai";
 	private String COL_HAFTA_TATIL_MESAI = "haftaTatilMesai";
@@ -1044,7 +1045,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					}
 					if (baslikHeader == null)
 						baslikHeader = header;
-					if (kodu.equals(COL_UCRETLI_IZIN) || kodu.equals(COL_RAPORLU_IZIN) || kodu.equals(COL_UCRETSIZ_IZIN))
+					if (kodu.equals(COL_UCRETLI_IZIN) || kodu.equals(COL_RAPORLU_IZIN) || kodu.equals(COL_UCRETSIZ_IZIN) || kodu.equals(COL_YILLIK_IZIN))
 						baslikHeader = headerIzin;
 					else if (kodu.equals(COL_NORMAL_GUN_SAAT) || kodu.equals(COL_HAFTA_TATIL_SAAT) || kodu.equals(COL_RESMI_TATIL_SAAT) || kodu.equals(COL_IZIN_SAAT))
 						baslikHeader = headerSaat;
@@ -1143,6 +1144,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getRaporluIzin());
 						else if (kodu.equals(COL_UCRETSIZ_IZIN))
 							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getUcretsizIzin());
+						else if (kodu.equals(COL_YILLIK_IZIN))
+							ExcelUtil.getCell(sheet, row, col++, numberStyle).setCellValue(denklestirmeBordro.getYillikIzin());
 						else if (kodu.equals(COL_RESMI_TATIL_MESAI)) {
 							if (denklestirmeBordro.getResmiTatilMesai() > 0)
 								setExcelNumber(row, col++, denklestirmeBordro.getResmiTatilMesai());
@@ -1236,6 +1239,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETLI_IZIN, "Ücretli İzin Gün"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_RAPORLU_IZIN, "Raporlu (Hasta)"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETSIZ_IZIN, "Ücretsiz İzin Gün"));
+		bordroAlanlari.add(getBordroAlani(++sira, COL_YILLIK_IZIN, "Yıllık İzin Gün"));
 		bordroAlanlari.add(getBordroAlani(++sira, COL_UCRETI_ODENEN_MESAI, "Ücreti Ödenen Mesai"));
 		if (maasKesintiGoster)
 			bordroAlanlari.add(getBordroAlani(++sira, COL_EKSIK_CALISMA, ortakIslemler.eksikCalismaAciklama()));
@@ -2021,5 +2025,21 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	public void setIlkGun(Date ilkGun) {
 		this.ilkGun = ilkGun;
+	}
+
+	public String getCOL_TOPLAM_ADET() {
+		return COL_TOPLAM_ADET;
+	}
+
+	public void setCOL_TOPLAM_ADET(String cOL_TOPLAM_ADET) {
+		COL_TOPLAM_ADET = cOL_TOPLAM_ADET;
+	}
+
+	public String getCOL_YILLIK_IZIN() {
+		return COL_YILLIK_IZIN;
+	}
+
+	public void setCOL_YILLIK_IZIN(String cOL_YILLIK_IZIN) {
+		COL_YILLIK_IZIN = cOL_YILLIK_IZIN;
 	}
 }

@@ -241,8 +241,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							double artiGun = 1.0d;
 							// if (saatlikCalisma)
 							// artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
+							IzinTipi senelikIzin = null;
 							if (vardiyaGun.getIzin() != null) {
 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
+
 								if (izinTipi != null) {
 									if (izinTipi.isUcretsizIzinTipi())
 										calismaGun = 0;
@@ -252,9 +254,11 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 											if (sure > 0.0d)
 												izinGunSaat += sure;
 										}
-										// if (vardiyaGun.isHaftaIci())
-										// izinGunSaat += resmiTatil == false ? vardiyaGun.getSaatCalisanIzinGunKatsayisi() : 0;
+
 									}
+									if (izinTipi.isSenelikIzin())
+										senelikIzin = izinTipi;
+
 								}
 
 								if (izinTipi.getTakvimGunumu() == false) {
@@ -280,18 +284,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							} else
 								izinKodu = vardiya.getStyleClass();
 							if (artiGun > 0.0d && izinKodu != null) {
-								BordroDetayTipi bordroTipi = null;
-								try {
-									if (PdksUtil.hasStringValue(izinKodu))
-										bordroTipi = BordroDetayTipi.fromValue(izinKodu);
-								} catch (Exception e) {
-								}
-								if (bordroTipi != null) {
-									double miktar = (detayMap.containsKey(bordroTipi) ? detayMap.get(bordroTipi) : 0.0d) + artiGun;
-									detayMap.put(bordroTipi, miktar);
-									if (bordroTipi.equals(BordroDetayTipi.RAPORLU_IZIN) || bordroTipi.equals(BordroDetayTipi.UCRETSIZ_IZIN))
-										calismaGun = 0;
-								}
+								calismaGun = izinDetayYaz(detayMap, calismaGun, izinKodu, artiGun);
+								if (senelikIzin != null)  
+									izinDetayYaz(detayMap, calismaGun, BordroDetayTipi.YILLIK_IZIN.value(), artiGun);
+								 
 							}
 
 						}
@@ -475,6 +471,30 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			bordroMap = null;
 		}
 		return baslikMap;
+	}
+
+	/**
+	 * @param detayMap
+	 * @param calismaGun
+	 * @param izinKodu
+	 * @param artiGun
+	 * @return
+	 */
+	private double izinDetayYaz(LinkedHashMap<BordroDetayTipi, Double> detayMap, double calismaGun, String izinKodu, double artiGun) {
+		BordroDetayTipi bordroTipi = null;
+		try {
+			if (PdksUtil.hasStringValue(izinKodu))
+				bordroTipi = BordroDetayTipi.fromValue(izinKodu);
+		} catch (Exception e) {
+		}
+		if (bordroTipi != null) {
+			double miktar = (detayMap.containsKey(bordroTipi) ? detayMap.get(bordroTipi) : 0.0d) + artiGun;
+			detayMap.put(bordroTipi, miktar);
+			if (bordroTipi.equals(BordroDetayTipi.RAPORLU_IZIN) || bordroTipi.equals(BordroDetayTipi.UCRETSIZ_IZIN))
+				calismaGun = 0;
+
+		}
+		return calismaGun;
 	}
 
 	/**

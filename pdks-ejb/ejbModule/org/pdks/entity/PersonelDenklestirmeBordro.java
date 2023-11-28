@@ -236,6 +236,13 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	@Transient
+	public Integer getYillikIzin() {
+		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroDetayTipi.YILLIK_IZIN);
+		Integer value = detay != null ? detay.getMiktar().intValue() : 0;
+		return value;
+	}
+
+	@Transient
 	public PersonelDenklestirmeBordroDetay getBordroDetay(BordroDetayTipi bordroDetayTipi) {
 		PersonelDenklestirmeBordroDetay bordroDetay = null;
 		if (bordroDetayTipi != null && detayMap != null && detayMap.containsKey(bordroDetayTipi))
