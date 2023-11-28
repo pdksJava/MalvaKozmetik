@@ -4,7 +4,7 @@
 	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
 	xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
 	<ui:define name="title">
-		<h:outputText value="#{ortakIslemler.getMenuAdi('denklestirmeBordroRaporu')}" />
+		<h:outputText value="#{ortakIslemler.getMenuAdi('denkslestirmeBordroRaporu')}" />
 	</ui:define>
 	<ui:define name="body">
 
@@ -369,7 +369,7 @@
 									rendered="#{puantaj.denklestirmeBordro.ucretsizIzin!=0}" />
 
 							</rich:column>
-							<rich:column style="text-align: center;" headerClass="izinGrup"
+							<rich:column style="text-align: center;" headerClass="izinAylik"
 								rendered="#{ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_YILLIK_IZIN))}">
 								<f:facet name="header">
 									<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_YILLIK_IZIN)}" />

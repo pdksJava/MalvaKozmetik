@@ -499,8 +499,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	public String getBaslikAciklama(String kod) {
 		String aciklama = "";
-		if (baslikMap != null && kod != null && baslikMap.containsKey(kod)) {
-			aciklama = baslikMap.get(kod).getAciklama();
+		if (baslikMap != null && kod != null) {
+			if (baslikMap.containsKey(kod)) {
+				aciklama = baslikMap.get(kod).getAciklama();
+			}
 		}
 		return aciklama;
 	}
@@ -664,6 +666,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							kartNoAciklamaGoster = false;
 						bordroBilgiAciklamaOlustur(kimlikNoGoster, kartNoAciklama, kartNoAciklamaGoster, bordroAlanlari);
 					}
+					baslikMap.clear();
 					for (Tanim tanim : bordroAlanlari)
 						if (tanim.getDurum())
 							baslikMap.put(tanim.getKodu(), tanim);
