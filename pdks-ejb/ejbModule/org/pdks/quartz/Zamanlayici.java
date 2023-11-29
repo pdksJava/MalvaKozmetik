@@ -46,8 +46,6 @@ public class Zamanlayici implements Serializable {
 	@In
 	IzinBakiyeGuncelleme izinBakiyeGuncelleme;
 	@In
-	YemekMukkerrerBilgilendirme yemekMukkerrerBilgilendirme;
-	@In
 	SertifikaSSLKontrol sertifikaSSLKontrol;
 	@In(required = false, create = true)
 	OrtakIslemler ortakIslemler;
@@ -72,12 +70,6 @@ public class Zamanlayici implements Serializable {
 	public void scheduleSertifikaSSLKontrolTimer() {
 		logger.info("scheduleSertifikaSSLKontrolTimer start : " + new Date());
 		sertifikaSSLKontrol.sertifikaSSLKontrolTimer(new Date(), "0 0/15 5-21 ? * *");
-
-	}
-
-	public void scheduleYemekMukkerrerBilgilendirmeTimer() {
-		logger.info("scheduleYemekMukkerrerBilgilendirmeTimer start : " + new Date());
-		yemekMukkerrerBilgilendirme.yemekMukkerrerBilgilendirmeTimer(new Date(), "0 0/5 5-21 ? * *");
 
 	}
 
