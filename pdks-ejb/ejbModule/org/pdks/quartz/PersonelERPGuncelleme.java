@@ -60,7 +60,7 @@ public class PersonelERPGuncelleme {
 	@In(required = false, create = true)
 	HashMap<String, String> parameterMap;
 	@In(required = false, create = true)
-	public Zamanlayici zamanlayici;
+	Zamanlayici zamanlayici;
 	@In(required = false, create = true)
 	EntityManager entityManager;
 	@In(required = false, create = true)
