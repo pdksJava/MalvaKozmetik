@@ -198,7 +198,7 @@
 
 								</DIV>
 							</rich:column>
-							<rich:column style="text-align: left;">
+							<rich:column style="text-align: left;" filterBy="#{puantaj.pdksPersonel.adSoyad}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AD_SOYAD)}" />
 								</f:facet>
@@ -211,7 +211,7 @@
 								</f:facet>
 								<h:outputText value="#{puantaj.pdksPersonel.tesis.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 							</rich:column>
-							<rich:column style="text-align: left;">
+							<rich:column style="text-align: left;" filterBy="#{puantaj.pdksPersonel.ekSaha3.aciklama}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="#{denklestirmeBordroRaporuHome.bolumAciklama}" />
 								</f:facet>

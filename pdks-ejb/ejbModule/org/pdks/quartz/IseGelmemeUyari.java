@@ -1071,11 +1071,11 @@ public class IseGelmemeUyari implements Serializable {
 		try {
 			if (wb == null)
 				wb = new XSSFWorkbook();
-			boolean userIK = user != null ? user.isIK() : false;
+			boolean userIK = user != null ? user.isIK() || user.isGenelMudur() : false;
 			if (userIK) {
 				userIK = false;
 				for (Role role : user.getYetkiliRollerim()) {
-					if (role.getRolename().equals(Role.TIPI_IK)) {
+					if (role.getRolename().equals(Role.TIPI_IK) || role.getRolename().equals(Role.TIPI_GENEL_MUDUR)) {
 						userIK = true;
 						break;
 					}

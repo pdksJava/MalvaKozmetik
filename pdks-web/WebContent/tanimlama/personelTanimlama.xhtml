@@ -103,8 +103,8 @@
 								</rich:toolTip>
 								</ui:fragment>
 							</rich:column>
-							<rich:column>
-								<f:facet name="header" filterBy="#{user.firstname}">
+							<rich:column filterBy="#{personelView.personelKGS.adSoyad}" filterEvent="onkeyup">
+								<f:facet name="header" >
 									<h:outputText value="PDKS Adı Soyadı" />
 								</f:facet>
 								<h:outputText title="#{personelView.pdksPersonelAciklama}" value="#{personelView.personelKGS.adSoyad}" id="adSoyad" />
@@ -247,7 +247,7 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.tesis.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.containsKey('ekSaha1')}">
+							<rich:column filterBy="#{personelView.pdksPersonel.ekSaha1.aciklama}" filterEvent="onkeyup" rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and pdksPersonelHome.ekSahaTanimMap.containsKey('ekSaha1')}">
 								<f:facet name="header">
 									<h:outputText value="#{pdksPersonelHome.ekSahaTanimMap.get('ekSaha1').aciklama}" />
 								</f:facet>
