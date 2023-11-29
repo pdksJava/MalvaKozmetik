@@ -138,8 +138,14 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		suaVar = Boolean.FALSE;
 		HashMap fields = new HashMap();
 		fields.put("id", izin.getIzinler().clone());
-		if (izin.getPersonel().getSirket().getDepartman().isAdminMi())
-			fields.put("baslangicZamani>", PdksUtil.getBakiyeYil());
+		if (izin.getPersonel().getSirket().getDepartman().isAdminMi()) {
+			boolean bakiyeIzinGoster = ortakIslemler.hasStringValue("bakiyeIzinGoster");
+			if (bakiyeIzinGoster)
+				fields.put("baslangicZamani>=", PdksUtil.getBakiyeYil());
+			else
+				fields.put("baslangicZamani>", PdksUtil.getBakiyeYil());
+		}
+
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelIzin> bakiyeIzinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
@@ -1779,12 +1785,17 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	public void izinGoster(TempIzin tempIzin) {
 		izinTipiList = null;
 		Personel pdksPersonel = tempIzin.getPersonel();
-
 		setUpdateTempIzin(tempIzin);
 		HashMap fields = new HashMap();
 		fields.put("id", tempIzin.getIzinler().clone());
-		if (pdksPersonel.getSirket().getDepartman().isAdminMi())
-			fields.put("baslangicZamani>", PdksUtil.getBakiyeYil());
+		if (pdksPersonel.getSirket().getDepartman().isAdminMi()) {
+			boolean bakiyeIzinGoster = ortakIslemler.hasStringValue("bakiyeIzinGoster");
+			if (bakiyeIzinGoster)
+				fields.put("baslangicZamani>=", PdksUtil.getBakiyeYil());
+			else
+				fields.put("baslangicZamani>", PdksUtil.getBakiyeYil());
+		}
+
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelIzin> izinList1 = tempIzin.getIzinler().isEmpty() ? new ArrayList<PersonelIzin>() : pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
