@@ -274,31 +274,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	}
 
 	public void aylariDoldur() {
-
-		HashMap fields = new HashMap();
-		StringBuffer sb = new StringBuffer();
-		sb.append("select DISTINCT D.* from " + DenklestirmeAy.TABLE_NAME + " D WITH(nolock) ");
-		sb.append(" INNER  JOIN " + PersonelDenklestirme.TABLE_NAME + " PD ON PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=D." + DenklestirmeAy.COLUMN_NAME_ID);
-		sb.append("    AND  PD." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
-		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y");
-		if (yil == maxYil) {
-			sb.append(" AND ((D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + ")<=:s");
-			fields.put("s", sonDonem);
-		}
-		fields.put("y", yil);
-		sb.append(" ORDER BY D." + DenklestirmeAy.COLUMN_NAME_AY);
-		if (session != null)
-			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<DenklestirmeAy> list = pdksEntityController.getObjectBySQLList(sb, fields, DenklestirmeAy.class);
-		aylar.clear();
-		int seciliAy = ay;
-		ay = 0;
-		for (DenklestirmeAy denklestirmeAy : list) {
-			if (denklestirmeAy.getAy() == seciliAy)
-				ay = seciliAy;
-			aylar.add(new SelectItem(denklestirmeAy.getAy(), denklestirmeAy.getAyAdi()));
-		}
-
+		if (aylar == null)
+			aylar = new ArrayList<SelectItem>();
+		ay = fazlaMesaiOrtakIslemler.aylariDoldur(yil, ay, aylar, session);
 	}
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)

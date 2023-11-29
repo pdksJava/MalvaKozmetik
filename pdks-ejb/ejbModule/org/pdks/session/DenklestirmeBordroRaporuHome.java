@@ -221,7 +221,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public String sayfaGirisAction() {
-		aylar = PdksUtil.getAyListesi(Boolean.TRUE);
 		String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
 		if (!ayniSayfa)
@@ -281,7 +280,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		String eksikCalisanVeriGetirStr = null;
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		linkAdresKey = (String) req.getParameter("linkAdresKey");
-
 		departmanId = null;
 		if (veriLastMap != null) {
 			if (veriLastMap.containsKey("yil"))
@@ -318,7 +316,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				}
 				if (departmanId == null && departmanIdStr != null)
 					departmanId = Long.parseLong(departmanIdStr);
-				fillSirketList();
+				yilDegisti();
 
 			}
 		}
@@ -326,7 +324,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (departmanId == null)
 				setDepartmanId(authenticatedUser.getDepartman().getId());
 			if (authenticatedUser.isIK())
-				fillSirketList();
+				yilDegisti();
 		}
 
 		// return ortakIslemler.yetkiIKAdmin(Boolean.FALSE);
@@ -387,7 +385,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		List<Departman> list = ortakIslemler.fillDepartmanTanimList(session);
 		if (list.size() == 1) {
 			departmanId = list.get(0).getId();
-			fillSirketList();
+			yilDegisti();
 
 		}
 
@@ -438,6 +436,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			tesisId = null;
 		setTesisId(onceki);
 		setTesisList(selectItems);
+	}
+
+	public void yilDegisti() {
+		if (aylar == null)
+			aylar = new ArrayList<SelectItem>();
+		ay = fazlaMesaiOrtakIslemler.aylariDoldur(yil, ay, aylar, session);
+		fillSirketList();
 	}
 
 	public void fillSirketList() {

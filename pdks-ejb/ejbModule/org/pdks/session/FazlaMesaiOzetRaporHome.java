@@ -227,7 +227,6 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			sirketId = null;
 			setTesisId(null);
 			setTesisList(null);
-			aylar = PdksUtil.getAyListesi(Boolean.TRUE);
 			seciliEkSaha3Id = null;
 			Calendar cal = Calendar.getInstance();
 			ortakIslemler.gunCikar(cal, 2);
@@ -430,6 +429,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			sicilNo = authenticatedUser.getPdksPersonel().getPdksSicilNo();
 		}
 		fillEkSahaTanim();
+		yilDegisti();
 		return "";
 	}
 
@@ -488,7 +488,14 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		setDepartmanList(departmanListe);
 	}
 
+	private void yilDegisti() {
+		if (aylar == null)
+			aylar = new ArrayList<SelectItem>();
+		ay = fazlaMesaiOrtakIslemler.aylariDoldur(yil, ay, aylar, session);
+	}
+
 	public String departmanDegisti(boolean degisti) {
+		yilDegisti();
 		if (degisti) {
 			sirketId = null;
 			if (tesisList != null)
