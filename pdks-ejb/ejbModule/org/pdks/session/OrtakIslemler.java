@@ -3657,7 +3657,7 @@ public class OrtakIslemler implements Serializable {
 		int sayac = 0;
 		if (personel.getSirket().isPdksMi() == false)
 			bakiyeIzin = null;
-		while (bakiyeIzin == null || sayac > 3) {
+		while (bakiyeIzin == null && sayac < 3) {
 			++sayac;
 			String bakiyeTarih = " convert(datetime,'" + PdksUtil.convertToDateString(donem, "yyyyMMdd") + "', 112)";
 			StringBuilder queryStr = new StringBuilder("SELECT " + PersonelIzin.COLUMN_NAME_ID + " AS IZIN_ID  from " + PersonelIzin.TABLE_NAME + " WITH(nolock)  ");
@@ -3674,7 +3674,7 @@ public class OrtakIslemler implements Serializable {
 					bakiyeIzin = (PersonelIzin) pdksEntityController.getObjectByInnerObject(map, PersonelIzin.class);
 				}
 
-			} else {
+			} else if (kidemYil >= 0) {
 				if (sure == null)
 					sure = bakiyeIzinTipi.getKotaBakiye() != null ? bakiyeIzinTipi.getKotaBakiye() : 0D;
 				if (user == null)
@@ -8814,7 +8814,7 @@ public class OrtakIslemler implements Serializable {
 			IzinTipi izinTipi = (IzinTipi) pdksEntityController.getObjectByInnerObject(map, IzinTipi.class);
 			if (izinTipi != null) {
 				try {
-					personelBakiyeIzin = getBakiyeIzin(user, izinSahibi, baslangicZamani, izinTipi, null, kidemYil, session);
+					personelBakiyeIzin = getBakiyeIzin(user, izinSahibi, baslangicZamani, izinTipi, null, -1, session);
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
 					e.printStackTrace();
@@ -8826,7 +8826,7 @@ public class OrtakIslemler implements Serializable {
 					personelBakiyeIzin = new PersonelIzin();
 					personelBakiyeIzin.setBaslangicZamani(baslangicZamani);
 					personelBakiyeIzin.setBitisZamani(baslangicZamani);
-					String aciklama = izinTipi != null ? izinTipi.getIzinTipiTanim().getAciklama() : "Bakiye İzin";
+					String aciklama = (izinTipi != null ? izinTipi.getIzinTipiTanim().getAciklama() + " Devir" : "Devir İzin");
 					if (kidemYil >= 0)
 						aciklama = kidemYil > 0 ? String.valueOf(kidemYil) : "";
 					personelBakiyeIzin.setAciklama(aciklama);
@@ -8834,8 +8834,6 @@ public class OrtakIslemler implements Serializable {
 					personelBakiyeIzin.setIzinTipi(izinTipi);
 					personelBakiyeIzin.setOlusturanUser(authenticatedUser);
 					personelBakiyeIzin.setIzinSuresi(0D);
-					if (izinSahibi.getId() != null)
-						pdksEntityController.saveOrUpdate(session, entityManager, personelBakiyeIzin);
 				}
 			}
 		}

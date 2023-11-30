@@ -768,7 +768,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	}
 
 	public void fillIzinList(Date gecerlilikTarih, boolean gelecekIzinGoster, boolean harcananIzinlerHepsi) throws Exception {
-		bakiyeIzinGoster = ortakIslemler.hasStringValue("bakiyeIzinGoster");
+		bakiyeIzinGoster = ortakIslemler.getParameterKeyHasStringValue("bakiyeIzinGoster");
 		if (istenAyrilanEkle && PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo())) {
 			String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo().trim());
 			HashMap fields = new HashMap();
