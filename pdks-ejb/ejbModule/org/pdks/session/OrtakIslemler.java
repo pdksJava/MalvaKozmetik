@@ -12782,28 +12782,28 @@ public class OrtakIslemler implements Serializable {
 					table.addCell(PDFITextUtils.getPdfCell("Devamsız lık", fontH, Element.ALIGN_CENTER));
 					table.addCell(PDFITextUtils.getPdfCell("Hizmete Ara Verme", fontH, Element.ALIGN_CENTER));
 					table.addCell(PDFITextUtils.getPdfCell("Diğer Nedenler", fontH, Element.ALIGN_CENTER));
-					int adet = bakiyeIzin.getHarcananDigerIzinler() != null && !bakiyeIzin.getHarcananDigerIzinler().isEmpty() ? bakiyeIzin.getHarcananDigerIzinler().size() : 1;
-					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeYil, font, Element.ALIGN_CENTER, adet));
+					int adet = bakiyeIzin.getHarcananDigerIzinler() != null && !bakiyeIzin.getHarcananDigerIzinler().isEmpty() ? bakiyeIzin.getHarcananDigerIzinler().size() : 0;
+					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getDevirIzin() == false ? bakiyeYil : "", font, Element.ALIGN_CENTER, adet));
 					table.addCell(PDFITextUtils.getPdfCellRowspan(bitisZamani != null ? PdksUtil.convertToDateString(bitisZamani, pattern) : "", font, Element.ALIGN_CENTER, adet));
 					for (int i = 0; i < 6; i++)
 						table.addCell(PDFITextUtils.getPdfCellRowspan("", font, Element.ALIGN_CENTER, adet));
-					table.addCell(PDFITextUtils.getPdfCellRowspan(PdksUtil.convertToDateString(bakiyeIzin.getBitisZamani(), pattern), font, Element.ALIGN_CENTER, adet));
+					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getDevirIzin() == false ? PdksUtil.convertToDateString(bakiyeIzin.getBitisZamani(), pattern) : "", font, Element.ALIGN_CENTER, adet));
 					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getAciklama(), font, Element.ALIGN_CENTER, adet));
 					table.addCell(PDFITextUtils.getPdfCellRowspan(nf.format(bakiyeIzin.getIzinSuresi()), font, Element.ALIGN_CENTER, adet));
-					if (adet > 1) {
-						if (bakiyeIzin.getHarcananDigerIzinler() != null && !bakiyeIzin.getHarcananDigerIzinler().isEmpty()) {
-							boolean ilkSatir = true;
-							List<PersonelIzin> sortList = PdksUtil.sortListByAlanAdi(bakiyeIzin.getHarcananDigerIzinler(), "baslangicZamani", false);
-							for (PersonelIzin harcananIzin : sortList) {
-								table.addCell(PDFITextUtils.getPdfCell(nf.format(harcananIzin.getIzinSuresi()), font, Element.ALIGN_CENTER));
-								table.addCell(PDFITextUtils.getPdfCell(PdksUtil.convertToDateString(harcananIzin.getBaslangicZamani(), pattern), font, Element.ALIGN_CENTER));
-								table.addCell(PDFITextUtils.getPdfCell(PdksUtil.convertToDateString(harcananIzin.getBitisZamani(), pattern), font, Element.ALIGN_CENTER));
-								if (ilkSatir)
-									table.addCell(PDFITextUtils.getPdfCellRowspan("", font, Element.ALIGN_CENTER, adet));
-								ilkSatir = false;
-							}
-							sortList = null;
+					if (adet > 0) {
+
+						boolean ilkSatir = true;
+						List<PersonelIzin> sortList = PdksUtil.sortListByAlanAdi(bakiyeIzin.getHarcananDigerIzinler(), "baslangicZamani", false);
+						for (PersonelIzin harcananIzin : sortList) {
+							table.addCell(PDFITextUtils.getPdfCell(nf.format(harcananIzin.getIzinSuresi()), font, Element.ALIGN_CENTER));
+							table.addCell(PDFITextUtils.getPdfCell(PdksUtil.convertToDateString(harcananIzin.getBaslangicZamani(), pattern), font, Element.ALIGN_CENTER));
+							table.addCell(PDFITextUtils.getPdfCell(PdksUtil.convertToDateString(harcananIzin.getBitisZamani(), pattern), font, Element.ALIGN_CENTER));
+							if (ilkSatir)
+								table.addCell(PDFITextUtils.getPdfCellRowspan("", font, Element.ALIGN_CENTER, adet));
+							ilkSatir = false;
 						}
+						sortList = null;
+
 					} else {
 						for (int i = 0; i < 4; i++)
 							table.addCell(PDFITextUtils.getPdfCell("", font, Element.ALIGN_CENTER));
@@ -12831,7 +12831,8 @@ public class OrtakIslemler implements Serializable {
 					logger.error("Pdks hata out : " + e.getMessage());
 
 				}
-				bitisZamani = bakiyeIzin.getBitisZamani();
+				if (bakiyeIzin.getDevirIzin() == false)
+					bitisZamani = bakiyeIzin.getBitisZamani();
 
 			}
 			doc.close();
@@ -13217,10 +13218,19 @@ public class OrtakIslemler implements Serializable {
 
 			izinList = new ArrayList<PersonelIzin>();
 		}
+
 		for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
 			PersonelIzin personelIzin = (PersonelIzin) iterator.next();
 			if (xDonemSonu != null && personelIzin.getBitisZamani().after(xDonemSonu))
 				iterator.remove();
+			else {
+				personelIzin.setDevirIzin(personelIzin.getBaslangicZamani().getTime() == PdksUtil.getBakiyeYil().getTime());
+				if (personelIzin.getDevirIzin()) {
+					if (personelIzin.getIzinSuresi() == null || personelIzin.getIzinSuresi().doubleValue() == 0.0d)
+						iterator.remove();
+				}
+			}
+
 		}
 		// if (!izinList.isEmpty())
 		// izinList = PdksUtil.sortListByAlanAdi(izinList, "baslangicZamani",

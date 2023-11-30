@@ -44,22 +44,25 @@
 
 			<ui:repeat value="#{personelKalanIzinHome.updateTempIzin.yillikIzinler}" var="bakiyeIzin">
 				<tr>
-					<td style="font-size: 10pt;" align="center">#{authenticatedUser.getTarihFormatla(bakiyeIzin.baslangicZamani, 'yyyy')}</td>
+					<td style="font-size: 10pt;" align="center"><ui:fragment rendered="#{bakiyeIzin.devirIzin==false}">
+					
+					#{authenticatedUser.getTarihFormatla(bakiyeIzin.baslangicZamani, 'yyyy')}</ui:fragment></td>
 					<td style="font-size: 10pt; width: 100px;" align="center">#{authenticatedUser.dateFormatla(bakiyeIzin.birOncekiHakedisTarih)}</td>
 					<td style="font-size: 10pt; width: 100px;" align="center">#{bakiyeIzin.aciklama}</td>
-					<td style="font-size: 10pt; width: 100px;" align="center">#{authenticatedUser.dateFormatla(bakiyeIzin.bitisZamani)}</td>
+					<td style="font-size: 10pt; width: 100px;" align="center"><ui:fragment rendered="#{bakiyeIzin.devirIzin==false}">
+					#{authenticatedUser.dateFormatla(bakiyeIzin.bitisZamani)}</ui:fragment></td>
 					<td style="font-size: 10pt; width: 80px;" align="center">#{authenticatedUser.sayiFormatliGoster(bakiyeIzin.izinSuresi)}</td>
 					<td style="font-size: 10pt; width: 280px; padding: 0px; margin: 0px" align="center" colspan="3">
 
-					<TABLE style="width: 280px;" cellpadding="0" cellspacing="0">
-						<ui:repeat value="#{bakiyeIzin.harcananDigerIzinler}" var="izin">
-							<TR>
-								<td style="font-size: 10pt; width: 80px;" align="center">#{authenticatedUser.sayiFormatliGoster(izin.izinSuresi)}</td>
-								<td style="font-size: 10pt; width: 100px;" align="center">#{authenticatedUser.dateFormatla(izin.baslangicZamani)}</td>
-								<td style="font-size: 10pt; width: 100px;" align="center">#{authenticatedUser.dateFormatla(izin.bitisZamani)}</td>
-							</TR>
-						</ui:repeat>
-					</TABLE>
+						<TABLE style="width: 280px;" cellpadding="0" cellspacing="0">
+							<ui:repeat value="#{bakiyeIzin.harcananDigerIzinler}" var="izin">
+								<TR>
+									<td style="font-size: 10pt; width: 80px;" align="center">#{authenticatedUser.sayiFormatliGoster(izin.izinSuresi)}</td>
+									<td style="font-size: 10pt; width: 100px;" align="center">#{authenticatedUser.dateFormatla(izin.baslangicZamani)}</td>
+									<td style="font-size: 10pt; width: 100px;" align="center">#{authenticatedUser.dateFormatla(izin.bitisZamani)}</td>
+								</TR>
+							</ui:repeat>
+						</TABLE>
 					</td>
 					<td style="font-size: 10pt; width: 80px;" align="center">#{authenticatedUser.sayiFormatliGoster(bakiyeIzin.kalanIzin)}</td>
 					<td style="font-size: 10pt; width: 120px;" align="center"></td>

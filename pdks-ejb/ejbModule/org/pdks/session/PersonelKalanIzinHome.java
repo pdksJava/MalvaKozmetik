@@ -108,7 +108,8 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	private List<TempIzin> pdksPersonelList = new ArrayList<TempIzin>(), personelBakiyeIzinList = new ArrayList<TempIzin>();
 
 	private String kidemYili, bolumAciklama;
-	private boolean gecmisYil, gelecekIzinGoster, geciciBakiye, bolumKlasorEkle, suaVar, istenAyrilanEkle = Boolean.FALSE, iptalIzinleriGetir = Boolean.FALSE;
+	private boolean gecmisYil, bakiyeIzinGoster, gelecekIzinGoster, geciciBakiye, bolumKlasorEkle, suaVar, istenAyrilanEkle = Boolean.FALSE, iptalIzinleriGetir = Boolean.FALSE;
+
 	private Date donemSonu, hakedisTarihi;
 	private Double izinSuresi, bakiyeSuresi, bakiyeleriTemizle;
 	private List<PersonelIzinDetay> harcananIzinler;
@@ -139,7 +140,6 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		HashMap fields = new HashMap();
 		fields.put("id", izin.getIzinler().clone());
 		if (izin.getPersonel().getSirket().getDepartman().isAdminMi()) {
-			boolean bakiyeIzinGoster = ortakIslemler.hasStringValue("bakiyeIzinGoster");
 			if (bakiyeIzinGoster)
 				fields.put("baslangicZamani>=", PdksUtil.getBakiyeYil());
 			else
@@ -170,8 +170,13 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 		HashMap fields = new HashMap();
 		fields.put("id", izin.getIzinler().clone());
-		if (izin.getPersonel().getSirket().getDepartman().isAdminMi() /* || authenticatedUser.isIK() */)
-			fields.put("baslangicZamani>", PdksUtil.getBakiyeYil());
+		if (izin.getPersonel().getSirket().getDepartman().isAdminMi()) {
+			if (bakiyeIzinGoster)
+				fields.put("baslangicZamani>=", PdksUtil.getBakiyeYil());
+			else
+				fields.put("baslangicZamani>", PdksUtil.getBakiyeYil());
+		}
+
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelIzin> bakiyeIzinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
@@ -368,6 +373,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	 */
 	private String pdfTekAktar(TempIzin tempIzin) {
 		String sayfa = "/izin/izinKartiPdf.xhtml";
+		sayfa = "";
 		if (tempIzin != null) {
 			List<TempIzin> list = new ArrayList<TempIzin>();
 			list.add(tempIzin);
@@ -762,6 +768,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	}
 
 	public void fillIzinList(Date gecerlilikTarih, boolean gelecekIzinGoster, boolean harcananIzinlerHepsi) throws Exception {
+		bakiyeIzinGoster = ortakIslemler.hasStringValue("bakiyeIzinGoster");
 		if (istenAyrilanEkle && PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo())) {
 			String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo().trim());
 			HashMap fields = new HashMap();
@@ -1753,8 +1760,8 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		boolean sifirla = true;
 		if (authenticatedUser.isAdmin() || authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi())
 			sifirla = PersonelIzin.getYillikIzinMaxBakiye() > 0;
-
 		for (PersonelIzin personelIzin : izinler) {
+			personelIzin.setDevirIzin(personelIzin.getBaslangicZamani().getTime() == PdksUtil.getBakiyeYil().getTime());
 			PersonelIzin personelIzinNew = (PersonelIzin) personelIzin.clone();
 			personelIzinNew.setKontrolIzin(personelIzin);
 			personelIzinNew.setDonemSonu(tarih);
@@ -1789,7 +1796,6 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		HashMap fields = new HashMap();
 		fields.put("id", tempIzin.getIzinler().clone());
 		if (pdksPersonel.getSirket().getDepartman().isAdminMi()) {
-			boolean bakiyeIzinGoster = ortakIslemler.hasStringValue("bakiyeIzinGoster");
 			if (bakiyeIzinGoster)
 				fields.put("baslangicZamani>=", PdksUtil.getBakiyeYil());
 			else
@@ -2082,6 +2088,21 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 	public void setSession(Session session) {
 		this.session = session;
+	}
+
+	/**
+	 * @return the bakiyeIzinGoster
+	 */
+	public boolean isBakiyeIzinGoster() {
+		return bakiyeIzinGoster;
+	}
+
+	/**
+	 * @param bakiyeIzinGoster
+	 *            the bakiyeIzinGoster to set
+	 */
+	public void setBakiyeIzinGoster(boolean bakiyeIzinGoster) {
+		this.bakiyeIzinGoster = bakiyeIzinGoster;
 	}
 
 }

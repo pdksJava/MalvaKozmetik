@@ -87,7 +87,7 @@ public class PersonelIzin extends BaseObject {
 
 	private IzinTipi izinTipi;
 
-	private Boolean izinKagidiGeldi, yilbasi = Boolean.FALSE;
+	private Boolean izinKagidiGeldi, yilbasi = Boolean.FALSE,devirIzin;
 
 	private PersonelIzin kontrolIzin, orjIzin;
 
@@ -822,5 +822,18 @@ public class PersonelIzin extends BaseObject {
 
 	public void setReferansERP(String referansERP) {
 		this.referansERP = referansERP;
+	}
+
+	 
+	@Transient
+	public Boolean getDevirIzin() {
+		return devirIzin;
+	}
+
+	/**
+	 * @param devirIzin the devirIzin to set
+	 */
+	public void setDevirIzin(Boolean devirIzin) {
+		this.devirIzin = devirIzin;
 	}
 }

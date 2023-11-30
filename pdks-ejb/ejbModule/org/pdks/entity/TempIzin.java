@@ -14,6 +14,7 @@ public class TempIzin implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 544794133884390627L;
+
 	static Logger logger = Logger.getLogger(TempIzin.class);
 
 	private Personel personel, yeniPersonel;
@@ -32,7 +33,7 @@ public class TempIzin implements Serializable {
 
 	private String styleClass;
 
-	private Boolean secim = Boolean.FALSE;
+	private Boolean secim = Boolean.FALSE, bakiyeIzin = Boolean.FALSE;
 
 	public Personel getPersonel() {
 		return personel;
@@ -98,7 +99,8 @@ public class TempIzin implements Serializable {
 				++sayfaNo;
 				bakiyeIzin.setSayfaNo(sayfaNo);
 				bakiyeIzin.setBirOncekiHakedisTarih(onceki);
-				onceki = bakiyeIzin.getBitisZamani();
+				if (bakiyeIzin.getDevirIzin() == false)
+					onceki = bakiyeIzin.getBitisZamani();
 				List<PersonelIzin> harcananDigerIzinler = new ArrayList<PersonelIzin>();
 				try {
 					if (bakiyeIzin.getHakEdisIzinler() != null) {
@@ -219,5 +221,20 @@ public class TempIzin implements Serializable {
 	public Personel getPdksPersonel() {
 		Personel pdksPersonel = personel != null ? personel : yeniPersonel;
 		return pdksPersonel;
+	}
+
+	/**
+	 * @return the bakiyeIzin
+	 */
+	public Boolean getBakiyeIzin() {
+		return bakiyeIzin;
+	}
+
+	/**
+	 * @param bakiyeIzin
+	 *            the bakiyeIzin to set
+	 */
+	public void setBakiyeIzin(Boolean bakiyeIzin) {
+		this.bakiyeIzin = bakiyeIzin;
 	}
 }

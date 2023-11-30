@@ -157,14 +157,14 @@
 												<thead>
 													<tr>
 														<td class="rich-panel-header">#{ortakIslemler.personelNoAciklama()}</td>
-														<td class="rich-panel-header" ><SPAN style="color:#FAC427">ADI SOYADI</SPAN></td>
-														<td class="rich-panel-header"><SPAN style="color:#FAC427">GRUBA GIRIS</SPAN></td>
-														<td class="rich-panel-header"><SPAN style="color:#FAC427">ISE GIRIS TARIHI</SPAN></td>
+														<td class="rich-panel-header"><SPAN style="color: #FAC427">ADI SOYADI</SPAN></td>
+														<td class="rich-panel-header"><SPAN style="color: #FAC427">GRUBA GIRIS</SPAN></td>
+														<td class="rich-panel-header"><SPAN style="color: #FAC427">ISE GIRIS TARIHI</SPAN></td>
 														<td class="rich-panel-header">IZIN HAKEDIS</td>
-														<td class="rich-panel-header"><SPAN style="color:#FAC427">DOGUM TARIHI</SPAN></td>
+														<td class="rich-panel-header"><SPAN style="color: #FAC427">DOGUM TARIHI</SPAN></td>
 														<td class="rich-panel-header">IZIN TÜRÜ</td>
 														<td class="rich-panel-header">YIL</td>
-														<td class="rich-panel-header"><SPAN style="color:#FAC427">ÖNCEKI HAKEDIS</SPAN></td>
+														<td class="rich-panel-header"><SPAN style="color: #FAC427">ÖNCEKI HAKEDIS</SPAN></td>
 														<td class="rich-panel-header">HAKETTIGI TARIH</td>
 														<td class="rich-panel-header">KIDEM</td>
 														<td class="rich-panel-header">IZIN GÜN</td>
@@ -439,7 +439,7 @@
 														<TD><a4j:commandButton status="ajaxStatus" value="İzin Kartı" oncomplete="#{rich:component('izinKartiPanel')}.show()"
 																action="#{personelKalanIzinHome.izinKarti(izinler)}" reRender="izinKartiPanel" /></TD>
 
-														<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" action="#{personelKalanIzinHome.pdfAktar(izinler)}"
+														<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" rendered="#{authenticatedUser.admin}" action="#{personelKalanIzinHome.pdfAktar(izinler)}"
 																target="popupWindow" id="izinPDFLink3">
 																<h:graphicImage value="/img/pdf.jpg" />
 															</h:commandLink></TD>
@@ -688,21 +688,26 @@
 							<f:facet name="header">
 								<h:outputText value="İzin Hakediş Yılı" />
 							</f:facet>
+
 							<h:outputText value="#{kalanIzinler.izinDonem}" />
+
 
 						</rich:column>
 						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}">
 							<f:facet name="header">
 								<h:outputText value="Hakettiği Tarihi" />
 							</f:facet>
-							<h:outputText value="#{authenticatedUser.dateFormatla(kalanIzinler.bitisZamani)}" />
-
+							<ui:fragment rendered="#{kalanIzinler.devirIzin==false}">
+								<h:outputText value="#{authenticatedUser.dateFormatla(kalanIzinler.bitisZamani)}" />
+							</ui:fragment>
 						</rich:column>
 						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}">
 							<f:facet name="header">
 								<h:outputText value="Kıdemi" />
 							</f:facet>
-							<h:outputText value="#{kalanIzinler.aciklama}" />
+							<ui:fragment rendered="#{kalanIzinler.devirIzin==false}">
+								<h:outputText value="#{kalanIzinler.aciklama}" />
+							</ui:fragment>
 
 						</rich:column>
 
