@@ -132,7 +132,7 @@
 							<rich:toolTip for="addlink" value="Add" />
 							<a4j:commandButton status="ajaxStatus" value="Test Mail" action="#{parameterHome.testMail()}" />
 							<a4j:commandButton status="ajaxStatus" value="fazlaMesaiGuncellemeCalistir" rendered="#{ortakIslemler.testDurum}"
-								action="#{sertifikaSSLKontrol.fazlaMesaiGuncellemeCalistir(true,parameterHome.session)}" />
+								action="#{fazlaMesaiGuncelleme.fazlaMesaiGuncellemeCalistir(true,parameterHome.session)}" />
 							<a4j:commandButton status="ajaxStatus" value="izinGuncelemeCalistir" rendered="#{ortakIslemler.testDurum}"
 								action="#{izinBakiyeGuncelleme.izinGuncelemeCalistir(true,parameterHome.session)}" />
 						</ui:fragment>

@@ -34,7 +34,6 @@ import org.pdks.session.FazlaMesaiOrtakIslemler;
 import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksEntityController;
 import org.pdks.session.PdksUtil;
-import org.pdks.session.SSLImport;
 
 @Name("fazlaMesaiGuncelleme")
 @AutoCreate
@@ -75,34 +74,29 @@ public class FazlaMesaiGuncelleme {
 
 	@Asynchronous
 	@SuppressWarnings("unchecked")
-	@Transactional
 	// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public QuartzTriggerHandle sertifikaSSLKontrolTimer(@Expiration Date when, @IntervalCron String interval) {
-
+	public QuartzTriggerHandle fazlaMesaiGuncellemeTimer(@Expiration Date when, @IntervalCron String interval) {
 		if (!isCalisiyor()) {
 			setCalisiyor(Boolean.TRUE);
-			logger.debug("Sertifika SSL Kontrol in " + new Date());
+			logger.debug("fazlaMesaiGuncelleme in " + new Date());
 			Session session = null;
 			try {
-				SSLImport.setServisURLList(null);
-				SSLImport.addCertToKeyStore(null, null, true);
-				Date time = new Date();
-				int dakika = PdksUtil.getDateField(time, Calendar.MINUTE);
-				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
-				if (dakika % 30 == 0) {
-
-					startupAction.fillParameter(session);
+				if (PdksUtil.isSistemDestekVar()) {
+					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
+					Parameter parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
+					String value = (parameter != null) ? parameter.getValue() : null;
+					if (value != null) {
+						Date time = zamanlayici.getDbTime(session);
+						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
+						if (zamanDurum)
+							fazlaMesaiGuncellemeCalistir(false, session);
+					}
 				}
 
-				logger.debug("Sertifika SSL Kontrol out " + new Date());
-				fazlaMesaiGuncellemeCalistirBasla(false, session);
 			} catch (Exception e) {
-				logger.error("PDKS hata in : \n");
+				logger.error("PDKS hata in : \n" + e.getMessage() + " " + new Date());
 				e.printStackTrace();
 				logger.error("PDKS hata out : " + e.getMessage());
-
-				logger.error("Sertifika SSL Kontrol hata " + e.getMessage() + " " + new Date());
-
 			} finally {
 				if (session != null)
 					session.close();
@@ -119,35 +113,7 @@ public class FazlaMesaiGuncelleme {
 	 * @param manuel
 	 * @param session
 	 */
-
-	private void fazlaMesaiGuncellemeCalistirBasla(boolean manuel, Session session) {
-		try {
-			Parameter parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
-			String value = (parameter != null) ? parameter.getValue() : null;
-
-			if (value != null) {
-				Date time = zamanlayici.getDbTime(session);
-
-				boolean zamanDurum = manuel || PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
-				if (zamanDurum)
-					fazlaMesaiGuncellemeCalistir(manuel, session);
-			}
-		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-
-		} finally {
-
-		}
-	}
-
-	/**
-	 * @param manuel
-	 * @param session
-	 */
 	public void fazlaMesaiGuncellemeCalistir(boolean manuel, Session session) {
-
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -6);
 		int yil = cal.get(Calendar.YEAR);
@@ -212,7 +178,8 @@ public class FazlaMesaiGuncelleme {
 					}
 				}
 				try {
-					zamanlayici.mailGonder(session, null, "Fazla Mesai Güncellemesi", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " fazla mesailer güncellenmiştir.", null, Boolean.TRUE);
+					if (manuel == false)
+						zamanlayici.mailGonder(session, null, "Fazla Mesai Güncellemesi", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " fazla mesailer güncellenmiştir.", null, Boolean.TRUE);
 				} catch (Exception e) {
 					logger.error(e);
 					e.printStackTrace();

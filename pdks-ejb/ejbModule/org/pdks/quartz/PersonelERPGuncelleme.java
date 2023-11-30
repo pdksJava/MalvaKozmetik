@@ -83,8 +83,7 @@ public class PersonelERPGuncelleme {
 	// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public QuartzTriggerHandle personelERPGuncellemeTimer(@Expiration Date when, @IntervalCron String interval) {
 		hataKonum = "personelERPGuncellemeTimer başladı ";
-
-		if (pdksEntityController != null && !isCalisiyor()) {
+ 		if (pdksEntityController != null && !isCalisiyor()) {
 			ozelKontrol = Boolean.FALSE;
 			setCalisiyor(Boolean.TRUE);
 			boolean hataGonder = Boolean.FALSE;

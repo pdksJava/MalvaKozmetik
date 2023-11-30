@@ -1,4 +1,4 @@
-package org.pdks.quartz;
+package org.pdks.security.action;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
@@ -7,9 +7,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SpringApplicationContext implements ApplicationContextAware {
+public class PdksApplicationContext implements ApplicationContextAware {
+	
 	private static ApplicationContext CONTEXT;
-	static Logger logger = Logger.getLogger(SpringApplicationContext.class);
+	
+	static Logger logger = Logger.getLogger(PdksApplicationContext.class);
 
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		CONTEXT = context;

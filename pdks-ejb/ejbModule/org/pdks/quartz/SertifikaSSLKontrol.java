@@ -1,6 +1,5 @@
 package org.pdks.quartz;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,10 +7,6 @@ import java.util.HashMap;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.pdks.security.action.StartupAction;
-import org.pdks.session.OrtakIslemler;
-import org.pdks.session.PdksUtil;
-import org.pdks.session.SSLImport;
 import org.hibernate.Session;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
@@ -23,20 +18,16 @@ import org.jboss.seam.annotations.async.Asynchronous;
 import org.jboss.seam.annotations.async.Expiration;
 import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
+import org.pdks.security.action.StartupAction;
+import org.pdks.session.OrtakIslemler;
+import org.pdks.session.PdksUtil;
+import org.pdks.session.SSLImport;
 
 @Name("sertifikaSSLKontrol")
 @AutoCreate
 @Scope(ScopeType.APPLICATION)
-public class SertifikaSSLKontrol implements Serializable {
+public class SertifikaSSLKontrol {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6017076879969504465L;
-
-	/**
-	 * 
-	 */
 	static Logger logger = Logger.getLogger(SertifikaSSLKontrol.class);
 
 	OrtakIslemler ortakIslemler;
