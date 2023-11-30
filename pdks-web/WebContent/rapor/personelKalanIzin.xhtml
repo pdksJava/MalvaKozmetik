@@ -236,55 +236,71 @@
 					</a4j:outputPanel>
 					<DIV class="#{authenticatedUser.scroolClass}" id="#{authenticatedUser.scroolDiv}1">
 						<ui:fragment id="bakiyeIzinTable" rendered="#{not empty personelKalanIzinHome.personelBakiyeIzinList}">
-							<table class="mars">
+							<table class="mars" style="width: 1300px">
 								<caption>
 									<B>Personeller Bakiye İzinleri</B>
 								</caption>
 								<thead>
 									<tr>
 
-										<td class="rich-panel-header" style="width: 90px"><h:outputText value="#{ortakIslemler.personelNoAciklama()}" /></td>
-										<td class="rich-panel-header"><h:outputText value="Adı Soyadı" /></td>
-										<td class="rich-panel-header" style="width: 90px"><h:outputText value="Toplam Bakiye" /></td>
-										<td class="rich-panel-header" style="width: 120px"><h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" /></td>
-										<td class="rich-panel-header" style="width: 30px"><h:outputText value="Yıl" /></td>
-										<td class="rich-panel-header" style="width: 30px"><h:outputText value="Süre" /></td>
-										<td class="rich-panel-header" style="width: 30px"><h:outputText value="Kıdem" /></td>
-										<td class="rich-panel-header" style="width: 140px"><h:outputText value="İzin Tipi" /></td>
-										<td class="rich-panel-header" style="width: 30px"><h:outputText value="Kullanılan Süre" /></td>
-										<td class="rich-panel-header" style="width: 60px"><h:outputText value="Başlangıç Tarihi" /></td>
-										<td class="rich-panel-header" style="width: 60px"><h:outputText value="Bitiş Tarihi" /></td>
+										<td style="width: 60px" class="rich-panel-header"><h:outputText value="#{ortakIslemler.personelNoAciklama()}" /></td>
+										<td style="width: 200px" class="rich-panel-header"><h:outputText value="Adı Soyadı" /></td>
+										<td style="width: 60px" class="rich-panel-header"><h:outputText value="Toplam Bakiye" /></td>
+										<td style="width: 160px" class="rich-panel-header"><h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" /></td>
+										<td style="width: 60px" class="rich-panel-header"><h:outputText value="Yıl" /></td>
+										<td style="width: 60px" class="rich-panel-header"><h:outputText value="Süre" /></td>
+										<td style="width: 120px" class="rich-panel-header"><h:outputText value="Kıdem" /></td>
+										<td style="width: 280px" class="rich-panel-header"><h:outputText value="İzin Tipi" /></td>
+										<td style="width: 60px" class="rich-panel-header"><h:outputText value="Kullanılan Süre" /></td>
+										<td style="width: 120px" class="rich-panel-header"><h:outputText value="Başlangıç Tarihi" /></td>
+										<td style="width: 120px" class="rich-panel-header"><h:outputText value="Bitiş Tarihi" /></td>
 									</tr>
 								</thead>
 								<tbody>
 									<ui:repeat value="#{personelKalanIzinHome.personelBakiyeIzinList}" var="bakiyeIzinler">
 										<tr class="#{bakiyeIzinler.styleClass}">
 
-											<td align="center"><h:outputText value="#{bakiyeIzinler.personel.sicilNo}" /></td>
-											<td><h:outputText value="#{bakiyeIzinler.personel.adSoyad}" /></td>
-											<td align="right"><h:outputText
+											<td align="center" style="width: 60px"><h:outputText value="#{bakiyeIzinler.personel.sicilNo}" /></td>
+											<td style="width: 200px"><h:outputText value="#{bakiyeIzinler.personel.adSoyad}" /></td>
+											<td align="right" style="width: 60px"><h:outputText
 													value="#{authenticatedUser.sayiFormatliGoster(bakiyeIzinler.toplamBakiyeIzin - bakiyeIzinler.kullanilanIzin)}" /></td>
-											<td colspan="8" style="width: 500px">
-												<table class="mars" style="width: 100%">
+											<td colspan="8" style="width: 980px">
+												<table class="mars" style="width: 980px">
+
 													<tbody>
 														<ui:repeat value="#{bakiyeIzinler.yillikIzinler}" var="yillikIzin">
 															<tr class="#{bakiyeIzinler.styleClass}">
-																<td align="center" style="width: 120px"><h:outputText value="#{authenticatedUser.dateFormatla(yillikIzin.hakedisTarih)}" /></td>
-																<td align="center" style="width: 30px"><h:outputText
-																		value="#{authenticatedUser.getTarihFormatla(yillikIzin.baslangicZamani, 'yyyy')}" /></td>
-																<td align="right" style="width: 30px"><h:outputText value="#{authenticatedUser.sayiFormatliGoster(yillikIzin.bakiyeSuresi)}" /></td>
-																<td align="right" style="width: 30px"><h:outputText value="#{yillikIzin.aciklama}" /></td>
-																<td><h:outputText value="#{yillikIzin.izinTipi.bakiyeIzinTipi.izinTipiTanim.aciklama}" /></td>
-																<td style="width: 150px">
-																	<table class="mars" style="width: 100%">
+																<td align="center" style="width: 160px"><ui:fragment rendered="#{yillikIzin.devirIzin==false}">
+																		<h:outputText value="#{authenticatedUser.dateFormatla(yillikIzin.hakedisTarih)}" />
+																	</ui:fragment></td>
+																<td align="center" style="width: 60px"><ui:fragment rendered="#{yillikIzin.devirIzin==false}">
+																		<h:outputText value="#{authenticatedUser.getTarihFormatla(yillikIzin.baslangicZamani, 'yyyy')}" />
+																	</ui:fragment></td>
+																<td align="right" style="width: 60px"><h:outputText value="#{authenticatedUser.sayiFormatliGoster(yillikIzin.bakiyeSuresi)}" /></td>
+																<td align="right" style="width: 120px"><h:outputText value="#{yillikIzin.aciklama}" /></td>
+																<td tyle="width: 280px"><h:outputText value="#{yillikIzin.izinTipi.bakiyeIzinTipi.izinTipiTanim.aciklama}" /></td>
+																<td style="width: 300px" colspan="3">
+																	<table class="mars" style="width: 300px">
 																		<tbody>
-																			<ui:repeat value="#{yillikIzin.harcananDigerIzinler}" var="kullanilan">
+																			<ui:fragment rendered="#{empty yillikIzin.harcananDigerIzinler}">
 																				<tr class="#{bakiyeIzinler.styleClass}">
-																					<td align="right" style="width: 30px"><h:outputText value="#{authenticatedUser.sayiFormatliGoster(kullanilan.izinSuresi)}" /></td>
-																					<td align="center" style="width: 60px"><h:outputText value="#{authenticatedUser.dateFormatla(kullanilan.baslangicZamani)}" /></td>
-																					<td align="center" style="width: 60px"><h:outputText value="#{authenticatedUser.dateFormatla(kullanilan.bitisZamani)}" /></td>
+																					<td style="width: 60px"></td>
+																					<td style="width: 120px"></td>
+																					<td style="width: 120px"></td>
 																				</tr>
-																			</ui:repeat>
+																			</ui:fragment>
+																			<ui:fragment rendered="#{not empty yillikIzin.harcananDigerIzinler}">
+																				<ui:repeat value="#{yillikIzin.harcananDigerIzinler}" var="kullanilan">
+																					<tr class="#{bakiyeIzinler.styleClass}">
+																						<td align="right" style="width: 60px">&nbsp;<h:outputText
+																								value="#{authenticatedUser.sayiFormatliGoster(kullanilan.izinSuresi)}" /></td>
+																						<td align="center" style="width: 120px">&nbsp;<h:outputText
+																								value="#{authenticatedUser.dateFormatla(kullanilan.baslangicZamani)}" /></td>
+																						<td align="center" style="width: 120px">&nbsp;<h:outputText
+																								value="#{authenticatedUser.dateFormatla(kullanilan.bitisZamani)}" /></td>
+																					</tr>
+																				</ui:repeat>
+																			</ui:fragment>
 																		</tbody>
 
 																	</table>
@@ -293,7 +309,7 @@
 														</ui:repeat>
 													</tbody>
 												</table>
-											</td>
+										</td>
 										</tr>
 									</ui:repeat>
 
@@ -439,8 +455,8 @@
 														<TD><a4j:commandButton status="ajaxStatus" value="İzin Kartı" oncomplete="#{rich:component('izinKartiPanel')}.show()"
 																action="#{personelKalanIzinHome.izinKarti(izinler)}" reRender="izinKartiPanel" /></TD>
 
-														<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" rendered="#{authenticatedUser.admin}" action="#{personelKalanIzinHome.pdfAktar(izinler)}"
-																target="popupWindow" id="izinPDFLink3">
+														<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" rendered="#{authenticatedUser.admin or authenticatedUser.IK}"
+																action="#{personelKalanIzinHome.pdfAktar(izinler)}" target="popupWindow" id="izinPDFLink3">
 																<h:graphicImage value="/img/pdf.jpg" />
 															</h:commandLink></TD>
 													</ui:fragment>
@@ -643,38 +659,40 @@
 							<f:facet name="header">
 								<h:outputText value="İşlem" />
 							</f:facet>
-							<TABLE>
-								<TR>
-									<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+							<ui:fragment rendered="#{kalanIzinler.devirIzin==false}">
+								<TABLE>
+									<TR>
+										<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 
-										<TD nowrap="nowrap"><ui:fragment>
+											<TD nowrap="nowrap"><ui:fragment>
 
-												<a4j:commandLink title="İptal Geri Al" status="ajaxStatus" id="iptalGeri"
-													rendered="#{personelKalanIzinHome.iptalIzinleriGetir and kalanIzinler.izinKagidiGeldi==false}"
-													action="#{personelKalanIzinHome.guncelle(kalanIzinler)}" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
-													<h:graphicImage value="/img/login.png" height="16" for="iptalGeri" />
+													<a4j:commandLink title="İptal Geri Al" status="ajaxStatus" id="iptalGeri"
+														rendered="#{personelKalanIzinHome.iptalIzinleriGetir and kalanIzinler.izinKagidiGeldi==false}"
+														action="#{personelKalanIzinHome.guncelle(kalanIzinler)}" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+														<h:graphicImage value="/img/login.png" height="16" for="iptalGeri" />
 
-												</a4j:commandLink>
-												<a4j:commandButton image="/img/edit.gif" title="Güncelle" status="ajaxStatus"
-													rendered="#{authenticatedUser.IK  and kalanIzinler.izinKagidiGeldi==null}" action="#{personelKalanIzinHome.guncelle(kalanIzinler)}"
-													oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
-												<a4j:commandButton image="/img/beklemede.gif" title="Sıfırla" status="ajaxStatus"
-													rendered="#{kalanIzinler.kontrolIzin==null and (authenticatedUser.admin or authenticatedUser.IKAdmin) and kalanIzinler.izinKagidiGeldi==null and kalanIzinler.harcananIzin le 0.0}"
-													action="#{personelKalanIzinHome.sifirla(kalanIzinler)}" oncomplete="#{rich:component('izinDetayPanel')}.hide()" reRender="izinPanel" />
-											</ui:fragment></TD>
-									</ui:fragment>
-									<ui:fragment
-										rendered="#{(authenticatedUser.admin or authenticatedUser.IK) and personelKalanIzinHome.updateTempIzin.personel.sirket.departman.admin==false}">
-										<TD><a4j:commandButton image="/img/down.gif" title="Kullanılan İzinler" rendered="#{kalanIzinler.harcananIzinler!=null}"
-												status="ajaxStatus" oncomplete="#{rich:component('izinHarcamaPanel')}.show()" reRender="izinHarcamaPanel">
-												<f:setPropertyActionListener value="#{kalanIzinler}" target="#{personelKalanIzinHome.updateIzin}" />
-												<f:setPropertyActionListener value="#{kalanIzinler.harcananIzinler}" target="#{personelKalanIzinHome.harcananIzinler}" />
-											</a4j:commandButton></TD>
-										<TD><a4j:commandButton image="/img/delete.gif" title="Sil" status="ajaxStatus" action="#{personelKalanIzinHome.sil(kalanIzinler)}"
-												rendered="#{kalanIzinler.isBakiyeSil(authenticatedUser)}" oncomplete="#{rich:component('izinDetayPanel')}.hide()" reRender="izinTable" /></TD>
-									</ui:fragment>
-								</TR>
-							</TABLE>
+													</a4j:commandLink>
+													<a4j:commandButton image="/img/edit.gif" title="Güncelle" status="ajaxStatus"
+														rendered="#{authenticatedUser.IK  and kalanIzinler.izinKagidiGeldi==null}" action="#{personelKalanIzinHome.guncelle(kalanIzinler)}"
+														oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
+													<a4j:commandButton image="/img/beklemede.gif" title="Sıfırla" status="ajaxStatus"
+														rendered="#{kalanIzinler.kontrolIzin==null and (authenticatedUser.admin or authenticatedUser.IKAdmin) and kalanIzinler.izinKagidiGeldi==null and kalanIzinler.harcananIzin le 0.0}"
+														action="#{personelKalanIzinHome.sifirla(kalanIzinler)}" oncomplete="#{rich:component('izinDetayPanel')}.hide()" reRender="izinPanel" />
+												</ui:fragment></TD>
+										</ui:fragment>
+										<ui:fragment
+											rendered="#{(authenticatedUser.admin or authenticatedUser.IK) and personelKalanIzinHome.updateTempIzin.personel.sirket.departman.admin==false}">
+											<TD><a4j:commandButton image="/img/down.gif" title="Kullanılan İzinler" rendered="#{kalanIzinler.harcananIzinler!=null}"
+													status="ajaxStatus" oncomplete="#{rich:component('izinHarcamaPanel')}.show()" reRender="izinHarcamaPanel">
+													<f:setPropertyActionListener value="#{kalanIzinler}" target="#{personelKalanIzinHome.updateIzin}" />
+													<f:setPropertyActionListener value="#{kalanIzinler.harcananIzinler}" target="#{personelKalanIzinHome.harcananIzinler}" />
+												</a4j:commandButton></TD>
+											<TD><a4j:commandButton image="/img/delete.gif" title="Sil" status="ajaxStatus" action="#{personelKalanIzinHome.sil(kalanIzinler)}"
+													rendered="#{kalanIzinler.isBakiyeSil(authenticatedUser)}" oncomplete="#{rich:component('izinDetayPanel')}.hide()" reRender="izinTable" /></TD>
+										</ui:fragment>
+									</TR>
+								</TABLE>
+							</ui:fragment>
 						</rich:column>
 
 						<rich:column rendered="#{personelKalanIzinHome.suaVar}">
@@ -688,8 +706,9 @@
 							<f:facet name="header">
 								<h:outputText value="İzin Hakediş Yılı" />
 							</f:facet>
-
-							<h:outputText value="#{kalanIzinler.izinDonem}" />
+							<ui:fragment rendered="#{kalanIzinler.devirIzin==false}">
+								<h:outputText value="#{kalanIzinler.izinDonem}" />
+							</ui:fragment>
 
 
 						</rich:column>
@@ -705,9 +724,9 @@
 							<f:facet name="header">
 								<h:outputText value="Kıdemi" />
 							</f:facet>
-							<ui:fragment rendered="#{kalanIzinler.devirIzin==false}">
-								<h:outputText value="#{kalanIzinler.aciklama}" />
-							</ui:fragment>
+
+							<h:outputText value="#{kalanIzinler.aciklama}" />
+
 
 						</rich:column>
 
