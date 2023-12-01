@@ -41,6 +41,9 @@ public class SertifikaSSLKontrol {
 	@In(required = false, create = true)
 	StartupAction startupAction;
 
+	// @In(required = false, create = true)
+	// FazlaMesaiGuncelleme fazlaMesaiGuncelleme;
+
 	private static boolean calisiyor = Boolean.FALSE;
 
 	@Asynchronous
@@ -58,11 +61,15 @@ public class SertifikaSSLKontrol {
 				SSLImport.addCertToKeyStore(null, null, true);
 				Date time = new Date();
 				int dakika = PdksUtil.getDateField(time, Calendar.MINUTE);
-				if (dakika % 30 == 0) {
-					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
+				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
+				if (dakika % 30 == 0)
 					startupAction.fillParameter(session);
-				}
 
+				// Object bean = PdksApplicationContext.getBean("fazlaMesaiGuncelleme");
+				// if (bean != null)
+				// fazlaMesaiGuncelleme = (FazlaMesaiGuncelleme) bean;
+				// if (fazlaMesaiGuncelleme != null)
+				// fazlaMesaiGuncelleme.fazlaMesaiGuncellemeBasla(false, session);
 				logger.debug("Sertifika SSL Kontrol out " + new Date());
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");

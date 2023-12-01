@@ -22,7 +22,7 @@ public class PdksApplicationContext implements ApplicationContextAware {
 		try {
 			object = CONTEXT.getBean(beanName);
 		} catch (Exception e) {
-			logger.error(beanName + "\n" + e);
+			logger.debug(beanName + "\n" + e);
 		}
 		return object;
 	}
