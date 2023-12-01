@@ -166,6 +166,9 @@ public class FazlaMesaiGuncelleme {
 							fazlaMesaiHesaplaHome.setDenklestirmeAy(denklestirmeAy);
 							fazlaMesaiHesaplaHome.setYil(denklestirmeAy.getYil());
 							fazlaMesaiHesaplaHome.setAy(denklestirmeAy.getAy());
+							fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
+							fazlaMesaiHesaplaHome.setSicilNo("");
+							fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
 							for (SelectItem selectItem : depList) {
 								Long departmanId = (Long) selectItem.getValue();
 								fazlaMesaiHesaplaHome.setDepartmanId(departmanId);
@@ -246,7 +249,10 @@ public class FazlaMesaiGuncelleme {
 				Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				logger.info(str + " in " + new Date());
-				fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
+				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
+				if (puantajList.isEmpty())  
+					manuel = true;
+ 				 
 				logger.info(str + " out " + new Date());
 			} catch (Exception e) {
 				logger.error(e);

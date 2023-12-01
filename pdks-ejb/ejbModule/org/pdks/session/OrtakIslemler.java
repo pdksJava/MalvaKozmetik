@@ -16058,6 +16058,7 @@ public class OrtakIslemler implements Serializable {
 
 					if (kontrol || vardiyaIzin) {
 						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
+
 						int gunlukOldu = 0;
 						int bitisDeger = PdksUtil.tarihKarsilastirNumeric(bitisZamani, vardiyaDate);
 						int baslangicDeger = PdksUtil.tarihKarsilastirNumeric(vardiyaDate, izin.getBaslangicZamani());
@@ -16082,6 +16083,7 @@ public class OrtakIslemler implements Serializable {
 							}
 
 						}
+
 						if (gunIzin) {
 							if (izinVardiyaKontrol) {
 								baslangicZamani = islemVardiya.getVardiyaBasZaman();
@@ -16090,9 +16092,15 @@ public class OrtakIslemler implements Serializable {
 								izin.setBaslangicZamani(baslangicZamani);
 								izin.setBitisZamani(islemVardiya.getVardiyaBitZaman());
 							}
+							if (islemVardiya.isOff() && izinTipi.isOffDahilMi() == false)
+								izinDurum = false;
+							if (islemVardiya.isHaftaTatil() && izinTipi.isHTDahil() == false)
+								izinDurum = false;
+							if (izinDurum) {
+								personelIzin2 = izin.setVardiyaIzin(vardiyaGun);
+								personelIzin2.setOrjIzin(personelIzin);
+							}
 
-							personelIzin2 = izin.setVardiyaIzin(vardiyaGun);
-							personelIzin2.setOrjIzin(personelIzin);
 						} else {
 							// vardiyaGun.setIzin(null);
 

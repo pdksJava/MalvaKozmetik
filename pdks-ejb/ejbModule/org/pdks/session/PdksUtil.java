@@ -1493,7 +1493,7 @@ public class PdksUtil implements Serializable {
 		RuleBasedCollator tr_Collator = (RuleBasedCollator) Collator.getInstance(Constants.TR_LOCALE);
 		try {
 			tr_Collator = new RuleBasedCollator("<a,A<b,B<c,C<ç,Ç<d,D<e,E<f,F<g,G<\u011f,\u011e<ğ,Ğ<h,H<ı=\u0131;I<i,\u0130=İ<j,J" + "<k,K<l,L<m,M<n,N<o,O<ö,Ö<p,P<q,Q<r,R<s,S<\u015f=ş;\u015e=Ş<t,T<u,U<ü,Ü<v,V<x,X<w,W<y,Y<z,Z<'-'<' '");
- 		} catch (ParseException ex) {
+		} catch (ParseException ex) {
 			ex.printStackTrace();
 		}
 		tr_Collator.setStrength(Collator.SECONDARY | Collator.CANONICAL_DECOMPOSITION);//
@@ -1515,7 +1515,7 @@ public class PdksUtil implements Serializable {
 					+ "< \u0444=?; \u0424=?" + "< \u0445=?; \u0425=?" + "< \u0446=?; \u0426=?" + "< \u0447=?; \u0427=?" + "< \u0448=?; \u0428=?" + "< \u0449=?; \u0429=?" + "< \u044A=?; \u042A=?" + "< \u044B=?; \u042B=?" + "< \u044C=?; \u042C=?" + "< \u044D=?; \u042D=?" + "< \u044E=?; \u042E=?"
 					+ "< \u044F=?; \u042F=?" + "<'-'<' '";
 			collator = new RuleBasedCollator(ruHarf);
- 		} catch (ParseException ex) {
+		} catch (ParseException ex) {
 			ex.printStackTrace();
 		}
 		collator.setStrength(Collator.SECONDARY | Collator.CANONICAL_DECOMPOSITION);//
@@ -1991,10 +1991,14 @@ public class PdksUtil implements Serializable {
 	}
 
 	private static void addMessage(String message, Severity severity, Boolean yeni) {
-		FacesMessages facesMessages = (FacesMessages) Component.getInstance("facesMessages");
-		if (yeni)
-			facesMessages.clear();
-		facesMessages.add(severity, " " + message, "");
+		Object object = Component.getInstance("facesMessages");
+		if (object != null) {
+			FacesMessages facesMessages = (FacesMessages) object;
+			if (yeni)
+				facesMessages.clear();
+			facesMessages.add(severity, " " + message, "");
+		}
+
 	}
 
 	public static void addMessageError(String message) {

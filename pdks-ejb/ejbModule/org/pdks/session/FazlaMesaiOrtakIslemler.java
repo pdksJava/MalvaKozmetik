@@ -106,7 +106,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, 1);
 		int maxYil = cal.get(Calendar.YEAR);
- 		int sonDonem = (maxYil * 100) + cal.get(Calendar.MONTH) + 1;
+		int sonDonem = (maxYil * 100) + cal.get(Calendar.MONTH) + 1;
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT DISTINCT D.* from " + DenklestirmeAy.TABLE_NAME + " D WITH(nolock) ");
@@ -283,7 +283,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							// artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
 							IzinTipi senelikIzin = null;
 							if (vardiyaGun.getIzin() != null) {
-								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
+ 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 								if (izinTipi != null) {
 									if (izinTipi.isUcretsizIzinTipi())
 										calismaGun = 0;
@@ -305,7 +305,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 										if (izinTipi.isOffDahilMi() == false)
 											artiGun = 0.0d;
 									} else if (haftaTatil) {
-										if (izinTipi.isHTDahil())
+										if (izinTipi.isHTDahil() == false)
 											artiGun = 0.0d;
 
 									}

@@ -908,7 +908,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 		bordroAlanKapat();
 		eksikMaasGoster = false;
-		saveLastParameter();
+		if (loginUser.getId().equals(authenticatedUser.getId()))
+			saveLastParameter();
 		boolean testDurum = PdksUtil.getTestDurum() && PdksUtil.getCanliSunucuDurum() == false;
 		testDurum = false;
 		Date basTarih = new Date();
@@ -2265,7 +2266,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 				if (puantajList.isEmpty()) {
 					if (kayitVar == false)
-						PdksUtil.addMessageAvailableWarn("Fazla mesai kaydı bulunmadı!");
+						PdksUtil.addMessageAvailableWarn("Fazla mesai kaydı bulunmadı! " + (seciliBolum != null ? " [ " + seciliBolum.getAciklama() + " ]" : ""));
 					else if (hataliPuantajGoster)
 						PdksUtil.addMessageAvailableWarn("Hatalı personel kaydı bulunmadı!");
 

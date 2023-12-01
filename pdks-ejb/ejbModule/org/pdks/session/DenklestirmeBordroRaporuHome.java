@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
@@ -28,6 +29,7 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
+import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.FlushModeType;
@@ -36,6 +38,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BordroDetayTipi;
@@ -211,6 +214,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
 			denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 			Departman departman = sirketSecili.getDepartman();
+			fazlaMesaiHesaplaHome.setYil(yil);
+			fazlaMesaiHesaplaHome.setAy(ay);
+			fazlaMesaiHesaplaHome.setSicilNo(sicilNo);
 			fazlaMesaiHesaplaHome.setDepartman(departman);
 			fazlaMesaiHesaplaHome.setSirket(sirketSecili);
 			fazlaMesaiHesaplaHome.setSirketId(sirketId);
@@ -218,6 +224,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			fazlaMesaiHesaplaHome.setStajerSirket(false);
 			fazlaMesaiHesaplaHome.setSession(session);
 			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
+			fazlaMesaiHesaplaHome.setSicilNo("");
+			fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
 			boolean denklestirme = true;
 			try {
 				LinkedHashMap<String, Object> paramMap = new LinkedHashMap<String, Object>();
@@ -234,7 +242,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						for (SelectItem selectItem3 : tesisList) {
 							Long tesis1Id = (Long) selectItem3.getValue();
 							paramMap.put("seciliTesisId", tesis1Id);
-
 							denklestirme = bolumFazlaMesai(paramMap);
 							if (!denklestirme)
 								break;
@@ -243,6 +250,21 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 				} else
 					denklestirme = bolumFazlaMesai(paramMap);
+				FacesMessages facesMessages = (FacesMessages) Component.getInstance("facesMessages");
+				facesMessages.clear();
+				List<String> mesajlar = new ArrayList<String>();
+				List list = facesMessages.getCurrentGlobalMessages();
+				for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+					FacesMessage fm = (FacesMessage) iterator.next();
+					if (!mesajlar.contains(fm.getDetail()))
+						mesajlar.add(fm.getDetail());
+					else
+						iterator.remove();
+				}
+				if (personelDenklestirmeList == null)
+					personelDenklestirmeList = new ArrayList<AylikPuantaj>();
+				else
+					personelDenklestirmeList.clear();
 				if (denklestirme)
 					fillPersonelDenklestirmeList();
 			} catch (Exception e) {
@@ -277,7 +299,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			tesis = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 		}
 		String baslik = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + seciliSirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "");
-		boolean hata = false;
+		boolean hataYok = true;
 		boolean test = !PdksUtil.getCanliSunucuDurum();
 		for (SelectItem selectItem : bolumList) {
 			Long seciliEkSaha3Id = (Long) selectItem.getValue();
@@ -293,7 +315,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					logger.info(str + " in " + new Date());
 				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
 				if (puantajList.isEmpty()) {
-					hata = true;
+					hataYok = false;
 					break;
 				}
 				if (test)
@@ -301,13 +323,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();
-				hata = true;
+				hataYok = false;
 			}
-			if (hata)
+			if (hataYok == false)
 				break;
 
 		}
-		return hata;
+		return hataYok;
 	}
 
 	/**
