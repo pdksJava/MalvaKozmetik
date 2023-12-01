@@ -897,7 +897,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param denklestirmeDonemi
 	 * @param loginUser
 	 */
-	public void fillPersonelDenklestirmeDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi, User loginUser) {
+	public List<AylikPuantaj> fillPersonelDenklestirmeDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi, User loginUser) {
 		if (loginUser == null)
 			loginUser = authenticatedUser;
 		if (userLogin == null)
@@ -2433,6 +2433,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (testDurum)
 			logger.info("fillPersonelDenklestirmeDevam 9300 " + new Date());
 		setAylikPuantajList(puantajList);
+		return puantajList;
 	}
 
 	/**

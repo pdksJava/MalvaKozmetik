@@ -291,7 +291,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				if (test)
 					logger.info(str + " in " + new Date());
-				fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
+				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
+				if (puantajList.isEmpty()) {
+					hata = true;
+					break;
+				}
 				if (test)
 					logger.info(str + " out " + new Date());
 			} catch (Exception e) {
