@@ -113,10 +113,11 @@
 					<h:panelGrid columns="5">
 						<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
 							reRender="denklestirmeDonemiTable" />
-						<ui:fragment
-							rendered="#{denklestirmeBordroRaporuHome.adminRole and ortakIslemler.getParameterKeyHasStringValue('fazlaMesaiGuncelleme') and denklestirmeBordroRaporuHome.sirket!=null and denklestirmeBordroRaporuHome.denklestirmeAy.durum }">
-							<a4j:commandButton status="ajaxStatus" value="#{ortakIslemler.sirketAciklama()} Fazla Mesai Hesapla"
-								action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable" />
+						<ui:fragment rendered="#{denklestirmeBordroRaporuHome.adminRole and denklestirmeBordroRaporuHome.denklestirmeAy.durum }">
+							<ui:fragment rendered="#{denklestirmeBordroRaporuHome.sirket.tesisDurum==false or denklestirmeBordroRaporuHome.tesisId gt 0 }">
+								<a4j:commandButton status="ajaxStatus" value="#{ortakIslemler.sirketAciklama()} Fazla Mesai Hesapla"
+									action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable" />
+							</ui:fragment>
 						</ui:fragment>
 						<h:commandLink value="Excel" action="#{denklestirmeBordroRaporuHome.denklestirmeExcelAktar}" target="blank"
 							rendered="#{not empty denklestirmeBordroRaporuHome.personelDenklestirmeList}">

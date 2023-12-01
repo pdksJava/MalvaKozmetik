@@ -265,8 +265,19 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					personelDenklestirmeList = new ArrayList<AylikPuantaj>();
 				else
 					personelDenklestirmeList.clear();
-				if (denklestirme)
+				if (denklestirme) {
 					fillPersonelDenklestirmeList();
+					Tanim tesis = null;
+					if (tesisId != null) {
+						fields.clear();
+						fields.put("id", tesisId);
+						if (session != null)
+							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+						tesis = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
+					}
+					PdksUtil.addMessageInfo(sirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "") + " hesaplaması tamamlandı.");
+				}
+
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();
