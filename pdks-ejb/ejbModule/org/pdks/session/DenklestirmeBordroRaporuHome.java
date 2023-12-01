@@ -275,7 +275,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 						tesis = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 					}
-					PdksUtil.addMessageInfo(sirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "") + " hesaplaması tamamlandı.");
+					PdksUtil.addMessageInfo(sirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "") + " fazla mesai hesaplaması tamamlandı.");
 				}
 
 			} catch (Exception e) {
