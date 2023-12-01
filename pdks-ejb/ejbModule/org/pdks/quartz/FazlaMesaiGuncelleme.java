@@ -69,6 +69,7 @@ public class FazlaMesaiGuncelleme {
 	FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemler;
 
 	private static final String PARAMETER_KEY = "fazlaMesaiGuncelleme";
+
 	private DepartmanDenklestirmeDonemi denklestirmeDonemi = null;
 	private AylikPuantaj aylikPuantaj = null;
 	private User loginUser;

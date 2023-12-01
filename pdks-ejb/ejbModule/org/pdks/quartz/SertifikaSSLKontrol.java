@@ -64,12 +64,6 @@ public class SertifikaSSLKontrol {
 				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 				if (dakika % 30 == 0)
 					startupAction.fillParameter(session);
-
-				// Object bean = PdksApplicationContext.getBean("fazlaMesaiGuncelleme");
-				// if (bean != null)
-				// fazlaMesaiGuncelleme = (FazlaMesaiGuncelleme) bean;
-				// if (fazlaMesaiGuncelleme != null)
-				// fazlaMesaiGuncelleme.fazlaMesaiGuncellemeBasla(false, session);
 				logger.debug("Sertifika SSL Kontrol out " + new Date());
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");
