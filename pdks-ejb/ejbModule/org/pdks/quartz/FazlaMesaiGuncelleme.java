@@ -74,6 +74,7 @@ public class FazlaMesaiGuncelleme {
 
 	@Asynchronous
 	@SuppressWarnings("unchecked")
+	@Transactional
 	// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public QuartzTriggerHandle fazlaMesaiGuncellemeTimer(@Expiration Date when, @IntervalCron String interval) {
 		if (!isCalisiyor()) {

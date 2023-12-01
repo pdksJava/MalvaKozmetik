@@ -80,6 +80,7 @@ public class PersonelERPGuncelleme {
 
 	@Asynchronous
 	@SuppressWarnings("unchecked")
+	@Transactional
 	// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public QuartzTriggerHandle personelERPGuncellemeTimer(@Expiration Date when, @IntervalCron String interval) {
 		hataKonum = "personelERPGuncellemeTimer başladı ";
