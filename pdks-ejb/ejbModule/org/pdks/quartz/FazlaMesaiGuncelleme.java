@@ -113,6 +113,7 @@ public class FazlaMesaiGuncelleme {
 	 * @param manuel
 	 * @param session
 	 */
+	@Transactional
 	public void fazlaMesaiGuncellemeCalistir(boolean manuel, Session session) {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -6);

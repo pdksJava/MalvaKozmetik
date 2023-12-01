@@ -19,7 +19,6 @@ import org.jboss.seam.annotations.async.Expiration;
 import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
 import org.pdks.security.action.StartupAction;
-import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksUtil;
 import org.pdks.session.SSLImport;
 
@@ -29,8 +28,6 @@ import org.pdks.session.SSLImport;
 public class SertifikaSSLKontrol {
 
 	static Logger logger = Logger.getLogger(SertifikaSSLKontrol.class);
-
-	OrtakIslemler ortakIslemler;
 
 	@In(required = false, create = true)
 	HashMap<String, String> parameterMap;
