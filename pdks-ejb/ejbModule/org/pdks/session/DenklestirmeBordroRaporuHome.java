@@ -970,7 +970,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false);
 							for (Long key : perMap.keySet()) {
 								Personel personel = perMap.get(key);
-								logger.info(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
+								logger.debug(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
 								list.add(eksikCalismaMap.get(perDMap.get(personel.getId())));
 							}
 							perMap = null;
