@@ -235,9 +235,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				paramMap.put("seciliSirket", sirketSecili);
 				paramMap.put("denklestirme", denklestirme);
 				if (sirketSecili.isTesisDurumu()) {
-					if (tesisId != null)
+					if (tesisId != null) {
+						paramMap.put("seciliTesisId", tesisId);
 						denklestirme = bolumFazlaMesai(paramMap);
-					else {
+					} else {
 						List<SelectItem> tesisList = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirketSecili, aylikPuantaj, denklestirme, session);
 						for (SelectItem selectItem3 : tesisList) {
 							Long tesis1Id = (Long) selectItem3.getValue();
