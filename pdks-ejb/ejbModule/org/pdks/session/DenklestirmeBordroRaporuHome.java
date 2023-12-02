@@ -205,6 +205,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		fields.put("id", sirketId);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		session.clear();
 		Sirket sirketSecili = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 		if (sirketSecili != null) {
 			User loginUser = ortakIslemler != null ? ortakIslemler.getSistemAdminUser(session) : null;
@@ -226,6 +227,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
 			fazlaMesaiHesaplaHome.setSicilNo("");
 			fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
+			fazlaMesaiHesaplaHome.setDenklestirmeAyDurum(true);
 			boolean denklestirme = true;
 			try {
 				LinkedHashMap<String, Object> paramMap = new LinkedHashMap<String, Object>();
@@ -267,6 +269,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				else
 					personelDenklestirmeList.clear();
 				if (denklestirme) {
+					session.clear();
 					fillPersonelDenklestirmeList();
 					Tanim tesis = null;
 					if (tesisId != null) {
@@ -329,6 +332,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				if (puantajList.isEmpty()) {
 					hataYok = false;
 					break;
+				} else {
+					session.flush();
 				}
 				if (test)
 					logger.info(str + " out " + new Date());
@@ -566,7 +571,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 
-			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
+			sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
 			if (sirket != null) {
 				if (sirket.isTesisDurumu()) {
 					HashMap fields = new HashMap();
