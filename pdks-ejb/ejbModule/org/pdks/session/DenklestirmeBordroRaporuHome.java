@@ -629,6 +629,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
 		List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, true, session);
 		Long onceki = null;
+		sirket = null;
 		if (!sirketList.isEmpty()) {
 			onceki = sirketId;
 			if (sirketList.size() == 1) {
