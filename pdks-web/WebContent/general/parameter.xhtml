@@ -54,7 +54,7 @@
 									</f:facet>
 									<h:outputText value="#{parameter.id}" />
 								</rich:column>
-								<rich:column rendered="#{authenticatedUser.admin==true}">
+								<rich:column rendered="#{authenticatedUser.admin==true}" filterBy="#{parameter.name}" filterEvent="onkeyup">
 									<f:facet name="header">
 										<h:outputText value="Adı" />
 									</f:facet>

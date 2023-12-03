@@ -1,5 +1,6 @@
 package org.pdks.quartz;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +41,12 @@ import org.pdks.session.PdksUtil;
 @Name("fazlaMesaiGuncelleme")
 @AutoCreate
 @Scope(ScopeType.APPLICATION)
-public class FazlaMesaiGuncelleme {
+public class FazlaMesaiGuncelleme implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6776373506431071650L;
 
 	static Logger logger = Logger.getLogger(FazlaMesaiGuncelleme.class);
 
@@ -250,9 +256,9 @@ public class FazlaMesaiGuncelleme {
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				logger.info(str + " in " + new Date());
 				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
-				if (puantajList.isEmpty())  
+				if (puantajList.isEmpty())
 					manuel = true;
- 				 
+
 				logger.info(str + " out " + new Date());
 			} catch (Exception e) {
 				logger.error(e);

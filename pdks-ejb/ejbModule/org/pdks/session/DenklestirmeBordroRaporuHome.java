@@ -191,13 +191,22 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 * 
 	 */
 	private void adminRoleDurum() {
-		adminRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIKAdmin();
+		adminRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi();
 		ikRole = authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isIK();
 	}
 
 	public void instanceRefresh() {
 		if (getInstance().getId() != null)
 			session.refresh(getInstance());
+	}
+
+	public String getFazlaMesaiGuncellemeAciklama() {
+		String str = "";
+		if (tesisId != null && tesisId.longValue() > 0L)
+			str = ortakIslemler.tesisAciklama();
+		else if (sirket != null && sirket.isTesisDurumu() == false)
+			str = ortakIslemler.sirketAciklama();
+		return str;
 	}
 
 	public String sirketFazlaMesaiGuncelleme() {

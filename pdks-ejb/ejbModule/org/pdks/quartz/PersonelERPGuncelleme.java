@@ -2,6 +2,7 @@ package org.pdks.quartz;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -45,11 +46,12 @@ import org.pdks.session.PdksUtil;
 @Name("personelERPGuncelleme")
 @AutoCreate
 @Scope(ScopeType.APPLICATION)
-public class PersonelERPGuncelleme {
+public class PersonelERPGuncelleme implements Serializable {
 
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -421170994640099576L;
 
 	static Logger logger = Logger.getLogger(PersonelERPGuncelleme.class);
 
@@ -84,7 +86,7 @@ public class PersonelERPGuncelleme {
 	// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public QuartzTriggerHandle personelERPGuncellemeTimer(@Expiration Date when, @IntervalCron String interval) {
 		hataKonum = "personelERPGuncellemeTimer başladı ";
- 		if (pdksEntityController != null && !isCalisiyor()) {
+		if (pdksEntityController != null && !isCalisiyor()) {
 			ozelKontrol = Boolean.FALSE;
 			setCalisiyor(Boolean.TRUE);
 			boolean hataGonder = Boolean.FALSE;

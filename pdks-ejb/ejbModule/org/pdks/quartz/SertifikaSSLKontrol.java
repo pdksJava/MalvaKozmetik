@@ -1,5 +1,6 @@
 package org.pdks.quartz;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,7 +26,12 @@ import org.pdks.session.SSLImport;
 @Name("sertifikaSSLKontrol")
 @AutoCreate
 @Scope(ScopeType.APPLICATION)
-public class SertifikaSSLKontrol {
+public class SertifikaSSLKontrol implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5287144140086345430L;
 
 	static Logger logger = Logger.getLogger(SertifikaSSLKontrol.class);
 

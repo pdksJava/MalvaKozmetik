@@ -73,9 +73,9 @@ public class IseGelmemeUyari implements Serializable {
 	/**
 	 * 
 	 */
-	private static final String PARAMETER_KEY = "uyariMail";
 	private static final long serialVersionUID = 6477701530769282426L;
 	static Logger logger = Logger.getLogger(IseGelmemeUyari.class);
+	private static final String PARAMETER_KEY = "uyariMail";
 
 	@In(required = false, create = true)
 	PdksEntityController pdksEntityController;

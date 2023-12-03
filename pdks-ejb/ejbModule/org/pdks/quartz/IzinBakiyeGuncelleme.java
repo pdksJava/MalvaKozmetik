@@ -1,5 +1,6 @@
 package org.pdks.quartz;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -42,11 +43,13 @@ import org.pdks.session.PdksUtil;
 @AutoCreate
 // @Synchronized(timeout=15000)
 @Scope(ScopeType.APPLICATION)
-public class IzinBakiyeGuncelleme {
+public class IzinBakiyeGuncelleme implements Serializable {
 
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 7758680001001702451L;
+
 	static Logger logger = Logger.getLogger(IzinBakiyeGuncelleme.class);
 
 	@In(required = false, create = true)

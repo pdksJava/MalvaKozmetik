@@ -33,10 +33,6 @@ public class AcikBaglantiKapat implements Serializable {
 	 */
 	private static final long serialVersionUID = 3634864061197974008L;
 
-	/**
-	 * 
-	 */
-
 	static Logger logger = Logger.getLogger(AcikBaglantiKapat.class);
 	@In(required = false, create = true)
 	HashMap<String, String> parameterMap = new HashMap<String, String>();
@@ -69,6 +65,9 @@ public class AcikBaglantiKapat implements Serializable {
 		return null;
 	}
 
+	/**
+	 * @param simdi
+	 */
 	public void islemYapanKullanicilariIptalEt(Date simdi) {
 		if (simdi == null)
 			simdi = new Date();
