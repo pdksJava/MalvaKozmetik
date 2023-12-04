@@ -32,7 +32,6 @@ import org.pdks.entity.Liste;
 import org.pdks.entity.Parameter;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
-import org.pdks.security.action.StartupAction;
 import org.pdks.security.entity.User;
 import org.pdks.session.FazlaMesaiHesaplaHome;
 import org.pdks.session.FazlaMesaiOrtakIslemler;
@@ -56,16 +55,10 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	OrtakIslemler ortakIslemler;
 
 	@In(required = false, create = true)
-	HashMap<String, String> parameterMap;
-
-	@In(required = false, create = true)
 	EntityManager entityManager;
 
 	@In(required = false, create = true)
 	Zamanlayici zamanlayici;
-
-	@In(required = false, create = true)
-	StartupAction startupAction;
 
 	@In(required = false, create = true)
 	PdksEntityController pdksEntityController;
