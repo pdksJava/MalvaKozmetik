@@ -56,12 +56,19 @@ public class Zamanlayici implements Serializable {
 	Renderer renderer;
 	@In(required = false)
 	User authenticatedUser;
+	// @In
+	// FazlaMesaiGuncelleme fazlaMesaiGuncelleme;
 
 	private List<User> adminList;
 
 	private String konu, aciklama;
 
 	private Dosya dosya;
+
+	// public void scheduleFazlaMesaiGuncellemeTimer() {
+	// logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
+	// fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 7-21 ? * *");
+	// }
 
 	public void scheduleIseGelmemeUyariTimer() {
 		logger.info("scheduleIseGelmemeUyariTimer start : " + new Date());
