@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.AutoCreate;
 import org.jboss.seam.annotations.In;
@@ -22,6 +23,7 @@ import org.jboss.seam.annotations.async.Asynchronous;
 import org.jboss.seam.annotations.async.Expiration;
 import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
+import org.jboss.seam.faces.FacesMessages;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
@@ -149,6 +151,14 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			HashMap fields = new HashMap();
 			loginUser.setAdmin(Boolean.TRUE);
 			fazlaMesaiHesaplaHome.setSession(session);
+			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
+			fazlaMesaiHesaplaHome.setSicilNo("");
+			fazlaMesaiHesaplaHome.setStajerSirket(false);
+			fazlaMesaiHesaplaHome.setSession(session);
+			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
+			fazlaMesaiHesaplaHome.setSicilNo("");
+			fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
+			fazlaMesaiHesaplaHome.setDenklestirmeAyDurum(true);
 			for (Integer key : dMap.keySet()) {
 				Liste liste = dMap.get(key);
 				yil = (Integer) liste.getId();
@@ -172,9 +182,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 							fazlaMesaiHesaplaHome.setDenklestirmeAy(denklestirmeAy);
 							fazlaMesaiHesaplaHome.setYil(denklestirmeAy.getYil());
 							fazlaMesaiHesaplaHome.setAy(denklestirmeAy.getAy());
-							fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
-							fazlaMesaiHesaplaHome.setSicilNo("");
-							fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
 							for (SelectItem selectItem : depList) {
 								Long departmanId = (Long) selectItem.getValue();
 								fazlaMesaiHesaplaHome.setDepartmanId(departmanId);
@@ -216,6 +223,11 @@ public class FazlaMesaiGuncelleme implements Serializable {
 
 					}
 				}
+				if (manuel) {
+					FacesMessages facesMessages = (FacesMessages) Component.getInstance("facesMessages");
+					facesMessages.clear();
+				}
+
 			}
 		}
 	}
