@@ -2472,7 +2472,8 @@ public class PdksUtil implements Serializable {
 					StringTokenizer st = new StringTokenizer(str, delim);
 					while (!zamaniGeldi && st.hasMoreTokens()) {
 						String zaman = st.nextToken();
-						zamaniGeldi = zamaniGeldimi(simdikiSaat, simdikiDakika, zaman);
+						if (!zamaniGeldi)
+							zamaniGeldi = zamaniGeldimi(simdikiSaat, simdikiDakika, zaman);
 					}
 					st = null;
 				} else

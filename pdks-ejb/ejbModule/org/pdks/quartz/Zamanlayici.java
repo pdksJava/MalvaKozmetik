@@ -35,6 +35,12 @@ public class Zamanlayici implements Serializable {
 	private static final long serialVersionUID = 7609983147081676186L;
 	static Logger logger = Logger.getLogger(Zamanlayici.class);
 
+	private List<User> adminList;
+
+	private String konu, aciklama;
+
+	private Dosya dosya;
+
 	@In(required = false, create = true)
 	UserHome userHome;
 	@In(required = false, create = true)
@@ -56,19 +62,13 @@ public class Zamanlayici implements Serializable {
 	Renderer renderer;
 	@In(required = false)
 	User authenticatedUser;
-	// @In
-	// FazlaMesaiGuncelleme fazlaMesaiGuncelleme;
+	@In
+	FazlaMesaiGuncelleme fazlaMesaiGuncelleme;
 
-	private List<User> adminList;
-
-	private String konu, aciklama;
-
-	private Dosya dosya;
-
-	// public void scheduleFazlaMesaiGuncellemeTimer() {
-	// logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
-	// fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 7-21 ? * *");
-	// }
+	public void scheduleFazlaMesaiGuncellemeTimer() {
+		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
+		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 7-21 ? * *");
+	}
 
 	public void scheduleIseGelmemeUyariTimer() {
 		logger.info("scheduleIseGelmemeUyariTimer start : " + new Date());

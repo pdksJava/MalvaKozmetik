@@ -283,7 +283,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							// artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
 							IzinTipi senelikIzin = null;
 							if (vardiyaGun.getIzin() != null) {
- 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
+								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 								if (izinTipi != null) {
 									if (izinTipi.isUcretsizIzinTipi())
 										calismaGun = 0;
@@ -862,7 +862,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiDepartmanList(AylikPuantaj aylikPuantaj, boolean denklestirme, Session session) {
-		List<Departman> list = ortakIslemler.getFazlaMesaiList(authenticatedUser, null, null, null, null, null, aylikPuantaj, "D", denklestirme, session);
+		User user = authenticatedUser != null ? authenticatedUser : aylikPuantaj.getUser();
+		List<Departman> list = ortakIslemler.getFazlaMesaiList(user, null, null, null, null, null, aylikPuantaj, "D", denklestirme, session);
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (!list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
@@ -882,7 +883,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiSirketList(Long departmanId, AylikPuantaj aylikPuantaj, boolean denklestirme, Session session) {
-		List<Sirket> list = ortakIslemler.getFazlaMesaiList(authenticatedUser, departmanId, null, null, null, null, aylikPuantaj, "S", denklestirme, session);
+		User user = authenticatedUser != null ? authenticatedUser : aylikPuantaj.getUser();
+		List<Sirket> list = ortakIslemler.getFazlaMesaiList(user, departmanId, null, null, null, null, aylikPuantaj, "S", denklestirme, session);
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (!list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAd", null);
@@ -902,9 +904,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiTesisList(Sirket sirket, AylikPuantaj aylikPuantaj, boolean denklestirme, Session session) {
+		User user = authenticatedUser != null ? authenticatedUser : aylikPuantaj.getUser();
 		List<Tanim> list = null;
 		if (sirket != null && sirket.isTesisDurumu())
-			list = ortakIslemler.getFazlaMesaiList(authenticatedUser, null, sirket, null, null, null, aylikPuantaj, "T", denklestirme, session);
+			list = ortakIslemler.getFazlaMesaiList(user, null, sirket, null, null, null, aylikPuantaj, "T", denklestirme, session);
 
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (list != null && !list.isEmpty()) {
@@ -927,7 +930,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiBolumList(Sirket sirket, String tesisId, AylikPuantaj aylikPuantaj, boolean denklestirme, Session session) {
-		List<Tanim> list = ortakIslemler.getFazlaMesaiList(authenticatedUser, null, sirket, tesisId, null, null, aylikPuantaj, "B", denklestirme, session);
+		User user = authenticatedUser != null ? authenticatedUser : aylikPuantaj.getUser();
+		List<Tanim> list = ortakIslemler.getFazlaMesaiList(user, null, sirket, tesisId, null, null, aylikPuantaj, "B", denklestirme, session);
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (!list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
@@ -949,7 +953,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiAltBolumList(Sirket sirket, String tesisId, Long bolumId, AylikPuantaj aylikPuantaj, boolean denklestirme, Session session) {
-		List<Tanim> list = ortakIslemler.getFazlaMesaiList(authenticatedUser, null, sirket, tesisId, bolumId, null, aylikPuantaj, "AB", denklestirme, session);
+		User user = authenticatedUser != null ? authenticatedUser : aylikPuantaj.getUser();
+		List<Tanim> list = ortakIslemler.getFazlaMesaiList(user, null, sirket, tesisId, bolumId, null, aylikPuantaj, "AB", denklestirme, session);
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (!list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
@@ -1011,7 +1016,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<Personel> getFazlaMesaiPersonelList(Sirket sirket, String tesisId, Long bolumId, Long altBolumId, AylikPuantaj aylikPuantaj, boolean denklestirme, Session session) {
-		List<Personel> list = ortakIslemler.getFazlaMesaiList(authenticatedUser, null, sirket, tesisId, bolumId, altBolumId, aylikPuantaj, "P", denklestirme, session);
+		User user = authenticatedUser != null ? authenticatedUser : aylikPuantaj.getUser();
+		List<Personel> list = ortakIslemler.getFazlaMesaiList(user, null, sirket, tesisId, bolumId, altBolumId, aylikPuantaj, "P", denklestirme, session);
 		if (!list.isEmpty())
 			list = PdksUtil.sortObjectStringAlanList(list, "getAdSoyad", null);
 
@@ -1780,9 +1786,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param vgList
 	 * @param puantajList
 	 * @param izinGoster
+	 * @param user
 	 * @return
 	 */
-	public TreeMap<String, Object> getIzinOzetMap(List<VardiyaGun> vgList, List<AylikPuantaj> puantajList, boolean izinGoster) {
+	public TreeMap<String, Object> getIzinOzetMap(List<VardiyaGun> vgList, List<AylikPuantaj> puantajList, boolean izinGoster, User user) {
 		TreeMap<String, Object> map = new TreeMap<String, Object>();
 		try {
 			if (puantajList != null) {
@@ -1816,8 +1823,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 			String key = ortakIslemler.getParameterKey("izinPersonelOzetGoster");
 
-			boolean devam = (authenticatedUser.isAdmin() && izinGoster) || key.equals("1") || (authenticatedUser.isIK() && PdksUtil.hasStringValue(key)), htToplamiGuncelle = false;
-			if (vgList != null && (authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi() || devam)) {
+			boolean devam = (user.isAdmin() && izinGoster) || key.equals("1") || (user.isIK() && PdksUtil.hasStringValue(key)), htToplamiGuncelle = false;
+			if (vgList != null && (user.isAdmin() || user.isSistemYoneticisi() || devam)) {
 				TreeMap<String, Vardiya> izinTipiVardiyaMap = new TreeMap<String, Vardiya>();
 				TreeMap<Long, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap = new TreeMap<Long, TreeMap<String, List<VardiyaGun>>>();
 				TreeMap<Long, Personel> izinTipiPersonelMap = new TreeMap<Long, Personel>();

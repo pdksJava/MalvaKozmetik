@@ -63,7 +63,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	@In(required = false, create = true)
 	PdksEntityController pdksEntityController;
 
-	@In(required = false, create = true)
+	// //@In(required = false, create = true)
 	FazlaMesaiHesaplaHome fazlaMesaiHesaplaHome;
 
 	@In(required = false, create = true)
@@ -143,6 +143,9 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			dMap.put(yil * 100 + ay, new Liste(yil, ay));
 			HashMap fields = new HashMap();
 			loginUser.setAdmin(Boolean.TRUE);
+			if (fazlaMesaiHesaplaHome == null)
+				fazlaMesaiHesaplaHome = new FazlaMesaiHesaplaHome();
+			fazlaMesaiHesaplaHome.setInject(entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
 			fazlaMesaiHesaplaHome.setSession(session);
 			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
 			fazlaMesaiHesaplaHome.setSicilNo("");
@@ -152,6 +155,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			fazlaMesaiHesaplaHome.setSicilNo("");
 			fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
 			fazlaMesaiHesaplaHome.setDenklestirmeAyDurum(true);
+
 			for (Integer key : dMap.keySet()) {
 				Liste liste = dMap.get(key);
 				yil = (Integer) liste.getId();
@@ -166,6 +170,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					if (denklestirmeAy.getDurum()) {
 						denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 						aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+						aylikPuantaj.setUser(loginUser);
 						aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
 						denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 						List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, denklestirme, session);
@@ -283,6 +288,14 @@ public class FazlaMesaiGuncelleme implements Serializable {
 
 	public static void setCalisiyor(boolean calisiyor) {
 		FazlaMesaiGuncelleme.calisiyor = calisiyor;
+	}
+
+	public User getLoginUser() {
+		return loginUser;
+	}
+
+	public void setLoginUser(User loginUser) {
+		this.loginUser = loginUser;
 	}
 
 }

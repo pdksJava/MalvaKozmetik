@@ -104,6 +104,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	private TreeMap<Long, PersonelDenklestirmeDinamikAlan> dinamikAlanMap;
 
 	private PersonelDenklestirmeDinamikAlan personelDenklestirmeDinamikAlan;
+	
+	private User user;
 
 	public AylikPuantaj(PersonelDenklestirmeBordro bordro) {
 		super();
@@ -1293,6 +1295,14 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	 */
 	public void setEksikGunVar(boolean eksikGunVar) {
 		this.eksikGunVar = eksikGunVar;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }

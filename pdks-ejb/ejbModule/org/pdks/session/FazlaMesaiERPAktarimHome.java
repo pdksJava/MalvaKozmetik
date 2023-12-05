@@ -1228,7 +1228,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 				} catch (Exception e) {
 					logger.error(sb.toString());
 				}
-				TreeMap<String, Object> ozetMap = fazlaMesaiOrtakIslemler.getIzinOzetMap(vgList, null, false);
+				TreeMap<String, Object> ozetMap = fazlaMesaiOrtakIslemler.getIzinOzetMap(vgList, null, false, authenticatedUser);
 				izinTipiVardiyaList = ozetMap.containsKey("izinTipiVardiyaList") ? (List<Vardiya>) ozetMap.get("izinTipiVardiyaList") : new ArrayList<Vardiya>();
 				izinTipiPersonelVardiyaMap = ozetMap.containsKey("izinTipiPersonelVardiyaMap") ? (TreeMap<String, TreeMap<String, List<VardiyaGun>>>) ozetMap.get("izinTipiPersonelVardiyaMap") : new TreeMap<String, TreeMap<String, List<VardiyaGun>>>();
 				izinTipiPersonelMap = ozetMap.containsKey("izinTipiPersonelMap") ? (TreeMap<Long, Personel>) ozetMap.get("izinTipiPersonelMap") : new TreeMap<Long, Personel>();

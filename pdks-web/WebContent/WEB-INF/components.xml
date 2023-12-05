@@ -55,6 +55,7 @@
 		<action execute="#{zamanlayici.izinBakiyeGuncellemeTimer()}" />
 		<action execute="#{zamanlayici.schedulePersonelERPGuncellemeTimer()}" />
 		<action execute="#{zamanlayici.scheduleSertifikaSSLKontrolTimer()}" />
+		<action execute="#{zamanlayici.scheduleFazlaMesaiGuncellemeTimer()}" />
 		<!-- 
 		 <action execute="#{zamanlayici.scheduleFazlaMesaiGuncellemeTimer()}" />
  		 -->
