@@ -53,7 +53,6 @@ public class Zamanlayici implements Serializable {
 	IzinBakiyeGuncelleme izinBakiyeGuncelleme;
 	@In
 	SertifikaSSLKontrol sertifikaSSLKontrol;
-
 	@In(required = false, create = true)
 	OrtakIslemler ortakIslemler;
 	@In(required = false, create = true)
@@ -67,7 +66,7 @@ public class Zamanlayici implements Serializable {
 
 	public void scheduleFazlaMesaiGuncellemeTimer() {
 		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
-		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 7-21 ? * *");
+		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 3-21 ? * *");
 	}
 
 	public void scheduleIseGelmemeUyariTimer() {

@@ -3375,7 +3375,7 @@ public class OrtakIslemler implements Serializable {
 			if (basTarih != null && bitTarih != null && session != null) {
 				if (user == null)
 					user = authenticatedUser;
-				boolean ikRol = getIKRolSayfa(user);
+				boolean ikRol = user.isAdmin() || getIKRolSayfa(user);
 				Class class1 = null;
 				boolean tesisYetki = getParameterKey("tesisYetki").equals("1");
 				Departman departman = null;
@@ -5869,12 +5869,13 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param loginUser
 	 * @param denklestirmeAy
 	 * @param vardiyalar
 	 * @param session
 	 * @return
 	 */
-	public List<PersonelFazlaMesai> denklestirmeFazlaMesaileriGetir(DenklestirmeAy denklestirmeAy, List<VardiyaGun> vardiyalar, Session session) {
+	public List<PersonelFazlaMesai> denklestirmeFazlaMesaileriGetir(User loginUser, DenklestirmeAy denklestirmeAy, List<VardiyaGun> vardiyalar, Session session) {
 		TreeMap<Long, VardiyaGun> vardiyaMap = new TreeMap<Long, VardiyaGun>();
 		String donemKodu = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
 		List<PersonelFazlaMesai> fazlaMesailer = null;
@@ -5925,28 +5926,16 @@ public class OrtakIslemler implements Serializable {
 			boolean kaydet = denklestirmeAy != null && denklestirmeAy.getDurum().equals(Boolean.TRUE);
 			for (Iterator iterator = fazlaMesailer.iterator(); iterator.hasNext();) {
 				PersonelFazlaMesai fazlaMesai = (PersonelFazlaMesai) iterator.next();
+				if (loginUser == null)
+					loginUser = authenticatedUser != null ? authenticatedUser : fazlaMesai.getOlusturanUser();
 				if (fazlaMesai.isOnaylandi() && fazlaMesai.isBayram() == false) {
 					VardiyaGun vardiyaGun = vardiyaMap.get(fazlaMesai.getVardiyaGun().getId());
 					if (vardiyaGun.getVardiya() == null || vardiyaGun.getVardiya().isCalisma() == false)
 						continue;
 					Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
-					// if (iptalDurum && vardiyaGun.isAyinGunu() && islemVardiya.isCalisma()) {
-					// boolean durum1 = islemVardiya.getVardiyaTelorans1BasZaman().before(fazlaMesai.getBasZaman()) && islemVardiya.getVardiyaTelorans2BasZaman().after(fazlaMesai.getBitZaman());
-					// if (durum1) {
-					// logger.info(vardiyaGun.getVardiyaKeyStr() + " " + fazlaMesai.getId() + " " + fazlaMesai.getBasZaman() + " " + fazlaMesai.getBitZaman());
-					// fazlaMesai.setDurum(Boolean.FALSE);
-					// if (!authenticatedUser.isAdmin()) {
-					// fazlaMesai.setGuncelleyenUser(authenticatedUser);
-					// fazlaMesai.setGuncellemeTarihi(new Date());
-					// }
-					// pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
-					// iterator.remove();
-					// flush = Boolean.TRUE;
-					// continue;
-					// }
-					// }
-					String str = "Hatali fazla mesai : " + vardiyaGun.getVardiyaKeyStr() + " (" + authenticatedUser.timeFormatla(islemVardiya.getVardiyaBasZaman()) + "-" + authenticatedUser.timeFormatla(islemVardiya.getVardiyaBitZaman()) + " --> "
-							+ authenticatedUser.timeFormatla(fazlaMesai.getBasZaman()) + "-" + authenticatedUser.timeFormatla(fazlaMesai.getBitZaman()) + " )";
+
+					String str = "Hatali fazla mesai : " + vardiyaGun.getVardiyaKeyStr() + " (" + loginUser.timeFormatla(islemVardiya.getVardiyaBasZaman()) + "-" + loginUser.timeFormatla(islemVardiya.getVardiyaBitZaman()) + " --> " + loginUser.timeFormatla(fazlaMesai.getBasZaman()) + "-"
+							+ loginUser.timeFormatla(fazlaMesai.getBitZaman()) + " )";
 					if (islemVardiya.getVardiyaTelorans2BasZaman().getTime() >= fazlaMesai.getBitZaman().getTime() || islemVardiya.getVardiyaTelorans1BitZaman().getTime() <= fazlaMesai.getBasZaman().getTime())
 						continue;
 					if (kaydet) {
@@ -5971,8 +5960,8 @@ public class OrtakIslemler implements Serializable {
 								logger.info(str + " Erken gelme");
 							if (iptalDurum) {
 								fazlaMesai.setDurum(Boolean.FALSE);
-								if (!authenticatedUser.isAdmin()) {
-									fazlaMesai.setGuncelleyenUser(authenticatedUser);
+								if (!loginUser.isAdmin()) {
+									fazlaMesai.setGuncelleyenUser(loginUser);
 									fazlaMesai.setGuncellemeTarihi(new Date());
 								}
 								pdksEntityController.saveOrUpdate(session, entityManager, fazlaMesai);
@@ -6416,7 +6405,7 @@ public class OrtakIslemler implements Serializable {
 
 					personelVardiyaBulMap = null;
 					List<YemekIzin> yemekList = getYemekList(tarih2, tarih2, session);
-					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
+					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(denklestirmeDonemi.getUser(), denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
 					HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
 					KapiView girisView = manuelKapiMap != null ? manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS) : null;
 					if (girisView == null)

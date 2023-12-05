@@ -218,9 +218,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		Sirket sirketSecili = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 		if (sirketSecili != null) {
 			User loginUser = ortakIslemler != null ? ortakIslemler.getSistemAdminUser(session) : null;
-			loginUser.setIK(Boolean.TRUE);
+			loginUser.setAdmin(Boolean.TRUE);
 			DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 			AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+			aylikPuantaj.setUser(loginUser);
 			aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
 			denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 			Departman departman = sirketSecili.getDepartman();
@@ -306,7 +307,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	@Transactional
 	private boolean bolumFazlaMesai(LinkedHashMap<String, Object> paramMap) {
-		User loginUser = (User) paramMap.get("loginUser");
 		DepartmanDenklestirmeDonemi denklestirmeDonemi = (DepartmanDenklestirmeDonemi) paramMap.get("denklestirmeDonemi");
 		AylikPuantaj aylikPuantaj = (AylikPuantaj) paramMap.get("aylikPuantaj");
 		Sirket seciliSirket = (Sirket) paramMap.get("seciliSirket");
@@ -325,6 +325,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		String baslik = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + seciliSirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "");
 		boolean hataYok = true;
 		boolean test = !PdksUtil.getCanliSunucuDurum();
+		User loginUser = aylikPuantaj.getUser();
 		for (SelectItem selectItem : bolumList) {
 			Long seciliEkSaha3Id = (Long) selectItem.getValue();
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
@@ -337,7 +338,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				if (test)
 					logger.info(str + " in " + new Date());
-				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
+				loginUser.setAdmin(Boolean.TRUE);
+				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 				if (puantajList.isEmpty()) {
 					hataYok = false;
 					break;

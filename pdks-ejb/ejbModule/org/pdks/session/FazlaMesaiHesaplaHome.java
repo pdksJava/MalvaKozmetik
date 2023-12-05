@@ -865,7 +865,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 				denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
-				fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, authenticatedUser);
+				aylikPuantaj.setUser(authenticatedUser);
+				fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 			} catch (Exception ee) {
 				logger.error(ee);
 				ee.printStackTrace();
@@ -895,10 +896,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	/**
 	 * @param aylikPuantajSablon
 	 * @param denklestirmeDonemi
-	 * @param loginUser
 	 */
-	public List<AylikPuantaj> fillPersonelDenklestirmeDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi, User loginUser) {
-		if (loginUser == null)
+	public List<AylikPuantaj> fillPersonelDenklestirmeDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
+		User loginUser = aylikPuantajSablon.getUser();
+		if (authenticatedUser == null)
+			loginUser.setAdmin(Boolean.TRUE);
+		else if (loginUser == null)
 			loginUser = authenticatedUser;
 		if (userLogin == null)
 			userLogin = loginUser;

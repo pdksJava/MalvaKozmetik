@@ -69,7 +69,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	@In(required = false, create = true)
 	FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemler;
 
-	private static final String PARAMETER_KEY = "fazlaMesaiGuncelleme";
+	private static final String PARAMETER_KEY = "fazlaMesaiZamanliGuncelleme";
 
 	private DepartmanDenklestirmeDonemi denklestirmeDonemi = null;
 	private AylikPuantaj aylikPuantaj = null;
@@ -117,7 +117,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			if (value != null) {
 				Date time = zamanlayici.getDbTime(session);
 				boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
-				if (zamanDurum)
+ 				if (zamanDurum)
 					fazlaMesaiGuncellemeCalistir(false, session);
 			}
 		}
@@ -131,6 +131,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	public void fazlaMesaiGuncellemeCalistir(boolean manuel, Session session) {
 		loginUser = ortakIslemler != null ? ortakIslemler.getSistemAdminUser(session) : null;
 		if (loginUser != null) {
+			loginUser.setAdmin(Boolean.TRUE);
 			boolean denklestirme = true;
 			Calendar cal = Calendar.getInstance();
 			LinkedHashMap<Integer, Liste> dMap = new LinkedHashMap<Integer, Liste>();
@@ -142,7 +143,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			ay = cal.get(Calendar.MONTH) + 1;
 			dMap.put(yil * 100 + ay, new Liste(yil, ay));
 			HashMap fields = new HashMap();
-			loginUser.setAdmin(Boolean.TRUE);
 			if (fazlaMesaiHesaplaHome == null)
 				fazlaMesaiHesaplaHome = new FazlaMesaiHesaplaHome();
 			fazlaMesaiHesaplaHome.setInject(entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
@@ -155,7 +155,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			fazlaMesaiHesaplaHome.setSicilNo("");
 			fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
 			fazlaMesaiHesaplaHome.setDenklestirmeAyDurum(true);
-
 			for (Integer key : dMap.keySet()) {
 				Liste liste = dMap.get(key);
 				yil = (Integer) liste.getId();
@@ -166,60 +165,58 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
-				if (denklestirmeAy != null) {
-					if (denklestirmeAy.getDurum()) {
-						denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-						aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
-						aylikPuantaj.setUser(loginUser);
-						aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
-						denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
-						List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, denklestirme, session);
-						boolean mesajGonder = false;
-						if (!depList.isEmpty()) {
-							logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " in " + new Date());
-							fazlaMesaiHesaplaHome.setDenklestirmeAy(denklestirmeAy);
-							fazlaMesaiHesaplaHome.setYil(denklestirmeAy.getYil());
-							fazlaMesaiHesaplaHome.setAy(denklestirmeAy.getAy());
-							for (SelectItem selectItem : depList) {
-								Long departmanId = (Long) selectItem.getValue();
-								fazlaMesaiHesaplaHome.setDepartmanId(departmanId);
-								List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, aylikPuantaj, denklestirme, session);
-								for (SelectItem selectItem2 : sirketList) {
-									Long sirketId = (Long) selectItem2.getValue();
-									fields.clear();
-									fields.put("id", sirketId);
-									if (session != null)
-										fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-									Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
-									if (sirket != null) {
-										Departman departman = sirket.getDepartman();
-										fazlaMesaiHesaplaHome.setDepartman(departman);
-										fazlaMesaiHesaplaHome.setSirket(sirket);
-										fazlaMesaiHesaplaHome.setSirketId(sirket.getId());
-										mesajGonder = true;
-										if (sirket.isTesisDurumu()) {
-											List<SelectItem> tesisList = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, aylikPuantaj, denklestirme, session);
-											for (SelectItem selectItem3 : tesisList) {
-												Long tesisId = (Long) selectItem3.getValue();
-												bolumFazlaMesai(manuel, sirket, tesisId, denklestirme, session);
-											}
-										} else
-											bolumFazlaMesai(manuel, sirket, null, denklestirme, session);
+				if (denklestirmeAy != null && denklestirmeAy.getDurum()) {
+					denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
+					aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+					aylikPuantaj.setUser(loginUser);
+					aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
+					denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
+					List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, denklestirme, session);
+					boolean mesajGonder = false;
+					if (!depList.isEmpty()) {
+						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " in " + new Date());
+						fazlaMesaiHesaplaHome.setDenklestirmeAy(denklestirmeAy);
+						fazlaMesaiHesaplaHome.setYil(denklestirmeAy.getYil());
+						fazlaMesaiHesaplaHome.setAy(denklestirmeAy.getAy());
+						for (SelectItem selectItem : depList) {
+							Long departmanId = (Long) selectItem.getValue();
+							fazlaMesaiHesaplaHome.setDepartmanId(departmanId);
+							List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, aylikPuantaj, denklestirme, session);
+							for (SelectItem selectItem2 : sirketList) {
+								Long sirketId = (Long) selectItem2.getValue();
+								fields.clear();
+								fields.put("id", sirketId);
+								if (session != null)
+									fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+								Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
+								if (sirket != null) {
+									Departman departman = sirket.getDepartman();
+									fazlaMesaiHesaplaHome.setDepartman(departman);
+									fazlaMesaiHesaplaHome.setSirket(sirket);
+									fazlaMesaiHesaplaHome.setSirketId(sirket.getId());
+									mesajGonder = true;
+									if (sirket.isTesisDurumu()) {
+										List<SelectItem> tesisList = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, aylikPuantaj, denklestirme, session);
+										for (SelectItem selectItem3 : tesisList) {
+											Long tesisId = (Long) selectItem3.getValue();
+											bolumFazlaMesai(manuel, sirket, tesisId, denklestirme, session);
+										}
+									} else
+										bolumFazlaMesai(manuel, sirket, null, denklestirme, session);
 
-									}
 								}
 							}
-							try {
-								if (manuel == false && mesajGonder)
-									zamanlayici.mailGonder(session, null, "Fazla Mesai Güncellemesi", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " fazla mesailer güncellenmiştir.", null, Boolean.TRUE);
-							} catch (Exception e) {
-								logger.error(e);
-								e.printStackTrace();
-							}
-							logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " out " + new Date());
 						}
-
+						try {
+							if (manuel == false && mesajGonder)
+								zamanlayici.mailGonder(session, null, "Fazla Mesai Güncellemesi", denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " fazla mesailer güncellenmiştir.", null, Boolean.TRUE);
+						} catch (Exception e) {
+							logger.error(e);
+							e.printStackTrace();
+						}
+						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " out " + new Date());
 					}
+
 				}
 				if (manuel) {
 					FacesMessages facesMessages = (FacesMessages) Component.getInstance("facesMessages");
@@ -265,10 +262,10 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				logger.info(str + " in " + new Date());
-				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi, loginUser);
-				if (puantajList.isEmpty())
-					manuel = true;
-
+				loginUser.setAdmin(Boolean.TRUE);
+				aylikPuantaj.setUser(loginUser);
+				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
+				manuel = puantajList.isEmpty();
 				logger.info(str + " out " + new Date());
 			} catch (Exception e) {
 				logger.error(e);
