@@ -19,13 +19,16 @@
 			</h:panelGrid>
 			<h:panelGrid columns="1" rendered="#{authenticatedUser.admin}">
 				<ui:fragment>
-					<b> Versiyon : </b>pdks-ear_20231005_1155.1.0.0.ear</ui:fragment>
+					<span><b> Versiyon : </b>pdks-ear_20231206_1310.1.0.0.ear</span></ui:fragment>
 				<ui:fragment>
 					<ui:fragment rendered="#{ortakIslemler.getHelpDeskLastDate()!=null}">
 						<b> Last Help Desk Date : </b>#{authenticatedUser.dateFormatla(ortakIslemler.getHelpDeskLastDate())}</ui:fragment>
 					<ui:fragment rendered="#{ortakIslemler.sistemDestekVar==false}">
-						<span style="color: red;font-size: 14;font-weight: bold;"> bitmiştir.</span>
+						<span style="color: red; font-size: 14; font-weight: bold;"> bitmiştir.<br></br></span>
 					</ui:fragment>
+
+					<ui:fragment><BR></BR><BR></BR>
+						<span><b> Sunucu : </b> #{ortakIslemler.hostName}</span></ui:fragment>
 				</ui:fragment>
 
 			</h:panelGrid>
