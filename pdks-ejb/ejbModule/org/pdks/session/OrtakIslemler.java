@@ -3353,10 +3353,11 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	public List getFazlaMesaiList(User user, Long departmanId, Sirket sirket, String tesisId, Long bolumId, Long altBolumId, AylikPuantaj aylikPuantaj, String tipi, boolean denklestirme, Session session) {
+	public List getFazlaMesaiList(User loginUser, Long departmanId, Sirket sirket, String tesisId, Long bolumId, Long altBolumId, AylikPuantaj aylikPuantaj, String tipi, boolean denklestirme, Session session) {
 		List list = null;
-
 		if (aylikPuantaj != null) {
+			if (loginUser == null)
+				loginUser = aylikPuantaj.getUser() != null ? aylikPuantaj.getUser() : authenticatedUser;
 			DenklestirmeAy denklestirmeAy = aylikPuantaj.getDenklestirmeAy();
 			Date bitTarih = null, basTarih = null;
 			if (denklestirmeAy != null) {
@@ -3373,16 +3374,14 @@ public class OrtakIslemler implements Serializable {
 				bitTarih = aylikPuantaj.getSonGun();
 			}
 			if (basTarih != null && bitTarih != null && session != null) {
-				if (user == null)
-					user = authenticatedUser;
-				boolean ikRol = user.isAdmin() || getIKRolSayfa(user);
+				boolean ikRol = getIKRolSayfa(loginUser);
 				Class class1 = null;
 				boolean tesisYetki = getParameterKey("tesisYetki").equals("1");
 				Departman departman = null;
 				String order = null;
 				HashMap fields = new HashMap();
-				if (tesisYetki && user.getId() != null && (user.isIK() || user.isDirektorSuperVisor()) && (user.getYetkiliTesisler() == null || user.getYetkiliTesisler().isEmpty())) {
-					setUserTesisler(user, session);
+				if (tesisYetki && loginUser.getId() != null && (loginUser.isIK() || loginUser.isDirektorSuperVisor()) && (loginUser.getYetkiliTesisler() == null || loginUser.getYetkiliTesisler().isEmpty())) {
+					setUserTesisler(loginUser, session);
 				}
 				if (tipi.equalsIgnoreCase("S")) {
 					class1 = Sirket.class;
@@ -3413,22 +3412,22 @@ public class OrtakIslemler implements Serializable {
 					}
 				}
 				if (class1 != null) {
-					Personel personel = user != null ? user.getPdksPersonel() : new Personel();
-					if (user.isTesisYonetici()) {
+					Personel personel = loginUser != null ? loginUser.getPdksPersonel() : new Personel();
+					if (loginUser.isTesisYonetici()) {
 						sirket = personel.getSirket();
 						tesisId = "" + (personel.getTesis() != null && personel.getTesis().getId() != null ? personel.getTesis().getId() : 0L);
 						ikRol = true;
 					}
-					boolean departmanYonetici = ikRol == false && user.isDepartmentAdmin() && getParameterKey("tesisYetki").equals("1");
+					boolean departmanYonetici = ikRol == false && loginUser.isDepartmentAdmin() && getParameterKey("tesisYetki").equals("1");
 					Long direktorId = null;
-					if ((user.isDirektorSuperVisor() || departmanYonetici) && personel.getEkSaha1() != null)
+					if ((loginUser.isDirektorSuperVisor() || departmanYonetici) && personel.getEkSaha1() != null)
 						direktorId = personel.getEkSaha1().getId();
 					if (sirket != null)
 						departmanId = null;
 					if (tesisYetki) {
-						if ((user.isDirektorSuperVisor() || departman == null || departman.isAdminMi()) && user.getYetkiliTesisler() != null && !user.getYetkiliTesisler().isEmpty()) {
+						if ((loginUser.isDirektorSuperVisor() || departman == null || departman.isAdminMi()) && loginUser.getYetkiliTesisler() != null && !loginUser.getYetkiliTesisler().isEmpty()) {
 							tesisId = "";
-							for (Iterator iterator = user.getYetkiliTesisler().iterator(); iterator.hasNext();) {
+							for (Iterator iterator = loginUser.getYetkiliTesisler().iterator(); iterator.hasNext();) {
 								Tanim tesis = (Tanim) iterator.next();
 								tesisId += String.valueOf(tesis.getId());
 								if (iterator.hasNext())
@@ -3447,9 +3446,9 @@ public class OrtakIslemler implements Serializable {
 							denklestirmeDeger = -1L;
 					}
 					map.put("denklestirme", denklestirmeDeger);
-					map.put("yoneticiId", ikRol ? 0L : user.getPersonelId());
+					map.put("yoneticiId", ikRol ? 0L : loginUser.getPersonelId());
 					Long depId = ikRol && departmanId != null ? departmanId : 0L;
-					if (ikRol == false && user.isTaseronAdmin()) {
+					if (ikRol == false && loginUser.isTaseronAdmin()) {
 						depId = -1L;
 					}
 					Long sirketId = 0L;
@@ -3482,7 +3481,7 @@ public class OrtakIslemler implements Serializable {
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					try {
 						list = pdksEntityController.execSPList(map, sp, class1);
-						if (tipi.equalsIgnoreCase("P") && user.isAdmin())
+						if (tipi.equalsIgnoreCase("P") && loginUser.isAdmin())
 							logger.debug(spAdi + " " + tipi + " " + list.size() + "\n" + gson.toJson(map));
 					} catch (Exception e) {
 						logger.error(e + "\n" + spAdi + "\n" + gson.toJson(map));
@@ -5879,7 +5878,7 @@ public class OrtakIslemler implements Serializable {
 		TreeMap<Long, VardiyaGun> vardiyaMap = new TreeMap<Long, VardiyaGun>();
 		String donemKodu = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
 		List<PersonelFazlaMesai> fazlaMesailer = null;
-		boolean iptalDurum = denklestirmeAy != null && (denklestirmeAy.getDurum() || ((authenticatedUser.isIK() || authenticatedUser.isAdmin()) && denklestirmeAy.getGuncelleIK()));
+		boolean iptalDurum = denklestirmeAy != null && (denklestirmeAy.getDurum() || ((loginUser.isIK() || loginUser.isAdmin()) && denklestirmeAy.getGuncelleIK()));
 		if (vardiyalar != null) {
 			for (Iterator iterator = vardiyalar.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
@@ -5926,8 +5925,6 @@ public class OrtakIslemler implements Serializable {
 			boolean kaydet = denklestirmeAy != null && denklestirmeAy.getDurum().equals(Boolean.TRUE);
 			for (Iterator iterator = fazlaMesailer.iterator(); iterator.hasNext();) {
 				PersonelFazlaMesai fazlaMesai = (PersonelFazlaMesai) iterator.next();
-				if (loginUser == null)
-					loginUser = authenticatedUser != null ? authenticatedUser : fazlaMesai.getOlusturanUser();
 				if (fazlaMesai.isOnaylandi() && fazlaMesai.isBayram() == false) {
 					VardiyaGun vardiyaGun = vardiyaMap.get(fazlaMesai.getVardiyaGun().getId());
 					if (vardiyaGun.getVardiya() == null || vardiyaGun.getVardiya().isCalisma() == false)
@@ -6133,8 +6130,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public List<PersonelDenklestirmeTasiyici> personelDenklestir(DepartmanDenklestirmeDonemi denklestirmeDonemi, TreeMap<String, Tatil> tatilGunleriMap, String searchKey, Object value, boolean pdks, boolean zamanGuncelle, boolean tarihHareketEkle, Session session) throws Exception {
 		TreeMap<String, Boolean> gunMap = new TreeMap<String, Boolean>();
-		if (authenticatedUser != null)
-			denklestirmeDonemi.setUser(authenticatedUser);
+		User loginUser = denklestirmeDonemi.getUser() != null ? denklestirmeDonemi.getUser() : authenticatedUser;
 
 		boolean yenidenCalistir = false;
 		List<YemekIzin> yemekAraliklari = getYemekList(denklestirmeDonemi.getBaslangicTarih(), denklestirmeDonemi.getBitisTarih(), session);
@@ -6405,7 +6401,7 @@ public class OrtakIslemler implements Serializable {
 
 					personelVardiyaBulMap = null;
 					List<YemekIzin> yemekList = getYemekList(tarih2, tarih2, session);
-					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(denklestirmeDonemi.getUser(), denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
+					List<PersonelFazlaMesai> fazlaMesailer = denklestirmeFazlaMesaileriGetir(loginUser, denklestirmeDonemi != null ? denklestirmeDonemi.getDenklestirmeAy() : null, vardiyalar, session);
 					HashMap<String, KapiView> manuelKapiMap = getManuelKapiMap(null, session);
 					KapiView girisView = manuelKapiMap != null ? manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS) : null;
 					if (girisView == null)
@@ -6450,8 +6446,8 @@ public class OrtakIslemler implements Serializable {
 						List<PersonelIzin> izinler = izinMap.containsKey(perNoId) ? izinMap.get(perNoId) : null;
 						LinkedHashMap<String, Object> denklestirmeOlusturMap = new LinkedHashMap<String, Object>();
 						denklestirmeOlusturMap.put("neden", neden);
-						denklestirmeOlusturMap.put("loginUser", denklestirmeDonemi.getUser());
 						denklestirmeOlusturMap.put("sistemUser", sistemUser);
+						denklestirmeOlusturMap.put("loginUser", loginUser);
 						denklestirmeOlusturMap.put("manuelKapiMap", manuelKapiMap);
 						denklestirmeOlusturMap.put("gunMap", gunMap);
 						denklestirmeOlusturMap.put("hareketEkle", tarihHareketEkle);
@@ -13814,7 +13810,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public PersonelDenklestirme aylikPlanSureHesapla(boolean yemekHesapla, AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
-		User user = authenticatedUser != null ? authenticatedUser : puantajData.getUser();
+		User loginUser = puantajData.getUser() != null ? puantajData.getUser() : authenticatedUser;
 		List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
 		String izinTarihKontrolTarihiStr = getParameterKey("izinTarihKontrolTarihi");
 		Date pdksIzinTarihKontrolTarihi = null;
@@ -14313,7 +14309,7 @@ public class OrtakIslemler implements Serializable {
 
 						toplamCalismaGunSayisi += calismaGunSayisi;
 
-						if (user.isAdmin() && toplamSure + izinSuresi != 0) {
+						if (loginUser.isAdmin() && toplamSure + izinSuresi != 0) {
 							logger.debug(personel.getPdksSicilNo() + " --> " + hafta + " : " + raporGunSayisi + " " + toplamSure + " " + calismaGunSayisi + " " + izinSuresi + " " + haftaTatiliFark);
 							logger.debug(personel.getPdksSicilNo() + "     " + planlanSure + " " + toplamSure + " " + calisilmayanSuresi);
 						}
@@ -14341,7 +14337,7 @@ public class OrtakIslemler implements Serializable {
 						}
 					}
 					if (puantajData.isFazlaMesaiHesapla()) {
-						double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(user);
+						double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(loginUser);
 						boolean fazlaMesaiOde = puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde();
 						if (!fazlaMesaiOde) {
 							try {
@@ -14356,7 +14352,7 @@ public class OrtakIslemler implements Serializable {
 						PersonelDenklestirme hesaplananDenklestirme = puantajData.getPersonelDenklestirme(fazlaMesaiOde, hesaplananBuAySure, gecenAydevredenSure);
 						puantajData.setFazlaMesaiSure(PdksUtil.setSureDoubleTypeRounded((hesaplananDenklestirme.getOdenenSure() > 0 ? hesaplananDenklestirme.getOdenenSure() : 0) + ucretiOdenenMesaiSure, yarimYuvarla));
 						puantajData.setHesaplananSure(hesaplananDenklestirme.getHesaplananSure());
-						if (user.isAdmin()) {
+						if (loginUser.isAdmin()) {
 							try {
 								if (denklestirmeAy == null)
 									denklestirmeAy = puantajData.getPersonelDenklestirmeAylik().getDenklestirmeAy();
@@ -14406,9 +14402,9 @@ public class OrtakIslemler implements Serializable {
 						}
 
 					}
-					if (((user.isIK() || user.isAdmin()) && personelDenklestirme.getDevredenSure() == null) || (kaydet && !personelDenklestirme.isKapandi(user))) {
+					if (((loginUser.isIK() || loginUser.isAdmin()) && personelDenklestirme.getDevredenSure() == null) || (kaydet && !personelDenklestirme.isKapandi(loginUser))) {
 						if (session == null)
-							session = PdksUtil.getSessionUser(entityManager, user);
+							session = PdksUtil.getSessionUser(entityManager, loginUser);
 						if (puantajData.getPersonelDenklestirmeAylik().getId() != null) {
 							HashMap fields = new HashMap();
 							fields = new HashMap();
@@ -14765,8 +14761,7 @@ public class OrtakIslemler implements Serializable {
 		HashMap<String, KapiView> manuelKapiMap = dataDenkMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) dataDenkMap.get("manuelKapiMap") : null;
 		Tanim neden = dataDenkMap.containsKey("neden") ? (Tanim) dataDenkMap.get("neden") : null;
 		Tanim fazlaMesaiOnayDurum = dataDenkMap.containsKey("fazlaMesaiOnayDurum") ? (Tanim) dataDenkMap.get("fazlaMesaiOnayDurum") : null;
-		User loginUser = dataDenkMap.containsKey("loginUser") ? (User) dataDenkMap.get("loginUser") : null;
-
+		User loginUser = dataDenkMap.containsKey("loginUser") ? (User) dataDenkMap.get("loginUser") : authenticatedUser;
 		User sistemUser = dataDenkMap.containsKey("sistemUser") ? (User) dataDenkMap.get("sistemUser") : null;
 		TreeMap<String, Boolean> gunMap = dataDenkMap.containsKey("gunMap") ? (TreeMap<String, Boolean>) dataDenkMap.get("gunMap") : null;
 		KapiView girisKapi = dataDenkMap.containsKey("girisView") ? (KapiView) dataDenkMap.get("girisView") : null;
@@ -16137,7 +16132,7 @@ public class OrtakIslemler implements Serializable {
 	private void denklestirmeOlustur(LinkedHashMap<String, Object> denklestirmeMap, Session session) {
 		Tanim neden = denklestirmeMap.containsKey("neden") ? (Tanim) denklestirmeMap.get("neden") : null;
 		User sistemUser = denklestirmeMap.containsKey("sistemUser") ? (User) denklestirmeMap.get("sistemUser") : null;
-		User loginUser = denklestirmeMap.containsKey("loginUser") ? (User) denklestirmeMap.get("loginUser") : null;
+		User loginUser = denklestirmeMap.containsKey("loginUser") ? (User) denklestirmeMap.get("loginUser") : authenticatedUser;
 		HashMap<String, KapiView> manuelKapiMap = denklestirmeMap.containsKey("manuelKapiMap") ? (HashMap<String, KapiView>) denklestirmeMap.get("manuelKapiMap") : null;
 		TreeMap<String, Boolean> gunMap = denklestirmeMap.containsKey("gunMap") ? (TreeMap<String, Boolean>) denklestirmeMap.get("gunMap") : null;
 		Boolean hareketEkle = denklestirmeMap.containsKey("hareketEkle") ? (Boolean) denklestirmeMap.get("hareketEkle") : null;
@@ -16644,9 +16639,9 @@ public class OrtakIslemler implements Serializable {
 				denklestirme.setDenklestirmeAy(personelDenklestirmeTasiyici.getDenklestirmeAy());
 				LinkedHashMap<String, Object> dataMap = new LinkedHashMap<String, Object>();
 				dataMap.put("manuelKapiMap", manuelKapiMap);
-				dataMap.put("loginUser", loginUser);
 				dataMap.put("neden", neden);
 				dataMap.put("sistemUser", sistemUser);
+				dataMap.put("loginUser", loginUser);
 				dataMap.put("gunMap", gunMap);
 				dataMap.put("personelDenklestirme", denklestirme);
 				dataMap.put("girisView", girisView);
@@ -17231,8 +17226,6 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 */
 	public void yoneticiPuantajKontrol(User loginUser, List<AylikPuantaj> aylikPuantajList, Boolean calismayanPersonelYoneticiDurum, Session session) {
-		if (authenticatedUser != null)
-			loginUser = authenticatedUser;
 		String key = getParameterKey("yoneticiPuantajKontrol");
 		boolean kontrolEtme = !PdksUtil.hasStringValue(key);
 		if (aylikPuantajList != null) {

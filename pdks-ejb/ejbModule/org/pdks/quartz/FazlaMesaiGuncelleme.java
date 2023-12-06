@@ -117,7 +117,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			if (value != null) {
 				Date time = zamanlayici.getDbTime(session);
 				boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
- 				if (zamanDurum)
+				if (zamanDurum)
 					fazlaMesaiGuncellemeCalistir(false, session);
 			}
 		}
@@ -171,6 +171,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					aylikPuantaj.setUser(loginUser);
 					aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
 					denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
+					denklestirmeDonemi.setUser(loginUser);
 					List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, denklestirme, session);
 					boolean mesajGonder = false;
 					if (!depList.isEmpty()) {
@@ -263,7 +264,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				logger.info(str + " in " + new Date());
 				loginUser.setAdmin(Boolean.TRUE);
-				aylikPuantaj.setUser(loginUser);
 				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 				manuel = puantajList.isEmpty();
 				logger.info(str + " out " + new Date());
