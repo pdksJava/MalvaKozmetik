@@ -133,6 +133,18 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	public void fazlaMesaiGuncellemeCalistir(boolean manuel, Session session) {
 		loginUser = ortakIslemler != null ? ortakIslemler.getSistemAdminUser(session) : null;
 		if (loginUser != null) {
+			Integer otomatikOnayIKGun = null;
+			String str = ortakIslemler.getParameterKey("otomatikOnayIKGun");
+			if (PdksUtil.hasStringValue(str))
+				try {
+					otomatikOnayIKGun = Integer.parseInt(str);
+					if (otomatikOnayIKGun < 1 || otomatikOnayIKGun > 28)
+						otomatikOnayIKGun = null;
+				} catch (Exception e) {
+					otomatikOnayIKGun = null;
+				}
+			if (otomatikOnayIKGun == null)
+				otomatikOnayIKGun = 6;
 			loginUser.setAdmin(Boolean.TRUE);
 			boolean denklestirme = true;
 			Calendar cal = Calendar.getInstance();
@@ -140,7 +152,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			int yil = cal.get(Calendar.YEAR);
 			int ay = cal.get(Calendar.MONTH) + 1;
 			dMap.put(yil * 100 + ay, new Liste(yil, ay));
-			cal.add(Calendar.DATE, -6);
+			cal.add(Calendar.DATE, -otomatikOnayIKGun);
 			yil = cal.get(Calendar.YEAR);
 			ay = cal.get(Calendar.MONTH) + 1;
 			dMap.put(yil * 100 + ay, new Liste(yil, ay));
