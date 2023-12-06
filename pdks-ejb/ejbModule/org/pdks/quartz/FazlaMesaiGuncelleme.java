@@ -86,9 +86,11 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			logger.debug("fazlaMesaiGuncelleme in " + new Date());
 			Session session = null;
 			try {
-				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
-				if (session != null)
-					fazlaMesaiGuncellemeBasla(false, session);
+				if (PdksUtil.isSistemDestekVar() && PdksUtil.getCanliSunucuDurum()) {
+					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
+					if (session != null)
+						fazlaMesaiGuncellemeBasla(false, session);
+				}
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n" + e.getMessage() + " " + new Date());
 				e.printStackTrace();
