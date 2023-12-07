@@ -98,23 +98,7 @@
 												</h:selectBooleanCheckbox>
 											</s:decorate>
 										</h:panelGrid>
-										<h:panelGrid columns="3" rendered="#{not empty denklestirmeBordroRaporuHome.sirketler}">
-											<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
-												reRender="denklestirmeDonemiTable" />
-											<ui:fragment
-												rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and (denklestirmeBordroRaporuHome.adminRole or ortakIslemler.getParameterKeyHasStringValue('sirketFazlaMesaiGuncelleme')) }">
-												<ui:fragment rendered="#{denklestirmeBordroRaporuHome.sirket.tesisDurum==false or denklestirmeBordroRaporuHome.tesisId gt 0 }">
-													<a4j:commandButton status="ajaxStatus" value="#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla"
-														action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable" />
-												</ui:fragment>
-											</ui:fragment>
-											<h:commandLink value="Excel" action="#{denklestirmeBordroRaporuHome.denklestirmeExcelAktar}" target="blank"
-												rendered="#{not empty denklestirmeBordroRaporuHome.personelDenklestirmeList}">
-												<a4j:support event="oncomplete" status="ajaxStatus" process="vardiyaTable" reRender="vardiyaTable" />
-											</h:commandLink>
 
-
-										</h:panelGrid>
 									</a4j:outputPanel>
 								</rich:panel></TD>
 							<TD style="width: 20%;" valign="middle" align="left"><ui:fragment rendered="#{authenticatedUser.admin==false}">
@@ -129,6 +113,23 @@
 			</rich:panel>
 			<a4j:outputPanel id="denklestirmeDonemiTable">
 				<rich:panel>
+					<h:panelGrid columns="3" rendered="#{not empty denklestirmeBordroRaporuHome.sirketler}">
+						<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
+							reRender="denklestirmeDonemiTable" />
+						<ui:fragment
+							rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and (denklestirmeBordroRaporuHome.adminRole or ortakIslemler.getParameterKeyHasStringValue('sirketFazlaMesaiGuncelleme')) }">
+							<ui:fragment rendered="#{denklestirmeBordroRaporuHome.sirket.tesisDurum==false or denklestirmeBordroRaporuHome.tesisId gt 0 }">
+								<a4j:commandButton status="ajaxStatus" value="#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla"
+									action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable" />
+							</ui:fragment>
+						</ui:fragment>
+						<h:commandLink value="Excel" action="#{denklestirmeBordroRaporuHome.denklestirmeExcelAktar}" target="blank"
+							rendered="#{not empty denklestirmeBordroRaporuHome.personelDenklestirmeList}">
+							<a4j:support event="oncomplete" status="ajaxStatus" process="vardiyaTable" reRender="vardiyaTable" />
+						</h:commandLink>
+
+
+					</h:panelGrid>
 					<DIV class="#{authenticatedUser.scroolClass}" id="#{authenticatedUser.scroolDiv}">
 
 						<rich:dataTable rowClasses="acik,koyu" value="#{denklestirmeBordroRaporuHome.personelDenklestirmeList}" var="puantaj" id="vardiyaTable"
