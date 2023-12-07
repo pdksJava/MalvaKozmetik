@@ -14,8 +14,6 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
@@ -120,7 +118,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	 * @throws Exception
 	 */
 	public void fazlaMesaiGuncellemeBasla(boolean manuel, Session session) throws Exception {
-
 		Parameter parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
 		String value = (parameter != null) ? parameter.getValue() : null;
 		if (value != null) {
@@ -178,9 +175,15 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			fazlaMesaiHesaplaHome.setDenklestirmeAyDurum(true);
 			HashMap<String, Object> veriMap = new HashMap<String, Object>();
 			StringBuffer sb = new StringBuffer();
+			List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
+			bordroAlanlari = PdksUtil.sortObjectStringAlanList(bordroAlanlari, "getErpKodu", null);
+			LinkedHashMap<String, String> baslikMap = new LinkedHashMap<String, String>();
+			for (Tanim tanim : bordroAlanlari) {
+				baslikMap.put(tanim.getKodu(), tanim.getAciklama());
+			}
+
 			List<Dosya> dosyalar = new ArrayList<Dosya>();
 			for (Integer key : dMap.keySet()) {
-
 				Liste liste = dMap.get(key);
 				yil = (Integer) liste.getId();
 				ay = (Integer) liste.getValue();
@@ -222,6 +225,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 									veriMap.put("denklestirme", denklestirme);
 									veriMap.put("denklestirmeAy", denklestirmeAy);
 									veriMap.put("dosyalar", dosyalar);
+									veriMap.put("baslikMap", baslikMap);
 									Departman departman = sirket.getDepartman();
 									fazlaMesaiHesaplaHome.setDepartman(departman);
 									fazlaMesaiHesaplaHome.setSirket(sirket);
@@ -260,21 +264,18 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				}
 
 			}
-			if (sb.length() > 0)
+			if (sb.length() > 0 && !dosyalar.isEmpty())
 				try {
 					Dosya dosya = null;
-					if (!dosyalar.isEmpty()) {
-						String zipDosyaAdi = "FazlaMesaiDurum_" + PdksUtil.convertToDateString(new Date(), "yyyyMMdd") + ".zip";
-						File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, dosyalar);
-						if (file != null && file.exists()) {
-
-							dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
-							file.deleteOnExit();
-
-						}
+					String zipDosyaAdi = "FazlaMesaiDurum_" + PdksUtil.convertToDateString(new Date(), "yyyyMMdd") + ".zip";
+					File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, dosyalar);
+					if (file != null && file.exists()) {
+						dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
+						file.deleteOnExit();
 					}
 					String aylar = sb.toString();
-					zamanlayici.mailGonderDosya(session, null, "Fazla Mesai Güncellemesi", aylar + " " + (aylar.indexOf(",") > 0 ? "dönemleri" : "dönemi") + " fazla mesailer güncellenmiştir.", null, dosya, Boolean.TRUE);
+					if (dosya != null)
+						zamanlayici.mailGonderDosya(session, null, "Fazla Mesai Güncellemesi", aylar + " " + (aylar.indexOf(",") > 0 ? "dönemleri" : "dönemi") + " fazla mesailer güncellenmiştir.", null, dosya, Boolean.TRUE);
 				} catch (Exception e) {
 				}
 			sb = null;
@@ -308,7 +309,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 		}
 		String baslik = dm.getAyAdi() + " " + dm.getYil() + " " + sirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "");
 		boolean manuel = false;
-
 		for (SelectItem selectItem : bolumList) {
 			Long seciliEkSaha3Id = (Long) selectItem.getValue();
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
@@ -341,11 +341,15 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			as.setTesisId(tesisId);
 			List<AylikPuantaj> personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, false, false, session);
 			if (!personelDenklestirmeList.isEmpty()) {
-				HashMap<String, Object> dataMap = new HashMap<String, Object>();
 				ByteArrayOutputStream baos = null;
+				HashMap<String, Object> dataMap = new HashMap<String, Object>();
+				dataMap.put("personelDenklestirmeList", new ArrayList(personelDenklestirmeList));
+				// LinkedHashMap<String, String> baslikMap = veriMap.containsKey("baslikMap") ? (LinkedHashMap<String, String>) veriMap.get("baslikMap") : null;
 
-				veriMap.put("denklestirmeAy", denklestirmeAy);
-				veriMap.put("personelDenklestirmeList", personelDenklestirmeList);
+				// dataMap.put("denklestirmeAy", denklestirmeAy);
+				// if (baslikMap != null)
+				// dataMap.put("baslikMap", baslikMap);
+				dataMap.putAll(veriMap);
 
 				try {
 					baos = fazlaMesaiOrtakIslemler.denklestirmeExcelAktarDevam(dataMap, session);
@@ -360,8 +364,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						String dosyaAdi = dm.getAyAdi() + " " + dm.getYil() + "/" + sirket.getAd() + (tesis != null ? "_" + tesis.getAciklama() : " ") + ".xlsx";
 						Dosya dosyaExcel = new Dosya();
 						dosyaExcel.setDosyaAdi(dosyaAdi);
-						Workbook wb = new XSSFWorkbook();
-						wb.write(baos);
 						dosyaExcel.setDosyaIcerik(baos.toByteArray());
 						dosyalar.add(dosyaExcel);
 					} catch (Exception e) {
