@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
+import org.pdks.entity.AramaSecenekleri;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.CalismaModeli;
@@ -108,43 +109,43 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private Tanim ekSaha4Tanim;
 
-	private String COL_SIRA = "sira";
-	private String COL_YIL = "yil";
-	private String COL_AY = "ay";
-	private String COL_AY_ADI = "ayAdi";
-	private String COL_PERSONEL_NO = "personelNo";
-	private String COL_AD = "ad";
-	private String COL_SOYAD = "soyad";
-	private String COL_AD_SOYAD = "adSoyad";
-	private String COL_KART_NO = "kartNo";
-	private String COL_KIMLIK_NO = "kimlikNo";
-	private String COL_SIRKET = "sirket";
-	private String COL_TESIS = "tesis";
-	private String COL_BOLUM = "bolumAdi";
-	private String COL_ALT_BOLUM = "altBolumAdi";
-	private String COL_NORMAL_GUN_ADET = "normalGunAdet";
-	private String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
-	private String COL_RESMI_TATIL_ADET = "resmiTatilAdet";
-	private String COL_ARTIK_ADET = "artikAdet";
-	private String COL_TOPLAM_ADET = "toplamAdet";
-	private String COL_NORMAL_GUN_SAAT = "normalGunSaat";
-	private String COL_HAFTA_TATIL_SAAT = "haftaTatilSaat";
-	private String COL_RESMI_TATIL_SAAT = "resmiTatilSaat";
-	private String COL_IZIN_SAAT = "izinSaat";
-	private String COL_UCRETLI_IZIN = "ucretliIzin";
-	private String COL_RAPORLU_IZIN = "raporluIzin";
-	private String COL_UCRETSIZ_IZIN = "ucretsizIzin";
-	private String COL_YILLIK_IZIN = "yillikIzin";
-	private String COL_RESMI_TATIL_MESAI = "resmiTatilMesai";
-	private String COL_UCRETI_ODENEN_MESAI = "ucretiOdenenMesai";
-	private String COL_HAFTA_TATIL_MESAI = "haftaTatilMesai";
-	private String COL_AKSAM_SAAT_MESAI = "aksamSaatMesai";
-	private String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
-	private String COL_EKSIK_CALISMA = "eksikCalisma";
-	private String COL_CALISMA_MODELI = "calismaModeli";
+	public String COL_SIRA = "sira";
+	public String COL_YIL = "yil";
+	public String COL_AY = "ay";
+	public String COL_AY_ADI = "ayAdi";
+	public String COL_PERSONEL_NO = "personelNo";
+	public String COL_AD = "ad";
+	public String COL_SOYAD = "soyad";
+	public String COL_AD_SOYAD = "adSoyad";
+	public String COL_KART_NO = "kartNo";
+	public String COL_KIMLIK_NO = "kimlikNo";
+	public String COL_SIRKET = "sirket";
+	public String COL_TESIS = "tesis";
+	public String COL_BOLUM = "bolumAdi";
+	public String COL_ALT_BOLUM = "altBolumAdi";
+	public String COL_NORMAL_GUN_ADET = "normalGunAdet";
+	public String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
+	public String COL_RESMI_TATIL_ADET = "resmiTatilAdet";
+	public String COL_ARTIK_ADET = "artikAdet";
+	public String COL_TOPLAM_ADET = "toplamAdet";
+	public String COL_NORMAL_GUN_SAAT = "normalGunSaat";
+	public String COL_HAFTA_TATIL_SAAT = "haftaTatilSaat";
+	public String COL_RESMI_TATIL_SAAT = "resmiTatilSaat";
+	public String COL_IZIN_SAAT = "izinSaat";
+	public String COL_UCRETLI_IZIN = "ucretliIzin";
+	public String COL_RAPORLU_IZIN = "raporluIzin";
+	public String COL_UCRETSIZ_IZIN = "ucretsizIzin";
+	public String COL_YILLIK_IZIN = "yillikIzin";
+	public String COL_RESMI_TATIL_MESAI = "resmiTatilMesai";
+	public String COL_UCRETI_ODENEN_MESAI = "ucretiOdenenMesai";
+	public String COL_HAFTA_TATIL_MESAI = "haftaTatilMesai";
+	public String COL_AKSAM_SAAT_MESAI = "aksamSaatMesai";
+	public String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
+	public String COL_EKSIK_CALISMA = "eksikCalisma";
+	public String COL_CALISMA_MODELI = "calismaModeli";
 
-	private String COL_ISE_BASLAMA_TARIHI = "iseBaslamaTarihi";
-	private String COL_SSK_CIKIS_TARIHI = "istenAyrilisTarihi";
+	public String COL_ISE_BASLAMA_TARIHI = "iseBaslamaTarihi";
+	public String COL_SSK_CIKIS_TARIHI = "istenAyrilisTarihi";
 
 	private Sheet sheet;
 
@@ -692,7 +693,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		return aciklama;
 	}
 
-	public String fillPersonelDenklestirmeList() {
+	public String fillOldPersonelDenklestirmeList() {
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.clear();
@@ -1074,6 +1075,253 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		return "";
 	}
 
+	public String fillPersonelDenklestirmeList() {
+		if (session == null)
+			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
+		session.clear();
+		Calendar cal = Calendar.getInstance();
+		bordroAdres = null;
+		aksamGun = Boolean.FALSE;
+		aksamSaat = Boolean.FALSE;
+		calismaModeliDurum = Boolean.FALSE;
+		haftaCalisma = Boolean.FALSE;
+		resmiTatilDurum = Boolean.FALSE;
+		maasKesintiGoster = Boolean.FALSE;
+		artikGunDurum = Boolean.FALSE;
+		resmiTatilGunDurum = Boolean.FALSE;
+		normalGunSaatDurum = Boolean.FALSE;
+		haftaTatilSaatDurum = Boolean.FALSE;
+		resmiTatilSaatDurum = Boolean.FALSE;
+		izinSaatDurum = Boolean.FALSE;
+		HashMap fields = new HashMap();
+		fields.put("ay", ay);
+		fields.put("yil", yil);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
+		personelDenklestirmeList.clear();
+		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+		if (denklestirmeAy.getDurum().equals(Boolean.FALSE)) {
+			eksikCalisanVeriGetir = null;
+			hataliVeriGetir = null;
+		}
+		Date tarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
+		ilkGun = ortakIslemler.tariheGunEkleCikar(cal, tarih, -1);
+		sonGun = ortakIslemler.tariheAyEkleCikar(cal, tarih, 1);
+		basGun = null;
+		bitGun = null;
+
+		durumERP = Boolean.FALSE;
+		onaylanmayanDurum = null;
+		personelERP = Boolean.FALSE;
+		if (personelDenklestirmeList == null)
+			personelDenklestirmeList = new ArrayList<AylikPuantaj>();
+		else
+			personelDenklestirmeList.clear();
+
+		baslikMap.clear();
+		if (denklestirmeAy != null) {
+			saveLastParameter();
+			AramaSecenekleri as = new AramaSecenekleri();
+			as.setSicilNo(sicilNo);
+			as.setSirket(sirket);
+			personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, hataliVeriGetir, eksikCalisanVeriGetir, session);
+			if (!personelDenklestirmeList.isEmpty()) {
+
+				List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
+				if (bordroAlanlari.isEmpty()) {
+					boolean kimlikNoGoster = false;
+					String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
+					Boolean kartNoAciklamaGoster = null;
+					if (PdksUtil.hasStringValue(kartNoAciklama))
+						kartNoAciklamaGoster = false;
+
+					for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
+						Personel personel = aylikPuantaj.getPdksPersonel();
+						PersonelKGS personelKGS = personel.getPersonelKGS();
+						if (personelKGS != null) {
+							if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
+								kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
+								if (kartNoAciklamaGoster && kimlikNoGoster)
+									break;
+							}
+
+							if (!kimlikNoGoster) {
+								kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
+								if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
+									break;
+							}
+						}
+					}
+					if (kartNoAciklamaGoster == null)
+						kartNoAciklamaGoster = false;
+					bordroBilgiAciklamaOlustur(kimlikNoGoster, kartNoAciklama, kartNoAciklamaGoster, bordroAlanlari);
+				}
+				baslikMap.clear();
+				for (Tanim tanim : bordroAlanlari)
+					if (tanim.getDurum())
+						baslikMap.put(tanim.getKodu(), tanim);
+				boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
+				boolean haftaTatilBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_HAFTA_TATIL_MESAI));
+				boolean aksamGunBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_GUN_MESAI));
+				boolean aksamSaatBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_SAAT_MESAI));
+				boolean eksikCalismaBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_EKSIK_CALISMA));
+				for (AylikPuantaj ap : personelDenklestirmeList) {
+					PersonelDenklestirme pd = ap.getPersonelDenklestirmeAylik();
+					PersonelDenklestirmeBordro personelDenklestirmeBordro = ap.getDenklestirmeBordro();
+					if (personelDenklestirmeBordro == null) {
+						personelDenklestirmeBordro = new PersonelDenklestirmeBordro();
+						personelDenklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
+						ap.setDenklestirmeBordro(personelDenklestirmeBordro);
+					}
+					if (saatlikCalismaVar) {
+						if (!normalGunSaatDurum)
+							normalGunSaatDurum = personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d;
+						if (!haftaTatilSaatDurum)
+							haftaTatilSaatDurum = personelDenklestirmeBordro.getSaatHaftaTatil() != null && personelDenklestirmeBordro.getSaatHaftaTatil().doubleValue() > 0.0d;
+						if (!resmiTatilSaatDurum)
+							resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d;
+						if (!izinSaatDurum)
+							izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d;
+					}
+					if (!artikGunDurum)
+						artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
+					if (!resmiTatilGunDurum)
+						resmiTatilGunDurum = personelDenklestirmeBordro.getResmiTatilAdet() != null && personelDenklestirmeBordro.getResmiTatilAdet().doubleValue() > 0.0d;
+					if (!artikGunDurum)
+						artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
+					if (!haftaCalisma && haftaTatilBaslik)
+						haftaCalisma = pd.getHaftaCalismaSuresi() != null && pd.getHaftaCalismaSuresi().doubleValue() > 0.0d;
+					if (!resmiTatilDurum)
+						resmiTatilDurum = pd.getResmiTatilSure() != null && pd.getResmiTatilSure().doubleValue() > 0.0d;
+					if (!aksamGun && aksamGunBaslik)
+						setAksamGun(pd.getAksamVardiyaSayisi() != null && pd.getAksamVardiyaSayisi().doubleValue() > 0.0d);
+					if (!aksamSaat && aksamSaatBaslik)
+						setAksamSaat(pd.getAksamVardiyaSaatSayisi() != null && pd.getAksamVardiyaSaatSayisi().doubleValue() > 0.0d);
+					if (!maasKesintiGoster && eksikCalismaBaslik)
+						setMaasKesintiGoster(pd.getEksikCalismaSure() != null && pd.getEksikCalismaSure().doubleValue() > 0.0d);
+
+					if (!normalGunSaatDurum)
+						normalGunSaatDurum = personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d;
+					if (!haftaTatilSaatDurum)
+						haftaTatilSaatDurum = personelDenklestirmeBordro.getSaatHaftaTatil() != null && personelDenklestirmeBordro.getSaatHaftaTatil().doubleValue() > 0.0d;
+					if (!resmiTatilSaatDurum)
+						resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d;
+					if (!izinSaatDurum)
+						izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d;
+
+				}
+			}
+
+			basGun = PdksUtil.getYilAyBirinciGun(yil, ay);
+			bitGun = ortakIslemler.tariheAyEkleCikar(cal, basGun, 1);
+			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
+			if (yil * 100 + ay >= Integer.parseInt(str)) {
+				/**
+				 * boolean sicilDolu = PdksUtil.hasStringValue(sicilNo);
+				 * 
+				 * 
+				 * fields.clear(); StringBuffer sb = new StringBuffer(); sb.append("SELECT P." + Personel.COLUMN_NAME_ID + " FROM " + Personel.TABLE_NAME + " P WITH(nolock) "); sb.append(" WHERE  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." +
+				 * Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun "); fields.put("basGun", basGun); fields.put("bitGun", bitGun); if (sirketId != null || (PdksUtil.hasStringValue(sicilNo))) { if (sirketId != null) { HashMap parametreMap = new HashMap(); parametreMap.put("id", sirketId);
+				 * sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "= " + sirketId); if (session != null) parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session); sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class); } if (sicilDolu) {
+				 * sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo "); fields.put("sicilNo", ortakIslemler.getSicilNo(sicilNo.trim())); } } if (tesisId != null) { sb.append(" AND  P." + Personel.COLUMN_NAME_TESIS + "= " + tesisId);
+				 * 
+				 * }
+				 * 
+				 * fields.put(PdksEntityController.MAP_KEY_MAP, "getId"); if (session != null) fields.put(PdksEntityController.MAP_KEY_SESSION, session); List<BigDecimal> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+				 * 
+				 * boolean hataliDurum = false; TreeMap<Long, AylikPuantaj> aylikPuantajMap = new TreeMap<Long, AylikPuantaj>(); if (!perList.isEmpty()) { List<Long> idList = new ArrayList<Long>(); for (Iterator iterator = perList.iterator(); iterator.hasNext();) { BigDecimal bd = (BigDecimal)
+				 * iterator.next(); idList.add(bd.longValue()); } fields.clear(); sb = new StringBuffer(); sb.append("SELECT V.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) "); sb.append(" WHERE V." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND V." +
+				 * PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
+				 * 
+				 * if (sicilDolu == false && (hataliVeriGetir == null || hataliVeriGetir == false)) { hataliDurum = true; } fields.put("p", idList); // fields.put(PdksEntityController.MAP_KEY_MAP, "getId"); if (session != null) fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				 * List<PersonelDenklestirme> pdlist = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class); for (PersonelDenklestirme pd : pdlist) { boolean ekle = true; if (hataliDurum) { ekle = false; if (pd.getDurum() && pd.isOnaylandi()) { CalismaModeli cm =
+				 * pd.getCalismaModeli(); ekle = cm.isFazlaMesaiGoruntulensinMi() || pd.isDenklestirme(); } } if (ekle) { pdMap.put(pd.getId(), pd); AylikPuantaj aylikPuantaj = new AylikPuantaj(); aylikPuantaj.setPersonelDenklestirmeAylik(pd); aylikPuantaj.setPdksPersonel(pd.getPdksPersonel());
+				 * aylikPuantajMap.put(pd.getId(), aylikPuantaj); personelDenklestirmeList.add(aylikPuantaj); }
+				 * 
+				 * } pdlist = null; idList = null; } perList = null; if (!pdMap.isEmpty()) { List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session); if (bordroAlanlari.isEmpty()) { boolean kimlikNoGoster = false; String kartNoAciklama =
+				 * ortakIslemler.getParameterKey("kartNoAciklama"); Boolean kartNoAciklamaGoster = null; if (PdksUtil.hasStringValue(kartNoAciklama)) kartNoAciklamaGoster = false;
+				 * 
+				 * for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) { Personel personel = aylikPuantaj.getPdksPersonel(); PersonelKGS personelKGS = personel.getPersonelKGS(); if (personelKGS != null) { if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
+				 * kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo()); if (kartNoAciklamaGoster && kimlikNoGoster) break; }
+				 * 
+				 * if (!kimlikNoGoster) { kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo()); if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster)) break; } } } if (kartNoAciklamaGoster == null) kartNoAciklamaGoster = false;
+				 * bordroBilgiAciklamaOlustur(kimlikNoGoster, kartNoAciklama, kartNoAciklamaGoster, bordroAlanlari); } baslikMap.clear(); for (Tanim tanim : bordroAlanlari) if (tanim.getDurum()) baslikMap.put(tanim.getKodu(), tanim); boolean saatlikCalismaVar =
+				 * ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1"); boolean haftaTatilBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_HAFTA_TATIL_MESAI)); boolean aksamGunBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_GUN_MESAI)); boolean aksamSaatBaslik =
+				 * PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_SAAT_MESAI)); boolean eksikCalismaBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_EKSIK_CALISMA)); fields.clear(); fields.put("personelDenklestirme.id", new ArrayList(pdMap.keySet())); if (session != null)
+				 * fields.put(PdksEntityController.MAP_KEY_SESSION, session); List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordro.class); TreeMap<Long, PersonelDenklestirmeBordro> idMap = new TreeMap<Long,
+				 * PersonelDenklestirmeBordro>(); for (PersonelDenklestirmeBordro personelDenklestirmeBordro : borDenklestirmeBordroList) { PersonelDenklestirme pd = personelDenklestirmeBordro.getPersonelDenklestirme(); if (saatlikCalismaVar) { if (!normalGunSaatDurum) normalGunSaatDurum =
+				 * personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d; if (!haftaTatilSaatDurum) haftaTatilSaatDurum = personelDenklestirmeBordro.getSaatHaftaTatil() != null &&
+				 * personelDenklestirmeBordro.getSaatHaftaTatil().doubleValue() > 0.0d; if (!resmiTatilSaatDurum) resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d; if (!izinSaatDurum) izinSaatDurum =
+				 * personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d; } if (!artikGunDurum) artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d; if
+				 * (!resmiTatilGunDurum) resmiTatilGunDurum = personelDenklestirmeBordro.getResmiTatilAdet() != null && personelDenklestirmeBordro.getResmiTatilAdet().doubleValue() > 0.0d; if (!artikGunDurum) artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null &&
+				 * personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d; if (!haftaCalisma && haftaTatilBaslik) haftaCalisma = pd.getHaftaCalismaSuresi() != null && pd.getHaftaCalismaSuresi().doubleValue() > 0.0d; if (!resmiTatilDurum) resmiTatilDurum = pd.getResmiTatilSure() != null &&
+				 * pd.getResmiTatilSure().doubleValue() > 0.0d; if (!aksamGun && aksamGunBaslik) setAksamGun(pd.getAksamVardiyaSayisi() != null && pd.getAksamVardiyaSayisi().doubleValue() > 0.0d); if (!aksamSaat && aksamSaatBaslik) setAksamSaat(pd.getAksamVardiyaSaatSayisi() != null &&
+				 * pd.getAksamVardiyaSaatSayisi().doubleValue() > 0.0d); if (!maasKesintiGoster && eksikCalismaBaslik) setMaasKesintiGoster(pd.getEksikCalismaSure() != null && pd.getEksikCalismaSure().doubleValue() > 0.0d);
+				 * 
+				 * personelDenklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>()); AylikPuantaj aylikPuantaj = null; if (aylikPuantajMap.containsKey(pd.getId())) { aylikPuantaj = aylikPuantajMap.get(pd.getId());
+				 * aylikPuantaj.setDenklestirmeBordro(personelDenklestirmeBordro); } else { aylikPuantaj = new AylikPuantaj(personelDenklestirmeBordro); personelDenklestirmeList.add(aylikPuantaj); }
+				 * 
+				 * idMap.put(personelDenklestirmeBordro.getId(), personelDenklestirmeBordro); if (pd.getDurum().equals(Boolean.TRUE) && (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir)) { double normalSaat = 0.0d, planlananSaaat = 0.0d; CalismaModeli cm = pd.getCalismaModeli(); if (cm !=
+				 * null) { try { normalSaat = pd.getHesaplananSure().doubleValue(); } catch (Exception e) { normalSaat = 0.0d; } try { planlananSaaat = pd.getPlanlanSure().doubleValue() - cm.getHaftaIci(); } catch (Exception e) { planlananSaaat = 0.0d; } if
+				 * (pd.getPdksPersonel().getPdksSicilNo().equals("1385")) logger.debug(pd.getId()); if (normalSaat <= planlananSaaat || cm.isAylikOdeme() || cm.isFazlaMesaiVarMi()) eksikCalismaMap.put(pd.getId(), aylikPuantaj); }
+				 * 
+				 * } // personelDenklestirmeList.add(aylikPuantaj); }
+				 * 
+				 * fields.clear(); fields.put("personelDenklestirmeBordro.id", new ArrayList(idMap.keySet())); if (session != null) fields.put(PdksEntityController.MAP_KEY_SESSION, session); List<PersonelDenklestirmeBordroDetay> list = pdksEntityController.getObjectByInnerObjectList(fields,
+				 * PersonelDenklestirmeBordroDetay.class); for (PersonelDenklestirmeBordroDetay detay : list) { Long key = detay.getPersonelDenklestirmeBordro().getId(); BordroDetayTipi bordroDetayTipi = BordroDetayTipi.fromValue(detay.getTipi()); idMap.get(key).getDetayMap().put(bordroDetayTipi,
+				 * detay); } for (PersonelDenklestirmeBordro personelDenklestirmeBordro : borDenklestirmeBordroList) { if (!normalGunSaatDurum) normalGunSaatDurum = personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d; if
+				 * (!haftaTatilSaatDurum) haftaTatilSaatDurum = personelDenklestirmeBordro.getSaatHaftaTatil() != null && personelDenklestirmeBordro.getSaatHaftaTatil().doubleValue() > 0.0d; if (!resmiTatilSaatDurum) resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null &&
+				 * personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d; if (!izinSaatDurum) izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d; } idMap = null; list = null;
+				 * 
+				 * } if (!eksikCalismaMap.isEmpty()) { List<AylikPuantaj> list = new ArrayList<AylikPuantaj>(); TreeMap<Long, Long> perDMap = new TreeMap<Long, Long>(); for (Long key : eksikCalismaMap.keySet()) { AylikPuantaj aylikPuantaj = eksikCalismaMap.get(key); // PersonelDenklestirme pd =
+				 * aylikPuantaj.getPersonelDenklestirmeAylik(); // if (pd.getCalismaModeli().isFazlaMesaiVarMi()) { // if (pd.getDurum()) // list.add(aylikPuantaj); // } else perDMap.put(aylikPuantaj.getPdksPersonel().getId(), key); } try { if (!perDMap.isEmpty()) { List<Long> perIdList = new
+				 * ArrayList<Long>(perDMap.keySet()); HashMap map = new HashMap(); sb = new StringBuffer(); sb.append("SELECT DISTINCT P.* FROM VARDIYA_GUN_SAAT_VIEW V WITH(nolock) "); sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." +
+				 * VardiyaGun.COLUMN_NAME_PERSONEL); sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn()); sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI); sb.append(" INNER JOIN  " +
+				 * Vardiya.TABLE_NAME + " VA ON VA." + Vardiya.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_VARDIYA + " AND VA.VARDIYATIPI=''"); sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
+				 * sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <CONVERT(DATE, GETDATE() ) AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 "); sb.append("  AND  V." + VardiyaSaat.COLUMN_NAME_NORMAL_SURE + " > 0   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p"); Date
+				 * basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01"); Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1); map.put("p", perIdList); map.put("basTarih", basTarih); map.put("bitTarih", bitTarih); if (session != null)
+				 * map.put(PdksEntityController.MAP_KEY_SESSION, session); map.put(PdksEntityController.MAP_KEY_MAP, "getId"); TreeMap<Long, Personel> perMap = pdksEntityController.getObjectBySQLMap(sb, map, Personel.class, false); for (Long key : perMap.keySet()) { Personel personel =
+				 * perMap.get(key); logger.debug(personel.getPdksSicilNo() + " " + personel.getAdSoyad()); list.add(eksikCalismaMap.get(perDMap.get(personel.getId()))); } perMap = null; } eksikCalismaMap.clear(); for (AylikPuantaj aylikPuantaj : list) {
+				 * eksikCalismaMap.put(aylikPuantaj.getPersonelDenklestirmeAylik().getId(), aylikPuantaj); } list = null; perDMap = null; } catch (Exception e) { logger.error(e + "\n" + sb.toString()); }
+				 * 
+				 * }
+				 **/
+			}
+		}
+
+		if (personelDenklestirmeList.isEmpty())
+			PdksUtil.addMessageWarn("İlgili döneme ait fazla mesai bulunamadı!");
+		else {
+
+			List<AylikPuantaj> puantajList = new ArrayList<AylikPuantaj>(ortakIslemler.sortAylikPuantajList(personelDenklestirmeList, false));
+			personelDenklestirmeList.clear();
+			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>();
+			for (AylikPuantaj aylikPuantaj : puantajList) {
+				PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
+				boolean hataYok = pd.getDurum().equals(Boolean.TRUE);
+
+				if (hataYok)
+					aktifList.add(aylikPuantaj);
+				else if (aylikPuantaj.getEksikCalismaSure() != null)
+					aktifEksikList.add(aylikPuantaj);
+				else
+					personelDenklestirmeList.add(aylikPuantaj);
+			}
+			if (!aktifEksikList.isEmpty())
+				personelDenklestirmeList.addAll(aktifEksikList);
+			if (!aktifList.isEmpty())
+				personelDenklestirmeList.addAll(aktifList);
+			puantajList = null;
+			aktifEksikList = null;
+			aktifList = null;
+
+		}
+		setInstance(denklestirmeAy);
+
+		return "";
+	}
+
 	public String denklestirmeExcelAktar() {
 		try {
 			ByteArrayOutputStream baosDosya = null;
@@ -1127,6 +1375,26 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 * @throws IOException
 	 */
 	private ByteArrayOutputStream denklestirmeExcelAktarDevam() throws IOException {
+		ByteArrayOutputStream baos = null;
+		HashMap<String, Object> veriMap = new HashMap<String, Object>();
+		veriMap.put("denklestirmeAy", denklestirmeAy);
+		veriMap.put("personelDenklestirmeList", personelDenklestirmeList);
+		if (ekSaha4Tanim != null)
+			veriMap.put("ekSaha4Tanim", ekSaha4Tanim);
+		try {
+			baos = fazlaMesaiOrtakIslemler.denklestirmeExcelAktarDevam(veriMap, session);
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+		return baos;
+	}
+
+	/**
+	 * @return
+	 * @throws IOException
+	 */
+	public ByteArrayOutputStream denklestirmeOldExcelAktarDevam() throws IOException {
 		ByteArrayOutputStream baos = null;
 
 		boolean kimlikNoGoster = false;

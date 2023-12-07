@@ -189,8 +189,8 @@ public class Zamanlayici implements Serializable {
 	 * @throws Exception
 	 */
 	public void mailGonder(Session session, MailObject mailx, String xkonu, String xaciklama, List<User> userList, Boolean adresEkle) throws Exception {
-
-		mailGonderDosya(session, mailx, xkonu, xaciklama, userList, null, adresEkle);
+		if (PdksUtil.isSistemDestekVar())
+			mailGonderDosya(session, mailx, xkonu, xaciklama, userList, null, adresEkle);
 
 	}
 
