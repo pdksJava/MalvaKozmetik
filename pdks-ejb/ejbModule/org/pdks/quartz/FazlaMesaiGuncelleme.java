@@ -279,6 +279,8 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				} catch (Exception e) {
 				}
 			sb = null;
+			veriMap = null;
+			dosyalar = null;
 		}
 	}
 
@@ -344,11 +346,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				ByteArrayOutputStream baos = null;
 				HashMap<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("personelDenklestirmeList", new ArrayList(personelDenklestirmeList));
-				// LinkedHashMap<String, String> baslikMap = veriMap.containsKey("baslikMap") ? (LinkedHashMap<String, String>) veriMap.get("baslikMap") : null;
-
-				// dataMap.put("denklestirmeAy", denklestirmeAy);
-				// if (baslikMap != null)
-				// dataMap.put("baslikMap", baslikMap);
 				dataMap.putAll(veriMap);
 
 				try {
@@ -357,6 +354,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					logger.error(e);
 					e.printStackTrace();
 				}
+				dataMap = null;
 				if (baos != null) {
 					try {
 						List<Dosya> dosyalar = veriMap.containsKey("dosyalar") ? (List<Dosya>) veriMap.get("dosyalar") : null;
