@@ -176,30 +176,40 @@
 									<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" />
 								</ui:fragment>
 								<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
-									<DIV style="color: red;" id="saatNormal#{puantaj.pdksPersonel.id}">
+									<DIV style="color: red;" id="personelNo#{puantaj.pdksPersonel.id}">
 										<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" />
 									</DIV>
-									<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
-										<rich:toolTip for="saatNormal#{puantaj.pdksPersonel.id}">
 
-											<h:panelGrid columns="2" style="color: green; font-size: 12px;">
-												<ui:fragment>
-													<B>TÇS</B>
-												</ui:fragment>
-												<ui:fragment>
-													<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.hesaplananSure)}
-													</ui:fragment>
-												<ui:fragment>
-													<B>ÇGS</B>
-												</ui:fragment>
-												<ui:fragment>
-													<B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
-													</ui:fragment>
-											</h:panelGrid>
+									<rich:toolTip for="personelNo#{puantaj.pdksPersonel.id}">
 
-											<rich:dataTable rowClasses="acik,koyu" value="#{puantaj.vardiyalar}" var="vardiyaGun" rendered="#{not empty puantaj.vardiyalar}"
-												style="width:80%">
-												<rich:column style="text-align: left;">
+										<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
+
+											<DIV style="color: black;">
+												<P>
+													<B>TÇS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.hesaplananSure)}
+												</P>
+												<P>
+													<B>ÇGS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
+												</P>
+											</DIV>
+
+
+										</ui:fragment>
+
+										<ui:fragment rendered="#{puantaj.vardiyalar!=null}">
+											<rich:dataTable rowClasses="acik,koyu" value="#{puantaj.vardiyalar}" var="vardiyaGun">
+
+												<f:facet name="header">
+													<ui:fragment>
+														<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo} #{puantaj.pdksPersonel.adSoyad}" />
+														<br></br>
+														<br></br>
+												
+														Kapı Giriş Kayıtı ve İzin Girilmeyen Günler
+												</ui:fragment>
+												</f:facet>
+
+												<rich:column style="text-align: center;">
 													<f:facet name="header">
 															Tarih
 														</f:facet>
@@ -207,15 +217,15 @@
 												</rich:column>
 												<rich:column style="text-align: left;">
 													<f:facet name="header">
-															Varidya
+															Vardiya
 														</f:facet>
-													<h:outputText value="#{vardiyaGun.vardiyaAdi }" />
+													<h:outputText value="#{vardiyaGun.vardiya.kisaAdi } [ #{vardiyaGun.vardiyaAdi } ]" />
 												</rich:column>
 
 											</rich:dataTable>
+										</ui:fragment>
+									</rich:toolTip>
 
-										</rich:toolTip>
-									</ui:fragment>
 
 								</ui:fragment>
 

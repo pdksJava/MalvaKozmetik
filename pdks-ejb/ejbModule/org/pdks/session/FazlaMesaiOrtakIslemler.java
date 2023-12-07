@@ -195,6 +195,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						AylikPuantaj aylikPuantaj = new AylikPuantaj();
 						aylikPuantaj.setPersonelDenklestirmeAylik(pd);
 						aylikPuantaj.setPdksPersonel(pd.getPdksPersonel());
+						aylikPuantaj.setEksikCalismaSure(null);
 						aylikPuantajMap.put(pd.getId(), aylikPuantaj);
 						personelDenklestirmeList.add(aylikPuantaj);
 						if (pd.getDurum().equals(Boolean.TRUE) && (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir)) {
@@ -299,41 +300,40 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								AylikPuantaj aylikPuantaj = perDMap.get(id);
 								aylikPuantaj.getVardiyalar().add(vardiyaGun);
 								if (!perMap.containsKey(id)) {
+									perMap.put(id, personel);
 									PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
 									boolean hataYok = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
-									CalismaModeli cm = eksikCalismaMap.containsKey(pd.getId()) && hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
-									Double eksikCalismaSure = null;
-									if (cm != null && eksikCalisanVeriGetir != null && eksikCalisanVeriGetir) {
-										double normalSaat = 0.0d, planlananSaaat = 0.0d;
-										try {
-											planlananSaaat = pd.getPlanlanSure().doubleValue() - cm.getHaftaIci();
-										} catch (Exception e) {
-											planlananSaaat = 0.0d;
-										}
-										try {
-											if (cm.isSaatlikOdeme()) {
-												PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
-												normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
-											} else {
-												normalSaat = pd.getHesaplananSure().doubleValue();
+									if (hataYok) {
+										CalismaModeli cm = eksikCalismaMap.containsKey(pd.getId()) && hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
+										Double eksikCalismaSure = null;
+										if (cm != null && eksikCalisanVeriGetir != null && eksikCalisanVeriGetir) {
+											double normalSaat = 0.0d, planlananSaaat = 0.0d;
+											try {
+												planlananSaaat = pd.getPlanlanSure().doubleValue() - cm.getHaftaIci();
+											} catch (Exception e) {
+												planlananSaaat = 0.0d;
 											}
-										} catch (Exception e) {
-											normalSaat = 0.0d;
+											try {
+												if (cm.isSaatlikOdeme()) {
+													PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
+													normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
+												} else {
+													normalSaat = pd.getHesaplananSure().doubleValue();
+												}
+											} catch (Exception e) {
+												normalSaat = 0.0d;
+											}
+											try {
+ 												eksikCalismaSure = normalSaat - (planlananSaaat + cm.getHaftaIci());
+											} catch (Exception e) {
+												hataYok = false;
+											}
+											donemBitti = hataYok;
 										}
-										try {
-											hataYok = !(normalSaat <= planlananSaaat || cm.isAylikOdeme() || cm.isFazlaMesaiVarMi());
-											if (hataYok == false)
-												eksikCalismaSure = normalSaat - (planlananSaaat + cm.getHaftaIci());
-										} catch (Exception e) {
-											hataYok = false;
-										}
-										donemBitti = hataYok;
-									}
-									aylikPuantaj.setEksikCalismaSure(null);
-									if (pd.getDurum())
-										aylikPuantaj.setEksikCalismaSure(eksikCalismaSure);
-									aylikPuantaj.setDonemBitti(donemBitti);
 
+										aylikPuantaj.setEksikCalismaSure(eksikCalismaSure);
+										aylikPuantaj.setDonemBitti(donemBitti);
+									}
 									logger.debug(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
 
 								}
