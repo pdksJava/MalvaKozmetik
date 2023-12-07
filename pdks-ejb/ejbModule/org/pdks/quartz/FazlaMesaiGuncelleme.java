@@ -120,16 +120,16 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	 * @throws Exception
 	 */
 	public void fazlaMesaiGuncellemeBasla(boolean manuel, Session session) throws Exception {
-		if (PdksUtil.isSistemDestekVar()) {
-			Parameter parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
-			String value = (parameter != null) ? parameter.getValue() : null;
-			if (value != null) {
-				Date time = zamanlayici.getDbTime(session);
-				boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
-				if (zamanDurum)
-					fazlaMesaiGuncellemeCalistir(false, session);
-			}
+
+		Parameter parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
+		String value = (parameter != null) ? parameter.getValue() : null;
+		if (value != null) {
+			Date time = zamanlayici.getDbTime(session);
+			boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
+			if (zamanDurum)
+				fazlaMesaiGuncellemeCalistir(false, session);
 		}
+
 	}
 
 	/**
