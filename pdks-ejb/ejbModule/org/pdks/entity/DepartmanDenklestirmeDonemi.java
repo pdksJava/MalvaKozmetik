@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-import org.pdks.security.entity.User;
 import org.pdks.session.PdksUtil;
 
 public class DepartmanDenklestirmeDonemi extends BaseObject {
@@ -39,8 +38,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 	private DenklestirmeAy denklestirmeAy;
 
 	private Boolean denklestirmeAyDurum = Boolean.FALSE;
-	
-	private User user;
 
 	public Integer getVersion() {
 		return version;
@@ -188,14 +185,6 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 
 	public void setDenklestirmeAyDurum(Boolean denklestirmeAyDurum) {
 		this.denklestirmeAyDurum = denklestirmeAyDurum;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 }

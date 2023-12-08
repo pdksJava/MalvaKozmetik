@@ -222,10 +222,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			loginUser.setAdmin(Boolean.TRUE);
 			DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 			AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
-			aylikPuantaj.setUser(loginUser);
+			aylikPuantaj.setLoginUser(loginUser);
 			aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
 			denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
-			denklestirmeDonemi.setUser(loginUser);
+			denklestirmeDonemi.setLoginUser(loginUser);
 			Departman departman = sirketSecili.getDepartman();
 			fazlaMesaiHesaplaHome.setYil(yil);
 			fazlaMesaiHesaplaHome.setAy(ay);
@@ -328,7 +328,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		String baslik = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + (seciliSirket.getSirketGrup() == null ? seciliSirket.getAd() : seciliSirket.getSirketGrup().getAciklama()) + (tesis != null ? " " + tesis.getAciklama() : "");
 		boolean hataYok = true;
 		boolean test = !PdksUtil.getCanliSunucuDurum();
-		User loginUser = aylikPuantaj.getUser();
+		User loginUser = aylikPuantaj.getLoginUser();
 		for (SelectItem selectItem : bolumList) {
 			Long seciliEkSaha3Id = (Long) selectItem.getValue();
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
@@ -1127,7 +1127,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			AramaSecenekleri as = new AramaSecenekleri();
 			as.setSicilNo(sicilNo);
 			as.setSirket(sirket);
-			as.setUser(authenticatedUser);
+			as.setLoginUser(authenticatedUser);
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 			if (yil * 100 + ay >= Integer.parseInt(str)) {
 				personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, hataliVeriGetir, eksikCalisanVeriGetir, session);

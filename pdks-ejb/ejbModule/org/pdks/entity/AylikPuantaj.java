@@ -105,7 +105,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private PersonelDenklestirmeDinamikAlan personelDenklestirmeDinamikAlan;
 	
-	private User user;
+	private User loginUser;
 
 	public AylikPuantaj(PersonelDenklestirmeBordro bordro) {
 		super();
@@ -1297,12 +1297,14 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.eksikGunVar = eksikGunVar;
 	}
 
-	public User getUser() {
-		return user;
+	 
+
+	public User getLoginUser() {
+		return loginUser;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setLoginUser(User loginUser) {
+		this.loginUser = loginUser;
 	}
 
 }

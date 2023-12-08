@@ -197,10 +197,10 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					List<Long> sirketGrupIdList = new ArrayList<Long>();
 					denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 					aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
-					aylikPuantaj.setUser(loginUser);
+					aylikPuantaj.setLoginUser(loginUser);
 					aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
 					denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
-					denklestirmeDonemi.setUser(loginUser);
+					denklestirmeDonemi.setLoginUser(loginUser);
 					List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, denklestirme, session);
 					boolean mesajGonder = false;
 					if (!depList.isEmpty()) {
@@ -349,7 +349,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			as.setSicilNo("");
 			as.setSirket(sirket);
 			as.setTesisId(tesisId);
-			as.setUser(loginUser);
+			as.setLoginUser(loginUser);
 			List<AylikPuantaj> personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, false, false, session);
 			if (!personelDenklestirmeList.isEmpty()) {
 				ByteArrayOutputStream baos = null;

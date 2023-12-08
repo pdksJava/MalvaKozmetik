@@ -3357,7 +3357,7 @@ public class OrtakIslemler implements Serializable {
 		List list = null;
 		if (aylikPuantaj != null) {
 			if (loginUser == null)
-				loginUser = aylikPuantaj.getUser() != null ? aylikPuantaj.getUser() : authenticatedUser;
+				loginUser = aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : authenticatedUser;
 			DenklestirmeAy denklestirmeAy = aylikPuantaj.getDenklestirmeAy();
 			Date bitTarih = null, basTarih = null;
 			if (denklestirmeAy != null) {
@@ -6130,7 +6130,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public List<PersonelDenklestirmeTasiyici> personelDenklestir(DepartmanDenklestirmeDonemi denklestirmeDonemi, TreeMap<String, Tatil> tatilGunleriMap, String searchKey, Object value, boolean pdks, boolean zamanGuncelle, boolean tarihHareketEkle, Session session) throws Exception {
 		TreeMap<String, Boolean> gunMap = new TreeMap<String, Boolean>();
-		User loginUser = denklestirmeDonemi.getUser() != null ? denklestirmeDonemi.getUser() : authenticatedUser;
+		User loginUser = denklestirmeDonemi.getLoginUser() != null ? denklestirmeDonemi.getLoginUser() : authenticatedUser;
 
 		boolean yenidenCalistir = false;
 		List<YemekIzin> yemekAraliklari = getYemekList(denklestirmeDonemi.getBaslangicTarih(), denklestirmeDonemi.getBitisTarih(), session);
@@ -13810,7 +13810,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public PersonelDenklestirme aylikPlanSureHesapla(boolean yemekHesapla, AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
-		User loginUser = puantajData.getUser() != null ? puantajData.getUser() : authenticatedUser;
+		User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
 		List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
 		String izinTarihKontrolTarihiStr = getParameterKey("izinTarihKontrolTarihi");
 		Date pdksIzinTarihKontrolTarihi = null;

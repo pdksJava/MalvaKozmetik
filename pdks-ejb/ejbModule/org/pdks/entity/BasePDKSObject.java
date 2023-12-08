@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import org.pdks.security.entity.User;
+
 @MappedSuperclass
 public abstract class BasePDKSObject implements Serializable, Cloneable {
 
@@ -20,6 +22,8 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 
 	protected Long id;
 
+	protected User loginUser;
+
 	@Id
 	@GeneratedValue
 	@Column(name = COLUMN_NAME_ID)
@@ -29,6 +33,15 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	@Transient
+	public User getLoginUser() {
+		return loginUser;
+	}
+
+	public void setLoginUser(User loginUser) {
+		this.loginUser = loginUser;
 	}
 
 	@Transient

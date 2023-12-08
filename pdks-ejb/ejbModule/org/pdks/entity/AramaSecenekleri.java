@@ -38,7 +38,7 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 
 	private Tanim ekSaha1, ekSaha2, ekSaha3, ekSaha4;
 
-	private User user;
+	private User loginUser;
 
 	private Sirket sirket;
 
@@ -53,7 +53,7 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 
 	public AramaSecenekleri(User user, boolean yetki) {
 		super();
-		this.user = user;
+		this.loginUser = user;
 		this.yetkiliPersoneller = yetki;
 		if (user != null) {
 			if (!(user.isAdmin() || user.isIKAdmin())) {
@@ -72,7 +72,7 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 
 	public AramaSecenekleri(User user) {
 		super();
-		this.user = user;
+		this.loginUser = user;
 		if (user != null) {
 			if (!(user.isAdmin() || user.isIKAdmin())) {
 				departmanId = user.getDepartman().getId();
@@ -216,12 +216,12 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 		this.stajyerOlmayanSirket = stajyerOlmayanSirket;
 	}
 
-	public User getUser() {
-		return user;
+	public User getLoginUser() {
+		return loginUser;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setLoginUser(User loginUser) {
+		this.loginUser = loginUser;
 	}
 
 	public Boolean getSessionClear() {
@@ -366,5 +366,7 @@ public class AramaSecenekleri implements Serializable, Cloneable {
 	public void setYetkiliPersoneller(boolean yetkiliPersoneller) {
 		this.yetkiliPersoneller = yetkiliPersoneller;
 	}
+
+
 
 }

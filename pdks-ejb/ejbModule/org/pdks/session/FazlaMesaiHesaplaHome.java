@@ -864,8 +864,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
 				DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
-				aylikPuantaj.setUser(authenticatedUser);
-				denklestirmeDonemi.setUser(authenticatedUser);
+				aylikPuantaj.setLoginUser(authenticatedUser);
+				denklestirmeDonemi.setLoginUser(authenticatedUser);
 				denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 				fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 			} catch (Exception ee) {
@@ -900,7 +900,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	public List<AylikPuantaj> fillPersonelDenklestirmeDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
 		boolean kullaniciCalistir = authenticatedUser != null && userHome != null;
-		User loginUser = aylikPuantajSablon.getUser();
+		User loginUser = aylikPuantajSablon.getLoginUser();
 		if (loginUser == null && kullaniciCalistir)
 			loginUser = authenticatedUser;
 		if (userLogin == null)
@@ -1753,7 +1753,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							yemekAraliklari = ortakIslemler.getYemekList(aylikPuantajDefault.getIlkGun(), aylikPuantajDefault.getSonGun(), session);
 							if (personelDurumMap.containsKey(personelDenklestirme.getId()))
 								puantaj.setFazlaMesaiIzinKontrol(Boolean.FALSE);
-							puantaj.setUser(loginUser);
+							puantaj.setLoginUser(loginUser);
 							personelDenklestirme = ortakIslemler.aylikPlanSureHesapla(true, puantaj, !personelDenklestirme.isKapandi(loginUser), tatilGunleriMap, session);
 						}
 					} catch (Exception e) {
