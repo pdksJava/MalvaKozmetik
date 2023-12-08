@@ -76,7 +76,7 @@
 							</h:inputText>
 						</s:decorate>
 					</h:panelGrid>
-					<h:panelGrid columns="2" style="width: 100%;"
+					<h:panelGrid columns="2" style="width: 80%;"
 						rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.sicilNo)==false}">
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Hatalı Personel Göster</ui:define>
@@ -225,7 +225,7 @@
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
-								<rich:column style="text-align: left;" rendered="#{denklestirmeBordroRaporuHome.sirket.sirketGrup!=null}">
+								<rich:column style="text-align: left;" rendered="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_SIRKET)}">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
 									</f:facet>
