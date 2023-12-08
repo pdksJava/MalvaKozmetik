@@ -103,8 +103,8 @@
 								</rich:toolTip>
 								</ui:fragment>
 							</rich:column>
-							<rich:column>
-								<f:facet name="header" filterBy="#{user.firstname}">
+							<rich:column filterBy="#{personelView.pdksPersonelAciklama}" filterEvent="onkeyup">
+								<f:facet name="header" >
 									<h:outputText value="PDKS Adı Soyadı" />
 								</f:facet>
 								<h:outputText title="#{personelView.pdksPersonelAciklama}" value="#{personelView.personelKGS.adSoyad}" id="adSoyad" />
@@ -1127,7 +1127,7 @@
 										<h:outputText value="#{p1.pdksSicilNo}" />
 									</rich:column>
 									<rich:column>
-										<f:facet name="header" filterBy="#{user.firstname}" filterEvent="onkeyup">
+										<f:facet name="header" >
 											<h:outputText value="PDKS Adı Soyadı" />
 										</f:facet>
 										<h:outputText value="#{p1.adSoyad}" />
