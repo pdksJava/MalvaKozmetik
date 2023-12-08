@@ -1,0 +1,38 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('anaSayfa')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h1>Ana Sayfa</h1>
+
+		<rich:panel>
+			<h:panelGrid columns="1" header="#{ortakIslemler.getMenuAdi('anaSayfa')}">
+				<s:div styleClass="info">
+					<f:verbatim> #{homePageNotice.stringHTML}</f:verbatim>
+				</s:div>
+
+			</h:panelGrid>
+			<h:panelGrid columns="1" rendered="#{authenticatedUser.admin}">
+				<ui:fragment>
+					<span><b> Versiyon : </b>pdks-ear_20231206_1310.1.0.0.ear</span></ui:fragment>
+				<ui:fragment>
+					<ui:fragment rendered="#{ortakIslemler.getHelpDeskLastDate()!=null}">
+						<b> Last Help Desk Date : </b>#{authenticatedUser.dateFormatla(ortakIslemler.getHelpDeskLastDate())}</ui:fragment>
+					<ui:fragment rendered="#{ortakIslemler.sistemDestekVar==false}">
+						<span style="color: red; font-size: 14; font-weight: bold;"> bitmiştir.<br></br></span>
+					</ui:fragment>
+
+					<ui:fragment><BR></BR><BR></BR>
+						<span><b> Sunucu : </b> #{ortakIslemler.hostName}</span></ui:fragment>
+				</ui:fragment>
+
+			</h:panelGrid>
+		</rich:panel>
+
+	</ui:define>
+</ui:composition>
