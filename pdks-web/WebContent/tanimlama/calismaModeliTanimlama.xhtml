@@ -163,7 +163,7 @@
 
 		<rich:modalPanel id="editPanel" autosized="true" width="650">
 			<f:facet name="header">
-				<h:outputText value="Çalışma Modeli Güncelle" />
+				<h:outputText value="#{ortakIslemler.calismaModeliAciklama()} Güncelle" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:panelGroup>
@@ -182,7 +182,7 @@
 				<h:panelGrid columns="1">
 					<h:panelGrid columns="2" id="calismaModeliGiris">
 						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Çalışma modeli adı</ui:define>
+							<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()} adı</ui:define>
 							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.aciklama}" disabled="#{authenticatedUser.admin==false}" size="35"
 								requiredMessage="Şablon Adı giriniz" />
 						</s:decorate>

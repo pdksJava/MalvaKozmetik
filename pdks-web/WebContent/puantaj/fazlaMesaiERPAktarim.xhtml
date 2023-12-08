@@ -151,7 +151,7 @@
 									</rich:column>
 									<rich:column style="text-align: left;" rendered="#{fazlaMesaiERPAktarimHome.modelGoster}">
 										<f:facet name="header">
-											<h:outputText value="Çalışma Modeli" />
+											<h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" />
 										</f:facet>
 										<ui:fragment rendered="#{mesai.calismaModeliAy!=null}">
 											<h:outputText value="#{mesai.calismaModeliAy.calismaModeli.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
@@ -237,7 +237,7 @@
 									</rich:column>
 									<rich:column style="text-align: left;" rendered="#{fazlaMesaiERPAktarimHome.modelGoster}">
 										<f:facet name="header">
-											<h:outputText value="Çalışma Modeli" />
+											<h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" />
 										</f:facet>
 										<ui:fragment rendered="#{mesai.calismaModeliAy!=null}">
 											<h:outputText value="#{mesai.calismaModeliAy.calismaModeli.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
