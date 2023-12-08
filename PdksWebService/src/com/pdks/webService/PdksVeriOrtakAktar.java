@@ -3859,7 +3859,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (personelERP != null) {
 						String adSoyad = (personelERP.getAdi() != null ? personelERP.getAdi().trim() + " " : "") + (personelERP.getSoyadi() != null ? personelERP.getSoyadi() : " ");
 						if (PdksUtil.hasStringValue(adSoyad))
-							konu += " [ " + adSoyad.trim() + " ]";
+							konu += " [ " + (PdksUtil.hasStringValue(personelERP.getPersonelNo()) ? personelERP.getPersonelNo().trim() + " - " : "") + adSoyad.trim() + " ]";
 					}
 				}
 				mailMap.put("konu", konu);
