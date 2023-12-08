@@ -1,0 +1,404 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('fazlaCalismaRapor')}" />
+	</ui:define>
+	<ui:define name="body">
+		<h:form>
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(fazlaCalismaRaporHome.session,'fazlaCalismaRapor')}">
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<a4j:outputPanel id="anaForm">
+					<h:panelGrid columns="1" width="90%">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaCalismaRaporHome.raporList.size()>1}">
+							<ui:define name="label">Rapor Tipi</ui:define>
+							<h:selectOneRadio value="#{fazlaCalismaRaporHome.raporSecim}" layout="pageDirection">
+								<f:selectItems value="#{fazlaCalismaRaporHome.raporList}" />
+								<a4j:support event="onclick" action="#{fazlaCalismaRaporHome.panelGuncelle()}" reRender="anaForm" status="ajaxStatus" limitToList="true"
+									ajaxSingle="true" />
+							</h:selectOneRadio>
+						</s:decorate>
+						<h:panelGrid columns="2" width="50%">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Başlangıç Tarih</ui:define>
+								<rich:calendar value="#{fazlaCalismaRaporHome.basTarih}" datePattern="#{authenticatedUser.dateFormat}">
+									<a4j:support event="onchanged" ajaxSingle="true" status="ajaxStatus" action="#{fazlaCalismaRaporHome.tarihDegisti('B')}" reRender="anaForm" />
+
+								</rich:calendar>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Bitiş Tarih</ui:define>
+								<rich:calendar value="#{fazlaCalismaRaporHome.bitTarih}" datePattern="#{authenticatedUser.dateFormat}">
+									<a4j:support event="onchanged" ajaxSingle="true" status="ajaxStatus" action="#{fazlaCalismaRaporHome.tarihDegisti('S')}" reRender="anaForm" />
+
+								</rich:calendar>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaCalismaRaporHome.adminRole and fazlaCalismaRaporHome.departmanList.size()>1}">
+								<ui:define name="label">PDKS Departman</ui:define>
+								<h:selectOneMenu value="#{fazlaCalismaRaporHome.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{fazlaCalismaRaporHome.departmanList}" />
+									<a4j:support event="onchange" action="#{fazlaCalismaRaporHome.departmanDegisti()}" ajaxSingle="true" reRender="anaForm" />
+								</h:selectOneMenu>
+
+
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{not empty fazlaCalismaRaporHome.pdksSirketList}">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+
+								<h:selectOneMenu id="sirketSec" value="#{fazlaCalismaRaporHome.sirketId}" disabled="#{fazlaCalismaRaporHome.pdksSirketList.size()==1}"
+									required="true" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{fazlaCalismaRaporHome.pdksSirketList}" />
+									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaCalismaRaporHome.tesisDoldur(true)}" ajaxSingle="true" reRender="anaForm" />
+								</h:selectOneMenu>
+							</s:decorate>
+							<c:if test="#{not empty fazlaCalismaRaporHome.pdksSirketList}">
+
+								<s:decorate template="/layout/edit.xhtml"
+									rendered="#{ortakIslemler.tesisDurumu and fazlaCalismaRaporHome.tesisList!=null and fazlaCalismaRaporHome.tesisList.size()>0}">
+									<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+									<h:selectOneMenu value="#{fazlaCalismaRaporHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="false"
+										disabled="#{fazlaCalismaRaporHome.tesisList.size()==1}">
+										<f:selectItem itemLabel="Lütfen seçiniz" />
+										<f:selectItems value="#{fazlaCalismaRaporHome.tesisList}" />
+										<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaCalismaRaporHome.bolumDoldur()}" ajaxSingle="true" reRender="anaForm" />
+									</h:selectOneMenu>
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml"
+									rendered="#{fazlaCalismaRaporHome.gorevYeriList!=null and fazlaCalismaRaporHome.gorevYeriList.size()>0}">
+									<ui:define name="label">#{fazlaCalismaRaporHome.bolumAciklama}</ui:define>
+									<h:selectOneMenu value="#{fazlaCalismaRaporHome.seciliEkSaha3Id}" disabled="#{fazlaCalismaRaporHome.gorevYeriList.size()==1}"
+										requiredMessage="#{fazlaCalismaRaporHome.bolumAciklama} giriniz!">
+										<f:selectItem itemLabel="Lütfen seçiniz" />
+										<f:selectItems value="#{fazlaCalismaRaporHome.gorevYeriList}" />
+										<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaCalismaRaporHome.listeTemizle()}" ajaxSingle="true" reRender="anaForm" />
+									</h:selectOneMenu>
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaCalismaRaporHome.kullaniciPersonel==false}">
+									<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+									<h:inputText value="#{fazlaCalismaRaporHome.sicilNo}">
+										<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" action="#{fazlaCalismaRaporHome.listeTemizle()}" reRender="anaForm" />
+									</h:inputText>
+								</s:decorate>
+							</c:if>
+						</h:panelGrid>
+					</h:panelGrid>
+					<rich:panel style="overflow: auto;">
+						<a4j:outputPanel id="butonlar">
+							<c:if test="#{fazlaCalismaRaporHome.gorevYeriList!=null and fazlaCalismaRaporHome.gorevYeriList.size()>0}">
+								<TABLE width="45%">
+									<TR>
+										<TD width="35%" valign="top"><a4j:commandButton action="#{fazlaCalismaRaporHome.fillPersonelDenklestirmeRaporList()}"
+												value="Rapor Getir" rendered="#{not empty fazlaCalismaRaporHome.pdksSirketList and not empty fazlaCalismaRaporHome.raporList}"
+												reRender="hareketTables,butonlar" onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide()" /></TD>
+										<ui:fragment rendered="#{fazlaCalismaRaporHome.veriDolu()}">
+											<TD nowrap="nowrap"><SPAN style="font-size: 14;"><h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
+														action="#{fazlaCalismaRaporHome.fazlaMesaiExcel}" target="blank">
+														<a4j:support event="oncomplete" status="ajaxStatus" />
+													</h:commandLink></SPAN></TD>
+
+										</ui:fragment>
+									</TR>
+
+
+								</TABLE>
+							</c:if>
+						</a4j:outputPanel>
+						<a4j:outputPanel id="hareketTables">
+							<ui:fragment rendered="#{fazlaCalismaRaporHome.veriDolu()}">
+
+								<ui:fragment rendered="#{fazlaCalismaRaporHome.seciliBolum!=null}">
+									<DIV style="text-align: center; font-weight: bold; color: blue; font-size: 16px;">#{fazlaCalismaRaporHome.seciliBolum.aciklama}</DIV>
+								</ui:fragment>
+
+
+								<rich:dataTable rowClasses="acik,koyu" value="#{fazlaCalismaRaporHome.aylikPuantajList}"
+									rendered="#{not empty fazlaCalismaRaporHome.aylikPuantajList}" var="fazlaMesai" style="width: 80%;" rows="50" rowKeyVar="row">
+
+									<f:facet name="header">
+										<h:outputText value="#{fazlaCalismaRaporHome.raporAdi}" />
+									</f:facet>
+
+									<rich:column style="text-align: center;width: 30px;">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+										</f:facet>
+
+										<h:outputText value="#{fazlaMesai.pdksPersonel.sicilNo}" />
+									</rich:column>
+									<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+										<f:facet name="header">
+											<h:outputText value="Adı Soyadı" />
+										</f:facet>
+										<h:outputText value="#{fazlaMesai.pdksPersonel.adSoyad}" />
+									</rich:column>
+									<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaCalismaRaporHome.sirket.tesisDurumu}">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{fazlaMesai.pdksPersonel.tesis.aciklama}" />
+									</rich:column>
+									<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaCalismaRaporHome.seciliEkSaha3Id==null}">
+										<f:facet name="header">
+											<h:outputText value="#{fazlaCalismaRaporHome.bolumAciklama}" />
+										</f:facet>
+										<h:outputText value="#{fazlaMesai.pdksPersonel.ekSaha3.aciklama}" />
+									</rich:column>
+									<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaCalismaRaporHome.ekSaha4Tanim!=null}">
+										<f:facet name="header">
+											<h:outputText value="#{fazlaCalismaRaporHome.ekSaha4Tanim.aciklama}" />
+										</f:facet>
+										<h:outputText value="#{fazlaMesai.pdksPersonel.ekSaha4.aciklama}" />
+									</rich:column>
+									<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+										</f:facet>
+										<ui:fragment rendered="#{fazlaMesai.pdksPersonel.yoneticisi!=null}">
+											<h:outputText value="#{fazlaMesai.pdksPersonel.yoneticisi.adSoyad}" />
+
+										</ui:fragment>
+									</rich:column>
+									<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+										<f:facet name="header">
+											<h:outputText value="Görevi" />
+										</f:facet>
+										<h:outputText value="#{fazlaMesai.pdksPersonel.gorevTipi.aciklama}" />
+									</rich:column>
+									<c:choose>
+										<c:when test="#{fazlaCalismaRaporHome.vardiyaHaftaList.size()>0}">
+											<c:forEach items="#{fazlaCalismaRaporHome.vardiyaHaftaList}" var="vardiyaHafta">
+												<c:forEach items="#{vardiyaHafta.vardiyaGunler}" var="vardiya">
+
+													<rich:column style="width: 10px;text-align: center;" styleClass="#{fazlaCalismaRaporHome.vardiyaBul(fazlaMesai,vardiya).style}">
+														<f:facet name="header">
+															<ui:fragment>
+																<DIV id="gun#{vardiya.vardiyaDateStr}">
+
+																	<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}" />
+																	<bR />
+																	<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" />
+
+
+																</DIV>
+																<c:if test="#{vardiya.tatil!=null}">
+																	<rich:toolTip for="tatil#{vardiya.vardiyaDateStr}">
+																		<SPAN style="color: green; font-size: 12px;"><B>#{vardiya.tatil.ad}</B></SPAN>
+																	</rich:toolTip>
+
+																</c:if>
+															</ui:fragment>
+														</f:facet>
+
+														<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaBul(fazlaMesai,vardiya)!=null }">
+															<DIV id="vardiya#{fazlaCalismaRaporHome.vardiyaGun.id}">
+																<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaGun.vardiyaSaat!=null}">
+																	<span style="#{fazlaCalismaRaporHome.vardiyaGun.tdClass}"> <h:outputText
+																			value="#{authenticatedUser.sayiFormatliGoster(fazlaCalismaRaporHome.vardiyaGun.vardiyaSaat.calismaSuresi)}" />
+																	</span>
+																</ui:fragment>
+																<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaGun.izin!=null}">
+																	<span styleClass="izin"> <h:outputText value="#{fazlaCalismaRaporHome.vardiyaGun.izin.izinTipi.kisaAciklama}" />
+																	</span>
+																</ui:fragment>
+															</DIV>
+															<rich:toolTip for="vardiya#{fazlaCalismaRaporHome.vardiyaGun.id}">
+																#{fazlaCalismaRaporHome.vardiyaGun.fazlaMesaiTitle}
+															</rich:toolTip>
+														</ui:fragment>
+
+
+													</rich:column>
+
+
+
+												</c:forEach>
+												<rich:column style="width: 10px;text-align: center;" styleClass="#{fazlaMesai.trClass}">
+													<f:facet name="header">
+														<ui:fragment>
+
+															<SPAN style="color: blue;"> <c:if test="#{fazlaCalismaRaporHome.vardiyaHaftaList.size()>1}">
+																#{vardiyaHafta.hafta}. 
+																</c:if> Hafta<br /> Toplamı
+															</SPAN>
+
+														</ui:fragment>
+													</f:facet>
+													<ui:fragment rendered="#{fazlaCalismaRaporHome.getCalismaSuresi(vardiyaHafta.hafta,fazlaMesai)!=null}">
+														<ui:fragment rendered="#{fazlaCalismaRaporHome.haftaCalismaSaat gt fazlaCalismaRaporHome.maxHaftaCalismaSaat}">
+															<span style="font-weight: bold; color: red;"> <h:outputText
+																	value="#{authenticatedUser.sayiFormatliGoster(fazlaCalismaRaporHome.haftaCalismaSaat)}" />
+															</span>
+														</ui:fragment>
+														<ui:fragment rendered="#{fazlaCalismaRaporHome.haftaCalismaSaat == fazlaCalismaRaporHome.maxHaftaCalismaSaat}">
+															<span> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaCalismaRaporHome.haftaCalismaSaat)}" />
+															</span>
+														</ui:fragment>
+
+
+													</ui:fragment>
+												</rich:column>
+											</c:forEach>
+										</c:when>
+										<c:otherwise>
+											<c:forEach items="#{fazlaCalismaRaporHome.vardiyaGunList}" var="vardiya">
+												<rich:column style="width: 10px;text-align: center;" styleClass="#{fazlaCalismaRaporHome.vardiyaBul(fazlaMesai,vardiya).style}">
+													<f:facet name="header">
+														<ui:fragment>
+															<DIV id="gun#{vardiya.vardiyaDateStr}">
+																<c:choose>
+																	<c:when test="#{fazlaCalismaRaporHome.raporSecim=='maxToplamMesai'}">
+																		<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'yyyy')}" />
+																		<bR />
+																		<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'MMM')}" />
+																	</c:when>
+																	<c:otherwise>
+																		<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'd')}" />
+																		<bR />
+																		<h:outputText value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" />
+																	</c:otherwise>
+
+																</c:choose>
+
+															</DIV>
+															<c:if test="#{vardiya.tatil!=null}">
+																<rich:toolTip for="tatil#{vardiya.vardiyaDateStr}">
+																	<SPAN style="color: green; font-size: 12px;"><B>#{vardiya.tatil.ad}</B></SPAN>
+																</rich:toolTip>
+
+															</c:if>
+														</ui:fragment>
+													</f:facet>
+
+													<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaBul(fazlaMesai,vardiya)!=null }">
+														<DIV id="vardiya#{fazlaCalismaRaporHome.vardiyaGun.vardiyaKeyStr}">
+
+															<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaGun.vardiyaSaat!=null}">
+																<span style="#{fazlaCalismaRaporHome.vardiyaGun.tdClass}"> <h:outputText
+																		value="#{authenticatedUser.sayiFormatliGoster(fazlaCalismaRaporHome.vardiyaGun.vardiyaSaat.calismaSuresi)}" />
+																</span>
+															</ui:fragment>
+															<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaGun.vardiyaSaat==null and fazlaCalismaRaporHome.vardiyaGun.haftaTatil}">
+																<span style="color: green; font-size: 12px;"> <h:outputText value="#{fazlaCalismaRaporHome.vardiyaGun.vardiyaAciklama}" />
+																</span>
+															</ui:fragment>
+															<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaGun.izin!=null}">
+																<span> <h:outputText value="#{fazlaCalismaRaporHome.vardiyaGun.izin.izinTipi.kisaAciklama}" />
+																</span>
+															</ui:fragment>
+														</DIV>
+														<rich:toolTip for="vardiya#{fazlaCalismaRaporHome.vardiyaGun.vardiyaKeyStr}">
+												#{fazlaCalismaRaporHome.vardiyaGun.fazlaMesaiTitle}  
+												<ui:fragment rendered="#{fazlaCalismaRaporHome.vardiyaGun.vardiyaSaat!=null and not empty fazlaCalismaRaporHome.fazlaMesailer}">
+																<br />
+																<rich:dataTable rowClasses="acik,koyu" value="#{fazlaCalismaRaporHome.fazlaMesailer}" var="ms" style="width: 80%;" rows="50"
+																	rowKeyVar="row">
+
+																	<f:facet name="header">
+																		<h:outputText value="Fazla Mesailer" />
+																	</f:facet>
+
+																	<rich:column style="text-align: center;width: 30px;">
+																		<f:facet name="header">
+																			<h:outputText value="Başlangıç Zamanı" />
+																		</f:facet>
+
+																		<h:outputText value="#{authenticatedUser.dateTimeFormatla(ms.basZaman)}" />
+																	</rich:column>
+																	<rich:column style="text-align: center;width: 30px;">
+																		<f:facet name="header">
+																			<h:outputText value="Bitiş Zamanı" />
+																		</f:facet>
+
+																		<h:outputText value="#{authenticatedUser.dateTimeFormatla(ms.bitZaman)}" />
+																	</rich:column>
+																	<rich:column style="text-align: center;width: 30px;">
+																		<f:facet name="header">
+																			<h:outputText value="Süre" />
+																		</f:facet>
+
+																		<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ms.fazlaMesaiSaati)}" />
+																	</rich:column>
+																	<rich:column style=" width: 50px;">
+																		<f:facet name="header">
+																			<h:outputText value="Neden" />
+																		</f:facet>
+
+																		<h:outputText value="#{ms.fazlaMesaiOnayDurum.aciklama}" />
+																	</rich:column>
+																	<rich:column style=" width: 50px;">
+																		<f:facet name="header">
+																			<h:outputText value="Onaylayan" />
+																		</f:facet>
+
+																		<h:outputText value="#{ms.olusturanUser.adSoyad}" />
+																	</rich:column>
+
+																	<rich:column style="text-align: center;width: 30px;">
+																		<f:facet name="header">
+																			<h:outputText value="Onay Zamanı" />
+																		</f:facet>
+
+																		<h:outputText value="#{authenticatedUser.dateTimeFormatla(ms.olusturmaTarihi)}" />
+																	</rich:column>
+																</rich:dataTable>
+
+															</ui:fragment>
+														</rich:toolTip>
+													</ui:fragment>
+
+
+												</rich:column>
+											</c:forEach>
+										</c:otherwise>
+									</c:choose>
+
+									<c:if test="#{fazlaCalismaRaporHome.raporSecim=='maxToplamMesai' and fazlaCalismaRaporHome.vardiyaGunList.size()>1}">
+										<rich:column style="text-align: center;width: 60px;width:autostretch ;white-space: nowrap;">
+											<f:facet name="header">
+												<h:outputText value="Toplam Fazla Çalışma" />
+											</f:facet>
+											<SPAN style="font-weight: bold; color: red;"> #{authenticatedUser.sayiFormatliGoster(fazlaMesai.saatToplami)}</SPAN>
+										</rich:column>
+
+									</c:if>
+
+
+
+
+									<f:facet name="footer">
+										<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+									</f:facet>
+								</rich:dataTable>
+
+
+
+
+
+								<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaCalismaRaporHome.fazlaMesaiExcel}" target="blank">
+									<a4j:support event="oncomplete" onclick="#{rich:component('wait')}.show()" oncomplete=" #{rich:component('wait')}.hide()" />
+								</h:commandLink>
+
+							</ui:fragment>
+						</a4j:outputPanel>
+
+
+					</rich:panel>
+				</a4j:outputPanel>
+
+
+			</rich:panel>
+		</h:form>
+
+
+
+
+
+	</ui:define>
+
+</ui:composition>

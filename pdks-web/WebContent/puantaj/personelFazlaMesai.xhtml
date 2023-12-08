@@ -211,7 +211,16 @@
 							<f:facet name="header">
 								<h:outputText value="Kapi" />
 							</f:facet>
-							<h:outputText value="#{mesai.kapiView.aciklama}" />
+							<ui:fragment rendered="#{mesai.kapiView.kapiKGS!=null}">
+								<A href="#" id="hareket#{mesai.id}"> <h:outputText value="#{mesai.kapiView.aciklama}" /></A>
+								<rich:toolTip for="hareket#{mesai.id}">
+									<b>Kapi Şirket : </b>
+									<h:outputText value="#{mesai.kapiView.kapiKGS.kapiSirket.aciklama}" />
+								</rich:toolTip>
+							</ui:fragment>
+							<ui:fragment rendered="#{mesai.kapiView.kapiKGS==null}">
+								<h:outputText value="#{mesai.kapiView.aciklama}" />
+							</ui:fragment>
 
 						</rich:column>
 

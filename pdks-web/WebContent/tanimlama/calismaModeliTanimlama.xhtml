@@ -26,6 +26,11 @@
 
 							</a4j:commandLink>
 							<rich:toolTip for="editlink" value="Güncelle" />
+							<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="copylink" action="#{calismaModeliHome.calismaModeliKopyala(calismaModeli)}"
+								oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" rendered="#{authenticatedUser.admin}">
+								<h:graphicImage value="/img/onetomany.gif" style="border:0" />
+							</a4j:commandLink>
+							<rich:toolTip for="copylink" value="Kopyala" />
 						</rich:column>
 						<rich:column rendered="#{authenticatedUser.admin}">
 							<f:facet name="header">
@@ -83,7 +88,7 @@
 							</f:facet>
 							<h:outputText value="#{calismaModeli.bagliVardiyaSablonu.adi}" />
 						</rich:column>
-						<rich:column>
+						<rich:column rendered="#{calismaModeliHome.saatlikCalismaVar}">
 							<f:facet name="header">
 								<h:outputText value="Maaş Ödeme Tipi" />
 							</f:facet>
@@ -97,9 +102,21 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="ÇGS Güncellenir" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.updateCGS)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Vardiya Kontrol Edilmez" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.ortakVardiya)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="Tüm Vardiyalar" />
 							</f:facet>
-							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.genelVardiya)}" />
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.genelVardiya and calismaModeli.ortakVardiya==false)}" />
 						</rich:column>
 						<rich:column
 							rendered="#{ortakIslemler.getParameterKey('aksamBordroBasZamani')!='' and ortakIslemler.getParameterKey('aksamBordroBitZamani')!=''}">
@@ -115,7 +132,12 @@
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.hareketKaydiVardiyaBul)}" />
 						</rich:column>
-
+						<rich:column rendered="#{calismaModeliHome.otomatikFazlaCalismaOnaylansinVar}">
+							<f:facet name="header">
+								<h:outputText value="Fazla Çalışma Otomatik Onaylansın" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.otomatikFazlaCalismaOnaylansin)}" />
+						</rich:column>
 						<rich:column rendered="#{ortakIslemler.getParameterKey('haftaTatilDurum')=='1'}">
 							<f:facet name="header">
 								<h:outputText value="Hafta Sonu Fazla Mesai Ode" />
@@ -203,7 +225,7 @@
 								<s:convertEntity />
 							</h:selectOneMenu>
 						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
+						<s:decorate template="/layout/edit.xhtml" rendered="#{calismaModeliHome.saatlikCalismaVar}">
 							<ui:define name="label">Aylık Maaş Mı</ui:define>
 
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.aylikMaas}" disabled="#{authenticatedUser.admin==false}">
@@ -252,10 +274,22 @@
 								<f:validateDoubleRange maximum="0" />
 							</h:inputText>
 						</s:decorate>
- 						<s:decorate template="/layout/edit.xhtml">
+						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Fazla Mesai Var</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.fazlaMesaiVar}" disabled="#{authenticatedUser.admin==false}">
 
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">ÇGS Güncellenir</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.toplamGunGuncelle}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Vardiya Kontrol Edilmez</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.ortakVardiya}" disabled="#{authenticatedUser.admin==false}">
+								<a4j:support event="onclick" reRender="vardiyalar" status="ajaxStatus" ajaxSingle="true" />
 							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
@@ -266,9 +300,16 @@
 							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{calismaModeliHome.hareketKaydiVardiyaBul or calismaModeliHome.calismaModeli.hareketKaydiVardiyaBul}">
+							rendered="#{calismaModeliHome.otomatikFazlaCalismaOnaylansinVar or calismaModeliHome.calismaModeli.otomatikFazlaCalismaOnaylansin}">
 							<ui:define name="label">Hareket Kayıtlarından Vardiya Bul</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.hareketKaydiVardiyaBul}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{calismaModeliHome.otomatikFazlaCalismaOnaylansinVar or calismaModeliHome.calismaModeli.otomatikFazlaCalismaOnaylansin}">
+							<ui:define name="label">Fazla Çalışma Otomatik Onaylansın</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.otomatikFazlaCalismaOnaylansin}" disabled="#{authenticatedUser.admin==false}">
 
 							</h:selectBooleanCheckbox>
 						</s:decorate>
@@ -294,8 +335,9 @@
 					</h:panelGrid>
 					<a4j:outputPanel id="vardiyalar">
 
-						<rich:simpleTogglePanel rendered="#{calismaModeliHome.calismaModeli.genelVardiya==false}" switchType="client" label="Vardiyalar" height="110"
-							opened="true">
+						<rich:simpleTogglePanel
+							rendered="#{calismaModeliHome.calismaModeli.genelVardiya==false and calismaModeliHome.calismaModeli.ortakVardiya==false}" switchType="client"
+							label="Vardiyalar" height="110" opened="true">
 							<s:decorate>
 								<rich:listShuttle id="shuttle" sourceValue="#{calismaModeliHome.vardiyaList}" fastOrderControlsVisible="false" orderControlsVisible="false"
 									targetValue="#{calismaModeliHome.kayitliVardiyaList}" var="vardiya" copyControlLabel="#{messages['listShuttle.etiket.copyControlLabel']}"

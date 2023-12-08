@@ -13,14 +13,55 @@
 
 			<rich:panel header="#{ortakIslemler.getMenuUserAdi(calismaSaatleriHome.session,'calismaSaatleri')}">
 				<h:panelGrid columns="1">
+					<a4j:outputPanel id="secimler">
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and calismaSaatleriHome.aramaSecenekleri.departmanIdList.size()>1}">
+							<ui:define name="label">PDKS Departman</ui:define>
+							<h:selectOneMenu value="#{calismaSaatleriHome.aramaSecenekleri.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{calismaSaatleriHome.aramaSecenekleri.departmanIdList}" />
+								<a4j:support event="onchange" action="#{calismaSaatleriHome.fillSirketList()}" ajaxSingle="true" reRender="secimler,vardiyaOzetPanel" />
+							</h:selectOneMenu>
 
-					<s:decorate template="/layout/edit.xhtml">
-						<ui:define name="label">Tarih</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{calismaSaatleriHome.date}" required="true" requiredMessage="Tarih giriniz" />
-					</s:decorate>
+
+						</s:decorate>
+						<h:panelGrid columns="2">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{calismaSaatleriHome.aramaSecenekleri.sirketIdList.size()>0}">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:selectOneMenu value="#{calismaSaatleriHome.aramaSecenekleri.sirketId}"
+									disabled="#{calismaSaatleriHome.aramaSecenekleri.sirketIdList.size()==1}">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{calismaSaatleriHome.aramaSecenekleri.sirketIdList}" />
+									<a4j:support event="onchange" action="#{calismaSaatleriHome.fillTesisList()}" ajaxSingle="true" reRender="hareketPanel" />
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{ortakIslemler.tesisDurumu and calismaSaatleriHome.aramaSecenekleri.tesisList!=null and calismaSaatleriHome.aramaSecenekleri.tesisList.size()>0}">
+								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+								<h:selectOneMenu value="#{calismaSaatleriHome.aramaSecenekleri.tesisId}"
+									disabled="#{calismaSaatleriHome.aramaSecenekleri.tesisList.size()==1}">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{calismaSaatleriHome.aramaSecenekleri.tesisList}" />
+
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Tarih</ui:define>
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{calismaSaatleriHome.date}" required="true"
+									requiredMessage="Tarih giriniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+								<h:inputText value="#{calismaSaatleriHome.sicilNo}">
+									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="hareketPanel"
+										action="#{calismaSaatleriHome.vardiyaGunList.clear()}" />
+
+								</h:inputText>
+							</s:decorate>
+						</h:panelGrid>
+					</a4j:outputPanel>
 					<a4j:commandButton status="ajaxStatus" value="Hareket Listele" action="#{calismaSaatleriHome.fillHareketList}" reRender="hareketPanel" />
 				</h:panelGrid>
-
 			</rich:panel>
 
 			<a4j:outputPanel id="hareketPanel">

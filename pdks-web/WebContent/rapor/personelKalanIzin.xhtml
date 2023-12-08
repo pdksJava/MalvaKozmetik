@@ -111,7 +111,7 @@
 							<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 								<a4j:commandButton value="Tüm İzinler" status="ajaxStatus" action="#{personelKalanIzinHome.fillIzinList(null)}"
 									reRender="izinPanel,secim,izinPersonel" />
-								<a4j:commandButton value="Tarih Bazlı İzinler,izinPersonel" status="ajaxStatus" action="#{personelKalanIzinHome.fillTarihIzinList}"
+								<a4j:commandButton value="Tarih Bazlı İzinler" status="ajaxStatus" action="#{personelKalanIzinHome.fillTarihIzinList}"
 									reRender="izinPanel,secim" />
 								<a4j:commandButton value="Güncelle" status="ajaxStatus" rendered="#{authenticatedUser.admin}"
 									action="#{personelKalanIzinHome.izinleriBakiyeleriniHesapla}" reRender="izinPanel,secim,izinPersonel" />
@@ -378,7 +378,7 @@
 								</rich:column>
 
 
-								<rich:column>
+								<rich:column style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 									</f:facet>
@@ -391,13 +391,13 @@
 									</f:facet>
 									<h:outputText value="#{izinler.personel.adSoyad}" />
 								</rich:column>
-								<rich:column>
+								<rich:column style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.dateFormatla(izinler.personel.izinHakEdisTarihi)}" />
 								</rich:column>
-								<rich:column rendered="#{personelKalanIzinHome.istenAyrilanEkle}">
+								<rich:column rendered="#{personelKalanIzinHome.istenAyrilanEkle}" style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="İşten Ayrılma Tarihi" />
 									</f:facet>
@@ -405,20 +405,20 @@
 								</rich:column>
 
 
-								<rich:column>
+								<rich:column style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="İzin Toplamı" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.toplamBakiyeIzin)} Gün" />
 								</rich:column>
-								<rich:column>
+								<rich:column style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="Kullanılan İzin Toplamı" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.kullanilanIzin)} Gün" />
 
 								</rich:column>
-								<rich:column>
+								<rich:column style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="Bakiye İzin Toplamı" />
 									</f:facet>
@@ -428,24 +428,28 @@
 									<f:facet name="header">
 										<h:outputText value="" />
 									</f:facet>
-									<TABLE>
-										<TR>
-											<ui:fragment rendered="#{izinler.izinler!=null}">
-												<TD><a4j:commandButton status="ajaxStatus" value="İzin Detay" oncomplete="#{rich:component('izinDetayPanel')}.show()"
-														action="#{personelKalanIzinHome.izinGoster(izinler)}" reRender="izinDetayPanel" /></TD>
+									<ui:fragment rendered="#{izinler.toplamBakiyeIzin>0}">
+										<TABLE>
+											<TR>
+												<ui:fragment rendered="#{izinler.izinler!=null}">
+													<TD><a4j:commandButton status="ajaxStatus" value="İzin Detay" oncomplete="#{rich:component('izinDetayPanel')}.show()"
+															action="#{personelKalanIzinHome.izinGoster(izinler)}" reRender="izinDetayPanel" /></TD>
 
-												<ui:fragment rendered="#{authenticatedUser.admin or izinler.personel.sirket.departman.admin or authenticatedUser.IK}">
-													<TD><a4j:commandButton status="ajaxStatus" value="İzin Kartı" oncomplete="#{rich:component('izinKartiPanel')}.show()"
-															action="#{personelKalanIzinHome.izinKarti(izinler)}" reRender="izinKartiPanel" /></TD>
-													<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" action="#{personelKalanIzinHome.pdfAktar(izinler)}"
-															target="popupWindow" id="izinPDFLink3">
-															<h:graphicImage value="/img/pdf.jpg" />
-														</h:commandLink></TD>
+													<ui:fragment rendered="#{authenticatedUser.admin or izinler.personel.sirket.departman.admin or authenticatedUser.IK}">
+														<TD><a4j:commandButton status="ajaxStatus" value="İzin Kartı" oncomplete="#{rich:component('izinKartiPanel')}.show()"
+																action="#{personelKalanIzinHome.izinKarti(izinler)}" reRender="izinKartiPanel" /></TD>
+
+														<TD><h:commandLink status="ajaxStatus" title="İzin Kartı PDF" action="#{personelKalanIzinHome.pdfAktar(izinler)}"
+																target="popupWindow" id="izinPDFLink3">
+																<h:graphicImage value="/img/pdf.jpg" />
+															</h:commandLink></TD>
+													</ui:fragment>
 
 												</ui:fragment>
-											</ui:fragment>
-										</TR>
-									</TABLE>
+
+											</TR>
+										</TABLE>
+									</ui:fragment>
 
 								</rich:column>
 

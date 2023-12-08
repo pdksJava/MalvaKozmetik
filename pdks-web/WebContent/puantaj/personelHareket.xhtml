@@ -350,13 +350,13 @@
 														</h:panelGrid>
 													</ui:fragment>
 												</rich:column>
-												<rich:column filterBy="#{hareketler.personel.sicilNo}" filterEvent="onkeyup">
+												<rich:column style="text-align:center">
 													<f:facet name="header">
 														<h:outputText value="Sicil Numarasi" />
 													</f:facet>
 													<h:outputText value="#{hareketler.personel.sicilNo}" />
 												</rich:column>
-												<rich:column filterBy="#{hareketler.personel.adSoyad}" filterEvent="onkeyup">
+												<rich:column>
 													<f:facet name="header">
 														<h:outputText value="Personel" />
 													</f:facet>
@@ -388,6 +388,12 @@
 												</rich:column>
 												<rich:column>
 													<f:facet name="header">
+														<h:outputText value="Kapi Şirket" />
+													</f:facet>
+													<h:outputText value="#{hareketler.kapiView.kapiKGS.kapiSirket.aciklama}" />
+												</rich:column>
+												<rich:column>
+													<f:facet name="header">
 														<h:outputText value="Zaman" />
 													</f:facet>
 													<h:outputText value="#{authenticatedUser.dateTimeLongFormatla(hareketler.zaman)}" />
@@ -408,12 +414,7 @@
 
 												</rich:column>
 
-												<rich:column>
-													<f:facet name="header">
-														<h:outputText value="Orjinal Zaman" />
-													</f:facet>
-													<h:outputText value="#{authenticatedUser.dateTimeLongFormatla(hareketler.orjinalZaman)}" />
-												</rich:column>
+
 												<rich:column>
 													<f:facet name="header">
 														<h:outputText value="Onay Durum" />
@@ -423,6 +424,15 @@
 												<h:outputText value=" #{hareketler.islem.onayDurumAciklama}" rendered="#{hareketler.durum!=0}" />
 														<h:outputText value=" (İptal Edildi)" rendered="#{hareketler.durum==0}" />
 													</ui:fragment>
+												</rich:column>
+												<rich:column rendered="#{personelHareketHome.kgsUpdateGoster}">
+													<f:facet name="header">
+														<h:outputText value="Orjinal Zaman" />
+													</f:facet>
+													<ui:fragment rendered="#{hareketler.islem!=null and hareketler.kgsZaman!=null}">
+														<h:outputText value="#{authenticatedUser.dateTimeLongFormatla(hareketler.kgsZaman)}" />
+													</ui:fragment>
+
 												</rich:column>
 												<f:facet name="footer">
 													<rich:datascroller renderIfSinglePage="false" maxPages="5" />
@@ -456,7 +466,7 @@
 				</a4j:outputPanel>
 				<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
 					<s:decorate template="/layout/edit.xhtml">
-						<ui:define name="label">Personel Adi</ui:define>
+						<ui:define name="label">Personel Adı</ui:define>
 						<h:outputText value="#{personelHareketHome.instance.personel.pdksPersonel.adSoyad}" />
 					</s:decorate>
 					<s:decorate template="/layout/edit.xhtml">
@@ -506,19 +516,19 @@
 						<tr>
 							<TD valign="top"><h:panelGrid columns="1" cellpadding="0" cellspacing="0" id="hareketIslem">
 									<s:decorate template="/layout/edit.xhtml">
-										<ui:define name="label">Personel Adi</ui:define>
+										<ui:define name="label">Personel Adı</ui:define>
 										<h:outputText value="#{personelHareketHome.instance.personel.pdksPersonel.adSoyad}" />
 									</s:decorate>
 									<s:decorate template="/layout/edit.xhtml">
 										<ui:define name="label">Tarih</ui:define>
 										<h:outputText value="#{authenticatedUser.dateFormatla(personelHareketHome.tarih)}" />
 									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml" rendered="#{personelHareketHome.islemTipi=='E'}">
+									<s:decorate template="/layout/edit.xhtml" id="inputKapi" rendered="#{personelHareketHome.islemTipi=='E'}">
 										<ui:define name="label">Kapi</ui:define>
 										<h:selectOneMenu value="#{personelHareketHome.instance.kapiId}" style="width:350px" required="false" requiredMessage="Kapi Seciniz">
 											<f:selectItem itemLabel="Lütfen seçiniz" />
 											<f:selectItems value="#{personelHareketHome.kapiList}" />
-
+											<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="inputKapi" />
 										</h:selectOneMenu>
 									</s:decorate>
 									<s:decorate template="/layout/edit.xhtml" rendered="#{personelHareketHome.islemTipi!='E'}">
@@ -529,13 +539,17 @@
 										<ui:define name="label">Zaman</ui:define>
 										<h:outputText value="#{personelHareketHome.saatStr}" /> : <h:outputText value="#{personelHareketHome.dakikaStr}" />
 									</s:decorate>
-									<s:decorate template="/layout/edit.xhtml" rendered="#{personelHareketHome.islemTipi!='S'}">
+									<s:decorate template="/layout/edit.xhtml" id="inputZaman" rendered="#{personelHareketHome.islemTipi!='S'}">
 										<ui:define name="label">Zaman</ui:define>
 										<TABLE>
 											<TR>
-												<TD><rich:inputNumberSpinner minValue="0" maxValue="23" inputSize="2" value="#{personelHareketHome.saat}" /></TD>
+												<TD><rich:inputNumberSpinner minValue="0" maxValue="23" inputSize="2" value="#{personelHareketHome.saat}">
+														<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="inputZaman" />
+													</rich:inputNumberSpinner></TD>
 												<TD>:</TD>
-												<TD><rich:inputNumberSpinner minValue="0" maxValue="59" inputSize="2" value="#{personelHareketHome.dakika}" /></TD>
+												<TD><rich:inputNumberSpinner minValue="0" maxValue="59" inputSize="2" value="#{personelHareketHome.dakika}">
+														<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="inputZaman" />
+													</rich:inputNumberSpinner></TD>
 											</TR>
 										</TABLE>
 
@@ -568,8 +582,8 @@
 										rendered="#{empty personelHareketHome.hareketList }">
 										<br></br>
 
-										<a4j:commandButton status="ajaxStatus" value="Giriş ve Çıkış Kaydet" action="#{personelHareketHome.saveGirisCikis}"
-											reRender="hareketForm" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+										<a4j:commandButton status="ajaxStatus" value="Giriş ve Çıkış Kaydet" action="#{personelHareketHome.saveGirisCikis}" reRender="hareketForm"
+											oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
 
 									</ui:fragment></TD>
 							</ui:fragment>

@@ -132,8 +132,8 @@
 									<f:facet name="header">
 										<h:outputText value="Orjinal Zamanı " />
 									</f:facet>
-									<ui:fragment rendered="#{hareketler.islem!=null or hareketler.sirket=='K'}">
-										<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareketler.orjinalZaman)}" />
+									<ui:fragment rendered="#{hareketler.islem!=null and hareketler.kgsZaman!=null}">
+										<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareketler.kgsZaman)}" />
 									</ui:fragment>
 								</rich:column>
 								<rich:column>
@@ -145,12 +145,14 @@
 									</ui:fragment>
 								</rich:column>
 							</c:if>
+							
 							<rich:column>
 								<f:facet name="header">
 									<h:outputText value="Oluşturma Zamanı " />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareketler.olusturmaZamani)}" />
 							</rich:column>
+
 							<f:facet name="footer">
 								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 							</f:facet>

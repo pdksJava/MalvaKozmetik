@@ -16,7 +16,6 @@
 				</a4j:outputPanel>
 				<a4j:outputPanel ajaxRendered="true" id="idPersonelKullaniciAramaHome">
 
-
 					<h:panelGrid columns="1">
 						<h:panelGrid columns="2" rendered="#{personelIzinGirisiHome.visibled==true}" cellpadding="0" cellspacing="0">
 							<s:decorate template="/layout/edit.xhtml">
@@ -110,18 +109,17 @@
 						</a4j:outputPanel>
 					</h:panelGrid>
 
-					<a4j:commandButton status="ajaxStatus" id="idPersonelAramaForm"
+					<a4j:commandButton status="ajaxStatus" id="idPersonelAramaForm" value="Personel Seçin"
 						rendered="#{not empty authenticatedUser.yetkiTumPersonelNoList and personelIzinGirisiHome.visibled==false and (authenticatedUser.izinGirebilir or ortakIslemler.getParameterKey('izinERPUpdate')!='1')}"
-						value="Personel Seç" immediate="true" limitToList="true" action="#{personelIzinGirisiHome.personelArama('izinGirisForm')}"
+						immediate="true" limitToList="true" action="#{personelIzinGirisiHome.personelArama('izinGirisForm')}"
 						reRender="idPersonelKullaniciAramaHome,idPersonelAramaForm,idPersonelGirisForm" />
 
 				</a4j:outputPanel>
 			</rich:panel>
 		</h:form>
-		<a4j:outputPanel id="idPersonelGirisForm" rendered="#{authenticatedUser.izinGirebilir or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
-			<h:form>
-
-				<h:panelGrid id="izinGirisi" rendered="#{personelKullaniciAramaHome.visibled==false and personelIzinGirisiHome.personel!=null}" columns="2">
+		<a4j:outputPanel id="idPersonelGirisForm">
+			<h:form rendered="#{personelIzinGirisiHome.visibled==false and personelIzinGirisiHome.personel!=null and (authenticatedUser.izinGirebilir or ortakIslemler.getParameterKey('izinERPUpdate')!='1')}">
+ 				<h:panelGrid id="izinGirisi" columns="2">
 					<s:decorate template="/layout/edit.xhtml">
 						<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
 						<h:outputText value="#{personelIzinGirisiHome.personel.sicilNo}" />
@@ -159,7 +157,7 @@
 					</s:decorate>
 				</h:panelGrid>
 
-				<h:panelGrid columns="1" rendered="#{personelKullaniciAramaHome.visibled==false}">
+				<h:panelGrid columns="1" rendered="#{personelIzinGirisiHome.visibled==false}">
 
 					<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
 
