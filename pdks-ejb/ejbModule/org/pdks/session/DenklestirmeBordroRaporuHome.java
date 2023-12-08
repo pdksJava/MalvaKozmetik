@@ -122,7 +122,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	public String COL_SIRKET = "sirket";
 	public String COL_TESIS = "tesis";
 	public String COL_BOLUM = "bolumAdi";
-	public String COL_ALT_BOLUM = "altBolumAdi";
+ 	public String COL_ALT_BOLUM = "altBolumAdi";
 	public String COL_NORMAL_GUN_ADET = "normalGunAdet";
 	public String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
 	public String COL_RESMI_TATIL_ADET = "resmiTatilAdet";
@@ -1220,7 +1220,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 		if (personelDenklestirmeList.isEmpty())
 			PdksUtil.addMessageWarn("İlgili döneme ait fazla mesai bulunamadı!");
-		 
+
 		setInstance(denklestirmeAy);
 
 		return "";

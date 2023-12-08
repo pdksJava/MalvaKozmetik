@@ -368,6 +368,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	public ByteArrayOutputStream denklestirmeExcelAktarDevam(HashMap<String, Object> veriMap, Session session) throws IOException {
 		ByteArrayOutputStream baos = null;
 		List<AylikPuantaj> personelDenklestirmeList = veriMap.containsKey("personelDenklestirmeList") ? (List<AylikPuantaj>) veriMap.get("personelDenklestirmeList") : new ArrayList<AylikPuantaj>();
+		Sirket sirket = veriMap.containsKey("sirket") ? (Sirket) veriMap.get("sirket") : null;
 		if (!personelDenklestirmeList.isEmpty()) {
 			LinkedHashMap<String, String> baslikMap = veriMap.containsKey("baslikMap") ? (LinkedHashMap<String, String>) veriMap.get("baslikMap") : null;
 			Tanim ekSaha4Tanim = veriMap.containsKey("ekSaha4Tanim") ? (Tanim) veriMap.get("ekSaha4Tanim") : null;
@@ -503,6 +504,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					}
 
 					if (kodu.startsWith(home.COL_AKSAM_GUN_MESAI) && aksamGun == false) {
+						iterator.remove();
+						continue;
+					}
+					if (kodu.startsWith(home.COL_SIRKET) && (sirket == null || sirket.getSirketGrup() == null)) {
 						iterator.remove();
 						continue;
 					}
