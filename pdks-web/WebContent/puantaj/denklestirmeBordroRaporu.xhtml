@@ -75,7 +75,7 @@
 
 							</h:inputText>
 						</s:decorate>
- 					</h:panelGrid>
+					</h:panelGrid>
 					<h:panelGrid columns="2" style="width: 100%;"
 						rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.sicilNo)==false}">
 						<s:decorate template="/layout/edit.xhtml">
@@ -160,7 +160,64 @@
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 									</f:facet>
-									<h:outputText value="#{puantaj.pdksPersonel.sicilNo}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+									<ui:fragment rendered="#{puantaj.eksikCalismaSure==null}">
+										<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" />
+									</ui:fragment>
+									<ui:fragment rendered="#{puantaj.eksikCalismaSure!=null}">
+										<DIV style="color: red;" id="personelNo#{puantaj.pdksPersonel.id}">
+											<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo}" />
+										</DIV>
+
+										<rich:toolTip for="personelNo#{puantaj.pdksPersonel.id}">
+
+											<ui:fragment rendered="#{puantaj.calismaModeli.fazlaMesaiVar}">
+
+												<DIV style="color: black;">
+													<P>
+														<B>TÇS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.hesaplananSure)}
+													</P>
+													<P>
+														<B>ÇGS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
+													</P>
+												</DIV>
+
+
+											</ui:fragment>
+
+											<ui:fragment rendered="#{puantaj.vardiyalar!=null}">
+												<rich:dataTable rowClasses="acik,koyu" value="#{puantaj.vardiyalar}" var="vardiyaGun">
+
+													<f:facet name="header">
+														<ui:fragment>
+															<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo} #{puantaj.pdksPersonel.adSoyad}" />
+															<br></br>
+															<br></br>
+												
+														Kapı Giriş Kayıtı ve İzin Girilmeyen Günler
+</ui:fragment>
+													</f:facet>
+
+													<rich:column style="text-align: center;">
+														<f:facet name="header">
+															Tarih
+														</f:facet>
+														<h:outputText value="#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}" />
+													</rich:column>
+													<rich:column style="text-align: left;">
+														<f:facet name="header">
+															Vardiya
+														</f:facet>
+														<h:outputText value="#{vardiyaGun.vardiya.kisaAdi } [ #{vardiyaGun.vardiyaAdi } ]" />
+													</rich:column>
+
+												</rich:dataTable>
+											</ui:fragment>
+										</rich:toolTip>
+
+
+									</ui:fragment>
+
+
 								</rich:column>
 								<rich:column style="text-align: left;">
 									<f:facet name="header">

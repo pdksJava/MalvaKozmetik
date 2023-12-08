@@ -218,9 +218,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				perList = null;
 			}
 			perList = null;
-
 			if (!idMap.isEmpty()) {
-
 				fields.clear();
 				fields.put("personelDenklestirmeBordro.id", new ArrayList(idMap.keySet()));
 				if (session != null)
@@ -231,9 +229,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					BordroDetayTipi bordroDetayTipi = BordroDetayTipi.fromValue(detay.getTipi());
 					idMap.get(key).getDetayMap().put(bordroDetayTipi, detay);
 				}
-
 				idMap = null;
-
 			}
 
 			if (!eksikCalismaMap.isEmpty()) {
@@ -244,81 +240,79 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					perDMap.put(aylikPuantaj.getPdksPersonel().getId(), aylikPuantaj);
 				}
 				try {
-					if (!perDMap.isEmpty()) {
-						List<Long> perIdList = new ArrayList<Long>(perDMap.keySet());
-						HashMap map = new HashMap();
-						sb = new StringBuffer();
-						sb.append("SELECT DISTINCT VG.* FROM VARDIYA_GUN_SAAT_VIEW V WITH(nolock) ");
-						sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_PERSONEL);
-						sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn());
-						sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
-						sb.append(" INNER JOIN  " + Vardiya.TABLE_NAME + " VA ON VA." + Vardiya.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_VARDIYA + " AND VA.VARDIYATIPI=''");
-						sb.append(" INNER JOIN  " + VardiyaGun.TABLE_NAME + " VG ON VG." + VardiyaGun.COLUMN_NAME_ID + "=V.VARDIYA_GUN_ID ");
-						sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
-						sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <CONVERT(DATE, GETDATE() ) AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
-						sb.append("  AND  V." + VardiyaSaat.COLUMN_NAME_NORMAL_SURE + " > 0   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
-						Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
-						Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
-						map.put("p", perIdList);
-						map.put("basTarih", basTarih);
-						map.put("bitTarih", bitTarih);
-						if (session != null)
-							map.put(PdksEntityController.MAP_KEY_SESSION, session);
-						List<VardiyaGun> vardiyaGunList = pdksEntityController.getObjectBySQLList(sb, map, VardiyaGun.class);
-						if (vardiyaGunList.size() > 1)
-							vardiyaGunList = PdksUtil.sortListByAlanAdi(vardiyaGunList, "vardiyaDate", false);
-						String donem = String.valueOf(dm.getYil() * 100 + dm.getAy());
-						TreeMap<Long, Personel> perMap = new TreeMap<Long, Personel>();
-						for (VardiyaGun vardiyaGun : vardiyaGunList) {
-							if (vardiyaGun.getVardiyaDateStr().startsWith(donem)) {
-								vardiyaGun.setVardiyaZamani();
-								Personel personel = vardiyaGun.getPdksPersonel();
-								Long id = personel.getId();
-								AylikPuantaj aylikPuantaj = perDMap.get(id);
-								aylikPuantaj.getVardiyalar().add(vardiyaGun);
-								if (!perMap.containsKey(id)) {
-									perMap.put(id, personel);
-									PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
-									boolean hataYok = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
-									if (hataYok) {
-										CalismaModeli cm = eksikCalismaMap.containsKey(pd.getId()) && hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
-										Double eksikCalismaSure = null;
-										if (cm != null && eksikCalisanVeriGetir != null && eksikCalisanVeriGetir) {
-											double normalSaat = 0.0d, planlananSaaat = 0.0d;
-											try {
-												planlananSaaat = pd.getPlanlanSure().doubleValue() - cm.getHaftaIci();
-											} catch (Exception e) {
-												planlananSaaat = 0.0d;
-											}
-											try {
-												if (cm.isSaatlikOdeme()) {
-													PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
-													normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
-												} else {
-													normalSaat = pd.getHesaplananSure().doubleValue();
-												}
-											} catch (Exception e) {
-												normalSaat = 0.0d;
-											}
-											try {
-												eksikCalismaSure = normalSaat - (planlananSaaat + cm.getHaftaIci());
-											} catch (Exception e) {
-												hataYok = false;
-											}
-											donemBitti = hataYok;
+					List<Long> perIdList = new ArrayList<Long>(perDMap.keySet());
+					HashMap map = new HashMap();
+					sb = new StringBuffer();
+					sb.append("SELECT DISTINCT VG.* FROM VARDIYA_GUN_SAAT_VIEW V WITH(nolock) ");
+					sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_PERSONEL);
+					sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn());
+					sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
+					sb.append(" INNER JOIN  " + Vardiya.TABLE_NAME + " VA ON VA." + Vardiya.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_VARDIYA + " AND VA.VARDIYATIPI=''");
+					sb.append(" INNER JOIN  " + VardiyaGun.TABLE_NAME + " VG ON VG." + VardiyaGun.COLUMN_NAME_ID + "=V.VARDIYA_GUN_ID ");
+					sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
+					sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <CONVERT(DATE, GETDATE() ) AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
+					sb.append("  AND  V." + VardiyaSaat.COLUMN_NAME_NORMAL_SURE + " > 0   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
+					Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
+					Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
+					map.put("p", perIdList);
+					map.put("basTarih", basTarih);
+					map.put("bitTarih", bitTarih);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					List<VardiyaGun> vardiyaGunList = pdksEntityController.getObjectBySQLList(sb, map, VardiyaGun.class);
+					if (vardiyaGunList.size() > 1)
+						vardiyaGunList = PdksUtil.sortListByAlanAdi(vardiyaGunList, "vardiyaDate", false);
+					String donem = String.valueOf(dm.getYil() * 100 + dm.getAy());
+					TreeMap<Long, Personel> perMap = new TreeMap<Long, Personel>();
+					for (VardiyaGun vardiyaGun : vardiyaGunList) {
+						if (vardiyaGun.getVardiyaDateStr().startsWith(donem)) {
+							vardiyaGun.setVardiyaZamani();
+							Personel personel = vardiyaGun.getPdksPersonel();
+							Long id = personel.getId();
+							AylikPuantaj aylikPuantaj = perDMap.get(id);
+							aylikPuantaj.getVardiyalar().add(vardiyaGun);
+							if (!perMap.containsKey(id)) {
+								perMap.put(id, personel);
+								PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
+								boolean hataYok = pd.getDurum().equals(Boolean.TRUE), donemBitti = true;
+								if (hataYok) {
+									CalismaModeli cm = eksikCalismaMap.containsKey(pd.getId()) && hataYok && hataliVeriGetir != null && hataliVeriGetir ? pd.getCalismaModeli() : null;
+									Double eksikCalismaSure = null;
+									if (cm != null && eksikCalisanVeriGetir != null && eksikCalisanVeriGetir) {
+										double normalSaat = 0.0d, planlananSaaat = 0.0d;
+										try {
+											planlananSaaat = pd.getPlanlanSure().doubleValue() - cm.getHaftaIci();
+										} catch (Exception e) {
+											planlananSaaat = 0.0d;
 										}
-
-										aylikPuantaj.setEksikCalismaSure(eksikCalismaSure);
-										aylikPuantaj.setDonemBitti(donemBitti);
+										try {
+											if (cm.isSaatlikOdeme()) {
+												PersonelDenklestirmeBordro pdb = aylikPuantaj.getDenklestirmeBordro();
+												normalSaat = pdb != null ? pdb.getSaatNormal().doubleValue() : 0.0d;
+											} else {
+												normalSaat = pd.getHesaplananSure().doubleValue();
+											}
+										} catch (Exception e) {
+											normalSaat = 0.0d;
+										}
+										try {
+											eksikCalismaSure = normalSaat - (planlananSaaat + cm.getHaftaIci());
+										} catch (Exception e) {
+											hataYok = false;
+										}
+										donemBitti = hataYok;
 									}
-									logger.debug(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
 
+									aylikPuantaj.setEksikCalismaSure(eksikCalismaSure);
+									aylikPuantaj.setDonemBitti(donemBitti);
 								}
-							}
+								logger.debug(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
 
+							}
 						}
-						perMap = null;
+
 					}
+					perMap = null;
 
 					perDMap = null;
 				} catch (Exception e) {
