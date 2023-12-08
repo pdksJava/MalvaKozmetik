@@ -219,15 +219,16 @@
 
 
 								</rich:column>
-								<rich:column style="text-align: left;">
+								<rich:column style="text-align: left;" filterBy="#{puantaj.pdksPersonel.adSoyad}" filterEvent="onkeyup">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AD_SOYAD)}" />
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
-								<rich:column style="text-align: left;" rendered="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_SIRKET)}">
+								<rich:column style="text-align: left;"
+									rendered="#{denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_SIRKET)}">
 									<f:facet name="header">
-										<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_SIRKET)}" />
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.sirket.ad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
@@ -238,17 +239,46 @@
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.tesis.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
-								<rich:column style="text-align: left;">
+								<rich:column style="text-align: left;" filterBy="#{puantaj.pdksPersonel.ekSaha3.aciklama}" filterEvent="onkeyup">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.bolumAciklama}" />
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.ekSaha3.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+								<rich:column style="text-align: left;" rendered="#{denklestirmeBordroRaporuHome.ekSaha4Tanim!=null}">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.ekSaha4Tanim.aciklama}" />
+									</f:facet>
+									<h:outputText value="#{puantaj.pdksPersonel.ekSaha4.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
 								<rich:column style="text-align: left;">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.pdksYonetici.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+								<rich:column style="text-align: left;" rendered="#{denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_CALISMA_MODELI)}">
+									<f:facet name="header">
+											<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_CALISMA_MODELI)}" />
+
+									</f:facet>
+									<h:outputText value="#{puantaj.calismaModeli.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+								<rich:column style="text-align:center">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_ISE_BASLAMA_TARIHI)}" />
+									</f:facet>
+									<ui:fragment rendered="#{puantaj.pdksPersonel.iseBaslamaTarihi.after(denklestirmeBordroRaporuHome.ilkGun)}">
+										<h:outputText value="#{authenticatedUser.dateFormatla(puantaj.pdksPersonel.iseBaslamaTarihi)}" />
+									</ui:fragment>
+								</rich:column>
+								<rich:column style="text-align:center">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_SSK_CIKIS_TARIHI)}" />
+									</f:facet>
+									<ui:fragment rendered="#{puantaj.pdksPersonel.isCalisiyorGun(denklestirmeBordroRaporuHome.sonGun)==false}">
+										<h:outputText value="#{authenticatedUser.dateFormatla(puantaj.pdksPersonel.istenAyrilisTarihi)}" />
+									</ui:fragment>
 								</rich:column>
 
 								<rich:column style="text-align: right;">

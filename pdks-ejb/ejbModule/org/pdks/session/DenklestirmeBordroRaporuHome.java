@@ -122,7 +122,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	public String COL_SIRKET = "sirket";
 	public String COL_TESIS = "tesis";
 	public String COL_BOLUM = "bolumAdi";
- 	public String COL_ALT_BOLUM = "altBolumAdi";
+	public String COL_ALT_BOLUM = "altBolumAdi";
 	public String COL_NORMAL_GUN_ADET = "normalGunAdet";
 	public String COL_HAFTA_TATIL_ADET = "haftaTatilAdet";
 	public String COL_RESMI_TATIL_ADET = "resmiTatilAdet";
@@ -325,7 +325,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			tesis = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 		}
-		String baslik = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + seciliSirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "");
+		String baslik = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + (seciliSirket.getSirketGrup() == null ? seciliSirket.getAd() : seciliSirket.getSirketGrup().getAciklama()) + (tesis != null ? " " + tesis.getAciklama() : "");
 		boolean hataYok = true;
 		boolean test = !PdksUtil.getCanliSunucuDurum();
 		User loginUser = aylikPuantaj.getUser();
@@ -686,6 +686,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	public String getBaslikAciklama(String kod) {
 		String aciklama = "";
 		if (baslikMap != null && kod != null) {
+			if (kod.equals(COL_SIRKET))
+				logger.debug("");
 			if (baslikMap.containsKey(kod)) {
 				aciklama = baslikMap.get(kod).getAciklama();
 			}

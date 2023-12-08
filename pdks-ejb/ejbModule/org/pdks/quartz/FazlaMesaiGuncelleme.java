@@ -194,6 +194,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
 				if (denklestirmeAy != null && denklestirmeAy.getDurum()) {
+					List<Long> sirketGrupIdList = new ArrayList<Long>();
 					denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 					aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 					aylikPuantaj.setUser(loginUser);
@@ -219,6 +220,13 @@ public class FazlaMesaiGuncelleme implements Serializable {
 									fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 								Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 								if (sirket != null) {
+									if (sirket.getSirketGrup() != null) {
+										Long grupId = sirket.getSirketGrup().getId();
+										if (!sirketGrupIdList.contains(grupId)) {
+											sirketGrupIdList.add(grupId);
+										} else
+											continue;
+									}
 									veriMap.clear();
 									veriMap.put("sirket", sirket);
 									veriMap.put("manuel", manuel);
@@ -256,7 +264,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						}
 						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " out " + new Date());
 					}
-
+					sirketGrupIdList = null;
 				}
 				if (manuel) {
 					FacesMessages facesMessages = (FacesMessages) Component.getInstance("facesMessages");
