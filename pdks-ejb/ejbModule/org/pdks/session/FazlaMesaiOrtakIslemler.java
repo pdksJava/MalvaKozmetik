@@ -119,55 +119,32 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		int yil = dm.getYil(), ay = dm.getAy();
 		Calendar cal = Calendar.getInstance();
 		String sicilNo = aramaSecenekleri.getSicilNo();
-		Date basGun = PdksUtil.getYilAyBirinciGun(yil, ay);
-		Date bitGun = ortakIslemler.tariheAyEkleCikar(cal, basGun, 1);
 		String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 		boolean sicilDolu = PdksUtil.hasStringValue(sicilNo);
 		List<AylikPuantaj> personelDenklestirmeList = new ArrayList<AylikPuantaj>();
 		TreeMap<Long, AylikPuantaj> eksikCalismaMap = new TreeMap<Long, AylikPuantaj>();
 		if (yil * 100 + ay >= Integer.parseInt(str)) {
-			HashMap fields = new HashMap();
-			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT P." + Personel.COLUMN_NAME_ID + " FROM " + Personel.TABLE_NAME + " P WITH(nolock) ");
-			sb.append(" WHERE  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
-			fields.put("basGun", basGun);
-			fields.put("bitGun", bitGun);
-			Long sirketId = aramaSecenekleri.getSirketId();
 			Long tesisId = aramaSecenekleri.getTesisId();
 			Sirket sirket = aramaSecenekleri.getSirket();
-			if (sirketId != null || (PdksUtil.hasStringValue(sicilNo))) {
-				if (sirketId != null && sirket == null) {
-					HashMap parametreMap = new HashMap();
-					parametreMap.put("id", sirketId);
-					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "= " + sirketId);
-					if (session != null)
-						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
-				}
-				if (sicilDolu) {
-					sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo ");
-					fields.put("sicilNo", ortakIslemler.getSicilNo(sicilNo.trim()));
-				}
-			}
-			if (tesisId != null) {
-				sb.append(" AND  P." + Personel.COLUMN_NAME_TESIS + "= " + tesisId);
+			AylikPuantaj aylikPuantajSablon = new AylikPuantaj(dm);
+			aylikPuantajSablon.setUser(aramaSecenekleri.getUser());
+			List<Personel> donemPerList = getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, null, null, dm != null ? aylikPuantajSablon : null, true, session);
+			List<Long> perList = new ArrayList<Long>();
 
+			for (Personel personel : donemPerList) {
+				if (sicilDolu && !personel.getPdksSicilNo().trim().equals(sicilNo.trim()))
+					continue;
+				perList.add(personel.getId());
 			}
 
-			fields.put(PdksEntityController.MAP_KEY_MAP, "getId");
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<BigDecimal> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+			HashMap fields = new HashMap();
+			StringBuffer sb = new StringBuffer();
+
 			TreeMap<Long, PersonelDenklestirme> pdMap = new TreeMap<Long, PersonelDenklestirme>();
 			boolean hataliDurum = false;
 			TreeMap<Long, AylikPuantaj> aylikPuantajMap = new TreeMap<Long, AylikPuantaj>();
 			TreeMap<Long, PersonelDenklestirmeBordro> idMap = new TreeMap<Long, PersonelDenklestirmeBordro>();
 			if (!perList.isEmpty()) {
-				List<Long> list2 = new ArrayList<Long>();
-				for (Iterator iterator = perList.iterator(); iterator.hasNext();) {
-					BigDecimal bd = (BigDecimal) iterator.next();
-					list2.add(bd.longValue());
-				}
 				fields.clear();
 				sb = new StringBuffer();
 				sb.append("SELECT V.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
@@ -175,11 +152,11 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				if (sicilDolu == false && (hataliVeriGetir == null || hataliVeriGetir == false)) {
 					hataliDurum = true;
 				}
-				fields.put("p", list2);
+				fields.put("p", perList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				List<PersonelDenklestirme> pdlist = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
-				list2.clear();
+				perList.clear();
 				for (PersonelDenklestirme pd : pdlist) {
 					boolean ekle = true;
 					if (hataliDurum) {
@@ -190,7 +167,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						}
 					}
 					if (ekle) {
-						list2.add(pd.getId());
+						perList.add(pd.getId());
 						pdMap.put(pd.getId(), pd);
 						AylikPuantaj aylikPuantaj = new AylikPuantaj();
 						aylikPuantaj.setPersonelDenklestirmeAylik(pd);
@@ -222,9 +199,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					}
 
 				}
-				if (!list2.isEmpty()) {
+				if (!perList.isEmpty()) {
 					fields.clear();
-					fields.put("personelDenklestirme.id", list2);
+					fields.put("personelDenklestirme.id", perList);
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 					List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordro.class);
@@ -238,7 +215,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				}
 
 				pdlist = null;
-				list2 = null;
+				perList = null;
 			}
 			perList = null;
 
@@ -352,6 +329,28 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 
 		}
+		if (!personelDenklestirmeList.isEmpty()) {
+			List<AylikPuantaj> puantajList = new ArrayList<AylikPuantaj>(ortakIslemler.sortAylikPuantajList(personelDenklestirmeList, false));
+			personelDenklestirmeList.clear();
+			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>();
+			for (AylikPuantaj aylikPuantaj : puantajList) {
+				PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
+				boolean hataYok = pd.getDurum().equals(Boolean.TRUE);
+				if (aylikPuantaj.getEksikCalismaSure() != null)
+					aktifEksikList.add(aylikPuantaj);
+				else if (hataYok)
+					aktifList.add(aylikPuantaj);
+				else
+					personelDenklestirmeList.add(aylikPuantaj);
+			}
+			if (!aktifEksikList.isEmpty())
+				personelDenklestirmeList.addAll(aktifEksikList);
+			if (!aktifList.isEmpty())
+				personelDenklestirmeList.addAll(aktifList);
+			puantajList = null;
+			aktifEksikList = null;
+			aktifList = null;
+		}
 		return personelDenklestirmeList;
 	}
 
@@ -370,7 +369,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		ByteArrayOutputStream baos = null;
 		List<AylikPuantaj> personelDenklestirmeList = veriMap.containsKey("personelDenklestirmeList") ? (List<AylikPuantaj>) veriMap.get("personelDenklestirmeList") : new ArrayList<AylikPuantaj>();
 		if (!personelDenklestirmeList.isEmpty()) {
- 			LinkedHashMap<String, String> baslikMap = veriMap.containsKey("baslikMap") ? (LinkedHashMap<String, String>) veriMap.get("baslikMap") : null;
+			LinkedHashMap<String, String> baslikMap = veriMap.containsKey("baslikMap") ? (LinkedHashMap<String, String>) veriMap.get("baslikMap") : null;
 			Tanim ekSaha4Tanim = veriMap.containsKey("ekSaha4Tanim") ? (Tanim) veriMap.get("ekSaha4Tanim") : null;
 			DenklestirmeAy dm = veriMap.containsKey("denklestirmeAy") ? (DenklestirmeAy) veriMap.get("denklestirmeAy") : null;
 			if (baslikMap == null) {

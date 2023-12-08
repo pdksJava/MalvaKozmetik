@@ -83,10 +83,16 @@
 				<a4j:outputPanel id="denklestirmeDonemiTable">
 					<rich:panel rendered="#{not empty denklestirmeBordroRaporuHome.sirketler}">
 
-						<h:panelGrid columns="5">
+						<h:panelGrid columns="4">
 							<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
 								reRender="denklestirmeDonemiTable" />
-
+						<ui:fragment
+							rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and (denklestirmeBordroRaporuHome.adminRole or ortakIslemler.getParameterKeyHasStringValue('sirketFazlaMesaiGuncelleme')) }">
+							<ui:fragment rendered="#{denklestirmeBordroRaporuHome.sirket.tesisDurum==false or denklestirmeBordroRaporuHome.tesisId gt 0 }">
+								<a4j:commandButton status="ajaxStatus" value="#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla"
+									action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable" />
+							</ui:fragment>
+						</ui:fragment>
 							<h:commandLink value="Excel" action="#{denklestirmeBordroRaporuHome.denklestirmeExcelAktar}" target="blank"
 								rendered="#{not empty denklestirmeBordroRaporuHome.personelDenklestirmeList}">
 								<a4j:support event="oncomplete" status="ajaxStatus" process="vardiyaTable" reRender="vardiyaTable" />
@@ -105,6 +111,36 @@
 								<f:facet name="header">
 									<h:outputText value="Bordo Bilgileri" />
 								</f:facet>
+								<rich:column style="text-align: center;">
+									<f:facet name="header">
+
+									</f:facet>
+									<DIV id="denk#{puantaj.pdksPersonel.id}">
+										<a4j:commandLink ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.saveLastParameter(puantaj) }"
+											onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide(); ">
+
+											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum}">
+												<h:graphicImage value="/img/msginfo.png" style="border:0" height="16" width="16" />
+												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
+											#{ortakIslemler.getMenuUserAdi(denklestirmeBordroRaporuHome.session,'fazlaMesaiHesapla')} Göster
+											</rich:toolTip>
+											</ui:fragment>
+											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum==false}">
+												<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20" />
+												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
+											#{ortakIslemler.getMenuUserAdi(denklestirmeBordroRaporuHome.session,'fazlaMesaiHesapla')} Hatalı Göster
+											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi==false}">
+														<br></br>
+														<span style="color: red; font-style: 14;">Çalışma planı onaylanmamıştır!</span>
+													</ui:fragment>
+												</rich:toolTip>
+											</ui:fragment>
+										</a4j:commandLink>
+									</DIV>
+
+
+
+								</rich:column>
 
 								<rich:column style="text-align: center;">
 									<f:facet name="header">
@@ -117,6 +153,12 @@
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AD_SOYAD)}" />
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+								<rich:column style="text-align: left;" rendered="#{denklestirmeBordroRaporuHome.sirket.sirketGrup!=null}">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+									</f:facet>
+									<h:outputText value="#{puantaj.pdksPersonel.sirket.adi}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
 								<rich:column style="text-align: left;"
 									rendered="#{denklestirmeBordroRaporuHome.tesisId==null and ortakIslemler.getListTesisDurum(denklestirmeBordroRaporuHome.personelDenklestirmeList)}">

@@ -341,6 +341,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			as.setSicilNo("");
 			as.setSirket(sirket);
 			as.setTesisId(tesisId);
+			as.setUser(loginUser);
 			List<AylikPuantaj> personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, false, false, session);
 			if (!personelDenklestirmeList.isEmpty()) {
 				ByteArrayOutputStream baos = null;

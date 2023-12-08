@@ -1125,6 +1125,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			AramaSecenekleri as = new AramaSecenekleri();
 			as.setSicilNo(sicilNo);
 			as.setSirket(sirket);
+			as.setUser(authenticatedUser);
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 			if (yil * 100 + ay >= Integer.parseInt(str)) {
 				personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, hataliVeriGetir, eksikCalisanVeriGetir, session);
@@ -1219,30 +1220,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 		if (personelDenklestirmeList.isEmpty())
 			PdksUtil.addMessageWarn("İlgili döneme ait fazla mesai bulunamadı!");
-		else {
-
-			List<AylikPuantaj> puantajList = new ArrayList<AylikPuantaj>(ortakIslemler.sortAylikPuantajList(personelDenklestirmeList, false));
-			personelDenklestirmeList.clear();
-			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>();
-			for (AylikPuantaj aylikPuantaj : puantajList) {
-				PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirmeAylik();
-				boolean hataYok = pd.getDurum().equals(Boolean.TRUE);
-				if (aylikPuantaj.getEksikCalismaSure() != null)
-					aktifEksikList.add(aylikPuantaj);
-				else if (hataYok)
-					aktifList.add(aylikPuantaj);
-				else
-					personelDenklestirmeList.add(aylikPuantaj);
-			}
-			if (!aktifEksikList.isEmpty())
-				personelDenklestirmeList.addAll(aktifEksikList);
-			if (!aktifList.isEmpty())
-				personelDenklestirmeList.addAll(aktifList);
-			puantajList = null;
-			aktifEksikList = null;
-			aktifList = null;
-
-		}
+		 
 		setInstance(denklestirmeAy);
 
 		return "";
