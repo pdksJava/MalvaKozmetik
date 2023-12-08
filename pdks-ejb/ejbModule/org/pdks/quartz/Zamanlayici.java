@@ -66,17 +66,17 @@ public class Zamanlayici implements Serializable {
 
 	public void scheduleFazlaMesaiGuncellemeTimer() {
 		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
-		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/15 3-21 ? * *");
+		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/15 3-21 ? * MON-SAT");
+	}
+
+	public void scheduleSertifikaSSLKontrolTimer() {
+		logger.info("scheduleSertifikaSSLKontrolTimer start : " + new Date());
+		sertifikaSSLKontrol.sertifikaSSLKontrolTimer(new Date(), "0 0/15 8-21 ? * MON-SAT");
 	}
 
 	public void scheduleIseGelmemeUyariTimer() {
 		logger.info("scheduleIseGelmemeUyariTimer start : " + new Date());
 		iseGelmemeUyari.iseGelmeDurumuTimer(new Date(), "0 0/5 8-14 ? * *");
-	}
-
-	public void scheduleSertifikaSSLKontrolTimer() {
-		logger.info("scheduleSertifikaSSLKontrolTimer start : " + new Date());
-		sertifikaSSLKontrol.sertifikaSSLKontrolTimer(new Date(), "0 0/15 5-21 ? * *");
 	}
 
 	public void schedulePersonelERPGuncellemeTimer() {
