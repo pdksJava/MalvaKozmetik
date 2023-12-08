@@ -54,7 +54,7 @@
 									</f:facet>
 									<h:outputText value="#{parameter.id}" />
 								</rich:column>
-								<rich:column rendered="#{authenticatedUser.admin==true}">
+								<rich:column rendered="#{authenticatedUser.admin==true}" filterBy="#{parameter.name}" filterEvent="onkeyup">
 									<f:facet name="header">
 										<h:outputText value="Adı" />
 									</f:facet>
@@ -131,7 +131,11 @@
 
 							<rich:toolTip for="addlink" value="Add" />
 							<a4j:commandButton status="ajaxStatus" value="Test Mail" action="#{parameterHome.testMail()}" />
-							<a4j:commandButton status="ajaxStatus" value="izinGuncelemeCalistir" rendered="#{ortakIslemler.testDurum}"
+							<a4j:commandButton status="ajaxStatus" value="fazlaMesaiGuncellemeCalistir"
+								rendered="#{ortakIslemler.getParameterKeyHasStringValue('fazlaMesaiGuncelleme')}"
+								action="#{fazlaMesaiGuncelleme.fazlaMesaiGuncellemeCalistir(true,parameterHome.session)}" />
+							<a4j:commandButton status="ajaxStatus" value="izinGuncelemeCalistir"
+								rendered="#{ortakIslemler.getParameterKeyHasStringValue('izinBakiyeGuncelleme') and ortakIslemler.testDurum}"
 								action="#{izinBakiyeGuncelleme.izinGuncelemeCalistir(true,parameterHome.session)}" />
 						</ui:fragment>
 					</a4j:outputPanel>
