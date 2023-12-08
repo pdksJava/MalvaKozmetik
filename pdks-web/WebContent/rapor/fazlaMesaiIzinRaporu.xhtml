@@ -1,0 +1,126 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:fmt="http://java.sun.com/jsp/jstl/fmt" xmlns:a4j="http://richfaces.org/a4j"
+	template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('fazlaMesaiIzinRaporu')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(fazlaMesaiIzinRaporuHome.session,'fazlaMesaiIzinRaporu')}">
+				<a4j:outputPanel id="secimler">
+					<h:panelGrid columns="1">
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and fazlaMesaiIzinRaporuHome.aramaSecenekleri.departmanIdList.size()>1}">
+							<ui:define name="label">PDKS Departman</ui:define>
+							<h:selectOneMenu value="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+								<f:selectItem itemLabel="Lütfen seçiniz" />
+								<f:selectItems value="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.departmanIdList}" />
+								<a4j:support event="onchange" action="#{fazlaMesaiIzinRaporuHome.fillSirketList()}" ajaxSingle="true" reRender="secimler,vardiyaOzetPanel" />
+							</h:selectOneMenu>
+
+
+						</s:decorate>
+						<h:panelGrid columns="2">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.sirketIdList.size()>0}">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:selectOneMenu value="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.sirketId}"
+									disabled="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.sirketIdList.size()==1}">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.sirketIdList}" />
+									<a4j:support event="onchange" action="#{fazlaMesaiIzinRaporuHome.fillTesisList()}" ajaxSingle="true" reRender="secimler,vardiyaOzetPanel" />
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList!=null and fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList.size()>0}">
+								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
+								<h:selectOneMenu value="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisId}"
+									disabled="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList.size()==1}">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{fazlaMesaiIzinRaporuHome.aramaSecenekleri.tesisList}" />
+
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Tarih</ui:define>
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{fazlaMesaiIzinRaporuHome.date}" id="dateFilter">
+									<a4j:support event="onchanged" action="#{fazlaMesaiIzinRaporuHome.fillTesisList()}" onclick="#{rich:component('wait')}.show()"
+										oncomplete="#{rich:component('wait')}.hide();" ajaxSingle="true" reRender="secimler,vardiyaOzetPanel" />
+								</rich:calendar>
+							</s:decorate>
+
+
+
+						</h:panelGrid>
+
+					</h:panelGrid>
+				</a4j:outputPanel>
+			</rich:panel>
+
+			<a4j:outputPanel id="vardiyaOzetPanel">
+				<ui:fragment>
+					<a4j:commandButton status="ajaxStatus" value="Raporu Göster" action="#{fazlaMesaiIzinRaporuHome.vardiyaListeOlustur}" reRender="vardiyaOzetPanel" />
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiIzinRaporuHome.vardiyaOzetExcel}" target="blank"
+						rendered="#{not empty fazlaMesaiIzinRaporuHome.izinVardiyaGunList}">
+						<a4j:support event="oncomplete" status="ajaxStatus" />
+					</h:commandLink>
+				</ui:fragment>
+
+				<ui:fragment rendered="#{not empty fazlaMesaiIzinRaporuHome.izinVardiyaGunList }">
+					<table class="mars" width="500">
+						<thead>
+							<tr>
+								<TH colspan="9">İZİN TABLOSU</TH>
+							</tr>
+							<tr>
+								<th style="width: 30px">#{ortakIslemler.personelNoAciklama()}</th>
+								<th style="width: 40px">Adı</th>
+								<th style="width: 40px">Soyadı</th>
+								<th style="width: 100px">#{ortakIslemler.sirketAciklama()}</th>
+								<ui:fragment rendered="#{fazlaMesaiIzinRaporuHome.tesisDurum}">
+									<th style="width: 100px">#{ortakIslemler.tesisAciklama()}</th>
+								</ui:fragment>
+								<th style="width: 100px">#{fazlaMesaiIzinRaporuHome.bolumAciklama}</th>
+
+
+							</tr>
+						</thead>
+						<tbody>
+							<a4j:repeat value="#{fazlaMesaiIzinRaporuHome.izinVardiyaGunList}" var="vardiyaGun">
+								<tr>
+									<td class="#{vardiyaGun.tdClass}" align="center" style="width: 30px">#{vardiyaGun.personel.pdksSicilNo}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.ad}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 40px">#{vardiyaGun.personel.soyad}</td>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.sirket.ad}</td>
+									<ui:fragment rendered="#{fazlaMesaiIzinRaporuHome.tesisDurum}">
+										<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.tesis.aciklama}</td>
+									</ui:fragment>
+									<td class="#{vardiyaGun.tdClass}" style="width: 100px">#{vardiyaGun.personel.ekSaha3.aciklama}</td>
+
+								</tr>
+							</a4j:repeat>
+
+
+
+						</tbody>
+					</table>
+				</ui:fragment>
+
+			</a4j:outputPanel>
+
+		</h:form>
+
+
+	</ui:define>
+
+
+</ui:composition>
+
+
+
+
+

@@ -1,0 +1,31 @@
+<m:message xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://jboss.com/products/seam/mail" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:hx="http://www.ibm.com/jsf/html_extended" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jstl="http://java.sun.com/jsp/jstl" xmlns:ui="http://java.sun.com/jsf/facelets" charset="UTF-8">
+	<m:from name="#{ortakIslemler.getParameterKey('fromName')}" address="#{ortakIslemler.getParameterKey('fromAdres')}" />
+	<ui:repeat value="#{vardiyaGunHome.toList}" var="toUser">
+		<m:to name="#{toUser.adSoyad}" address="#{toUser.email}" />
+	</ui:repeat>
+	 
+	<ui:repeat value="#{vardiyaGunHome.bccList}" var="bccMail">
+		<m:bcc address="#{bccMail.email}" />
+	</ui:repeat>
+	 
+
+	<m:subject>#{vardiyaGunHome.mailKonu}</m:subject>
+	<m:body>
+		<f:verbatim>#{vardiyaGunHome.mailIcerik}</f:verbatim>
+		<p>
+		<TABLE style="width: 270px;">
+			<TR>
+				<td width="90px"><a style="font-size: 16px;"
+					href="http://#{vardiyaGunHome.donusAdres}/mesaiTalepLinkOnay?id=#{vardiyaGunHome.getOnayId('2')}"><b>Onay</b></a></td>
+ 				<td width="90px"><a style="font-size: 16px;"
+					href="http://#{vardiyaGunHome.donusAdres}/mesaiTalepLinkOnay?id=#{vardiyaGunHome.getOnayId('3')}"><b>Red</b></a></td>
+			</TR>
+		</TABLE>
+		
+		
+		</p>
+		<p>Saygılarımla,</p>
+	</m:body>
+</m:message>

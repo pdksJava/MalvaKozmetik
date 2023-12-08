@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<p:document xmlns:p="http://jboss.com/products/seam/pdf" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" title="Pdf" xmlns:f="http://java.sun.com/jsf/core">
+
+
+	<p:table columns="3" widths="4 3 6">
+		<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+			<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin}">
+				<p:image value="/img/logo_ASM_Orj.png" alignment="left" height="212" width="300" />
+			</ui:fragment>
+			<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin==false}">
+				<p:font name="helvetica" encoding="ISO-8859-9" size="10" style="bold">
+					<p:paragraph>#{personelIzinGirisiHome.izin.izinSahibi.sirket.ad}</p:paragraph>
+				</p:font>
+			</ui:fragment>
+
+
+		</p:cell>
+		<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+			<p:paragraph spacingAfter="5"></p:paragraph>
+
+		</p:cell>
+		<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+			<p:table columns="2" widths="3 1" widthPercentage="100">
+				<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+					<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0"></p:cell>
+					<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+						<p:text value="#{authenticatedUser.dateFormatla(personelIzinGirisiHome.date)}" />
+					</p:cell>
+				</p:font>
+			</p:table>
+		</p:cell>
+	</p:table>
+	<p:font name="helvetica" encoding="ISO-8859-9" size="10" style="bold">
+		<p:paragraph spacingAfter="10" alignment="center">İZİN TALEP FORM</p:paragraph>
+	</p:font>
+
+	<p:paragraph>
+
+		<p:table columns="2" widths="1 3">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>Personelin Adı Soyadı</p:cell>
+				<p:cell>
+
+					<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin==false}">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+							<p:paragraph> #{personelIzinGirisiHome.izin.izinSahibi.adSoyad}</p:paragraph>
+						</p:font>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin}">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+							<p:paragraph> #{personelIzinGirisiHome.izin.izinSahibi.sicilNo} -  #{personelIzinGirisiHome.izin.izinSahibi.adSoyad}</p:paragraph>
+						</p:font>
+					</ui:fragment>
+
+				</p:cell>
+			</p:font>
+		</p:table>
+
+
+		<p:table columns="2" widths="1 3">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>İzin Sebebi</p:cell>
+				<p:cell>
+
+					<p:font name="helvetica" encoding="ISO-8859-9" size="8">#{personelIzinGirisiHome.izin.izinTipiAciklama}</p:font>
+				</p:cell>
+			</p:font>
+		</p:table>
+
+		<p:table columns="3" widths="1 1.5 1.5">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>
+					<p:paragraph spacingAfter="15"></p:paragraph>
+					<p:paragraph>İzin Süresi</p:paragraph>
+				</p:cell>
+				<p:cell paddingBottom="0">
+					<p:paragraph spacingAfter="10" alignment="center">İZİN BAŞLAMA</p:paragraph>
+					<p:table columns="2" widthPercentage="102">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+							<p:cell borderWidthLeft="0" borderWidthBottom="0">
+								<p:paragraph>       TARİH</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthRight="0" borderWidthBottom="0" borderWidthLeft="0">
+								<p:paragraph>        SAAT</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.dateFormatla(personelIzinGirisiHome.izin.baslangicZamani)}" />
+								</p:font>
+
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0" borderWidthRight="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.timeFormatla(personelIzinGirisiHome.izin.baslangicZamani)}" />
+								</p:font>
+							</p:cell>
+						</p:font>
+					</p:table>
+
+				</p:cell>
+
+				<p:cell paddingBottom="0">
+					<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+						<p:paragraph spacingAfter="10" alignment="center">İŞE BAŞLAMA TARİHİ</p:paragraph>
+					</p:font>
+					<p:table columns="2" widthPercentage="102" widths="1.5 1">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+							<p:cell borderWidthLeft="0" borderWidthBottom="0">
+								<p:paragraph>          TARİH</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthRight="0" borderWidthBottom="0" borderWidthLeft="0">
+								<p:paragraph>     SAAT</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.dateFormatla(personelIzinGirisiHome.izin.bitisZamani)}" />
+								</p:font>
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0" borderWidthRight="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.timeFormatla(personelIzinGirisiHome.izin.bitisZamani)}" />
+								</p:font>
+							</p:cell>
+						</p:font>
+					</p:table>
+
+				</p:cell>
+			</p:font>
+		</p:table>
+
+		<p:table columns="3" widths="1 1.5 1.5">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>Not:</p:cell>
+				<p:cell>
+					<p:font name="helvetica" encoding="ISO-8859-9" size="6">
+						<p:text value="#{personelIzinGirisiHome.izin.aciklama}"></p:text>
+					</p:font>
+
+				</p:cell>
+				<p:cell paddingBottom="0" paddingTop="0" borderWidthBottom="0">
+					<p:table columns="2" widthPercentage="103" widths="1.5 1">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+							<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthTop="0">  İZİN SÜRESİ</p:cell>
+							<p:cell borderWidthRight="0" borderWidthBottom="0" borderWidthLeft="0" borderWidthTop="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{personelIzinGirisiHome.izin.sureAciklama}"></p:text>
+								</p:font>
+							</p:cell>
+
+						</p:font>
+					</p:table>
+
+
+
+				</p:cell>
+			</p:font>
+		</p:table>
+
+
+		<p:table columns="2" widths="1 3">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>
+					<p:paragraph>İzinde Bulunacağı </p:paragraph>
+					<p:paragraph spacingAfter="10">Adres / Tel :</p:paragraph>
+				</p:cell>
+				<p:cell>
+					<p:paragraph spacingAfter="10" alignment="center"></p:paragraph>
+				</p:cell>
+
+			</p:font>
+		</p:table>
+
+		<p:table columns="2" widths="2 2">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>
+					<p:paragraph alignment="center">TALEP EDENİN</p:paragraph>
+					<p:font style="underline and bold" size="8" name="helvetica" encoding="ISO-8859-9">
+						<p:paragraph spacingAfter="30" alignment="center">İMZASI</p:paragraph>
+					</p:font>
+				</p:cell>
+
+				<p:cell>
+					<p:paragraph alignment="center">İNSAN KAYNAKLARI</p:paragraph>
+					<p:font style="underline and bold" size="8" name="helvetica" encoding="ISO-8859-9">
+						<p:paragraph spacingAfter="30" alignment="center">ONAYI</p:paragraph>
+					</p:font>
+				</p:cell>
+			</p:font>
+		</p:table>
+	</p:paragraph>
+	<p:paragraph spacingAfter="30"></p:paragraph>
+	<p:paragraph alignment="left">          ------------------------------------------------------------------------------------------------------------------</p:paragraph>
+	<p:paragraph spacingAfter="30"></p:paragraph>
+	<p:table columns="3" widths="4 3 6">
+		<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+			<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin}">
+				<p:image value="/img/logo_ASM_Orj.png" alignment="left" height="212" width="300" />
+			</ui:fragment>
+			<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin==false}">
+				<p:font name="helvetica" encoding="ISO-8859-9" size="10" style="bold">
+					<p:paragraph>#{personelIzinGirisiHome.izin.izinSahibi.sirket.ad}</p:paragraph>
+				</p:font>
+			</ui:fragment>
+
+
+		</p:cell>
+		<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+			<p:paragraph spacingAfter="5"></p:paragraph>
+
+		</p:cell>
+		<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+			<p:table columns="2" widths="3 1" widthPercentage="100">
+				<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+					<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0"></p:cell>
+					<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthRight="0" borderWidthTop="0">
+						<p:text value="#{authenticatedUser.dateFormatla(personelIzinGirisiHome.date)}" />
+					</p:cell>
+				</p:font>
+			</p:table>
+		</p:cell>
+	</p:table>
+	<p:font name="helvetica" encoding="ISO-8859-9" size="10" style="bold">
+		<p:paragraph spacingAfter="10" alignment="center">İZİN TALEP FORM</p:paragraph>
+	</p:font>
+
+	<p:paragraph>
+
+		<p:table columns="2" widths="1 3">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>Personelin Adı Soyadı</p:cell>
+				<p:cell>
+
+					<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin==false}">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+							<p:paragraph> #{personelIzinGirisiHome.izin.izinSahibi.adSoyad}</p:paragraph>
+						</p:font>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{personelIzinGirisiHome.izin.izinSahibi.sirket.departman.admin}">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+							<p:paragraph> #{personelIzinGirisiHome.izin.izinSahibi.sicilNo} -  #{personelIzinGirisiHome.izin.izinSahibi.adSoyad}</p:paragraph>
+						</p:font>
+					</ui:fragment>
+
+				</p:cell>
+			</p:font>
+		</p:table>
+
+
+		<p:table columns="2" widths="1 3">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>İzin Sebebi</p:cell>
+				<p:cell>
+
+					<p:font name="helvetica" encoding="ISO-8859-9" size="8">#{personelIzinGirisiHome.izin.izinTipiAciklama}</p:font>
+				</p:cell>
+			</p:font>
+		</p:table>
+
+		<p:table columns="3" widths="1 1.5 1.5">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>
+					<p:paragraph spacingAfter="15"></p:paragraph>
+					<p:paragraph>İzin Süresi</p:paragraph>
+				</p:cell>
+				<p:cell paddingBottom="0">
+					<p:paragraph spacingAfter="10" alignment="center">İZİN BAŞLAMA</p:paragraph>
+					<p:table columns="2" widthPercentage="102">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+							<p:cell borderWidthLeft="0" borderWidthBottom="0">
+								<p:paragraph>       TARİH</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthRight="0" borderWidthBottom="0" borderWidthLeft="0">
+								<p:paragraph>        SAAT</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.dateFormatla(personelIzinGirisiHome.izin.baslangicZamani)}" />
+								</p:font>
+
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0" borderWidthRight="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.timeFormatla(personelIzinGirisiHome.izin.baslangicZamani)}" />
+								</p:font>
+							</p:cell>
+						</p:font>
+					</p:table>
+
+				</p:cell>
+
+				<p:cell paddingBottom="0">
+					<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+						<p:paragraph spacingAfter="10" alignment="center">İŞE BAŞLAMA TARİHİ</p:paragraph>
+					</p:font>
+					<p:table columns="2" widthPercentage="102" widths="1.5 1">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+							<p:cell borderWidthLeft="0" borderWidthBottom="0">
+								<p:paragraph>          TARİH</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthRight="0" borderWidthBottom="0" borderWidthLeft="0">
+								<p:paragraph>     SAAT</p:paragraph>
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.dateFormatla(personelIzinGirisiHome.izin.bitisZamani)}" />
+								</p:font>
+							</p:cell>
+							<p:cell borderWidthBottom="0" borderWidthLeft="0" borderWidthRight="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{authenticatedUser.timeFormatla(personelIzinGirisiHome.izin.bitisZamani)}" />
+								</p:font>
+							</p:cell>
+						</p:font>
+					</p:table>
+
+				</p:cell>
+			</p:font>
+		</p:table>
+
+		<p:table columns="3" widths="1 1.5 1.5">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>Not:</p:cell>
+				<p:cell>
+					<p:font name="helvetica" encoding="ISO-8859-9" size="6">
+						<p:text value="#{personelIzinGirisiHome.izin.aciklama}"></p:text>
+					</p:font>
+
+				</p:cell>
+				<p:cell paddingBottom="0" paddingTop="0" borderWidthBottom="0">
+					<p:table columns="2" widthPercentage="103" widths="1.5 1">
+						<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+							<p:cell borderWidthLeft="0" borderWidthBottom="0" borderWidthTop="0">  İZİN SÜRESİ</p:cell>
+							<p:cell borderWidthRight="0" borderWidthBottom="0" borderWidthLeft="0" borderWidthTop="0">
+								<p:font name="helvetica" encoding="ISO-8859-9" size="8">
+									<p:text value="#{personelIzinGirisiHome.izin.sureAciklama}"></p:text>
+								</p:font>
+							</p:cell>
+
+						</p:font>
+					</p:table>
+
+
+
+				</p:cell>
+			</p:font>
+		</p:table>
+
+
+		<p:table columns="2" widths="1 3">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>
+					<p:paragraph>İzinde Bulunacağı </p:paragraph>
+					<p:paragraph spacingAfter="10">Adres / Tel :</p:paragraph>
+				</p:cell>
+				<p:cell>
+					<p:paragraph spacingAfter="10" alignment="center"></p:paragraph>
+				</p:cell>
+
+			</p:font>
+		</p:table>
+
+		<p:table columns="2" widths="2 2">
+			<p:font name="helvetica" encoding="ISO-8859-9" size="8" style="bold">
+				<p:cell>
+					<p:paragraph alignment="center">TALEP EDENİN</p:paragraph>
+					<p:font style="underline and bold" size="8" name="helvetica" encoding="ISO-8859-9">
+						<p:paragraph spacingAfter="30" alignment="center">İMZASI</p:paragraph>
+					</p:font>
+				</p:cell>
+
+				<p:cell>
+					<p:paragraph alignment="center">İNSAN KAYNAKLARI</p:paragraph>
+					<p:font style="underline and bold" size="8" name="helvetica" encoding="ISO-8859-9">
+						<p:paragraph spacingAfter="30" alignment="center">ONAYI</p:paragraph>
+					</p:font>
+				</p:cell>
+			</p:font>
+		</p:table>
+	</p:paragraph>
+
+</p:document>

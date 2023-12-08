@@ -1,0 +1,45 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:a="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:rich="http://richfaces.org/rich" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('sifreDegistirme')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="sifreDegistirmeForm" styleClass="edit">
+			<rich:panel header="#{ortakIslemler.getMenuUserAdi(userHome.session,'sifreDegistirme')}">
+				<f:facet name="header">Şifre Değiştirme Ekranı</f:facet>
+				<h:panelGrid columns="1">
+					<s:decorate id="usernameField" template="/layout/edit.xhtml">
+						<ui:define name="label">Kullanıcı Adı</ui:define>
+						<h:inputText value="#{userHome.instance.username}" />
+					</s:decorate>
+
+					<s:decorate id="eskiSifreField" template="/layout/edit.xhtml">
+						<ui:define name="label">Eski Şifre</ui:define>
+						<h:inputSecret value="#{userHome.passwordHash}" />
+					</s:decorate>
+					<s:decorate id="yeniSifreField" template="/layout/edit.xhtml">
+						<ui:define name="label">Yeni Şifre</ui:define>
+						<h:inputSecret value="#{userHome.newPassword1}" />
+					</s:decorate>
+					<s:decorate id="yeniSifreConfirmField" template="/layout/edit.xhtml">
+						<ui:define name="label">Yeni Şifre Tekrar</ui:define>
+						<h:inputSecret value="#{userHome.newPassword2}" />
+					</s:decorate>
+				</h:panelGrid>
+			</rich:panel>
+			<div class="actionButtons">
+			<h:commandButton status="ajaxStatus" id="save" value="Kaydet" action="#{userHome.changePassword}" disabled="#{!userHome.wired}" rendered="#{!userHome.managed}">
+				<f:setPropertyActionListener value="#{authenticatedUser}" target="#{userHome.instance}">
+					<s:convertEntity />
+				</f:setPropertyActionListener>
+			</h:commandButton></div>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

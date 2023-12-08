@@ -1,0 +1,151 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+
+	<ui:define name="body">
+
+		<h:form>
+			<a4j:region>
+				<rich:dataTable rowClasses="acik,koyu" value="#{accountPermissionHome.accountPermissionList}" var="accountPermission" rows="20" rowKeyVar="row" id="table">
+					<f:facet name="header">
+						<h:outputText value="Permission List" />
+					</f:facet>
+					<rich:column>
+						<f:facet name="header">
+                        İşlemler
+                </f:facet>
+						<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+							<h:graphicImage value="/img/edit.gif" style="border:0" alt="Edit" />
+							<f:setPropertyActionListener value="#{accountPermission}" target="#{accountPermissionHome.instance}">
+								<s:convertEntity />
+							</f:setPropertyActionListener>
+						</a4j:commandLink>
+						<rich:toolTip for="editlink" value="Güncelle" />
+						<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="deletelink" oncomplete="#{rich:component('deletePanel')}.show()">
+							<h:graphicImage value="/img/delete.gif" style="border:0" alt="Delete" />
+							<f:setPropertyActionListener value="#{accountPermission}" target="#{accountPermissionHome.instance}">
+								<s:convertEntity />
+							</f:setPropertyActionListener>
+						</a4j:commandLink>
+						<rich:toolTip for="deletelink" value="Delete" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="recipient" />
+						</f:facet>
+						<h:outputText value="#{accountPermission.recipient}" id="recipient" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="target" />
+						</f:facet>
+						<h:outputText value="#{accountPermission.target}" id="target" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="action" />
+						</f:facet>
+						<h:outputText value="#{accountPermission.action}" id="action" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="discriminator" />
+						</f:facet>
+						<h:outputText value="#{accountPermission.discriminator}" id="discriminator" />
+					</rich:column>
+
+
+					<f:facet name="footer">
+						<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+					</f:facet>
+				</rich:dataTable>
+				<a4j:commandButton status="ajaxStatus" value="Parametre Ekle" action="#{accountPermissionHome.clearInstance}" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+					<f:setPropertyActionListener value="#{accountPermission}" target="#{accountPermissionHome.instance}">
+						<s:convertEntity />
+					</f:setPropertyActionListener>
+				</a4j:commandButton>
+				<rich:toolTip for="addlink" value="Add" />
+			</a4j:region>
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="450">
+			<f:facet name="header">
+				<h:outputText value="Güncelle Current Car" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink" />
+					<rich:componentControl for="editPanel" attachTo="hidelink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<rich:messages style="color:red;"/>
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:panelGrid columns="1">
+							<s:decorate id="parametreAdiField1" template="/layoutedit.xhtml">
+								<ui:define name="label">recipient</ui:define>
+								<rich:listShuttle id="shuttle" sourceValue="#{accountPermissionHome.distinctRoleList}" targetValue="#{accountPermissionHome.instance.roleList}" var="role"
+									copyControlLabel="#{messages['listShuttle.etiket.copyControlLabel']}" removeControlLabel="#{messages['listShuttle.etiket.removeControlLabel']}"
+									copyAllControlLabel="#{messages['listShuttle.etiket.copyAllControlLabel']}" removeAllControlLabel="#{messages['listShuttle.etiket.removeAllControlLabel']}" sourceCaptionLabel="Source List"
+									targetCaptionLabel="Target List" switchType="client">
+									<h:column>
+										<f:facet name="header">
+											<h:outputText value="Roller" />
+										</f:facet>
+										<h:outputText value="#{role.aciklama}" />
+									</h:column>
+									<s:convertEntity />
+								</rich:listShuttle>
+
+								<h:inputText id="parametreAdi1" required="true" value="#{accountPermissionHome.instance.recipient}" />
+							</s:decorate>
+							<s:decorate id="parametreAdiField2" template="/layoutedit.xhtml">
+								<ui:define name="label">target</ui:define>
+								<h:inputText id="parametreAdi2" required="true" value="#{accountPermissionHome.instance.target}" />
+							</s:decorate>
+							<s:decorate id="parametreAdiField3" template="/layoutedit.xhtml">
+								<ui:define name="label">action</ui:define>
+								<h:inputText id="parametreAdi3" required="true" value="#{accountPermissionHome.instance.action}" />
+							</s:decorate>
+
+						</h:panelGrid>
+
+					</a4j:outputPanel>
+					<!--  -->
+
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{accountPermissionHome.save}" reRender="table" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+
+
+
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="deletePanel" autosized="true" width="200">
+			<f:facet name="header">
+				<h:outputText value="Delete this car from list?" style="padding-right:15px;" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
+					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{accountPermissionHome.remove}" oncomplete="#{rich:component('deletePanel')}.hide();"
+								reRender="table" /></td>
+							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</h:form>
+		</rich:modalPanel>
+	 
+		
+	</ui:define>
+
+</ui:composition>
