@@ -81,6 +81,7 @@ import org.pdks.entity.Dosya;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.Tanim;
+import org.pdks.security.entity.DefaultPasswordGenerator;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
 import org.richfaces.model.UploadItem;
@@ -131,6 +132,37 @@ public class PdksUtil implements Serializable {
 	private static Integer yarimYuvarlaLast = 1;
 
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
+
+	/**
+	 * @param dosyaAdi
+	 * @param dosyaIcerik
+	 * @return
+	 */
+	public static byte[] getFileZip(String dosyaAdi, byte[] dosyaIcerik) {
+		byte[] bytesZip = null;
+		if (dosyaIcerik != null && PdksUtil.hasStringValue(dosyaAdi)) {
+			Dosya dosya = new Dosya();
+			dosya.setDosyaAdi(dosyaAdi);
+			dosya.setDosyaIcerik(dosyaIcerik);
+			List<Dosya> list = new ArrayList<Dosya>();
+			list.add(dosya);
+			OrtakIslemler ortakIslemler = new OrtakIslemler();
+			try {
+				String zipDosyaAdi = "tmp" + DefaultPasswordGenerator.generate(8) + ".zip";
+				File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, list);
+				if (file != null && file.exists()) {
+					dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
+					file.deleteOnExit();
+					bytesZip = dosya.getDosyaIcerik();
+				}
+
+			} catch (Exception e) {
+			}
+			dosya = null;
+			ortakIslemler = null;
+		}
+		return bytesZip;
+	}
 
 	/**
 	 * @param deger

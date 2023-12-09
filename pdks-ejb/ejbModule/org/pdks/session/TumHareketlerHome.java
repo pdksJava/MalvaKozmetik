@@ -40,7 +40,6 @@ import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.BasitHareket;
 import org.pdks.entity.Departman;
-import org.pdks.entity.Dosya;
 import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiKGS;
@@ -607,12 +606,12 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			setHareketList(new ArrayList<HareketKGS>());
 		setZipVeri(null);
 		if (!hareketList.isEmpty() && PdksUtil.hasStringValue(sicilNo) == false && (authenticatedUser.isAdmin() || ikRole)) {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
 			String dosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
 			try {
 				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi olusturuluyor."));
 				if (!PdksUtil.getTestDurum()) {
-					zipVeri = textZipDosyaOlustur(bos, dosyaAdi);
+					zipVeri = textZipDosyaOlustur(dosyaAdi + ".txt");
 					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi mail gonderiliyor."));
 					if (zipVeri != null) {
 						// ortakIslemler.mailGonder(renderer, "/email/hareketMail.xhtml");
@@ -652,14 +651,11 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		String dosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
 		try {
 			if (zipVeri == null) {
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				String zipDosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
-				textZipDosyaOlustur(bos, zipDosyaAdi);
-				bos = null;
+				zipVeri = textZipDosyaOlustur(zipDosyaAdi + ".txt");
 			}
 			byte[] bytes = zipVeri;
 			if (bytes != null) {
-
 				HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
 				ServletOutputStream sos = response.getOutputStream();
 				response.setContentType("application/zip");
@@ -682,15 +678,13 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 	}
 
 	/**
-	 * @param bos
 	 * @param dosyaAdi
 	 * @return
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	private byte[] textZipDosyaOlustur(ByteArrayOutputStream bos, String dosyaAdi) throws IOException, FileNotFoundException {
+	private byte[] textZipDosyaOlustur(String dosyaAdi) throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
 		StringBuffer sb = new StringBuffer();
 		sb.append("Zaman|" + ortakIslemler.sirketAciklama() + "|Adı Soyadı|" + ortakIslemler.personelNoAciklama() + "|Kapi|");
 		if (guncellenmis) {
@@ -738,25 +732,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			}
 
 		}
-
-		Dosya dosya = new Dosya();
-		dosya.setDosyaAdi(dosyaAdi + ".txt");
-		dosya.setDosyaIcerik(baos.toByteArray());
-		List<Dosya> list = new ArrayList<Dosya>();
-		list.add(dosya);
-		byte[] bytesZip = null;
-		try {
-			String zipDosyaAdi = "Hareket.zip";
-			File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, list);
-			if (file != null && file.exists()) {
-				dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
-				file.deleteOnExit();
-				bytesZip = dosya.getDosyaIcerik();
-			}
-
-		} catch (Exception e) {
-		}
-
+		byte[] bytesZip = PdksUtil.getFileZip(dosyaAdi, baos.toByteArray());
 		return bytesZip;
 	}
 
