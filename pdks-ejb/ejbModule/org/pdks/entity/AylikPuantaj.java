@@ -93,7 +93,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private Double izinSuresi = 0d, saatlikIzinSuresi = 0d, eksikCalismaSure = 0d, gecenAyFazlaMesai = 0d, hesaplananSure = 0d, devredenSure = 0d, aksamVardiyaSaatSayisi = 0d, kesilenSure = 0d;
 
-	private boolean fazlaMesaiHesapla = Boolean.FALSE, vardiyaSua = Boolean.FALSE,  eksikGunVar = Boolean.FALSE, denklestirilmeyenDevredenVar = Boolean.FALSE;
+	private boolean fazlaMesaiHesapla = Boolean.FALSE, vardiyaSua = Boolean.FALSE, eksikGunVar = Boolean.FALSE, denklestirilmeyenDevredenVar = Boolean.FALSE;
 
 	private CalismaModeli calismaModeli;
 
@@ -104,7 +104,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	private TreeMap<Long, PersonelDenklestirmeDinamikAlan> dinamikAlanMap;
 
 	private PersonelDenklestirmeDinamikAlan personelDenklestirmeDinamikAlan;
-	
+
 	private User loginUser;
 
 	public AylikPuantaj(PersonelDenklestirmeBordro bordro) {
@@ -726,7 +726,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 					String dateStr = (yil * 100 + ay) + "01";
 					Date basTarih = PdksUtil.convertToJavaDate(dateStr, "yyyyMMdd");
 					Date bitTarih = PdksUtil.tariheGunEkleCikar(PdksUtil.tariheAyEkleCikar(basTarih, 1), -1);
-					if (yoneticisi.getIseGirisTarihi().getTime() <= bitTarih.getTime() && yoneticisi.getIstenAyrilisTarihi().getTime() >= basTarih.getTime())
+					if (yoneticisi != null && yoneticisi.getIseGirisTarihi().getTime() <= bitTarih.getTime() && yoneticisi.getIstenAyrilisTarihi().getTime() >= basTarih.getTime())
 						yonetici = yoneticisi;
 				}
 				value = (yonetici != null && yonetici.getId() != null) || pdksPersonel.isSanalPersonelMi();
@@ -1291,13 +1291,12 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	}
 
 	/**
-	 * @param eksikGunVar the eksikGunVar to set
+	 * @param eksikGunVar
+	 *            the eksikGunVar to set
 	 */
 	public void setEksikGunVar(boolean eksikGunVar) {
 		this.eksikGunVar = eksikGunVar;
 	}
-
-	 
 
 	public User getLoginUser() {
 		return loginUser;
