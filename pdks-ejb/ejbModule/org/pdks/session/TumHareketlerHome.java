@@ -40,6 +40,7 @@ import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.BasitHareket;
 import org.pdks.entity.Departman;
+import org.pdks.entity.Dosya;
 import org.pdks.entity.HareketKGS;
 import org.pdks.entity.Kapi;
 import org.pdks.entity.KapiKGS;
@@ -611,7 +612,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			try {
 				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi olusturuluyor."));
 				if (!PdksUtil.getTestDurum()) {
-					textZipDosyaOlustur(bos, dosyaAdi);
+					zipVeri = textZipDosyaOlustur(bos, dosyaAdi);
 					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi mail gonderiliyor."));
 					if (zipVeri != null) {
 						// ortakIslemler.mailGonder(renderer, "/email/hareketMail.xhtml");
@@ -640,6 +641,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 			} catch (Exception e) {
 				logger.error(e);
+				e.printStackTrace();
 			}
 
 		}
@@ -737,23 +739,25 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 		}
 
-		byte[] bytes = baos.toByteArray();
-
-		ZipOutputStream zos = new ZipOutputStream(bos);
-
-		ZipEntry zipEntry = new ZipEntry(dosyaAdi + ".txt");
-		zos.putNextEntry(zipEntry);
-
-		int length = bytes.length;
-		zos.write(bytes, 0, length);
-		zos.closeEntry();
-		zos.close();
-		bos.close();
-		bos.flush();
+		Dosya dosya = new Dosya();
+		dosya.setDosyaAdi(dosyaAdi + ".txt");
+		dosya.setDosyaIcerik(baos.toByteArray());
+		List<Dosya> list = new ArrayList<Dosya>();
+		list.add(dosya);
 		byte[] bytesZip = null;
-		zos.write(bytesZip);
-		setZipVeri(bytesZip);
-		return bytes;
+		try {
+			String zipDosyaAdi = "Hareket.zip";
+			File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, list);
+			if (file != null && file.exists()) {
+				dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
+				file.deleteOnExit();
+				bytesZip = dosya.getDosyaIcerik();
+			}
+
+		} catch (Exception e) {
+		}
+
+		return bytesZip;
 	}
 
 	public String zipAktar() {

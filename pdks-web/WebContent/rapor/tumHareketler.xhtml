@@ -76,7 +76,7 @@
 				<rich:panel id="hareketPanel">
 					<h:panelGrid columns="1" width="800">
 						<rich:dataTable rowClasses="acik,koyu" value="#{tumHareketlerHome.hareketList}" var="hareketler" rows="25" rowKeyVar="row" id="hareketTable"
-							rendered="#{tumHareketlerHome.hareketList.size() le 65000}">
+							rendered="#{not empty tumHareketlerHome.hareketList and tumHareketlerHome.hareketList.size() le 65000}">
 							<f:facet name="header">
 								<h:outputText value="Tum Kapı Hareketleri" />
 							</f:facet>
@@ -145,7 +145,7 @@
 									</ui:fragment>
 								</rich:column>
 							</c:if>
-							
+
 							<rich:column>
 								<f:facet name="header">
 									<h:outputText value="Oluşturma Zamanı " />
