@@ -499,7 +499,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				setDepartman(departmanId != null ? (Departman) pdksEntityController.getObjectByInnerObject(parametreMap, Departman.class) : null);
 				if (tesisIdStr != null) {
-					if (!tesisList.isEmpty())
+					if (tesisList != null && !tesisList.isEmpty())
 						setTesisId(Long.parseLong(tesisIdStr));
 					else
 						tesisIdStr = null;
