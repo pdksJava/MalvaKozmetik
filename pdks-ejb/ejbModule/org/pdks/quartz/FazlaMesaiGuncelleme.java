@@ -91,7 +91,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			logger.debug("fazlaMesaiGuncelleme in " + new Date());
 			Session session = null;
 			try {
-				if (PdksUtil.isSistemDestekVar() && PdksUtil.getCanliSunucuDurum()) {
+				if (PdksUtil.isSistemDestekVar() && zamanlayici.isPazar() == false) {
 					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 					if (session != null)
 						fazlaMesaiGuncellemeBasla(false, session);
@@ -123,7 +123,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 		if (value != null) {
 			Date time = zamanlayici.getDbTime(session);
 			boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
-			if (zamanDurum)
+ 			if (zamanDurum)
 				fazlaMesaiGuncellemeCalistir(false, session);
 		}
 

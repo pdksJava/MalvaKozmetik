@@ -1330,9 +1330,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 	/**
 	 * @param vardiyaGun
+	 * @param loginUser
 	 * @return
 	 */
-	public String getFazlaMesaiSaatleri(VardiyaGun vardiyaGun) {
+	public String getFazlaMesaiSaatleri(VardiyaGun vardiyaGun, User loginUser) {
+		if (loginUser == null)
+			loginUser = authenticatedUser;
 		StringBuffer sb = new StringBuffer();
 		if (vardiyaGun != null && vardiyaGun.getIslemVardiya() != null && vardiyaGun.getVersion() >= 0) {
 			String pattern = PdksUtil.getDateTimeFormat();
@@ -1351,11 +1354,11 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (!PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBasZaman(), pattern).equals(PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBitZaman(), pattern)))
 						list.add(PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaFazlaMesaiBitZaman(), pattern));
 			} catch (Exception e) {
-				logger.error(authenticatedUser.getAdSoyad() + " " + authenticatedUser.getCalistigiSayfa() + " " + vardiyaGun.getVardiyaKeyStr() + " --> " + e);
+				logger.error(loginUser.getAdSoyad() + " " + loginUser.getCalistigiSayfa() + " " + vardiyaGun.getVardiyaKeyStr() + " --> " + e);
 			}
 			if (!list.isEmpty()) {
 				sb.append("<p align=\"left\">");
-				if (islemVardiya.isCalisma() && (authenticatedUser.isAdmin() || authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi()))
+				if (islemVardiya.isCalisma() && loginUser != null && (loginUser.isAdmin() || loginUser.isIK() || loginUser.isSistemYoneticisi()))
 					sb.append("<B>Telorans Aralık : <B>" + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans1BasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans2BitZaman(), pattern) + "</BR>");
 
 				sb.append("<B>Fazla Çalışma Saat : </B>");
@@ -1371,12 +1374,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 			if (islemVardiya.isCalisma()) {
 				Tatil tatil = vardiyaGun.getTatil();
-				if (tatil != null && (authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi() || authenticatedUser.isAdmin())) {
+				if (tatil != null && (loginUser.isIK() || loginUser.isSistemYoneticisi() || loginUser.isAdmin())) {
 					if (tatil.isYarimGunMu()) {
 						Date arifeGun = tatil.getBasTarih();
 						if (PdksUtil.tarihKarsilastirNumeric(arifeGun, vardiyaGun.getVardiyaDate()) == 0) {
 							sb.append("<p align=\"left\">");
-							sb.append("<B>Arife Başlama Saati : </B>" + authenticatedUser.getTarihFormatla(arifeGun, authenticatedUser.getDateTimeFormat()));
+							sb.append("<B>Arife Başlama Saati : </B>" + loginUser.getTarihFormatla(arifeGun, loginUser.getDateTimeFormat()));
 							sb.append("</p>");
 						}
 					}

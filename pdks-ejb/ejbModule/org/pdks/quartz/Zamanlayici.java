@@ -66,12 +66,12 @@ public class Zamanlayici implements Serializable {
 
 	public void scheduleFazlaMesaiGuncellemeTimer() {
 		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
-		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 3-21 ? * MON-SAT");
+		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 3-21 ? * *");
 	}
 
 	public void scheduleSertifikaSSLKontrolTimer() {
 		logger.info("scheduleSertifikaSSLKontrolTimer start : " + new Date());
-		sertifikaSSLKontrol.sertifikaSSLKontrolTimer(new Date(), "0 0/15 8-21 ? * MON-SAT");
+		sertifikaSSLKontrol.sertifikaSSLKontrolTimer(new Date(), "0 0/15 8-21 ? * *");
 	}
 
 	public void scheduleIseGelmemeUyariTimer() {
@@ -87,6 +87,30 @@ public class Zamanlayici implements Serializable {
 	public void izinBakiyeGuncellemeTimer() {
 		logger.info("izinBakiyeGuncellemeTimer start : " + new Date());
 		izinBakiyeGuncelleme.izinBakiyeGuncellemeTimer(new Date(), "0 0/5 3-18 ? * *");
+	}
+
+	public boolean isPazar() {
+		boolean pazar = PdksUtil.getDateField(new Date(), Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
+		return pazar;
+	}
+
+	public boolean isCumartesi() {
+		boolean cumartesi = PdksUtil.getDateField(new Date(), Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
+		return cumartesi;
+	}
+
+	public boolean isHaftaSonu() {
+		Calendar cal = Calendar.getInstance();
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		boolean haftaSonu = dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
+		return haftaSonu;
+	}
+
+	public boolean isHaftaIci() {
+		Calendar cal = Calendar.getInstance();
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		boolean haftaIci = dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY;
+		return haftaIci;
 	}
 
 	/**

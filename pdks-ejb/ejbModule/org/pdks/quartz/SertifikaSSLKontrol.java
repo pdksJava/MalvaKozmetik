@@ -67,9 +67,13 @@ public class SertifikaSSLKontrol implements Serializable {
 				SSLImport.addCertToKeyStore(null, null, true);
 				Date time = new Date();
 				int dakika = PdksUtil.getDateField(time, Calendar.MINUTE);
-				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
-				if (dakika % 30 == 0)
-					startupAction.fillParameter(session);
+				if (zamanlayici.isPazar() == false) {
+					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
+					if (dakika % 30 == 0) {
+						startupAction.fillParameter(session);
+						logger.debug("Parametreler güncellendi " + new Date());
+					}
+ 				}
 				logger.debug("Sertifika SSL Kontrol out " + new Date());
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");

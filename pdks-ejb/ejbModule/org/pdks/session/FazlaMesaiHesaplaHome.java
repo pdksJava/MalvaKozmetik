@@ -1676,7 +1676,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									}
 								}
 								if (loginUser.isAdmin()) {
-									String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGun);
+									String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGun, loginUser);
 									if (eksikCalismaDurum)
 										titleStr += "<br/>" + getEksikCalismaHTML(vardiyaGun);
 
@@ -5453,7 +5453,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 		}
 		if (vg.getTitleStr() == null) {
-			String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vg);
+			String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vg, seciliAylikPuantaj.getLoginUser());
 			if (denklestirmeAyDurum && eksikCalismaGoster) {
 				Double netSure = vg.getVardiya().getNetCalismaSuresi();
 				if (vg.getHareketDurum() && vg.getVardiya() != null && vg.isIzinli() == false && netSure > 0.0d) {
