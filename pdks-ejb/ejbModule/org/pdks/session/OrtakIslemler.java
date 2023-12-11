@@ -216,6 +216,20 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param entityManagerInput
+	 * @param pdksEntityControllerInput
+	 * @param loginUser
+	 */
+	public void setInject(EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput, User loginUser) {
+		if (entityManagerInput != null && entityManager == null)
+			this.entityManager = entityManagerInput;
+		if (pdksEntityControllerInput != null && pdksEntityController == null)
+			this.pdksEntityController = pdksEntityControllerInput;
+		if (loginUser != null && authenticatedUser == null)
+			this.authenticatedUser = loginUser;
+	}
+
+	/**
 	 * @param tarih
 	 * @param mailList
 	 * @param session

@@ -1329,6 +1329,23 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param entityManagerInput
+	 * @param pdksEntityControllerInput
+	 * @param ortakIslemlerInput
+	 * @param loginUser
+	 */
+	public void setInject(EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput, OrtakIslemler ortakIslemlerInput, User loginUser) {
+		if (entityManagerInput != null && entityManager == null)
+			this.entityManager = entityManagerInput;
+		if (pdksEntityControllerInput != null && pdksEntityController == null)
+			this.pdksEntityController = pdksEntityControllerInput;
+		if (ortakIslemlerInput != null && ortakIslemler == null)
+			this.ortakIslemler = ortakIslemlerInput;
+		if (loginUser != null && authenticatedUser == null)
+			this.authenticatedUser = loginUser;
+	}
+
+	/**
 	 * @param vardiyaGun
 	 * @param loginUser
 	 * @return
