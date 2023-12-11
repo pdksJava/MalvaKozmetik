@@ -179,9 +179,9 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 			bordroAlanlari = PdksUtil.sortObjectStringAlanList(bordroAlanlari, "getErpKodu", null);
 			LinkedHashMap<String, String> baslikMap = new LinkedHashMap<String, String>();
-			for (Tanim tanim : bordroAlanlari) {
+			for (Tanim tanim : bordroAlanlari)
 				baslikMap.put(tanim.getKodu(), tanim.getAciklama());
-			}
+
 			List<Dosya> dosyalar = new ArrayList<Dosya>();
 			for (Integer key : dMap.keySet()) {
 				Liste liste = dMap.get(key);
@@ -272,19 +272,24 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				}
 
 			}
-			if (sb.length() > 0 && !dosyalar.isEmpty())
+			if (manuel == false)
+				logger.debug(sb.toString() + " " + dosyalar.size() + "  " + new Date());
+			if (sb.length() > 0 || !dosyalar.isEmpty())
 				try {
 					Dosya dosya = null;
-					String zipDosyaAdi = "FazlaMesaiDurum_" + PdksUtil.convertToDateString(new Date(), "yyyyMMdd") + ".zip";
-					File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, dosyalar);
-					if (file != null && file.exists()) {
-						dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
-						file.deleteOnExit();
+					if (!dosyalar.isEmpty()) {
+						String zipDosyaAdi = "FazlaMesaiDurum_" + PdksUtil.convertToDateString(new Date(), "yyyyMMdd") + ".zip";
+						File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, dosyalar);
+						if (file != null && file.exists()) {
+							dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
+							file.deleteOnExit();
+						}
 					}
 					String aylar = sb.toString();
-					if (dosya != null)
-						zamanlayici.mailGonderDosya(session, null, "Fazla Mesai Güncellemesi", aylar + " " + (aylar.indexOf(",") > 0 ? "dönemleri" : "dönemi") + " fazla mesailer güncellenmiştir.", null, dosya, Boolean.TRUE);
+					zamanlayici.mailGonderDosya(session, null, "Fazla Mesai Güncellemesi", aylar + " " + (aylar.indexOf(",") > 0 ? "dönemleri" : "dönemi") + " fazla mesailer güncellenmiştir.", null, dosya, Boolean.TRUE);
 				} catch (Exception e) {
+					logger.error(e);
+					e.printStackTrace();
 				}
 			sb = null;
 			veriMap = null;
@@ -305,7 +310,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 		boolean denklestirme = veriMap.containsKey("denklestirme") ? (Boolean) veriMap.get("denklestirme") : false;
 		Long tesisId = veriMap.containsKey("tesisId") ? (Long) veriMap.get("tesisId") : null;
 		Sirket sirket = veriMap.containsKey("sirket") ? (Sirket) veriMap.get("sirket") : null;
-		DenklestirmeAy denklestirmeAy = veriMap.containsKey("denklestirmeAy") ? (DenklestirmeAy) veriMap.get("denklestirmeAy") : null;
 		List<SelectItem> bolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : "", aylikPuantaj, denklestirme, session);
 		fazlaMesaiHesaplaHome.setTesisId(tesisId);
 		HashMap fields = new HashMap();
@@ -350,12 +354,14 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			as.setSirket(sirket);
 			as.setTesisId(tesisId);
 			as.setLoginUser(loginUser);
-			List<AylikPuantaj> personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, false, false, session);
+			loginUser.setAdmin(Boolean.TRUE);
+			List<AylikPuantaj> personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(dm, as, false, false, session);
 			if (!personelDenklestirmeList.isEmpty()) {
 				ByteArrayOutputStream baos = null;
 				HashMap<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("personelDenklestirmeList", new ArrayList(personelDenklestirmeList));
-				dataMap.putAll(veriMap);
+				dataMap.put("loginUser", loginUser);
+ 				dataMap.putAll(veriMap);
 				try {
 					baos = fazlaMesaiOrtakIslemler.denklestirmeExcelAktarDevam(dataMap, session);
 				} catch (Exception e) {

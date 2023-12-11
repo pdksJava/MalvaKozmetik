@@ -363,6 +363,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		ByteArrayOutputStream baos = null;
 		List<AylikPuantaj> personelDenklestirmeList = veriMap.containsKey("personelDenklestirmeList") ? (List<AylikPuantaj>) veriMap.get("personelDenklestirmeList") : new ArrayList<AylikPuantaj>();
 		Sirket sirket = veriMap.containsKey("sirket") ? (Sirket) veriMap.get("sirket") : null;
+		User loginUser = veriMap.containsKey("loginUser") ? (User) veriMap.get("loginUser") : authenticatedUser;
 		if (!personelDenklestirmeList.isEmpty()) {
 			LinkedHashMap<String, String> baslikMap = veriMap.containsKey("baslikMap") ? (LinkedHashMap<String, String>) veriMap.get("baslikMap") : null;
 			Tanim ekSaha4Tanim = veriMap.containsKey("ekSaha4Tanim") ? (Tanim) veriMap.get("ekSaha4Tanim") : null;
@@ -538,9 +539,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						} else if (kodu.equals(home.COL_SIRA))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(row);
 						else if (kodu.equals(home.COL_ISE_BASLAMA_TARIHI))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ilkGun.before(personel.getIseBaslamaTarihi()) ? authenticatedUser.dateFormatla(personel.getIseBaslamaTarihi()) : "");
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ilkGun.before(personel.getIseBaslamaTarihi()) ? loginUser.dateFormatla(personel.getIseBaslamaTarihi()) : "");
 						else if (kodu.equals(home.COL_SSK_CIKIS_TARIHI))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.isCalisiyorGun(sonGun) ? "" : authenticatedUser.dateFormatla(personel.getSskCikisTarihi()));
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.isCalisiyorGun(sonGun) ? "" : loginUser.dateFormatla(personel.getSskCikisTarihi()));
 						else if (kodu.equals(home.COL_YIL))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(yil);
 						else if (kodu.equals(home.COL_YIL))
