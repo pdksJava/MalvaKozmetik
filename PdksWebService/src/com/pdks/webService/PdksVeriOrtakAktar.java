@@ -1992,6 +1992,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 									personelIzin.setGuncellemeTarihi(islemZamani);
 									personelIzin.setGuncelleyenUser(islemYapan);
 								}
+							} else {
+								izinERP.setYazildi(Boolean.TRUE);
+								izinERP.setId(personelIzin.getId());
 							}
 							List<PersonelDenklestirme> acikDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, true);
 							if (acikDenklestirmeler != null && !acikDenklestirmeler.isEmpty()) {
@@ -3341,6 +3344,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 								personel.setPdksSicilNo(personelNo);
 							}
 							saveList.add(personel);
+						} else {
+							personelERP.setYazildi(Boolean.TRUE);
+							personelERP.setId(personel.getId());
 						}
 
 						if (!updateYonetici2)
