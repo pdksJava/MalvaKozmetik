@@ -257,9 +257,10 @@
 									</f:facet>
 									<h:outputText value="#{puantaj.pdksPersonel.pdksYonetici.adSoyad}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
 								</rich:column>
-								<rich:column style="text-align: left;" rendered="#{denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_CALISMA_MODELI)}">
+								<rich:column style="text-align: left;"
+									rendered="#{denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_CALISMA_MODELI)}">
 									<f:facet name="header">
-											<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_CALISMA_MODELI)}" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_CALISMA_MODELI)}" />
 
 									</f:facet>
 									<h:outputText value="#{puantaj.calismaModeli.aciklama}" style="font-size: 9px;width:autostretch ;white-space: nowrap;" />
@@ -285,99 +286,99 @@
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_NORMAL_GUN_ADET)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.normalGunAdet))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.normalGunAdet)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.normalGunAdet)}"
+										rendered="#{puantaj.denklestirmeBordro.normalGunAdet!=0}" />
 								</rich:column>
 
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_ADET)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilAdet)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.haftaTatilAdet)}"
+										rendered="#{puantaj.denklestirmeBordro.haftaTatilAdet!=0}" />
 								</rich:column>
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilGunDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_ADET)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilAdet))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilAdet)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.resmiTatilAdet)}"
+										rendered="#{puantaj.denklestirmeBordro.resmiTatilAdet!=0}" />
 								</rich:column>
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.artikGunDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_ARTIK_ADET)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.artikAdet))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.artikAdet)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.artikAdet)}"
+										rendered="#{puantaj.denklestirmeBordro.artikAdet!=0}" />
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETLI_IZIN)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretliIzin))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretliIzin)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.ucretliIzin)}"
+										rendered="#{puantaj.denklestirmeBordro.ucretliIzin!=0}" />
 
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RAPORLU_IZIN)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.raporluIzin))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.raporluIzin)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.raporluIzin)}"
+										rendered="#{puantaj.denklestirmeBordro.raporluIzin!=0}" />
 
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETSIZ_IZIN)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretsizIzin))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretsizIzin)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.ucretsizIzin)}"
+										rendered="#{puantaj.denklestirmeBordro.ucretsizIzin!=0}" />
 
 								</rich:column>
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETI_ODENEN_MESAI)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretiOdenenMesai))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.ucretiOdenenMesai)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.ucretiOdenenMesai)}"
+										rendered="#{puantaj.denklestirmeBordro.ucretiOdenenMesai!=0}" />
 								</rich:column>
 
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.haftaCalisma}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_HAFTA_TATIL_MESAI)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.haftaTatilMesai)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.haftaTatilMesai)}"
+										rendered="#{puantaj.denklestirmeBordro.haftaTatilMesai!=0}" />
 								</rich:column>
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_MESAI)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilMesai))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.resmiTatilMesai)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.resmiTatilMesai)}"
+										rendered="#{puantaj.denklestirmeBordro.resmiTatilMesai!=0}" />
 								</rich:column>
 
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamGun}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AKSAM_GUN_MESAI)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamGunMesai))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamGunMesai)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.aksamGunMesai)}"
+										rendered="#{puantaj.denklestirmeBordro.aksamGunMesai!=0}" />
 								</rich:column>
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamSaat}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AKSAM_SAAT_MESAI)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamSaatMesai))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.aksamSaatMesai)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.aksamSaatMesai)}"
+										rendered="#{puantaj.denklestirmeBordro.aksamSaatMesai!=0}" />
 
 								</rich:column>
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.maasKesintiGoster}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_EKSIK_CALISMA)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.eksikCalismaSure))}"
-										rendered="#{authenticatedUser.getYuvarla(puantaj.denklestirmeBordro.eksikCalismaSure)>0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.eksikCalismaSure)}"
+										rendered="#{puantaj.denklestirmeBordro.eksikCalismaSure!=0}" />
 								</rich:column>
 								<f:facet name="footer">
 									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
