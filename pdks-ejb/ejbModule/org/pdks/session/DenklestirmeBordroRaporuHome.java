@@ -1124,13 +1124,15 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		baslikMap.clear();
 		if (denklestirmeAy != null) {
 			saveLastParameter();
-			AramaSecenekleri as = new AramaSecenekleri();
-			as.setSicilNo(sicilNo);
-			as.setSirket(sirket);
-			as.setLoginUser(authenticatedUser);
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 			if (yil * 100 + ay >= Integer.parseInt(str)) {
+				AramaSecenekleri as = new AramaSecenekleri();
+				as.setSicilNo(sicilNo);
+				as.setSirket(sirket);
+				as.setTesisId(tesisId);
+				as.setLoginUser(authenticatedUser);
 				personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, hataliVeriGetir, eksikCalisanVeriGetir, session);
+				as = null;
 				if (!personelDenklestirmeList.isEmpty()) {
 					List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 					if (bordroAlanlari.isEmpty()) {
