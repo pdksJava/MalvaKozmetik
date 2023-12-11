@@ -327,7 +327,7 @@
 			<h:form>
 				<h:panelGrid columns="1">
 					<a4j:outputPanel id="fazlaMesaiOnay">
-						<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(personelFazlaMesaiHome.instance.hareket.vardiyaGun)}"></s:formattedText>
+						<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(personelFazlaMesaiHome.instance.hareket.vardiyaGun,authenticatedUser)}"></s:formattedText>
 						<h:panelGrid columns="1">
 
 							<s:decorate template="/layout/edit.xhtml">
