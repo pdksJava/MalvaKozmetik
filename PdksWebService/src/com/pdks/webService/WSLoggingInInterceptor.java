@@ -98,6 +98,9 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 				if (ins != null) {
 					xml = PdksUtil.StringToByInputStream(ins);
 					if (xml != null) {
+						int beginIndex = xml.indexOf("<S:Envelope");
+						if (beginIndex >= 0)
+							xml = xml.substring(beginIndex);
 						xml = PdksUtil.getUTF8String(xml);
 						orjinalXML = new String(xml);
 						message.put("requestOrjinalXML", orjinalXML);
