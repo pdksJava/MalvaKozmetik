@@ -2242,7 +2242,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					List<String> vGunList = ciftBolumCalisanKontrol(puantajList);
 					if (!izinMap.isEmpty())
 						try {
-							izinCalismaUyariMesajiOlustur(vGunList, izinMap);
+							if (loginUser.getLogin())
+								izinCalismaUyariMesajiOlustur(vGunList, izinMap);
 						} catch (Exception e) {
 						}
 				}
