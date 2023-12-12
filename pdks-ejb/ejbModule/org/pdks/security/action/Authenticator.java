@@ -17,6 +17,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.security.Credentials;
 import org.jboss.seam.security.Identity;
 import org.jboss.seam.security.management.IdentityManager;
@@ -73,6 +74,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 	private String adres;
 	private Session session;
 
+	@Transactional
 	public boolean authenticate() {
 		session = PdksUtil.getSession(entityManager, Boolean.FALSE);
 		session.clear();

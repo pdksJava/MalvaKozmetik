@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Transactional;
 import org.pdks.entity.ServiceData;
 import org.pdks.security.entity.User;
 import org.pdks.session.PdksEntityController;
@@ -496,6 +497,7 @@ public class MailManager implements Serializable {
 	 * @param mailObject
 	 * @param sessionDB
 	 */
+	@Transactional
 	private void saveLog(MailObject mail, HashMap<String, String> map, Session sessionDB) {
 		try {
 			if (sessionDB != null) {

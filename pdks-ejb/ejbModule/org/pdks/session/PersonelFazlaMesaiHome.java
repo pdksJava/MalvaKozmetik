@@ -1448,6 +1448,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		return "";
 	}
 
+	@Transactional
 	public String mesaiSil() {
 		HashMap parametreMap = new HashMap();
 

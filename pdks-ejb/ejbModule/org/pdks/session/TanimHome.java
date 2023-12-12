@@ -258,6 +258,7 @@ public class TanimHome extends EntityHome<Tanim> implements Serializable {
 
 	}
 
+	@Transactional
 	private void tanimKaydet(Tanim tanim) {
 		tanim.setIslemTarihi(new Date());
 		tanim.setIslemYapan(authenticatedUser);

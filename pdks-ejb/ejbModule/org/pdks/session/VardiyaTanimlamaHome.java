@@ -111,6 +111,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 		return sayi;
 	}
 
+	@Transactional
 	public String fillPdksYoneticiDenklestirme(Session xSession) {
 		HashMap map = new HashMap();
 		map.put("yil", yil);
@@ -245,6 +246,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 	/**
 	 * @return
 	 */
+	@Transactional
 	public String devredenBakiyeDosyaOku() {
 		personelDenklestirmeler.clear();
 		try {
@@ -434,6 +436,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 	/**
 	 * @return
 	 */
+	@Transactional
 	public String kismiOdemeDosyaOku() {
 		//
 

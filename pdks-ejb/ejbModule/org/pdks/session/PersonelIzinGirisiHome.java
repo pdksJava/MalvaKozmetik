@@ -196,6 +196,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	 * @return
 	 * @throws Exception
 	 */
+	@Transactional
 	public List yilBasiIzinParcala(PersonelIzinOnay izinOnay) throws Exception {
 		PersonelIzin yilBasiIzin = izinOnay.getPersonelIzin();
 		List<Personel> perList = new ArrayList<Personel>();
@@ -1072,6 +1073,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			authenticatedUser.setCalistigiSayfa("");
 	}
 
+	@Transactional
 	public void izinleriDuzelt() {
 		HashMap paramMap = new HashMap();
 		paramMap.put("izinTipi.bakiyeIzinTipi=", null);
@@ -1873,6 +1875,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	 * @param onayDurum
 	 * @return
 	 */
+	@Transactional
 	public String izinOnayla(Long personelIzinOnayId, Integer onayDurum) {
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("id", personelIzinOnayId);
@@ -2463,6 +2466,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		setIzinDosyaMap(izinDosyaMap);
 	}
 
+	@Transactional
 	public String onaylamaIslemi() {
 		if (onayDurum.equals("true")) {
 			if (guncellenecekIzin.getIzinKagidiGeldi() == null || !guncellenecekIzin.getIzinKagidiGeldi()) {
@@ -3597,6 +3601,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	 * @param izinDetayList
 	 * @return
 	 */
+	@Transactional
 	private String izniSistemKaydet(PersonelIzin personelIzin, User updateUser, List<PersonelIzinDetay> izinDetayList) {
 		String durum = "persist";
 		List<PersonelIzinDetay> list = null;
@@ -3792,6 +3797,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	 * @param session
 	 * @return
 	 */
+	@Transactional
 	private String onayMesajiGonder(PersonelIzin personelIzin, boolean isGenelMudur, boolean isProjeMuduru, Session session) {
 
 		String durum = "persist";
@@ -4571,6 +4577,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	 * @param izinSahibiInput
 	 * @return
 	 */
+	@Transactional
 	public Personel getPersonelVeri(Personel izinSahibiInput) {
 		Personel izinSahibi = null;
 		setIzinIptalGoster(Boolean.FALSE);
@@ -4898,6 +4905,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	}
 
+	@Transactional
 	public void onayAkisiGoster(PersonelIzin izin) {
 		List<PersonelIzinOnay> onaylayanlar = ortakIslemler.izinOnaylarGetir(izin, session);
 		if (onaylayanlar != null) {
@@ -4919,7 +4927,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				if (!onaylayanlar.isEmpty())
 					izin.getOnaylayanlar().addAll(onaylayanlar);
 				izin = entityManager.merge(izin);
-				entityManager.flush();
+				session.flush();
 			}
 		}
 		setMailIzin(izin);

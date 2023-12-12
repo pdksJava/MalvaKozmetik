@@ -16,6 +16,7 @@ import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.FlushModeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
@@ -118,6 +119,7 @@ public class VardiyaSablonuHome extends EntityHome<VardiyaSablonu> implements Se
 	}
 
 	@Override
+	@Transactional
 	public String update() {
 		String cikis = "";
 		VardiyaSablonu pdksVardiyaSablon = getInstance();

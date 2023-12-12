@@ -34,6 +34,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.security.Identity;
 import org.pdks.entity.AramaSecenekleri;
@@ -709,6 +710,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
+	@Transactional
 	public TreeMap<String, Boolean> bordroVeriOlustur(boolean kaydet, List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, Session session) {
 		TreeMap<String, Boolean> baslikMap = new TreeMap<String, Boolean>();
 		String arifeGunuBordroYarim = ortakIslemler.getParameterKey("arifeGunuBordroYarim");
@@ -1757,6 +1759,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param denklestirmeAy
 	 * @param session
 	 */
+	@Transactional
 	public void setFazlaMesaiMaxSure(DenklestirmeAy denklestirmeAy, Session session) {
 		denklestirmeAy.setFazlaMesaiMaxSure(ortakIslemler.getFazlaMesaiMaxSure(null));
 		pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);

@@ -170,6 +170,7 @@ public class ParameterHome extends EntityHome<Parameter> implements Serializable
 		return parametreList;// this.entityManager.createNamedQuery("select Parameter from Parameter").getResultList();
 	}
 
+	@Transactional
 	public String skinUpdate() {
 		boolean guncelle = false;
 		for (SelectItem skin : skinList) {

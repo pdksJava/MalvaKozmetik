@@ -26,6 +26,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Startup;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.security.Identity;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -218,6 +219,7 @@ public class StartupAction implements Serializable {
 	/**
 	 * @param session
 	 */
+	@Transactional
 	public void savePrepareAllTableID(Session session) {
 		List<Class> list = new ArrayList<Class>();
 		long toplamAdet = 0L;
@@ -689,6 +691,7 @@ public class StartupAction implements Serializable {
 	 * @param session
 	 * @param pmMap
 	 */
+	@Transactional
 	private void setHelpDeskParametre(Session session, HashMap<String, Parameter> pmMap) {
 		OrtakIslemler ortakIslemler = new OrtakIslemler();
 		try {
@@ -820,6 +823,7 @@ public class StartupAction implements Serializable {
 	 * @param helpDeskList
 	 * @param pmMap
 	 */
+	@Transactional
 	private void servisDurumKontrol(Session session, List<String> helpDeskList, HashMap<String, Parameter> pmMap) {
 		boolean sistemDestekVar = false;
 		String helpDeskLastDateKey = "helpDeskLastDate";
@@ -937,6 +941,7 @@ public class StartupAction implements Serializable {
 	/**
 	 * @param session
 	 */
+	@Transactional
 	public void setLDAPUserList(Session session) {
 		List saveList = new ArrayList(), list = new ArrayList();
 		if (session == null)

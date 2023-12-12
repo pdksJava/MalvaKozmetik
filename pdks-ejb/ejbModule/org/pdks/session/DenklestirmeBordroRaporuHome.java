@@ -210,6 +210,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		return str;
 	}
 
+	@Transactional
 	public String sirketFazlaMesaiGuncelleme() {
 		HashMap fields = new HashMap();
 		fields.put("id", sirketId);
@@ -1575,6 +1576,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 * @param kartNoAciklamaGoster
 	 * @param bordroAlanlari
 	 */
+	@Transactional
 	private void bordroBilgiAciklamaOlustur(boolean kimlikNoGoster, String kartNoAciklama, Boolean kartNoAciklamaGoster, List<Tanim> bordroAlanlari) {
 		int sira = 0;
 		Tanim ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);

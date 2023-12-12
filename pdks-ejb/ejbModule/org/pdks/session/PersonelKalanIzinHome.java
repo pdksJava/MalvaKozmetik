@@ -1139,6 +1139,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		return "";
 	}
 
+	@Transactional
 	public String izinBakiyeDosyaOku() throws Exception {
 
 		Workbook wb = ortakIslemler.getWorkbook(izinBakiyeDosya);
@@ -1614,6 +1615,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		return "";
 	}
 
+	@Transactional
 	public String izinBakiyeDosyaYaz() throws Exception {
 		TreeMap<String, PersonelIzin> izinMap = new TreeMap<String, PersonelIzin>();
 		List<String> tipler = Arrays.asList(new String[] { IzinTipi.YILLIK_UCRETLI_IZIN, IzinTipi.SUA_IZNI });

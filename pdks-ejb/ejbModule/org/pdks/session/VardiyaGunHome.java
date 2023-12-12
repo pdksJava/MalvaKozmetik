@@ -668,6 +668,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @return
 	 * @throws Exception
 	 */
+	@Transactional
 	public String mesaiOnay() throws Exception {
 		boolean guncelle = false;
 		for (FazlaMesaiTalep fmt : aylikFazlaMesaiTalepler) {
@@ -705,6 +706,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	/**
 	 * @return
 	 */
+	@Transactional
 	public String mesaiIptal() {
 		islemFazlaMesaiTalep.setDurum(Boolean.FALSE);
 		pdksEntityController.saveOrUpdate(session, entityManager, islemFazlaMesaiTalep);
@@ -967,6 +969,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	/**
 	 * @return
 	 */
+	@Transactional
 	public String mesaiRedIslemi() {
 		HashMap fields = new HashMap();
 		fields.put("id", redNedeniId);
@@ -987,6 +990,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @param topluGuncelle
 	 * @return
 	 */
+	@Transactional
 	public String mesaiKaydet(boolean topluGuncelle) {
 		Vardiya islemVardiya = seciliVardiyaGun.getIslemVardiya();
 		if (islemVardiya != null) {
@@ -1444,6 +1448,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @param excelAktar
 	 * @return
 	 */
+	@Transactional
 	public boolean vardiyaPlanKontrol(PersonelDenklestirme personelDenklestirme, TreeMap<Long, Vardiya> vardiyaMap, VardiyaPlan plan, String mesaj, boolean excelAktar) {
 		boolean yaz = Boolean.TRUE;
 		boolean haftaTatil = Boolean.FALSE;
@@ -1800,7 +1805,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				PdksUtil.addMessageAvailableWarn(mesaj + sb.toString());
 			if (sbCalismaModeliUyumsuz.length() > 0) {
 				String str = sbCalismaModeliUyumsuz.toString();
-				PdksUtil.addMessageAvailableWarn(mesaj + str + " " + (calismaModeli != null ? calismaModeli.getAciklama() + " Vardiyalarına " : ortakIslemler.calismaModeliAciklama()+"ne") + " uymayan hatalı " + (str.indexOf(",") < 0 ? "vardiyadır!" : "vardiyalardır"));
+				PdksUtil.addMessageAvailableWarn(mesaj + str + " " + (calismaModeli != null ? calismaModeli.getAciklama() + " Vardiyalarına " : ortakIslemler.calismaModeliAciklama() + "ne") + " uymayan hatalı " + (str.indexOf(",") < 0 ? "vardiyadır!" : "vardiyalardır"));
 			}
 			if (personelDenklestirme != null) {
 				if (ikMesaj)
@@ -6733,6 +6738,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @param puantajList
 	 * @throws Exception
 	 */
+	@Transactional
 	private void setDenklestirmeAlanlari(List<AylikPuantaj> puantajList) throws Exception {
 
 		TreeMap<Long, PersonelDenklestirme> map = new TreeMap<Long, PersonelDenklestirme>();
@@ -7717,6 +7723,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @throws Exception
 	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
+	@Transactional
 	public void sayfaMesaiTalepAction() throws Exception {
 		if (session == null)
 			session = PdksUtil.getSession(entityManager, Boolean.FALSE);
@@ -8324,6 +8331,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	/**
 	 * @return
 	 */
+	@Transactional
 	public String topluMesaiOnayla() {
 		List<FazlaMesaiTalep> list = new ArrayList<FazlaMesaiTalep>();
 		for (FazlaMesaiTalep ft : fazlaMesaiTalepler) {
@@ -8364,6 +8372,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	/**
 	 * @return
 	 */
+	@Transactional
 	public String topluMailGonder() {
 		List<FazlaMesaiTalep> list = new ArrayList<FazlaMesaiTalep>();
 		for (FazlaMesaiTalep ft : fazlaMesaiTalepler) {

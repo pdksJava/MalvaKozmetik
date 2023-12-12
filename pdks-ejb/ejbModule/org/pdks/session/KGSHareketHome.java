@@ -17,6 +17,7 @@ import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.FlushModeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
@@ -256,14 +257,14 @@ public class KGSHareketHome extends EntityHome<HareketKGS> {
 		if (!yenile)
 			fillHareketList();
 	}
-
+	@Transactional
 	public void onayla() {
 		HareketKGS kgsHareket = this.getInstance();
 		pdksEntityController.hareketOnayla(kgsHareket.getIslem().getId(), authenticatedUser, session);
 		session.flush();
 
 	}
-
+	@Transactional
 	public void onaylama() {
 		HareketKGS kgsHareket = this.getInstance();
 		if (kgsHareket.getSirket().equals(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS)) {

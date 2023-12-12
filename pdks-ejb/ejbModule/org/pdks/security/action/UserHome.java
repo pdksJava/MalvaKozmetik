@@ -103,11 +103,8 @@ public class UserHome extends EntityHome<User> implements Serializable {
 				currentUser.setPasswordHash(passwordEncoded);
 
 			}
-			if (currentUser.getId() == null)
-				entityManager.persist(currentUser);
-			else
-				currentUser = entityManager.merge(currentUser);
-			entityManager.flush();
+ 			pdksEntityController.saveOrUpdate(session, entityManager, currentUser);
+ 			session.flush();
 			assignId(PersistenceProvider.instance().getId(getInstance(), entityManager));
 			// createdMessage();
 			raiseAfterTransactionSuccessEvent();
@@ -117,7 +114,7 @@ public class UserHome extends EntityHome<User> implements Serializable {
 		return sonuc;
 
 	}
-
+	@Transactional
 	public String changePassword() {
 		User user = getInstance();
 		String oldPasswordData = user.getPasswordHash();

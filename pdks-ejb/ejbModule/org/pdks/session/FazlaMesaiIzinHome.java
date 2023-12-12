@@ -186,7 +186,7 @@ public class FazlaMesaiIzinHome extends EntityHome<PersonelIzin> implements Seri
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			PersonelIzin izin = (PersonelIzin) pdksEntityController.getObjectByInnerObject(parametreMap, PersonelIzin.class);
 			session.refresh(izin);
-			entityManager.flush();
+			session.flush();
 			fillIzinList();
 
 		} catch (Exception e) {

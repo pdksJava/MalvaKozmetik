@@ -297,6 +297,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 	 * @param izin
 	 * @return
 	 */
+	@Transactional
 	public String sapAktar(PersonelIzin izin) {
 		if (izinSapAktar(izin, null)) {
 			izin.setGuncelleyenUser(authenticatedUser);

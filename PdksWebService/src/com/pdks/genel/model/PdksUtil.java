@@ -225,22 +225,9 @@ public class PdksUtil implements Serializable {
 	 * @param xml
 	 * @return
 	 */
-	public static String getXMLConvert(String xml) {
+	public static String getUTF8String1(String xml) {
 		String data = xml;
 		if (data != null) {
-
-			while (data.indexOf(" </") >= 0)
-				data = replaceAll(data, " </", "</");
-			if (data.indexOf(" xsi:nil=\"true\"") >= 0)
-				data = replaceAll(data, " xsi:nil=\"true\"", "");
-			if (data.indexOf("\t") >= 0)
-				data = replaceAll(data, "\t", "");
-			if (data.indexOf("&#26;") >= 0)
-				data = replaceAll(data, "&#26;", "");
-			if (data.indexOf("&#41;") >= 0)
-				data = replaceAll(data, "&#41;", "");
-			if (data.indexOf("&#9;") >= 0)
-				data = replaceAll(data, "&#9;", "");
 			if (data.indexOf("&#304;") >= 0)
 				data = replaceAll(data, "&#304;", "İ");
 			if (data.indexOf("&#305;") >= 0)
@@ -265,6 +252,18 @@ public class PdksUtil implements Serializable {
 				data = replaceAll(data, "&#350;", "Ş");
 			if (data.indexOf("&#351;") >= 0)
 				data = replaceAll(data, "&#351;", "ş");
+
+		}
+		return data;
+	}
+
+	/**
+	 * @param xml
+	 * @return
+	 */
+	public static String getUTF8String2(String xml) {
+		String data = xml;
+		if (data != null) {
 			if (data.indexOf("\u015E") >= 0)
 				data = replaceAll(data, "\u015E", "Ş");
 			if (data.indexOf("\u015F") >= 0)
@@ -289,30 +288,82 @@ public class PdksUtil implements Serializable {
 				data = replaceAll(data, "\u0130", "İ");
 			if (data.indexOf("\u0131") >= 0)
 				data = replaceAll(data, "\u0131", "ı");
-			if (data.indexOf("&gt;") >= 0)
-				data = replaceAll(data, "&gt;", ">");
-			if (data.indexOf("&lt;") >= 0)
-				data = replaceAll(data, "&lt;", "<");
+		}
+		return data;
+	}
+
+	/**
+	 * @param xml
+	 * @return
+	 */
+	public static String getUTF8String3(String xml) {
+		String data = xml;
+		if (data != null) {
 			if (data.indexOf("&#x11E;") >= 0)
 				data = replaceAll(data, "&#x11E;", "Ğ");
+			if (data.indexOf("&#x11F;") >= 0)
+				data = replaceAll(data, "&#x11F;", "ğ");
 			if (data.indexOf("&#x130;") >= 0)
 				data = replaceAll(data, "&#x130;", "İ");
+			if (data.indexOf("&#x131;") >= 0)
+				data = replaceAll(data, "&#x131;", "ı");
 			if (data.indexOf("&#x15E;") >= 0)
 				data = replaceAll(data, "&#x15E;", "Ş");
 			if (data.indexOf("&#x15F;") >= 0)
 				data = replaceAll(data, "&#x15F;", "ş");
-			if (data.indexOf("&#x131;") >= 0)
-				data = replaceAll(data, "&#x131;", "ı");
 			if (data.indexOf("&#xDC;") >= 0)
 				data = replaceAll(data, "&#xDC;", "Ü");
 			if (data.indexOf("&#xFC;") >= 0)
 				data = replaceAll(data, "&#xFC;", "ü");
-			if (data.indexOf("&#x11F;") >= 0)
-				data = replaceAll(data, "&#x11F;", "ğ");
-			if (data.indexOf("&#xF6;") >= 0)
-				data = replaceAll(data, "&#xF6;", "ö");
 			if (data.indexOf("&#xD6;") >= 0)
 				data = replaceAll(data, "&#xD6;", "Ö");
+			if (data.indexOf("&#xF6;") >= 0)
+				data = replaceAll(data, "&#xF6;", "ö");
+		}
+		return data;
+	}
+
+	/**
+	 * @param xml
+	 * @return
+	 */
+	public static String getUTF8String(String xml) {
+		String data = xml;
+		if (data != null) {
+			data = getUTF8String1(data);
+			data = getUTF8String2(data);
+			data = getUTF8String3(data);
+		}
+		return data;
+
+	}
+
+	/**
+	 * @param xml
+	 * @return
+	 */
+	public static String getXMLConvert(String xml) {
+		String data = xml;
+		if (data != null) {
+			data = getUTF8String(data);
+			while (data.indexOf(" </") >= 0)
+				data = replaceAll(data, " </", "</");
+			if (data.indexOf(" xsi:nil=\"true\"") >= 0)
+				data = replaceAll(data, " xsi:nil=\"true\"", "");
+			if (data.indexOf("\t") >= 0)
+				data = replaceAll(data, "\t", "");
+			if (data.indexOf("&#26;") >= 0)
+				data = replaceAll(data, "&#26;", "");
+			if (data.indexOf("&#41;") >= 0)
+				data = replaceAll(data, "&#41;", "");
+			if (data.indexOf("&#9;") >= 0)
+				data = replaceAll(data, "&#9;", "");
+
+			if (data.indexOf("&gt;") >= 0)
+				data = replaceAll(data, "&gt;", ">");
+			if (data.indexOf("&lt;") >= 0)
+				data = replaceAll(data, "&lt;", "<");
+
 			// data = getXmlAciklama(data);
 
 		}
@@ -1290,10 +1341,10 @@ public class PdksUtil implements Serializable {
 	public static RuleBasedCollator getRuRuleBasedCollator() {
 		RuleBasedCollator collator = (RuleBasedCollator) Collator.getInstance(Constants.RU_LOCALE);
 		try {
-			String ruHarf = "< \u0430=?; \u0410=?" + "< \u0431=?; \u0411=?" + "< \u0432=?; \u0412=?" + "< \u0433=?; \u0413=?" + "< \u0434=?; \u0414=?" + "< \u0435=?; \u0415=?" + "< \u0451=?; \u0401=?" + "< \u0436=?; \u0416=?" + "< \u0437=?; \u0417=?"
-					+ "< \u0438=?; \u0418=?" + "< \u0439=?; \u0419=?" + "< \u043A=?; \u041A=?" + "< \u043B=?; \u041B=?" + "< \u043C=?; \u041C=?" + "< \u043D=?; \u041D=?" + "< \u043E=?; \u041E=?" + "< \u043F=?; \u041F=?" + "< \u0440=?; \u0420=?" + "< \u0441=?; \u0421=?" + "< \u0442=?; \u0422=?"
-					+ "< \u0443=?; \u0423=?" + "< \u0444=?; \u0424=?" + "< \u0445=?; \u0425=?" + "< \u0446=?; \u0426=?" + "< \u0447=?; \u0427=?" + "< \u0448=?; \u0428=?" + "< \u0449=?; \u0429=?" + "< \u044A=?; \u042A=?" + "< \u044B=?; \u042B=?" + "< \u044C=?; \u042C=?" + "< \u044D=?; \u042D=?"
-					+ "< \u044E=?; \u042E=?" + "< \u044F=?; \u042F=?" + "<'-'<' '";
+			String ruHarf = "< \u0430=?; \u0410=?" + "< \u0431=?; \u0411=?" + "< \u0432=?; \u0412=?" + "< \u0433=?; \u0413=?" + "< \u0434=?; \u0414=?" + "< \u0435=?; \u0415=?" + "< \u0451=?; \u0401=?" + "< \u0436=?; \u0416=?" + "< \u0437=?; \u0417=?" + "< \u0438=?; \u0418=?"
+					+ "< \u0439=?; \u0419=?" + "< \u043A=?; \u041A=?" + "< \u043B=?; \u041B=?" + "< \u043C=?; \u041C=?" + "< \u043D=?; \u041D=?" + "< \u043E=?; \u041E=?" + "< \u043F=?; \u041F=?" + "< \u0440=?; \u0420=?" + "< \u0441=?; \u0421=?" + "< \u0442=?; \u0422=?" + "< \u0443=?; \u0423=?"
+					+ "< \u0444=?; \u0424=?" + "< \u0445=?; \u0425=?" + "< \u0446=?; \u0426=?" + "< \u0447=?; \u0427=?" + "< \u0448=?; \u0428=?" + "< \u0449=?; \u0429=?" + "< \u044A=?; \u042A=?" + "< \u044B=?; \u042B=?" + "< \u044C=?; \u042C=?" + "< \u044D=?; \u042D=?" + "< \u044E=?; \u042E=?"
+					+ "< \u044F=?; \u042F=?" + "<'-'<' '";
 			collator = new RuleBasedCollator(ruHarf);
 		} catch (ParseException ex) {
 			ex.printStackTrace();

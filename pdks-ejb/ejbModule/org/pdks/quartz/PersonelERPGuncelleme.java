@@ -482,6 +482,7 @@ public class PersonelERPGuncelleme implements Serializable {
 	 * @param session
 	 * @return
 	 */
+	@Transactional
 	public String aktifMailAdressGuncelle(Session session) {
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();

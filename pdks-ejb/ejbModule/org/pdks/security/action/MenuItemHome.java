@@ -120,6 +120,7 @@ public class MenuItemHome extends EntityHome<MenuItem> implements Serializable {
 
 	@Override
 	@Begin(join = true)
+	@Transactional
 	public String persist() {
 		session = getSession();
 		String method = "";

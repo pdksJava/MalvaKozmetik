@@ -577,6 +577,7 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 
 	}
 
+	@Transactional
 	public String bitisTarihDegistir() {
 		String islem = "";
 		Date bitTarih = devirUserVekalet.getDevirBitTarih();
@@ -608,6 +609,7 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 
 	}
 
+	@Transactional
 	public String devret() {
 		UserVekalet vekalet = devirUserVekalet;
 		// vekalet.setDevirBasTarih(getDevirBasTarih());

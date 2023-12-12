@@ -536,6 +536,7 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 		return "";
 	}
 
+	@Transactional
 	public String kayitKopyalaDevam() {
 		Tatil pdksTatil = getInstance();
 		kopyala = yilSayisi > 1;

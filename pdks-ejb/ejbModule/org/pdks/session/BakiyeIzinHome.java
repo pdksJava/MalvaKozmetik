@@ -151,7 +151,7 @@ public class BakiyeIzinHome extends EntityHome<PersonelIzin> {
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			PersonelIzin izin = (PersonelIzin) pdksEntityController.getObjectByInnerObject(parametreMap, PersonelIzin.class);
 			session.refresh(izin);
-			entityManager.flush();
+			session.flush();
 			fillIzinList();
 
 		} catch (Exception e) {

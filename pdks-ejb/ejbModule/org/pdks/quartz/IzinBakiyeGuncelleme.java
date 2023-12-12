@@ -163,6 +163,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 	 * @param session
 	 * @throws Exception
 	 */
+	@Transactional
 	public void ciftBakiyeIzinKontrol(Session session) throws Exception {
 		HashMap parametreMap = new HashMap();
 		StringBuffer sb = new StringBuffer();
@@ -335,6 +336,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 	 * @param yeni
 	 * @param gecmisHesapla
 	 */
+	@Transactional
 	public void izinleriBakiyeleriniHesapla(Session userSession, List<String> siciller, Sirket sirket, User user, boolean yeni, boolean gecmisHesapla) {
 		if (userSession == null)
 			userSession = PdksUtil.getSession(entityManager, yeni);
