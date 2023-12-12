@@ -92,12 +92,21 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 
 			}
 			InputStream ins = null;
-			String xml = null;
-			if (soapAction == null) {
+			String xml = null, orjinalXML = null;
+			if (inMessage != null) {
 				ins = inMessage.getContent(InputStream.class);
-				xml = PdksUtil.StringToByInputStream(ins);
-				if (xml != null)
-					xml = PdksUtil.getXMLConvert(xml);
+				if (ins != null) {
+					xml = PdksUtil.StringToByInputStream(ins);
+					if (xml != null) {
+						xml = PdksUtil.getUTF8String(xml);
+						orjinalXML = new String(xml);
+						message.put("requestOrjinalXML", orjinalXML);
+					}
+				}
+			}
+
+			if (soapAction == null) {
+
 				soapAction = getActionName(xml);
 				if (soapAction == null) {
 					logger.error(xml != null ? xml : "XML okunamadi!");
@@ -111,18 +120,12 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 			try {
 				// now get the request xml
 				if (PdksUtil.hasStringValue(soapAction)) {
+					xml = PdksUtil.getXMLConvert(xml);
 					int index = soapAction.indexOf(":");
 					if (index > 0)
 						soapAction = soapAction.substring(index + 1);
-					if (ins == null)
-						ins = inMessage.getContent(InputStream.class);
-					if (xml == null)
-						xml = PdksUtil.StringToByInputStream(ins);
 					String ekKey = "";
-					if (xml != null)
-						xml = PdksUtil.getUTF8String(xml);
-					String orjinalXML = new String(xml);
-					message.put("requestOrjinalXML", orjinalXML);
+
 					// if (xml != null)
 					// xml = PdksUtil.getXMLConvert(xml);
 					if (soapAction.length() > 1)

@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -228,30 +229,57 @@ public class PdksUtil implements Serializable {
 	public static String getUTF8String1(String xml) {
 		String data = xml;
 		if (data != null) {
-			if (data.indexOf("&#304;") >= 0)
-				data = replaceAll(data, "&#304;", "İ");
-			if (data.indexOf("&#305;") >= 0)
-				data = replaceAll(data, "&#305;", "ı");
-			if (data.indexOf("&#214;") >= 0)
-				data = replaceAll(data, "&#214;", "Ö");
-			if (data.indexOf("&#246;") >= 0)
-				data = replaceAll(data, "&#246;", "ö");
-			if (data.indexOf("&#220;") >= 0)
-				data = replaceAll(data, "&#220;", "Ü");
-			if (data.indexOf("&#252;") >= 0)
-				data = replaceAll(data, "&#252;", "ü");
-			if (data.indexOf("&#199;") >= 0)
-				data = replaceAll(data, "&#199;", "Ç");
-			if (data.indexOf("&#231;") >= 0)
-				data = replaceAll(data, "&#231;", "ç");
-			if (data.indexOf("&#286;") >= 0)
-				data = replaceAll(data, "&#286;", "Ğ");
-			if (data.indexOf("&#287;") >= 0)
-				data = replaceAll(data, "&#287;", "ğ");
-			if (data.indexOf("&#350;") >= 0)
-				data = replaceAll(data, "&#350;", "Ş");
-			if (data.indexOf("&#351;") >= 0)
-				data = replaceAll(data, "&#351;", "ş");
+			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+			map.put("&#304;", "İ");
+			map.put("&#305;", "ı");
+			map.put("&#214;", "Ö");
+			map.put("&#246;", "ö");
+			map.put("&#220;", "Ü");
+			map.put("&#252;", "ü");
+			map.put("&#199;", "Ç");
+			map.put("&#231;", "ç");
+			map.put("&#286;", "Ğ");
+			map.put("&#287;", "ğ");
+			map.put("&#350;", "Ş");
+			map.put("&#351;", "ş");
+			for (String pattern : map.keySet()) {
+				if (data.indexOf(pattern) >= 0) {
+					String replace = map.get(pattern);
+					data = replaceAll(data, pattern, replace);
+				}
+			}
+			map = null;
+		}
+		return data;
+	}
+
+	/**
+	 * @param xml
+	 * @return
+	 */
+	public static String getUnicodeString(String xml) {
+		String data = xml;
+		if (data != null) {
+			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+			map.put("\u015E", "Ş");
+			map.put("\u015F", "ş");
+			map.put("\u011E", "Ğ");
+			map.put("\u011F", "ğ");
+			map.put("\u00D6", "Ö");
+			map.put("\u00F6", "ö");
+			map.put("\u00DC", "Ü");
+			map.put("\u00FC", "ü");
+			map.put("\u00C7", "Ç");
+			map.put("\u00E7", "ç");
+			map.put("\u0130", "İ");
+			map.put("\u0131", "ı");
+			for (String pattern : map.keySet()) {
+				if (data.indexOf(pattern) >= 0) {
+					String replace = map.get(pattern);
+					data = replaceAll(data, pattern, replace);
+				}
+			}
+			map = null;
 
 		}
 		return data;
@@ -261,64 +289,27 @@ public class PdksUtil implements Serializable {
 	 * @param xml
 	 * @return
 	 */
-	public static String getUTF8String2(String xml) {
+	public static String getUnicodeHexString(String xml) {
 		String data = xml;
 		if (data != null) {
-			if (data.indexOf("\u015E") >= 0)
-				data = replaceAll(data, "\u015E", "Ş");
-			if (data.indexOf("\u015F") >= 0)
-				data = replaceAll(data, "\u015F", "ş");
-			if (data.indexOf("\u011E") >= 0)
-				data = replaceAll(data, "\u011E", "Ğ");
-			if (data.indexOf("\u011F") >= 0)
-				data = replaceAll(data, "\u011F", "ğ");
-			if (data.indexOf("\u00D6") >= 0)
-				data = replaceAll(data, "\u00D6", "Ö");
-			if (data.indexOf("\u00F6") >= 0)
-				data = replaceAll(data, "\u00F6", "ö");
-			if (data.indexOf("\u00DC") >= 0)
-				data = replaceAll(data, "\u00DC", "Ü");
-			if (data.indexOf("\u00FC") >= 0)
-				data = replaceAll(data, "\u00FC", "ü");
-			if (data.indexOf("\u00C7") >= 0)
-				data = replaceAll(data, "\u00C7", "Ç");
-			if (data.indexOf("\u00E7") >= 0)
-				data = replaceAll(data, "\u00E7", "ç");
-			if (data.indexOf("\u0130") >= 0)
-				data = replaceAll(data, "\u0130", "İ");
-			if (data.indexOf("\u0131") >= 0)
-				data = replaceAll(data, "\u0131", "ı");
-		}
-		return data;
-	}
-
-	/**
-	 * @param xml
-	 * @return
-	 */
-	public static String getUTF8String3(String xml) {
-		String data = xml;
-		if (data != null) {
-			if (data.indexOf("&#x11E;") >= 0)
-				data = replaceAll(data, "&#x11E;", "Ğ");
-			if (data.indexOf("&#x11F;") >= 0)
-				data = replaceAll(data, "&#x11F;", "ğ");
-			if (data.indexOf("&#x130;") >= 0)
-				data = replaceAll(data, "&#x130;", "İ");
-			if (data.indexOf("&#x131;") >= 0)
-				data = replaceAll(data, "&#x131;", "ı");
-			if (data.indexOf("&#x15E;") >= 0)
-				data = replaceAll(data, "&#x15E;", "Ş");
-			if (data.indexOf("&#x15F;") >= 0)
-				data = replaceAll(data, "&#x15F;", "ş");
-			if (data.indexOf("&#xDC;") >= 0)
-				data = replaceAll(data, "&#xDC;", "Ü");
-			if (data.indexOf("&#xFC;") >= 0)
-				data = replaceAll(data, "&#xFC;", "ü");
-			if (data.indexOf("&#xD6;") >= 0)
-				data = replaceAll(data, "&#xD6;", "Ö");
-			if (data.indexOf("&#xF6;") >= 0)
-				data = replaceAll(data, "&#xF6;", "ö");
+			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+			map.put("&#x11E;", "Ğ");
+			map.put("&#x11F;", "ğ");
+			map.put("&#x130;", "İ");
+			map.put("&#x131;", "ı");
+			map.put("&#x15E;", "Ş");
+			map.put("&#x15F;", "ş");
+			map.put("&#xDC;", "Ü");
+			map.put("&#xFC;", "ü");
+			map.put("&#xD6;", "Ö");
+			map.put("&#xF6;", "ö");
+			for (String pattern : map.keySet()) {
+				if (data.indexOf(pattern) >= 0) {
+					String replace = map.get(pattern);
+					data = replaceAll(data, pattern, replace);
+				}
+			}
+			map = null;
 		}
 		return data;
 	}
@@ -331,8 +322,8 @@ public class PdksUtil implements Serializable {
 		String data = xml;
 		if (data != null) {
 			data = getUTF8String1(data);
-			data = getUTF8String2(data);
-			data = getUTF8String3(data);
+			data = getUnicodeString(data);
+			data = getUnicodeHexString(data);
 		}
 		return data;
 
@@ -1451,12 +1442,24 @@ public class PdksUtil implements Serializable {
 		return matches;
 	}
 
+	/**
+	 * @param str
+	 * @param pattern
+	 * @param replace
+	 * @return
+	 */
 	public static String replaceAll(String str, String pattern, String replace) {
 		if (str != null && pattern != null && replace != null)
 			str = str.replaceAll(pattern, replace);
 		return str;
 	}
 
+	/**
+	 * @param str
+	 * @param pattern
+	 * @param replace
+	 * @return
+	 */
 	public static String replaceAllManuel(String str, String pattern, String replace) {
 
 		if ((str != null) && (pattern != null) && (pattern.length() > 0) && (replace != null)) {
