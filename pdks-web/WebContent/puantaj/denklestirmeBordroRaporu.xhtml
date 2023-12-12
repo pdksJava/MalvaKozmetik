@@ -335,6 +335,16 @@
 										rendered="#{puantaj.denklestirmeBordro.ucretsizIzin!=0}" />
 
 								</rich:column>
+								<rich:column style="text-align: right;"
+									rendered="#{denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_YILLIK_IZIN)}">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_YILLIK_IZIN)}" />
+									</f:facet>
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.yillikIzin)}"
+										rendered="#{puantaj.denklestirmeBordro.yillikIzin!=0}" />
+
+								</rich:column>
+
 								<rich:column style="text-align: right;">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_UCRETI_ODENEN_MESAI)}" />
