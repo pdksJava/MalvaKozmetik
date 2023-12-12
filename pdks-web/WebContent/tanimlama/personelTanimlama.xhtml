@@ -1020,10 +1020,10 @@
 													<a4j:support event="onclick" />
 												</h:selectBooleanCheckbox>
 											</s:decorate>
-											<s:decorate template="/layout/edit.xhtml"
-												rendered="#{pdksPersonelHome.instance.sirket.departman.admin==false  and ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
+											<s:decorate template="/layout/edit.xhtml" rendered="#{ortakIslemler.getParameterKeyHasStringValue('bakiyeIzinGoster')}">
 												<ui:define name="label">Önceki Yıllardan Devir İzin</ui:define>
-												<h:inputText value="#{pdksPersonelHome.bakiyeIzinSuresi}" />
+												<h:inputText value="#{pdksPersonelHome.bakiyeIzinSuresi}"
+													disabled="#{authenticatedUser.IK and ortakIslemler.getParameterKey('bakiyeIzinGoster')!='1'}" />
 											</s:decorate>
 										</c:if>
 										<c:forEach items="#{pdksPersonelHome.dinamikPersonelDurumList}" var="dpa">
