@@ -929,7 +929,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 								KapiView terminalKapi = terminalKapiManuelUpdate(terminalGirisCikisMap.get(kgsHareket.getKapiView().getId()).getTerminal());
 								kgsHareket.setTerminalKapi(terminalKapi);
 							} else
-								logger.error(kgsHareket.getKapiView().getKapi().getAciklama() + " " + kgsHareket.getId());
+								logger.debug(kgsHareket.getKapiView().getKapi().getAciklama() + " " + kgsHareket.getId());
 						}
 						hareketMap.put(kgsHareket.getId(), kgsHareket.getId());
 						HareketKGS hareket = (HareketKGS) kgsHareket.clone();
