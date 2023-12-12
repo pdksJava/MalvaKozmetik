@@ -977,7 +977,7 @@
 															#{authenticatedUser.getTarihFormatla(vardiyaGun.vardiyaDate, 'd MMMMM yyyy')}<br /> #{vardiyaGun.vardiyaAdi}
 														</H2> <ui:fragment rendered="#{vardiyaGun.islemVardiya!=null}">
 															<c:if test="#{authenticatedUser.admin}">
-																<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGun)}"></s:formattedText>
+																<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGun,authenticatedUser)}"></s:formattedText>
 															</c:if>
 														</ui:fragment> </SPAN>
 												</rich:toolTip>
@@ -999,7 +999,7 @@
 						header="#{authenticatedUser.getTarihFormatla(vardiyaGunHome.seciliVardiyaGun.vardiyaDate, 'd MMMMM yyyy')} ( #{vardiyaGunHome.seciliVardiyaGun.vardiyaAdi} )">
 
 						<ui:fragment rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.fazlaMesaiTalep!=null}">
-							<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGunHome.seciliVardiyaGun)}"></s:formattedText>
+							<s:formattedText value="#{fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGunHome.seciliVardiyaGun,authenticatedUser)}"></s:formattedText>
 
 							<h:panelGrid columns="1">
 								<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.fazlaMesaiTalep.guncelleyenUser!=null}">
