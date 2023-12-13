@@ -66,7 +66,7 @@ public class Zamanlayici implements Serializable {
 
 	public void scheduleFazlaMesaiGuncellemeTimer() {
 		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
-		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 3-21 ? * *");
+		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 3-23 ? * *");
 	}
 
 	public void scheduleSertifikaSSLKontrolTimer() {
