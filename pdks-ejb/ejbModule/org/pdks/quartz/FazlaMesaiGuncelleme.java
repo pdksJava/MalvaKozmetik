@@ -91,7 +91,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			logger.debug("fazlaMesaiGuncelleme in " + new Date());
 			Session session = null;
 			try {
-				if (PdksUtil.isSistemDestekVar() && zamanlayici.isPazar() == false) {
+				if (PdksUtil.isSistemDestekVar() && PdksUtil.getCanliSunucuDurum() && zamanlayici.isPazar() == false) {
 					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 					if (session != null)
 						fazlaMesaiGuncellemeBasla(false, session);
@@ -361,7 +361,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				HashMap<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("personelDenklestirmeList", new ArrayList(personelDenklestirmeList));
 				dataMap.put("loginUser", loginUser);
- 				dataMap.putAll(veriMap);
+				dataMap.putAll(veriMap);
 				try {
 					baos = fazlaMesaiOrtakIslemler.denklestirmeExcelAktarDevam(dataMap, session);
 				} catch (Exception e) {
