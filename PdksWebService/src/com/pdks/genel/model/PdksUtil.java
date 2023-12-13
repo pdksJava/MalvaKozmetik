@@ -306,9 +306,10 @@ public class PdksUtil implements Serializable {
 	public static String getUTF8String(String xml) {
 		String data = xml;
 		if (data != null) {
-			data = getStringReplaceMap(data, getUTF8Map());
-			data = getStringReplaceMap(data, getUnicodeMap());
-			data = getStringReplaceMap(data, getUnicodeHexMap());
+			LinkedHashMap<String, String> map = getUTF8Map();
+			map.putAll(getUnicodeMap());
+			map.putAll(getUnicodeHexMap());
+			data = getStringReplaceMap(data, map);
 		}
 		return data;
 
