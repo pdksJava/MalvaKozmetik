@@ -433,7 +433,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 		try {
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			manuelVardiyaIzinGir = ortakIslemler.isVardiyaIzinGir(session, authenticatedUser.getDepartman());
+			manuelVardiyaIzinGir = ortakIslemler.getVardiyaIzinGir(session, authenticatedUser.getDepartman());
 			List<Vardiya> vardiyalar = pdksEntityController.getObjectByInnerObjectList(parametreMap, Vardiya.class);
 			yemekList = ortakIslemler.getYemekList(new Date(), null, session);
 			HashMap<Long, Vardiya> vardiyaMap = new HashMap<Long, Vardiya>();

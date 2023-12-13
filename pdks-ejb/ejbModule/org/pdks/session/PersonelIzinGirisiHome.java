@@ -2063,7 +2063,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				izinOnaylandi = Boolean.FALSE;
 			}
 			setMailIzin(personelIzin);
-			if (ortakIslemler.isGenelMudur(null, personelIzin.getIzinSahibi(), session)) {
+			if (ortakIslemler.getGenelMudur(null, personelIzin.getIzinSahibi(), session)) {
 				userList = null;
 				izinOnaylandi = Boolean.FALSE;
 				listeOlustur = Boolean.TRUE;
@@ -3521,9 +3521,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 			}
 			boolean isGenelMudur = Boolean.FALSE;
-			boolean isProjeMuduru = ortakIslemler.isProjeMuduru(null, personelIzin.getIzinSahibi(), session);
+			boolean isProjeMuduru = ortakIslemler.getProjeMuduru(null, personelIzin.getIzinSahibi(), session);
 			if (!isProjeMuduru)
-				isGenelMudur = ortakIslemler.isGenelMudur(null, personelIzin.getIzinSahibi(), session);
+				isGenelMudur = ortakIslemler.getGenelMudur(null, personelIzin.getIzinSahibi(), session);
 			if (!(isProjeMuduru || isGenelMudur)) {
 				if (personelIzin.getId() == null) {
 					Personel yonetici = personelIzin.getIzinSahibi().getPdksYonetici();
@@ -3627,9 +3627,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			// Onaylanmis gibi kaydedilir, mail gitmez
 
 			boolean isGenelMudur = Boolean.FALSE;
-			boolean isProjeMuduru = ortakIslemler.isProjeMuduru(null, personelIzin.getIzinSahibi(), session);
+			boolean isProjeMuduru = ortakIslemler.getProjeMuduru(null, personelIzin.getIzinSahibi(), session);
 			if (!isProjeMuduru)
-				isGenelMudur = ortakIslemler.isGenelMudur(null, personelIzin.getIzinSahibi(), session);
+				isGenelMudur = ortakIslemler.getGenelMudur(null, personelIzin.getIzinSahibi(), session);
 			if (isGenelMudur || isProjeMuduru)
 				personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_IK_ONAYINDA);
 

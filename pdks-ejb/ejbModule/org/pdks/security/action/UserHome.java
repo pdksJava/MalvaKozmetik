@@ -338,7 +338,7 @@ public class UserHome extends EntityHome<User> implements Serializable {
 				String fazlaMesaiTalepDurum = ortakIslemler.getParameterKey("fazlaMesaiTalepDurum");
 				sonuc = fazlaMesaiTalepDurum.equals("1");
 			}
-			if (sonuc && ortakIslemler.isSistemDestekVar() && authenticatedUser.isAdmin() == false && authenticatedUser.isSistemYoneticisi() == false) {
+			if (sonuc && ortakIslemler.getSistemDestekVar() && authenticatedUser.isAdmin() == false && authenticatedUser.isSistemYoneticisi() == false) {
 				if (target.equals("vardiyaTanimlama") || target.equals("vardiyaSablonTanimlama") || target.equals("calismaModeliTanimlama") || target.equals("kapiTanimlama"))
 					sonuc = false;
 			}

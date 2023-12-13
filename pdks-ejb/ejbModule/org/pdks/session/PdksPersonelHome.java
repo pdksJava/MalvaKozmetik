@@ -3219,7 +3219,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	}
 
 	public void fillDistinctTesisList() {
-		List<Tanim> allTesis = ortakIslemler.isTesisDurumu() ? ortakIslemler.getTanimList(Tanim.TIPI_TESIS, session) : new ArrayList<Tanim>();
+		List<Tanim> allTesis = ortakIslemler.getTesisDurumu() ? ortakIslemler.getTanimList(Tanim.TIPI_TESIS, session) : new ArrayList<Tanim>();
 		Personel seciliPersonel = getInstance();
 		if (seciliPersonel != null) {
 			User seciiliKullanici = seciliPersonel.getKullanici();

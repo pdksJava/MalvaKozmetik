@@ -129,7 +129,7 @@ public class IseGelmemeUyari implements Serializable {
 		HashMap sonucMap = ortakIslemler.fillEkSahaTanim(sessionx, Boolean.FALSE, Boolean.FALSE);
 		setEkSahaListMap((HashMap<String, List<Tanim>>) sonucMap.get("ekSahaList"));
 		setEkSahaTanimMap((TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap"));
-		if (ortakIslemler.isTesisDurumu())
+		if (ortakIslemler.getTesisDurumu())
 			tesisAciklama = ortakIslemler.tesisAciklama();
 		bolumAciklama = (String) sonucMap.get("bolumAciklama");
 		altBolumAciklama = (String) sonucMap.get("altBolumAciklama");
