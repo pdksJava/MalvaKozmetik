@@ -223,94 +223,79 @@ public class PdksUtil implements Serializable {
 	}
 
 	/**
-	 * @param xml
 	 * @return
 	 */
-	public static String getUTF8String1(String xml) {
-		String data = xml;
-		if (data != null) {
-			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-			map.put("&#304;", "İ");
-			map.put("&#305;", "ı");
-			map.put("&#214;", "Ö");
-			map.put("&#246;", "ö");
-			map.put("&#220;", "Ü");
-			map.put("&#252;", "ü");
-			map.put("&#199;", "Ç");
-			map.put("&#231;", "ç");
-			map.put("&#286;", "Ğ");
-			map.put("&#287;", "ğ");
-			map.put("&#350;", "Ş");
-			map.put("&#351;", "ş");
-			for (String pattern : map.keySet()) {
-				if (data.indexOf(pattern) >= 0) {
-					String replace = map.get(pattern);
-					data = replaceAll(data, pattern, replace);
-				}
-			}
-			map = null;
-		}
-		return data;
+	public static LinkedHashMap<String, String> getUTF8Map() {
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		map.put("&#304;", "İ");
+		map.put("&#305;", "ı");
+		map.put("&#214;", "Ö");
+		map.put("&#246;", "ö");
+		map.put("&#220;", "Ü");
+		map.put("&#252;", "ü");
+		map.put("&#199;", "Ç");
+		map.put("&#231;", "ç");
+		map.put("&#286;", "Ğ");
+		map.put("&#287;", "ğ");
+		map.put("&#350;", "Ş");
+		map.put("&#351;", "ş");
+		return map;
+	}
+
+	/**
+	 * @return
+	 */
+	public static LinkedHashMap<String, String> getUnicodeMap() {
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		map.put("\u015E", "Ş");
+		map.put("\u015F", "ş");
+		map.put("\u011E", "Ğ");
+		map.put("\u011F", "ğ");
+		map.put("\u00D6", "Ö");
+		map.put("\u00F6", "ö");
+		map.put("\u00DC", "Ü");
+		map.put("\u00FC", "ü");
+		map.put("\u00C7", "Ç");
+		map.put("\u00E7", "ç");
+		map.put("\u0130", "İ");
+		map.put("\u0131", "ı");
+		return map;
+	}
+
+	/**
+	 * @return
+	 */
+	public static LinkedHashMap<String, String> getUnicodeHexMap() {
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
+		map.put("&#x11E;", "Ğ");
+		map.put("&#x11F;", "ğ");
+		map.put("&#x130;", "İ");
+		map.put("&#x131;", "ı");
+		map.put("&#x15E;", "Ş");
+		map.put("&#x15F;", "ş");
+		map.put("&#xDC;", "Ü");
+		map.put("&#xFC;", "ü");
+		map.put("&#xD6;", "Ö");
+		map.put("&#xF6;", "ö");
+		return map;
 	}
 
 	/**
 	 * @param xml
+	 * @param map
 	 * @return
 	 */
-	public static String getUnicodeString(String xml) {
+	public static String getStringReplaceMap(String xml, LinkedHashMap<String, String> map) {
 		String data = xml;
-		if (data != null) {
-			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-			map.put("\u015E", "Ş");
-			map.put("\u015F", "ş");
-			map.put("\u011E", "Ğ");
-			map.put("\u011F", "ğ");
-			map.put("\u00D6", "Ö");
-			map.put("\u00F6", "ö");
-			map.put("\u00DC", "Ü");
-			map.put("\u00FC", "ü");
-			map.put("\u00C7", "Ç");
-			map.put("\u00E7", "ç");
-			map.put("\u0130", "İ");
-			map.put("\u0131", "ı");
+		if (data != null && map != null) {
 			for (String pattern : map.keySet()) {
 				if (data.indexOf(pattern) >= 0) {
 					String replace = map.get(pattern);
 					data = replaceAll(data, pattern, replace);
 				}
 			}
-			map = null;
-
 		}
-		return data;
-	}
-
-	/**
-	 * @param xml
-	 * @return
-	 */
-	public static String getUnicodeHexString(String xml) {
-		String data = xml;
-		if (data != null) {
-			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-			map.put("&#x11E;", "Ğ");
-			map.put("&#x11F;", "ğ");
-			map.put("&#x130;", "İ");
-			map.put("&#x131;", "ı");
-			map.put("&#x15E;", "Ş");
-			map.put("&#x15F;", "ş");
-			map.put("&#xDC;", "Ü");
-			map.put("&#xFC;", "ü");
-			map.put("&#xD6;", "Ö");
-			map.put("&#xF6;", "ö");
-			for (String pattern : map.keySet()) {
-				if (data.indexOf(pattern) >= 0) {
-					String replace = map.get(pattern);
-					data = replaceAll(data, pattern, replace);
-				}
-			}
-			map = null;
-		}
+		map = null;
 		return data;
 	}
 
@@ -321,9 +306,9 @@ public class PdksUtil implements Serializable {
 	public static String getUTF8String(String xml) {
 		String data = xml;
 		if (data != null) {
-			data = getUTF8String1(data);
-			data = getUnicodeString(data);
-			data = getUnicodeHexString(data);
+			data = getStringReplaceMap(data, getUTF8Map());
+			data = getStringReplaceMap(data, getUnicodeMap());
+			data = getStringReplaceMap(data, getUnicodeHexMap());
 		}
 		return data;
 
