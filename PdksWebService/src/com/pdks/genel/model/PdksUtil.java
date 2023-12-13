@@ -295,7 +295,6 @@ public class PdksUtil implements Serializable {
 				}
 			}
 		}
-		map = null;
 		return data;
 	}
 
@@ -306,10 +305,13 @@ public class PdksUtil implements Serializable {
 	public static String getUTF8String(String xml) {
 		String data = xml;
 		if (data != null) {
-			LinkedHashMap<String, String> map = getUTF8Map();
-			map.putAll(getUnicodeMap());
-			map.putAll(getUnicodeHexMap());
-			data = getStringReplaceMap(data, map);
+			LinkedHashMap<String, String> map1 = getUTF8Map(), map2 = getUnicodeMap(), map3 = getUnicodeHexMap();
+			map1.putAll(map2);
+			map1.putAll(map3);
+			data = getStringReplaceMap(data, map1);
+			map1 = null;
+			map2 = null;
+			map3 = null;
 		}
 		return data;
 
