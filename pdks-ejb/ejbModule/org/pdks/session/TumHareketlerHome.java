@@ -610,8 +610,12 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			String dosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
 			try {
 				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi olusturuluyor."));
-				if (!PdksUtil.getTestDurum()) {
-					zipVeri = textZipDosyaOlustur(dosyaAdi + ".txt");
+				if (authenticatedUser.isIK() && !PdksUtil.getTestDurum()) {
+					if (hareketList.size() > 10000) {
+						ByteArrayOutputStream baos = excelDevam();
+						if (baos != null)
+							zipVeri = PdksUtil.getFileZip(dosyaAdi + ".xlsx", baos.toByteArray());
+					}
 					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi mail gonderiliyor."));
 					if (zipVeri != null) {
 						// ortakIslemler.mailGonder(renderer, "/email/hareketMail.xhtml");
@@ -647,7 +651,6 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 	}
 
 	public String textDosyaAktar() {
-
 		String dosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
 		try {
 			if (zipVeri == null) {
