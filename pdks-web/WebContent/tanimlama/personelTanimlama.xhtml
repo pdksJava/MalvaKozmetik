@@ -441,7 +441,7 @@
 					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
 				</a4j:outputPanel>
 				<a4j:outputPanel id="dosyaPanel">
-					<rich:panel header="Dosya Ekleme" rendered="#{authenticatedUser.admin }">
+					<rich:panel header="Dosya Ekleme">
 						<h:panelGrid columns="2" style="width:700px;">
 							<rich:fileUpload id="fileUpload" fileUploadListener="#{pdksPersonelHome.listenerPersonelDosya}" listHeight="50px" listWidth="300px"
 								sizeErrorLabel="Dosya boyutu büyük" maxFilesQuantity="1" immediateUpload="true" acceptedTypes="xls,xlsx"
