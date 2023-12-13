@@ -40,7 +40,6 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 		boolean requestXMLDurum = false;
 		try {
 			Exchange exchange = message.getExchange();
-
 			if (exchange != null) {
 				Message inMessage = exchange.getInMessage();
 				if (inMessage != null) {
@@ -50,7 +49,6 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 					if (inMessage.containsKey("soapAction"))
 						soapAction = (String) inMessage.get("soapAction");
 				}
-
 				if (soapAction == null) {
 					Message outMessage = exchange.getOutMessage();
 					MessageInfo mo = (MessageInfo) outMessage.get(MessageInfo.class);
@@ -59,9 +57,7 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 						if (operationInfo != null)
 							soapAction = operationInfo.getName().getLocalPart();
 					}
-
 				}
-
 			}
 
 		} catch (Exception e) {
@@ -121,11 +117,9 @@ public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 								action = PdksUtil.setTurkishStr(action.substring(0, 1)).toUpperCase(Locale.ENGLISH) + action.substring(1);
 							Date bugun = new Date();
 							action = "service" + action + "_" + PdksUtil.convertToDateString(bugun, "yyyy-MM-") + bugun.getTime();
-
 						}
 						try {
 							xml = PdksUtil.formatXML(xml);
-							// xml = xml.indexOf("&amp;") > 0 ? PdksUtil.replaceAllManuel(xml, "&amp;", "&") : xml;
 							PdksUtil.fileWrite(xml, action);
 						} catch (Exception eg) {
 							logger.error(eg);

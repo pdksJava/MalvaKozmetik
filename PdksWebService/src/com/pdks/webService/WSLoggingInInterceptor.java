@@ -137,18 +137,6 @@ public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 					if (soapAction.equalsIgnoreCase("saveIzinHakedisler") || soapAction.equalsIgnoreCase("getMesaiPDKS") || soapAction.equalsIgnoreCase("SavePersoneller") || soapAction.equalsIgnoreCase("SaveIzinler"))
 						ekKey = getParseKey(xml, soapAction);
 					String xmlStr = xml;
-					// LinkedHashMap<String, String> map = getChangeMap();
-					// for (String key : map.keySet()) {
-					// String newKey = map.get(key);
-					// if (xmlStr.indexOf(key) > 0)
-					// xmlStr = PdksUtil.replaceAll(xmlStr, key, newKey);
-					// if (xmlStr.indexOf(newKey) > 0)
-					// xml = PdksUtil.replaceAll(xmlStr, newKey, key);
-					// }
-					// if (xmlStr.indexOf("&") > 0)
-					// xmlStr = PdksUtil.replaceAll(xmlStr, "&", "&amp;");
-					// if (xmlStr.indexOf("&amp;amp;") > 0)
-					// xmlStr = PdksUtil.replaceAllManuel(xmlStr, "&amp;amp;", "&amp;");
 					InputStream oss = PdksUtil.getInputStreamByString(xmlStr);
 					message.setContent(InputStream.class, oss);
 					StringBuffer sb = new StringBuffer();
