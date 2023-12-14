@@ -208,8 +208,9 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						fazlaMesaiHesaplaHome.setDenklestirmeAy(denklestirmeAy);
 						fazlaMesaiHesaplaHome.setYil(denklestirmeAy.getYil());
 						fazlaMesaiHesaplaHome.setAy(denklestirmeAy.getAy());
-						for (SelectItem selectItem : depList) {
-							Long departmanId = (Long) selectItem.getValue();
+						for (SelectItem selectItemDepartman : depList) {
+							Long departmanId = (Long) selectItemDepartman.getValue();
+
 							fazlaMesaiHesaplaHome.setDepartmanId(departmanId);
 							List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, aylikPuantaj, denklestirme, session);
 							for (SelectItem selectItem2 : sirketList) {
@@ -228,6 +229,8 @@ public class FazlaMesaiGuncelleme implements Serializable {
 											continue;
 									}
 									veriMap.clear();
+									if (depList.size() > 1)
+										veriMap.put("departmanAdi", selectItemDepartman.getLabel());
 									veriMap.put("sirket", sirket);
 									if (manuel)
 										veriMap.put("manuel", manuel);
@@ -308,6 +311,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	private void bolumFazlaMesai(HashMap<String, Object> veriMap, Session session) {
 		boolean manuelDurum = veriMap.containsKey("manuel") ? (Boolean) veriMap.get("manuel") : false;
 		boolean denklestirme = veriMap.containsKey("denklestirme") ? (Boolean) veriMap.get("denklestirme") : false;
+		String departmanOnEk = veriMap.containsKey("departmanAdi") ? (String) veriMap.get("departmanAdi") + "/" : "";
 		Long tesisId = veriMap.containsKey("tesisId") ? (Long) veriMap.get("tesisId") : null;
 		Sirket sirket = veriMap.containsKey("sirket") ? (Sirket) veriMap.get("sirket") : null;
 		List<SelectItem> bolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : "", aylikPuantaj, denklestirme, session);
@@ -372,7 +376,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				if (baos != null) {
 					try {
 						List<Dosya> dosyalar = veriMap.containsKey("dosyalar") ? (List<Dosya>) veriMap.get("dosyalar") : new ArrayList<Dosya>();
-						String dosyaAdi = dm.getAyAdi() + " " + dm.getYil() + "/" + sirket.getAd() + (tesis != null ? "_" + tesis.getAciklama() : "") + ".xlsx";
+						String dosyaAdi = dm.getAyAdi() + " " + dm.getYil() + "/" + departmanOnEk + (tesis != null ? sirket.getAd() + "/" : "") + sirket.getAd() + (tesis != null ? "_" + tesis.getAciklama() : "") + ".xlsx";
 						Dosya dosyaExcel = new Dosya();
 						dosyaExcel.setDosyaAdi(dosyaAdi);
 						dosyaExcel.setDosyaIcerik(baos.toByteArray());
