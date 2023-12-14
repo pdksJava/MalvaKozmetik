@@ -2436,7 +2436,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			modelGoster = sanalDurum.size() > 1;
 		}
 		if (adminRole || denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle)) {
-			bordroVeriOlusturBasla(puantajList);
+			bordroVeriOlusturBasla(puantajList, loginUser);
 		}
 		saatlikCalismaGoster = false;
 		izinBordoroGoster = false;
@@ -2477,14 +2477,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	/**
 	 * @param puantajList
 	 */
-	private void bordroVeriOlusturBasla(List<AylikPuantaj> puantajList) {
+	private void bordroVeriOlusturBasla(List<AylikPuantaj> puantajList, User loginUser) {
 		baslikMap.clear();
 		if (sirket != null && ortakIslemler.getParameterKeyHasStringValue("bordroVeriOlustur")) {
 			try {
 				String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 				int donem = yil * 100 + ay;
 				if (donem >= Integer.parseInt(str))
-					baslikMap = fazlaMesaiOrtakIslemler.bordroVeriOlustur(denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle), puantajList, true, String.valueOf(donem), session);
+					baslikMap = fazlaMesaiOrtakIslemler.bordroVeriOlustur(denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle), puantajList, true, String.valueOf(donem), loginUser, session);
 
 			} catch (Exception e) {
 				logger.error(e);

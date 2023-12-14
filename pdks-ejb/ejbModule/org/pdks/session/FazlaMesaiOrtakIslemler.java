@@ -707,11 +707,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param puantajList
 	 * @param fazlaMesaiHesapla
 	 * @param donemStr
+	 * @param loginUser
 	 * @param session
 	 * @return
 	 */
 	@Transactional
-	public TreeMap<String, Boolean> bordroVeriOlustur(boolean kaydet, List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, Session session) {
+	public TreeMap<String, Boolean> bordroVeriOlustur(boolean kaydet, List<AylikPuantaj> puantajList, Boolean fazlaMesaiHesapla, String donemStr, User loginUser, Session session) {
 		TreeMap<String, Boolean> baslikMap = new TreeMap<String, Boolean>();
 		String arifeGunuBordroYarim = ortakIslemler.getParameterKey("arifeGunuBordroYarim");
 		boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
@@ -1023,7 +1024,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								}
 							}
 							if (calismaModeli.isFazlaMesaiVarMi()) {
-								if (ap.getGecenAyFazlaMesai(authenticatedUser) != 0)
+								if (ap.getGecenAyFazlaMesai(loginUser) != 0)
 									baslikMap.put(ortakIslemler.devredenMesaiKod(), Boolean.TRUE);
 								if (ap.getFazlaMesaiSure() > 0)
 									baslikMap.put(ortakIslemler.ucretiOdenenKod(), Boolean.TRUE);
@@ -1281,6 +1282,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	public List<String> getFazlaMesaiUyari(int yil, int ay, Long bolumId, List<AylikPuantaj> puantajList, Session session) {
 		List<String> list = new ArrayList<String>();
 		try {
+			User loginUser = authenticatedUser != null ? authenticatedUser : ortakIslemler.getSistemAdminUser(session);
 			String maxToplamMesaiStr = ortakIslemler.getParameterKey("maxToplamMesai");
 			if (PdksUtil.hasStringValue(maxToplamMesaiStr)) {
 				Double maxToplamMesai = null;
@@ -1316,7 +1318,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							double mesai = maxToplamMesaiMap.get(ap.getPdksPersonel().getId());
 							if (mesai >= maxToplamMesai) {
 								Personel personel = ap.getPdksPersonel();
-								String str = (puantajList.size() > 1 ? personel.getPdksSicilNo() + " " : "") + personel.getAdSoyad() + " toplam " + authenticatedUser.sayiFormatliGoster(mesai) + "  saat mesaisi oluşmuştur.";
+								String str = (puantajList.size() > 1 ? personel.getPdksSicilNo() + " " : "") + personel.getAdSoyad() + " toplam " + loginUser.sayiFormatliGoster(mesai) + "  saat mesaisi oluşmuştur.";
 								list.add(str);
 							}
 						}
@@ -1619,7 +1621,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiMudurSirketList(Long departmanId, AylikPuantaj aylikPuantaj, boolean denklestirme, boolean fazlaMesaiTalepDurum, Session session) {
-		List<Sirket> list = ortakIslemler.getFazlaMesaiMudurList(authenticatedUser, departmanId, null, null, null, aylikPuantaj, "S", denklestirme, fazlaMesaiTalepDurum, session);
+		User loginUser = aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : authenticatedUser;
+		List<Sirket> list = ortakIslemler.getFazlaMesaiMudurList(loginUser, departmanId, null, null, null, aylikPuantaj, "S", denklestirme, fazlaMesaiTalepDurum, session);
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (!list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAd", null);
@@ -1640,7 +1643,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiMudurTesisList(Sirket sirket, AylikPuantaj aylikPuantaj, boolean denklestirme, boolean fazlaMesaiTalepDurum, Session session) {
-		List<Tanim> list = ortakIslemler.getFazlaMesaiMudurList(authenticatedUser, null, sirket, null, null, aylikPuantaj, "T", denklestirme, fazlaMesaiTalepDurum, session);
+		User loginUser = aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : authenticatedUser;
+		List<Tanim> list = ortakIslemler.getFazlaMesaiMudurList(loginUser, null, sirket, null, null, aylikPuantaj, "T", denklestirme, fazlaMesaiTalepDurum, session);
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (!list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
@@ -1663,7 +1667,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiMudurBolumList(Sirket sirket, String tesisId, AylikPuantaj aylikPuantaj, boolean denklestirme, boolean fazlaMesaiTalepDurum, Session session) {
-		List<Tanim> list = ortakIslemler.getFazlaMesaiMudurList(authenticatedUser, null, sirket, tesisId, null, aylikPuantaj, "B", denklestirme, fazlaMesaiTalepDurum, session);
+		User loginUser = aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : authenticatedUser;
+		List<Tanim> list = ortakIslemler.getFazlaMesaiMudurList(loginUser, null, sirket, tesisId, null, aylikPuantaj, "B", denklestirme, fazlaMesaiTalepDurum, session);
 		List<SelectItem> selectList = new ArrayList<SelectItem>();
 		if (!list.isEmpty()) {
 			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
@@ -1686,7 +1691,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<Personel> getFazlaMesaiMudurPersonelList(Sirket sirket, String tesisId, Long bolumId, AylikPuantaj aylikPuantaj, boolean denklestirme, boolean fazlaMesaiTalepDurum, Session session) {
-		List<Personel> list = ortakIslemler.getFazlaMesaiMudurList(authenticatedUser, null, sirket, tesisId, bolumId, aylikPuantaj, "P", denklestirme, fazlaMesaiTalepDurum, session);
+		User loginUser = aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : authenticatedUser;
+		List<Personel> list = ortakIslemler.getFazlaMesaiMudurList(loginUser, null, sirket, tesisId, bolumId, aylikPuantaj, "P", denklestirme, fazlaMesaiTalepDurum, session);
 		if (!list.isEmpty())
 			list = PdksUtil.sortObjectStringAlanList(list, "getAdSoyad", null);
 
@@ -1995,6 +2001,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> bolumTesisMapDoldur(HashMap<String, Object> map, Session session) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : ortakIslemler.getSistemAdminUser(session);
 		HashMap fields = new HashMap();
 		List<SelectItem> gorevTipiList = null;
 		Date basTarih = (Date) map.get("basTarih");
@@ -2011,9 +2018,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		if (sirket != null) {
 			if (sirket.isTesisDurumu()) {
 				boolean tesisYetki = ortakIslemler.getParameterKey("tesisYetki").equals("1");
-				if (tesisYetki && authenticatedUser.getYetkiliTesisler() != null && !authenticatedUser.getYetkiliTesisler().isEmpty()) {
+				if (tesisYetki && loginUser.getYetkiliTesisler() != null && !loginUser.getYetkiliTesisler().isEmpty()) {
 					List<Long> idler = new ArrayList<Long>();
-					for (Iterator iterator = authenticatedUser.getYetkiliTesisler().iterator(); iterator.hasNext();) {
+					for (Iterator iterator = loginUser.getYetkiliTesisler().iterator(); iterator.hasNext();) {
 						Tanim tesis = (Tanim) iterator.next();
 						idler.add(tesis.getId());
 					}
@@ -2038,15 +2045,15 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		} else
 			fields.put("sirket.id=", 0L);
 
-		if (departmanId == null && authenticatedUser.isDirektorSuperVisor())
-			departmanId = authenticatedUser.getPdksPersonel().getEkSaha1().getId();
-		else if (authenticatedUser.isIK_Tesis() && authenticatedUser.getPdksPersonel().getTesis() != null)
-			fields.put("tesis.id=", authenticatedUser.getPdksPersonel().getTesis().getId());
+		if (departmanId == null && loginUser.isDirektorSuperVisor())
+			departmanId = loginUser.getPdksPersonel().getEkSaha1().getId();
+		else if (loginUser.isIK_Tesis() && loginUser.getPdksPersonel().getTesis() != null)
+			fields.put("tesis.id=", loginUser.getPdksPersonel().getTesis().getId());
 
 		if (departmanId != null)
 			fields.put("ekSaha1.id=", departmanId);
-		else if (authenticatedUser.isYonetici() && !(authenticatedUser.isIK() || authenticatedUser.isAdmin()))
-			fields.put("pdksSicilNo", ortakIslemler.getYetkiTumPersonelNoListesi(authenticatedUser));
+		else if (loginUser.isYonetici() && !(loginUser.isIK() || loginUser.isAdmin()))
+			fields.put("pdksSicilNo", ortakIslemler.getYetkiTumPersonelNoListesi(loginUser));
 		fields.put("iseBaslamaTarihi<=", bitTarih);
 		fields.put("sskCikisTarihi>=", basTarih);
 		if (pdksDepartman != null && pdksDepartman.isAdminMi() && denklestirme != null && denklestirme)
@@ -2100,7 +2107,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 			}
 		}
-		if (authenticatedUser.isYonetici() || authenticatedUser.isDirektorSuperVisor() || authenticatedUser.isAdmin() || authenticatedUser.isIK() || tanimlar.size() > 50) {
+		if (loginUser.isYonetici() || loginUser.isDirektorSuperVisor() || loginUser.isAdmin() || loginUser.isIK() || tanimlar.size() > 50) {
 			HashMap<Long, Tanim> tanimMap = new HashMap<Long, Tanim>();
 			for (Tanim tanim : tanimlar)
 				tanimMap.put(tanim.getId(), tanim);
@@ -2192,6 +2199,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<SelectItem> getBolumDepartmanSelectItems(Long departmanId, Long sirketId, Integer yil, Integer ay, Boolean fazlaMesai, Session session) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : ortakIslemler.getSistemAdminUser(session);
 		List<SelectItem> bolumDepartmanlari = null;
 		List<Tanim> bolumler = null;
 		HashMap fields = new HashMap();
@@ -2215,8 +2223,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				fields.put(PdksEntityController.MAP_KEY_SELECT, "ekSaha3");
 
 				fields.put("sirket.id=", sirketId);
-				if (authenticatedUser.isDirektorSuperVisor())
-					fields.put("ekSaha1.id=", authenticatedUser.getPdksPersonel().getEkSaha1().getId());
+				if (loginUser.isDirektorSuperVisor())
+					fields.put("ekSaha1.id=", loginUser.getPdksPersonel().getEkSaha1().getId());
 				if (bitTarih != null)
 					fields.put("iseBaslamaTarihi<=", bitTarih);
 				if (basTarih != null)
@@ -2288,10 +2296,11 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public Comment getCommentGuncelleyen(CreationHelper factory, Drawing drawing, ClientAnchor anchor, PersonelDenklestirme personelDenklestirme) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		Comment commentGuncelleyen;
 		commentGuncelleyen = drawing.createCellComment(anchor);
 		String title = "Onaylayan : " + personelDenklestirme.getGuncelleyenUser().getAdSoyad() + "\n";
-		title += "Zaman : " + authenticatedUser.dateTimeFormatla(personelDenklestirme.getGuncellemeTarihi());
+		title += "Zaman : " + loginUser.dateTimeFormatla(personelDenklestirme.getGuncellemeTarihi());
 		RichTextString str1 = factory.createRichTextString(title);
 		commentGuncelleyen.setString(str1);
 		return commentGuncelleyen;

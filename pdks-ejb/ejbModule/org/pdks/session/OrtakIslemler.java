@@ -917,6 +917,7 @@ public class OrtakIslemler implements Serializable {
 		ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Durum");
 		int rowHareket = 0, colHareket = 0;
 		boolean renk = true;
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		for (VardiyaGun calismaPlani : vardiyaGunList) {
 			Personel personel = calismaPlani.getPersonel();
 
@@ -985,7 +986,7 @@ public class OrtakIslemler implements Serializable {
 						if (tesisDurum)
 							ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, styleCenter).setCellValue(vardiya.isCalisma() ? authenticatedUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : vardiya.getAdi());
+						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, styleCenter).setCellValue(vardiya.isCalisma() ? loginUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : vardiya.getAdi());
 						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(kapiAciklama);
 						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, cellStyleDateTime).setCellValue(hareketKGS.getOrjinalZaman());
 						if (manuelGiris) {
@@ -1028,7 +1029,7 @@ public class OrtakIslemler implements Serializable {
 					if (tesisDurum)
 						ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 					ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-					ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, styleCenter).setCellValue(vardiya.isCalisma() ? authenticatedUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : vardiya.getAdi());
+					ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, styleCenter).setCellValue(vardiya.isCalisma() ? loginUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : vardiya.getAdi());
 					ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(sb.toString());
 					ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue("");
 					if (manuelGiris) {
@@ -1381,7 +1382,8 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public Tanim getEkSaha4(Sirket sirket, Long sirketId, Session session) {
 		Tanim tanim = null;
-		if (PdksUtil.isPuantajSorguAltBolumGir() || authenticatedUser.isAdmin()) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
+		if (PdksUtil.isPuantajSorguAltBolumGir() || loginUser.isAdmin()) {
 			if (sirket == null && sirketId != null) {
 				HashMap parametreMap = new HashMap();
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -1533,8 +1535,9 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public Boolean getKullaniciPersonel(User user) {
 		boolean personelMi = false;
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		if (user == null)
-			user = authenticatedUser;
+			user = loginUser;
 		if (user != null) {
 			if (user.isDirektorSuperVisor() == false && user.getYetkiliPersonelNoList() != null && user.getYetkiliPersonelNoList().size() == 1) {
 				try {
@@ -1589,9 +1592,9 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List getIzinOnayDurum(Session session, User user) {
-		HashMap fields = new HashMap();
+		HashMap fields = new HashMap();User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		if (user == null)
-			user = authenticatedUser;
+			user = loginUser;
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT MIN(P.BASLANGIC_ZAMANI) BASLANGIC_ZAMANI,MAX(BITIS_ZAMANI) BITIS_ZAMANI    FROM  ONAY_BEKLEYEN_IZIN_VIEW  P WITH(nolock) ");
 		sb.append(" where (P.KULLANICI_ID=:kullaniciId AND P.ONAY_ID IS NOT NULL)");
@@ -1622,8 +1625,9 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 */
 	public void vardiyaGunSirala(List<VardiyaGun> list, User user, Session session) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		if (user == null)
-			user = authenticatedUser;
+			user = loginUser;
 		TreeMap<String, List<VardiyaGun>> sirketParcalaMap = new TreeMap<String, List<VardiyaGun>>();
 		List<Liste> listeler = new ArrayList<Liste>();
 		List<Long> tesisList = null;
@@ -1632,7 +1636,7 @@ public class OrtakIslemler implements Serializable {
 			setUserTesisler(user, session);
 			if (user.getYetkiliTesisler() != null) {
 				tesisList = new ArrayList<Long>();
-				for (Tanim tesis : authenticatedUser.getYetkiliTesisler())
+				for (Tanim tesis : loginUser.getYetkiliTesisler())
 					tesisList.add(tesis.getId());
 
 			}
@@ -1781,6 +1785,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<Departman> fillDepartmanTanimList(Session session) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		HashMap parametreMap = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT DISTINCT D.* FROM  " + Sirket.TABLE_NAME + "  S WITH(nolock) ");
@@ -1790,7 +1795,7 @@ public class OrtakIslemler implements Serializable {
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<Departman> list = pdksEntityController.getObjectBySQLList(sb, parametreMap, Departman.class);
-		if (authenticatedUser.isIK() && !authenticatedUser.getDepartman().isAdminMi()) {
+		if (loginUser.isIK() && !loginUser.getDepartman().isAdminMi()) {
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 				Departman pdksDepartman = (Departman) iterator.next();
 				if (pdksDepartman.isAdminMi())
@@ -1995,8 +2000,9 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List<Personel> getAramaSecenekleriPersonelList(User gelenUser, Date tarih, AramaSecenekleri aramaSecenekleriPer, Session session) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		if (gelenUser == null)
-			gelenUser = authenticatedUser;
+			gelenUser = loginUser;
 
 		if (aramaSecenekleriPer == null)
 			aramaSecenekleriPer = new AramaSecenekleri();
@@ -2553,6 +2559,7 @@ public class OrtakIslemler implements Serializable {
 	 * @throws Exception
 	 */
 	private List getSPPersonelHareketList(List<Long> personelList, String kapi, String basTarihStr, String bitTarihStr, Class class2, Session session) throws Exception {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		StringBuffer sb = new StringBuffer("SP_GET_HAREKET_SIRKET");
 		LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
 		fields.put("kapi", kapi);
@@ -2560,7 +2567,7 @@ public class OrtakIslemler implements Serializable {
 		fields.put("basTarih", basTarihStr);
 		fields.put("bitTarih", bitTarihStr);
 		fields.put("df", null);
-		if (authenticatedUser != null && authenticatedUser.isAdmin()) {
+		if (loginUser != null && loginUser.isAdmin()) {
 			Gson gson = new Gson();
 			logger.debug(gson.toJson(fields));
 		}
@@ -2694,8 +2701,9 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 */
 	public void kullaniciKaydet(User kullanici, Session session) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		if (session == null)
-			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
+			session = PdksUtil.getSessionUser(entityManager, loginUser);
 		if (kullanici != null)
 			pdksEntityController.saveOrUpdate(session, entityManager, kullanici);
 
@@ -2706,8 +2714,9 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 */
 	public void personelKaydet(Personel personel, Session session) {
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		if (session == null)
-			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
+			session = PdksUtil.getSessionUser(entityManager, loginUser);
 		if (personel != null) {
 			MailGrubu mailGrubuCC = personel.getMailGrubuCC(), mailGrubuBCC = personel.getMailGrubuBCC(), hareketMailGrubu = personel.getHareketMailGrubu();
 			List<MailGrubu> deleteList = new ArrayList<MailGrubu>();
@@ -2921,9 +2930,10 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public List<SelectItem> getBolumDepartmanSelectItems(Long departmanId, Session session) {
 		List<SelectItem> bolumDepartmanlari = null;
-		if (authenticatedUser != null && authenticatedUser.isIK()) {
-			if (departmanId == null && !authenticatedUser.isIKAdmin())
-				departmanId = authenticatedUser.getDepartman().getId();
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
+		if (loginUser != null && loginUser.isIK()) {
+			if (departmanId == null && !loginUser.isIKAdmin())
+				departmanId = loginUser.getDepartman().getId();
 
 		}
 		if (departmanId != null) {
