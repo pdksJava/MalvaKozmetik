@@ -210,11 +210,10 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						fazlaMesaiHesaplaHome.setAy(denklestirmeAy.getAy());
 						for (SelectItem selectItemDepartman : depList) {
 							Long departmanId = (Long) selectItemDepartman.getValue();
-
 							fazlaMesaiHesaplaHome.setDepartmanId(departmanId);
 							List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, aylikPuantaj, denklestirme, session);
-							for (SelectItem selectItem2 : sirketList) {
-								Long sirketId = (Long) selectItem2.getValue();
+							for (SelectItem selectItemSirket : sirketList) {
+								Long sirketId = (Long) selectItemSirket.getValue();
 								fields.clear();
 								fields.put("id", sirketId);
 								if (session != null)
@@ -244,8 +243,8 @@ public class FazlaMesaiGuncelleme implements Serializable {
 									fazlaMesaiHesaplaHome.setSirketId(sirket.getId());
 									if (sirket.isTesisDurumu()) {
 										List<SelectItem> tesisList = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, aylikPuantaj, denklestirme, session);
-										for (SelectItem selectItem3 : tesisList) {
-											Long tesisId = (Long) selectItem3.getValue();
+										for (SelectItem selectItemTesis : tesisList) {
+											Long tesisId = (Long) selectItemTesis.getValue();
 											veriMap.put("tesisId", tesisId);
 											bolumFazlaMesai(veriMap, session);
 										}
