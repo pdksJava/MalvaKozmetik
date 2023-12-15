@@ -851,12 +851,28 @@
 												disabled="#{authenticatedUser.admin==false and pdksPersonelHome.instance.sirket.erp and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.personelERPGuncelleme!='M'}"
 												required="true" requiredMessage="Cinsiyet seçiniz">
 												<s:selectItems var="cinsiyet" value="#{pdksPersonelHome.cinsiyetList}" label="#{cinsiyet.aciklama}" noSelectionLabel="Lütfen seçiniz">
+													<a4j:support event="onchange" reRender="sirketDegisti" action="#{pdksPersonelHome.cinsiyetDegisti()}" status="ajaxStatus"
+														ajaxSingle="true" />
 												</s:selectItems>
-												<a4j:support event="onchange" reRender="sirketDegisti" status="ajaxStatus" ajaxSingle="true" />
 												<s:convertEntity />
+
 											</h:selectOneMenu>
 										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.cinsiyetBayan}">
+											<ui:define name="label">Süt İzni</ui:define>
+											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.sutIzni}">
+												<a4j:support event="onclick" action="#{pdksPersonelHome.durumGebeSutIzni('S')}" reRender="sirketDegisti" status="ajaxStatus"
+													ajaxSingle="true" />
+											</h:selectBooleanCheckbox>
+										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.cinsiyetBayan and pdksPersonelHome.gebeMi}">
+											<ui:define name="label">GebeMi</ui:define>
+											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.gebeMi}">
+												<a4j:support event="onclick" action="#{pdksPersonelHome.durumGebeSutIzni('G')}" reRender="sirketDegisti" status="ajaxStatus"
+													ajaxSingle="true" />
 
+											</h:selectBooleanCheckbox>
+										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.sirket.erp==false}">
 											<ui:define name="label">#{ortakIslemler.yoneticiAciklama()}</ui:define>
 											<h:selectOneMenu id="toComp" value="#{pdksPersonelHome.instance.yoneticisi}"
@@ -939,21 +955,7 @@
 											</h:selectOneMenu>
 										</s:decorate>
 
-										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.cinsiyetBayan}">
-											<ui:define name="label">Süt İzni</ui:define>
-											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.sutIzni}">
-												<a4j:support event="onclick" action="#{pdksPersonelHome.durumGebeSutIzni('S')}" reRender="sirketDegisti" status="ajaxStatus"
-													ajaxSingle="true" />
-											</h:selectBooleanCheckbox>
-										</s:decorate>
-										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.cinsiyetBayan}">
-											<ui:define name="label">GebeMi</ui:define>
-											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.gebeMi}">
-												<a4j:support event="onclick" action="#{pdksPersonelHome.durumGebeSutIzni('G')}" reRender="sirketDegisti" status="ajaxStatus"
-													ajaxSingle="true" />
 
-											</h:selectBooleanCheckbox>
-										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">Part Time</ui:define>
 											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.partTime}" />

@@ -54,6 +54,7 @@ import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.PersonelView;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
+import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaSablonu;
 import org.pdks.security.entity.DefaultPasswordGenerator;
 import org.pdks.security.entity.Role;
@@ -154,7 +155,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, kartNoGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
-	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable, transferAciklamaCiftKontrol, bakiyeIzinGoster = Boolean.FALSE;
+	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable, transferAciklamaCiftKontrol, bakiyeIzinGoster = Boolean.FALSE, gebeSecim = Boolean.FALSE;
 	private PersonelExtra personelExtra;
 	private TreeMap<Long, PersonelKGS> personelKGSMap;
 	private int COL_SICIL_NO, COL_ADI, COL_SOYADI, COL_SIRKET_KODU, COL_SIRKET_ADI, COL_TESIS_KODU, COL_TESIS_ADI, COL_GOREV_KODU, COL_GOREVI, COL_BOLUM_KODU, COL_BOLUM_ADI;
@@ -214,6 +215,29 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		if (dinamikAlan == null)
 			dinamikAlan = new PersonelDinamikAlan(pdksPersonel, alan);
 		return dinamikAlan;
+	}
+
+	public String cinsiyetDegisti() {
+		gebeSecim = Boolean.FALSE;
+		Personel pdksPersonel = getInstance();
+		Sirket sirket = pdksPersonel.getSirket();
+		if (sirket != null && pdksPersonel.getCinsiyetBayan()) {
+			Departman departman = sirket.getDepartman();
+			HashMap parametreMap = new HashMap();
+			parametreMap.put("durum", Boolean.TRUE);
+			parametreMap.put("gebelik", Boolean.TRUE);
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List<Vardiya> list = pdksEntityController.getObjectByInnerObjectList(parametreMap, Vardiya.class);
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Vardiya vardiya = (Vardiya) iterator.next();
+				if (vardiya.getDepartman() != null && !vardiya.getDepartman().getId().equals(departman.getId()))
+					iterator.remove();
+			}
+			gebeSecim = !list.isEmpty();
+			list = null;
+		}
+		return "";
 	}
 
 	/**
@@ -1377,8 +1401,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				list.add(tanim);
 			}
 		}
-
 		if (pdksPersonel.getId() == null) {
+			gebeSecim = false;
 			if (sirketList.isEmpty())
 				PdksUtil.addMessageAvailableWarn("İşlem yapılacak ERP olamayan " + ortakIslemler.sirketAciklama() + " yoktur!");
 			else if (sirketList.size() == 1) {
@@ -1394,6 +1418,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 
 		else {
+			cinsiyetDegisti();
 			if (pdksPersonel.getSirket().isErp() == false) {
 				erpSirketleriAyikla(sirketList);
 			} else
@@ -2232,6 +2257,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setPdksPersonelList(list);
 		fillPdksVardiyaSablonList();
 		fillPdksCalismaModeliList();
+		cinsiyetDegisti();
 		ekSahaDisable();
 	}
 
@@ -4599,5 +4625,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setBakiyeIzinGoster(Boolean bakiyeIzinGoster) {
 		this.bakiyeIzinGoster = bakiyeIzinGoster;
+	}
+
+	public Boolean getGebeSecim() {
+		return gebeSecim;
+	}
+
+	public void setGebeSecim(Boolean gebeSecim) {
+		this.gebeSecim = gebeSecim;
 	}
 }
