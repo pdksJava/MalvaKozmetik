@@ -189,6 +189,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	private ArrayList<Date> islemGunleri;
 
+	private AylikPuantaj aylikPuantajDonem;
+
 	private List<FazlaMesaiTalep> fazlaMesaiTalepler;
 
 	private KapiView manuelGiris = null, manuelCikis = null;
@@ -206,6 +208,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	private List<Long> gorevYerileri;
 
 	private VardiyaHafta vardiyaHafta1, vardiyaHafta2;
+
+	private User loginUser = null;
 
 	private String sicilNo = "", dosyaAdi, donusAdres = "";
 
@@ -3568,7 +3572,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	private void fillDepartmanList() throws Exception {
 		if (denklestirmeAy == null)
 			setSeciliDenklestirmeAy();
-		List<SelectItem> departmanListe = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), session);
+
+		List<SelectItem> departmanListe = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), session);
 		fazlaMesaiListeGuncelle(null, "D", departmanListe);
 		if (departmanListe.size() > 0) {
 			Long depId = null;
@@ -3587,6 +3592,39 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		}
 
 		aramaSecenekleri.setDepartmanIdList(departmanListe);
+	}
+
+	/**
+	 * @param dm
+	 * @return
+	 */
+	private void setAylikPuantajDonem(DenklestirmeAy dm) {
+		AylikPuantaj apd = null;
+		try {
+			if (dm != null && dm.getYil() == yil && dm.getAy() == ay) {
+				if (aylikPuantajDonem == null)
+					apd = new AylikPuantaj(dm);
+				else {
+					apd = aylikPuantajDonem;
+					apd.setDenklestirmeAy(dm);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (apd == null)
+			apd = new AylikPuantaj();
+		if (loginUser == null) {
+			if (authenticatedUser != null)
+				loginUser = authenticatedUser;
+			else {
+				loginUser = ortakIslemler.getSistemAdminUser(session);
+				loginUser.setAdmin(Boolean.TRUE);
+			}
+		}
+
+		apd.setLoginUser(loginUser);
+		setAylikPuantajDonem(apd);
 	}
 
 	/**
@@ -3848,8 +3886,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				else
 					PdksUtil.addMessageAvailableError(yil + " " + ayAdi + " döneme ait fazla mesai talep tanımlanmamıştır!");
 			}
-		}
+		} else
+			setAylikPuantajDonem(denklestirmeAy);
 		setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
+
 	}
 
 	/**
@@ -3885,8 +3925,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				departman = (Departman) pdksEntityController.getObjectByInnerObject(parametreMap, Departman.class);
-				sirketler = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurSirketList(adminRole ? aramaSecenekleri.getDepartmanId() : null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
 
+				sirketler = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurSirketList(adminRole ? aramaSecenekleri.getDepartmanId() : null, denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
 			}
 			if (sirketler == null)
 				sirketler = new ArrayList<SelectItem>();
@@ -3931,7 +3971,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
 		Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(map, Sirket.class);
 		aramaSecenekleri.setSirket(sirket);
-		List<SelectItem> list = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurTesisList(aramaSecenekleri.getSirket(), denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
+
+		List<SelectItem> list = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurTesisList(aramaSecenekleri.getSirket(), denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
 		if (list != null && !list.isEmpty()) {
 			Long oncekiId = aramaSecenekleri.getTesisId();
 			if (list.size() == 1)
@@ -3961,7 +4002,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (departman.isAdminMi() && sirket.isTesisDurumu())
 			tesisId = aramaSecenekleri.getTesisId() != null ? String.valueOf(aramaSecenekleri.getTesisId()) : null;
 
-		list = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurBolumList(sirket, tesisId, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
+		list = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurBolumList(sirket, tesisId, denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
 		if (list != null && !list.isEmpty()) {
 			Long oncekiId = aramaSecenekleri.getEkSaha3Id();
 			if (list.size() == 1)
@@ -3988,7 +4029,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		setDepartman(null);
 		aramaSecenekleri.setGorevYeriList(null);
 		if (aramaSecenekleri.getDepartmanId() != null) {
-			List<SelectItem> sirketler = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(adminRole ? aramaSecenekleri.getDepartmanId() : null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), session);
+
+			List<SelectItem> sirketler = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(adminRole ? aramaSecenekleri.getDepartmanId() : null, denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), session);
 			Sirket sirket = null;
 			fazlaMesaiListeGuncelle(null, "S", sirketler);
 			if (!sirketler.isEmpty()) {
@@ -5485,6 +5527,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			session.flush();
 		} else if (denklestirmeAy.getFazlaMesaiMaxSure() == null)
 			fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
+		setAylikPuantajDonem(denklestirmeAy);
 		setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
 		fields.clear();
 
@@ -5590,8 +5633,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			gorevliPersonelMap = new HashMap<String, Personel>();
 
 		perList = new ArrayList<String>();
+
 		List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(aramaSecenekleri.getSirket(), aramaSecenekleri.getTesisId() != null ? String.valueOf(aramaSecenekleri.getTesisId()) : null, aramaSecenekleri.getEkSaha3Id(), aramaSecenekleri.getEkSaha4Id(),
-				denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), session);
+				denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), session);
 		if (testDurum)
 			logger.info("aylikPuantajOlusturuluyor 2000 " + new Date());
 		sicilNo = ortakIslemler.getSicilNo(sicilNo);
@@ -6704,7 +6748,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
 				int donem = yil * 100 + ay;
 				if (donem >= Integer.parseInt(str))
-					baslikMap = fazlaMesaiOrtakIslemler.bordroVeriOlustur(false, puantajList, denklestirmeAyDurum, String.valueOf(donem),authenticatedUser, session);
+					baslikMap = fazlaMesaiOrtakIslemler.bordroVeriOlustur(false, puantajList, denklestirmeAyDurum, String.valueOf(donem), authenticatedUser, session);
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();
@@ -7194,6 +7238,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+			setAylikPuantajDonem(denklestirmeAy);
 			setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
 			List<FazlaMesaiTalep> list = new ArrayList<FazlaMesaiTalep>();
 			islemYapiliyor = false;
@@ -8057,6 +8102,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+		setAylikPuantajDonem(denklestirmeAy);
 		setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
 		if (denklestirmeAy != null) {
 			try {
@@ -8133,8 +8179,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		try {
 
 			HashMap map = new HashMap();
-			List<Personel> personelList = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurPersonelList(aramaSecenekleri.getSirket(), tesisId != null ? "" + tesisId : null, seciliEkSaha3Id, (denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null), getDenklestirmeDurum(), fazlaMesaiTalepDurum,
-					session);
+			List<Personel> personelList = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurPersonelList(aramaSecenekleri.getSirket(), tesisId != null ? "" + tesisId : null, seciliEkSaha3Id, (denklestirmeAy != null ? aylikPuantajDonem : null), getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
 			List<String> perList = new ArrayList<String>();
 			for (Personel personel : personelList) {
 				if (PdksUtil.hasStringValue(sicilNo) == false || sicilNo.equals(personel.getPdksSicilNo()))
@@ -8253,6 +8298,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+			setAylikPuantajDonem(denklestirmeAy);
 			setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
 		}
 		if (denklestirmeAy != null && authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals("fazlaMesaiTalep")) {
@@ -8641,7 +8687,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, null, session);
 		}
 		aramaSecenekleri.setSirket(sirket);
-		List<SelectItem> list = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(aramaSecenekleri.getSirket(), denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), session);
+
+		List<SelectItem> list = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(aramaSecenekleri.getSirket(), denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), session);
 		fazlaMesaiListeGuncelle(sirket, "T", list);
 		aramaSecenekleri.setTesisList(list);
 		Long onceki = aramaSecenekleri.getTesisId();
@@ -8697,7 +8744,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			String tesisId = null;
 			if (departman.isAdminMi() && sirket.isTesisDurumu())
 				tesisId = aramaSecenekleri.getTesisId() != null ? String.valueOf(aramaSecenekleri.getTesisId()) : null;
-			list = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), session);
+
+			list = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId, denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), session);
 			fazlaMesaiListeGuncelle(sirket, "B", list);
 		} else
 			list = new ArrayList<SelectItem>();
@@ -8734,7 +8782,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		seciliEkSaha4Id = aramaSecenekleri.getEkSaha4Id();
 		if (ekSaha4Tanim != null) {
 			Long tesisId = aramaSecenekleri.getTesisId();
-			altBolumIdList = fazlaMesaiOrtakIslemler.getFazlaMesaiAltBolumList(aramaSecenekleri.getSirket(), tesisId != null ? String.valueOf(tesisId) : null, aramaSecenekleri.getEkSaha3Id(), denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, getDenklestirmeDurum(), session);
+
+			altBolumIdList = fazlaMesaiOrtakIslemler.getFazlaMesaiAltBolumList(aramaSecenekleri.getSirket(), tesisId != null ? String.valueOf(tesisId) : null, aramaSecenekleri.getEkSaha3Id(), denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), session);
 			boolean eski = altBolumIdList.size() == 1;
 			if (eski)
 				seciliEkSaha4Id = (Long) altBolumIdList.get(0).getValue();
@@ -8807,6 +8856,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 
 		}
+		setAylikPuantajDonem(denklestirmeAy);
 
 		donusAdres = "";
 		denklestirmeAyDurum = Boolean.FALSE;
@@ -9227,6 +9277,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				fields.put("ay", ay);
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+				setAylikPuantajDonem(denklestirmeAy);
 				setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
 				fileImport = denklestirmeAy != null && denklestirmeAyDurum;
 			}
@@ -9468,6 +9519,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+			setAylikPuantajDonem(denklestirmeAy);
 			setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
 			fields.clear();
 			if (ay > 1) {
@@ -11320,5 +11372,17 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	public void setYoneticiERP1Kontrol(Boolean yoneticiERP1Kontrol) {
 		this.yoneticiERP1Kontrol = yoneticiERP1Kontrol;
+	}
+
+	public void setAylikPuantajDonem(AylikPuantaj aylikPuantajDonem) {
+		this.aylikPuantajDonem = aylikPuantajDonem;
+	}
+
+	public User getLoginUser() {
+		return loginUser;
+	}
+
+	public void setLoginUser(User loginUser) {
+		this.loginUser = loginUser;
 	}
 }
