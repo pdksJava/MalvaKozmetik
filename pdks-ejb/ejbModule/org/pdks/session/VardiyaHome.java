@@ -89,6 +89,10 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 		super.create();
 	}
 
+	public String izinVardiyalariGetir(Vardiya pdksVardiya) {
+		return "";
+	}
+
 	public void fillYemekList(Vardiya pdksVardiya) {
 		if (pdksVardiya.getId() == null || pdksVardiya.isCalisma()) {
 			yemekIzinList = ortakIslemler.getYemekList(new Date(), null, session);
