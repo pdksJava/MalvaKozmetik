@@ -136,6 +136,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	public void fazlaMesaiGuncellemeCalistir(boolean manuel, Session session) {
 		loginUser = ortakIslemler != null ? ortakIslemler.getSistemAdminUser(session) : null;
 		if (loginUser != null) {
+			Date basTarih = new Date();
 			Integer otomatikOnayIKGun = null;
 			String str = ortakIslemler.getParameterKey("otomatikOnayIKGun");
 			if (PdksUtil.hasStringValue(str))
@@ -288,7 +289,12 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						}
 					}
 					String aylar = sb.toString();
-					zamanlayici.mailGonderDosya(session, null, "Fazla Mesai Güncellemesi", aylar + " " + (aylar.indexOf(",") > 0 ? "dönemleri" : "dönemi") + " fazla mesailer güncellenmiştir.", null, dosya, Boolean.TRUE);
+					Date bitTarih = new Date();
+					sb = new StringBuffer();
+					sb.append(aylar + " " + (aylar.indexOf(",") > 0 ? "dönemleri" : "dönemi") + " fazla mesailer güncellenmiştir.");
+					sb.append("</br> <b>Çalışma Aralığı : </b>" + loginUser.timeLongFormatla(basTarih) + " - " + loginUser.timeLongFormatla(bitTarih));
+					zamanlayici.mailGonderDosya(session, null, "Fazla Mesai Güncellemesi", sb.toString(), null, dosya, Boolean.TRUE);
+					sb = null;
 				} catch (Exception e) {
 					logger.error(e);
 					e.printStackTrace();
@@ -313,6 +319,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 		String departmanOnEk = veriMap.containsKey("departmanAdi") ? (String) veriMap.get("departmanAdi") + "/" : "";
 		Long tesisId = veriMap.containsKey("tesisId") ? (Long) veriMap.get("tesisId") : null;
 		Sirket sirket = veriMap.containsKey("sirket") ? (Sirket) veriMap.get("sirket") : null;
+		String sirketAdi = sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama();
 		List<SelectItem> bolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : "", aylikPuantaj, denklestirme, session);
 		fazlaMesaiHesaplaHome.setTesisId(tesisId);
 		HashMap fields = new HashMap();
@@ -324,7 +331,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			tesis = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 		}
-		String baslik = dm.getAyAdi() + " " + dm.getYil() + " " + sirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : "");
+		String baslik = dm.getAyAdi() + " " + dm.getYil() + " " + sirketAdi + (tesis != null ? " " + tesis.getAciklama() : "");
 		boolean hataVar = false;
 		for (SelectItem selectItem : bolumList) {
 			Long seciliEkSaha3Id = (Long) selectItem.getValue();
@@ -375,7 +382,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				if (baos != null) {
 					try {
 						List<Dosya> dosyalar = veriMap.containsKey("dosyalar") ? (List<Dosya>) veriMap.get("dosyalar") : new ArrayList<Dosya>();
-						String dosyaAdi = dm.getAyAdi() + " " + dm.getYil() + "/" + departmanOnEk + (tesis != null ? sirket.getAd() + "/" : "") + sirket.getAd() + (tesis != null ? "_" + tesis.getAciklama() : "") + ".xlsx";
+						String dosyaAdi = dm.getAyAdi() + " " + dm.getYil() + "/" + departmanOnEk + (tesis != null ? sirketAdi + "/" : "") + sirketAdi + (tesis != null ? "_" + tesis.getAciklama() : "") + ".xlsx";
 						Dosya dosyaExcel = new Dosya();
 						dosyaExcel.setDosyaAdi(dosyaAdi);
 						dosyaExcel.setDosyaIcerik(baos.toByteArray());
