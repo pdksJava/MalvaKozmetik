@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jboss-seam-remoting.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jbosssx.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jbpm-jpdl.jar"/>
-	<classpathentry kind="lib" path="/pdks-ear/EarContent/log4j.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/quartz-1.6.0.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/richfaces-api-3.3.2.GA.jar"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/richfaces-impl-3.3.2.GA.jar"/>
@@ -30,5 +29,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container/pdks-web"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jboss-seam.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

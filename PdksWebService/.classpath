@@ -14,5 +14,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/pdks-test/lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
