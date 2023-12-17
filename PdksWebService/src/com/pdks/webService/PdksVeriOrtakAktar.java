@@ -122,7 +122,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @param list
 	 */
 	protected void mailBosGonder(String fonksiyonAdi, String bilgi, List list) {
-		if (PdksUtil.isSistemDestekVar()) {
+		if (PdksUtil.isSistemDestekVar() && PdksUtil.isPazar() == false) {
 			if (list != null && list.size() > 1 && PdksUtil.hasStringValue(fonksiyonAdi) && PdksUtil.hasStringValue(bilgi)) {
 				if (PdksUtil.hasStringValue(uygulamaBordro) == false)
 					uygulamaBordro = mailMap.containsKey("uygulamaBordro") ? (String) mailMap.get("uygulamaBordro") : "Bordro Uygulaması ";
@@ -2204,7 +2204,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				if (izinERP == null || izinERP.getDurum() == null)
 					iterator.remove();
 			}
-			if (!hataList.isEmpty()) {
+			if (!hataList.isEmpty() && (izinCok == false || PdksUtil.isPazar() == false)) {
 				try {
 					Gson gson = new Gson();
 					String jsonStr = null;
@@ -3854,7 +3854,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 			}
 		}
-		if (!hataList.isEmpty()) {
+		if (!hataList.isEmpty() && (mailBosGonder == false || PdksUtil.isPazar() == false)) {
 			try {
 
 				Gson gson = new Gson();

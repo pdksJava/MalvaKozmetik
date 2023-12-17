@@ -1838,6 +1838,30 @@ public class PdksUtil implements Serializable {
 		return message;
 	}
 
+	public static boolean isPazar() {
+		boolean pazar = getDateField(new Date(), Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
+		return pazar;
+	}
+
+	public static boolean isCumartesi() {
+		boolean cumartesi = getDateField(new Date(), Calendar.DAY_OF_WEEK) == Calendar.SATURDAY;
+		return cumartesi;
+	}
+
+	public static boolean isHaftaSonu() {
+		Calendar cal = Calendar.getInstance();
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		boolean haftaSonu = dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY;
+		return haftaSonu;
+	}
+
+	public static boolean isHaftaIci() {
+		Calendar cal = Calendar.getInstance();
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		boolean haftaIci = dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY;
+		return haftaIci;
+	}
+
 	public static Date ayinIlkGunu() {
 		Calendar cal = Calendar.getInstance();
 		GregorianCalendar calendar = new GregorianCalendar();

@@ -292,7 +292,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					Date bitTarih = new Date();
 					sb = new StringBuffer();
 					sb.append(aylar + " " + (aylar.indexOf(",") > 0 ? "dönemleri" : "dönemi") + " fazla mesailer güncellenmiştir.");
-					sb.append("</br> <b>Çalışma Aralığı : </b>" + loginUser.timeLongFormatla(basTarih) + " - " + loginUser.timeLongFormatla(bitTarih));
+					sb.append("<br></br><b>Çalışma Aralığı : </b>" + loginUser.timeLongFormatla(basTarih) + " - " + loginUser.timeLongFormatla(bitTarih) + "<br></br>");
 					zamanlayici.mailGonderDosya(session, null, "Fazla Mesai Güncellemesi", sb.toString(), null, dosya, Boolean.TRUE);
 					sb = null;
 				} catch (Exception e) {
