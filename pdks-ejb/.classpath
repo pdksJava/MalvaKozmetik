@@ -28,16 +28,17 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container/pdks-web"/>
 	<classpathentry kind="lib" path="/pdks-ear/EarContent/jboss-seam.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/log4j-1.2.13.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/commons-io-2.6.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/gson-2.3.1.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/javax.mail-1.6.2.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/javax.ws.rs.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/jersey-bundle-1.2.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/json-20140107.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/ojdbc14.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/ostermillerutils_1_04_03_for_kaffe.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/spring-2.5.6.jar"/>
-	<classpathentry kind="lib" path="/pdks-test/lib/quartz-1.6.0.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/commons-io-2.6.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/gson-2.3.1.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/javax.mail-1.6.2.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/javax.ws.rs.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/jersey-bundle-1.2.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/json-20140107.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/ostermillerutils_1_04_03_for_kaffe.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/poi-2.5.1-final-20040804.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/quartz-1.6.0.jar"/>
+	<classpathentry kind="lib" path="/pdks-test/lib/gl/spring-2.5.6.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
