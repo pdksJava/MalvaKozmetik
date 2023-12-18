@@ -35,6 +35,7 @@ import org.pdks.entity.DepartmanDenklestirmeDonemi;
 import org.pdks.entity.Dosya;
 import org.pdks.entity.Liste;
 import org.pdks.entity.Parameter;
+import org.pdks.entity.Personel;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.security.entity.User;
@@ -43,6 +44,7 @@ import org.pdks.session.FazlaMesaiOrtakIslemler;
 import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksEntityController;
 import org.pdks.session.PdksUtil;
+import org.pdks.session.VardiyaGunHome;
 
 @Name("fazlaMesaiGuncelleme")
 @AutoCreate
@@ -71,6 +73,8 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	// //@In(required = false, create = true)
 	FazlaMesaiHesaplaHome fazlaMesaiHesaplaHome;
 
+	VardiyaGunHome vardiyaGunHome;
+
 	@In(required = false, create = true)
 	FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemler;
 
@@ -91,7 +95,9 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			logger.debug("fazlaMesaiGuncelleme in " + new Date());
 			Session session = null;
 			try {
-				if (PdksUtil.isSistemDestekVar() && PdksUtil.getCanliSunucuDurum() && zamanlayici.isPazar() == false) {
+				boolean canliSistem = PdksUtil.getCanliSunucuDurum();
+				// canliSistem = true;
+				if (PdksUtil.isSistemDestekVar() && canliSistem && zamanlayici.isPazar() == false) {
 					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 					if (session != null)
 						fazlaMesaiGuncellemeBasla(false, session);
@@ -123,6 +129,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 		if (value != null) {
 			Date time = zamanlayici.getDbTime(session);
 			boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, time);
+			// zamanDurum = true;
 			if (zamanDurum)
 				fazlaMesaiGuncellemeCalistir(false, session);
 		}
@@ -139,6 +146,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			Date basTarih = new Date();
 			Integer otomatikOnayIKGun = null;
 			String str = ortakIslemler.getParameterKey("otomatikOnayIKGun");
+			boolean vardiyaPlaniOtomatikOlustur = ortakIslemler.getParameterKeyHasStringValue("vardiyaPlaniOtomatikOlustur");
 			if (PdksUtil.hasStringValue(str))
 				try {
 					otomatikOnayIKGun = Integer.parseInt(str);
@@ -163,6 +171,16 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			HashMap fields = new HashMap();
 			if (fazlaMesaiHesaplaHome == null)
 				fazlaMesaiHesaplaHome = new FazlaMesaiHesaplaHome();
+			if (vardiyaPlaniOtomatikOlustur) {
+				if (vardiyaGunHome == null)
+					vardiyaGunHome = new VardiyaGunHome();
+				vardiyaGunHome.setInject(entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
+				vardiyaGunHome.setSession(session);
+				vardiyaGunHome.setSicilNo("");
+				vardiyaGunHome.setDenklestirmeAyDurum(true);
+				vardiyaGunHome.setLoginUser(loginUser);
+			}
+
 			fazlaMesaiHesaplaHome.setInject(entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
 			ortakIslemler.setInject(null, null, loginUser);
 			fazlaMesaiOrtakIslemler.setInject(null, null, ortakIslemler, loginUser);
@@ -170,9 +188,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
 			fazlaMesaiHesaplaHome.setSicilNo("");
 			fazlaMesaiHesaplaHome.setStajerSirket(false);
-			fazlaMesaiHesaplaHome.setSession(session);
-			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
-			fazlaMesaiHesaplaHome.setSicilNo("");
 			fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
 			fazlaMesaiHesaplaHome.setDenklestirmeAyDurum(true);
 			HashMap<String, Object> veriMap = new HashMap<String, Object>();
@@ -202,17 +217,22 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					aylikPuantaj.setDenklestirmeAy(denklestirmeAy);
 					denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 					denklestirmeDonemi.setLoginUser(loginUser);
-					List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, denklestirme, session);
+					List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, !vardiyaPlaniOtomatikOlustur, session);
 					boolean mesajGonder = false;
 					if (!depList.isEmpty()) {
 						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " in " + new Date());
+						if (vardiyaPlaniOtomatikOlustur) {
+							vardiyaGunHome.setDenklestirmeAy(denklestirmeAy);
+							vardiyaGunHome.setYil(denklestirmeAy.getYil());
+							vardiyaGunHome.setAy(denklestirmeAy.getAy());
+						}
 						fazlaMesaiHesaplaHome.setDenklestirmeAy(denklestirmeAy);
 						fazlaMesaiHesaplaHome.setYil(denklestirmeAy.getYil());
 						fazlaMesaiHesaplaHome.setAy(denklestirmeAy.getAy());
 						for (SelectItem selectItemDepartman : depList) {
 							Long departmanId = (Long) selectItemDepartman.getValue();
 							fazlaMesaiHesaplaHome.setDepartmanId(departmanId);
-							List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, aylikPuantaj, denklestirme, session);
+							List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, aylikPuantaj, !vardiyaPlaniOtomatikOlustur, session);
 							for (SelectItem selectItemSirket : sirketList) {
 								Long sirketId = (Long) selectItemSirket.getValue();
 								fields.clear();
@@ -238,12 +258,13 @@ public class FazlaMesaiGuncelleme implements Serializable {
 									veriMap.put("denklestirmeAy", denklestirmeAy);
 									veriMap.put("dosyalar", dosyalar);
 									veriMap.put("baslikMap", baslikMap);
+									veriMap.put("vardiyaPlaniOtomatikOlustur", vardiyaPlaniOtomatikOlustur);
 									Departman departman = sirket.getDepartman();
 									fazlaMesaiHesaplaHome.setDepartman(departman);
 									fazlaMesaiHesaplaHome.setSirket(sirket);
 									fazlaMesaiHesaplaHome.setSirketId(sirket.getId());
 									if (sirket.isTesisDurumu()) {
-										List<SelectItem> tesisList = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, aylikPuantaj, denklestirme, session);
+										List<SelectItem> tesisList = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, aylikPuantaj, !vardiyaPlaniOtomatikOlustur, session);
 										for (SelectItem selectItemTesis : tesisList) {
 											Long tesisId = (Long) selectItemTesis.getValue();
 											veriMap.put("tesisId", tesisId);
@@ -315,12 +336,12 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	@Transactional
 	private void bolumFazlaMesai(HashMap<String, Object> veriMap, Session session) {
 		boolean manuelDurum = veriMap.containsKey("manuel") ? (Boolean) veriMap.get("manuel") : false;
-		boolean denklestirme = veriMap.containsKey("denklestirme") ? (Boolean) veriMap.get("denklestirme") : false;
+		boolean vardiyaPlaniOtomatikOlustur = veriMap.containsKey("vardiyaPlaniOtomatikOlustur") ? (Boolean) veriMap.get("vardiyaPlaniOtomatikOlustur") : false;
 		String departmanOnEk = veriMap.containsKey("departmanAdi") ? (String) veriMap.get("departmanAdi") + "/" : "";
 		Long tesisId = veriMap.containsKey("tesisId") ? (Long) veriMap.get("tesisId") : null;
 		Sirket sirket = veriMap.containsKey("sirket") ? (Sirket) veriMap.get("sirket") : null;
 		String sirketAdi = sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama();
-		List<SelectItem> bolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : "", aylikPuantaj, denklestirme, session);
+		List<SelectItem> bolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : "", aylikPuantaj, !vardiyaPlaniOtomatikOlustur, session);
 		fazlaMesaiHesaplaHome.setTesisId(tesisId);
 		HashMap fields = new HashMap();
 		Tanim tesis = null;
@@ -331,19 +352,52 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			tesis = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 		}
+		AramaSecenekleri as = new AramaSecenekleri();
+		as.setSicilNo("");
+		as.setDepartman(sirket.getDepartman());
+		as.setDepartmanId(as.getDepartman().getId());
+		as.setSirket(sirket);
+		as.setSirketId(sirket.getId());
+		as.setTesisId(tesisId);
+		as.setLoginUser(loginUser);
 		String baslik = dm.getAyAdi() + " " + dm.getYil() + " " + sirketAdi + (tesis != null ? " " + tesis.getAciklama() : "");
 		boolean hataVar = false;
 		for (SelectItem selectItem : bolumList) {
 			Long seciliEkSaha3Id = (Long) selectItem.getValue();
+			fields.clear();
+			fields.put("id", seciliEkSaha3Id);
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
+			String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
+			loginUser.setAdmin(Boolean.TRUE);
+			if (vardiyaPlaniOtomatikOlustur) {
+				as.setEkSaha3Id(seciliEkSaha3Id);
+				boolean devam = true;
+				int adet = 0;
+				while (devam && adet < 3) {
+					List<Personel> donemFMPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
+					List<Personel> donemCPPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, false, session);
+					devam = donemCPPerList.size() != donemFMPerList.size();
+					try {
+						if (devam) {
+							logger.info(str + " aylikPuantajOlusturuluyor in " + new Date());
+							vardiyaGunHome.setAramaSecenekleri(as);
+							vardiyaGunHome.aylikPuantajOlusturuluyor();
+							logger.info(str + " aylikPuantajOlusturuluyor out " + new Date());
+						}
+					} catch (Exception e) {
+						logger.error(e);
+						e.printStackTrace();
+					}
+					++adet;
+					donemFMPerList = null;
+					donemCPPerList = null;
+				}
+			}
+			as.setEkSaha3Id(null);
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
-			fazlaMesaiHesaplaHome.setStajerSirket(false);
 			try {
-				fields.clear();
-				fields.put("id", seciliEkSaha3Id);
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
-				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				logger.info(str + " in " + new Date());
 				loginUser.setAdmin(Boolean.TRUE);
 				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
@@ -359,11 +413,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 
 		}
 		if (hataVar == false && manuelDurum == false) {
-			AramaSecenekleri as = new AramaSecenekleri();
-			as.setSicilNo("");
-			as.setSirket(sirket);
-			as.setTesisId(tesisId);
-			as.setLoginUser(loginUser);
 			loginUser.setAdmin(Boolean.TRUE);
 			List<AylikPuantaj> personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(dm, as, false, false, session);
 			if (!personelDenklestirmeList.isEmpty()) {

@@ -62,6 +62,8 @@ import org.pdks.entity.VardiyaSaat;
 import org.pdks.security.action.UserHome;
 import org.pdks.security.entity.User;
 
+import com.google.gson.Gson;
+
 @Name("fazlaCalismaRaporHome")
 public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonemi> implements Serializable {
 	private static final long serialVersionUID = -3864181405990033326L;
@@ -1670,11 +1672,15 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			for (int j = 0; j < uz.length; j++) {
 				try {
 					b2 = bas[j];
-					rt.applyFont(b1, b2, fontBold);
+					if (b2 >= 0 && b1 >= 0)
+						rt.applyFont(b1, b2, fontBold);
 					b1 = uz[j];
 				} catch (Exception e) {
-					logger.error(j + " " + b1 + " " + b2 + " " + e);
-					e.printStackTrace();
+					LinkedHashMap<String, Object> veriLastMap = ortakIslemler.getLastParameter("fazlaCalismaRapor", session);
+					Gson gs = new Gson();
+					logger.error(authenticatedUser.getAdSoyad() + " --> " + j + " " + b1 + " " + b2 + " " + e + "\n" + gs.toJson(veriLastMap));
+					veriLastMap = null;
+					gs = null;
 				}
 			}
 

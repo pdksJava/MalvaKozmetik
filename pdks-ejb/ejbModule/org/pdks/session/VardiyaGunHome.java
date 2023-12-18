@@ -2857,7 +2857,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * 
 	 */
 	private void aylikVardiyaOzetOlustur() {
-		aylikVardiyaOzetList.clear();
+		if (aylikVardiyaOzetList == null)
+			aylikVardiyaOzetList = new ArrayList<VardiyaGun>();
+		else
+			aylikVardiyaOzetList.clear();
 		AylikPuantaj aylikPuantajToplam = new AylikPuantaj();
 		TreeMap<String, VardiyaGun> vardiyaMap = new TreeMap<String, VardiyaGun>();
 		VardiyaGun toplamVardiyaGun = new VardiyaGun();
@@ -3556,6 +3559,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	}
 
 	/**
+	 * @param entityManagerInput
+	 * @param pdksEntityControllerInput
+	 * @param ortakIslemlerInput
+	 * @param fazlaMesaiOrtakIslemlerInput
+	 */
+	public void setInject(EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput, OrtakIslemler ortakIslemlerInput, FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemlerInput) {
+		this.entityManager = entityManagerInput;
+		this.pdksEntityController = pdksEntityControllerInput;
+		this.ortakIslemler = ortakIslemlerInput;
+		this.fazlaMesaiOrtakIslemler = fazlaMesaiOrtakIslemlerInput;
+	}
+
+	/**
 	 * @return
 	 * @throws Exception
 	 */
@@ -3615,12 +3631,14 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (apd == null)
 			apd = new AylikPuantaj();
 		if (loginUser == null) {
-			if (authenticatedUser != null)
+			if (authenticatedUser != null) {
 				loginUser = authenticatedUser;
-			else {
+			} else {
 				loginUser = ortakIslemler.getSistemAdminUser(session);
 				loginUser.setAdmin(Boolean.TRUE);
 			}
+			loginUser.setLogin(authenticatedUser != null);
+
 		}
 
 		apd.setLoginUser(loginUser);
@@ -5414,7 +5432,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * 
 	 */
 	@Transactional
-	private Boolean aylikPuantajOlusturuluyor() {
+	public Boolean aylikPuantajOlusturuluyor() {
+		if (loginUser == null)
+			loginUser = authenticatedUser;
 		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
 		yoneticiERP1Kontrol = !ortakIslemler.getParameterKeyHasStringValue("yoneticiERP1Kontrol");
 		bordroAlanKapat();
@@ -5425,16 +5445,16 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		vardiyaBolumList = null;
 		aylikHareketKaydiVardiyaBul = Boolean.FALSE;
 		savePlanLastParameter();
-		fazlaMesaiIzinRaporuDurum = userHome.hasPermission("fazlaMesaiIzinRaporu", "view");
+		fazlaMesaiIzinRaporuDurum = loginUser.getLogin() && userHome.hasPermission("fazlaMesaiIzinRaporu", "view");
 		offIzinGuncelle = ortakIslemler.getParameterKey("offIzinGuncelle").equals("1");
 		User user = ortakIslemler.getSistemAdminUser(session);
 		if (user == null)
-			user = authenticatedUser;
+			user = loginUser;
 		boolean testDurum = PdksUtil.getTestDurum() && PdksUtil.getCanliSunucuDurum() == false;
 		testDurum = false;
 		if (testDurum)
 			logger.info("aylikPuantajOlusturuluyor 0000 " + new Date());
-		manuelVardiyaIzinGir = ortakIslemler.getVardiyaIzinGir(session, authenticatedUser.getDepartman());
+		manuelVardiyaIzinGir = ortakIslemler.getVardiyaIzinGir(session, loginUser.getDepartman());
 		gorevYeriGirisDurum = ortakIslemler.getParameterKey("uygulamaTipi").equals("H") && ortakIslemler.getParameterKey("gorevYeriGiris").equals("1");
 		departmanBolumAyni = Boolean.FALSE;
 		fazlaMesaiTalepVar = planGirisi && aramaSecenekleri.getSirket() != null && aramaSecenekleri.getSirket().isFazlaMesaiTalepGirer() && aramaSecenekleri.getSirket().getDepartman().isFazlaMesaiTalepGirer();
@@ -5448,7 +5468,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		aksamVardiyaBitDakika = bitZaman[1];
 		ozelIstek = Boolean.FALSE;
 		onayDurum = Boolean.FALSE;
-		aylikPuantajList.clear();
+		if (aylikPuantajList == null)
+			aylikPuantajList = new ArrayList<AylikPuantaj>();
+		else
+			aylikPuantajList.clear();
 		List<VardiyaGun> aylikSablonVardiyalar = new ArrayList<VardiyaGun>();
 		gunSec = Boolean.FALSE;
 		DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi(), denklestirmeDonemiGecenAy = new DepartmanDenklestirmeDonemi();
@@ -5528,7 +5551,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		} else if (denklestirmeAy.getFazlaMesaiMaxSure() == null)
 			fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
 		setAylikPuantajDonem(denklestirmeAy);
-		setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy));
+		setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy, loginUser));
 		fields.clear();
 
 		fields.put("denklestirmeAy.id", denklestirmeAy.getId());
@@ -5620,7 +5643,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		bitTarih = denklestirmeDonemi.getBitisTarih();
 
 		devam = true;
-		User islemYapan = (User) authenticatedUser.clone();
+		User islemYapan = (User) loginUser.clone();
 
 		ArrayList<String> perList = null;
 		fields.clear();
@@ -5644,7 +5667,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				perList.add(personel.getPdksSicilNo());
 		}
 
-		if (!authenticatedUser.isDirektorSuperVisor() && !authenticatedUser.isIK() && (authenticatedUser.isYonetici() || authenticatedUser.isYoneticiKontratli())) {
+		if (!loginUser.isDirektorSuperVisor() && !loginUser.isIK() && (loginUser.isYonetici() || loginUser.isYoneticiKontratli())) {
 			ortakIslemler.sistemeGirisIslemleri(islemYapan, Boolean.TRUE, basTarih, bitTarih, session);
 
 			boolean hastane = ortakIslemler.getParameterKey("uygulamaTipi").equals("H");
@@ -5658,7 +5681,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							SelectItem item = (SelectItem) iterator.next();
 							gorevYerileri.add((Long) item.getValue());
 						}
-					List<VardiyaGorev> gorevliler = ortakIslemler.getVardiyaGorevYerleri(authenticatedUser, defaultAylikPuantajSablon.getIlkGun(), defaultAylikPuantajSablon.getSonGun(), gorevYerileri, session);
+					List<VardiyaGorev> gorevliler = ortakIslemler.getVardiyaGorevYerleri(loginUser, defaultAylikPuantajSablon.getIlkGun(), defaultAylikPuantajSablon.getSonGun(), gorevYerileri, session);
 					for (VardiyaGorev pdksVardiyaGorev : gorevliler) {
 						Personel personel = pdksVardiyaGorev.getVardiyaGun().getPersonel();
 						String perNo = personel.getPdksSicilNo();
@@ -5698,9 +5721,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			fazlaMesaiMap = ortakIslemler.getFazlaMesaiMap(session);
 			fields.clear();
 			List<String> superVisorList = null;
-			if (authenticatedUser.isSuperVisor()) {
+			if (loginUser.isSuperVisor()) {
 				superVisorList = new ArrayList<String>();
-				for (Personel personel : authenticatedUser.getTumPersoneller()) {
+				for (Personel personel : loginUser.getTumPersoneller()) {
 					String sicil = personel.getSicilNo();
 					if (!PdksUtil.hasStringValue(sicil))
 						continue;
@@ -5856,7 +5879,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				TreeMap<Long, VardiyaGorev> vardiyaGunGorevMap = pdksEntityController.getObjectByInnerObjectMapInLogic(fields, VardiyaGorev.class, false);
 
 				List<Long> idList = null;
-				if ((authenticatedUser.isYonetici() || authenticatedUser.isYoneticiKontratli()) && !authenticatedUser.isDirektorSuperVisor()) {
+				if ((loginUser.isYonetici() || loginUser.isYoneticiKontratli()) && !loginUser.isDirektorSuperVisor()) {
 					idList = new ArrayList<Long>();
 					if (aramaSecenekleri.getGorevYeriList() != null) {
 						for (SelectItem selectItem : aramaSecenekleri.getGorevYeriList())
@@ -6055,7 +6078,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							if (personelDenklestirme.getId() == null) {
 								if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 									personelDenklestirme.setPlanlanSure(-1d);
-								personelDenklestirme.setOlusturanUser(authenticatedUser);
+								personelDenklestirme.setOlusturanUser(loginUser);
 								denklestirme = personelDenklestirme.isDenklestirme();
 							}
 						} else {
@@ -6181,7 +6204,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 								default:
 									break;
 								}
-								pdksVardiyaGun.setOlusturanUser(authenticatedUser);
+								pdksVardiyaGun.setOlusturanUser(loginUser);
 								if (yeniKayit && pdksVardiyaGun.getTatil() != null && pdksVardiyaGun.getVardiya().isCalisma()) {
 									Tatil tatil = pdksVardiyaGun.getTatil();
 									if (!tatil.isYarimGunMu())
@@ -6300,7 +6323,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						} else {
 							if (pdks && pdksVardiyaHafta.getId() == null && sablonu != null) {
 								pdksVardiyaHafta.setVardiyaSablonu(sablonu);
-								pdksVardiyaHafta.setOlusturanUser(authenticatedUser);
+								pdksVardiyaHafta.setOlusturanUser(loginUser);
 								pdksEntityController.saveOrUpdate(session, entityManager, pdksVardiyaHafta);
 								flush = true;
 							}
@@ -6374,8 +6397,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 					setIzin(plan.getPersonel().getId(), izinler, list);
 					try {
-						if (gecenAylikPuantaj.getPersonelDenklestirmeAylik() != null && !helpPersonel(personel)) {
+						if (gecenAylikPuantaj.getPersonelDenklestirmeAylik() != null && !helpPersonel(personel) && loginUser.getLogin()) {
 							gecenAylikPuantaj.setCalismaModeliAy(gecenAylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy());
+							gecenAylikPuantaj.setLoginUser(loginUser);
 							ortakIslemler.aylikPlanSureHesapla(true, gecenAylikPuantaj, false, tatilGunleriMap, session);
 						}
 
@@ -6422,6 +6446,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						}
 						aylikPuantaj.setCalismaModeliAy(personelDenklestirme.getCalismaModeliAy());
 						CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
+						aylikPuantaj.setLoginUser(loginUser);
 						if (!helpPersonel(personel))
 							ortakIslemler.aylikPlanSureHesapla(true, aylikPuantaj, denklestirmeAyDurum, tatilGunleriMap, session);
 
@@ -6581,11 +6606,11 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				aylikPuantajList.addAll(helpAylikPuantajList);
 			helpAylikPuantajList = null;
 		}
-		if (aylikPuantajList != null)
+		if (aylikPuantajList != null && loginUser.getLogin())
 			aylikVardiyaOzetOlustur();
 		List<AylikPuantaj> aylikPuantajAllList = new ArrayList<AylikPuantaj>();
-		Long userId = authenticatedUser.getPdksPersonel().getId();
-		boolean kullaniciYonetici = authenticatedUser.isYonetici() || authenticatedUser.isSuperVisor() || authenticatedUser.isProjeMuduru() || authenticatedUser.isDirektorSuperVisor();
+		Long userId = loginUser.getPdksPersonel().getId();
+		boolean kullaniciYonetici = loginUser.isYonetici() || loginUser.isSuperVisor() || loginUser.isProjeMuduru() || loginUser.isDirektorSuperVisor();
 		for (Iterator iterator = aylikPuantajList.iterator(); iterator.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 			if (!kullaniciYonetici || !aylikPuantaj.getPdksPersonel().getId().equals(userId)) {
@@ -6648,7 +6673,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			suaKontrol(aylikPuantajList);
 			list = null;
 		}
-		ortakIslemler.yoneticiPuantajKontrol(authenticatedUser, aylikPuantajList, Boolean.FALSE, session);
+		ortakIslemler.yoneticiPuantajKontrol(loginUser, aylikPuantajList, Boolean.FALSE, session);
 		if (denklestirmeAyDurum && !aylikPuantajList.isEmpty()) {
 			try {
 				setDenklestirmeAlanlari(aylikPuantajList);
@@ -6660,8 +6685,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		vardiyaFazlaMesaiMap.clear();
 		if (fazlaMesaiTalepVar && aylikPuantajList != null && !aylikPuantajList.isEmpty())
 			fazlaMesaiGunleriniBul(defaultAylikPuantajSablon.getIlkGun(), defaultAylikPuantajSablon.getSonGun(), aylikPuantajList);
-		vardiyaFazlaMesaiTalepGoster = planGirisi && !vardiyaFazlaMesaiMap.isEmpty() && (authenticatedUser.isAdmin() || PdksUtil.isSistemDestekVar());
-		TreeMap<String, Object> ozetMap = fazlaMesaiOrtakIslemler.getIzinOzetMap(authenticatedUser, null, aylikPuantajList, false);
+		vardiyaFazlaMesaiTalepGoster = planGirisi && !vardiyaFazlaMesaiMap.isEmpty() && (loginUser.isAdmin() || PdksUtil.isSistemDestekVar());
+		TreeMap<String, Object> ozetMap = fazlaMesaiOrtakIslemler.getIzinOzetMap(loginUser, null, aylikPuantajList, false);
 		izinTipiVardiyaList = ozetMap.containsKey("izinTipiVardiyaList") ? (List<Vardiya>) ozetMap.get("izinTipiVardiyaList") : new ArrayList<Vardiya>();
 		izinTipiPersonelVardiyaMap = ozetMap.containsKey("izinTipiPersonelVardiyaMap") ? (TreeMap<String, TreeMap<String, List<VardiyaGun>>>) ozetMap.get("izinTipiPersonelVardiyaMap") : new TreeMap<String, TreeMap<String, List<VardiyaGun>>>();
 		if (izinTipiVardiyaList != null && !izinTipiVardiyaList.isEmpty()) {
@@ -6669,11 +6694,11 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		}
 		fazlaMesaiTalepler.clear();
 		boolean vardiyaHareketKontrol = ortakIslemler.getParameterKey("vardiyaHareketKontrol").equals("1");
-		if (vardiyaHareketKontrol && defaultAylikPuantajSablon != null && (authenticatedUser.isAdmin()))
+		if (vardiyaHareketKontrol && defaultAylikPuantajSablon != null && (loginUser.isAdmin()))
 			vardiyaHareketKontrol(defaultAylikPuantajSablon);
 		aylikPuantajAllList = null;
 		if (fazlaMesaiTalepVar && denklestirmeAyDurum && aylikPuantajList.size() > 0)
-			topluFazlaCalismaTalep = ortakIslemler.getParameterKey("topluFazlaCalismaTalep").equals("1") || userHome.hasPermission("vardiyaPlani", "topluFazlaCalismaTalep") || authenticatedUser.isAdmin();
+			topluFazlaCalismaTalep = ortakIslemler.getParameterKey("topluFazlaCalismaTalep").equals("1") || (loginUser.getLogin() && userHome.hasPermission("vardiyaPlani", "topluFazlaCalismaTalep")) || loginUser.isAdmin();
 		else
 			topluFazlaCalismaTalep = false;
 
@@ -8835,6 +8860,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		session.setFlushMode(FlushMode.MANUAL);
 		bordroAlanKapat();
 		adminRoleDurum(authenticatedUser);
+		loginUser = authenticatedUser;
+		loginUser.setLogin(authenticatedUser != null);
 		session.clear();
 		aylikHareketKaydiVardiyaBul = Boolean.FALSE;
 		fillEkSahaTanim();
