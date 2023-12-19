@@ -25,7 +25,5 @@
 	<classpathentry kind="lib" path="C:/opt/lib/gl/poi-2.5.1-final-20040804.jar"/>
 	<classpathentry kind="lib" path="C:/opt/lib/gl/quartz-1.6.0.jar"/>
 	<classpathentry kind="lib" path="C:/opt/lib/gl/spring-2.5.6.jar"/>
-	<classpathentry kind="lib" path="/pdks-ear/EarContent/log4j.jar"/>
-	<classpathentry kind="lib" path="/pdks-ear/EarContent/log4j-1.2.17.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
