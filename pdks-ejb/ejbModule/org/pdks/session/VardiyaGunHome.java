@@ -6699,7 +6699,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (izinTipiVardiyaList != null && !izinTipiVardiyaList.isEmpty()) {
 			fazlaMesaiOrtakIslemler.personelIzinAdetleriOlustur(aylikPuantajList, izinTipiVardiyaList, izinTipiPersonelVardiyaMap);
 		}
-		fazlaMesaiTalepler.clear();
+		if (fazlaMesaiTalepler == null)
+			fazlaMesaiTalepler = new ArrayList<FazlaMesaiTalep>();
+		else
+			fazlaMesaiTalepler.clear();
 		boolean vardiyaHareketKontrol = ortakIslemler.getParameterKey("vardiyaHareketKontrol").equals("1");
 		if (vardiyaHareketKontrol && defaultAylikPuantajSablon != null && (loginUser.isAdmin()))
 			vardiyaHareketKontrol(defaultAylikPuantajSablon);
