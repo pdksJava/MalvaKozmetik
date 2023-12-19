@@ -2634,6 +2634,7 @@ public class PdksUtil implements Serializable {
 		if (yeni != null && yeni && session1 != null) {
 			if (sessionFactory == null)
 				sessionFactory = session1.getSessionFactory();
+			// session1 = sessionFactory.getCurrentSession();
 			session1 = sessionFactory.openSession();
 		}
 

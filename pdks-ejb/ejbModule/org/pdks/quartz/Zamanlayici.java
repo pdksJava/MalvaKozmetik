@@ -53,6 +53,8 @@ public class Zamanlayici implements Serializable {
 	IzinBakiyeGuncelleme izinBakiyeGuncelleme;
 	@In
 	SertifikaSSLKontrol sertifikaSSLKontrol;
+	@In
+	FazlaMesaiGuncelleme fazlaMesaiGuncelleme;
 	@In(required = false, create = true)
 	OrtakIslemler ortakIslemler;
 	@In(required = false, create = true)
@@ -61,32 +63,30 @@ public class Zamanlayici implements Serializable {
 	Renderer renderer;
 	@In(required = false)
 	User authenticatedUser;
-	@In
-	FazlaMesaiGuncelleme fazlaMesaiGuncelleme;
 
 	public void scheduleFazlaMesaiGuncellemeTimer() {
-		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
 		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 3-23 ? * *");
+		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
 	}
 
 	public void scheduleSertifikaSSLKontrolTimer() {
-		logger.info("scheduleSertifikaSSLKontrolTimer start : " + new Date());
 		sertifikaSSLKontrol.sertifikaSSLKontrolTimer(new Date(), "0 0/15 8-21 ? * *");
+		logger.info("scheduleSertifikaSSLKontrolTimer start : " + new Date());
 	}
 
 	public void scheduleIseGelmemeUyariTimer() {
-		logger.info("scheduleIseGelmemeUyariTimer start : " + new Date());
 		iseGelmemeUyari.iseGelmeDurumuTimer(new Date(), "0 0/5 8-14 ? * *");
+		logger.info("scheduleIseGelmemeUyariTimer start : " + new Date());
 	}
 
 	public void schedulePersonelERPGuncellemeTimer() {
-		logger.info("schedulePersonelERPGuncellemeTimer start : " + new Date());
 		personelERPGuncelleme.personelERPGuncellemeTimer(new Date(), "0 0/5 3-21 ? * *");
+		logger.info("schedulePersonelERPGuncellemeTimer start : " + new Date());
 	}
 
 	public void izinBakiyeGuncellemeTimer() {
-		logger.info("izinBakiyeGuncellemeTimer start : " + new Date());
 		izinBakiyeGuncelleme.izinBakiyeGuncellemeTimer(new Date(), "0 0/5 3-18 ? * *");
+		logger.info("izinBakiyeGuncellemeTimer start : " + new Date());
 	}
 
 	public boolean isPazar() {

@@ -3559,16 +3559,23 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	}
 
 	/**
+	 * @param sessionInput
 	 * @param entityManagerInput
 	 * @param pdksEntityControllerInput
 	 * @param ortakIslemlerInput
 	 * @param fazlaMesaiOrtakIslemlerInput
 	 */
-	public void setInject(EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput, OrtakIslemler ortakIslemlerInput, FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemlerInput) {
-		this.entityManager = entityManagerInput;
-		this.pdksEntityController = pdksEntityControllerInput;
-		this.ortakIslemler = ortakIslemlerInput;
-		this.fazlaMesaiOrtakIslemler = fazlaMesaiOrtakIslemlerInput;
+	public void setInject(Session sessionInput, EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput, OrtakIslemler ortakIslemlerInput, FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemlerInput) {
+		if (sessionInput != null && session == null)
+			this.session = sessionInput;
+		if (entityManagerInput != null && entityManager == null)
+			this.entityManager = entityManagerInput;
+		if (pdksEntityControllerInput != null && pdksEntityController == null)
+			this.pdksEntityController = pdksEntityControllerInput;
+		if (ortakIslemlerInput != null && ortakIslemler == null)
+			this.ortakIslemler = ortakIslemlerInput;
+		if (fazlaMesaiOrtakIslemlerInput != null && fazlaMesaiOrtakIslemler == null)
+			this.fazlaMesaiOrtakIslemler = fazlaMesaiOrtakIslemlerInput;
 	}
 
 	/**
@@ -5445,7 +5452,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		vardiyaBolumList = null;
 		aylikHareketKaydiVardiyaBul = Boolean.FALSE;
 		savePlanLastParameter();
-		fazlaMesaiIzinRaporuDurum = loginUser.getLogin() && userHome.hasPermission("fazlaMesaiIzinRaporu", "view");
+		fazlaMesaiIzinRaporuDurum = userHome != null && loginUser.getLogin() && userHome.hasPermission("fazlaMesaiIzinRaporu", "view");
 		offIzinGuncelle = ortakIslemler.getParameterKey("offIzinGuncelle").equals("1");
 		User user = ortakIslemler.getSistemAdminUser(session);
 		if (user == null)
@@ -6698,7 +6705,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			vardiyaHareketKontrol(defaultAylikPuantajSablon);
 		aylikPuantajAllList = null;
 		if (fazlaMesaiTalepVar && denklestirmeAyDurum && aylikPuantajList.size() > 0)
-			topluFazlaCalismaTalep = ortakIslemler.getParameterKey("topluFazlaCalismaTalep").equals("1") || (loginUser.getLogin() && userHome.hasPermission("vardiyaPlani", "topluFazlaCalismaTalep")) || loginUser.isAdmin();
+			topluFazlaCalismaTalep = ortakIslemler.getParameterKey("topluFazlaCalismaTalep").equals("1") || (userHome != null && loginUser.getLogin() && userHome.hasPermission("vardiyaPlani", "topluFazlaCalismaTalep")) || loginUser.isAdmin();
 		else
 			topluFazlaCalismaTalep = false;
 

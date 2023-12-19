@@ -51,14 +51,12 @@
 	<web:multipart-filter create-temp-files="true" max-request-size="1000000" url-pattern="*.seam" />
 
 	<event type="org.jboss.seam.postInitialization">
-		<action execute="#{zamanlayici.scheduleIseGelmemeUyariTimer()}" />
-		<action execute="#{zamanlayici.izinBakiyeGuncellemeTimer()}" />
-		<action execute="#{zamanlayici.schedulePersonelERPGuncellemeTimer()}" />
 		<action execute="#{zamanlayici.scheduleSertifikaSSLKontrolTimer()}" />
-		<action execute="#{zamanlayici.scheduleFazlaMesaiGuncellemeTimer()}" />
+		<action execute="#{zamanlayici.scheduleIseGelmemeUyariTimer()}" />
+		<action execute="#{zamanlayici.schedulePersonelERPGuncellemeTimer()}" />
+		<action execute="#{zamanlayici.izinBakiyeGuncellemeTimer()}" />
 		<!-- 
-		
-		
+			<action execute="#{zamanlayici.scheduleFazlaMesaiGuncellemeTimer()}" />
 		 -->
 	</event>
 	<async:quartz-dispatcher />

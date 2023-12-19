@@ -1592,7 +1592,8 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public List getIzinOnayDurum(Session session, User user) {
-		HashMap fields = new HashMap();User loginUser = authenticatedUser != null ? authenticatedUser : new User();
+		HashMap fields = new HashMap();
+		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
 		if (user == null)
 			user = loginUser;
 		StringBuffer sb = new StringBuffer();
@@ -3000,7 +3001,7 @@ public class OrtakIslemler implements Serializable {
 		try {
 			parameter = (Parameter) pdksEntityController.getObjectByInnerObject(map, Parameter.class);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 		if (parameter != null && (parameter.getActive().equals(Boolean.FALSE) || (parameter.isHelpDeskMi() && PdksUtil.isSistemDestekVar() == false)))
 			parameter = null;

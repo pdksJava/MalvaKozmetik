@@ -59,9 +59,6 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	static Logger logger = Logger.getLogger(FazlaMesaiGuncelleme.class);
 
 	@In(required = false, create = true)
-	OrtakIslemler ortakIslemler;
-
-	@In(required = false, create = true)
 	EntityManager entityManager;
 
 	@In(required = false, create = true)
@@ -70,13 +67,20 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	@In(required = false, create = true)
 	PdksEntityController pdksEntityController;
 
-	// //@In(required = false, create = true)
-	FazlaMesaiHesaplaHome fazlaMesaiHesaplaHome;
-
-	VardiyaGunHome vardiyaGunHome;
+	@In(required = false, create = true)
+	User authenticatedUser;
 
 	@In(required = false, create = true)
 	FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemler;
+
+	@In(required = false, create = true)
+	OrtakIslemler ortakIslemler;
+
+	// @In(required = false, create = true)
+	FazlaMesaiHesaplaHome fazlaMesaiHesaplaHome;
+
+	// @In(required = false, create = true)
+	VardiyaGunHome vardiyaGunHome;
 
 	private static final String PARAMETER_KEY = "fazlaMesaiZamanliGuncelleme";
 
@@ -141,7 +145,11 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	 */
 	@Transactional
 	public void fazlaMesaiGuncellemeCalistir(boolean manuel, Session session) {
-		loginUser = ortakIslemler != null ? ortakIslemler.getSistemAdminUser(session) : null;
+		if (authenticatedUser == null)
+			loginUser = ortakIslemler != null ? ortakIslemler.getSistemAdminUser(session) : null;
+		else
+			loginUser = authenticatedUser;
+		loginUser.setLogin(authenticatedUser != null);
 		if (loginUser != null) {
 			Date basTarih = new Date();
 			Integer otomatikOnayIKGun = null;
@@ -157,7 +165,8 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				}
 			if (otomatikOnayIKGun == null)
 				otomatikOnayIKGun = 6;
-			loginUser.setAdmin(Boolean.TRUE);
+			if (loginUser.getLogin().booleanValue() == false)
+				loginUser.setAdmin(Boolean.TRUE);
 			boolean denklestirme = true;
 			Calendar cal = Calendar.getInstance();
 			LinkedHashMap<Integer, Liste> dMap = new LinkedHashMap<Integer, Liste>();
@@ -168,23 +177,29 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			yil = cal.get(Calendar.YEAR);
 			ay = cal.get(Calendar.MONTH) + 1;
 			dMap.put(yil * 100 + ay, new Liste(yil, ay));
+			cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, otomatikOnayIKGun);
+			yil = cal.get(Calendar.YEAR);
+			ay = cal.get(Calendar.MONTH) + 1;
+			dMap.put(yil * 100 + ay, new Liste(yil, ay));
 			HashMap fields = new HashMap();
-			if (fazlaMesaiHesaplaHome == null)
-				fazlaMesaiHesaplaHome = new FazlaMesaiHesaplaHome();
 			if (vardiyaPlaniOtomatikOlustur) {
-				if (vardiyaGunHome == null)
+				if (vardiyaGunHome == null) {
 					vardiyaGunHome = new VardiyaGunHome();
-				vardiyaGunHome.setInject(entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
-				vardiyaGunHome.setSession(session);
+					vardiyaGunHome.setInject(session, entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
+				}
 				vardiyaGunHome.setSicilNo("");
 				vardiyaGunHome.setDenklestirmeAyDurum(true);
 				vardiyaGunHome.setLoginUser(loginUser);
 			}
-
-			fazlaMesaiHesaplaHome.setInject(entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
-			ortakIslemler.setInject(null, null, loginUser);
-			fazlaMesaiOrtakIslemler.setInject(null, null, ortakIslemler, loginUser);
-			fazlaMesaiHesaplaHome.setSession(session);
+			if (fazlaMesaiHesaplaHome == null) {
+				fazlaMesaiHesaplaHome = new FazlaMesaiHesaplaHome();
+				fazlaMesaiHesaplaHome.setInject(session, entityManager, pdksEntityController, ortakIslemler, fazlaMesaiOrtakIslemler);
+			}
+			if (loginUser.getLogin().booleanValue() == false) {
+				ortakIslemler.setInject(null, null, loginUser);
+				fazlaMesaiOrtakIslemler.setInject(null, null, ortakIslemler, loginUser);
+			}
 			fazlaMesaiHesaplaHome.setHataliPuantajGoster(false);
 			fazlaMesaiHesaplaHome.setSicilNo("");
 			fazlaMesaiHesaplaHome.setStajerSirket(false);
@@ -361,6 +376,8 @@ public class FazlaMesaiGuncelleme implements Serializable {
 		as.setTesisId(tesisId);
 		as.setLoginUser(loginUser);
 		String baslik = dm.getAyAdi() + " " + dm.getYil() + " " + sirketAdi + (tesis != null ? " " + tesis.getAciklama() : "");
+		Date basGun = PdksUtil.convertToJavaDate(String.valueOf(dm.getYil() * 100 + dm.getAy()) + "01", "yyyyMMdd"), bugun = new Date();
+		boolean gelecekTarih = basGun.after(bugun);
 		boolean hataVar = false;
 		for (SelectItem selectItem : bolumList) {
 			Long seciliEkSaha3Id = (Long) selectItem.getValue();
@@ -370,40 +387,50 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 			String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
+			// session.beginTransaction().begin();
 			loginUser.setAdmin(Boolean.TRUE);
-			if (vardiyaPlaniOtomatikOlustur) {
+			if (vardiyaPlaniOtomatikOlustur || gelecekTarih) {
 				as.setEkSaha3Id(seciliEkSaha3Id);
 				boolean devam = true;
 				int adet = 0;
-				while (devam && adet < 3) {
+				while (devam && adet < 2) {
+					session.clear();
 					List<Personel> donemFMPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
 					List<Personel> donemCPPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, false, session);
 					devam = donemCPPerList.size() != donemFMPerList.size();
 					try {
 						if (devam) {
 							logger.info(str + " aylikPuantajOlusturuluyor in " + new Date());
+							vardiyaGunHome.setSession(session);
 							vardiyaGunHome.setAramaSecenekleri(as);
 							vardiyaGunHome.aylikPuantajOlusturuluyor();
 							logger.info(str + " aylikPuantajOlusturuluyor out " + new Date());
 						}
 					} catch (Exception e) {
-						logger.error(e);
+						System.err.println(e);
 						e.printStackTrace();
 					}
 					++adet;
 					donemFMPerList = null;
 					donemCPPerList = null;
 				}
+
 			}
 			as.setEkSaha3Id(null);
+			fazlaMesaiHesaplaHome.setSession(session);
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
 			try {
-				logger.info(str + " in " + new Date());
-				loginUser.setAdmin(Boolean.TRUE);
-				List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
-				hataVar = puantajList.isEmpty();
-				logger.info(str + " out " + new Date());
+				if (!hataVar && gelecekTarih == false) {
+					logger.info(str + " in " + new Date());
+					loginUser.setAdmin(Boolean.TRUE);
+					List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
+					hataVar = puantajList.isEmpty();
+					logger.info(str + " out " + new Date());
+				}
+				session.flush();
+				// session.getTransaction().commit();
 			} catch (Exception e) {
+				// session.getTransaction().rollback();
 				logger.error(e);
 				e.printStackTrace();
 				hataVar = true;

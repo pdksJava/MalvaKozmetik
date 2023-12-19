@@ -2462,16 +2462,23 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	}
 
 	/**
+	 * @param sessionInput
 	 * @param entityManagerInput
 	 * @param pdksEntityControllerInput
 	 * @param ortakIslemlerInput
 	 * @param fazlaMesaiOrtakIslemlerInput
 	 */
-	public void setInject(EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput, OrtakIslemler ortakIslemlerInput, FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemlerInput) {
-		this.entityManager = entityManagerInput;
-		this.pdksEntityController = pdksEntityControllerInput;
-		this.ortakIslemler = ortakIslemlerInput;
-		this.fazlaMesaiOrtakIslemler = fazlaMesaiOrtakIslemlerInput;
+	public void setInject(Session sessionInput, EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput, OrtakIslemler ortakIslemlerInput, FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemlerInput) {
+		if (sessionInput != null && session == null)
+			this.session = sessionInput;
+		if (entityManagerInput != null && entityManager == null)
+			this.entityManager = entityManagerInput;
+		if (pdksEntityControllerInput != null && pdksEntityController == null)
+			this.pdksEntityController = pdksEntityControllerInput;
+		if (ortakIslemlerInput != null && ortakIslemler == null)
+			this.ortakIslemler = ortakIslemlerInput;
+		if (fazlaMesaiOrtakIslemlerInput != null && fazlaMesaiOrtakIslemler == null)
+			this.fazlaMesaiOrtakIslemler = fazlaMesaiOrtakIslemlerInput;
 	}
 
 	/**

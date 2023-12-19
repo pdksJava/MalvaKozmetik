@@ -306,6 +306,7 @@ public class StartupAction implements Serializable {
 			if (session == null)
 				session = PdksUtil.getSession(entityManager, Boolean.FALSE);
 		}
+		logger.info("Sistem verileri yukleniyor in " + new Date());
 
 		HashMap parametreMap = new HashMap();
 		if (session != null)
@@ -359,6 +360,7 @@ public class StartupAction implements Serializable {
 
 		// Menu listesisini dolduruyoruz
 		fillMenuItemList(session);
+		logger.info("Sistem verileri yukleniyor out " + new Date());
 
 	}
 
