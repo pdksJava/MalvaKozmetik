@@ -1467,6 +1467,42 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param dm
+	 * @param perList
+	 * @param session
+	 * @return
+	 */
+	public List<Personel> getFazlaMesaiPersonelList(DenklestirmeAy dm, List<Personel> perList, Session session) {
+		List<Personel> list = null;
+		if (dm != null && dm.getId() != null && perList != null && !perList.isEmpty()) {
+			List<Long> idList = new ArrayList<Long>();
+			for (Personel personel : perList)
+				idList.add(personel.getId());
+			StringBuffer sb = new StringBuffer();
+			sb.append("SELECT DISTINCT P.* FROM " + PersonelDenklestirme.TABLE_NAME + " PD WITH(nolock) ");
+			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=" + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
+			sb.append(" AND P.PDKS=1");
+			sb.append(" WHERE PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + dm.getId());
+			sb.append(" AND PD." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :s");
+			HashMap fields = new HashMap();
+			fields.put("s", idList);
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			try {
+				list = pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+			idList = null;
+		}
+		if (list == null)
+			list = new ArrayList<Personel>();
+		return list;
+
+	}
+
+	/**
 	 * @param departmanId
 	 * @param aylikPuantaj
 	 * @param denklestirme

@@ -395,9 +395,9 @@ public class FazlaMesaiGuncelleme implements Serializable {
 				int adet = 0;
 				while (devam && adet < 2) {
 					session.clear();
-					List<Personel> donemFMPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
-					List<Personel> donemCPPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, false, session);
-					devam = donemCPPerList.size() != donemFMPerList.size();
+					List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
+					List<Personel> donemCPPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(dm, donemPerList, session);
+					devam = donemCPPerList.size() != donemPerList.size();
 					try {
 						if (devam) {
 							logger.info(str + " aylikPuantajOlusturuluyor in " + new Date());
@@ -411,7 +411,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						e.printStackTrace();
 					}
 					++adet;
-					donemFMPerList = null;
+					donemPerList = null;
 					donemCPPerList = null;
 				}
 
