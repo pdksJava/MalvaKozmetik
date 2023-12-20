@@ -201,9 +201,9 @@ public class DepartmanHome extends EntityHome<Departman> implements Serializable
 				mailAdres = "";
 			}
 		} catch (Exception e) {
-			logger.error("ASM Pdks hata in : \n");
+			logger.error("Pdks hata in : \n");
 			e.printStackTrace();
-			logger.error("ASM Pdks hata out : " + e.getMessage());
+			logger.error("Pdks hata out : " + e.getMessage());
 			PdksUtil.addMessageError(mailAdres + " hatalı adres!");
 		}
 

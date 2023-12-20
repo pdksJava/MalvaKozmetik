@@ -328,7 +328,6 @@ public class IseGelmemeUyari implements Serializable {
 					kgsPerMap.put(per.getPersonelKGS().getId(), per);
 				}
 				if (!kgsPerMap.isEmpty() && !yoneticiler.isEmpty()) {
-					// personeller = new ArrayList<AsmPersonel>(karadagPerMap.values());
 					map.clear();
 					map.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);

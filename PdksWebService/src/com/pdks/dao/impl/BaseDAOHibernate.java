@@ -57,7 +57,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.abh.asm.dao.BaseDAO#getObjectNumericId(String, java.lang.Class)
+	 * @see com.pdks.dao.BaseDAO#getObjectNumericId(String, java.lang.Class)
 	 */
 	public Object getObjectNumericId(String id, Class class1) {
 		Object ob = null;
@@ -72,7 +72,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.abh.asm.dao.BaseDAO#getObjectByInnerObjectList(java.lang.String, java.lang.Object, java.lang.Class)
+	 * @see com.pdks.dao.BaseDAO#getObjectByInnerObjectList(java.lang.String, java.lang.Object, java.lang.Class)
 	 */
 	public List getObjectByInnerObjectList(String fieldName, Object fieldValue, Class class1) {
 		List list = null;
@@ -87,7 +87,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.abh.asm.dao.BaseDAO#getObjectByInnerObject(java.util.HashMap, java.lang.Class)
+	 * @see com.pdks.dao.BaseDAO#getObjectByInnerObject(java.util.HashMap, java.lang.Class)
 	 */
 	public Object getObjectByInnerObject(HashMap fields, Class class1) {
 		List list = getObjectByInnerObjectList(fields, class1);
@@ -275,7 +275,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.abh.asm.dao.BaseDAO#getObjectByInnerObjectMapInLogic(java.util.HashMap , java.lang.Class)
+	 * @see com.pdks.dao.BaseDAO#getObjectByInnerObjectMapInLogic(java.util.HashMap , java.lang.Class)
 	 */
 	public TreeMap getObjectByInnerObjectMapInLogic(HashMap map, Class class1, boolean uzerineYaz) {
 		TreeMap treeMap = new TreeMap();
@@ -296,7 +296,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.abh.asm.dao.BaseDAO#getObjectByInnerObjectMap(java.util.HashMap, java.lang.Class)
+	 * @see com.pdks.dao.BaseDAO#getObjectByInnerObjectMap(java.util.HashMap, java.lang.Class)
 	 */
 	public TreeMap getObjectByInnerObjectMap(HashMap map, Class class1, boolean uzerineYaz) {
 		TreeMap treeMap = new TreeMap();
@@ -374,7 +374,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.abh.asm.dao.BaseDAO#deleteAndSaveObject(java.lang.Object[], java.lang.Object[])
+	 * @see com.pdks.dao.BaseDAO#deleteAndSaveObject(java.lang.Object[], java.lang.Object[])
 	 */
 	public void deleteAndSaveObject(Object[] saveObjectArray, Object[] deleteObjectArray) {
 		if (deleteObjectArray != null) {

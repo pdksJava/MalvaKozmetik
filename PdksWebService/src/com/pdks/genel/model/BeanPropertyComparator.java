@@ -82,7 +82,7 @@ public class BeanPropertyComparator implements Comparator {
      *            </DL>
      * @throws IllegalArgumentException
      *             if there is no property named <I>property </I> or there is a problem accessing it with the <CODE>PropertyDescriptor</CODE>
-     * @see com.asm.esaglik.genel.model.ioshq.util.BeanPropertyUtil#getProperty
+     * @see com.pdks.genel.model.BeanPropertyUtil#getProperty
      */
     public int compare(Object o1, Object o2) throws IllegalArgumentException {
         // Get the value of the properties

@@ -7,7 +7,7 @@
 	-->
 	<defaultCache maxElementsInMemory="1000" eternal="false"
 		timeToLiveSeconds="600" overflowToDisk="true" />
-	<cache name="com.asm.esaglik.entity.Hasta"
+	<cache name="com.pdks.entity.Personel"
 		maxElementsInMemory="500" eternal="false" timeToIdleSeconds="600"
 		timeToLiveSeconds="600" overflowToDisk="true" />
 

@@ -3250,8 +3250,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		aylikPuantaj.setAksamVardiyaSaatSayisi(aksamVardiyaSaatSayisi);
 		aylikPuantaj.setAksamVardiyaSayisi(aksamVardiyaSayisi);
 
-		// if (authenticatedUser.isIK())
-		// aylikPuantaj.setKaydet(aylikPuantajDefault.getAsmDenklestirmeGecenAy() == null || aylikPuantajDefault.getAsmDenklestirmeGecenAy().getDurum());
 	}
 
 	/**
