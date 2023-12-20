@@ -389,13 +389,14 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 			// session.beginTransaction().begin();
 			loginUser.setAdmin(Boolean.TRUE);
+			List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
+			boolean kayitVar = !donemPerList.isEmpty();
 			if (vardiyaPlaniOtomatikOlustur || gelecekTarih) {
 				as.setEkSaha3Id(seciliEkSaha3Id);
-				boolean devam = true;
+				boolean devam = kayitVar;
 				int adet = 0;
 				while (devam && adet < 2) {
 					session.clear();
-					List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
 					List<Personel> donemCPPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(dm, donemPerList, session);
 					devam = donemCPPerList.size() != donemPerList.size();
 					try {
@@ -420,7 +421,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			fazlaMesaiHesaplaHome.setSession(session);
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
 			try {
-				if (!hataVar && gelecekTarih == false) {
+				if (!hataVar && gelecekTarih == false && kayitVar) {
 					logger.info(str + " in " + new Date());
 					loginUser.setAdmin(Boolean.TRUE);
 					List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);

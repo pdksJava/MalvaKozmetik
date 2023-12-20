@@ -347,13 +347,14 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
+				List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
+				boolean kayitVar = !donemPerList.isEmpty();
 				if (authenticatedUser.isAdmin() || gelecekTarih) {
 					as.setEkSaha3Id(seciliEkSaha3Id);
-					boolean devam = true;
+					boolean devam = kayitVar;
 					int adet = 0;
 					while (devam && adet < 2) {
 						session.clear();
-						List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
 						List<Personel> donemCPPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(denklestirmeAy, donemPerList, session);
 						devam = donemPerList.size() != donemCPPerList.size();
 						try {
@@ -378,7 +379,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					logger.info(str + " in " + new Date());
 				loginUser.setAdmin(Boolean.TRUE);
 				List<AylikPuantaj> puantajList = null;
-				if (gelecekTarih == false)
+				if (kayitVar && gelecekTarih == false)
 					puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 				if (puantajList != null && puantajList.isEmpty()) {
 					hataYok = false;
