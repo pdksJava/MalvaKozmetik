@@ -10300,7 +10300,7 @@ public class OrtakIslemler implements Serializable {
 
 				if (saveList != null && !saveList.isEmpty()) {
 					for (Iterator iterator = saveList.iterator(); iterator.hasNext();) {
-						Object oVardiya = (Object) iterator.next();
+						BaseObject oVardiya = (BaseObject) iterator.next();
 						String vardiyaKey = null;
 						VardiyaGun vardiyaGun = null;
 						if (oVardiya instanceof VardiyaGun) {
@@ -10314,20 +10314,19 @@ public class OrtakIslemler implements Serializable {
 								}
 
 							}
+							try {
+								if (!vardiyaMap.containsKey(vardiyaKey)) {
+									if (veriYaz) {
+										pdksEntityController.saveOrUpdate(session, entityManager, vardiyaGun);
+										session.flush();
+									}
+									vardiyaMap.put(vardiyaKey, vardiyaGun);
+								}
 
-						}
-						try {
-							pdksEntityController.saveOrUpdate(session, entityManager, oVardiya);
-							session.flush();
-							if (vardiyaGun != null)
-								vardiyaMap.put(vardiyaKey, vardiyaGun);
+							} catch (Exception e1) {
+								logger.error(vardiyaGun.getVardiyaKeyStr() + "\n" + e1);
 
-						} catch (Exception e1) {
-							if (vardiyaGun != null) {
-								logger.error(vardiyaGun.getVardiyaKeyStr());
 							}
-							logger.error(e1);
-
 						}
 					}
 
