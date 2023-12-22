@@ -2218,7 +2218,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						IzinERP izinERP = hataList.get(0);
 						if (PdksUtil.hasStringValue(izinERP.getPersonelNo()) && personelMap.containsKey(izinERP.getPersonelNo())) {
 							Personel izinSahibi = personelMap.get(izinERP.getPersonelNo());
-							konuEk = " [ " + izinSahibi.getAd() + " ]";
+							konuEk = " [ " + izinERP.getPersonelNo() + " - " + izinSahibi.getAdSoyad() + " ]";
 						}
 					}
 					mailMap.put("konu", konu + konuEk);
