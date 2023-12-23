@@ -289,8 +289,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		linkBordroAdres = null;
 		bordroAlanKapat();
 		boolean ayniSayfa = userLogin.getCalistigiSayfa() != null && userLogin.getCalistigiSayfa().equals(sayfaURL);
-		if (!ayniSayfa)
-			userLogin.setCalistigiSayfa(sayfaURL);
+		// if (!ayniSayfa)
+		// userLogin.setCalistigiSayfa(sayfaURL);
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, userLogin);
 		session.setFlushMode(FlushMode.MANUAL);

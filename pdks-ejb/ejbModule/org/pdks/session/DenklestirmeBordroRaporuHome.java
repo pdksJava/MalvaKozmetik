@@ -441,10 +441,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		try {
 			fazlaMesaiHesaplaMenuAdi = "";
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
-			// authenticatedUser.setCalistigiSayfa("");
-			// boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
-			// if (!ayniSayfa)
-			// authenticatedUser.setCalistigiSayfa(sayfaURL);
+//			boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
+//			if (!ayniSayfa)
+//				authenticatedUser.setCalistigiSayfa(sayfaURL);
 			if (personelDenklestirmeList != null)
 				personelDenklestirmeList.clear();
 			else
@@ -896,7 +895,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		if (personelDenklestirmeList.isEmpty())
 			PdksUtil.addMessageWarn("İlgili döneme ait fazla mesai bulunamadı!");
 		else
-			fazlaMesaiHesaplaMenuAdi = ortakIslemler.getMenuAdi("fazlaMesaiHesapla");
+			fazlaMesaiHesaplaMenuAdi = ortakIslemler.getMenuUserLogAdi(null, "fazlaMesaiHesapla", false);
+
 		setInstance(denklestirmeAy);
 
 		return "";

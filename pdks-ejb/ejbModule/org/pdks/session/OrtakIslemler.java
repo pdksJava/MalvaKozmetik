@@ -4632,7 +4632,7 @@ public class OrtakIslemler implements Serializable {
 				Gson gson = new Gson();
 				LinkedHashMap<String, Object> map1 = new LinkedHashMap<String, Object>();
 				map1.put("kullanici", authenticatedUser.getAdSoyad());
-				map1.put("menuAdi", getMenuUserAdi(null, key));
+				map1.put("menuAdi", getMenuUserLogAdi(null, key, false));
 				map1.putAll(map);
 				String parametreJSON = gson.toJson(map1);
 				UserMenuItemTime menuItemTime = null;
@@ -7043,8 +7043,19 @@ public class OrtakIslemler implements Serializable {
 	 * @param menuAdi
 	 * @return
 	 */
-	@Transactional
 	public String getMenuUserAdi(Session sessionx, String menuAdi) {
+		boolean logYaz = authenticatedUser.getCalistigiSayfa() == null || !authenticatedUser.getCalistigiSayfa().equals(menuAdi);
+		String menuTanimAdi = getMenuUserLogAdi(sessionx, menuAdi, logYaz);
+		return menuTanimAdi;
+	}
+
+	/**
+	 * @param sessionx
+	 * @param menuAdi
+	 * @return
+	 */
+	@Transactional
+	public String getMenuUserLogAdi(Session sessionx, String menuAdi, boolean logYaz) {
 		String menuTanimAdi = null;
 		if (menuItemMap.containsKey(menuAdi) || menuAdi.equals("anaSayfa")) {
 			menuTanimAdi = menuAdi.equals("anaSayfa") ? "Ana Sayfa" : menuItemMap.get(menuAdi).getDescription().getAciklama();
@@ -7057,7 +7068,8 @@ public class OrtakIslemler implements Serializable {
 				}
 				if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
 					String mesaj = authenticatedUser.getAdSoyad() + " Sayfa : " + menuTanimAdi + " " + new Date();
-					logger.info(mesaj);
+					if (logYaz)
+						logger.info(mesaj);
 				}
 				authenticatedUser.setMenuItemTime(null);
 				if (sessionx != null) {
@@ -7085,7 +7097,7 @@ public class OrtakIslemler implements Serializable {
 							if (map == null || map.isEmpty()) {
 								map = new LinkedHashMap<String, Object>();
 								map.put("kullanici", authenticatedUser.getAdSoyad());
-								map.put("menuAdi", getMenuUserAdi(null, menuAdi));
+								map.put("menuAdi", getMenuUserLogAdi(null, menuAdi, false));
 								String parametreJSON = gson.toJson(map);
 								menuItemTime.setParametreJSON(parametreJSON);
 								pdksEntityController.saveOrUpdate(sessionx, entityManager, menuItemTime);
@@ -7114,7 +7126,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public String getMenuAdi(String menuAdi) {
-		String menuTanimAdi = getMenuUserAdi(null, menuAdi);
+		String menuTanimAdi = getMenuUserLogAdi(null, menuAdi, false);
 		return menuTanimAdi;
 	}
 
