@@ -61,7 +61,7 @@ public class SessionListener implements HttpSessionListener {
 		User authenticatedUser = (User) session.getAttribute(SESSION_USER_NAME);
 		if (authenticatedUser != null) {
 			PdksUtil.getSessionUser(null, authenticatedUser);
-			sb.append(authenticatedUser.getUsername() + " " + PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " kullanıcısı PDKS sisteminden logout oldu."));
+			sb.append(authenticatedUser.getUsername() + " " + authenticatedUser.getAdSoyad() + " kullanıcısı PDKS sisteminden logout oldu.");
 
 		}
 		List<HttpSession> sessionList = getSessionList(session.getServletContext());

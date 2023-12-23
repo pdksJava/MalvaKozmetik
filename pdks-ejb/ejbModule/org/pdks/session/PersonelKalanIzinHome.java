@@ -1645,7 +1645,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 			Personel pdksPersonel = tempIzin.getPersonel();
 			Long personelId = pdksPersonel.getId();
 			Date tarih = new Date();
-			logger.info((sayi--) + " " + pdksPersonel.getPdksSicilNo() + " " + PdksUtil.setTurkishStr(pdksPersonel.getAdSoyad()));
+			logger.info((sayi--) + " " + pdksPersonel.getPdksSicilNo() + " " + pdksPersonel.getAdSoyad());
 
 			// session.clear();
 			fields.clear();

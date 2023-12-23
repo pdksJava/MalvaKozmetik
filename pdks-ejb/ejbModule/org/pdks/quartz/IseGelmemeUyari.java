@@ -517,7 +517,7 @@ public class IseGelmemeUyari implements Serializable {
 								if (!hareketVar) {
 									hareketVar = izinMap.containsKey(pdksPersonel.getId());
 									if (hareketVar) {
-										logger.debug(PdksUtil.setTurkishStr(pdksPersonel.getPdksSicilNo() + " - " + pdksPersonel.getAdSoyad()));
+										logger.debug(pdksPersonel.getPdksSicilNo() + " - " + pdksPersonel.getAdSoyad());
 									}
 								}
 								if (!kayitVar)
@@ -549,7 +549,7 @@ public class IseGelmemeUyari implements Serializable {
 								}
 								if (yoneticisi != null && ekle) {
 									if (!calisma)
-										logger.debug(PdksUtil.setTurkishStr(pdksVardiyaGun.getVardiyaKeyStr() + " " + pdksPersonel.getAdSoyad()));
+										logger.debug(pdksVardiyaGun.getVardiyaKeyStr() + " " + pdksPersonel.getAdSoyad());
 									if (geciciYoneticiMap.containsKey(pdksVardiyaGun.getPersonel().getId()))
 										yoneticisi = (Personel) geciciYoneticiMap.get(pdksVardiyaGun.getPersonel().getId()).getYeniYonetici().getPdksPersonel().clone();
 									if (vekaletMap.containsKey(yoneticisi.getId()))
@@ -941,7 +941,7 @@ public class IseGelmemeUyari implements Serializable {
 						user = bosYonetici;
 						user.setEmail(email);
 					} else if (!user.getPdksPersonel().isCalisiyor()) {
-						logger.error(PdksUtil.setTurkishStr(user.getAdSoyad() + " MAİL GÖNDERİLEMİYOR!"));
+						logger.error(user.getAdSoyad() + " MAİL GÖNDERİLEMİYOR!");
 						continue;
 					}
 					List<Role> yetkiliRollerim = user.getYetkiliRollerim();

@@ -260,7 +260,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		Boolean pdks = pdksKapi;
 		Boolean girisCikisKapilari = Boolean.TRUE, ayikla = false;
 		if (pdksKapi) {
-			logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Pdks kapıları okunuyor."));
+			logger.debug(authenticatedUser.getAdSoyad() + " Pdks kapıları okunuyor.");
 			if (pdksHaricKapi) {
 				girisCikisKapilari = Boolean.FALSE;
 				pdks = null;
@@ -271,7 +271,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			if (pdksHaricKapi) {
 				ayikla = true;
 				girisCikisKapilari = null;
-				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Pdks haric kapıları okunuyor."));
+				logger.debug(authenticatedUser.getAdSoyad() + " Pdks haric kapıları okunuyor.");
 
 			}
 		}
@@ -339,7 +339,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 			if (!admin && map.isEmpty())
 				map.put("pdksPersonel.pdksSicilNo", yetkiTumPersonelNoList);
-			logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor."));
+			logger.debug(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor.");
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<PersonelView> personeller = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectListInLogic(map, PersonelView.class));
@@ -366,7 +366,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		} else {
 			devam = Boolean.TRUE;
 			if (!authenticatedUser.isAdmin() && !ikRole && !authenticatedUser.isGenelMudur()) {
-				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor."));
+				logger.debug(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor.");
 				parametreMap.clear();
 				if (tumPersoneller != null && !tumPersoneller.isEmpty())
 					parametreMap.put("pdksPersonel", tumPersoneller);
@@ -454,7 +454,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			try {
-				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket bilgileri okunuyor."));
+				logger.debug(authenticatedUser.getAdSoyad() + " Hareket bilgileri okunuyor.");
 				if (personelId != null && !personelId.isEmpty()) {
 					kgsList = ortakIslemler.getHareketBilgileri(new ArrayList<Long>(kapiMap.keySet()), personelId, basTarih, ortakIslemler.tariheGunEkleCikar(cal, PdksUtil.getDate(bitTarih), 1), BasitHareket.class, session);
 				} else {
@@ -491,7 +491,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				}
 				if (kapiMap == null) {
 					kapiMap = new TreeMap<Long, KapiView>();
-					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Kapı bilgileri okunuyor."));
+					logger.debug(authenticatedUser.getAdSoyad() + " Kapı bilgileri okunuyor.");
 					parametreMap.clear();
 					parametreMap.put("id", new ArrayList(kapilarMap.values()));
 					if (session != null)
@@ -502,7 +502,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					list1 = null;
 				}
 				if (personelId.isEmpty()) {
-					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Personel bilgileri okunuyor."));
+					logger.debug(authenticatedUser.getAdSoyad() + " Personel bilgileri okunuyor.");
 					parametreMap.clear();
 					// parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getId");
 					parametreMap.put("id", new ArrayList(perMap.keySet()));
@@ -549,7 +549,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				}
 				idList = null;
 				if (!islemIdler.isEmpty()) {
-					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket islem bilgileri okunuyor."));
+					logger.debug(authenticatedUser.getAdSoyad() + " Hareket islem bilgileri okunuyor.");
 					parametreMap.clear();
 					parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getId");
 					parametreMap.put("id", islemIdler);
@@ -596,7 +596,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					}
 					islemMap = null;
 				}
-				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket bilgileri okundu."));
+				logger.debug(authenticatedUser.getAdSoyad() + " Hareket bilgileri okundu.");
 				islemIdler = null;
 				setHareketList(list);
 			} else
@@ -609,14 +609,14 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 			String dosyaAdi = "tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "");
 			try {
-				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi olusturuluyor."));
+				logger.debug(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi olusturuluyor.");
 				if (authenticatedUser.isIK() && !PdksUtil.getTestDurum()) {
 					if (hareketList.size() > 10000) {
 						ByteArrayOutputStream baos = excelDevam();
 						if (baos != null)
 							zipVeri = PdksUtil.getFileZip(dosyaAdi + ".xlsx", baos.toByteArray());
 					}
-					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi mail gonderiliyor."));
+					logger.debug(authenticatedUser.getAdSoyad() + " " + dosyaAdi + " dosyasi mail gonderiliyor.");
 					if (zipVeri != null) {
 						// ortakIslemler.mailGonder(renderer, "/email/hareketMail.xhtml");
 						try {
@@ -741,10 +741,10 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 	public String zipAktar() {
 		try {
-			logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket excel dosyası hazırlanıyor."));
+			logger.debug(authenticatedUser.getAdSoyad() + " Hareket excel dosyası hazırlanıyor.");
 			ByteArrayOutputStream baos = excelDevam();
 			if (baos != null) {
-				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket zip dosyası hazırlanıyor."));
+				logger.debug(authenticatedUser.getAdSoyad() + " Hareket zip dosyası hazırlanıyor.");
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ZipOutputStream zos = new ZipOutputStream(bos);
 				ZipEntry zipEntry = new ZipEntry("tumHareketler.xlsx");
@@ -759,7 +759,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 				bytes = bos.toByteArray();
 				File zipDosya = PdksUtil.dosyaOlustur("/tmp/tumHareketler" + (authenticatedUser.getShortUsername() != null ? authenticatedUser.getShortUsername().trim() : "") + ".zip", bytes);
-				logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket zip dosyası kayıt ediliyor."));
+				logger.debug(authenticatedUser.getAdSoyad() + " Hareket zip dosyası kayıt ediliyor.");
 				setZipVeri(bytes);
 				MailStatu mailSatu = null;
 				try {
@@ -776,7 +776,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 						mail.getAttachmentFiles().add(mf);
 						mailSatu = ortakIslemler.mailSoapServisGonder(true, mail, renderer, "/email/hareketMail.xhtml", session);
 					}
-					logger.debug(PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Hareket zip dosyası mail olarak gönderildi."));
+					logger.debug(authenticatedUser.getAdSoyad() + " Hareket zip dosyası mail olarak gönderildi.");
 
 				} catch (Exception e) {
 					logger.error("Onay Akis Hata in  : ");

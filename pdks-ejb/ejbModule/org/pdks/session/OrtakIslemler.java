@@ -3798,7 +3798,7 @@ public class OrtakIslemler implements Serializable {
 				map.clear();
 				map.put("durum", Boolean.TRUE);
 				map.put("ldap", Boolean.TRUE);
-				map.put("sap", Boolean.TRUE);
+				map.put("erpDurum", Boolean.TRUE);
 				map.put("pdks", Boolean.TRUE);
 				if (session != null)
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -7056,7 +7056,7 @@ public class OrtakIslemler implements Serializable {
 
 				}
 				if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
-					String mesaj = PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Sayfa : " + menuTanimAdi) + " " + new Date();
+					String mesaj = authenticatedUser.getAdSoyad() + " Sayfa : " + menuTanimAdi + " " + new Date();
 					logger.info(mesaj);
 				}
 				authenticatedUser.setMenuItemTime(null);
@@ -8431,7 +8431,7 @@ public class OrtakIslemler implements Serializable {
 				if (user.isGenelMudur()) {
 					map.clear();
 					map.put("ldap=", Boolean.TRUE);
-					map.put("sap=", Boolean.TRUE);
+					map.put("erpDurum=", Boolean.TRUE);
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					List<Sirket> sirketList = pdksEntityController.getObjectByInnerObjectListInLogic(map, Sirket.class);

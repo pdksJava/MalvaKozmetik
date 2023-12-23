@@ -392,7 +392,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 					logger.error("PDKS hata in : \n");
 					e.printStackTrace();
 					logger.error("PDKS hata out : " + e.getMessage());
-					logger.error(" izinBakiyeGuncelleme hata : " + sicilNo + " " + PdksUtil.setTurkishStr(pdksPersonel.getAdSoyad()) + " " + e.getMessage());
+					logger.error(" izinBakiyeGuncelleme hata : " + sicilNo + " " + pdksPersonel.getAdSoyad() + " " + e.getMessage());
 
 					break;
 				}

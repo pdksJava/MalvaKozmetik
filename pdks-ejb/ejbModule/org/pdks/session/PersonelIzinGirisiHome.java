@@ -1102,7 +1102,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					personelIzin.setGuncelleyenUser(guncelleyen);
 					pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 
-					logger.info(personel.getSicilNo() + " " + PdksUtil.setTurkishStr(personel.getAdSoyad() + " " + guncelleyen.getAdSoyad()));
+					logger.info(personel.getSicilNo() + " " + personel.getAdSoyad() + " " + guncelleyen.getAdSoyad());
 				}
 				iterator.remove();
 

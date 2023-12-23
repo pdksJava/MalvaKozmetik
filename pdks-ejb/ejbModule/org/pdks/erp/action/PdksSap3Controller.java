@@ -270,7 +270,7 @@ public class PdksSap3Controller implements ERPController, Serializable {
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					// map.put("sapKodu<>", "");
-					map.put("sap=", Boolean.TRUE);
+					map.put("erpDurum=", Boolean.TRUE);
 					map.put("durum=", Boolean.TRUE);
 					// map.put("pdks=", Boolean.TRUE);
 					TreeMap sirketMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, Sirket.class, Boolean.FALSE);
@@ -335,7 +335,7 @@ public class PdksSap3Controller implements ERPController, Serializable {
 										boolean durumUpdate = sirketKodu.length() < 4;
 										HashMap fields = new HashMap();
 										if (!durumUpdate) {
-											fields.put("sapKodu", sirketKodu);
+											fields.put("erpKodu", sirketKodu);
 											fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 											sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 											durumUpdate = sirket != null;

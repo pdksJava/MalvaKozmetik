@@ -90,14 +90,19 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
-		if (authenticatedUser.isAdmin() == false || aramaSecenekleri == null)
-			aramaSecenekleri = new AramaSecenekleri(authenticatedUser);
-		session.clear();
-		fillEkSahaTanim();
+		try {
+			if (authenticatedUser.isAdmin() == false || aramaSecenekleri == null)
+				aramaSecenekleri = new AramaSecenekleri(authenticatedUser);
+			session.clear();
+			fillEkSahaTanim();
+			setBasDate(PdksUtil.ayinIlkGunu());
+			setBitDate(PdksUtil.ayinSonGunu());
+			setPersonelizinList(new ArrayList());
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 
-		setBasDate(PdksUtil.ayinIlkGunu());
-		setBitDate(PdksUtil.ayinSonGunu());
-		setPersonelizinList(new ArrayList());
 	}
 
 	private void fillEkSahaTanim() {
@@ -110,7 +115,7 @@ public class IzinERPAktarimHome extends EntityHome<PersonelIzin> implements Seri
 			HashMap fields = new HashMap();
 			fields.put(PdksEntityController.MAP_KEY_MAP, "getId");
 			fields.put("fazlaMesai", Boolean.TRUE);
-			fields.put("sap", Boolean.TRUE);
+			fields.put("erpDurum", Boolean.TRUE);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			TreeMap<Long, Sirket> sirketMap = pdksEntityController.getObjectByInnerObjectMap(fields, Sirket.class, false);
