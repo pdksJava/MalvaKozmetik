@@ -97,7 +97,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private List<SelectItem> aylar;
 
-	private String sicilNo = "", bolumAciklama, linkAdresKey;
+	private String sicilNo = "", bolumAciklama, linkAdresKey, fazlaMesaiHesaplaMenuAdi;
 
 	private DenklestirmeAy denklestirmeAy;
 
@@ -322,7 +322,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		}
 		String baslik = denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " " + (seciliSirket.getSirketGrup() == null ? seciliSirket.getAd() : seciliSirket.getSirketGrup().getAciklama()) + (tesis != null ? " " + tesis.getAciklama() : "");
 		boolean hataYok = true;
-		boolean test = !PdksUtil.getCanliSunucuDurum();
 		User loginUser = aylikPuantaj.getLoginUser();
 
 		AramaSecenekleri as = new AramaSecenekleri();
@@ -359,6 +358,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						devam = donemPerList.size() != donemCPPerList.size();
 						try {
 							if (devam) {
+
 								logger.info(str + " aylikPuantajOlusturuluyor in " + new Date());
 								vardiyaGunHome.setSession(session);
 								vardiyaGunHome.setAramaSecenekleri(as);
@@ -375,8 +375,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					}
 
 				}
-				if (test)
-					logger.info(str + " in " + new Date());
+
+				logger.info(str + " in " + new Date());
 				loginUser.setAdmin(Boolean.TRUE);
 				List<AylikPuantaj> puantajList = null;
 				if (kayitVar && gelecekTarih == false)
@@ -387,8 +387,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				} else {
 					session.flush();
 				}
-				if (test)
-					logger.info(str + " out " + new Date());
+
+				logger.info(str + " out " + new Date());
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();
@@ -439,10 +439,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public String sayfaGirisAction() {
 		try {
+			fazlaMesaiHesaplaMenuAdi = "";
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
-			boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
-			if (!ayniSayfa)
-				authenticatedUser.setCalistigiSayfa(sayfaURL);
+			// authenticatedUser.setCalistigiSayfa("");
+			// boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
+			// if (!ayniSayfa)
+			// authenticatedUser.setCalistigiSayfa(sayfaURL);
 			if (personelDenklestirmeList != null)
 				personelDenklestirmeList.clear();
 			else
@@ -746,6 +748,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	}
 
 	public String fillPersonelDenklestirmeList() {
+		fazlaMesaiHesaplaMenuAdi = "";
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.clear();
@@ -892,7 +895,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 		if (personelDenklestirmeList.isEmpty())
 			PdksUtil.addMessageWarn("İlgili döneme ait fazla mesai bulunamadı!");
-
+		else
+			fazlaMesaiHesaplaMenuAdi = ortakIslemler.getMenuAdi("fazlaMesaiHesapla");
 		setInstance(denklestirmeAy);
 
 		return "";
@@ -1833,5 +1837,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	 */
 	public void setIkRole(Boolean ikRole) {
 		this.ikRole = ikRole;
+	}
+
+	public String getFazlaMesaiHesaplaMenuAdi() {
+		return fazlaMesaiHesaplaMenuAdi;
+	}
+
+	public void setFazlaMesaiHesaplaMenuAdi(String fazlaMesaiHesaplaMenuAdi) {
+		this.fazlaMesaiHesaplaMenuAdi = fazlaMesaiHesaplaMenuAdi;
 	}
 }

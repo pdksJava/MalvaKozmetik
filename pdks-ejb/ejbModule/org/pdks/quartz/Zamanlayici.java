@@ -140,7 +140,7 @@ public class Zamanlayici implements Serializable {
 			xaciklama += " ( " + PdksUtil.convertToDateString(Calendar.getInstance().getTime(), PdksUtil.getDateFormat() + " H:mm") + " ) ";
 		}
 		if (thisIp != null)
-			logger.info(PdksUtil.setTurkishStr(xkonu + " " + thisIp));
+			logger.info(xkonu + " " + thisIp);
 		if (!userList.isEmpty()) {
 			setAdminList(userList);
 			setKonu(xkonu);
@@ -161,7 +161,7 @@ public class Zamanlayici implements Serializable {
 				mailSatu = ortakIslemler.mailSoapServisGonder(false, mail, renderer, "/email/" + sayfaAdi, session);
 				if (mailSatu != null && mailSatu.isDurum()) {
 					if (thisIp != null)
-						logger.info(PdksUtil.setTurkishStr(xkonu + " " + thisIp + " tamamlandı."));
+						logger.info(xkonu + " " + thisIp + " tamamlandı.");
 				}
 
 			} catch (Exception e) {

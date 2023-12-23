@@ -5042,7 +5042,7 @@ public class OrtakIslemler implements Serializable {
 
 			URL url = new URL(path);
 			if (logGoster)
-				logger.info(PdksUtil.setTurkishStr(isim + " " + path + " in ") + PdksUtil.convertToDateString(new Date(), pattern));
+				logger.info(isim + " " + path + " in " + PdksUtil.convertToDateString(new Date(), pattern));
 			HttpURLConnection connjava = (HttpURLConnection) url.openConnection();
 
 			if (contentType == null)
@@ -5085,7 +5085,7 @@ public class OrtakIslemler implements Serializable {
 		}
 		String str = sb.toString();
 		if (logGoster)
-			logger.info(PdksUtil.setTurkishStr(isim + " " + path + " out ") + PdksUtil.convertToDateString(new Date(), pattern));
+			logger.info(isim + " " + path + " out " + PdksUtil.convertToDateString(new Date(), pattern));
 		sb = null;
 		return str;
 
@@ -7039,27 +7039,28 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param session
+	 * @param sessionx
 	 * @param menuAdi
 	 * @return
 	 */
 	@Transactional
-	public String getMenuUserAdi(Session session, String menuAdi) {
+	public String getMenuUserAdi(Session sessionx, String menuAdi) {
 		String menuTanimAdi = null;
 		if (menuItemMap.containsKey(menuAdi) || menuAdi.equals("anaSayfa")) {
 			menuTanimAdi = menuAdi.equals("anaSayfa") ? "Ana Sayfa" : menuItemMap.get(menuAdi).getDescription().getAciklama();
 			if (authenticatedUser != null && (authenticatedUser.getCalistigiSayfa() == null || !menuAdi.equals(authenticatedUser.getCalistigiSayfa()))) {
-				if (session != null) {
+				if (sessionx != null) {
 					authenticatedUser.setCalistigiSayfa(menuAdi);
 					if (PdksUtil.getTestDurum())
-						session = null;
+						sessionx = null;
+
 				}
 				if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
 					String mesaj = PdksUtil.setTurkishStr(authenticatedUser.getAdSoyad() + " Sayfa : " + menuTanimAdi) + " " + new Date();
 					logger.info(mesaj);
 				}
 				authenticatedUser.setMenuItemTime(null);
-				if (session != null) {
+				if (sessionx != null) {
 					try {
 						HttpSession mySession = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 						StringBuffer sb = new StringBuffer();
@@ -7068,7 +7069,7 @@ public class OrtakIslemler implements Serializable {
 						fields.put("sId", mySession.getId());
 						fields.put("userName", authenticatedUser.getUsername());
 						fields.put("menuAdi", menuAdi);
-						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+						fields.put(PdksEntityController.MAP_KEY_SESSION, sessionx);
 						List<UserMenuItemTime> newList = pdksEntityController.execSPList(fields, sb, UserMenuItemTime.class);
 						if (!newList.isEmpty()) {
 							UserMenuItemTime menuItemTime = newList.get(0);
@@ -7087,8 +7088,8 @@ public class OrtakIslemler implements Serializable {
 								map.put("menuAdi", getMenuUserAdi(null, menuAdi));
 								String parametreJSON = gson.toJson(map);
 								menuItemTime.setParametreJSON(parametreJSON);
-								pdksEntityController.saveOrUpdate(session, entityManager, menuItemTime);
-								session.flush();
+								pdksEntityController.saveOrUpdate(sessionx, entityManager, menuItemTime);
+								sessionx.flush();
 							}
 							authenticatedUser.setMenuItemTime(menuItemTime);
 						}
@@ -7101,7 +7102,7 @@ public class OrtakIslemler implements Serializable {
 
 			}
 
-		} else if (session != null)
+		} else if (sessionx != null)
 			authenticatedUser.setCalistigiSayfa("");
 
 		return menuTanimAdi;
@@ -16810,7 +16811,7 @@ public class OrtakIslemler implements Serializable {
 			}
 			if (user != null)
 				try {
-					// logger.info(PdksUtil.setTurkishStr(user.getAdSoyad()));
+					// logger.info(user.getAdSoyad()));
 					setUserRoller(user, session);
 					user.setAdmin(Boolean.FALSE);
 					user.setIK(Boolean.FALSE);

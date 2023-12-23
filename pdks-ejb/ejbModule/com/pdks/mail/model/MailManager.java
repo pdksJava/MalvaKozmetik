@@ -403,11 +403,11 @@ public class MailManager implements Serializable {
 
 						}
 						String aciklama = ((authenticatedUser != null ? authenticatedUser.getAdSoyad() + " " : "") + "\"" + konu + "\" konulu mail " + (mesajAlan != null ? mesajAlan + " " : "")).trim();
-						logger.info(PdksUtil.setTurkishStr(aciklama + " gönderiliyor."));
+						logger.info(aciklama + " gönderiliyor.");
 						Transport.send(message);
 						mailStatu.setDurum(true);
 						mailStatu.setHataMesai("");
-						logger.info(PdksUtil.setTurkishStr(aciklama + " gönderildi."));
+						logger.info(aciklama + " gönderildi.");
 					} catch (Exception e) {
 						hata = e;
 						try {

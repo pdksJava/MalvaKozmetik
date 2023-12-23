@@ -3065,7 +3065,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						PdksUtil.addMessageAvailableWarn(izinStr);
 					String str = izinStr + " ( Izin Id : " + izinId + " )";
 					if (userLogin.getLogin())
-						logger.info(PdksUtil.setTurkishStr(userLogin.getAdSoyad() + " --> " + str + " " + izinSahibi.getAdSoyad()));
+						logger.info(userLogin.getAdSoyad() + " --> " + str + " " + izinSahibi.getAdSoyad());
 					if (izinCalismayanMailGonder && !izinliCalisilanGunler.contains(str)) {
 						strList.add(str);
 						startupAction.addIzinliCalisilanGunlerList(str);

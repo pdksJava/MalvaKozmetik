@@ -364,7 +364,7 @@ public class PersonelERPGuncelleme implements Serializable {
 					}
 					sicilNo = String.valueOf(Long.parseLong(pdksPersonel.getSicilNo().trim()));
 					hataKonum = (list.size() - guncelleyenMap.size()) + ". personelERPGuncelleme : " + pdksPersonel.getSicilNo().trim() + " " + pdksPersonel.getAdSoyad();
-					// logger.info(pdksUtil.setTurkishStr(hataKonum));
+					// logger.info(hataKonum));
 				} catch (Exception e) {
 					logger.error(PdksUtil.setTurkishStr("HATALI PERSONEL NO " + pdksPersonel.getSicilNo() + " " + pdksPersonel.getAdSoyad()));
 					sicilNo = "";
@@ -394,7 +394,7 @@ public class PersonelERPGuncelleme implements Serializable {
 					if (hataliPersonelList != null)
 						hataliPersonelList.add(pdksPersonel);
 					iterator.remove();
-					logger.info(PdksUtil.setTurkishStr(hataKonum));
+					logger.info(hataKonum);
 
 					logger.error("personelERPGuncellemeTimer hata 1 : " + sicilNo + " " + e1.getMessage());
 					break;

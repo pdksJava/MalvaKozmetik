@@ -129,7 +129,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				MailObject mailObject = new MailObject();
 				String subject = uygulamaBordro + " " + fonksiyonAdi + " fonksiyon " + bilgi + " güncellemesi";
 				String body = subject + " " + list.size() + " adet kayıt için başarılı olarak tamamlandı.";
-				logger.info(PdksUtil.setTurkishStr(subject + "\n" + body));
+				logger.info(subject + "\n" + body);
 				mailObject.setSubject(subject);
 				mailObject.setBody(body);
 				try {
@@ -859,7 +859,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	private void mesajInfoYaz(String msg) {
 		if (PdksUtil.hasStringValue(msg))
-			logger.info(PdksUtil.setTurkishStr(msg));
+			logger.info(msg);
 	}
 
 	/**
