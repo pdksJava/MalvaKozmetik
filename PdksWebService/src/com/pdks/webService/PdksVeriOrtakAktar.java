@@ -567,7 +567,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (mailObject != null) {
 			String subject = mailObject.getSubject() != null ? PdksUtil.setTurkishStr(mailObject.getSubject()) : null;
 			if (subject != null)
-				logger.info(subject + " in " + new Date());
+				logger.info(subject + " in " + PdksUtil.getCurrentTimeStampStr());
 			StringBuffer sb = new StringBuffer();
 			if (!PdksUtil.hasStringValue(mailObject.getSmtpUser()))
 				sb.append("Mail user belirtiniz!");
@@ -616,7 +616,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			sb = null;
 
 			if (subject != null)
-				logger.info(subject + " out " + new Date());
+				logger.info(subject + " out " + PdksUtil.getCurrentTimeStampStr());
 		} else
 			mailStatu.setHataMesai("Boş veri geldi!");
 		return mailStatu;
@@ -901,7 +901,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 				if (denklestirmeAy != null) {
 					mesaj = yil + "-" + ay + (sirket != null ? " " + sirket.getAd() : "");
-					mesajInfoYaz("getMesaiPDKS --> " + mesaj + " in " + new Date());
+					mesajInfoYaz("getMesaiPDKS --> " + mesaj + " in " + PdksUtil.getCurrentTimeStampStr());
 					LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
 					veriMap.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_FAZLA_MESAI");
 					veriMap.put("sirketId", sirket != null ? sirket.getId() : 0L);
@@ -952,7 +952,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						logger.error(e);
 						e.printStackTrace();
 					}
-					mesajInfoYaz("getMesaiPDKS --> " + mesaj + " out " + new Date());
+					mesajInfoYaz("getMesaiPDKS --> " + mesaj + " out " + PdksUtil.getCurrentTimeStampStr());
 					try {
 
 						mailMapGuncelle("bccEntegrasyon", "bccEntegrasyonAdres");
@@ -1374,7 +1374,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 
 			saveFonksiyonVeri(null, izinHakedisList);
-			mesajInfoYaz("saveHakedisIzinler --> " + mesaj + " out " + new Date());
+			mesajInfoYaz("saveHakedisIzinler --> " + mesaj + " out " + PdksUtil.getCurrentTimeStampStr());
 			if (!izinHakedisHataList.isEmpty()) {
 				Gson gson = new Gson();
 				String jsonStr = PdksUtil.toPrettyFormat(gson.toJson(izinHakedisHataList));
@@ -1541,7 +1541,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			mesaj = PdksUtil.setTurkishStr(erp.getPersonelNo() + " " + erp.getIzinTipiAciklama() + " bilgisi guncellenecektir.");
 		else
 			mesaj = izinList.size() + " adet izin bilgisi guncellenecektir.";
-		mesajInfoYaz("saveIzinler --> " + mesaj + " in " + new Date());
+		mesajInfoYaz("saveIzinler --> " + mesaj + " in " + PdksUtil.getCurrentTimeStampStr());
 		// String canliSunucu = "srvglf";
 		// if (mailMap != null && mailMap.containsKey("canliSunucu"))
 		// canliSunucu = (String) mailMap.get("canliSunucu");
@@ -2354,7 +2354,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		hataList = null;
 		saveFonksiyonVeri(null, izinList);
 
-		mesajInfoYaz("saveIzinler --> " + mesaj + " out " + new Date());
+		mesajInfoYaz("saveIzinler --> " + mesaj + " out " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	private String getIzinKisaAciklama(String aciklama) {
@@ -3579,7 +3579,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			mesaj = (erp.getPersonelNo() != null ? erp.getPersonelNo() + " " : "") + (erp.getAdi() != null ? erp.getAdi() + " " : "") + (erp.getSoyadi() != null ? erp.getSoyadi() + " " : "");
 		} else
 			mesaj = personelList.size() + " adet personel bilgisi guncellenecektir.";
-		mesajInfoYaz("savePersoneller --> " + mesaj + " in " + new Date());
+		mesajInfoYaz("savePersoneller --> " + mesaj + " in " + PdksUtil.getCurrentTimeStampStr());
 		TreeMap<String, PersonelERP> perMap = new TreeMap<String, PersonelERP>();
 		List<String> yoneticiPerNoList = new ArrayList<String>(), kendiYoneticiPerNoList = new ArrayList<String>();
 		TreeMap<String, List<String>> veriSorguMap = new TreeMap<String, List<String>>();
@@ -3945,7 +3945,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		saveFonksiyonVeri(null, personelList);
 		hataList = null;
 
-		mesajInfoYaz("savePersoneller --> " + mesaj + " out " + new Date());
+		mesajInfoYaz("savePersoneller --> " + mesaj + " out " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	/**

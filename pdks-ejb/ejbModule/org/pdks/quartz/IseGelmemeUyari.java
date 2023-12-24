@@ -239,7 +239,7 @@ public class IseGelmemeUyari implements Serializable {
 	public String iseGelmeDurumu(Date tarih, User islemYapan, boolean manuel, Session session, boolean mailGonder) throws Exception {
 		if (islemYapan != null && session != null)
 			session.clear();
-		logger.info("iseGelmeDurumu in " + new Date());
+		logger.info("iseGelmeDurumu in " + PdksUtil.getCurrentTimeStampStr());
 		if (!manuel)
 			calisiyor = Boolean.TRUE;
 		Calendar cal = Calendar.getInstance();
@@ -662,7 +662,7 @@ public class IseGelmemeUyari implements Serializable {
 			}
 
 		}
-		logger.info("iseGelmeDurumu out " + new Date());
+		logger.info("iseGelmeDurumu out " + PdksUtil.getCurrentTimeStampStr());
 		if (!manuel)
 			calisiyor = Boolean.FALSE;
 
@@ -1822,7 +1822,7 @@ public class IseGelmemeUyari implements Serializable {
 				boolean zamanTamam = PdksUtil.zamanKontrolDurum();
 				// zamanTamam = true;
 				if (zamanTamam && PdksUtil.getCanliSunucuDurum()) {
-					// logger.error("Ise gelme durumu " + new Date());
+					// logger.error("Ise gelme durumu " + PdksUtil.getCurrentTimeStampStr());
 					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 					hataKonum = "Paramatre okunuyor ";
 					Parameter parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
@@ -1913,7 +1913,7 @@ public class IseGelmemeUyari implements Serializable {
 			sb = new StringBuffer();
 			TreeMap<String, String> map1 = new TreeMap<String, String>();
 
-			logger.info("Toplu mail dosyasi hazirlaniyor in " + new Date());
+			logger.info("Toplu mail dosyasi hazirlaniyor in " + PdksUtil.getCurrentTimeStampStr());
 			TreeMap<Long, User> userMap = new TreeMap<Long, User>();
 			for (Iterator iterator = userYoneticiList.iterator(); iterator.hasNext();) {
 				User user = (User) iterator.next();
@@ -2006,7 +2006,7 @@ public class IseGelmemeUyari implements Serializable {
 					mail.getAttachmentFiles().add(mailFile);
 				}
 				sb.append("<br/>");
-				logger.info("Toplu mail dosyasi hazirlaniyor out " + new Date());
+				logger.info("Toplu mail dosyasi hazirlaniyor out " + PdksUtil.getCurrentTimeStampStr());
 			}
 			fileList = null;
 			if (mailGonder) {

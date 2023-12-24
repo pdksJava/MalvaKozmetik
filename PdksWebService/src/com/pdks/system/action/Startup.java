@@ -1,7 +1,5 @@
 package com.pdks.system.action;
 
-import java.util.Date;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,7 +30,7 @@ public class Startup extends HttpServlet {
 	ServletContext sc = null;
 
 	public void init() throws ServletException {
-		logger.info(Constants.UYGULAMA_VERSION + " start in " + new Date());
+		logger.info(Constants.UYGULAMA_VERSION + " start in " + PdksUtil.getCurrentTimeStampStr());
 		ServletConfig servletConfig = getServletConfig();
 		ApplicationContext appCtx = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		PdksDAO pdksDAO = (PdksDAO) appCtx.getBean("pdksDAOIntercepted");
@@ -51,7 +49,7 @@ public class Startup extends HttpServlet {
 		} catch (Exception e) {
 
 		}
-		logger.info(Constants.UYGULAMA_VERSION + " start out " + new Date());
+		logger.info(Constants.UYGULAMA_VERSION + " start out " + PdksUtil.getCurrentTimeStampStr());
 
 	}
 

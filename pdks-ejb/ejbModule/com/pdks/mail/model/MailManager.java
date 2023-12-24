@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -200,7 +199,7 @@ public class MailManager implements Serializable {
 		MailStatu mailStatu = new MailStatu();
 		String subject = mailObject.getSubject() != null ? PdksUtil.setTurkishStr(mailObject.getSubject()) : null;
 		if (subject != null)
-			logger.debug(subject + " in " + new Date());
+			logger.debug(subject + " in " + PdksUtil.getCurrentTimeStampStr());
 		StringBuffer sb = new StringBuffer();
 		if (!PdksUtil.hasStringValue(mailObject.getSmtpUser()))
 			sb.append("Mail user belirtiniz!");
@@ -244,7 +243,7 @@ public class MailManager implements Serializable {
 		sb = null;
 
 		if (subject != null)
-			logger.debug(subject + " out " + new Date());
+			logger.debug(subject + " out " + PdksUtil.getCurrentTimeStampStr());
 		return mailStatu;
 
 	}

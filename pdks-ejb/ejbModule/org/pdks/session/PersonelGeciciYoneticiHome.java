@@ -264,7 +264,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 	}
 
 	public void personelSecimIslemi(Personel pdksPersonel) {
-		logger.debug(pdksPersonel.toString() + " " + new Date());
+		logger.debug(pdksPersonel.toString() + " " + PdksUtil.getCurrentTimeStampStr());
 		getInstance().setPersonelGecici(pdksPersonel);
 	}
 
@@ -288,14 +288,14 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 			personelList.addAll(tempPersonelList);
 		}
 		setPersonelList(personelList);
-		logger.debug(parametre.toString() + " " + new Date());
+		logger.debug(parametre.toString() + " " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	public Personel getArananPersonel() {
 
 		Personel pdksPersonel = seciliPersonel != null ? seciliPersonel : new Personel();
 		if (pdksPersonel.getId() != null)
-			logger.debug("Bulunan personel : " + new Date());
+			logger.debug("Bulunan personel : " + PdksUtil.getCurrentTimeStampStr());
 
 		return pdksPersonel;
 	}

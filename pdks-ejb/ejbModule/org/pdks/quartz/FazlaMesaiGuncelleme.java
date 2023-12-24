@@ -96,7 +96,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 	public QuartzTriggerHandle fazlaMesaiGuncellemeTimer(@Expiration Date when, @IntervalCron String interval) {
 		if (!isCalisiyor()) {
 			setCalisiyor(Boolean.TRUE);
-			logger.debug("fazlaMesaiGuncelleme in " + new Date());
+			logger.debug("fazlaMesaiGuncelleme in " + PdksUtil.getCurrentTimeStampStr());
 			Session session = null;
 			try {
 				boolean canliSistem = PdksUtil.getCanliSunucuDurum();
@@ -107,7 +107,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						fazlaMesaiGuncellemeBasla(false, session);
 				}
 			} catch (Exception e) {
-				logger.error("PDKS hata in : \n" + e.getMessage() + " " + new Date());
+				logger.error("PDKS hata in : \n" + e.getMessage() + " " + PdksUtil.getCurrentTimeStampStr());
 				e.printStackTrace();
 				logger.error("PDKS hata out : " + e.getMessage());
 			} finally {
@@ -235,7 +235,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					List<SelectItem> depList = fazlaMesaiOrtakIslemler.getFazlaMesaiDepartmanList(aylikPuantaj, !vardiyaPlaniOtomatikOlustur, session);
 					boolean mesajGonder = false;
 					if (!depList.isEmpty()) {
-						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " in " + new Date());
+						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " in " + PdksUtil.getCurrentTimeStampStr());
 						if (vardiyaPlaniOtomatikOlustur) {
 							vardiyaGunHome.setDenklestirmeAy(denklestirmeAy);
 							vardiyaGunHome.setYil(denklestirmeAy.getYil());
@@ -301,7 +301,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 							logger.error(e);
 							e.printStackTrace();
 						}
-						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " out " + new Date());
+						logger.info(denklestirmeAy.getAyAdi() + " " + denklestirmeAy.getYil() + " out " + PdksUtil.getCurrentTimeStampStr());
 					}
 					sirketGrupIdList = null;
 				}
@@ -312,7 +312,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 
 			}
 			if (manuel == false)
-				logger.debug(sb.toString() + " " + dosyalar.size() + "  " + new Date());
+				logger.debug(sb.toString() + " " + dosyalar.size() + "  " + PdksUtil.getCurrentTimeStampStr());
 			if (sb.length() > 0 || !dosyalar.isEmpty())
 				try {
 					Dosya dosya = null;
@@ -401,11 +401,11 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					devam = donemCPPerList.size() != donemPerList.size();
 					try {
 						if (devam) {
-							logger.info(str + " aylikPuantajOlusturuluyor in " + new Date());
+							logger.info(str + " aylikPuantajOlusturuluyor in " + PdksUtil.getCurrentTimeStampStr());
 							vardiyaGunHome.setSession(session);
 							vardiyaGunHome.setAramaSecenekleri(as);
 							vardiyaGunHome.aylikPuantajOlusturuluyor();
-							logger.info(str + " aylikPuantajOlusturuluyor out " + new Date());
+							logger.info(str + " aylikPuantajOlusturuluyor out " + PdksUtil.getCurrentTimeStampStr());
 						}
 					} catch (Exception e) {
 						System.err.println(e);
@@ -422,11 +422,11 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
 			try {
 				if (!hataVar && gelecekTarih == false && kayitVar) {
-					logger.info(str + " in " + new Date());
+					logger.info(str + " in " + PdksUtil.getCurrentTimeStampStr());
 					loginUser.setAdmin(Boolean.TRUE);
 					List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 					hataVar = puantajList.isEmpty();
-					logger.info(str + " out " + new Date());
+					logger.info(str + " out " + PdksUtil.getCurrentTimeStampStr());
 				}
 				session.flush();
 				// session.getTransaction().commit();

@@ -66,27 +66,27 @@ public class Zamanlayici implements Serializable {
 
 	public void scheduleFazlaMesaiGuncellemeTimer() {
 		fazlaMesaiGuncelleme.fazlaMesaiGuncellemeTimer(new Date(), "0 0/5 3-23 ? * *");
-		logger.info("fazlaMesaiGuncellemeTimer start : " + new Date());
+		logger.info("fazlaMesaiGuncellemeTimer start : " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	public void scheduleSertifikaSSLKontrolTimer() {
 		sertifikaSSLKontrol.sertifikaSSLKontrolTimer(new Date(), "0 0/15 8-21 ? * *");
-		logger.info("scheduleSertifikaSSLKontrolTimer start : " + new Date());
+		logger.info("scheduleSertifikaSSLKontrolTimer start : " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	public void scheduleIseGelmemeUyariTimer() {
 		iseGelmemeUyari.iseGelmeDurumuTimer(new Date(), "0 0/5 8-14 ? * *");
-		logger.info("scheduleIseGelmemeUyariTimer start : " + new Date());
+		logger.info("scheduleIseGelmemeUyariTimer start : " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	public void schedulePersonelERPGuncellemeTimer() {
 		personelERPGuncelleme.personelERPGuncellemeTimer(new Date(), "0 0/5 3-21 ? * *");
-		logger.info("schedulePersonelERPGuncellemeTimer start : " + new Date());
+		logger.info("schedulePersonelERPGuncellemeTimer start : " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	public void izinBakiyeGuncellemeTimer() {
 		izinBakiyeGuncelleme.izinBakiyeGuncellemeTimer(new Date(), "0 0/5 3-18 ? * *");
-		logger.info("izinBakiyeGuncellemeTimer start : " + new Date());
+		logger.info("izinBakiyeGuncellemeTimer start : " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	public boolean isPazar() {

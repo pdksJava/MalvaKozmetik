@@ -216,6 +216,14 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @return
+	 */
+	public String getCurrentTimeStampStr() {
+		String str = PdksUtil.getCurrentTimeStampStr();
+		return str;
+	}
+
+	/**
 	 * @param entityManagerInput
 	 * @param pdksEntityControllerInput
 	 * @param loginUser
@@ -3763,7 +3771,7 @@ public class OrtakIslemler implements Serializable {
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelView> perList = getPersonelViewByPersonelKGSList(pdksEntityController.getObjectBySQLList(sb, map, PersonelKGS.class));
 		if (!perList.isEmpty()) {
-			logger.info("yeniPersonelleriOlustur (" + perList.size() + ") in " + new Date());
+			logger.info("yeniPersonelleriOlustur (" + perList.size() + ") in " + getCurrentTimeStampStr());
 			List<String> siciller = new ArrayList<String>();
 			// perList.clear();
 			String sicilNo = "";
@@ -3878,7 +3886,7 @@ public class OrtakIslemler implements Serializable {
 
 				}
 			}
-			logger.info("yeniPersonelleriOlustur (" + perList.size() + ") out " + new Date());
+			logger.info("yeniPersonelleriOlustur (" + perList.size() + ") out " + getCurrentTimeStampStr());
 			siciller = null;
 		}
 		perList = null;
@@ -10532,7 +10540,7 @@ public class OrtakIslemler implements Serializable {
 		boolean testDurum = PdksUtil.getTestDurum() && PdksUtil.getCanliSunucuDurum() == false;
 		testDurum = false;
 		if (testDurum)
-			logger.info("fazlaMesaiSaatiAyarla 0000 " + new Date());
+			logger.info("fazlaMesaiSaatiAyarla 0000 " + getCurrentTimeStampStr());
 		List<VardiyaGun> vardiyaGunList = new ArrayList<VardiyaGun>(vardiyaGunMap.values());
 		if (vardiyaGunList.size() > 1)
 			vardiyaGunList = PdksUtil.sortListByAlanAdi(vardiyaGunList, "vardiyaDate", Boolean.TRUE);
@@ -10562,7 +10570,7 @@ public class OrtakIslemler implements Serializable {
 
 		}
 		if (testDurum)
-			logger.info("fazlaMesaiSaatiAyarla 1000 " + new Date());
+			logger.info("fazlaMesaiSaatiAyarla 1000 " + getCurrentTimeStampStr());
 
 		for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 			VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
@@ -10681,7 +10689,7 @@ public class OrtakIslemler implements Serializable {
 			vardiyaGun.setAyarlamaBitti(Boolean.TRUE);
 		}
 		if (testDurum)
-			logger.info("fazlaMesaiSaatiAyarla 2000 " + new Date());
+			logger.info("fazlaMesaiSaatiAyarla 2000 " + getCurrentTimeStampStr());
 
 		vardiyalarMap = null;
 	}
@@ -16219,7 +16227,7 @@ public class OrtakIslemler implements Serializable {
 		}
 		denklestirmeMap = null;
 		if (testDurum)
-			logger.info(perNoId + " denklestirmeOlustur 0100 " + new Date());
+			logger.info(perNoId + " denklestirmeOlustur 0100 " + getCurrentTimeStampStr());
 		PersonelDenklestirmeTasiyici personelDenklestirmeTasiyici = personelDenklestirmeMap.get(perNoId);
 		Date simdikiZaman = new Date();
 		double normalFazlaMesai = 0, resmiTatilMesai = 0;
@@ -16718,7 +16726,7 @@ public class OrtakIslemler implements Serializable {
 			personelDenklestirmeTasiyici.setResmiTatilMesai(PdksUtil.setSureDoubleTypeRounded(resmiTatilMesai, personelDenklestirmeTasiyici.getYarimYuvarla()));
 			personelDenklestirmeTasiyiciList.add(personelDenklestirmeTasiyici);
 			if (testDurum)
-				logger.info(perNoId + " denklestirmeOlustur 0200 " + new Date());
+				logger.info(perNoId + " denklestirmeOlustur 0200 " + getCurrentTimeStampStr());
 
 		}
 	}

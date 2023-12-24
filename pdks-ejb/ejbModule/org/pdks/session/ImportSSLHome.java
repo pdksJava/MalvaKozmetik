@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -53,11 +52,11 @@ public class ImportSSLHome extends EntityHome<Parameter> implements Serializable
 		PdksUtil.getSessionUser(null, authenticatedUser);
 		List<CertificatePdks> list = null;
 		try {
-			logger.info("Sertifika SSL Kontrol in " + new Date());
+			logger.info("Sertifika SSL Kontrol in " + PdksUtil.getCurrentTimeStampStr());
 			SSLImport.setServisURLList(null);
 			SSLImport.addCertToKeyStore(null, null, true);
 			list = getCertificaList();
-			logger.info("Sertifika SSL Kontrol out " + new Date());
+			logger.info("Sertifika SSL Kontrol out " + PdksUtil.getCurrentTimeStampStr());
 		} catch (Exception e) {
 		}
 		setCerList(list);

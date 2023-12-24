@@ -279,7 +279,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 							authenticatedUser.setCalistigiSayfa("anasayfa");
 							ortakIslemler.sistemeGirisIslemleri(authenticatedUser, Boolean.TRUE, null, null, session);
 							logger.info(authenticatedUser.getUsername() + " " + authenticatedUser.getAdSoyad() + " " + (authenticatedUser.getEmail() != null && !authenticatedUser.getEmail().equals(authenticatedUser.getUsername()) ? authenticatedUser.getEmail() + " E-postali" : "")
-									+ " kullanıcısı PDKS sistemine login oldu. " + new Date());
+									+ " kullanıcısı PDKS sistemine login oldu. " + PdksUtil.getCurrentTimeStampStr());
 							authenticatedUser.setSessionSQL(session);
 						} catch (Exception e) {
 							logger.error("PDKS hata in : \n");
@@ -314,7 +314,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 				logger.info(authenticatedUser.getUsername() + " kullanıcı bilgisi okundu.");
 
 				if (!perList.isEmpty())
-					logger.error(perList.size() + " " + new Date());
+					logger.error(perList.size() + " " + PdksUtil.getCurrentTimeStampStr());
 
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");

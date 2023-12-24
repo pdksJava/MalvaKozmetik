@@ -2,7 +2,6 @@ package com.pdks.quartz.model;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -103,7 +102,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 	 * @param spName
 	 */
 	private void topluUpdate(PdksDAO pdksDAO, String spName) {
-		logger.info(spName + "  in " + new Date());
+		logger.info(spName + "  in " + PdksUtil.getCurrentTimeStampStr());
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put(BaseDAOHibernate.MAP_KEY_SELECT, spName);
 		try {
@@ -112,7 +111,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 			logger.error(e);
 		}
 		pdksDAO.execSP(map);
-		logger.info(spName + "  out " + new Date());
+		logger.info(spName + "  out " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	/**
@@ -182,7 +181,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 		Parameter parameter = (Parameter) pdksDAO.getObjectByInnerObject(fields, Parameter.class);
 		HashMap<String, Object> mailMap = null;
 		if (parameter != null && parameter.getValue().equals("2")) {
-			logger.info("Personel Kontrol start " + new Date());
+			logger.info("Personel Kontrol start " + PdksUtil.getCurrentTimeStampStr());
 			fields.clear();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT D.* FROM " + HataliPersonel.VIEW_NAME + " D WITH(nolock)");
@@ -230,7 +229,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 					e.printStackTrace();
 				}
 			}
-			logger.info("Personel Kontrol stop " + new Date());
+			logger.info("Personel Kontrol stop " + PdksUtil.getCurrentTimeStampStr());
 		}
 		yoneticiKontrol();
 	}

@@ -576,7 +576,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
 			logger.error("PDKS hata out : " + e.getMessage());
-			logger.error("Hata : fillVardiyalar " + e.getMessage() + " " + new Date());
+			logger.error("Hata : fillVardiyalar " + e.getMessage() + " " + PdksUtil.getCurrentTimeStampStr());
 		} finally {
 			parametreMap = null;
 		}
@@ -596,7 +596,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
 			logger.error("PDKS hata out : " + e.getMessage());
-			logger.error("Hata : fillSablonlar " + e.getMessage() + " " + new Date());
+			logger.error("Hata : fillSablonlar " + e.getMessage() + " " + PdksUtil.getCurrentTimeStampStr());
 		} finally {
 			parametreMap = null;
 		}
@@ -615,7 +615,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			logger.error("PDKS hata in : \n");
 			e.printStackTrace();
 			logger.error("PDKS hata out : " + e.getMessage());
-			logger.error("Hata : fillSablonlar " + e.getMessage() + " " + new Date());
+			logger.error("Hata : fillSablonlar " + e.getMessage() + " " + PdksUtil.getCurrentTimeStampStr());
 		} finally {
 			parametreMap = null;
 		}

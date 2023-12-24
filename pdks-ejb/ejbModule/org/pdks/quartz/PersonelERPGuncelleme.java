@@ -122,7 +122,7 @@ public class PersonelERPGuncelleme implements Serializable {
 				logger.error("PDKS hata in : \n");
 				e.printStackTrace();
 				logger.error("PDKS hata out : " + e.getMessage());
-				logger.error("personelERPGuncelle hata " + e.getMessage() + " " + new Date());
+				logger.error("personelERPGuncelle hata " + e.getMessage() + " " + PdksUtil.getCurrentTimeStampStr());
 				if (hataGonder)
 					try {
 						zamanlayici.mailGonder(session, null, "ERP personel bilgileri güncellemesi", "ERP personel bilgileri güncelleme tamamlanmadı." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);
@@ -147,7 +147,7 @@ public class PersonelERPGuncelleme implements Serializable {
 	 * @throws Exception
 	 */
 	public void personelERPGuncellemeCalistir(Session session, Date time, Boolean mailGonder) throws Exception {
-		logger.info("personelERPGuncelleme  basladi " + new Date());
+		logger.info("personelERPGuncelleme  basladi " + PdksUtil.getCurrentTimeStampStr());
 		if (time == null)
 			time = zamanlayici.getDbTime(session);
 		ozelKontrol = zamanlayici.getOzelKontrol(session);
@@ -189,7 +189,7 @@ public class PersonelERPGuncelleme implements Serializable {
 		}
 
 		try {
-			logger.info("ozel islemler in  " + new Date());
+			logger.info("ozel islemler in  " + PdksUtil.getCurrentTimeStampStr());
 			kullaniciGuncelle(session, null);
 
 			ortakIslemler.yeniPersonelleriOlustur(session);
@@ -197,10 +197,10 @@ public class PersonelERPGuncelleme implements Serializable {
 			if (ozelKontrol)
 				hataliVeriPersonelBul(session, null);
 			ortakIslemler.setIkinciYoneticiSifirla(session);
-			logger.info("ozel islemler out " + new Date());
-			logger.info("aktif Mail Adress Guncelle in " + new Date());
+			logger.info("ozel islemler out " + PdksUtil.getCurrentTimeStampStr());
+			logger.info("aktif Mail Adress Guncelle in " + PdksUtil.getCurrentTimeStampStr());
 			aktifMailAdressGuncelle(session);
-			logger.info("aktif Mail Adress Guncelle out " + new Date());
+			logger.info("aktif Mail Adress Guncelle out " + PdksUtil.getCurrentTimeStampStr());
 		} catch (Exception e) {
 			hataKonum = "ozel islemler tamamlandı ";
 		}
@@ -210,7 +210,7 @@ public class PersonelERPGuncelleme implements Serializable {
 			else
 				zamanlayici.mailGonder(session, null, "SAP personel bilgileri güncellemesi", "SAP personel bilgileri güncelleme tamamlandı.", null, Boolean.TRUE);
 		}
-		logger.info("personelERPGuncelle bitti " + new Date());
+		logger.info("personelERPGuncelle bitti " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	public User getLdapKullanici(String kullaniciAdi) {
@@ -242,7 +242,7 @@ public class PersonelERPGuncelleme implements Serializable {
 		fields.put("pdksPersonel.sirket.ldap=", Boolean.TRUE);
 		fields.put("pdksPersonel.sskCikisTarihi>=", PdksUtil.getDate(Calendar.getInstance().getTime()));
 		List<User> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, User.class);
-		logger.info("kullaniciGuncelle in " + list.size() + " --> " + new Date());
+		logger.info("kullaniciGuncelle in " + list.size() + " --> " + PdksUtil.getCurrentTimeStampStr());
 
 		List<User> hataliList = new ArrayList<User>();
 		while (!list.isEmpty()) {
@@ -301,7 +301,7 @@ public class PersonelERPGuncelleme implements Serializable {
 			}
 		}
 
-		logger.info("kullaniciGuncelle out " + new Date());
+		logger.info("kullaniciGuncelle out " + PdksUtil.getCurrentTimeStampStr());
 
 		list = null;
 		fields = null;
@@ -315,7 +315,7 @@ public class PersonelERPGuncelleme implements Serializable {
 			user = ortakIslemler.getSistemAdminUser(session);
 		List<Long> personelList = new ArrayList<Long>();
 		setCalisiyor(Boolean.TRUE);
-		logger.info("personelERPGuncelleme in " + new Date());
+		logger.info("personelERPGuncelleme in " + PdksUtil.getCurrentTimeStampStr());
 		Calendar cal = Calendar.getInstance();
 		Date bugun = (Date) cal.getTime();
 		cal.add(Calendar.HOUR_OF_DAY, -6);
@@ -346,7 +346,7 @@ public class PersonelERPGuncelleme implements Serializable {
 		hataKonum = "personelERPGuncelle basladi ";
 		List<Personel> list = pdksEntityController.getObjectByInnerObjectListInLogic(map, Personel.class);
 
-		logger.info("personelERPGuncelle basladi. (" + list.size() + ") " + new Date());
+		logger.info("personelERPGuncelle basladi. (" + list.size() + ") " + PdksUtil.getCurrentTimeStampStr());
 		String sicilNo = "";
 		int sayac = 0;
 		List<Personel> hataliPersonelList = new ArrayList<Personel>();
@@ -418,7 +418,7 @@ public class PersonelERPGuncelleme implements Serializable {
 		if (ekran)
 			PdksUtil.addMessageInfo("SAP personel bilgileri güncelleme tamamlandı.");
 
-		logger.info("personelERPGuncelleme out " + new Date());
+		logger.info("personelERPGuncelleme out " + PdksUtil.getCurrentTimeStampStr());
 		return personelList;
 	}
 

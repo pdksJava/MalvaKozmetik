@@ -123,7 +123,7 @@ public class PdksUtil implements Serializable {
 
 	private static int sistemBaslangicYili, izinOffAdet, izinHaftaAdet, planOffAdet;
 
-	private static String url, bundleName, canliSunucu, testSunucu, dateFormat = "dd/MM/yyyy", dateTimeFormat, dateTimeLongFormat, saatFormat = "H:mm";;
+	private static String url, bundleName, canliSunucu, testSunucu, sqlDateFormat = "yyyy-MM-dd", dateFormat = "dd/MM/yyyy", dateTimeFormat, dateTimeLongFormat, saatFormat = "H:mm";
 
 	private static Date sonSistemTarih, helpDeskLastDate;
 
@@ -132,6 +132,16 @@ public class PdksUtil implements Serializable {
 	private static Integer yarimYuvarlaLast = 1;
 
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
+
+	/**
+	 * @return
+	 */
+	public static String getCurrentTimeStampStr() {
+		Date date = new Date();
+		String str = convertToDateString(date, sqlDateFormat + " " + saatFormat + ":ss");
+		date = null;
+		return str;
+	}
 
 	/**
 	 * @param dosyaAdi
@@ -2994,11 +3004,11 @@ public class PdksUtil implements Serializable {
 				String ashost = veriMap != null && veriMap.containsKey("SYSTEMID") ? (String) veriMap.get("SYSTEMID") : "";
 				r3name = pr != null && pr.containsKey("jco.client.r3name") ? (String) pr.get("jco.client.r3name") : ashost;
 
-				// logger.info(name + " --> " + r3name + " " + client + " in " + new Date());
+				// logger.info(name + " --> " + r3name + " " + client + " in " + PdksUtil.getCurrentTimeStampStr());
 				if (execute)
 					jcoClient.execute(function);
 
-				// logger.info(name + " --> " + r3name + " " + client + " out " + new Date());
+				// logger.info(name + " --> " + r3name + " " + client + " out " + PdksUtil.getCurrentTimeStampStr());
 			} catch (Exception e) {
 				hata = "ERR_";
 				exception = e;

@@ -1144,7 +1144,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				boolean ayBitmedi = denklestirmeDonemi.getBitisTarih().getTime() >= PdksUtil.getDate(bugun).getTime();
 				List<PersonelDenklestirmeTasiyici> list = null;
 				if (testDurum)
-					logger.info("fillPersonelDenklestirmeDevam 4000 " + new Date());
+					logger.info("fillPersonelDenklestirmeDevam 4000 " + PdksUtil.getCurrentTimeStampStr());
 				try {
 					denklestirmeDonemi.setPersonelDenklestirmeDonemMap(personelDenklestirmeDonemMap);
 					denklestirmeDonemi.setDenklestirmeAyDurum(denklestirmeAyDurum);
@@ -1164,7 +1164,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					ex.printStackTrace();
 				}
 				if (testDurum)
-					logger.info("fillPersonelDenklestirmeDevam 5000 " + new Date());
+					logger.info("fillPersonelDenklestirmeDevam 5000 " + PdksUtil.getCurrentTimeStampStr());
 				if (!list.isEmpty()) {
 
 					if (list.size() > 1)
@@ -1338,7 +1338,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (!yoneticiKontrolEtme)
 					yoneticiKontrolEtme = yoneticiRolVarmi;
 				if (testDurum)
-					logger.info("fillPersonelDenklestirmeDevam 6000 " + new Date());
+					logger.info("fillPersonelDenklestirmeDevam 6000 " + PdksUtil.getCurrentTimeStampStr());
 
 				ortakIslemler.yoneticiPuantajKontrol(loginUser, puantajDenklestirmeList, Boolean.TRUE, session);
 				boolean kayitVar = false;
@@ -2210,7 +2210,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 				}
 				if (testDurum)
-					logger.info("fillPersonelDenklestirmeDevam 7000 " + new Date());
+					logger.info("fillPersonelDenklestirmeDevam 7000 " + PdksUtil.getCurrentTimeStampStr());
 				if (uyariHaftaTatilMesai) {
 					if (userLogin.getLogin())
 						PdksUtil.addMessageWarn("Hafta tatil günleri güncellendi, 'Fazla Mesai Getir' tekrar çalıştırın.");
@@ -2236,7 +2236,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						PdksUtil.addMessageAvailableWarn("Geçen aydan devreden negatif bakiye denkleştirilemedi!");
 				}
 				if (testDurum)
-					logger.info("fillPersonelDenklestirmeDevam 8000 " + new Date());
+					logger.info("fillPersonelDenklestirmeDevam 8000 " + PdksUtil.getCurrentTimeStampStr());
 
 				if (denklestirmeAyDurum) {
 					List<String> vGunList = ciftBolumCalisanKontrol(puantajList);
@@ -2274,7 +2274,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					fList = null;
 				}
 				if (testDurum)
-					logger.info("fillPersonelDenklestirmeDevam 9000 " + new Date());
+					logger.info("fillPersonelDenklestirmeDevam 9000 " + PdksUtil.getCurrentTimeStampStr());
 
 				paramsMap = null;
 				if (!saveGenelList.isEmpty()) {
@@ -2350,7 +2350,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			pageSize = puantajList.size() + 1;
 		hatalariAyikla = false;
 		if (testDurum)
-			logger.info("fillPersonelDenklestirmeDevam 9100 " + new Date());
+			logger.info("fillPersonelDenklestirmeDevam 9100 " + PdksUtil.getCurrentTimeStampStr());
 
 		if (denklestirmeAyDurum) {
 
@@ -2427,7 +2427,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		}
 		modelGoster = ortakIslemler.getModelGoster(denklestirmeAy, session);
 		if (testDurum)
-			logger.info("fillPersonelDenklestirmeDevam 9200 " + new Date());
+			logger.info("fillPersonelDenklestirmeDevam 9200 " + PdksUtil.getCurrentTimeStampStr());
 		if (!modelGoster) {
 			HashMap<Boolean, Long> sanalDurum = new HashMap<Boolean, Long>();
 			if (puantajList != null)
@@ -2456,7 +2456,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 		}
 		if (testDurum)
-			logger.info("fillPersonelDenklestirmeDevam 9300 " + new Date());
+			logger.info("fillPersonelDenklestirmeDevam 9300 " + PdksUtil.getCurrentTimeStampStr());
 		setAylikPuantajList(puantajList);
 		return puantajList;
 	}

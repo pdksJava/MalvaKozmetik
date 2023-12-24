@@ -91,7 +91,7 @@ public class PdksUtil implements Serializable {
 
 	private static int sistemBaslangicYili, izinOffAdet, izinHaftaAdet, planOffAdet;
 
-	private static String url, bundleName, dateFormat = "dd/MM/yyyy", canliSunucu, testSunucu;
+	private static String url, bundleName, canliSunucu, testSunucu;
 
 	private static Date sonSistemTarih;
 
@@ -102,6 +102,18 @@ public class PdksUtil implements Serializable {
 	private static ServletContext sc;
 
 	private static boolean sistemDestekVar = false;
+
+	private static String sqlDateFormat = "yyyy-MM-dd", dateFormat = "dd/MM/yyyy", saatFormat = "H:mm";
+
+	/**
+	 * @return
+	 */
+	public static String getCurrentTimeStampStr() {
+		Date date = new Date();
+		String str = convertToDateString(date, sqlDateFormat + " " + saatFormat + ":ss");
+		date = null;
+		return str;
+	}
 
 	/**
 	 * @param str

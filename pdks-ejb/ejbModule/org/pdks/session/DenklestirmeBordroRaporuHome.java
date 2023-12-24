@@ -359,11 +359,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						try {
 							if (devam) {
 
-								logger.info(str + " aylikPuantajOlusturuluyor in " + new Date());
+								logger.info(str + " aylikPuantajOlusturuluyor in " + PdksUtil.getCurrentTimeStampStr());
 								vardiyaGunHome.setSession(session);
 								vardiyaGunHome.setAramaSecenekleri(as);
 								vardiyaGunHome.aylikPuantajOlusturuluyor();
-								logger.info(str + " aylikPuantajOlusturuluyor out " + new Date());
+								logger.info(str + " aylikPuantajOlusturuluyor out " + PdksUtil.getCurrentTimeStampStr());
 							}
 						} catch (Exception e) {
 							System.err.println(e);
@@ -376,7 +376,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 				}
 
-				logger.info(str + " in " + new Date());
+				logger.info(str + " in " + PdksUtil.getCurrentTimeStampStr());
 				loginUser.setAdmin(Boolean.TRUE);
 				List<AylikPuantaj> puantajList = null;
 				if (kayitVar && gelecekTarih == false)
@@ -388,7 +388,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					session.flush();
 				}
 
-				logger.info(str + " out " + new Date());
+				logger.info(str + " out " + PdksUtil.getCurrentTimeStampStr());
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();

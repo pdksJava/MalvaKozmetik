@@ -147,7 +147,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 	 * @throws Exception
 	 */
 	public void izinBakiyeGuncellemeCalistir(Session session, Boolean mailGonder) throws Exception {
-		logger.info("izinleriHesapla basladi " + new Date());
+		logger.info("izinleriHesapla basladi " + PdksUtil.getCurrentTimeStampStr());
 		ozelKontrol = zamanlayici.getOzelKontrol(session);
 		User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
 		hataKonum = "izinleriHesapla başladı ";
@@ -156,7 +156,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		izinleriHesapla(sistemAdminUser, session);
 		if (mailGonder)
 			zamanlayici.mailGonder(session, null, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmiştir.", null, Boolean.TRUE);
-		logger.info("izinleriHesapla bitti " + new Date());
+		logger.info("izinleriHesapla bitti " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 	@Transactional
 	// @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void izinleriHesapla(User user, Session session) throws Exception {
-		logger.info("izinBakiyeGuncellemeTimer in " + new Date());
+		logger.info("izinBakiyeGuncellemeTimer in " + PdksUtil.getCurrentTimeStampStr());
 
 		Calendar cal = Calendar.getInstance();
 		yil = cal.get(Calendar.YEAR);
@@ -325,7 +325,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		if (user != null)
 			PdksUtil.addMessageInfo("İzin bakiyeleri güncellenmiştir");
 
-		logger.info("izinBakiyeGuncellemeTimer out " + new Date());
+		logger.info("izinBakiyeGuncellemeTimer out " + PdksUtil.getCurrentTimeStampStr());
 
 	}
 

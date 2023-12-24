@@ -60,7 +60,7 @@ public class SertifikaSSLKontrol implements Serializable {
 
 		if (!isCalisiyor()) {
 			setCalisiyor(Boolean.TRUE);
-			logger.debug("Sertifika SSL Kontrol in " + new Date());
+			logger.debug("Sertifika SSL Kontrol in " + PdksUtil.getCurrentTimeStampStr());
 			Session session = null;
 			try {
 				SSLImport.setServisURLList(null);
@@ -71,16 +71,16 @@ public class SertifikaSSLKontrol implements Serializable {
 					session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 					if (dakika % 30 == 0) {
 						startupAction.fillParameter(session);
-						logger.debug("Parametreler güncellendi " + new Date());
+						logger.debug("Parametreler güncellendi " + PdksUtil.getCurrentTimeStampStr());
 					}
  				}
-				logger.debug("Sertifika SSL Kontrol out " + new Date());
+				logger.debug("Sertifika SSL Kontrol out " + PdksUtil.getCurrentTimeStampStr());
 			} catch (Exception e) {
 				logger.error("PDKS hata in : \n");
 				e.printStackTrace();
 				logger.error("PDKS hata out : " + e.getMessage());
 
-				logger.error("Sertifika SSL Kontrol hata " + e.getMessage() + " " + new Date());
+				logger.error("Sertifika SSL Kontrol hata " + e.getMessage() + " " + PdksUtil.getCurrentTimeStampStr());
 
 			} finally {
 				if (session != null)
