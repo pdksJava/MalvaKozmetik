@@ -7075,7 +7075,7 @@ public class OrtakIslemler implements Serializable {
 
 				}
 				if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
-					String mesaj = authenticatedUser.getAdSoyad() + " Sayfa : " + menuTanimAdi + " " + new Date();
+					String mesaj = authenticatedUser.getAdSoyad() + " Sayfa : " + menuTanimAdi + " " + PdksUtil.getCurrentTimeStampStr();
 					if (logYaz)
 						logger.info(mesaj);
 				}

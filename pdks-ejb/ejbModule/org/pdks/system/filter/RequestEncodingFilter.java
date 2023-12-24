@@ -21,7 +21,6 @@ import org.pdks.erp.action.MyDestinationDataProvider;
 import org.pdks.erp.action.SapRfcManager;
 import com.sap.conn.jco.ext.Environment;
 
-
 public class RequestEncodingFilter implements Filter, Serializable {
 
 	/**
@@ -67,7 +66,7 @@ public class RequestEncodingFilter implements Filter, Serializable {
 		try {
 			myProvider = new MyDestinationDataProvider();
 			Environment.registerDestinationDataProvider(myProvider);
-			logger.info("SAP Pool olustu.");
+			logger.info("SAP Pool olustu. " + PdksUtil.getCurrentTimeStampStr());
 		} catch (Exception e) {
 			logger.error(e);
 			myProvider = null;
