@@ -1173,26 +1173,33 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					double puantajSaatToplami = 0.0d, puantajResmiTatil = 0.0d, puantajHaftaTatil = 0.0d, puantajUcretiOdenenSure = 0.0d;
 					boolean puantajFazlaMesaiHesapla = true;
 					if (puantaj.getVardiyalar() != null) {
+						String donemStr = String.valueOf(yil * 100 + ay);
 						VardiyaGun vardiyaGunSon = null;
 						for (Iterator iterator = puantaj.getVardiyalar().iterator(); iterator.hasNext();) {
 							VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-
-							vardiyaGun.setAyinGunu(gunList.contains(vardiyaGun.getVardiyaDateStr()));
+							String key = vardiyaGun.getVardiyaDateStr();
+							vardiyaGun.setAyinGunu(key.startsWith(donemStr));
 							if (!vardiyaGun.isAyinGunu()) {
 								iterator.remove();
 								continue;
 							}
-							String key = vardiyaGun.getVardiyaDateStr();
-							if (key.equals("20211110"))
-								logger.debug(vardiyaGun.getVardiyaKeyStr());
+
 							if (vardiyaGun.getId() != null) {
-								if (vardiyaGun.getVardiya().isCalisma())
+								Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+								boolean calisma = islemVardiya != null && islemVardiya.isCalisma();
+								if (calisma)
 									vardiyaGunSon = vardiyaGun;
 								vgIdList.add(vardiyaGun.getId());
 								vgMap.put(vardiyaGun.getVardiyaDateStr(), vardiyaGun);
 								if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate())) {
 									try {
-										vardiyaGun.setZamanGelmedi(vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(vardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman()));
+										boolean zamanGelmedi = vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(islemVardiya.getVardiyaTelorans2BitZaman());
+										if (key.equals("20231231"))
+											logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + zamanGelmedi);
+										if (!zamanGelmedi)
+											zamanGelmedi = islemVardiya.isCalisma() == false || islemVardiya.isIzin();
+
+										vardiyaGun.setZamanGelmedi(zamanGelmedi);
 									} catch (Exception e) {
 									}
 								}
