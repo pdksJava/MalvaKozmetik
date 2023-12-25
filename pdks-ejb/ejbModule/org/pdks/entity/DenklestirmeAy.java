@@ -26,9 +26,11 @@ public class DenklestirmeAy extends BaseObject {
 	private static final long serialVersionUID = -4284922207901564192L;
 
 	public static final String TABLE_NAME = "DENKLESTIRMEAY";
- 	public static final String COLUMN_NAME_YIL = "YIL";
+	public static final String COLUMN_NAME_YIL = "YIL";
 	public static final String COLUMN_NAME_AY = "AY";
 	public static final String COLUMN_NAME_IK_OTOMATIK_ONAY_TARIHI = "IK_OTOMATIK_ONAY_TARIHI";
+	public static final String COLUMN_NAME_IK_OTOMATIK_ONAY_BASLANGIC_TARIHI = "IK_OTOMATIK_ONAY_BASLANGIC_TARIHI";
+
 	public static final String COLUMN_NAME_FAZLA_MESAI_ONAY_DURUM = "FAZLA_MESAI_ONAY_DURUM";
 	public static final String COLUMN_NAME_DENKLESTIRME_KESINTI_YAP = "DENKLESTIRME_KESINTI_YAP";
 	public static final String COLUMN_NAME_GUN_MAX_CALISMA_SURESI = "GUN_MAX_CALISMA_SURESI";
@@ -37,7 +39,7 @@ public class DenklestirmeAy extends BaseObject {
 	private double sure = 0, toplamIzinSure = 0;
 	private Double yemekMolasiYuzdesi, fazlaMesaiMaxSure;
 
-	private Date otomatikOnayIKTarih;
+	private Date otomatikOnayIKTarih, otomatikOnayIKBaslangicTarih;
 	private String ayAdi = "", trClass;
 	private List<CalismaModeliAy> modeller;
 	private TreeMap<Long, CalismaModeliAy> modelMap;
@@ -77,6 +79,16 @@ public class DenklestirmeAy extends BaseObject {
 
 	public void setOtomatikOnayIKTarih(Date otomatikOnayIKTarih) {
 		this.otomatikOnayIKTarih = otomatikOnayIKTarih;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = COLUMN_NAME_IK_OTOMATIK_ONAY_BASLANGIC_TARIHI)
+	public Date getOtomatikOnayIKBaslangicTarih() {
+		return otomatikOnayIKBaslangicTarih;
+	}
+
+	public void setOtomatikOnayIKBaslangicTarih(Date otomatikOnayIKBaslangicTarih) {
+		this.otomatikOnayIKBaslangicTarih = otomatikOnayIKBaslangicTarih;
 	}
 
 	@Column(name = "YEMEK_MOLASI_CALISMA_YUZDESI")
@@ -256,8 +268,6 @@ public class DenklestirmeAy extends BaseObject {
 	public TreeMap<Long, CalismaModeliAy> getModelMap() {
 		return modelMap;
 	}
-
-	 
 
 	public void setModelMap(TreeMap<Long, CalismaModeliAy> modelMap) {
 		this.modelMap = modelMap;

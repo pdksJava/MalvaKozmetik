@@ -176,6 +176,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 		if (wb != null) {
 			Sheet sheet = wb.getSheetAt(0);
 			try {
+				int adet = 0;
 				for (int j = 1; j <= sheet.getLastRowNum(); j++) {
 					String sicilNo = "", adSoyad = "";
 					Date zaman = null;
@@ -207,7 +208,16 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 					}
 					if (sicilNo.length() > 0)
 						sicilNo = ortakIslemler.getSicilNo(sicilNo);
+					else {
+						if (adet < 3) {
+							++adet;
+							continue;
+						}
 
+						break;
+					}
+
+					adet = 0;
 					veriMap.put(sicilNo, zaman);
 					perMap.put(sicilNo, adSoyad);
 
@@ -328,7 +338,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 			Date zaman = vg.getVardiyaDate();
 			String zamanStr = PdksUtil.convertToDateString(zaman, formatStr);
 			PersonelKGS personel = vg.getPersonel().getPersonelKGS();
-			Boolean yaz = bugun.after(zaman);
+			Boolean yaz = bugun.after(zaman) || authenticatedUser.isIK();
 			List<HareketKGS> list = hMap.containsKey(personel.getId()) ? hMap.get(personel.getId()) : new ArrayList<HareketKGS>();
 			for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {
 				HareketKGS kgs = (HareketKGS) iterator2.next();
@@ -342,7 +352,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 				pdksEntityController.hareketEkle(kapiView, personel.getPersonelView(), zaman, authenticatedUser, hareketler.getIslem().getNeden().getId(), hareketler.getIslem().getAciklama(), session);
 
 		}
-
+		session.flush();
 		dosyaSifirla();
 		kgsList = null;
 		return "persisted";

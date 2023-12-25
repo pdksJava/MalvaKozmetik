@@ -2381,12 +2381,21 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			Date tarihLast = ortakIslemler.tariheGunEkleCikar(cal, denklestirmeAy.getOtomatikOnayIKTarih(), 10);
 			cal = Calendar.getInstance();
 			Date toDay = cal.getTime();
-			if (toDay.after(tarih) && (toDay.before(denklestirmeAy.getOtomatikOnayIKTarih())) || (loginUser.isTestLogin() && toDay.before(tarihLast))) {
+			boolean baslangicDurum = false;
+			if (denklestirmeAy.getOtomatikOnayIKBaslangicTarih() != null)
+				baslangicDurum = toDay.after(denklestirmeAy.getOtomatikOnayIKBaslangicTarih());
+			if (toDay.after(tarih) && (toDay.before(denklestirmeAy.getOtomatikOnayIKTarih())) || baslangicDurum || (loginUser.isTestLogin() && toDay.before(tarihLast))) {
 				onayla = Boolean.FALSE;
 				for (AylikPuantaj puantaj : puantajList) {
 					PersonelDenklestirme pd = puantaj.getPersonelDenklestirmeAylik();
 					boolean kaydet = pd.getDurum();
 					if (kaydet) {
+						if (baslangicDurum) {
+							puantaj.setSonGun(denklestirmeAy.getOtomatikOnayIKBaslangicTarih());
+							puantaj.setDonemBitti(true);
+							fazlaMesaiOnayDurum = true;
+						}
+
 						boolean eksikCalismaSureDegisti = PdksUtil.isDoubleDegisti(pd.getEksikCalismaSure(), puantaj.getEksikCalismaSure());
 						boolean kesilenSureDegisti = PdksUtil.isDoubleDegisti(pd.getKesilenSure(), puantaj.getKesilenSure());
 						boolean aksamVardiyaSaatSayisiDegisti = PdksUtil.isDoubleDegisti(pd.getAksamVardiyaSaatSayisi(), puantaj.getAksamVardiyaSaatSayisi());
@@ -2455,6 +2464,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					break;
 			}
 		}
+
 		if (testDurum)
 			logger.info("fillPersonelDenklestirmeDevam 9300 " + PdksUtil.getCurrentTimeStampStr());
 		setAylikPuantajList(puantajList);
