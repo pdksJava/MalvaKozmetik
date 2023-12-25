@@ -1250,6 +1250,8 @@ public class VardiyaGun extends BaseObject {
 	public String getAylikClassAdi(String anaClasss) {
 		String classAd = "";
 		Boolean ozelGorevVar = Boolean.FALSE;
+		if (vardiyaDateStr.equals("20231212"))
+			logger.debug("");
 		if (vardiya != null && vardiya.getId() != null) {
 			if (izin == null && !vardiya.isRadyasyonIzni()) {
 				classAd = STYLE_CLASS_NORMAL_CALISMA;
@@ -1277,7 +1279,7 @@ public class VardiyaGun extends BaseObject {
 				classAd = STYLE_CLASS_DIGER_AY;
 		} else {
 
-			if (PdksUtil.hasStringValue(anaClasss) && personel != null && personel.isCalisiyorGun(vardiyaDate) == false)
+			if (PdksUtil.hasStringValue(anaClasss) && (personel == null || personel.isCalisiyorGun(vardiyaDate) == false))
 				classAd = STYLE_CLASS_OFF;
 		}
 		if (ayinGunu && version < 0 && this.isIzinli() == false && fiiliHesapla == false)

@@ -158,8 +158,11 @@ public class AylikPuantaj implements Serializable, Cloneable {
 			if (vgMap.containsKey(key))
 				vardiyaGun = vgMap.get(key);
 		}
-		if (vardiyaGun == null)
-			vardiyaGun = gun;
+		if (vardiyaGun == null) {
+			vardiyaGun = new VardiyaGun(this.getPdksPersonel(), null, gun.getVardiyaDate());
+
+		}
+
 		return vardiyaGun;
 	}
 
