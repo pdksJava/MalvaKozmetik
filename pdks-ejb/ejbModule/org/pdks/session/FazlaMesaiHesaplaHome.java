@@ -2897,7 +2897,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (PdksUtil.hasStringValue(sicilNo))
 				lastMap.put("sicilNo", sicilNo.trim());
 		}
-
+		lastMap.put("sayfaURL", sayfaURL);
 		try {
 
 			ortakIslemler.saveLastParameter(lastMap, session);

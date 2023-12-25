@@ -18,6 +18,7 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
@@ -381,7 +382,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			Workbook wb = new XSSFWorkbook();
 			CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
 			CellStyle numberStyle = ExcelUtil.getCellStyleTutar(wb);
-
+			CreationHelper factory = wb.getCreationHelper();
+			ClientAnchor anchor = factory.createClientAnchor();
 			boolean kimlikNoGoster = false;
 			Boolean kartNoAciklamaGoster = null;
 			String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
@@ -452,6 +454,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				Date sonGun = ortakIslemler.tariheAyEkleCikar(cal, tarih, 1);
 				String ayAdi = dm.getAyAdi();
 				Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.setTurkishStr(ayAdi + " " + dm.getYil()) + " Liste", Boolean.TRUE);
+				Drawing drawing = sheet.createDrawingPatriarch();
 				XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 				XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 				CellStyle style = ExcelUtil.getStyleData(wb);
@@ -534,6 +537,17 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					row++;
 					col = 0;
 					PersonelKGS personelKGS = personel.getPersonelKGS();
+					StringBuffer sb = null;
+					if (ap.getVardiyalar() != null && !ap.getVardiyalar().isEmpty()) {
+						sb = new StringBuffer();
+						String pattern = PdksUtil.getDateFormat();
+						for (VardiyaGun vg : ap.getVardiyalar()) {
+							if (sb.length() > 0)
+								sb.append("\n");
+							Vardiya vardiya = vg.getVardiya();
+							sb.append(PdksUtil.convertToDateString(vg.getVardiyaDate(), pattern) + " " + vardiya.getKisaAdi() + " [ " + vg.getVardiyaAdi() + " ] ");
+						}
+					}
 					for (String kodu : baslikMap.keySet()) {
 						if (kodu.startsWith(home.COL_CALISMA_MODELI)) {
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ap.getCalismaModeli().getAciklama());
@@ -551,8 +565,18 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ay);
 						else if (kodu.equals(home.COL_AY_ADI))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ayAdi);
-						else if (kodu.equals(home.COL_PERSONEL_NO))
-							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
+
+						else if (kodu.equals(home.COL_PERSONEL_NO)) {
+							Cell perNoCell = ExcelUtil.getCell(sheet, row, col++, styleCenter);
+							perNoCell.setCellValue(personel.getPdksSicilNo());
+							if (sb != null) {
+								String title = sb.toString();
+								AylikPuantaj.cellComment(factory, drawing, anchor, perNoCell, title);
+								sb = null;
+							}
+
+						}
+
 						else if (kodu.equals(home.COL_AD_SOYAD))
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 						else if (kodu.equals(home.COL_AD))

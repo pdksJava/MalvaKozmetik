@@ -66,8 +66,10 @@ import com.google.gson.Gson;
 
 @Name("fazlaCalismaRaporHome")
 public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonemi> implements Serializable {
+
 	private static final long serialVersionUID = -3864181405990033326L;
 	static Logger logger = Logger.getLogger(FazlaCalismaRaporHome.class);
+	public static String sayfaURL = "fazlaCalismaRapor";
 
 	@RequestParameter
 	Long personelDenklestirmeId;
@@ -1244,6 +1246,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (((authenticatedUser.isIK()) || (authenticatedUser.isAdmin())) && PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
 		try {
+			lastMap.put("sayfaURL", sayfaURL);
 			ortakIslemler.saveLastParameter(lastMap, session);
 		} catch (Exception localException) {
 		}

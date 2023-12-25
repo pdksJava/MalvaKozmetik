@@ -75,6 +75,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	 */
 	private static final long serialVersionUID = 5201033120905302620L;
 	static Logger logger = Logger.getLogger(FazlaMesaiOzetRaporHome.class);
+	public static String sayfaURL = "fazlaMesaiOzetRapor";
 
 	@RequestParameter
 	Long personelDenklestirmeId;
@@ -702,6 +703,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		try {
 
 			map1 = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
+			lastMap.put("sayfaURL", sayfaURL);
 			ortakIslemler.saveLastParameter(lastMap, session);
 		} catch (Exception e) {
 

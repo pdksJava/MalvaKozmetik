@@ -423,7 +423,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			lastMap.put("bolumId", "" + personel.getEkSaha3().getId());
 		if (ekSaha4Tanim != null)
 			lastMap.put("altBolumId", "" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getId() : "-1"));
-
 		lastMap.put("sicilNo", personel.getPdksSicilNo());
 		lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
 
@@ -441,9 +440,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		try {
 			fazlaMesaiHesaplaMenuAdi = "";
 			String str = ortakIslemler.getParameterKey("bordroVeriOlustur");
-//			boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
-//			if (!ayniSayfa)
-//				authenticatedUser.setCalistigiSayfa(sayfaURL);
+			boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals(sayfaURL);
+			if (!ayniSayfa)
+				authenticatedUser.setCalistigiSayfa(sayfaURL);
 			if (personelDenklestirmeList != null)
 				personelDenklestirmeList.clear();
 			else
@@ -588,7 +587,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			lastMap.put("tesisId", "" + tesisId);
 		if (PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
-		else {
+		if (denklestirmeAy.getDurum()) {
 			if (hataliVeriGetir != null)
 				lastMap.put("hataliVeriGetir", "" + hataliVeriGetir);
 			if (eksikCalisanVeriGetir != null)

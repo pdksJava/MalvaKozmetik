@@ -29,7 +29,7 @@ public class UserMenuItemTime extends BasePDKSObject implements Serializable {
 	private static final long serialVersionUID = 8339875569540893616L;
 
 	public static final String TABLE_NAME = "USER_MENUITEM_TIME";
- 	public static final String COLUMN_NAME_USER = "USER_ID";
+	public static final String COLUMN_NAME_USER = "USER_ID";
 	public static final String COLUMN_NAME_MENU = "MENU_ID";
 	public static final String COLUMN_NAME_LAST_PARAMETRE = "LAST_PARAMETRE";
 

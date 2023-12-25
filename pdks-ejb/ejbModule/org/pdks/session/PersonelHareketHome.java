@@ -55,7 +55,8 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	 */
 	private static final long serialVersionUID = -3323735011423501133L;
 	static Logger logger = Logger.getLogger(PersonelHareketHome.class);
-
+	public static String sayfaURL = "personelHareket";
+	
 	@RequestParameter
 	Long personelHareketId;
 	@In(create = true)
@@ -1007,6 +1008,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 			lastMap.put("tarih", PdksUtil.convertToDateString(tarih, "yyyy-MM-dd"));
 
 		try {
+			lastMap.put("sayfaURL", sayfaURL);
 			ortakIslemler.saveLastParameter(lastMap, session);
 		} catch (Exception e) {
 

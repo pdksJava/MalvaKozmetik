@@ -75,7 +75,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	 */
 	private static final long serialVersionUID = 5201033120905302620L;
 	static Logger logger = Logger.getLogger(FazlaMesaiRaporHome.class);
-
+	public static String sayfaURL = "fazlaMesaiRapor";
+	
 	@RequestParameter
 	Long personelDenklestirmeId;
 	@In(required = false, create = true)
@@ -1157,8 +1158,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		if ((authenticatedUser.isIK() || authenticatedUser.isAdmin()) && PdksUtil.hasStringValue(sicilNo))
 			lastMap.put("sicilNo", sicilNo.trim());
 		try {
-
-			ortakIslemler.saveLastParameter(lastMap, session);
+			lastMap.put("sayfaURL", sayfaURL);
+ 		ortakIslemler.saveLastParameter(lastMap, session);
 		} catch (Exception e) {
 
 		}
