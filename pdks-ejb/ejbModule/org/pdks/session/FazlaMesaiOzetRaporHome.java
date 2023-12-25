@@ -1024,8 +1024,6 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 								if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate())) {
 									try {
 										boolean zamanGelmedi = vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(islemVardiya.getVardiyaTelorans2BitZaman());
-										if (key.equals("20231231"))
-											logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + zamanGelmedi);
 										if (!zamanGelmedi)
 											zamanGelmedi = islemVardiya.isCalisma() == false || islemVardiya.isIzin();
 
