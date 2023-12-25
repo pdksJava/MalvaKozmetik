@@ -868,6 +868,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						boolean resmiTatil = tatil != null;
 						double calismaGun = 1.0d;
 						if (vardiyaGun.isIzinli()) {
+
 							// calisiyor = true;
 							String izinKodu = null;
 							double artiGun = 1.0d;
@@ -877,9 +878,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							if (vardiyaGun.getIzin() != null) {
 								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 								if (izinTipi != null) {
-									if (izinTipi.isUcretsizIzinTipi())
+									if (izinTipi.isUcretsizIzinTipi()) {
 										calismaGun = 0;
-									else if (saatlikCalisma) {
+									} else if (saatlikCalisma) {
 										if (resmiTatil == false) {
 											Double sure = ortakIslemler.getVardiyaIzinSuresi(vardiyaGun.getSaatCalisanIzinGunKatsayisi(), vardiyaGun, personelDenklestirme, vardiyaGun.getVardiyaDate());
 											if (sure > 0.0d)

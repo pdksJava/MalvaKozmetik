@@ -16090,6 +16090,7 @@ public class OrtakIslemler implements Serializable {
 				BordroDetayTipi bordroDetayTipi = null;
 				if (vardiyaIzin && PdksUtil.hasStringValue(islemVardiya.getStyleClass()))
 					bordroDetayTipi = BordroDetayTipi.fromValue(islemVardiya.getStyleClass());
+				
 				if (vardiyaIzin == false || bordroDetayTipi == null) {
 					Date vardiyaDate = vardiyaGun.getVardiyaDate();
 					if (!personelIzin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
@@ -16111,7 +16112,7 @@ public class OrtakIslemler implements Serializable {
 
 					if (kontrol || vardiyaIzin) {
 						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
-
+						Date sonGun = PdksUtil.getDate(izin.getBitisZamani());
 						int gunlukOldu = 0;
 						int bitisDeger = PdksUtil.tarihKarsilastirNumeric(bitisZamani, vardiyaDate);
 						int baslangicDeger = PdksUtil.tarihKarsilastirNumeric(vardiyaDate, izin.getBaslangicZamani());
@@ -16129,6 +16130,7 @@ public class OrtakIslemler implements Serializable {
 						izin.setGunlukOldu(gunIzin);
 						PersonelIzin personelIzin2 = izin;
 						boolean izinDurum = true;
+
 						if (cumaCumartesiTekIzinSay && gunIzin && offVardiya && sure.intValue() == 1) {
 							if (vardiyaGun.getTatil() != null || PdksUtil.getDate(personelIzinInput.getBitisZamani()).getTime() == vardiyaGun.getVardiyaDate().getTime()) {
 								izinDurum = false;
@@ -16149,6 +16151,12 @@ public class OrtakIslemler implements Serializable {
 								izinDurum = false;
 							if (islemVardiya.isHaftaTatil() && izinTipi.isHTDahil() == false)
 								izinDurum = false;
+						
+								if (!izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {
+									izinDurum = sonGun.after(vardiyaDate);
+								}
+							 
+
 							if (izinDurum) {
 								personelIzin2 = izin.setVardiyaIzin(vardiyaGun);
 								personelIzin2.setOrjIzin(personelIzin);
