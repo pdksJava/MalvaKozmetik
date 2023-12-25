@@ -688,14 +688,18 @@
 							<f:facet name="header">
 								<h:outputText value="İzin Hakediş Yılı" />
 							</f:facet>
-							<h:outputText value="#{kalanIzinler.izinDonem}" />
+							<ui:fragment rendered="#{kalanIzinler.devirIzin==false}">
+								<h:outputText value="#{kalanIzinler.izinDonem}" />
+							</ui:fragment>
 
 						</rich:column>
 						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}">
 							<f:facet name="header">
 								<h:outputText value="Hakettiği Tarihi" />
 							</f:facet>
-							<h:outputText value="#{authenticatedUser.dateFormatla(kalanIzinler.bitisZamani)}" />
+							<ui:fragment rendered="#{kalanIzinler.devirIzin==false}">
+								<h:outputText value="#{authenticatedUser.dateFormatla(kalanIzinler.bitisZamani)}" />
+							</ui:fragment>
 
 						</rich:column>
 						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}">
@@ -816,11 +820,11 @@
 
 				</h:panelGrid>
 				<ui:fragment rendered="#{personelKalanIzinHome.updateIzin.izinKagidiGeldi==null}">
-					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{personelKalanIzinHome.kaydet}" reRender="izinDetayPanel,izinPanel"
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{personelKalanIzinHome.kaydet(true)}" reRender="izinDetayPanel,izinPanel"
 						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
 				</ui:fragment>
 				<ui:fragment rendered="#{personelKalanIzinHome.updateIzin.izinKagidiGeldi!=null}">
-					<a4j:commandButton status="ajaxStatus" value="Geri Al" action="#{personelKalanIzinHome.kaydet}" reRender="izinDetayPanel,izinPanel"
+					<a4j:commandButton status="ajaxStatus" value="Geri Al" action="#{personelKalanIzinHome.kaydet(true)}" reRender="izinDetayPanel,izinPanel"
 						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
 				</ui:fragment>
 
