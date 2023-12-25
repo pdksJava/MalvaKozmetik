@@ -70,7 +70,7 @@
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
 							<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
-								<a4j:support event="oncchange" reRender="secimler" status="ajaxStatus" />
+								<a4j:support event="onchange" reRender="anaForm" status="ajaxStatus" />
 
 							</h:inputText>
 						</s:decorate>
@@ -98,12 +98,12 @@
 
 						<h:panelGrid columns="4">
 							<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
-								reRender="denklestirmeDonemiTable" />
+								reRender="denklestirmeDonemiTable,anaForm" />
 							<ui:fragment
 								rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and (denklestirmeBordroRaporuHome.adminRole or ortakIslemler.getParameterKeyHasStringValue('sirketFazlaMesaiGuncelleme')) }">
 								<ui:fragment rendered="#{denklestirmeBordroRaporuHome.sirket.tesisDurum==false or denklestirmeBordroRaporuHome.tesisId gt 0 }">
 									<a4j:commandButton status="ajaxStatus" value="#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla"
-										action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable" />
+										action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable,anaForm" />
 								</ui:fragment>
 							</ui:fragment>
 							<h:commandLink value="Excel" action="#{denklestirmeBordroRaporuHome.denklestirmeExcelAktar}" target="blank"
