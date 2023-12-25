@@ -70,9 +70,9 @@
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
 							<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
-								<a4j:support event="onchange" reRender="anaForm" status="ajaxStatus" />
-
-							</h:inputText>
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
+									reRender="anaForm,denklestirmeDonemiTable" status="ajaxStatus" />
+ 							</h:inputText>
 						</s:decorate>
 					</h:panelGrid>
 					<h:panelGrid columns="2" style="width: 80%;"
