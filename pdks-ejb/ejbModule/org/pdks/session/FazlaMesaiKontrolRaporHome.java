@@ -34,6 +34,7 @@ import org.jboss.seam.annotations.FlushModeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
@@ -590,6 +591,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		return "";
 	}
 
+	@Transactional
 	public String fillFazlaMesaiKontrolRaporList() {
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
@@ -666,6 +668,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 	 * @param aylikPuantajSablon
 	 * @param denklestirmeDonemi
 	 */
+	@Transactional
 	public void fillFazlaMesaiKontrolRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
 		fazlaMesaiVardiyaGun = null;
 		Map<String, String> map1 = null;

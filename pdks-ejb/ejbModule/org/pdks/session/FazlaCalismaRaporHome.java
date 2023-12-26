@@ -1229,6 +1229,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			aylikPuantajList.clear();
 	}
 
+	@Transactional
 	private void saveLastParameter() {
 		LinkedHashMap lastMap = new LinkedHashMap();
 		lastMap.put("basTarih", PdksUtil.convertToDateString(basTarih, "yyyyMMdd"));

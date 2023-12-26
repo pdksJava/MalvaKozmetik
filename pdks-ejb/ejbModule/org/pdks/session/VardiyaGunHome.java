@@ -2916,6 +2916,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	/**
 	 * 
 	 */
+	@Transactional
 	private void savePlanLastParameter() {
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 		lastMap.put("yil", "" + yil);
@@ -8159,6 +8160,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @param aylikPuantajSablon
 	 * @param denklestirmeDonemi
 	 */
+	@Transactional
 	public void fillFazlaMesaiTalepDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
 		mailGonder = Boolean.FALSE;
 		mesaiOnayla = Boolean.FALSE;

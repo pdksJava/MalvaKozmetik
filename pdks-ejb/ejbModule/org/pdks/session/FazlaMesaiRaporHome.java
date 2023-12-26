@@ -1142,6 +1142,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	/**
 	 * @param map1
 	 */
+	@Transactional
 	private void saveLastParameter() {
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 		lastMap.put("basTarih", PdksUtil.convertToDateString(basTarih, "yyyyMMdd"));

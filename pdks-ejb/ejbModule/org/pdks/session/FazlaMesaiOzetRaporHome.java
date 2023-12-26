@@ -674,6 +674,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	 * @param aylikPuantajSablon
 	 * @param denklestirmeDonemi
 	 */
+	@Transactional
 	public void fillFazlaMesaiOzetRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
 		fazlaMesaiVardiyaGun = null;
 		yoneticiERP1Kontrol = !ortakIslemler.getParameterKeyHasStringValue("yoneticiERP1Kontrol");

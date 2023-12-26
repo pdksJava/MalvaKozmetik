@@ -2885,6 +2885,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	/**
 	 * 
 	 */
+	@Transactional
 	private void saveLastParameter() {
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 		lastMap.put("yil", "" + yil);

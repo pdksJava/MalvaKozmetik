@@ -3199,6 +3199,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 	/**
 	 * 
 	 */
+	@Transactional
 	private void saveLastParameter() {
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 		lastMap.put("yil", "" + yil);

@@ -59,7 +59,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 	private static final long serialVersionUID = -6296894631826661965L;
 	static Logger logger = Logger.getLogger(PersonelFazlaMesaiHome.class);
 	public static String sayfaURL = "personelFazlaMesai";
-	
+
 	@RequestParameter
 	Long fazlaMesaiId;
 	@In(create = true)
@@ -1265,6 +1265,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 
 	}
 
+	@Transactional
 	private void saveLastParameter() {
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 		if (aramaSecenekleri.getDepartmanId() != null)
