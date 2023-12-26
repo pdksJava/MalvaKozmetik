@@ -496,7 +496,11 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public String departmanDegisti(boolean degisti) {
 		yilDegisti();
+		if (ay <= 0 && !aylar.isEmpty())
+			ay = (Integer) aylar.get(aylar.size() - 1).getValue();
+
 		if (degisti) {
+			setSeciliDenklestirmeAy();
 			sirketId = null;
 			if (tesisList != null)
 				tesisList.clear();

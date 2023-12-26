@@ -535,7 +535,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					}
 					if (departmanId == null && departmanIdStr != null)
 						departmanId = Long.parseLong(departmanIdStr);
-					yilDegisti();
+					yilDegisti(false);
 
 				}
 			}
@@ -543,7 +543,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				if (departmanId == null)
 					setDepartmanId(authenticatedUser.getDepartman().getId());
 				if (authenticatedUser.isIK())
-					yilDegisti();
+					yilDegisti(false);
 			}
 
 			// return ortakIslemler.yetkiIKAdmin(Boolean.FALSE);
@@ -609,7 +609,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		List<Departman> list = ortakIslemler.fillDepartmanTanimList(session);
 		if (list.size() == 1) {
 			departmanId = list.get(0).getId();
-			yilDegisti();
+			yilDegisti(false);
 
 		}
 
@@ -662,12 +662,15 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		setTesisList(selectItems);
 	}
 
-	public void yilDegisti() {
+	/**
+	 * @param sirketDegisti
+	 */
+	public void yilDegisti(boolean sirketDegisti) {
 		if (yil > 0) {
 			if (aylar == null)
 				aylar = new ArrayList<SelectItem>();
 			ay = fazlaMesaiOrtakIslemler.aylariDoldur(yil, ay, aylar, session);
-			if (!aylar.isEmpty())
+			if (!aylar.isEmpty() && sirketDegisti == false)
 				fillSirketList();
 		}
 
@@ -675,6 +678,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void fillSirketList() {
 		personelDenklestirmeList.clear();
+		yilDegisti(true);
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("id", departmanId);
 		if (session != null)
@@ -685,7 +689,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			departman = null;
 
 		HashMap fields = new HashMap();
-		if (ay <= 0)
+		if (ay <= 0 && !aylar.isEmpty())
 			ay = (Integer) aylar.get(aylar.size() - 1).getValue();
 
 		fields.put("ay", ay);
