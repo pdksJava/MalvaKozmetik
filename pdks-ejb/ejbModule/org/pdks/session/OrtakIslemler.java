@@ -16072,6 +16072,7 @@ public class OrtakIslemler implements Serializable {
 	 * @param personelIzin
 	 */
 	public PersonelIzin setIzinDurum(VardiyaGun vardiyaGun, PersonelIzin personelIzinInput) {
+		Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
 		String izinVardiyaKontrolStr = getParameterKey("izinVardiyaKontrol");
 		IzinTipi izinTipi = personelIzinInput != null ? personelIzinInput.getIzinTipi() : null;
@@ -16079,11 +16080,10 @@ public class OrtakIslemler implements Serializable {
 		boolean izinVardiyaKontrol = PdksUtil.hasStringValue(izinVardiyaKontrolStr), izinERPUpdate = getParameterKey("izinERPUpdate").equals("1");
 		boolean takvimGunu = personelIzin != null && personelIzin.getIzinTipi().isTakvimGunuMu();
 		boolean offDahil = takvimGunu == false && personelIzin != null && personelIzin.getIzinTipi().isOffDahilMi();
-		boolean offVardiya = offDahil && vardiyaGun != null && vardiyaGun.getVardiya().isOff();
+		boolean offVardiya = offDahil && vardiyaGun != null && islemVardiya != null && vardiyaGun.getVardiya().isOff();
 		Double sure = personelIzin.getIzinSuresi();
 		Calendar cal = Calendar.getInstance();
 		try {
-			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 			String vardiyaDateStr = vardiyaGun.getVardiyaDateStr();
 			boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
 			if (personelIzin != null && vardiyaGun != null && islemVardiya != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
@@ -16769,18 +16769,20 @@ public class OrtakIslemler implements Serializable {
 					}
 
 					// Personel izinleri vardiya gününe ekleniyor
-					if (izinler != null) {
-						for (Iterator<PersonelIzin> iterator3 = izinler.iterator(); iterator3.hasNext();) {
-							PersonelIzin personelIzin = iterator3.next();
-							setIzinDurum(vardiyaGun, personelIzin);
+					if (vardiya != null) {
+						if (izinler != null) {
+							for (Iterator<PersonelIzin> iterator3 = izinler.iterator(); iterator3.hasNext();) {
+								PersonelIzin personelIzin = iterator3.next();
+								setIzinDurum(vardiyaGun, personelIzin);
+							}
+							if (vardiyaGun.getIzin() != null && vardiya.isHaftaTatil()) {
+								if (!vardiyaGun.getIzin().getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
+									izinVar = true;
+							}
 						}
-						if (vardiya != null && vardiyaGun.getIzin() != null && vardiya.isHaftaTatil()) {
-							if (!vardiyaGun.getIzin().getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
-								izinVar = true;
-						}
+						if (vardiyaGun.getIzin() != null && vardiyaGun.getVardiya().isIzin())
+							izinVardiyaGunList.add(vardiyaGun);
 					}
-					if (vardiya != null && vardiyaGun.getIzin() != null && vardiyaGun.getVardiya().isIzin())
-						izinVardiyaGunList.add(vardiyaGun);
 				}
 
 			} catch (Exception e) {
