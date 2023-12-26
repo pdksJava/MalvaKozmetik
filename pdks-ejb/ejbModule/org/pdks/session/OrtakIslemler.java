@@ -16084,13 +16084,13 @@ public class OrtakIslemler implements Serializable {
 		Calendar cal = Calendar.getInstance();
 		try {
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
-
+			String vardiyaDateStr = vardiyaGun.getVardiyaDateStr();
 			boolean vardiyaIzin = vardiyaGun.getVardiya().isIzin();
 			if (personelIzin != null && vardiyaGun != null && islemVardiya != null && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
 				BordroDetayTipi bordroDetayTipi = null;
 				if (vardiyaIzin && PdksUtil.hasStringValue(islemVardiya.getStyleClass()))
 					bordroDetayTipi = BordroDetayTipi.fromValue(islemVardiya.getStyleClass());
-				
+
 				if (vardiyaIzin == false || bordroDetayTipi == null) {
 					Date vardiyaDate = vardiyaGun.getVardiyaDate();
 					if (!personelIzin.getIzinTipi().getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK))
@@ -16104,15 +16104,22 @@ public class OrtakIslemler implements Serializable {
 					}
 
 					boolean kontrol = false;
+					Date sonGun = PdksUtil.getDate(bitisZamani);
 					if (izinERPUpdate == false) {
 						kontrol = PdksUtil.getDate(bitisZamani).getTime() > islemVardiya.getVardiyaBasZaman().getTime() && baslangicZamani.getTime() <= islemVardiya.getVardiyaBitZaman().getTime();
 
 					} else
 						kontrol = bitisZamani.getTime() >= vardiyaDate.getTime() && baslangicZamani.getTime() <= vardiyaDate.getTime();
-
+					if (vardiyaDateStr.equals("20231210")) {
+						logger.debug(personelIzin.getId());
+					}
+					if (kontrol == false && !izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {
+						kontrol = sonGun.after(vardiyaDate);
+					}
 					if (kontrol || vardiyaIzin) {
+
 						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
-						Date sonGun = PdksUtil.getDate(izin.getBitisZamani());
+
 						int gunlukOldu = 0;
 						int bitisDeger = PdksUtil.tarihKarsilastirNumeric(bitisZamani, vardiyaDate);
 						int baslangicDeger = PdksUtil.tarihKarsilastirNumeric(vardiyaDate, izin.getBaslangicZamani());
@@ -16151,11 +16158,10 @@ public class OrtakIslemler implements Serializable {
 								izinDurum = false;
 							if (islemVardiya.isHaftaTatil() && izinTipi.isHTDahil() == false)
 								izinDurum = false;
-						
-								if (!izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {
-									izinDurum = sonGun.after(vardiyaDate);
-								}
-							 
+
+							if (!izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {
+								izinDurum = sonGun.after(vardiyaDate);
+							}
 
 							if (izinDurum) {
 								personelIzin2 = izin.setVardiyaIzin(vardiyaGun);
@@ -16788,7 +16794,8 @@ public class OrtakIslemler implements Serializable {
 					if (vardiyaGun.getIzin() != null || oncekiVardiyaGun == null || oncekiVardiyaGun.getIzin() == null)
 						continue;
 					if (oncekiVardiyaGun.getVardiya().isHaftaTatil()) {
-						oncekiVardiyaGun.setIzin(null);
+						if (oncekiVardiyaGun.getIzin() != null && oncekiVardiyaGun.getIzin().getIzinTipi().isSenelikIzin())
+							oncekiVardiyaGun.setIzin(null);
 						// PersonelIzin izin = oncekiVardiyaGun.getIzin();
 						// if (izin != null) {
 						// IzinTipi izinTipi = izin.getIzinTipi();

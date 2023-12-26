@@ -868,6 +868,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						Tatil tatil = vardiyaGun.getTatil();
 						boolean resmiTatil = tatil != null;
 						double calismaGun = 1.0d;
+						BordroDetayTipi izinBordroDetayTipi = null;
+						if (vardiyaGun.getVardiyaDateStr().equals("20231210"))
+							logger.debug("x");
 						if (vardiyaGun.isIzinli()) {
 
 							// calisiyor = true;
@@ -919,15 +922,32 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 							} else
 								izinKodu = vardiya.getStyleClass();
-							if (artiGun > 0.0d && izinKodu != null) {
-								calismaGun = izinDetayYaz(detayMap, calismaGun, izinKodu, artiGun);
-								if (senelikIzin != null)
-									izinDetayYaz(detayMap, calismaGun, BordroDetayTipi.YILLIK_IZIN.value(), artiGun);
+
+							if (izinKodu != null) {
+								try {
+									izinBordroDetayTipi = BordroDetayTipi.fromValue(izinKodu);
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
+
+								if (haftaTatil && izinBordroDetayTipi != null) {
+									haftaTatil = izinBordroDetayTipi.value().equals(BordroDetayTipi.UCRETLI_IZIN.value());
+									if (haftaTatil == false)
+										artiGun = 1;
+								}
+								if (artiGun > 0.0d) {
+
+									calismaGun = izinDetayYaz(detayMap, calismaGun, izinKodu, artiGun);
+									if (senelikIzin != null)
+										izinDetayYaz(detayMap, calismaGun, BordroDetayTipi.YILLIK_IZIN.value(), artiGun);
+
+								}
 
 							}
 
 						}
 						if (calismaGun > 0.0d) {
+
 							if (resmiTatil) {
 								if (!tatil.isYarimGunMu()) {
 									resmiTatilAdet += calismaGun;
