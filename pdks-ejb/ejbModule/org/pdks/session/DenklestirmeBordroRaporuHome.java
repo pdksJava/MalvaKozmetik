@@ -346,7 +346,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
-				List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
+				List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, false, session);
 				int kayitAdet = donemPerList != null ? donemPerList.size() : 0;
 				if (authenticatedUser.isAdmin() || gelecekTarih) {
 					as.setEkSaha3Id(seciliEkSaha3Id);
@@ -535,7 +535,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					}
 					if (departmanId == null && departmanIdStr != null)
 						departmanId = Long.parseLong(departmanIdStr);
-					yilDegisti(false);
+					yilDegisti();
 
 				}
 			}
@@ -543,7 +543,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				if (departmanId == null)
 					setDepartmanId(authenticatedUser.getDepartman().getId());
 				if (authenticatedUser.isIK())
-					yilDegisti(false);
+					yilDegisti();
 			}
 
 			// return ortakIslemler.yetkiIKAdmin(Boolean.FALSE);
@@ -609,7 +609,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		List<Departman> list = ortakIslemler.fillDepartmanTanimList(session);
 		if (list.size() == 1) {
 			departmanId = list.get(0).getId();
-			yilDegisti(false);
+			yilDegisti();
 
 		}
 
@@ -662,15 +662,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		setTesisList(selectItems);
 	}
 
-	/**
-	 * @param sirketDegisti
-	 */
-	public void yilDegisti(boolean sirketDegisti) {
+	public void yilDegisti() {
 		if (yil > 0) {
 			if (aylar == null)
 				aylar = new ArrayList<SelectItem>();
 			ay = fazlaMesaiOrtakIslemler.aylariDoldur(yil, ay, aylar, session);
-			if (!aylar.isEmpty() && sirketDegisti == false)
+			if (!aylar.isEmpty())
 				fillSirketList();
 		}
 
@@ -678,7 +675,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void fillSirketList() {
 		personelDenklestirmeList.clear();
-		yilDegisti(true);
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("id", departmanId);
 		if (session != null)
@@ -689,7 +685,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			departman = null;
 
 		HashMap fields = new HashMap();
-		if (ay <= 0 && !aylar.isEmpty())
+		if (ay <= 0)
 			ay = (Integer) aylar.get(aylar.size() - 1).getValue();
 
 		fields.put("ay", ay);

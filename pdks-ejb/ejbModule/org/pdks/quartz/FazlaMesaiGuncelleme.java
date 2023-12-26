@@ -389,7 +389,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 			// session.beginTransaction().begin();
 			loginUser.setAdmin(Boolean.TRUE);
-			List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
+			List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, false, session);
 			boolean kayitVar = !donemPerList.isEmpty();
 			if (vardiyaPlaniOtomatikOlustur || gelecekTarih) {
 				as.setEkSaha3Id(seciliEkSaha3Id);
