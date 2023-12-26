@@ -33,6 +33,8 @@ import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.PersonelView;
 import org.pdks.security.entity.User;
 
+import com.google.gson.Gson;
+
 @Startup(depends = { "entityManager" })
 @Scope(ScopeType.APPLICATION)
 @Name("pdksEntityController")
@@ -638,7 +640,9 @@ public class PdksEntityController implements Serializable {
 				query.addEntity(class1);
 			sonucList = query.list();
 		} catch (Exception e) {
-			logger.error(sp.toString() + "\n" + e);
+			Gson gson = new Gson();
+			logger.error(sp.toString() + (veriMap != null && !veriMap.isEmpty() ? "\n" + gson.toJson(veriMap) : "") + "\n" + e);
+			gson = null;
 			throw new Exception(e);
 		}
 
@@ -656,7 +660,9 @@ public class PdksEntityController implements Serializable {
 			SQLQuery query = prepareProcedure(veriMap, sp);
 			sonuc = query.executeUpdate();
 		} catch (Exception e) {
-			logger.error(sp.toString() + "\n" + e);
+			Gson gson = new Gson();
+			logger.error(sp.toString() + (veriMap != null && !veriMap.isEmpty() ? "\n" + gson.toJson(veriMap) : "") + "\n" + e);
+			gson = null;
 		}
 
 		return sonuc;
