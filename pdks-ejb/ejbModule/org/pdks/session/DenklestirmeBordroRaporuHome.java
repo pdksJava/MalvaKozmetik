@@ -347,18 +347,17 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				Tanim bolum = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 				String str = baslik + (bolum != null ? " " + bolum.getAciklama() : "");
 				List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantaj, true, session);
-				boolean kayitVar = !donemPerList.isEmpty();
+				int kayitAdet = donemPerList != null ? donemPerList.size() : 0;
 				if (authenticatedUser.isAdmin() || gelecekTarih) {
 					as.setEkSaha3Id(seciliEkSaha3Id);
-					boolean devam = kayitVar;
+					boolean devam = kayitAdet > 0;
 					int adet = 0;
 					while (devam && adet < 2) {
 						session.clear();
 						List<Personel> donemCPPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(denklestirmeAy, donemPerList, session);
-						devam = donemPerList.size() != donemCPPerList.size();
 						try {
+							devam = donemCPPerList != null && kayitAdet != donemCPPerList.size();
 							if (devam) {
-
 								logger.info(str + " aylikPuantajOlusturuluyor in " + PdksUtil.getCurrentTimeStampStr());
 								vardiyaGunHome.setSession(session);
 								vardiyaGunHome.setAramaSecenekleri(as);
@@ -366,20 +365,21 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 								logger.info(str + " aylikPuantajOlusturuluyor out " + PdksUtil.getCurrentTimeStampStr());
 							}
 						} catch (Exception e) {
-							System.err.println(e);
+							logger.error(seciliEkSaha3Id + " " + e);
 							e.printStackTrace();
 						}
+
 						++adet;
-						donemPerList = null;
 						donemCPPerList = null;
 					}
+					donemPerList = null;
 
 				}
 
 				logger.info(str + " in " + PdksUtil.getCurrentTimeStampStr());
 				loginUser.setAdmin(Boolean.TRUE);
 				List<AylikPuantaj> puantajList = null;
-				if (kayitVar && gelecekTarih == false)
+				if (kayitAdet > 0 && gelecekTarih == false)
 					puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 				if (puantajList != null && puantajList.isEmpty()) {
 					hataYok = false;
@@ -390,7 +390,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 				logger.info(str + " out " + PdksUtil.getCurrentTimeStampStr());
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error(seciliEkSaha3Id + " " + e);
 				e.printStackTrace();
 				hataYok = false;
 			}

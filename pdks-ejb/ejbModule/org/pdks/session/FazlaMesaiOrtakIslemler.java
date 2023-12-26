@@ -895,11 +895,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 								if (izinTipi.getTakvimGunumu() == false) {
 									if (vardiyaGun.getVardiya().isOffGun()) {
-										if (izinTipi.isOffDahilMi() == false)
+										if (izinTipi.isOffDahilMi() == false) {
 											artiGun = 0.0d;
+										}
+
 									} else if (haftaTatil) {
-										if (izinTipi.isHTDahil() == false)
+										if (izinTipi.isHTDahil() == false) {
 											artiGun = 0.0d;
+										}
 
 									}
 									if (izinTipi.getUcretli())
@@ -936,6 +939,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							if (!haftaTatil)
 								normalGunAdet += calismaGun;
 							else {
+
 								haftaTatilAdet += calismaGun;
 							}
 							// logger.info(vardiyaGun.getVardiyaDateStr() + " " + (normalGunAdet + haftaTatilAdet + resmiTatilAdet));
@@ -949,14 +953,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 									resmiTatilSaat += vardiyaGun.getSaatCalisanArifeTatilKatsayisi();
 									normalSaat += vardiyaGun.getSaatCalisanArifeNormalKatsayisi();
 								}
-							} else if (haftaTatil)
-								haftaTatilSaat += vardiyaGun.getSaatCalisanHaftaTatilKatsayisi();
-							else if (vardiyaGun.isHaftaIci()) {
+							} else if (vardiyaGun.isHaftaIci()) {
 								normalSaat += vardiyaGun.getSaatCalisanNormalGunKatsayisi();
 								logger.debug(vardiyaGun.getVardiyaDateStr() + " " + normalGunAdet);
 							}
 
 						}
+						if (haftaTatil)
+							haftaTatilSaat += vardiyaGun.getSaatCalisanHaftaTatilKatsayisi();
 					}
 
 				}

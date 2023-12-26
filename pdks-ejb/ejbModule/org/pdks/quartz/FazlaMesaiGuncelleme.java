@@ -412,10 +412,9 @@ public class FazlaMesaiGuncelleme implements Serializable {
 						e.printStackTrace();
 					}
 					++adet;
-					donemPerList = null;
 					donemCPPerList = null;
 				}
-
+				donemPerList = null;
 			}
 			as.setEkSaha3Id(null);
 			fazlaMesaiHesaplaHome.setSession(session);
