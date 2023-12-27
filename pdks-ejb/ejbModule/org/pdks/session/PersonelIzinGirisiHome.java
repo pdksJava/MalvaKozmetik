@@ -3025,9 +3025,10 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					} else {
 						boolean offGunBasla = pdksVardiyaGun2.getVardiya() != null && pdksVardiyaGun2.getVardiya().isCalisma() == false;
 						if (offGunBasla && izinTipi.isBaslamaZamaniCalismadir() == false) {
-							offGunBasla = !(authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi());
-							if (offGunBasla == false && sonIzinVardiyaGun.getId() != null) {
+							offGunBasla = !(authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi()) || sonIzinVardiyaGun.getVardiya() == null;
+							if (offGunBasla == false) {
 								Vardiya vardiya = sonIzinVardiyaGun.getVardiya();
+								offGunBasla = vardiya.isCalisma() == false;
 								cal.setTime(PdksUtil.getDate(personelIzin.getBitisZamani()));
 								if (isSaatGosterilecek() == false) {
 									if (vardiya.getBasSaat() < vardiya.getBitSaat()) {
@@ -3039,7 +3040,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 									}
 									personelIzin.setBitisZamani(cal.getTime());
 								}
-							}
+							} else
+								offGunBasla = true;
 
 						}
 
