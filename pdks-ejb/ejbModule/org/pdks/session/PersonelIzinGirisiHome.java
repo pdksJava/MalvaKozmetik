@@ -3023,7 +3023,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 						}
 
 					} else {
-						boolean offGunBasla = pdksVardiyaGun2.getVardiya() != null && pdksVardiyaGun2.getVardiya().isOffGun();
+						boolean offGunBasla = pdksVardiyaGun2.getVardiya() != null && pdksVardiyaGun2.getVardiya().isCalisma() == false;
 						if (offGunBasla && izinTipi.isBaslamaZamaniCalismadir() == false) {
 							offGunBasla = !(authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi());
 							if (offGunBasla == false && sonIzinVardiyaGun.getId() != null) {
