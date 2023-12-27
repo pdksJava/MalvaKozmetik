@@ -1017,7 +1017,7 @@
 		</rich:modalPanel>
 		<rich:modalPanel id="deleteERPPanel" autosized="true" width="900">
 			<f:facet name="header">
-				<h:outputText value="İzni iptal etmek istediğinizden emin misiniz?" style="padding-right:15px;" />
+				<h:outputText value="İzni iptal  etmek istediğinizden emin misiniz?" style="padding-right:15px;" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:panelGroup>
@@ -1065,8 +1065,7 @@
 						</s:decorate>
 
 						<DIV>
-							<B>İzin Açıklama : </B><br />
-							<span style="background-color: white;">#{personelIzinGirisiHome.guncellenecekIzin.aciklama}</span>
+							<B>İzin Açıklama : </B><br /> <span style="background-color: white;">#{personelIzinGirisiHome.guncellenecekIzin.aciklama}</span>
 						</DIV>
 
 					</h:panelGrid>
@@ -1086,7 +1085,7 @@
 			</h:form>
 		</rich:modalPanel>
 
-		<rich:modalPanel id="deletePanel" autosized="true" width="500">
+		<rich:modalPanel id="deletePanel" autosized="true" width="800">
 			<f:facet name="header">
 				<h:outputText value="İzni iptal etmek istediğinizden emin misiniz?" style="padding-right:15px;" />
 			</f:facet>
@@ -1100,6 +1099,47 @@
 				<a4j:outputPanel ajaxRendered="true">
 					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
 				</a4j:outputPanel>
+				<ui:fragment rendered="#{personelIzinGirisiHome.guncellenecekIzin!=null}">
+					<h:panelGrid columns="2">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+							<h:inputText readonly="true" value="#{personelIzinGirisiHome.guncellenecekIzin.izinSahibi.sicilNo}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Adı Soyadı</ui:define>
+							<h:inputText readonly="true" value="#{personelIzinGirisiHome.guncellenecekIzin.izinSahibi.adSoyad}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+							<h:inputText readonly="true" value="#{personelIzinGirisiHome.guncellenecekIzin.izinSahibi.sirket.ad}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{personelIzinGirisiHome.aramaListeSecenekleri.ekSahaTanimMap.get('ekSaha3').aciklama}</ui:define>
+							<h:inputText readonly="true" value="#{personelIzinGirisiHome.guncellenecekIzin.izinSahibi.ekSaha3.aciklama}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İzin Başlangıç Zamanı</ui:define>
+							<h:inputText readonly="true" value="#{authenticatedUser.dateTimeFormatla(personelIzinGirisiHome.guncellenecekIzin.baslangicZamani)}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İşe Başlama Zamanı</ui:define>
+							<h:inputText readonly="true" value="#{authenticatedUser.dateTimeFormatla(personelIzinGirisiHome.guncellenecekIzin.bitisZamani)}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İzin Tipi</ui:define>
+							<h:inputText readonly="true" value="#{personelIzinGirisiHome.guncellenecekIzin.izinTipiAciklama}" />
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Süresi</ui:define>
+							<h:inputText readonly="true" value="#{personelIzinGirisiHome.guncellenecekIzin.sureAciklama}" />
+						</s:decorate>
+
+						<DIV>
+							<B>İzin Açıklama : </B><br /> <span style="background-color: white;">#{personelIzinGirisiHome.guncellenecekIzin.aciklama}</span>
+						</DIV>
+
+					</h:panelGrid>
+				</ui:fragment>
 
 				<ui:fragment rendered="#{personelIzinGirisiHome.guncellenecekIzin.iptalEdilir==false}">
 					<h:outputText style="color:red" value="Denkleştirmesi dönemi kapatılmış bir izni iptal edemezsiniz!" />
