@@ -409,16 +409,32 @@ public class PdksVeriOrtakAktar implements Serializable {
 			helpDeskList = null;
 			PdksUtil.setSistemBaslangicYili(mailMap.containsKey("sistemBaslangicYili") ? Integer.parseInt((String) mailMap.get("sistemBaslangicYili")) : 2010);
 			PdksUtil.setSistemDestekVar(sistemDestekVar);
-			String sistemAdminUserName = mailMap.containsKey("sistemAdminUserName") ? (String) mailMap.get("sistemAdminUserName") : null;
-			if (sistemAdminUserName != null)
-				islemYapan = (User) dao.getObjectByInnerObject("username", sistemAdminUserName, User.class);
-			if (islemYapan == null)
-				islemYapan = (User) dao.getObjectByInnerObject("id", 1L, User.class);
+
+			islemYapan = getSistemAdminUser(dao);
+
 			setHelpDeskParametre(pmMap, dao);
 			pmMap = null;
 
 		}
 
+	}
+
+	/**
+	 * @param dao
+	 * @return
+	 */
+	public static User getSistemAdminUser(PdksDAO dao) {
+		if (dao == null)
+			dao = Constants.pdksDAO;
+		User user = null;
+		HashMap fields = new HashMap();
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT * FROM FN_SISTEM_ADMIN_LIST() ");
+		List<User> list = dao.getNativeSQLList(fields, sb, User.class);
+		if (list != null && !list.isEmpty())
+			user = list.get(0);
+		list = null;
+		return user;
 	}
 
 	/**
@@ -434,8 +450,10 @@ public class PdksVeriOrtakAktar implements Serializable {
 				changeDate = PdksUtil.convertToJavaDate(PdksUtil.getSistemBaslangicYili() + "0101", "yyyyMMdd");
 			} catch (Exception e) {
 			}
+			if (islemYapan == null)
+				islemYapan = getSistemAdminUser(dao);
 			helpDeskStatus.setChangeDate(changeDate != null ? changeDate : bugun);
-			helpDeskStatus.setChangeUser(getSistemAdminUserByParamMap(dao));
+			helpDeskStatus.setChangeUser(islemYapan);
 			helpDeskStatus.setVersion(0);
 			helpDeskStatus.setDescription("Sistem Desktek Durumu");
 			helpDeskStatus.setName(HELP_DESK_STATUS);
@@ -451,32 +469,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 				helpDeskStatus.setChangeDate(bugun);
 			dao.saveObject(helpDeskStatus);
 		}
-	}
-
-	/**
-	 * @param dao
-	 * @return
-	 */
-	private User getSistemAdminUserByParamMap(PdksDAO dao) {
-		User user = null;
-
-		if (mailMap != null && mailMap.containsKey("sistemAdminUserName")) {
-			String sistemAdminUserName = (String) mailMap.get("sistemAdminUserName");
-			if (PdksUtil.hasStringValue(sistemAdminUserName)) {
-				fields.put("username", sistemAdminUserName);
-				user = (User) dao.getObjectByInnerObject(fields, User.class);
-			}
-		}
-		if (user == null) {
-			if (!fields.isEmpty())
-				fields.clear();
-			fields.put("id", 1L);
-			user = (User) dao.getObjectByInnerObject(fields, User.class);
-		}
-		fields = null;
-
-		return user;
-
 	}
 
 	/**

@@ -2018,7 +2018,8 @@ public class IseGelmemeUyari implements Serializable {
 				zamanlayici.mailGonder(session, mail, "İşe gelme durumu", new String(sb), userList, Boolean.TRUE);
 				ortakIslemler.gunlukFazlaCalisanlar(session);
 			}
-		}
+		} else
+			zamanlayici.mailGonder(session, null, "İşe gelme durumu", "Hatalı giriş bilgisi bulunamadı.", null, Boolean.TRUE);
 		sb = null;
 
 		return "";

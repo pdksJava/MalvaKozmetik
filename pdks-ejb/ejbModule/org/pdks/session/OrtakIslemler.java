@@ -3002,15 +3002,16 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public Parameter getParameter(Session session, String name) {
 		HashMap map = new HashMap();
-		map.put("name", name);
+		map.put("adi", name);
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT   T.* FROM " + Parameter.TABLE_NAME + " T WITH(nolock) ");
+		sb.append(" WHERE T." + Parameter.COLUMN_NAME_ADI + "=:adi  ");
 		if (session != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<Parameter> list = pdksEntityController.getObjectBySQLList(sb, map, Parameter.class);
 		Parameter parameter = null;
-		try {
-			parameter = (Parameter) pdksEntityController.getObjectByInnerObject(map, Parameter.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		if (!list.isEmpty())
+			parameter = list.get(0);
 		if (parameter != null && (parameter.getActive().equals(Boolean.FALSE) || (parameter.isHelpDeskMi() && PdksUtil.isSistemDestekVar() == false)))
 			parameter = null;
 		map = null;
@@ -16828,16 +16829,16 @@ public class OrtakIslemler implements Serializable {
 			map = parameterMap;
 		if (pec == null)
 			pec = pdksEntityController;
-		if (map != null && map.containsKey("sistemAdminUserName")) {
-			String sistemAdminUserName = map.get("sistemAdminUserName");
-			if (PdksUtil.hasStringValue(sistemAdminUserName)) {
-				fields.put("username", sistemAdminUserName);
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				user = (User) pec.getObjectByInnerObject(fields, User.class);
-			}
+		if (map != null) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("SELECT * FROM FN_SISTEM_ADMIN_LIST() ");
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List<User> userList = pdksEntityController.getObjectBySQLList(sb, fields, User.class);
+			if (userList != null && !userList.isEmpty())
+				user = userList.get(0);
 		}
-		if (startUp == false) {
+		if (startUp == false || user == null) {
 			if (user == null) {
 				if (!fields.isEmpty())
 					fields.clear();
