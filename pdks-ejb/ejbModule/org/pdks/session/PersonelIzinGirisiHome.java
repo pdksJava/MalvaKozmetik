@@ -2887,6 +2887,8 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		setIzinIptalGoster(Boolean.FALSE);
 		PersonelIzin personelIzin = getInstance();
 		IzinTipi izinTipi = personelIzin.getIzinTipi();
+		List<VardiyaGun> calisilanGunler = new ArrayList<VardiyaGun>();
+		personelIzin.setCalisilanGunler(calisilanGunler);
 		// boolean senelikIzin = izinTipi.isSenelikIzin();
 		Boolean hekim = null;
 		try {
@@ -2896,13 +2898,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		}
 		if (hekim == null)
 			hekim = Boolean.FALSE;
-		Double artikGun = null;
-		try {
-			artikGun = izinTipi.getArtikIzinGun();
-		} catch (Exception e) {
-			artikGun = null;
-		}
-		double artikIzinGun = artikGun != null && !hekim ? artikGun.doubleValue() : 0D;
+
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("id", authenticatedUser.getId());
 		if (session != null)
@@ -2948,6 +2944,12 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 		VardiyaGun pdksVardiyaGun1 = new VardiyaGun(izinliSahibi, null, personelIzin.getBaslangicZamani());
 		VardiyaGun pdksVardiyaGun2 = new VardiyaGun(izinliSahibi, null, personelIzin.getBitisZamani());
+		VardiyaGun sonIzinVardiyaGun = new VardiyaGun(izinliSahibi, null, PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(personelIzin.getBitisZamani(), -1)));
+		if (vardiyaMap.containsKey(sonIzinVardiyaGun.getVardiyaKeyStr())) {
+			VardiyaGun vg = vardiyaMap.get(sonIzinVardiyaGun.getVardiyaKeyStr());
+			if (vg.getVardiya().isCalisma())
+				sonIzinVardiyaGun = vg;
+		}
 
 		if (izinTipi == null) {
 			durum = "";
@@ -3006,7 +3008,6 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 							}
 						}
 					}
-
 					if (devam) {
 						if (pdksVardiyaGun2.getIslemVardiya() == null)
 							pdksVardiyaGun2.setVardiyaZamani();
@@ -3022,7 +3023,27 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 						}
 
 					} else {
-						if (!(artikIzinGun > 0.0d && pdksVardiyaGun2.getVardiya() != null && pdksVardiyaGun2.getVardiya().isOffGun())) {
+						boolean offGunBasla = pdksVardiyaGun2.getVardiya() != null && pdksVardiyaGun2.getVardiya().isOffGun();
+						if (offGunBasla && izinTipi.isBaslamaZamaniCalismadir() == false) {
+							offGunBasla = !(authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi());
+							if (offGunBasla == false && sonIzinVardiyaGun.getId() != null) {
+								Vardiya vardiya = sonIzinVardiyaGun.getVardiya();
+								cal.setTime(PdksUtil.getDate(personelIzin.getBitisZamani()));
+								if (isSaatGosterilecek() == false) {
+									if (vardiya.getBasSaat() < vardiya.getBitSaat()) {
+										cal.set(Calendar.HOUR_OF_DAY, vardiya.getBasSaat());
+										cal.set(Calendar.MINUTE, vardiya.getBasDakika());
+									} else {
+										cal.set(Calendar.HOUR_OF_DAY, vardiya.getBitSaat());
+										cal.set(Calendar.MINUTE, vardiya.getBitDakika());
+									}
+									personelIzin.setBitisZamani(cal.getTime());
+								}
+							}
+
+						}
+
+						if (offGunBasla) {
 							PdksUtil.addMessageWarn("İzin bitiş zamanı çalışma olmalıdır! " + (pdksVardiyaGun2.getVardiya() != null ? "Vardiya Adı :" + pdksVardiyaGun2.getVardiya().getAdi() + " " + PdksUtil.convertToDateString(pdksVardiyaGun2.getVardiyaDate(), PdksUtil.getDateFormat()) : ""));
 							durum = "";
 						}

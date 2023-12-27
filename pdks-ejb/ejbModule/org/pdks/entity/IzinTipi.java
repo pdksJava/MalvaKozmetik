@@ -29,6 +29,7 @@ public class IzinTipi extends BaseObject {
 	public static final String COLUMN_NAME_GIRIS_TIPI = "GIRIS_TIPI";
 	public static final String COLUMN_NAME_UCRETLI = "UCRETLI";
 	public static final String COLUMN_NAME_CUMA_CUMARTESI_TEK_IZIN_SAY = "CUMA_CUMARTESI_TEK_IZIN_SAY";
+	public static final String COLUMN_NAME_BASLANGIC_ZAMANI_CALISMA_OLUR = "BASLANGIC_ZAMANI_CALISMA_OLUR";
 
 	public static final int MAIL_GONDERIM_DURUMU_ONAYSIZ = 0;
 
@@ -111,7 +112,7 @@ public class IzinTipi extends BaseObject {
 	private String onaylayanTipi = ONAYLAYAN_TIPI_YONETICI2;
 	private String mesaj = "", kisaAciklama = "";
 	private IzinTipi bakiyeIzinTipi;
-	private Boolean denklestirmeDahil = Boolean.FALSE, offDahil = Boolean.FALSE, htDahil = Boolean.FALSE, cumaCumartesiTekIzinSay = Boolean.FALSE;
+	private Boolean denklestirmeDahil = Boolean.FALSE, offDahil = Boolean.FALSE, htDahil = Boolean.FALSE, cumaCumartesiTekIzinSay = Boolean.FALSE, baslamaZamaniCalisma = Boolean.FALSE;
 	private Integer listeSira = 0, hesapTipi, durumCGS = CGS_DURUM_CIKAR, mailGonderimDurumu;
 	private IzinIstirahat izinIstirahat;
 
@@ -374,6 +375,15 @@ public class IzinTipi extends BaseObject {
 
 	public void setCumaCumartesiTekIzinSay(Boolean cumaCumartesiTekIzinSay) {
 		this.cumaCumartesiTekIzinSay = cumaCumartesiTekIzinSay;
+	}
+
+	@Column(name = COLUMN_NAME_BASLANGIC_ZAMANI_CALISMA_OLUR)
+	public Boolean getBaslamaZamaniCalisma() {
+		return baslamaZamaniCalisma;
+	}
+
+	public void setBaslamaZamaniCalisma(Boolean baslamaZamaniCalisma) {
+		this.baslamaZamaniCalisma = baslamaZamaniCalisma;
 	}
 
 	@Column(name = "DOSYA_EKLE")
@@ -720,6 +730,11 @@ public class IzinTipi extends BaseObject {
 	@Transient
 	public boolean isCumaCumartesiTekIzinSaysin() {
 		return cumaCumartesiTekIzinSay != null && cumaCumartesiTekIzinSay;
+	}
+
+	@Transient
+	public boolean isBaslamaZamaniCalismadir() {
+		return baslamaZamaniCalisma != null && baslamaZamaniCalisma;
 	}
 
 	@Transient
