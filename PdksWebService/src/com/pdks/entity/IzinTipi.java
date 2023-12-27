@@ -28,6 +28,7 @@ public class IzinTipi extends BaseObject {
 	public static final String COLUMN_NAME_BAKIYE_IZIN_TIPI = "BAKIYE_IZIN_TIPI_ID";
 	public static final String COLUMN_NAME_MAIL_GONDERIM_DURUMU = "MAIL_GONDERIM_DURUMU";
 	public static final String COLUMN_NAME_GIRIS_TIPI = "GIRIS_TIPI";
+	public static final String COLUMN_NAME_BASLANGIC_ZAMANI_CALISMA_OLUR = "BASLANGIC_ZAMANI_CALISMA_OLUR";
 
 	public static final int MAIL_GONDERIM_DURUMU_ONAYSIZ = 0;
 
@@ -103,7 +104,7 @@ public class IzinTipi extends BaseObject {
 	private Double maxGun = 0D, maxSaat = 0D, minGun = 0D, minSaat = 0D, kotaBakiye = 0D, artikIzinGun = 0D;
 	private Departman departman;
 	private Boolean dokumAlmaDurum, takvimGunumu, saatGosterilecek, gunGosterilecek, erpAktarim, izinKagidiGeldi, dosyaEkle = Boolean.FALSE;
-	private Boolean gunSigortaDahil = Boolean.TRUE;
+	private Boolean gunSigortaDahil = Boolean.TRUE, baslamaZamaniCalisma = Boolean.TRUE;
 	private String personelGirisTipi = GIRIS_TIPI_PERSONEL;
 	private String bakiyeDevirTipi = BAKIYE_DEVIR_YOK;
 	private String onaylayanTipi = ONAYLAYAN_TIPI_YONETICI2;
@@ -188,6 +189,15 @@ public class IzinTipi extends BaseObject {
 
 	public void setTakvimGunumu(Boolean takvimGunumu) {
 		this.takvimGunumu = takvimGunumu;
+	}
+
+	@Column(name = COLUMN_NAME_BASLANGIC_ZAMANI_CALISMA_OLUR)
+	public Boolean getBaslamaZamaniCalisma() {
+		return baslamaZamaniCalisma;
+	}
+
+	public void setBaslamaZamaniCalisma(Boolean baslamaZamaniCalisma) {
+		this.baslamaZamaniCalisma = baslamaZamaniCalisma;
 	}
 
 	@Column(name = "GUN_SIGORTA_DAHIL")
