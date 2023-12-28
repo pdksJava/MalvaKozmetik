@@ -1545,6 +1545,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 			}
 		}
+		StringBuffer izinSonrasiOffDurum = new StringBuffer();
+		VardiyaGun oncekiVardiyaGun = null;
+
 		for (Iterator<String> iterator = vardiyaGunMap.keySet().iterator(); iterator.hasNext();) {
 			String key = iterator.next();
 			VardiyaGun vardiyaGun = vardiyaGunMap.get(key);
@@ -1552,6 +1555,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			vardiyaGun.setAyinGunu(str.startsWith(donem));
 			if (vardiyaGun.getVardiya() != null) {
 				Vardiya vardiya = vardiyaGun.getVardiya();
+				if (vardiya.isCalisma() == false && vardiyaGun.isAyinGunu() && oncekiVardiyaGun != null && oncekiVardiyaGun.getIzin() != null) {
+					IzinTipi izinTipi = oncekiVardiyaGun.getIzin().getIzinTipi();
+					if (izinTipi.isBaslamaZamaniCalismadir()) {
+						cal.setTime(vardiyaGun.getVardiyaDate());
+						if (izinTipi.isCumaCumartesiTekIzinSaysin() == false || cal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
+							yaz = false;
+							if (izinSonrasiOffDurum.length() > 0)
+								izinSonrasiOffDurum.append(", ");
+							izinSonrasiOffDurum.append(PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), PdksUtil.getDateFormat() + " EEEEE") + " günü " + vardiya.getAdi());
+						}
+
+					}
+				}
 				boolean calismaPlanDenetimTarihKontrol = (calismaPlanDenetimTarih != null) && (vardiyaGun.getVardiyaDate().after(calismaPlanDenetimTarih));
 				if (haftaTatilCalismaGunAdetMaxSaat != null) {
 					if (vardiya.isHaftaTatil()) {
@@ -1627,12 +1643,15 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				geceVardiyaAdetSaat = 0;
 				haftaTatil = Boolean.FALSE;
 			}
-
+			oncekiVardiyaGun = vardiyaGun;
 		}
 		if (geceVardiyaAdetMaxSaatStr != null)
 			sb.append(geceVardiyaAdetMaxSaatStr);
 		if (haftaTatilCalismaGunAdetMaxSaatStr != null)
 			sb.append(haftaTatilCalismaGunAdetMaxSaatStr);
+		if (izinSonrasiOffDurum.length() > 0)
+			sb.append(izinSonrasiOffDurum.toString() + " olamaz!");
+		izinSonrasiOffDurum = null;
 		if (yaz) {
 			List<VardiyaHafta> vardiyaHaftaList = plan.getVardiyaHaftaList();
 			if (vardiyaHaftaList == null) {
@@ -4278,6 +4297,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		List<String> genelMudurERPKodlari = !PdksUtil.hasStringValue(genelMudurERPKoduStr) ? new ArrayList<String>() : PdksUtil.getListByString(genelMudurERPKoduStr, null);
 		List<Long> eskiOnayList = new ArrayList<Long>();
 		TreeMap<Long, TreeMap<Long, Vardiya>> calismaModeliMap = getCalismaModeliMap(aylikPuantajList);
+		boolean onayliVar = false;
 		for (Iterator iter = aylikPuantajList.iterator(); iter.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
 			aylikPuantaj.setSecili(false);
@@ -4301,6 +4321,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (onayDurum) {
 				mesajYaz = false;
 				onayDurum = vardiyaPlanKontrol(personelDenklestirme, vardiyaMap, pdksVardiyaPlan, personel.getSicilNo() + " " + personel.getAdSoyad() + " ", false);
+				if (!onayliVar)
+					onayliVar = onayDurum;
 				asilOnay = true;
 			} else if (tumOnaylanPlanEkle) {
 				onayDurum = personelDenklestirme != null && personelDenklestirme.isOnaylandi();
@@ -4589,7 +4611,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				aylikPuantajOlusturuluyor();
 				puantajList = aylikPuantajList;
 				suaKontrol(puantajList);
-				PdksUtil.addMessageAvailableWarn(PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  ") + " ayı çalışma onaylandı.");
+				if (onayliVar)
+					PdksUtil.addMessageAvailableWarn(PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  ") + " ayı çalışma onaylandı.");
 			}
 
 		}

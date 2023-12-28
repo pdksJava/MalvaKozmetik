@@ -333,10 +333,13 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 		kapiId = null;
 		String formatStr = "yyyy-MM-dd HH:mm";
 		Date bugun = Calendar.getInstance().getTime();
+		boolean hareketTarihKontrol = ortakIslemler.getParameterKeyHasStringValue("hareketTarihKontrol");
 		for (Iterator iterator1 = vardiyaGunleri.iterator(); iterator1.hasNext();) {
 			VardiyaGun vg = (VardiyaGun) iterator1.next();
 			Date zaman = vg.getVardiyaDate();
 			String zamanStr = PdksUtil.convertToDateString(zaman, formatStr);
+			if (!(hareketTarihKontrol && bugun.after(tarih)))
+				continue;
 			PersonelKGS personel = vg.getPersonel().getPersonelKGS();
 			Boolean yaz = bugun.after(zaman) || authenticatedUser.isIK();
 			List<HareketKGS> list = hMap.containsKey(personel.getId()) ? hMap.get(personel.getId()) : new ArrayList<HareketKGS>();

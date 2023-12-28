@@ -734,7 +734,10 @@ public class IzinTipi extends BaseObject {
 
 	@Transient
 	public boolean isBaslamaZamaniCalismadir() {
-		return baslamaZamaniCalisma != null && baslamaZamaniCalisma;
+		boolean bc = baslamaZamaniCalisma != null && baslamaZamaniCalisma;
+		if (bc)
+			bc = personelGirisTipi != null && !personelGirisTipi.equals(GIRIS_TIPI_YOK);
+		return bc;
 	}
 
 	@Transient
