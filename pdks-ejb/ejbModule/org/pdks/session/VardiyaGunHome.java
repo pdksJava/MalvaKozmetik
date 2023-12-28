@@ -41,6 +41,7 @@ import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.validator.InvalidStateException;
 import org.hibernate.validator.InvalidValue;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.FlushModeType;
 import org.jboss.seam.annotations.In;
@@ -112,6 +113,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	private static final long serialVersionUID = 5067953117682032644L;
 	static Logger logger = Logger.getLogger(VardiyaGunHome.class);
+	public static String sayfaURL = "vardiyaPlani";
+
 	@RequestParameter
 	Long pdksVardiyaGunId;
 
@@ -137,6 +140,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	PersonelIzinGirisiHome personelIzinGirisiHome;
 	@In(required = false, create = true)
 	String linkAdres;
+	@In(scope = ScopeType.SESSION, required = false)
+	String bordroAdres;
 
 	private TreeMap<String, Tanim> fazlaMesaiMap;
 
@@ -197,7 +202,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	private Date basTarih, bitTarih;
 
-	private String basTarihStr, bitTarihStr, sanalPersonelAciklama, bolumAciklama, altBolumAciklama, tesisAciklama;
+	private String basTarihStr, bitTarihStr, sanalPersonelAciklama, bolumAciklama, altBolumAciklama, tesisAciklama, linkBordroAdres;
 
 	private List<SelectItem> gunler;
 
@@ -8723,6 +8728,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public void sayfaGirisAction() throws Exception {
 		bordroPuantajEkranindaGoster = false;
+		linkBordroAdres = null;
 		aylikVardiyaPlanGiris("vardiyaPlani", true);
 
 	}
@@ -8869,7 +8875,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public void sayfaGirisRaporAction() throws Exception {
-
+		linkBordroAdres = null;
 		try {
 			aylikVardiyaPlanGiris("aylikPlanRapor", false);
 
@@ -9009,7 +9015,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (!veriLastMap.isEmpty())
 						doldurStr = "V";
 					if (veriLastMap.containsKey("yil") && veriLastMap.containsKey("ay") && veriLastMap.containsKey("bolumId") && veriLastMap.containsKey("sirketId")) {
-
+						if (bordroAdres != null)
+							linkBordroAdres = bordroAdres;
 						yil = Integer.parseInt((String) veriLastMap.get("yil"));
 						ay = Integer.parseInt((String) veriLastMap.get("ay"));
 						aramaSecenekleri.setEkSaha3Id(Long.parseLong((String) veriLastMap.get("bolumId")));
@@ -9043,6 +9050,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 			if (dateStr != null && perIdStr != null) {
 				donusAdres = planGirisiDurum ? linkAdres : "";
+				if (linkBordroAdres != null)
+					doldurStr = "F";
 				Date vardiyaDate = PdksUtil.convertToJavaDate(dateStr, "yyyyMMdd");
 				cal.setTime(vardiyaDate);
 				yil = cal.get(Calendar.YEAR);
@@ -11444,5 +11453,13 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	public void setLoginUser(User loginUser) {
 		this.loginUser = loginUser;
+	}
+
+	public String getLinkBordroAdres() {
+		return linkBordroAdres;
+	}
+
+	public void setLinkBordroAdres(String linkBordroAdres) {
+		this.linkBordroAdres = linkBordroAdres;
 	}
 }

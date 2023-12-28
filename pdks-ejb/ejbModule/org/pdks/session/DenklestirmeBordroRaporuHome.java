@@ -408,7 +408,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	@Transactional
 	public String saveLastParameter(AylikPuantaj aylikPuantaj) {
 		Map<String, String> map1 = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
-
+		PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
 		String adres = map1.containsKey("host") ? map1.get("host") : "";
 		Personel personel = aylikPuantaj.getPdksPersonel();
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
@@ -425,7 +425,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		if (ekSaha4Tanim != null)
 			lastMap.put("altBolumId", "" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getId() : "-1"));
 		lastMap.put("sicilNo", personel.getPdksSicilNo());
-		lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
+		String sayfa = MenuItemConstant.fazlaMesaiHesapla;
+		if (personelDenklestirme.getDurum().equals(Boolean.FALSE) && personelDenklestirme.isOnaylandi())
+			lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
+		else {
+			lastMap.put("sayfaURL", VardiyaGunHome.sayfaURL);
+			sayfa = MenuItemConstant.vardiyaPlani;
+		}
 
 		bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + aylikPuantaj.getPersonelDenklestirmeAylik().getId() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
 		try {
@@ -433,7 +439,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		} catch (Exception e) {
 
 		}
-		return MenuItemConstant.fazlaMesaiHesapla;
+		return sayfa;
 	}
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)

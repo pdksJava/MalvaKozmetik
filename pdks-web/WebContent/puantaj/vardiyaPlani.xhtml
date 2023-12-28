@@ -109,6 +109,11 @@
 
 
 					</h:panelGrid>
+					<ui:fragment rendered="#{vardiyaGunHome.linkBordroAdres!=null}">
+						<br />
+						<SPAN style="font-size: 14px; font-weight: bold; color: black;"><f:verbatim>#{bordroAdres}</f:verbatim></SPAN>
+						<br />
+					</ui:fragment>
 					<a4j:commandButton value="Aylık Plan Getir" action="#{vardiyaGunHome.fillAylikVardiyaPlanList}" onclick="#{rich:component('wait')}.show()"
 						rendered="#{not empty vardiyaGunHome.aramaSecenekleri.gorevYeriList}"
 						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('wait')}.hide()" reRender="vardiyaPanel,girisler,ozelIstekSec" />

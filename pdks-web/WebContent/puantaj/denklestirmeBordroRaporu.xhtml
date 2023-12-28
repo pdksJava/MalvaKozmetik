@@ -19,7 +19,7 @@
 							<ui:define name="label">Yıl</ui:define>
 							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="#{denklestirmeBordroRaporuHome.minYil}"
 								maxValue="#{denklestirmeBordroRaporuHome.maxYil}" inputSize="1" value="#{denklestirmeBordroRaporuHome.yil}">
-								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.fillSirketList()}" ajaxSingle="true"
+								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.yilDegisti()}" ajaxSingle="true"
 									reRender="denklestirmeDonemiTable,anaForm" />
 							</rich:inputNumberSpinner>
 						</s:decorate>
@@ -72,7 +72,7 @@
 							<h:inputText value="#{denklestirmeBordroRaporuHome.sicilNo}" maxlength="11">
 								<a4j:support event="onchange" action="#{denklestirmeBordroRaporuHome.personelDenklestirmeList.clear()}"
 									reRender="anaForm,denklestirmeDonemiTable" status="ajaxStatus" />
- 							</h:inputText>
+							</h:inputText>
 						</s:decorate>
 					</h:panelGrid>
 					<h:panelGrid columns="2" style="width: 80%;"
@@ -141,10 +141,12 @@
 											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum==false}">
 												<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20" />
 												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
-											#{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi}  Hatalı Göster
-											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi==false}">
-														<br></br>
-														<span style="color: red; font-style: 14;">Çalışma planı onaylanmamıştır!</span>
+													<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi}">
+														<span style="color: red; font-style: 14;">#{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi} Hatalı Göster</span>
+													</ui:fragment>
+													<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi==false}">
+
+														<span style="color: blue; font-style: 14;">Çalışma planı onaylanmamıştır!</span>
 													</ui:fragment>
 												</rich:toolTip>
 											</ui:fragment>
