@@ -112,7 +112,7 @@ public class IzinTipi extends BaseObject {
 	private String onaylayanTipi = ONAYLAYAN_TIPI_YONETICI2;
 	private String mesaj = "", kisaAciklama = "";
 	private IzinTipi bakiyeIzinTipi;
-	private Boolean denklestirmeDahil = Boolean.FALSE, offDahil = Boolean.FALSE, htDahil = Boolean.FALSE, cumaCumartesiTekIzinSay = Boolean.FALSE, baslamaZamaniCalisma = Boolean.FALSE;
+	private Boolean denklestirmeDahil = Boolean.FALSE, offDahil = Boolean.FALSE, htDahil = Boolean.FALSE, cumaCumartesiTekIzinSay = Boolean.FALSE, baslamaZamaniCalisma = Boolean.TRUE;
 	private Integer listeSira = 0, hesapTipi, durumCGS = CGS_DURUM_CIKAR, mailGonderimDurumu;
 	private IzinIstirahat izinIstirahat;
 
