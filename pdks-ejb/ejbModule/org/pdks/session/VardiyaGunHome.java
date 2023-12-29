@@ -7084,19 +7084,24 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	private TreeMap<Long, PersonelDenklestirme> getPersonelDenklestirme(DenklestirmeAy denklestirmeAy, ArrayList<Long> idler) {
 		HashMap fields = new HashMap();
-		fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
-
 		StringBuffer sb = new StringBuffer();
-		sb.append("SELECT S." + PersonelDenklestirme.COLUMN_NAME_ID + " from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
-		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=:denklestirmeAy AND S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
-		fields.put("denklestirmeAy", denklestirmeAy.getId());
+		// sb.append("SELECT S." + PersonelDenklestirme.COLUMN_NAME_ID + " from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
+		sb.append("SELECT S.* from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
+		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
 		fields.put("p", idler);
+		// fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		TreeMap<Long, PersonelDenklestirme> denklestirmeMap = ortakIslemler.getDataByIdMap(sb, fields, PersonelDenklestirme.TABLE_NAME, PersonelDenklestirme.class);
-		for (Long key : denklestirmeMap.keySet())
-			denklestirmeMap.get(key).setGuncellendi(Boolean.FALSE);
-
+		TreeMap<Long, PersonelDenklestirme> denklestirmeMap = new TreeMap<Long, PersonelDenklestirme>();
+		List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
+		for (PersonelDenklestirme pd : list) {
+			pd.setGuncellendi(Boolean.FALSE);
+			denklestirmeMap.put(pd.getPersonelId(), pd);
+		}
+		// TreeMap<Long, PersonelDenklestirme> denklestirmeMap = ortakIslemler.getDataByIdMap(sb, fields, PersonelDenklestirme.TABLE_NAME, PersonelDenklestirme.class);
+		// for (Long key : denklestirmeMap.keySet())
+		// denklestirmeMap.get(key).setGuncellendi(Boolean.FALSE);
+		list = null;
 		sb = null;
 		fields = null;
 		return denklestirmeMap;
