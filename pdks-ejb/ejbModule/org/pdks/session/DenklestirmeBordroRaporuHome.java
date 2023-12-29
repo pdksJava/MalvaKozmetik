@@ -426,7 +426,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			lastMap.put("altBolumId", "" + (personel.getEkSaha4() != null ? personel.getEkSaha4().getId() : "-1"));
 		lastMap.put("sicilNo", personel.getPdksSicilNo());
 		String sayfa = MenuItemConstant.fazlaMesaiHesapla;
-		if (personelDenklestirme.getDurum().equals(Boolean.FALSE) && personelDenklestirme.isOnaylandi())
+		if (personelDenklestirme.getDurum().equals(Boolean.TRUE) || personelDenklestirme.isOnaylandi())
 			lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
 		else {
 			lastMap.put("sayfaURL", VardiyaGunHome.sayfaURL);
