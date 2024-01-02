@@ -10225,7 +10225,13 @@ public class OrtakIslemler implements Serializable {
 		if (!izinMap.isEmpty()) {
 
 			for (Long perId : izinMap.keySet()) {
-				vardiyaIzinleriGuncelle(izinMap.get(perId), vMap.get(perId));
+				List<VardiyaGun> vgList = vMap.get(perId);
+				for (VardiyaGun vardiyaGun : vgList) {
+					if (tatillerMap.containsKey(vardiyaGun.getVardiyaDateStr()))
+						vardiyaGun.setTatil(tatillerMap.get(vardiyaGun.getVardiyaDateStr()));
+				}
+
+				vardiyaIzinleriGuncelle(izinMap.get(perId), vgList);
 			}
 		}
 
@@ -16074,6 +16080,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public PersonelIzin setIzinDurum(VardiyaGun vardiyaGun, PersonelIzin personelIzinInput) {
 		Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+		Tatil tatil = vardiyaGun.getTatil();
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
 		String izinVardiyaKontrolStr = getParameterKey("izinVardiyaKontrol");
 		IzinTipi izinTipi = personelIzinInput != null ? personelIzinInput.getIzinTipi() : null;
@@ -16111,13 +16118,13 @@ public class OrtakIslemler implements Serializable {
 
 					} else
 						kontrol = bitisZamani.getTime() >= vardiyaDate.getTime() && baslangicZamani.getTime() <= vardiyaDate.getTime();
-					if (vardiyaDateStr.equals("20231210")) {
+					if (tatil != null || vardiyaDateStr.equals("20240101")) {
 						logger.debug(personelIzin.getId());
 					}
 					if (kontrol == false && !izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {
 						kontrol = sonGun.after(vardiyaDate);
 					}
-					if (kontrol || vardiyaIzin) {
+					if (tatil == null && (kontrol || vardiyaIzin)) {
 
 						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
 
