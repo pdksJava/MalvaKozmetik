@@ -227,7 +227,7 @@ public class PdksUtil implements Serializable {
 		} catch (Exception e) {
 			str = jsonStr;
 		}
-		String xml = formatXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + rootName + ">" + str + "</" + rootName + ">");
+		String xml = formatXML("<?xml version=\"1.0\" encoding=\"" + StandardCharsets.UTF_8 + "\"?><" + rootName + ">" + str + "</" + rootName + ">");
 		return xml;
 	}
 
@@ -496,7 +496,7 @@ public class PdksUtil implements Serializable {
 			formatXML = xml;
 		}
 		if (formatXML != null && formatXML.indexOf("UTF-16") > 0)
-			formatXML = replaceAll(formatXML, "UTF-16", "UTF-8");
+			formatXML = replaceAll(formatXML, "UTF-16", StandardCharsets.UTF_8.toString());
 		return formatXML;
 	}
 
@@ -579,7 +579,7 @@ public class PdksUtil implements Serializable {
 		if (in != null) {
 			StringBuilder sb = new StringBuilder();
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf-8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 				while ((read = br.readLine()) != null) {
 					sb.append(read);
 				}
@@ -740,7 +740,7 @@ public class PdksUtil implements Serializable {
 		if (file != null && file.exists()) {
 			BufferedReader reader;
 			InputStream in = new FileInputStream(file);
-			reader = new BufferedReader(new InputStreamReader(in, "utf-8"));
+			reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 			String line = reader.readLine();
 			list = new ArrayList<String>();
 			while (line != null) {
@@ -824,11 +824,11 @@ public class PdksUtil implements Serializable {
 			if (baos != null) {
 				HttpServletResponse httpServletResponse = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
 				httpServletResponse.setContentType("application/vnd.ms-excel; charset=UTF-8");
-				httpServletResponse.setCharacterEncoding("UTF-8");
+				httpServletResponse.setCharacterEncoding(" + StandardCharsets.UTF_8 + ");
 				httpServletResponse.setHeader("Expires", "0");
 				httpServletResponse.setHeader("Pragma", "cache");
 				httpServletResponse.setHeader("Cache-Control", "cache");
-				String dosyaAdi = encoderURL(fileName, "UTF-8");
+				String dosyaAdi = encoderURL(fileName, StandardCharsets.UTF_8.toString());
 
 				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=" + dosyaAdi);
 				writeByteArrayOutputStream(httpServletResponse, baos);
@@ -1700,7 +1700,7 @@ public class PdksUtil implements Serializable {
 	 */
 	public static String encoderURL(String fileName, String characterEncoding) throws Exception {
 		if (characterEncoding == null)
-			characterEncoding = "UTF-8";
+			characterEncoding = StandardCharsets.UTF_8.toString();
 		String url = URLEncoder.encode(fileName, characterEncoding);
 		if (url != null)
 			url = replaceAllManuel(url, "+", " ");
@@ -3327,7 +3327,7 @@ public class PdksUtil implements Serializable {
 
 			try {
 				fos = new FileOutputStream(dosyaAdi, ekle);
-				printWriter = new BufferedWriter(new OutputStreamWriter(fos, "UTF-8"));
+				printWriter = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8));
 				printWriter.write(content + "\n");
 			} catch (Exception e1) {
 				e1.printStackTrace();
