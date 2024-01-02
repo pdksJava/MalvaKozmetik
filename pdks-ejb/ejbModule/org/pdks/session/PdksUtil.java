@@ -730,6 +730,32 @@ public class PdksUtil implements Serializable {
 		return new ValidatorException(new FacesMessage(""));
 	}
 
+	/**
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getStringListFromFile(File file) throws Exception {
+		List<String> list = null;
+		if (file != null && file.exists()) {
+			BufferedReader reader;
+			InputStream in = new FileInputStream(file);
+			reader = new BufferedReader(new InputStreamReader(in, "utf-8"));
+			String line = reader.readLine();
+			list = new ArrayList<String>();
+			while (line != null) {
+				list.add(line);
+				line = reader.readLine();
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * @param file
+	 * @return
+	 * @throws Exception
+	 */
 	public static byte[] getFileByteArray(File file) throws Exception {
 		byte[] dosyaIcerik = new byte[(int) file.length()];
 		InputStream ios = null;
@@ -3273,6 +3299,8 @@ public class PdksUtil implements Serializable {
 
 	private static void fileWrite(String content, String fileName, Boolean ekle) throws Exception {
 		String path = "/tmp/pdks";
+		if (fileName.indexOf("\\") > 0)
+			fileName = fileName.replaceAll("\\\\", "/");
 		File tmp = new File(path);
 		boolean devam = tmp.exists();
 		if (!devam) {
