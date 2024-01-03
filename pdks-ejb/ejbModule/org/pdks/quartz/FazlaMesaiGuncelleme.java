@@ -414,19 +414,20 @@ public class FazlaMesaiGuncelleme implements Serializable {
 					++adet;
 					donemCPPerList = null;
 				}
-				donemPerList = null;
+
 			}
 			as.setEkSaha3Id(null);
 			fazlaMesaiHesaplaHome.setSession(session);
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
 			try {
 				if (!hataVar && gelecekTarih == false && kayitVar) {
-					logger.info(str + " in " + PdksUtil.getCurrentTimeStampStr());
+					logger.info(str + " [ " + donemPerList.size() + " ] in " + PdksUtil.getCurrentTimeStampStr());
 					loginUser.setAdmin(Boolean.TRUE);
 					List<AylikPuantaj> puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 					hataVar = puantajList.isEmpty();
-					logger.info(str + " out " + PdksUtil.getCurrentTimeStampStr());
+					logger.info(str + (puantajList != null ? " [ " + puantajList.size() + " ]" : "") + " out " + PdksUtil.getCurrentTimeStampStr());
 				}
+				donemPerList = null;
 				session.flush();
 				// session.getTransaction().commit();
 			} catch (Exception e) {

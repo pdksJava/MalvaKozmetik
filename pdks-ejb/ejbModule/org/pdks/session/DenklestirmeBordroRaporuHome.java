@@ -372,23 +372,18 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						++adet;
 						donemCPPerList = null;
 					}
-					donemPerList = null;
 
 				}
-
-				logger.info(str + " in " + PdksUtil.getCurrentTimeStampStr());
+				logger.info(str + " [ " + donemPerList.size() + " ] in " + PdksUtil.getCurrentTimeStampStr());
+				donemPerList = null;
 				loginUser.setAdmin(Boolean.TRUE);
 				List<AylikPuantaj> puantajList = null;
 				if (kayitAdet > 0 && gelecekTarih == false)
 					puantajList = fazlaMesaiHesaplaHome.fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
-				if (puantajList != null && puantajList.isEmpty()) {
-					hataYok = false;
-					break;
-				} else {
+				if (puantajList != null && !puantajList.isEmpty()) {
 					session.flush();
 				}
-
-				logger.info(str + " out " + PdksUtil.getCurrentTimeStampStr());
+				logger.info(str + (puantajList != null ? " [ " + puantajList.size() + " ]" : "") + " out " + PdksUtil.getCurrentTimeStampStr());
 			} catch (Exception e) {
 				logger.error(seciliEkSaha3Id + " " + e);
 				e.printStackTrace();
