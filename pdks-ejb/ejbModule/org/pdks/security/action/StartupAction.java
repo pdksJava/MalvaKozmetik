@@ -697,7 +697,15 @@ public class StartupAction implements Serializable {
 	private void setHelpDeskParametre(Session session, HashMap<String, Parameter> pmMap) {
 		OrtakIslemler ortakIslemler = new OrtakIslemler();
 		try {
-			Parameter helpDeskStatus = pmMap.containsKey(HELP_DESK_STATUS) ? pmMap.get(HELP_DESK_STATUS) : new Parameter();
+			ortakIslemler.setInject(entityManager, pdksEntityController);
+			Parameter helpDeskStatus = pmMap.containsKey(HELP_DESK_STATUS) ? pmMap.get(HELP_DESK_STATUS) : null;
+			if (helpDeskStatus == null) {
+				helpDeskStatus = ortakIslemler.getParameter(session, HELP_DESK_STATUS);
+				if (helpDeskStatus == null) {
+					helpDeskStatus = new Parameter();
+					helpDeskStatus.setName(HELP_DESK_STATUS);
+				}
+			}
 			Date bugun = new Date();
 			if (helpDeskStatus.getId() == null) {
 				Date changeDate = null;

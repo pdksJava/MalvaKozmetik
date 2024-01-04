@@ -9463,6 +9463,18 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param entityManagerInput
+	 * @param pdksEntityControllerInput
+	 */
+	public void setInject(EntityManager entityManagerInput, PdksEntityController pdksEntityControllerInput) {
+		if (entityManagerInput != null && entityManager == null)
+			this.entityManager = entityManagerInput;
+		if (pdksEntityControllerInput != null && pdksEntityController == null)
+			this.pdksEntityController = pdksEntityControllerInput;
+
+	}
+
+	/**
 	 * @param izinSahibi
 	 * @param session
 	 * @param izinTipi
@@ -16845,7 +16857,7 @@ public class OrtakIslemler implements Serializable {
 			sb.append("SELECT * FROM FN_SISTEM_ADMIN_LIST() ");
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<User> userList = pdksEntityController.getObjectBySQLList(sb, fields, User.class);
+			List<User> userList = pec.getObjectBySQLList(sb, fields, User.class);
 			if (userList != null && !userList.isEmpty())
 				user = userList.get(0);
 		}
@@ -16881,7 +16893,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public User getSistemAdminUser(Session session) {
-		User user = getSistemAdminUserByParamMap(null, null, session);
+		User user = getSistemAdminUserByParamMap(null, pdksEntityController, session);
 		return user;
 
 	}
