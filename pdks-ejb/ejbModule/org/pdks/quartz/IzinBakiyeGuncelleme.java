@@ -99,25 +99,23 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		try {
 			if (session == null)
 				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
+			Date time = zamanlayici.getDbTime(session);
+			hataGonder = Boolean.TRUE;
 			hataKonum = "Paramatre okunuyor ";
-			Parameter parameter = null;
-			HashMap fields = new HashMap();
-			fields.put("durum=", Boolean.TRUE);
-			fields.put("departman.izinGirilebilir=", Boolean.TRUE);
-			fields.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
-			if (!list.isEmpty())
-				parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
+			Parameter parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
 			String value = (parameter != null) ? parameter.getValue() : null;
+			boolean zamanDurum = manuel || (PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(PersonelIzin.TABLE_NAME, session));
 			hataKonum = "Paramatre okundu ";
-			if (value != null) {
-				Date time = zamanlayici.getDbTime(session);
-				hataGonder = Boolean.TRUE;
-				hataKonum = "Zaman kontrolu yapılıyor ";
-				boolean zamanDurum = manuel || (PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(PersonelIzin.TABLE_NAME, session));
-				if (zamanDurum)
+			if (zamanDurum) {
+				hataKonum = "İzin durum kontrolu yapılıyor ";
+				HashMap fields = new HashMap();
+				fields.put("durum=", Boolean.TRUE);
+				fields.put("departman.izinGirilebilir=", Boolean.TRUE);
+				fields.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
+				if (!list.isEmpty())
 					izinBakiyeGuncellemeCalistir(session, true);
 
 			}

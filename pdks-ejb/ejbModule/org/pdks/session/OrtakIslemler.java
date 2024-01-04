@@ -16124,7 +16124,7 @@ public class OrtakIslemler implements Serializable {
 					if (kontrol == false && !izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {
 						kontrol = sonGun.after(vardiyaDate);
 					}
-					if (tatil == null && (kontrol || vardiyaIzin)) {
+					if (kontrol || vardiyaIzin) {
 
 						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
 
@@ -16561,7 +16561,7 @@ public class OrtakIslemler implements Serializable {
 									List<HareketKGS> cikisHareketleri = vardiyaGun.getCikisHareketleri();
 									if (cikisHareketleri != null && !cikisHareketleri.isEmpty())
 										sonCikis = (HareketKGS) cikisHareketleri.get(cikisHareketleri.size() - 1).clone();
- 									Date bayramBitis = vardiyaGun.getTatil().getOrjTatil().getBasTarih();
+									Date bayramBitis = vardiyaGun.getTatil().getOrjTatil().getBasTarih();
 									List<HareketKGS> hareketler = new ArrayList<HareketKGS>();
 									HareketKGS bayramBitisCikisHareket = null;
 									hareketler.addAll(vardiyaGun.getHareketler());
