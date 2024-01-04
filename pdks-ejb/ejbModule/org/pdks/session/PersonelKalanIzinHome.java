@@ -153,13 +153,14 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		if (gelecekIzinGoster)
 			bakiyeIzinler = borcluIzinleriSifirla(bakiyeIzinler);
 		for (PersonelIzin personelIzin : bakiyeIzinler) {
+			personelIzin.setDevirIzin(personelIzin.getBaslangicZamani().getTime() == PdksUtil.getBakiyeYil().getTime());
 			if (personelIzin.getIzinTipi() != null && personelIzin.getIzinTipi().getBakiyeIzinTipi() != null && personelIzin.getIzinTipi().getBakiyeIzinTipi().isSuaIzin()) {
 				suaVar = Boolean.TRUE;
 				break;
 			}
 		}
-
-		updateTempIzin.setYillikIzinler((ArrayList<PersonelIzin>) PdksUtil.sortListByAlanAdi(bakiyeIzinler, "baslangicZamani", Boolean.FALSE));
+		List<PersonelIzin> yillikIzinler = bakiyeIzinler.size() > 1 ? PdksUtil.sortListByAlanAdi(bakiyeIzinler, "baslangicZamani", Boolean.FALSE) : bakiyeIzinler;
+		updateTempIzin.setYillikIzinler((ArrayList<PersonelIzin>) yillikIzinler);
 		updateTempIzin.bakiyeHesapla();
 		return "";
 	}
