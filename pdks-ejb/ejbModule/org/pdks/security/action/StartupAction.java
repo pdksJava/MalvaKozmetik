@@ -705,8 +705,17 @@ public class StartupAction implements Serializable {
 					changeDate = PdksUtil.convertToJavaDate(PdksUtil.getSistemBaslangicYili() + "0101", "yyyyMMdd");
 				} catch (Exception e) {
 				}
+				HashMap<String, String> map = null;
+				if (pmMap != null) {
+					map = new HashMap<String, String>();
+					for (String key : pmMap.keySet()) {
+						Parameter parameter = pmMap.get(key);
+						map.put(key, parameter.getValue());
+					}
+				}
+
 				helpDeskStatus.setChangeDate(changeDate != null ? changeDate : bugun);
-				helpDeskStatus.setChangeUser(ortakIslemler.getSistemAdminUserByParamMap(parameterMap, pdksEntityController, session));
+				helpDeskStatus.setChangeUser(ortakIslemler.getSistemAdminUserByParamMap(map, pdksEntityController, session));
 				helpDeskStatus.setVersion(0);
 				helpDeskStatus.setDescription("Sistem Desktek Durumu");
 				helpDeskStatus.setName(HELP_DESK_STATUS);
