@@ -13882,6 +13882,7 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param normalCalismaVardiya
 	 * @param yemekHesapla
 	 * @param puantajData
 	 * @param kaydet
@@ -13889,10 +13890,11 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	public PersonelDenklestirme aylikPlanSureHesapla(boolean yemekHesapla, AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
+	public PersonelDenklestirme aylikPlanSureHesapla(Vardiya normalCalismaVardiya, boolean yemekHesapla, AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
 		User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
 		List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
 		String izinTarihKontrolTarihiStr = getParameterKey("izinTarihKontrolTarihi");
+
 		Date pdksIzinTarihKontrolTarihi = null;
 		try {
 			if (PdksUtil.hasStringValue(izinTarihKontrolTarihiStr))
@@ -13946,8 +13948,6 @@ public class OrtakIslemler implements Serializable {
 					denklestirmeAy = puantajData.getPersonelDenklestirmeAylik().getDenklestirmeAy();
 				double planlanSure = 0, izinSuresi = 0d, ucretiOdenenMesaiSure = 0d, fazlaMesaiMaxSure = getFazlaMesaiMaxSure(denklestirmeAy), resmiTatilSure = 0d;
 				boolean resmiTatilVardiyaEkle = false;
-
-				Vardiya normalCalismaVardiya = getNormalCalismaVardiya(session);
 
 				AylikPuantaj sablonAylikPuantaj = puantajData.getSablonAylikPuantaj();
 				// TreeMap<String, Tatil> tatilGunleri = new TreeMap<String, Tatil>();
@@ -14237,6 +14237,17 @@ public class OrtakIslemler implements Serializable {
 												}
 
 												// double sure = getSaatToplami(puantajData, gun, yemekList, session) ;
+												if (izinSaat == null) {
+													izinSaat = calismaModeli.getIzinSaat(pdksVardiyaGun);
+													if (tatil != null && tatil.isYarimGunMu() && vardiyaIzin != null) {
+														izinSaat = calismaModeli.getArife();
+														if (vardiyaIzin.isIzin() == false && tatil.getArifeVardiyaYarimHesapla() != null && !tatil.getArifeVardiyaYarimHesapla())
+															izinSaat = 0.0d;
+														arifeGunu = true;
+													}
+													if (izinSaat == null)
+														izinSaat = normalCalismaVardiya.getNetCalismaSuresi();
+												}
 												double sure = izinSaat;
 												double kontrolSure = 0;
 												if (sure > 0 || pdksVardiyaGun.getIzin() != null) {
@@ -14528,12 +14539,15 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param kisaAdi
 	 * @param session
 	 * @return
 	 */
-	private Vardiya getNormalCalismaVardiya(Session session) {
+	public Vardiya getNormalCalismaVardiya(String kisaAdi, Session session) {
+		if (!PdksUtil.hasStringValue(kisaAdi))
+			kisaAdi = "G";
 		HashMap fields = new HashMap();
-		fields.put("kisaAdi", "G");
+		fields.put("kisaAdi", kisaAdi);
 		fields.put("durum", Boolean.TRUE);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
