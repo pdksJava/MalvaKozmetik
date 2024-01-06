@@ -58,7 +58,7 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_PERSONEL_NO = "PER_NO";
 
 	private String username, shortUsername, passwordHash, newPassword, firstname, lastname, staffId, email, calistigiSayfa, remoteAddr, fullName;
-	private String personelNo;
+	private String personelNo, parametreJSON;
 
 	private Departman departman;
 
@@ -1070,6 +1070,15 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 
 	public void setRaporKullanici(boolean raporKullanici) {
 		this.raporKullanici = raporKullanici;
+	}
+
+	@Transient
+	public String getParametreJSON() {
+		return parametreJSON;
+	}
+
+	public void setParametreJSON(String parametreJSON) {
+		this.parametreJSON = parametreJSON;
 	}
 
 }

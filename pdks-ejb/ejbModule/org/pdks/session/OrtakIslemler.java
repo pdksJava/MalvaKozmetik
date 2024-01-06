@@ -4672,6 +4672,8 @@ public class OrtakIslemler implements Serializable {
 						pdksEntityController.saveOrUpdate(session, entityManager, menuItemTime);
 						session.flush();
 					}
+					if (authenticatedUser != null && parametreJSON != null)
+						authenticatedUser.setParametreJSON(parametreJSON);
 					map1 = null;
 					gson = null;
 				}
@@ -14238,17 +14240,26 @@ public class OrtakIslemler implements Serializable {
 
 												// double sure = getSaatToplami(puantajData, gun, yemekList, session) ;
 												if (izinSaat == null) {
-													izinSaat = calismaModeli.getIzinSaat(pdksVardiyaGun);
-													if (tatil != null && tatil.isYarimGunMu() && vardiyaIzin != null) {
-														izinSaat = calismaModeli.getArife();
-														if (vardiyaIzin.isIzin() == false && tatil.getArifeVardiyaYarimHesapla() != null && !tatil.getArifeVardiyaYarimHesapla())
-															izinSaat = 0.0d;
-														arifeGunu = true;
+													try {
+														if (pdksVardiyaGun != null)
+															logger.info(pdksVardiyaGun.getVardiyaKeyStr() + " " + authenticatedUser.getAdSoyad() + "\n" + authenticatedUser.getParametreJSON());
+														izinSaat = calismaModeli.getIzinSaat(pdksVardiyaGun);
+														if (tatil != null && tatil.isYarimGunMu() && vardiyaIzin != null) {
+															izinSaat = calismaModeli.getArife();
+															if (vardiyaIzin.isIzin() == false && tatil.getArifeVardiyaYarimHesapla() != null && !tatil.getArifeVardiyaYarimHesapla())
+																izinSaat = 0.0d;
+															arifeGunu = true;
+														}
+
+													} catch (Exception e) {
+														logger.error(authenticatedUser.getAdSoyad() + " " + (pdksVardiyaGun != null ? pdksVardiyaGun.getVardiyaKeyStr() + " " : "") + e);
+														e.printStackTrace();
 													}
 													if (izinSaat == null)
 														izinSaat = normalCalismaVardiya.getNetCalismaSuresi();
+
 												}
-												double sure = izinSaat;
+												double sure = izinSaat != null ? izinSaat : 9.0d;
 												double kontrolSure = 0;
 												if (sure > 0 || pdksVardiyaGun.getIzin() != null) {
 													kontrolSure = getVardiyaIzinSuresi(izinTarihKontrolTarihi == null ? sure : 0.0d, pdksVardiyaGun, personelDenklestirme, izinTarihKontrolTarihi);
