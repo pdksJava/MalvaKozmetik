@@ -14252,8 +14252,7 @@ public class OrtakIslemler implements Serializable {
 														}
 
 													} catch (Exception e) {
-														logger.error(authenticatedUser.getAdSoyad() + " " + (pdksVardiyaGun != null ? pdksVardiyaGun.getVardiyaKeyStr() + " " : "") + e);
-														e.printStackTrace();
+														setExceptionLog(pdksVardiyaGun != null ? pdksVardiyaGun.getVardiyaKeyStr() : null, e);
 													}
 													if (izinSaat == null)
 														izinSaat = normalCalismaVardiya.getNetCalismaSuresi();
@@ -14546,6 +14545,32 @@ public class OrtakIslemler implements Serializable {
 			e.printStackTrace();
 		}
 		return personelDenklestirme;
+
+	}
+
+	/**
+	 * @param mesaj
+	 * @param es
+	 */
+	public void setExceptionLog(String mesaj, Exception es) {
+		StringBuffer mesajSb = new StringBuffer();
+		if (authenticatedUser != null) {
+			mesajSb.append(authenticatedUser.getAdSoyad());
+			if (PdksUtil.hasStringValue(authenticatedUser.getCalistigiSayfa()))
+				mesajSb.append(" --> " + authenticatedUser.getCalistigiSayfa() + " : ");
+			if (PdksUtil.hasStringValue(mesaj))
+				mesajSb.append(" " + mesaj);
+			if (PdksUtil.hasStringValue(authenticatedUser.getParametreJSON()))
+				mesajSb.append("\n" + authenticatedUser.getParametreJSON());
+		} else if (PdksUtil.hasStringValue(mesaj))
+			mesajSb.append(" " + mesaj);
+		mesaj = mesajSb.toString();
+		if (es != null) {
+			logger.error((PdksUtil.hasStringValue(mesaj) ? mesaj + "\n" : "") + es);
+			es.printStackTrace();
+		} else if (PdksUtil.hasStringValue(mesaj))
+			logger.error(mesaj);
+		mesajSb = null;
 
 	}
 

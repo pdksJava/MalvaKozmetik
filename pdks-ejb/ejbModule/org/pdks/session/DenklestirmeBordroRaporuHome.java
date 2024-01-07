@@ -803,56 +803,82 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				as.setSirket(sirket);
 				as.setTesisId(tesisId);
 				as.setLoginUser(authenticatedUser);
-				personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, hataliVeriGetir, eksikCalisanVeriGetir, session);
-				as = null;
-				if (!personelDenklestirmeList.isEmpty()) {
-					List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
-					if (bordroAlanlari.isEmpty()) {
-						boolean kimlikNoGoster = false;
-						String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
-						Boolean kartNoAciklamaGoster = null;
-						if (PdksUtil.hasStringValue(kartNoAciklama))
-							kartNoAciklamaGoster = false;
+				try {
+					personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, hataliVeriGetir, eksikCalisanVeriGetir, session);
+					if (!personelDenklestirmeList.isEmpty()) {
+						List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
+						if (bordroAlanlari.isEmpty()) {
+							boolean kimlikNoGoster = false;
+							String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
+							Boolean kartNoAciklamaGoster = null;
+							if (PdksUtil.hasStringValue(kartNoAciklama))
+								kartNoAciklamaGoster = false;
 
-						for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
-							Personel personel = aylikPuantaj.getPdksPersonel();
-							PersonelKGS personelKGS = personel.getPersonelKGS();
-							if (personelKGS != null) {
-								if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
-									kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
-									if (kartNoAciklamaGoster && kimlikNoGoster)
-										break;
-								}
+							for (AylikPuantaj aylikPuantaj : personelDenklestirmeList) {
+								Personel personel = aylikPuantaj.getPdksPersonel();
+								PersonelKGS personelKGS = personel.getPersonelKGS();
+								if (personelKGS != null) {
+									if (kartNoAciklamaGoster != null && kartNoAciklamaGoster.booleanValue() == false) {
+										kartNoAciklamaGoster = PdksUtil.hasStringValue(personelKGS.getKartNo());
+										if (kartNoAciklamaGoster && kimlikNoGoster)
+											break;
+									}
 
-								if (!kimlikNoGoster) {
-									kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
-									if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
-										break;
+									if (!kimlikNoGoster) {
+										kimlikNoGoster = PdksUtil.hasStringValue(personelKGS.getKimlikNo());
+										if (kimlikNoGoster && (kartNoAciklamaGoster == null || kartNoAciklamaGoster))
+											break;
+									}
 								}
 							}
+							if (kartNoAciklamaGoster == null)
+								kartNoAciklamaGoster = false;
+							bordroBilgiAciklamaOlustur(kimlikNoGoster, kartNoAciklama, kartNoAciklamaGoster, bordroAlanlari);
 						}
-						if (kartNoAciklamaGoster == null)
-							kartNoAciklamaGoster = false;
-						bordroBilgiAciklamaOlustur(kimlikNoGoster, kartNoAciklama, kartNoAciklamaGoster, bordroAlanlari);
-					}
-					baslikMap.clear();
-					for (Tanim tanim : bordroAlanlari)
-						if (tanim.getDurum())
-							baslikMap.put(tanim.getKodu(), tanim);
-					boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
-					boolean haftaTatilBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_HAFTA_TATIL_MESAI));
-					boolean aksamGunBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_GUN_MESAI));
-					boolean aksamSaatBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_SAAT_MESAI));
-					boolean eksikCalismaBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_EKSIK_CALISMA));
-					for (AylikPuantaj ap : personelDenklestirmeList) {
-						PersonelDenklestirme pd = ap.getPersonelDenklestirmeAylik();
-						PersonelDenklestirmeBordro personelDenklestirmeBordro = ap.getDenklestirmeBordro();
-						if (personelDenklestirmeBordro == null) {
-							personelDenklestirmeBordro = new PersonelDenklestirmeBordro();
-							personelDenklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
-							ap.setDenklestirmeBordro(personelDenklestirmeBordro);
-						}
-						if (saatlikCalismaVar) {
+						baslikMap.clear();
+						for (Tanim tanim : bordroAlanlari)
+							if (tanim.getDurum())
+								baslikMap.put(tanim.getKodu(), tanim);
+						boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
+						boolean haftaTatilBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_HAFTA_TATIL_MESAI));
+						boolean aksamGunBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_GUN_MESAI));
+						boolean aksamSaatBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_SAAT_MESAI));
+						boolean eksikCalismaBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_EKSIK_CALISMA));
+						for (AylikPuantaj ap : personelDenklestirmeList) {
+							PersonelDenklestirme pd = ap.getPersonelDenklestirmeAylik();
+							PersonelDenklestirmeBordro personelDenklestirmeBordro = ap.getDenklestirmeBordro();
+							if (personelDenklestirmeBordro == null) {
+								personelDenklestirmeBordro = new PersonelDenklestirmeBordro();
+								personelDenklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
+								ap.setDenklestirmeBordro(personelDenklestirmeBordro);
+							}
+							if (saatlikCalismaVar) {
+								if (!normalGunSaatDurum)
+									normalGunSaatDurum = personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d;
+								if (!haftaTatilSaatDurum)
+									haftaTatilSaatDurum = personelDenklestirmeBordro.getSaatHaftaTatil() != null && personelDenklestirmeBordro.getSaatHaftaTatil().doubleValue() > 0.0d;
+								if (!resmiTatilSaatDurum)
+									resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d;
+								if (!izinSaatDurum)
+									izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d;
+							}
+							if (!artikGunDurum)
+								artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
+							if (!resmiTatilGunDurum)
+								resmiTatilGunDurum = personelDenklestirmeBordro.getResmiTatilAdet() != null && personelDenklestirmeBordro.getResmiTatilAdet().doubleValue() > 0.0d;
+							if (!artikGunDurum)
+								artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
+							if (!haftaCalisma && haftaTatilBaslik)
+								haftaCalisma = pd.getHaftaCalismaSuresi() != null && pd.getHaftaCalismaSuresi().doubleValue() > 0.0d;
+							if (!resmiTatilDurum)
+								resmiTatilDurum = pd.getResmiTatilSure() != null && pd.getResmiTatilSure().doubleValue() > 0.0d;
+							if (!aksamGun && aksamGunBaslik)
+								setAksamGun(pd.getAksamVardiyaSayisi() != null && pd.getAksamVardiyaSayisi().doubleValue() > 0.0d);
+							if (!aksamSaat && aksamSaatBaslik)
+								setAksamSaat(pd.getAksamVardiyaSaatSayisi() != null && pd.getAksamVardiyaSaatSayisi().doubleValue() > 0.0d);
+							if (!maasKesintiGoster && eksikCalismaBaslik)
+								setMaasKesintiGoster(pd.getEksikCalismaSure() != null && pd.getEksikCalismaSure().doubleValue() > 0.0d);
+
 							if (!normalGunSaatDurum)
 								normalGunSaatDurum = personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d;
 							if (!haftaTatilSaatDurum)
@@ -861,36 +887,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 								resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d;
 							if (!izinSaatDurum)
 								izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d;
+
 						}
-						if (!artikGunDurum)
-							artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
-						if (!resmiTatilGunDurum)
-							resmiTatilGunDurum = personelDenklestirmeBordro.getResmiTatilAdet() != null && personelDenklestirmeBordro.getResmiTatilAdet().doubleValue() > 0.0d;
-						if (!artikGunDurum)
-							artikGunDurum = personelDenklestirmeBordro.getArtikAdet() != null && personelDenklestirmeBordro.getArtikAdet().doubleValue() > 0.0d;
-						if (!haftaCalisma && haftaTatilBaslik)
-							haftaCalisma = pd.getHaftaCalismaSuresi() != null && pd.getHaftaCalismaSuresi().doubleValue() > 0.0d;
-						if (!resmiTatilDurum)
-							resmiTatilDurum = pd.getResmiTatilSure() != null && pd.getResmiTatilSure().doubleValue() > 0.0d;
-						if (!aksamGun && aksamGunBaslik)
-							setAksamGun(pd.getAksamVardiyaSayisi() != null && pd.getAksamVardiyaSayisi().doubleValue() > 0.0d);
-						if (!aksamSaat && aksamSaatBaslik)
-							setAksamSaat(pd.getAksamVardiyaSaatSayisi() != null && pd.getAksamVardiyaSaatSayisi().doubleValue() > 0.0d);
-						if (!maasKesintiGoster && eksikCalismaBaslik)
-							setMaasKesintiGoster(pd.getEksikCalismaSure() != null && pd.getEksikCalismaSure().doubleValue() > 0.0d);
-
-						if (!normalGunSaatDurum)
-							normalGunSaatDurum = personelDenklestirmeBordro.getSaatNormal() != null && personelDenklestirmeBordro.getSaatNormal().doubleValue() > 0.0d;
-						if (!haftaTatilSaatDurum)
-							haftaTatilSaatDurum = personelDenklestirmeBordro.getSaatHaftaTatil() != null && personelDenklestirmeBordro.getSaatHaftaTatil().doubleValue() > 0.0d;
-						if (!resmiTatilSaatDurum)
-							resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d;
-						if (!izinSaatDurum)
-							izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d;
-
 					}
+				} catch (Exception es) {
+					ortakIslemler.setExceptionLog(null, es);
 				}
-
+				as = null;
 			}
 		}
 

@@ -870,8 +870,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 				fillPersonelDenklestirmeDevam(aylikPuantaj, denklestirmeDonemi);
 			} catch (Exception ee) {
-				logger.error(ee);
-				ee.printStackTrace();
+				ortakIslemler.setExceptionLog(null, ee);
 			}
 
 		} else if (userLogin.getLogin())

@@ -266,9 +266,13 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (vardiyaGunList.size() > 1)
 						vardiyaGunList = PdksUtil.sortListByAlanAdi(vardiyaGunList, "vardiyaDate", false);
 					String donem = String.valueOf(dm.getYil() * 100 + dm.getAy());
+					TreeMap<String, Tatil> tatilGunleriMap = ortakIslemler.getTatilGunleri(null, ortakIslemler.tariheGunEkleCikar(cal, basTarih, -1), ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1), session);
 					TreeMap<Long, Personel> perMap = new TreeMap<Long, Personel>();
 					for (VardiyaGun vardiyaGun : vardiyaGunList) {
-						if (vardiyaGun.getVardiyaDateStr().startsWith(donem)) {
+						String vardiyaDateStr = vardiyaGun.getVardiyaDateStr();
+						if (vardiyaDateStr.startsWith(donem)) {
+							if (tatilGunleriMap.containsKey(vardiyaDateStr))
+								continue;
 							vardiyaGun.setVardiyaZamani();
 							Personel personel = vardiyaGun.getPdksPersonel();
 							Long id = personel.getId();
@@ -315,8 +319,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						}
 
 					}
+					tatilGunleriMap = null;
 					perMap = null;
-
 					perDMap = null;
 				} catch (Exception e) {
 					logger.error(e + "\n" + sb.toString());
