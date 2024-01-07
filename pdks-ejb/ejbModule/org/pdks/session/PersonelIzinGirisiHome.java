@@ -4334,26 +4334,28 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 		// istedigi tarih icin vardiyesi tanimlanmamissa sablondaki degerlere
 		// gore hesaplama yapilir.
 
+		IzinTipi izinTipi = personelIzin.getIzinTipi();
+		boolean tatilSay = izinTipi.isTatilSayilir();
 		double izinSuresiSaatGun = 0;
+
 		Double eklenecekGun = 1.0;
 		String tatilGunuKey = "";
 		Calendar basCal = Calendar.getInstance();
 		basCal.setTime((Date) personelIzin.getBaslangicZamani().clone());
-		boolean senelikIzin = personelIzin.getIzinTipi().isSenelikIzin();
+		boolean senelikIzin = izinTipi.isSenelikIzin();
 		Boolean hekim = null;
 		try {
 			hekim = personelIzin != null && personelIzin.getIzinSahibi() != null ? personelIzin.getIzinSahibi().isHekim() : Boolean.FALSE;
 		} catch (Exception e) {
 			hekim = Boolean.FALSE;
 		}
-		double artikIzinGun = personelIzin.getIzinTipi().getArtikIzinGun() != null && !hekim ? personelIzin.getIzinTipi().getArtikIzinGun() : 0D;
+		double artikIzinGun = izinTipi.getArtikIzinGun() != null && !hekim ? izinTipi.getArtikIzinGun() : 0D;
 
 		// iznin ilk haftasi- ilk gun icin vardiya var mi diye bakilir
-		if (!personelIzin.getIzinTipi().getTakvimGunumu() || hesapTipiMethod == PersonelIzin.HESAP_TIPI_SAAT) {
+		if (!izinTipi.getTakvimGunumu() || hesapTipiMethod == PersonelIzin.HESAP_TIPI_SAAT) {
 			Date vardiyaDate = (Date) personelIzin.getBaslangicZamani().clone();
 			VardiyaGun pdksVardiyaGun = new VardiyaGun(personelIzin.getIzinSahibi(), null, vardiyaDate);
 			String vardiyaKey = pdksVardiyaGun.getVardiyaKeyStr();
-			IzinTipi izinTipi = personelIzin.getIzinTipi();
 			if (hesapTipiMethod == PersonelIzin.HESAP_TIPI_SAAT)
 				vardiyaDate = oncekiVardiyami(vardiyalar, vardiyaDate, personelIzin, Boolean.TRUE);
 			pdksVardiyaGun.setVardiyaDate(vardiyaDate);
@@ -4402,29 +4404,9 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 							vardiyaDate = tempVardiya.getIslemVardiya().getVardiyaBasZaman();
 							izinBasTarih = vardiyaDate;
 						}
-
 						eklenecekGun = 1.0d;
-						Tatil tatil = null;
-						if (senelikIzin && resmiTatilGunleri.containsKey(tatilGunuKey)) {
-							tatil = (Tatil) resmiTatilGunleri.get(tatilGunuKey);
-							if (tatil.isYarimGunMu() && !tempVardiya.getVardiya().isHaftaTatil()) {
-								eklenecekGun = new Double("0.5").doubleValue();
-								if (izinTipi != null && izinTipi.isSenelikIzin()) {
-									String arifeSenelikIzinGun = ortakIslemler.getParameterKey("arifeSenelikIzinGun");
-									try {
-										eklenecekGun = null;
-										if (PdksUtil.hasStringValue(arifeSenelikIzinGun))
-											eklenecekGun = Double.parseDouble(arifeSenelikIzinGun);
-
-									} catch (Exception e) {
-										eklenecekGun = null;
-									}
-									if (eklenecekGun == null || eklenecekGun.doubleValue() < 0.0d)
-										throw new Exception("Arife gününü içeren izin girilemez!");
-								}
-
-							} else
-								eklenecekGun = 0.0d;
+						if (resmiTatilGunleri.containsKey(tatilGunuKey) && tatilSay == false) {
+							eklenecekGun = 0.0d;
 						}
 						if (artiklarMap != null) {
 							if (!artikIizinVar && bayramArtikIzinSifirla.equals("1"))
@@ -4468,8 +4450,6 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 							if (izinBitTarih.getTime() < bitTarih.getTime())
 								bitTarih = (Date) izinBitTarih.clone();
 							if (eklenecekGun > 0) {
-								if (tatil != null && tatil.isYarimGunMu() && bitTarih.getTime() > tatil.getBasTarih().getTime())
-									bitTarih = tatil.getBasTarih();
 								if (tempVardiya.getVardiya().isCalisma()) {
 									double toplamSure = PdksUtil.getSaatFarki(bitTarih, basTarih).doubleValue();
 									double sure = ortakIslemler.getSaatSure(basTarih, bitTarih, pdksYemekList, tempVardiya, session);
@@ -4543,7 +4523,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				Date bitisZamani = cal.getTime();
 				personelIzin.setBitisZamani(bitisZamani);
 			}
-		} else if (personelIzin.getIzinTipi().getTakvimGunumu()) {
+		} else if (izinTipi.getTakvimGunumu()) {
 			// 2 tarih arasindaki gun sayısı kadar izinden dusulur
 			// takvim gunu secilen bir izni saatlik girilecek sekilde
 			// yapmamlilar.

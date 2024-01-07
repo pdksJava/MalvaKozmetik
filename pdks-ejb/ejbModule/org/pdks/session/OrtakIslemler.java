@@ -16121,6 +16121,7 @@ public class OrtakIslemler implements Serializable {
 		PersonelIzin personelIzin = personelIzinInput != null ? (PersonelIzin) personelIzinInput.clone() : null;
 		String izinVardiyaKontrolStr = getParameterKey("izinVardiyaKontrol");
 		IzinTipi izinTipi = personelIzinInput != null ? personelIzinInput.getIzinTipi() : null;
+		boolean tatilSay = izinTipi.isTatilSayilir();
 		boolean cumaCumartesiTekIzinSay = izinTipi != null ? izinTipi.isCumaCumartesiTekIzinSaysin() : false;
 		boolean izinVardiyaKontrol = PdksUtil.hasStringValue(izinVardiyaKontrolStr), izinERPUpdate = getParameterKey("izinERPUpdate").equals("1");
 		boolean takvimGunu = personelIzin != null && personelIzin.getIzinTipi().isTakvimGunuMu();
@@ -16155,16 +16156,17 @@ public class OrtakIslemler implements Serializable {
 
 					} else
 						kontrol = bitisZamani.getTime() >= vardiyaDate.getTime() && baslangicZamani.getTime() <= vardiyaDate.getTime();
-					if (tatil != null || vardiyaDateStr.equals("20240101")) {
-						logger.debug(personelIzin.getId());
+					if (tatil != null) {
+						if (tatilSay)
+							tatil = null;
+						if (vardiyaDateStr.equals("20240101"))
+							logger.debug(personelIzin.getId());
 					}
 					if (kontrol == false && !izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {
 						kontrol = sonGun.after(vardiyaDate);
 					}
-					if (kontrol || vardiyaIzin) {
-
+					if (tatil == null && (kontrol || vardiyaIzin)) {
 						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
-
 						int gunlukOldu = 0;
 						int bitisDeger = PdksUtil.tarihKarsilastirNumeric(bitisZamani, vardiyaDate);
 						int baslangicDeger = PdksUtil.tarihKarsilastirNumeric(vardiyaDate, izin.getBaslangicZamani());
