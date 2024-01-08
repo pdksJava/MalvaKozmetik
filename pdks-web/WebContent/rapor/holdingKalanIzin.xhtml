@@ -37,7 +37,7 @@
 								<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="izinPanel" />
 							</h:selectOneMenu>
 						</s:decorate>
- 
+
 						<s:decorate template="/layout/edit.xhtml"
 							rendered="#{ortakIslemler.tesisDurumu and (authenticatedUser.admin or authenticatedUser.IKAdmin) and  holdingKalanIzinHome.aramaSecenekleri.tesisList!=null}">
 							<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
@@ -83,8 +83,10 @@
 
 						<s:decorate id="baslangicField" template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK }">
 							<ui:define name="label">Tarihi</ui:define>
-							<rich:calendar id="startDate" value="#{holdingKalanIzinHome.hakedisTarihi}" datePattern="#{authenticatedUser.dateFormat}" cellWidth="24px" cellHeight="22px"
-								style="width:200px" />
+							<rich:calendar id="startDate" value="#{holdingKalanIzinHome.hakedisTarihi}" datePattern="#{authenticatedUser.dateFormat}" cellWidth="24px"
+								cellHeight="22px" style="width:200px">
+								<a4j:support event="onchanged" ajaxSingle="true" status="ajaxStatus" reRender="baslangicField" />
+							</rich:calendar>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 							<ui:define name="label">İşten Ayrılanları Getir</ui:define>
@@ -124,26 +126,26 @@
 								</f:facet>
 								<h:outputText value="#{izinler.personel.sirket.ad}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{izinler.personel.sicilNo}" />
 							</rich:column>
 
-							<rich:column>
+							<rich:column filterBy="#{izinler.personel.adSoyad}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="Adı Soyadı" />
 								</f:facet>
 								<h:outputText value="#{izinler.personel.adSoyad}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.dateFormatla(izinler.personel.izinHakEdisTarihi)}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="Doğum Tarihi" />
 								</f:facet>
@@ -157,7 +159,7 @@
 									<h:outputText value="#{authenticatedUser.dateFormatla(izinler.personel.istenAyrilisTarihi)}" />
 								</ui:fragment>
 							</rich:column>
-							
+
 							<rich:column rendered="#{ortakIslemler.getListTesisDurum(holdingKalanIzinHome.holdingIzinList)}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
@@ -165,7 +167,7 @@
 								<h:outputText value="#{izinler.personel.tesis.aciklama}" />
 							</rich:column>
 
-							<rich:column rendered="#{holdingKalanIzinHome.aramaSecenekleri.sirket.departman.admin==false}">
+							<rich:column filterBy="#{izinler.personel.ekSaha3.aciklama}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="#{holdingKalanIzinHome.bolumAciklama}" />
 								</f:facet>
@@ -210,36 +212,46 @@
 							</rich:column>
 
 
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="Geçen Yıl Bakiye" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.gecenYilBakiye)} Gün" />
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.gecenYilBakiye)} Gün" rendered="#{izinler.gecenYilBakiye ne 0}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="Bu Yıl Hakkedilen" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.buYilHakedilen)} Gün" />
+								<ui:fragment rendered="#{izinler.buYilHakedilen ne 0}">
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.buYilHakedilen)} Gün" rendered="#{izinler.buYilHakedilen ne 0}" />
+								</ui:fragment>
+								<ui:fragment rendered="#{izinler.buYilHakedilen == 0}">  
+									<DIV id="denk#{izinler.personel.id}">
+										<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20" />
+									</DIV>
+									<rich:toolTip for="denk#{izinler.personel.id}">
+										<span style="color: red; font-style: 14;">#{authenticatedUser.dateFormatla(izinler.seciliYilIzinHakEdisTarihi)}</span>
+									</rich:toolTip>
+								</ui:fragment>
 
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="Bu Yıl Harcanan İzin Toplamı" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.harcananIzin)} Gün" />
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.harcananIzin)} Gün" rendered="#{izinler.harcananIzin ne 0}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="Bakiye İzin Toplamı" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.bakiye)} Gün" />
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.bakiye)} Gün" rendered="#{izinler.bakiye ne 0}" />
 							</rich:column>
-							<rich:column rendered="#{holdingKalanIzinHome.suaVar}">
+							<rich:column style="text-align:center" rendered="#{holdingKalanIzinHome.suaVar}">
 								<f:facet name="header">
 									<h:outputText value="Bakiye İzin Toplamı" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.buYilHakedilenSua)} Gün" rendered="#{izinler.buYilHakedilenSua>0}" />
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(izinler.buYilHakedilenSua)} Gün" rendered="#{izinler.buYilHakedilenSua ne 0}" />
 							</rich:column>
 
 							<f:facet name="footer">

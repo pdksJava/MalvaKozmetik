@@ -15,7 +15,12 @@ import java.util.TreeMap;
 import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -335,6 +340,9 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		if (suaVar)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bu Yıl Hakkedilen ŞUA");
 		boolean renk = true;
+		CreationHelper factory = wb.getCreationHelper();
+		Drawing drawing = sheet.createDrawingPatriarch();
+		ClientAnchor anchor = factory.createClientAnchor();
 		for (HoldingIzin tempIzin : holdingIzinList) {
 			Personel personel = tempIzin.getPersonel();
 			row++;
@@ -377,15 +385,16 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 			if (ekSaha4)
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPdksYonetici() != null ? personel.getPdksYonetici().getAdSoyad() : "");
-			ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tempIzin.getGecenYilBakiye());
-			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(tempIzin.getBuYilHakedilen());
-			ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tempIzin.getHarcananIzin());
-			ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tempIzin.getBakiye());
+			setNumberValue(tempIzin.getGecenYilBakiye(), sheet, row, col++, styleCenter, styleNumber);
+			Cell cell = setNumberValue(tempIzin.getBuYilHakedilen(), sheet, row, col++, styleCenter, styleNumber);
+			if (cell != null) {
+				RichTextString str1 = factory.createRichTextString(authenticatedUser.dateFormatla(tempIzin.getSeciliYilIzinHakEdisTarihi()));
+				ExcelUtil.setCellComment(drawing, anchor, cell, str1);
+			}
+			setNumberValue(tempIzin.getHarcananIzin(), sheet, row, col++, styleCenter, styleNumber);
+			setNumberValue(tempIzin.getBakiye(), sheet, row, col++, styleCenter, styleNumber);
 			if (suaVar) {
-				if (tempIzin.getBuYilHakedilenSua() != null && tempIzin.getBuYilHakedilenSua().intValue() > 0)
-					ExcelUtil.getCell(sheet, row, col++, styleNumber).setCellValue(tempIzin.getBuYilHakedilenSua());
-				else
-					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+				setNumberValue(tempIzin.getBuYilHakedilenSua(), sheet, row, col++, styleCenter, styleNumber);
 			}
 		}
 
@@ -404,11 +413,38 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		return baos;
 	}
 
+	/**
+	 * @param sayi
+	 * @param sheet
+	 * @param row
+	 * @param col
+	 * @param style
+	 * @param styleNumber
+	 * @return
+	 */
+	private Cell setNumberValue(Object sayi, Sheet sheet, int row, int col, CellStyle style, CellStyle styleNumber) {
+		Double value = null;
+		Cell cell = null;
+		if (sayi != null) {
+			if (sayi instanceof Double)
+				value = (Double) sayi;
+			else if (sayi instanceof Integer)
+				value = new Double((Integer) sayi);
+		}
+		if (value != null && value.doubleValue() != 0.0d) {
+			ExcelUtil.getCell(sheet, row, col, styleNumber).setCellValue(value.doubleValue());
+		} else {
+			cell = ExcelUtil.getCell(sheet, row, col, style);
+			cell.setCellValue("");
+		}
+		return cell;
+	}
+
 	public String izinKartiExcelAktar() {
 		try {
 			ByteArrayOutputStream baosDosya = izinKartiExcelAktarDevam();
 			if (baosDosya != null)
-				PdksUtil.setExcelHttpServletResponse(baosDosya, "holdingIzinRapor.xlsx");
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "senelikIzinRapor.xlsx");
 
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");

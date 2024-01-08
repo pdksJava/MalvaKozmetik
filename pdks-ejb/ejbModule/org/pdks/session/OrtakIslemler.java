@@ -13286,12 +13286,22 @@ public class OrtakIslemler implements Serializable {
 
 			izinList = new ArrayList<PersonelIzin>();
 		}
-
+		Date tarihKontrol = xDonemSonu != null ? xDonemSonu : PdksUtil.getDate(new Date());
+		List<Long> hakEdilmeyenTarihList = new ArrayList<Long>();
 		for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
 			PersonelIzin personelIzin = (PersonelIzin) iterator.next();
-			if (xDonemSonu != null && personelIzin.getBitisZamani().after(xDonemSonu))
+			Date bitisZamani = personelIzin.getBitisZamani();
+			if (xDonemSonu != null && bitisZamani.after(xDonemSonu))
 				iterator.remove();
 			else {
+				if (bitisZamani.after(tarihKontrol)) {
+					Long perId = personelIzin.getPdksPersonel().getId();
+					if (hakEdilmeyenTarihList.contains(perId)) {
+						iterator.remove();
+						continue;
+					}
+					hakEdilmeyenTarihList.add(perId);
+				}
 				personelIzin.setDevirIzin(personelIzin.getBaslangicZamani().getTime() == PdksUtil.getBakiyeYil().getTime());
 				if (personelIzin.getDevirIzin()) {
 					if (personelIzin.getIzinSuresi() == null || personelIzin.getIzinSuresi().doubleValue() == 0.0d)
@@ -13309,6 +13319,7 @@ public class OrtakIslemler implements Serializable {
 		int yil = cal.get(Calendar.YEAR);
 		cal.set(yil, 0, 1);
 		cal.set(yil - 1, 0, 1);
+
 		for (PersonelIzin personelIzin : izinList) {
 			if (personelKontrol && !sicilNoList.contains(personelIzin.getIzinSahibi().getSicilNo()))
 				continue;
@@ -16184,7 +16195,7 @@ public class OrtakIslemler implements Serializable {
 					if (tatil != null) {
 						if (tatilSay)
 							tatil = null;
-						if (vardiyaDateStr.equals("20240101"))
+						if (vardiyaDateStr.equals("20240107"))
 							logger.debug(personelIzin.getId());
 					}
 					if (kontrol == false && !izinTipi.getPersonelGirisTipi().equals(IzinTipi.GIRIS_TIPI_YOK) && islemVardiya.isCalisma() == false) {

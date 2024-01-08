@@ -53,6 +53,7 @@ import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeBordro;
 import org.pdks.entity.PersonelDenklestirmeBordroDetay;
+import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
@@ -885,13 +886,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							// if (saatlikCalisma)
 							// artiGun = vardiyaGun.getSaatCalisanIzinGunKatsayisi();
 							IzinTipi senelikIzin = null;
+							IzinTipi izinTipi = null;
 							if (vardiyaGun.getIzin() != null) {
-								if (vardiyaGun.getVardiyaDateStr().equals("20240101"))
+								PersonelIzin personelIzin = vardiyaGun.getIzin();
+								if (vardiyaGun.getVardiyaDateStr().equals("20240106"))
 									logger.debug("x");
-								IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
+								izinTipi = personelIzin.getIzinTipi();
 								if (izinTipi != null) {
 									izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
-
 									if (!izinGrupMap.containsKey(izinKodu))
 										izinKodu = null;
 									else
@@ -901,7 +903,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 									} catch (Exception e) {
 										// TODO: handle exception
 									}
-
 									if (izinTipi.isUcretsizIzinTipi()) {
 										calismaGun = 0;
 									} else if (saatlikCalisma) {
@@ -919,15 +920,16 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 								if (izinTipi.getTakvimGunumu() == false) {
 									if (vardiyaGun.getVardiya().isOffGun()) {
-										if (izinTipi.isOffDahilMi() == false) {
+										if (izinTipi.isOffDahilMi() == false || (izinTipi.isCumaCumartesiTekIzinSaysin() && personelIzin.getIzinSuresi() < 2.0d)) {
 											artiGun = 0.0d;
+											calismaGun = 1.0d;
 										}
 
 									} else if (haftaTatil) {
 										if (izinTipi.isHTDahil() == false) {
 											artiGun = 0.0d;
+											calismaGun = 1.0d;
 										}
-
 									}
 									if (izinTipi.getUcretli() && resmiTatil == false)
 										izinGunAdet += 1;
@@ -946,7 +948,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								}
 
 								if (haftaTatil && izinBordroDetayTipi != null) {
-									haftaTatil = izinBordroDetayTipi.value().equals(BordroDetayTipi.UCRETLI_IZIN.value());
+									haftaTatil = (izinTipi != null && izinTipi.isHTDahil() == false) || izinBordroDetayTipi.value().equals(BordroDetayTipi.UCRETLI_IZIN.value());
 									if (haftaTatil == false)
 										artiGun = 1;
 								}

@@ -1,6 +1,7 @@
 package org.pdks.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,6 +29,7 @@ public class HoldingIzin implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_ID = "PERSONEL_ID";
 	public static final String COLUMN_NAME_SIRKET = "SIRKET_ID";
 	public static final String COLUMN_NAME_IZIN = "IZIN_ID";
+	public static final String COLUMN_NAME_SECILI_YIL_HAKEDIS_TARIHI = "SECILI_YIL_HAKEDIS_TARIHI";
 
 	private Long id;
 
@@ -36,6 +38,8 @@ public class HoldingIzin implements Serializable, Cloneable {
 	private Integer buYilHakedilen, buYilHakedilenSua;
 
 	private Double gecenYilBakiye, harcananIzin;
+
+	private Date seciliYilIzinHakEdisTarihi;
 
 	public HoldingIzin() {
 		super();
@@ -69,6 +73,15 @@ public class HoldingIzin implements Serializable, Cloneable {
 
 	public void setPersonel(Personel personel) {
 		this.personel = personel;
+	}
+
+	@Column(name = COLUMN_NAME_SECILI_YIL_HAKEDIS_TARIHI)
+	public Date getSeciliYilIzinHakEdisTarihi() {
+		return seciliYilIzinHakEdisTarihi;
+	}
+
+	public void setSeciliYilIzinHakEdisTarihi(Date seciliYilIzinHakEdisTarihi) {
+		this.seciliYilIzinHakEdisTarihi = seciliYilIzinHakEdisTarihi;
 	}
 
 	@Column(name = "GECEN_YIL_BAKIYE")

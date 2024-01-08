@@ -763,12 +763,22 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 		fillIzinList(gecerlilikTarih, Boolean.FALSE, Boolean.FALSE);
 	}
 
+	/**
+	 * @param gecerlilikTarih
+	 * @throws Exception
+	 */
 	public void fillIzinList(Date gecerlilikTarih) throws Exception {
 		if (!gelecekIzinGoster)
-			gecerlilikTarih = new Date();
+			gecerlilikTarih = PdksUtil.getDate(new Date());
 		fillIzinList(gecerlilikTarih, gelecekIzinGoster, Boolean.TRUE);
 	}
 
+	/**
+	 * @param gecerlilikTarih
+	 * @param gelecekIzinGoster
+	 * @param harcananIzinlerHepsi
+	 * @throws Exception
+	 */
 	public void fillIzinList(Date gecerlilikTarih, boolean gelecekIzinGoster, boolean harcananIzinlerHepsi) throws Exception {
 		bakiyeIzinGoster = ortakIslemler.getParameterKeyHasStringValue("bakiyeIzinGoster");
 		if (istenAyrilanEkle && PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo())) {
