@@ -1609,7 +1609,19 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (denklestirmeDinamikAlanlar != null) {
 					for (Tanim alan : denklestirmeDinamikAlanlar) {
 						PersonelDinamikAlan personelDinamikAlan = aylikPuantaj.getPersonelDinamikAlan(alan.getId());
-						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelDinamikAlan != null ? authenticatedUser.getYesNo(personelDinamikAlan.getDurumSecim()) : "");
+						if (personelDinamikAlan != null) {
+							if (personelDinamikAlan.isCheckBox())
+								ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(authenticatedUser.getYesNo(personelDinamikAlan.getDurumSecim()));
+							else if (personelDinamikAlan.isTanim())
+								ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personelDinamikAlan.getTanimDeger() != null ? personelDinamikAlan.getTanimDeger().getAciklama() : "");
+							else if (personelDinamikAlan.isSayisal()) {
+								if (personelDinamikAlan.getSayisalDeger() != null)
+									ExcelUtil.getCell(sheet, row, col++, styleDayNumber).setCellValue(personelDinamikAlan.getSayisalDeger());
+								else
+									ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
+							}
+						} else
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
 
 					}
 				}
