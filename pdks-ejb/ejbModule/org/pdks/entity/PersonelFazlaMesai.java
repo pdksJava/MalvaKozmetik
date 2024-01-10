@@ -25,6 +25,8 @@ public class PersonelFazlaMesai extends BaseObject implements Cloneable {
 	public static final String TABLE_NAME = "PERSONELFAZLAMESAI";
 	public static final String COLUMN_NAME_VARDIYA_GUN = "VARDIYA_GUN";
 	public static final String COLUMN_NAME_HAREKET = "HAREKET_ID";
+	public static final String COLUMN_NAME_FAZLA_MESAI_SAATI = "FAZLA_MESAI_SAATI";
+	
 
 	public static final int DURUM_ONAYLANMADI = 0;
 	public static final int DURUM_ONAYLANDI = 1;
@@ -143,7 +145,7 @@ public class PersonelFazlaMesai extends BaseObject implements Cloneable {
 		this.tatilDurum = tatilDurum;
 	}
 
-	@Column(name = "FAZLA_MESAI_SAATI")
+	@Column(name = COLUMN_NAME_FAZLA_MESAI_SAATI)
 	public Double getFazlaMesaiSaati() {
 		return fazlaMesaiSaati;
 	}

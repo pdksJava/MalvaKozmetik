@@ -721,9 +721,10 @@ public class StartupAction implements Serializable {
 						map.put(key, parameter.getValue());
 					}
 				}
-
-				helpDeskStatus.setChangeDate(changeDate != null ? changeDate : bugun);
-				helpDeskStatus.setChangeUser(ortakIslemler.getSistemAdminUserByParamMap(map, pdksEntityController, session));
+				if (helpDeskStatus.getId() == null)
+					helpDeskStatus.setChangeDate(changeDate);
+				if (helpDeskStatus.getChangeUser() == null)
+					helpDeskStatus.setChangeUser(ortakIslemler.getSistemAdminUserByParamMap(map, pdksEntityController, session));
 				helpDeskStatus.setVersion(0);
 				helpDeskStatus.setDescription("Sistem Desktek Durumu");
 				helpDeskStatus.setName(HELP_DESK_STATUS);
@@ -848,7 +849,7 @@ public class StartupAction implements Serializable {
 		String helpDeskLastDateKey = "helpDeskLastDate";
 		OrtakIslemler islemler = new OrtakIslemler();
 		Gson gson = new Gson();
-		if (!PdksUtil.getCanliSunucuDurum()) {
+		if (PdksUtil.getCanliSunucuDurum()) {
 			String helpDeskLastDateStr = islemler.getStringHelpDesk();
 			if (helpDeskLastDateStr != null && pmMap.containsKey(helpDeskLastDateKey)) {
 				Parameter parameter = pmMap.get(helpDeskLastDateKey);
