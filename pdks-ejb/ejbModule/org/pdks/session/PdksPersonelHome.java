@@ -422,7 +422,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				Departman pdksDepartman = pdksPersonel.getSirket().getDepartman();
 				HashMap parametreMap = new HashMap();
 				parametreMap.put("durum", Boolean.TRUE);
-				parametreMap.put("toplamGunGuncelle", Boolean.FALSE);
+				if (pdksPersonel.getGebeMi().equals(Boolean.FALSE) && pdksPersonel.getSutIzni().equals(Boolean.FALSE))
+					parametreMap.put("toplamGunGuncelle", Boolean.FALSE);
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				calismaModeliList = pdksEntityController.getObjectByInnerObjectList(parametreMap, CalismaModeli.class);
