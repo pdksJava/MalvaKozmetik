@@ -74,7 +74,7 @@ public class VardiyaGun extends BaseObject {
 	private Boolean izinHaftaTatilDurum;
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE, fazlaMesaiTalepDurum = Boolean.FALSE, ayarlamaBitti = false;
-	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
+	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamKatSayisi = 0d, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
 	private String tdClass = "", style = "", manuelGirisHTML = "", vardiyaKisaAciklama, personelNo, vardiyaDateStr, donemStr;
 	private Tatil tatil;
@@ -2289,6 +2289,17 @@ public class VardiyaGun extends BaseObject {
 
 	public void setAyarlamaBitti(boolean ayarlamaBitti) {
 		this.ayarlamaBitti = ayarlamaBitti;
+	}
+
+	@Transient
+	public double getAksamKatSayisi() {
+		return aksamKatSayisi;
+	}
+
+	public void setAksamKatSayisi(double value) {
+		if (value != 0.0d)
+			logger.debug(value);
+		this.aksamKatSayisi = value;
 	}
 
 }

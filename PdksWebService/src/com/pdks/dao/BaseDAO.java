@@ -215,8 +215,8 @@ public interface BaseDAO extends DAO {
 	/**
 	 * @param fields
 	 */
-	public void execSP(HashMap fields);
-	
+	public void execSP(LinkedHashMap<String, Object> fields);
+
 	/**
 	 * @param veriMap
 	 * @param class1

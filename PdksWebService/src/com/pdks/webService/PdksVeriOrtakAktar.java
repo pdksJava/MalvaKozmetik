@@ -427,13 +427,18 @@ public class PdksVeriOrtakAktar implements Serializable {
 		if (dao == null)
 			dao = Constants.pdksDAO;
 		User user = null;
-		HashMap fields = new HashMap();
-		StringBuffer sb = new StringBuffer();
-		sb.append("SELECT * FROM FN_SISTEM_ADMIN_LIST() ");
-		List<User> list = dao.getNativeSQLList(fields, sb, User.class);
-		if (list != null && !list.isEmpty())
-			user = list.get(0);
-		list = null;
+		try {
+			LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
+			fields.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_SISTEM_ADMIN_LIST");
+			fields.put("TIP", "U");
+			List<User> list = dao.execSPList(fields, User.class);
+			if (list != null && !list.isEmpty())
+				user = list.get(0);
+			list = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return user;
 	}
 

@@ -385,11 +385,28 @@
 											</f:facet>
 											<SPAN style="font-weight: bold; color: red;"> #{authenticatedUser.sayiFormatliGoster(fazlaMesai.saatToplami)}</SPAN>
 										</rich:column>
-
 									</c:if>
 
 
+									<rich:column style="text-align: center;width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaCalismaRaporHome.aksamAdetGoster}">
+										<f:facet name="header">
+											<h:outputText value="Akşam Gün" />
+										</f:facet>
+										<ui:fragment rendered="#{fazlaMesai.aksamVardiyaSayisi!=0}">
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesai.aksamVardiyaSayisi)}" />
+										</ui:fragment>
+									</rich:column>
 
+
+
+									<rich:column style="text-align: center;width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaCalismaRaporHome.aksamSaatGoster}">
+										<f:facet name="header">
+											<h:outputText value="Akşam Saat" />
+										</f:facet>
+										<ui:fragment rendered="#{fazlaMesai.aksamVardiyaSaatSayisi!=0}">
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(fazlaMesai.aksamVardiyaSaatSayisi)}" />
+										</ui:fragment>
+									</rich:column>
 
 									<f:facet name="footer">
 										<rich:datascroller renderIfSinglePage="false" maxPages="5" />

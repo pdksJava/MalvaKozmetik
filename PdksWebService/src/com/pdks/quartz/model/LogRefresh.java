@@ -2,6 +2,7 @@ package com.pdks.quartz.model;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -30,10 +31,10 @@ public final class LogRefresh extends QuartzJobBean {
 		fields.put("active", Boolean.TRUE);
 		Parameter parameter = (Parameter) pdksDAO.getObjectByInnerObject(fields, Parameter.class);
 		if (parameter != null && parameter.getValue().equals("2")) {
-			fields.clear();
-			fields.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_PDKS_SIRKET_ISLEM");
+			LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
+			veriMap.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_PDKS_SIRKET_ISLEM");
 			try {
-				pdksDAO.execSP(fields);
+				pdksDAO.execSP(veriMap);
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();

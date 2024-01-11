@@ -46,6 +46,7 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	public static final String MAP_KEY_SQLADD = "sql_add";
 	public static final String MAP_KEY_SQLPARAMS = "sql_params";
 	public static final String MAP_KEY_SP_NAME = "SP_NAME";
+	public static final String MAP_KEY_SESSION = "session";
 	public static final String SELECT_KARAKTER = "t";
 	public static final String WHERE = " where ";
 
@@ -747,37 +748,49 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 		return listAll;
 	}
 
-	public List execSPList(LinkedHashMap<String, Object> veriMap, Class class1) throws Exception {
-		List liste = null;
-		if (veriMap.containsKey(BaseDAOHibernate.MAP_KEY_SELECT)) {
-			String qname = (String) veriMap.get(BaseDAOHibernate.MAP_KEY_SELECT);
-			veriMap.remove(BaseDAOHibernate.MAP_KEY_SELECT);
-			Session session = getHibernateCurrentSession();
-			String queryStr = "exec " + qname;
-			for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
-				String string = (String) iterator.next();
-				if (!veriMap.containsKey(string))
-					continue;
-				queryStr += " ?";
+	/**
+	 * @param veriMap
+	 * 
+	 * @return
+	 */
+	private SQLQuery prepareProcedure(LinkedHashMap<String, Object> veriMap) {
+		String qname = (String) veriMap.get(BaseDAOHibernate.MAP_KEY_SELECT);
+		veriMap.remove(BaseDAOHibernate.MAP_KEY_SELECT);
+		String queryStr = "exec " + qname;
+		Session session = getHibernateCurrentSession();
+		if (veriMap.containsKey(MAP_KEY_SESSION))
+			veriMap.remove(MAP_KEY_SESSION);
+		for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
+			String string = (String) iterator.next();
+			if (string != null) {
+				queryStr += " :" + string;
 				// queryStr += " :" + string;
 				if (iterator.hasNext())
 					queryStr += ",";
 			}
-
-			int sayac = 0;
-
-			SQLQuery query = session.createSQLQuery(queryStr);
-			for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
-				String key1 = (String) iterator.next();
-				if (!veriMap.containsKey(key1))
-					continue;
+		}
+		SQLQuery query = session.createSQLQuery(queryStr);
+		logger.debug(queryStr);
+		for (Iterator iterator = veriMap.keySet().iterator(); iterator.hasNext();) {
+			String key1 = (String) iterator.next();
+			if (key1 != null) {
 				Object veri = veriMap.get(key1);
-				logger.debug((sayac + 1) + ". " + key1 + " : " + veri.toString());
-				query.setParameter(sayac++, veri);
+				query.setParameter(key1, veri);
 			}
-			if (class1 != null)
-				query.addEntity(class1);
-			liste = query.list();
+		}
+		return query;
+	}
+
+	public List execSPList(LinkedHashMap<String, Object> veriMap, Class class1) throws Exception {
+		List liste = null;
+		if (veriMap.containsKey(BaseDAOHibernate.MAP_KEY_SELECT)) {
+			SQLQuery query = prepareProcedure(veriMap);
+			if (query != null) {
+				if (class1 != null)
+					query.addEntity(class1);
+				liste = query.list();
+			}
+
 		}
 		return liste;
 	}
@@ -786,37 +799,12 @@ public class BaseDAOHibernate extends HibernateDaoSupport implements BaseDAO {
 	 * @param fields
 	 * @return
 	 */
-	public void execSP(HashMap fields) {
-
+	public void execSP(LinkedHashMap<String, Object> fields) {
 		if (fields.containsKey(BaseDAOHibernate.MAP_KEY_SELECT)) {
-			String qname = (String) fields.get(BaseDAOHibernate.MAP_KEY_SELECT);
-			fields.remove(BaseDAOHibernate.MAP_KEY_SELECT);
-			Session session = getHibernateCurrentSession();
-			String queryStr = "exec " + qname;
-			for (Iterator iterator = fields.keySet().iterator(); iterator.hasNext();) {
-				String string = (String) iterator.next();
-				if (!fields.containsKey(string))
-					continue;
-				queryStr += " ?";
-				// queryStr += " :" + string;
-				if (iterator.hasNext())
-					queryStr += ",";
-			}
-
-			int sayac = 0;
-			SQLQuery query = session.createSQLQuery(queryStr);
-			for (Iterator iterator = fields.keySet().iterator(); iterator.hasNext();) {
-				String key1 = (String) iterator.next();
-				if (!fields.containsKey(key1))
-					continue;
-				Object veri = fields.get(key1);
-				logger.debug((sayac + 1) + ". " + key1 + " : " + veri.toString());
-				query.setParameter(sayac++, veri);
-			}
-
-			query.executeUpdate();
+			SQLQuery query = prepareProcedure(fields);
+			if (query != null)
+				query.executeUpdate();
 		}
-
 	}
 
 	/**

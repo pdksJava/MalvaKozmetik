@@ -29,10 +29,11 @@ public class PersonelDinamikAlan extends BasePDKSObject implements Serializable 
 	public static final String COLUMN_NAME_TANIM_DEGER = "TANIM_DEGER_ID";
 	public static final String COLUMN_NAME_DURUM_SECIM = "DURUM_SECIM";
 	public static final String COLUMN_NAME_SAYISAL_DEGER = "SAYISAL_DEGER";
-	public static final String TIP_ACIKLAMA = "PERSONEL_DINAMIK_ACIKLAMA";
-	public static final String TIP_DURUM = "PERSONEL_DINAMIK_DURUM";
-	public static final String TIP_SAYISAL = "PERSONEL_DINAMIK_SAYISAL";
-	public static final String TIP_TANIM = "PERSONEL_DINAMIK_TANIM";
+
+	// public static final String TIP_ACIKLAMA = "PERSONEL_DINAMIK_ACIKLAMA";
+	// public static final String TIP_DURUM = "PERSONEL_DINAMIK_DURUM";
+	// public static final String TIP_SAYISAL = "PERSONEL_DINAMIK_SAYISAL";
+	// public static final String TIP_TANIM = "PERSONEL_DINAMIK_TANIM";
 
 	public PersonelDinamikAlan(Personel personel, Tanim alan) {
 		super();
@@ -146,7 +147,7 @@ public class PersonelDinamikAlan extends BasePDKSObject implements Serializable 
 	public boolean isAciklama() {
 		boolean tip = false;
 		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(TIP_ACIKLAMA);
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL);
 		}
 		return tip;
 	}
@@ -155,7 +156,7 @@ public class PersonelDinamikAlan extends BasePDKSObject implements Serializable 
 	public boolean isCheckBox() {
 		boolean tip = false;
 		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(TIP_DURUM);
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
 		}
 		return tip;
 	}
@@ -164,7 +165,7 @@ public class PersonelDinamikAlan extends BasePDKSObject implements Serializable 
 	public boolean isSayisal() {
 		boolean tip = false;
 		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(TIP_SAYISAL);
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL);
 		}
 		return tip;
 	}
@@ -173,18 +174,8 @@ public class PersonelDinamikAlan extends BasePDKSObject implements Serializable 
 	public boolean isTanim() {
 		boolean tip = false;
 		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(TIP_TANIM);
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_TANIM);
 		}
 		return tip;
 	}
-
-	@Transient
-	public Tanim getTipi() {
-		return tipi;
-	}
-
-	public void setTipi(Tanim tipi) {
-		this.tipi = tipi;
-	}
-
 }

@@ -1632,7 +1632,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 										vardiyaSaat.setAksamVardiyaSaatSayisi(0.0d);
 									} else {
 										vardiyaSaat.setResmiTatilSure(vardiyaGun.getResmiTatilSure());
-										vardiyaSaat.setAksamVardiyaSaatSayisi(vardiyaGun.getAksamVardiyaSaatSayisi());
+										vardiyaSaat.setAksamVardiyaSaatSayisi(vardiyaGun.getAksamKatSayisi());
 									}
 									if (hareketDurum.equals(Boolean.TRUE) && vardiyaGun.isZamanGelmedi() == false && vardiyaGun.getHareketler() != null) {
 										vardiyaSaat.setCalismaSuresi(vardiyaGun.getCalismaSuresi());
@@ -3278,7 +3278,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	private void vardiyaGunKontrol(AylikPuantaj islemPuantaj, VardiyaGun vGun, HashMap<String, Object> paramsMap) {
 		boolean fazlaMesaiTalepVardiyaOnayliDurum = false;
-
+		vGun.setAksamKatSayisi(0.0d);
 		Date aksamVardiyaBitisZamani = null, aksamVardiyaBaslangicZamani = null;
 		Vardiya vardiya = vGun.getVardiya();
 		String key1 = vGun.getVardiyaDateStr(), vardiyaKey = vGun.getVardiyaKeyStr();
@@ -3706,6 +3706,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								}
 								if (aksamCalismaMaxSaati != null && aksamSure >= aksamCalismaMaxSaati && fazlaMesaiMap.containsKey(AylikPuantaj.MESAI_TIPI_AKSAM_ADET)) {
 									aksamVardiyaSayisi += 1;
+									vGun.setAksamKatSayisi(1);
 									if (vardiya.isCalisma() == false)
 										logger.debug(vardiyaKey);
 
@@ -3715,8 +3716,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									else
 										aksamSure = 0;
 								}
-								if (fazlaMesaiMap.containsKey(AylikPuantaj.MESAI_TIPI_AKSAM_SAAT))
+								if (fazlaMesaiMap.containsKey(AylikPuantaj.MESAI_TIPI_AKSAM_SAAT)) {
+									vGun.setAksamKatSayisi(vGun.getAksamKatSayisi() - aksamSure);
 									aksamVardiyaSaatSayisi += aksamSure;
+								}
+
 							}
 
 						}

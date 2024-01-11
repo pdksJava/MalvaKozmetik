@@ -27,7 +27,7 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	static Logger logger = Logger.getLogger(PersonelDenklestirmeDinamikAlan.class);
 
 	public static final String TABLE_NAME = "PERS_DENK_DINAMIK_ALAN";
- 	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
+	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
 	public static final String COLUMN_NAME_ALAN = "ALAN_ID";
 	public static final String COLUMN_NAME_DENKLESTIRME_ALAN_DURUM = "ALAN_DURUM";
 	public static final String COLUMN_NAME_DENKLESTIRME_ISLEM_DURUM = "ISLEM_DURUM";
@@ -37,7 +37,7 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 
 	private PersonelDenklestirme personelDenklestirme;
 
-	private Tanim alan;
+	private Tanim alan, tipi;
 
 	private Boolean durum = Boolean.FALSE, guncellendi = Boolean.FALSE, islemDurum = Boolean.FALSE;
 
@@ -82,8 +82,9 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 		return alan;
 	}
 
-	public void setAlan(Tanim alan) {
-		this.alan = alan;
+	public void setAlan(Tanim value) {
+		this.tipi = value != null ? value.getParentTanim() : null;
+		this.alan = value;
 	}
 
 	@Column(name = COLUMN_NAME_DENKLESTIRME_ALAN_DURUM)
@@ -132,6 +133,42 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	@Transient
 	public boolean isGuncellendi() {
 		return guncellendi && guncellendi.booleanValue();
+	}
+
+	@Transient
+	public boolean isAciklama() {
+		boolean tip = false;
+		if (tipi != null && tipi.getKodu() != null) {
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL);
+		}
+		return tip;
+	}
+
+	@Transient
+	public boolean isCheckBox() {
+		boolean tip = false;
+		if (tipi != null && tipi.getKodu() != null) {
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
+		}
+		return tip;
+	}
+
+	@Transient
+	public boolean isSayisal() {
+		boolean tip = false;
+		if (tipi != null && tipi.getKodu() != null) {
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL);
+		}
+		return tip;
+	}
+
+	@Transient
+	public boolean isTanim() {
+		boolean tip = false;
+		if (tipi != null && tipi.getKodu() != null) {
+			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_TANIM);
+		}
+		return tip;
 	}
 
 }

@@ -37,7 +37,7 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_KODU = "KODU";
 	public static final String COLUMN_NAME_ERP_KODU = "ERP_KODU";
 	public static final String COLUMN_NAME_TIPI = "TIPI";
- 	public static final String COLUMN_NAME_PARENT_ID = "PARENTTANIM_ID";
+	public static final String COLUMN_NAME_PARENT_ID = "PARENTTANIM_ID";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_ACIKLAMATR = "ACIKLAMATR";
 	public static final String COLUMN_NAME_ACIKLAMAEN = "ACIKLAMAEN";
