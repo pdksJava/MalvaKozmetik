@@ -3724,42 +3724,44 @@ public class OrtakIslemler implements Serializable {
 	public PersonelIzin getBakiyeIzin(User user, Personel personel, Date donem, IzinTipi bakiyeIzinTipi, Double sure, int kidemYil, Session session) throws Exception {
 		PersonelIzin bakiyeIzin = null;
 		Calendar cal = Calendar.getInstance();
+		Date bugun = PdksUtil.getDate(cal.getTime());
 		cal.setTime(donem);
 		int yil = cal.get(Calendar.YEAR);
 		int sayac = 0;
 		if (personel.getSirket().isPdksMi() == false)
 			bakiyeIzin = null;
+		cal = Calendar.getInstance();
+		boolean yeni = false;
 		while (bakiyeIzin == null && sayac < 3) {
 			++sayac;
-			String bakiyeTarih = " convert(datetime,'" + PdksUtil.convertToDateString(donem, "yyyy") + "0101', 112)";
-			StringBuilder queryStr = new StringBuilder("SELECT " + PersonelIzin.COLUMN_NAME_ID + " AS IZIN_ID  from " + PersonelIzin.TABLE_NAME + " WITH(nolock)  ");
-			queryStr.append(" WHERE  " + PersonelIzin.COLUMN_NAME_IZIN_TIPI + "=" + bakiyeIzinTipi.getId() + " AND " + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + "= " + bakiyeTarih + "  AND PERSONEL_ID=" + personel.getId());
-			SQLQuery query1 = session.createSQLQuery(queryStr.toString());
-			queryStr = null;
-			List<Object> elements = query1.list();
-			if (!elements.isEmpty()) {
-				BigDecimal izinId = (BigDecimal) elements.get(0);
-				if (izinId != null) {
-					HashMap map = new HashMap();
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-					map.put("id", izinId.longValue());
-					bakiyeIzin = (PersonelIzin) pdksEntityController.getObjectByInnerObject(map, PersonelIzin.class);
-				}
+			cal.setTime(personel.getIzinHakEdisTarihi());
+			cal.set(Calendar.YEAR, yil);
+			Date hakedisTarihi = cal.getTime();
+			String hakedisTarih = "convert(datetime, '" + PdksUtil.convertToDateString(hakedisTarihi, "yyyyMMdd") + "', 112)";
+			cal.add(Calendar.YEAR, -1);
+			Date oncekiHakEdisTarihi = cal.getTime();
+			if (bugun.after(oncekiHakEdisTarihi) && !donem.after(hakedisTarihi)) {
+				String bakiyeTarih = " convert(datetime,'" + PdksUtil.convertToDateString(donem, "yyyy") + "0101', 112)";
+				StringBuilder queryStr = new StringBuilder("SELECT " + PersonelIzin.COLUMN_NAME_ID + " AS IZIN_ID  from " + PersonelIzin.TABLE_NAME + " WITH(nolock)  ");
+				queryStr.append(" WHERE  " + PersonelIzin.COLUMN_NAME_IZIN_TIPI + "=" + bakiyeIzinTipi.getId() + " AND " + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + "= " + bakiyeTarih + "  AND PERSONEL_ID=" + personel.getId());
+				SQLQuery query1 = session.createSQLQuery(queryStr.toString());
+				queryStr = null;
+				List<Object> elements = query1.list();
+				if (!elements.isEmpty()) {
+					BigDecimal izinId = (BigDecimal) elements.get(0);
+					if (izinId != null) {
+						HashMap map = new HashMap();
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+						map.put("id", izinId.longValue());
+						bakiyeIzin = (PersonelIzin) pdksEntityController.getObjectByInnerObject(map, PersonelIzin.class);
+					}
 
-			} else if (kidemYil >= 0) {
-				if (sure == null)
-					sure = bakiyeIzinTipi.getKotaBakiye() != null ? bakiyeIzinTipi.getKotaBakiye() : 0D;
-				if (user == null)
-					user = getSistemAdminUser(session);
-				cal = Calendar.getInstance();
-				Date bugun = PdksUtil.getDate(cal.getTime());
-				cal.setTime(personel.getIzinHakEdisTarihi());
-				cal.set(Calendar.YEAR, yil);
-				Date hakedisTarihi = cal.getTime();
-				String hakedisTarih = "convert(datetime, '" + PdksUtil.convertToDateString(hakedisTarihi, "yyyyMMdd") + "', 112)";
-				cal.add(Calendar.YEAR, -1);
-				Date oncekiHakEdisTarihi = cal.getTime();
-				if (bugun.after(oncekiHakEdisTarihi) && !donem.after(hakedisTarihi)) {
+				} else if (kidemYil >= 0) {
+					if (sure == null)
+						sure = bakiyeIzinTipi.getKotaBakiye() != null ? bakiyeIzinTipi.getKotaBakiye() : 0D;
+					if (user == null)
+						user = getSistemAdminUser(session);
+
 					String aciklama = bakiyeIzinTipi != null ? bakiyeIzinTipi.getIzinTipiTanim().getAciklama() : "Bakiye İzin";
 					if (kidemYil >= 0)
 						aciklama = kidemYil > 0 ? String.valueOf(kidemYil) : "";
@@ -3778,6 +3780,7 @@ public class OrtakIslemler implements Serializable {
 						if (sure >= 0) {
 							query1 = session.createSQLQuery(sqlStr);
 							query1.executeUpdate();
+							yeni = true;
 						}
 
 					} catch (Exception e) {
@@ -3787,11 +3790,13 @@ public class OrtakIslemler implements Serializable {
 						logger.error(e.getMessage() + "\n" + sqlStr);
 					}
 					queryStr = null;
-				} else
-					break;
-			}
+				}
+			} else
+				break;
 
 		}
+		if (bakiyeIzin != null)
+			bakiyeIzin.setCheckBoxDurum(yeni);
 
 		return bakiyeIzin;
 	}
@@ -9634,6 +9639,7 @@ public class OrtakIslemler implements Serializable {
 		IzinHakedisHakki izinHakedisHakki = null;
 		int genelDirektorIzinSuresi = 0;
 		String genelDirektorIzinSuresiPrm = getParameterKey("genelDirektorIzinSuresi");
+		boolean flush = false;
 		try {
 			if (PdksUtil.hasStringValue(genelDirektorIzinSuresiPrm) && izinSahibi.isGenelDirektor() && getGenelMudur(null, izinSahibi, session))
 				try {
@@ -9733,6 +9739,8 @@ public class OrtakIslemler implements Serializable {
 					double izinSuresi = tarihGelmedi && yillikIzinMaxBakiye > 0 ? yillikIzinMaxBakiye : (double) izinHakedisHakki.getIzinSuresi();
 
 					personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+					if (personelIzin != null)
+						flush = personelIzin.isCheckBoxDurum();
 					Date oncekiHakedisTarihi = PdksUtil.addTarih(izinHakEttigiTarihi, Calendar.YEAR, -1);
 					if (yil > sistemKontrolYili && (personelIzin != null || bugun.after(oncekiHakedisTarihi))) {
 						if (personelIzin == null) {
@@ -9760,10 +9768,11 @@ public class OrtakIslemler implements Serializable {
 								personelIzin.setIzinSuresi(izinSuresi);
 								personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 								personelIzin.setAciklama(aciklama);
-								personelIzin.setBitisZamani(izinHakEttigiTarihi);
-								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime())
+								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime()) {
+									personelIzin.setBitisZamani(izinHakEttigiTarihi);
 									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
-								else
+									flush = true;
+								} else
 									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
 
 							}
@@ -9797,6 +9806,8 @@ public class OrtakIslemler implements Serializable {
 					if (genelDirektorIzinSuresi != 0)
 						izinSuresi = genelDirektorIzinSuresi;
 					personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+					if (flush == false && personelIzin != null)
+						flush = personelIzin.isCheckBoxDurum();
 					if (personelIzin == null) {
 						personelIzin = new PersonelIzin();
 						personelIzin.setIzinSahibi(izinSahibi);
@@ -9819,11 +9830,12 @@ public class OrtakIslemler implements Serializable {
 								}
 								personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 								personelIzin.setIzinSuresi(izinSuresi);
-								personelIzin.setBitisZamani(izinHakEttigiTarihi);
 								personelIzin.setAciklama(aciklama);
-								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime())
+								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime()) {
+									personelIzin.setBitisZamani(izinHakEttigiTarihi);
 									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
-								else
+									flush = true;
+								} else
 									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
 							}
 						}
@@ -9831,7 +9843,8 @@ public class OrtakIslemler implements Serializable {
 				}
 			}
 		}
-		session.flush();
+		if (flush)
+			session.flush();
 		// if (kidemYil == 0)
 		// izinTipi = null;
 		return izinTipi;
