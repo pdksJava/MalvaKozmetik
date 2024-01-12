@@ -9761,7 +9761,7 @@ public class OrtakIslemler implements Serializable {
 								personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 								personelIzin.setAciklama(aciklama);
 								personelIzin.setBitisZamani(izinHakEttigiTarihi);
-								if (personelIzin.getBaslangicZamani().after(izinHakEttigiTarihi))
+								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime())
 									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 								else
 									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
@@ -9821,7 +9821,7 @@ public class OrtakIslemler implements Serializable {
 								personelIzin.setIzinSuresi(izinSuresi);
 								personelIzin.setBitisZamani(izinHakEttigiTarihi);
 								personelIzin.setAciklama(aciklama);
-								if (personelIzin.getBaslangicZamani().after(izinHakEttigiTarihi))
+								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime())
 									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 								else
 									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
