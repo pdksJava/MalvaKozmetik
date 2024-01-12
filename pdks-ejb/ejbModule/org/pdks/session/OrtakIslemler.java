@@ -3796,7 +3796,7 @@ public class OrtakIslemler implements Serializable {
 
 		}
 		if (bakiyeIzin != null)
-			bakiyeIzin.setCheckBoxDurum(yeni);
+			bakiyeIzin.setCheckBoxDurum(yeni && sayac == 2);
 
 		return bakiyeIzin;
 	}
@@ -9616,7 +9616,17 @@ public class OrtakIslemler implements Serializable {
 	 * @throws Exception
 	 */
 	@Transactional
-	public IzinTipi senelikIzinOlustur(Personel izinSahibi, boolean suaDurum, int yil, int kidemYil, HashMap<String, IzinTipi> izinTipiMap, HashMap<String, IzinHakedisHakki> hakedisMap, User user, Session session, IzinTipi izinTipi, Date islemTarihi, boolean yeniBakiyeOlustur) throws Exception {
+	public IzinTipi senelikIzinOlustur(HashMap<String, Object> veriMap, Session session) {
+		Personel izinSahibi = (Personel) veriMap.get("izinSahibi");
+		boolean suaDurum = (Boolean) veriMap.get("suaDurum");
+		int yil = (Integer) veriMap.get("yil");
+		HashMap<String, IzinHakedisHakki> hakedisMap = (HashMap<String, IzinHakedisHakki>) veriMap.get("hakedisMap");
+		User user = (User) veriMap.get("user");
+		boolean yeniBakiyeOlustur = (Boolean) veriMap.get("yeniBakiyeOlustur");
+		int kidemYil = (Integer) veriMap.get("kidemYil") - (yeniBakiyeOlustur ? 0 : 1);
+		IzinTipi izinTipi = (IzinTipi) veriMap.get("izinTipi");
+		Date islemTarihi = (Date) veriMap.get("islemTarihi");
+		User sistemYonetici = (User) veriMap.get("sistemYonetici");
 		if (yeniBakiyeOlustur == false)
 			logger.debug(yil + " " + kidemYil);
 		int sistemKontrolYili = PdksUtil.getSistemBaslangicYili() - 1;
@@ -9626,16 +9636,20 @@ public class OrtakIslemler implements Serializable {
 		// onceki yas tipini de bulalim
 
 		// int yil = cal.get(Calendar.YEAR);
-
-		PersonelIzin personelIzin = null;
-		HashMap map = new HashMap();
-		User sistemYonetici = getSistemAdminUser(session);
-		int yillikIzinMaxBakiye = PersonelIzin.getYillikIzinMaxBakiye();
 		cal.setTime(izinSahibi.getIzinHakEdisTarihi());
 		int girisYil = cal.get(Calendar.YEAR);
+		PersonelIzin personelIzin = null;
+		HashMap map = new HashMap();
+		boolean kidemYok = yeniBakiyeOlustur && girisYil <= yil && kidemYil == 0;
+		if (kidemYok)
+			logger.debug("");
+
+		int yillikIzinMaxBakiye = PersonelIzin.getYillikIzinMaxBakiye();
+
 		cal.set(Calendar.YEAR, yil);
 		Date izinHakEttigiTarihi = PdksUtil.getDate((Date) cal.getTime().clone());
-		boolean tarihGelmedi = kidemYil > 0 && PdksUtil.tarihKarsilastirNumeric(izinHakEttigiTarihi, islemTarihi) == 1;
+
+		boolean tarihGelmedi = PdksUtil.tarihKarsilastirNumeric(izinHakEttigiTarihi, islemTarihi) == 1;
 		IzinHakedisHakki izinHakedisHakki = null;
 		int genelDirektorIzinSuresi = 0;
 		String genelDirektorIzinSuresiPrm = getParameterKey("genelDirektorIzinSuresi");
@@ -9688,11 +9702,14 @@ public class OrtakIslemler implements Serializable {
 		if (izinTipi != null) {
 			if (yillikIzinMaxBakiye < 0 && (kidemYil == 0 || tarihGelmedi)) {
 				kidemEkle = kidemYil == 0;
-				kidemMap.put(Calendar.YEAR, kidemYil + 1);
+				if (tarihGelmedi && yeniBakiyeOlustur)
+					kidemYil++;
+				kidemMap.put(Calendar.YEAR, kidemYil);
 				if (kidemEkle) {
 					kidemYil++;
 					cal.setTime(izinHakEttigiTarihi);
-					cal.add(Calendar.YEAR, 1);
+					if (yil == girisYil)
+						cal.add(Calendar.YEAR, 1);
 					izinHakEttigiTarihi = cal.getTime();
 				}
 
@@ -9701,27 +9718,24 @@ public class OrtakIslemler implements Serializable {
 			if (kidemYil > 0 || kidemEkle) {
 				if (!tarihGelmedi)
 					izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
-				if (tarihGelmedi) {
+				else {
 					if (yillikIzinMaxBakiye > 0) {
 						izinHakedisHakki = new IzinHakedisHakki();
 						izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
 					} else
-						izinHakedisHakki = getIzinHakedis(kidemYil + 1, hakedisMap, session, yasTipi, suaDurum, departman, map);
+						izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
 				}
 
 				if (izinHakedisHakki != null && izinTipi != null) {
 					Date baslangicZamani = PdksUtil.getDate(cal.getTime());
 					cal.setTime(izinSahibi.getIzinHakEdisTarihi());
-					cal.set(Calendar.YEAR, (kidemEkle && yeniBakiyeOlustur ? 1 : 0) + yil);
+					cal.set(Calendar.YEAR, yil);
+					if (girisYil == yil)
+						cal.add(Calendar.YEAR, 1);
 					izinHakEttigiTarihi = PdksUtil.getDate(cal.getTime());
-					Date kidemTarih = yeniBakiyeOlustur == false || tarihGelmedi ? izinHakEttigiTarihi : PdksUtil.getDate(bugun);
+					Date kidemTarih = kidemYok || yeniBakiyeOlustur == false || tarihGelmedi ? izinHakEttigiTarihi : PdksUtil.getDate(bugun);
 					kidemMap = getTarihMap(izinSahibi != null ? izinSahibi.getIzinHakEdisTarihi() : null, kidemTarih);
 					kidemYil = kidemMap.get(Calendar.YEAR);
-
-					if (kidemEkle) {
-						++kidemYil;
-
-					}
 					HashMap<Integer, Integer> yasMap = getTarihMap(izinSahibi != null ? izinSahibi.getDogumTarihi() : null, kidemTarih);
 					int yasYeni = yasMap.get(Calendar.YEAR);
 					if (yasYeni != yas) {
@@ -9732,13 +9746,15 @@ public class OrtakIslemler implements Serializable {
 							yasTipi = IzinHakedisHakki.YAS_TIPI_YASLI;
 						izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
 					}
-
-					String aciklama = String.valueOf(kidemYil);
+ 					String aciklama = String.valueOf(kidemYil);
 					if (genelDirektorIzinSuresi != 0)
 						izinHakedisHakki.setIzinSuresi(genelDirektorIzinSuresi);
 					double izinSuresi = tarihGelmedi && yillikIzinMaxBakiye > 0 ? yillikIzinMaxBakiye : (double) izinHakedisHakki.getIzinSuresi();
-
-					personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+					try {
+						personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					if (personelIzin != null)
 						flush = personelIzin.isCheckBoxDurum();
 					Date oncekiHakedisTarihi = PdksUtil.addTarih(izinHakEttigiTarihi, Calendar.YEAR, -1);
@@ -9783,7 +9799,7 @@ public class OrtakIslemler implements Serializable {
 			cal.setTime(izinHakEttigiTarihi);
 			// cal.add(Calendar.YEAR, -1);
 			Date hakedisTarihi = cal.getTime();
-			boolean yeniKidemBakiyeOlustur = yeniBakiyeOlustur && bugun.after(hakedisTarihi);
+			boolean yeniKidemBakiyeOlustur = yeniBakiyeOlustur && bugun.after(hakedisTarihi) && kidemYok == false;
 			if (yeniKidemBakiyeOlustur) {
 				if (((tarihGelmedi == false || yillikIzinMaxBakiye < 0) && kidemYil > 0) || yil == girisYil)
 					++yil;
@@ -9805,7 +9821,11 @@ public class OrtakIslemler implements Serializable {
 					double izinSuresi = (double) izinHakedisHakki.getIzinSuresi();
 					if (genelDirektorIzinSuresi != 0)
 						izinSuresi = genelDirektorIzinSuresi;
-					personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+					try {
+						personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 					if (flush == false && personelIzin != null)
 						flush = personelIzin.isCheckBoxDurum();
 					if (personelIzin == null) {
@@ -11374,6 +11394,8 @@ public class OrtakIslemler implements Serializable {
 			return kidemMap;
 		int kidemYili = 0;
 		String izinERPUpdate = getParameterKey("izinERPUpdate");
+		HashMap<String, Object> veriMap = new HashMap<String, Object>();
+		User sistemYonetici = getSistemAdminUser(session);
 		if (!izinERPUpdate.equals("1") || personel.getSirket().getDepartman().getIzinGirilebilir()) {
 
 			if (personel.getIzinHakEdisTarihi() != null) {
@@ -11394,7 +11416,18 @@ public class OrtakIslemler implements Serializable {
 							ekle = Boolean.TRUE;
 						if (personel.getIzinHakEdisTarihi().before(bugun)) {
 							boolean suaDurum = personel.isSuaOlur();
-							izinTipi = senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, yeniBakiyeOlustur);
+							// izinTipi = senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, yeniBakiyeOlustur);
+							veriMap.put("izinSahibi", personel);
+							veriMap.put("sistemYonetici", sistemYonetici);
+							veriMap.put("suaDurum", suaDurum);
+							veriMap.put("yil", buYil);
+							veriMap.put("kidemYil", yil);
+							veriMap.put("hakedisMap", hakedisMap);
+							veriMap.put("user", user);
+							veriMap.put("izinTipi", izinTipi);
+							veriMap.put("islemTarihi", bugun);
+							veriMap.put("yeniBakiyeOlustur", yeniBakiyeOlustur);
+							izinTipi = senelikIzinOlustur(veriMap, session);
 							if (gecmis && izinTipi != null) {
 								cal.setTime(bugun);
 								cal.add(Calendar.MONTH, -2);
@@ -11431,9 +11464,20 @@ public class OrtakIslemler implements Serializable {
 									// kidemMap = getTarihMap(personel != null ?
 									// personel.getIzinHakEdisTarihi() : null,
 									// bugun);
-									if (personel.getIzinHakEdisTarihi().before(bugun) && yil > 0) {
+									if (personel.getIzinHakEdisTarihi().before(bugun) && yil > 1) {
 										// int kidemYil = yil - 1;
-										senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, Boolean.FALSE);
+										// senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, Boolean.FALSE);
+										veriMap.put("izinSahibi", personel);
+										veriMap.put("suaDurum", suaDurum);
+										veriMap.put("yil", buYil);
+										veriMap.put("kidemYil", yil);
+										veriMap.put("hakedisMap", hakedisMap);
+										veriMap.put("user", user);
+										veriMap.put("izinTipi", izinTipi);
+										veriMap.put("islemTarihi", bugun);
+										veriMap.put("yeniBakiyeOlustur", Boolean.FALSE);
+										veriMap.put("sistemYonetici", sistemYonetici);
+										izinTipi = senelikIzinOlustur(veriMap, session);
 									}
 
 								}
