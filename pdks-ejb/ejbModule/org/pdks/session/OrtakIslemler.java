@@ -114,6 +114,7 @@ import org.pdks.entity.PersonelFazlaMesai;
 import org.pdks.entity.PersonelGeciciYonetici;
 import org.pdks.entity.PersonelHareketIslem;
 import org.pdks.entity.PersonelIzin;
+import org.pdks.entity.PersonelIzinDetay;
 import org.pdks.entity.PersonelIzinOnay;
 import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.PersonelView;
@@ -3758,7 +3759,7 @@ public class OrtakIslemler implements Serializable {
 				String hakedisTarih = "convert(datetime, '" + PdksUtil.convertToDateString(hakedisTarihi, "yyyyMMdd") + "', 112)";
 				cal.add(Calendar.YEAR, -1);
 				Date oncekiHakEdisTarihi = cal.getTime();
-				if (bugun.after(oncekiHakEdisTarihi)) {
+				if (bugun.after(oncekiHakEdisTarihi) && !donem.after(hakedisTarihi)) {
 					String aciklama = bakiyeIzinTipi != null ? bakiyeIzinTipi.getIzinTipiTanim().getAciklama() : "Bakiye İzin";
 					if (kidemYil >= 0)
 						aciklama = kidemYil > 0 ? String.valueOf(kidemYil) : "";
@@ -9611,6 +9612,8 @@ public class OrtakIslemler implements Serializable {
 	 */
 	@Transactional
 	public IzinTipi senelikIzinOlustur(Personel izinSahibi, boolean suaDurum, int yil, int kidemYil, HashMap<String, IzinTipi> izinTipiMap, HashMap<String, IzinHakedisHakki> hakedisMap, User user, Session session, IzinTipi izinTipi, Date islemTarihi, boolean yeniBakiyeOlustur) throws Exception {
+		if (yeniBakiyeOlustur == false)
+			logger.debug(yil + " " + kidemYil);
 		int sistemKontrolYili = PdksUtil.getSistemBaslangicYili() - 1;
 		Calendar cal = Calendar.getInstance();
 		Date bugun = PdksUtil.getDate(cal.getTime());
@@ -9758,7 +9761,10 @@ public class OrtakIslemler implements Serializable {
 								personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 								personelIzin.setAciklama(aciklama);
 								personelIzin.setBitisZamani(izinHakEttigiTarihi);
-								pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
+								if (personelIzin.getBaslangicZamani().after(izinHakEttigiTarihi))
+									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
+								else
+									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
 
 							}
 						}
@@ -9803,18 +9809,23 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (personelIzin.getId() == null)
 						personelIzin.setOlusturanUser(sistemYonetici);
-					if (personelIzin.getIzinKagidiGeldi() == null && kidemYil > 0) {
-						if (izinSuresi > 0 && izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
-							if (personelIzin.getId() != null) {
-								if (user != null)
-									personelIzin.setGuncelleyenUser(user);
-								personelIzin.setGuncellemeTarihi(new Date());
+					if (yeniBakiyeOlustur || personelIzin.getId() != null) {
+						if (personelIzin.getIzinKagidiGeldi() == null && kidemYil > 0) {
+							if (izinSuresi > 0 && izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
+								if (personelIzin.getId() != null) {
+									if (user != null)
+										personelIzin.setGuncelleyenUser(user);
+									personelIzin.setGuncellemeTarihi(new Date());
+								}
+								personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
+								personelIzin.setIzinSuresi(izinSuresi);
+								personelIzin.setBitisZamani(izinHakEttigiTarihi);
+								personelIzin.setAciklama(aciklama);
+								if (personelIzin.getBaslangicZamani().after(izinHakEttigiTarihi))
+									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
+								else
+									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
 							}
-							personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
-							personelIzin.setIzinSuresi(izinSuresi);
-							personelIzin.setBitisZamani(izinHakEttigiTarihi);
-							personelIzin.setAciklama(aciklama);
-							pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
 						}
 					}
 				}
@@ -11407,9 +11418,9 @@ public class OrtakIslemler implements Serializable {
 									// kidemMap = getTarihMap(personel != null ?
 									// personel.getIzinHakEdisTarihi() : null,
 									// bugun);
-									if (personel.getIzinHakEdisTarihi().before(bugun)) {
-										int kidemYil = yil - 1;
-										senelikIzinOlustur(personel, suaDurum, buYil, kidemYil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, Boolean.FALSE);
+									if (personel.getIzinHakEdisTarihi().before(bugun) && yil > 0) {
+										// int kidemYil = yil - 1;
+										senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, Boolean.FALSE);
 									}
 
 								}
@@ -12917,13 +12928,13 @@ public class OrtakIslemler implements Serializable {
 					table.addCell(PDFITextUtils.getPdfCell("Hizmete Ara Verme", fontH, Element.ALIGN_CENTER));
 					table.addCell(PDFITextUtils.getPdfCell("Diğer Nedenler", fontH, Element.ALIGN_CENTER));
 					int adet = bakiyeIzin.getHarcananDigerIzinler() != null && !bakiyeIzin.getHarcananDigerIzinler().isEmpty() ? bakiyeIzin.getHarcananDigerIzinler().size() : 0;
-					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getDevirIzin() == false ? bakiyeYil : "", font, Element.ALIGN_CENTER, adet));
+					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getDevirIzin() != null && bakiyeIzin.getDevirIzin() == false ? bakiyeYil : "", font, Element.ALIGN_CENTER, adet));
 					table.addCell(PDFITextUtils.getPdfCellRowspan(bitisZamani != null ? PdksUtil.convertToDateString(bitisZamani, pattern) : "", font, Element.ALIGN_CENTER, adet));
 					for (int i = 0; i < 6; i++)
 						table.addCell(PDFITextUtils.getPdfCellRowspan("", font, Element.ALIGN_CENTER, adet));
 					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getDevirIzin() == false ? PdksUtil.convertToDateString(bakiyeIzin.getBitisZamani(), pattern) : "", font, Element.ALIGN_CENTER, adet));
 					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getAciklama(), font, Element.ALIGN_CENTER, adet));
-					table.addCell(PDFITextUtils.getPdfCellRowspan(nf.format(bakiyeIzin.getIzinSuresi()), font, Element.ALIGN_CENTER, adet));
+					table.addCell(PDFITextUtils.getPdfCellRowspan(bakiyeIzin.getIzinSuresi() != 0.0d ? nf.format(bakiyeIzin.getIzinSuresi()) : "", font, Element.ALIGN_CENTER, adet));
 					if (adet > 0) {
 
 						boolean ilkSatir = true;
@@ -13257,6 +13268,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public HashMap<Long, TempIzin> senelikIzinListesiOlustur(ArrayList<String> sicilNoList, Date xDonemSonu, Sirket gelenSirket, boolean harcananIzinlerHepsi, boolean personelKontrol, boolean iptalIzinleriGetir, Session session) {
 		Sirket xSirket = null;
+		boolean tarihBazli = xDonemSonu != null;
 		if (gelenSirket != null && gelenSirket.getId() != null) {
 			HashMap fields = new HashMap();
 			fields.put("id", gelenSirket.getId());
@@ -13354,12 +13366,24 @@ public class OrtakIslemler implements Serializable {
 		}
 		Date tarihKontrol = xDonemSonu != null ? xDonemSonu : PdksUtil.getDate(new Date());
 		List<Long> hakEdilmeyenTarihList = new ArrayList<Long>();
+		List<PersonelIzin> hakedilmeyenIzinler = new ArrayList<PersonelIzin>();
+		List<Long> hakedisIdList = new ArrayList<Long>();
 		for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
 			PersonelIzin personelIzin = (PersonelIzin) iterator.next();
 			Date bitisZamani = personelIzin.getBitisZamani();
-			if (xDonemSonu != null && bitisZamani.after(xDonemSonu))
+			if (xDonemSonu != null && bitisZamani.after(xDonemSonu)) {
+				if (tarihBazli) {
+					double kullanilanIzin = personelIzin.getHarcananIzin();
+					if (kullanilanIzin != 0.0d) {
+						PersonelIzin izin = (PersonelIzin) personelIzin.clone();
+						izin.setIzinSuresi(0.0d);
+						hakedilmeyenIzinler.add(izin);
+						izin.setDevirIzin(Boolean.TRUE);
+					}
+
+				}
 				iterator.remove();
-			else {
+			} else {
 				if (bitisZamani.after(tarihKontrol)) {
 					Long perId = personelIzin.getPdksPersonel().getId();
 					if (hakEdilmeyenTarihList.contains(perId)) {
@@ -13376,6 +13400,43 @@ public class OrtakIslemler implements Serializable {
 			}
 
 		}
+		if (!hakedisIdList.isEmpty()) {
+			parametreMap.clear();
+			parametreMap.put("h", hakedisIdList);
+			StringBuffer sb = new StringBuffer();
+			sb.append("SELECT DISTINCT H.*  FROM " + PersonelIzinDetay.TABLE_NAME + " D  WITH(nolock) ");
+			sb.append(" INNER JOIN " + PersonelIzin.TABLE_NAME + " H ON  H." + PersonelIzin.COLUMN_NAME_ID + "=D." + PersonelIzinDetay.COLUMN_NAME_HAKEDIS_IZIN);
+			sb.append(" INNER JOIN " + PersonelIzin.TABLE_NAME + " I ON  I." + PersonelIzin.COLUMN_NAME_ID + "=D." + PersonelIzinDetay.COLUMN_NAME_IZIN);
+			sb.append(" AND I." + PersonelIzin.COLUMN_NAME_IZIN_DURUMU + " NOT IN (8,9)");
+			sb.append(" WHERE D." + PersonelIzinDetay.COLUMN_NAME_HAKEDIS_IZIN + " :h ");
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			try {
+				List<PersonelIzin> list = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelIzin.class);
+				TreeMap<Long, PersonelIzin> map1 = new TreeMap<Long, PersonelIzin>();
+				for (PersonelIzin hakEdisIzin : list) {
+					Long key = hakEdisIzin.getId();
+					if (!map1.containsKey(key)) {
+						PersonelIzin izin = (PersonelIzin) hakEdisIzin.clone();
+						izin.setId(null);
+						izin.setIzinSuresi(0.0d);
+						map1.put(key, izin);
+						hakedilmeyenIzinler.add(izin);
+						izin.setDevirIzin(Boolean.TRUE);
+					}
+
+				}
+				map1 = null;
+				list = null;
+			} catch (Exception e) {
+
+				logger.error("Pdks hata in : \n");
+				e.printStackTrace();
+				logger.error("Pdks hata out : " + e.getMessage());
+			}
+		}
+		if (!hakedilmeyenIzinler.isEmpty())
+			izinList.addAll(hakedilmeyenIzinler);
 		// if (!izinList.isEmpty())
 		// izinList = PdksUtil.sortListByAlanAdi(izinList, "baslangicZamani",
 		// Boolean.TRUE);
@@ -13404,9 +13465,8 @@ public class OrtakIslemler implements Serializable {
 				tempIzin.setKullanilanIzin(0);
 				tempIzin.setToplamBakiyeIzin(0);
 				tempIzin.setYillikIzinler(new ArrayList<PersonelIzin>());
-
 			}
-			if ((iptalIzinleriGetir && personelIzin.getIzinKagidiGeldi() != null) || personelIzin.getIzinSuresi() > 0 || (personelIzin.getHarcananDigerIzinler() != null && !personelIzin.getHarcananDigerIzinler().isEmpty()))
+			if (personelIzin.getDevirIzin() || (iptalIzinleriGetir && personelIzin.getIzinKagidiGeldi() != null) || personelIzin.getIzinSuresi() > 0 || (personelIzin.getHarcananDigerIzinler() != null && !personelIzin.getHarcananDigerIzinler().isEmpty()))
 				tempIzin.getYillikIzinler().add(personelIzin);
 			// session.refresh(personelIzin);
 			personelIzin.setKontrolIzin(null);
@@ -13414,7 +13474,7 @@ public class OrtakIslemler implements Serializable {
 			tempIzin.setToplamKalanIzin(tempIzin.getToplamKalanIzin() + personelIzin.getKalanIzin());
 			tempIzin.setKullanilanIzin(tempIzin.getKullanilanIzin() + personelIzin.getHarcananIzin());
 			tempIzin.setToplamBakiyeIzin(tempIzin.getToplamBakiyeIzin() + personelIzin.getIzinSuresi());
-			if (personelIzin.getIzinKagidiGeldi() == null || iptalIzinleriGetir)
+			if (personelIzin.getDevirIzin() || personelIzin.getIzinKagidiGeldi() == null || iptalIzinleriGetir)
 				tempIzin.getIzinler().add(personelIzin.getId());
 			izinMap.put(perId, tempIzin);
 		}

@@ -135,6 +135,14 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	}
 
 	public String izinKarti(TempIzin izin) {
+		List<Long> idList = new ArrayList<Long>();
+		if (gelecekIzinGoster == false) {
+			for (PersonelIzin bakiye : izin.getYillikIzinler()) {
+				if (bakiye.getDevirIzin() && bakiye.getIzinSuresi().doubleValue() == 0.0d)
+					idList.add(bakiye.getId());
+
+			}
+		}
 		updateTempIzin = izin;
 		suaVar = Boolean.FALSE;
 		HashMap fields = new HashMap();
@@ -145,10 +153,19 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 			else
 				fields.put("baslangicZamani>", PdksUtil.getBakiyeYil());
 		}
-
+		List<PersonelIzin> bakiyeIzinler = new ArrayList<PersonelIzin>();
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> bakiyeIzinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+		List<PersonelIzin> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+		for (PersonelIzin personelIzin : list) {
+			if (idList.contains(personelIzin.getId())) {
+				PersonelIzin personelIzin2 = (PersonelIzin) personelIzin.clone();
+				personelIzin2.setIzinSuresi(0.0d);
+				bakiyeIzinler.add(personelIzin2);
+			} else
+				bakiyeIzinler.add(personelIzin);
+
+		}
 		fields = null;
 		if (gelecekIzinGoster)
 			bakiyeIzinler = borcluIzinleriSifirla(bakiyeIzinler);
@@ -168,7 +185,15 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	public String pdfAktar(TempIzin izin) {
 		updateTempIzin = izin;
 		suaVar = Boolean.FALSE;
+		List<Long> idList = new ArrayList<Long>();
+		if (gelecekIzinGoster == false) {
+			for (PersonelIzin bakiye : izin.getYillikIzinler()) {
+				if (bakiye.getDevirIzin() && bakiye.getIzinSuresi().doubleValue() == 0.0d)
+					idList.add(bakiye.getId());
 
+			}
+		}
+		List<PersonelIzin> bakiyeIzinler = new ArrayList<PersonelIzin>();
 		HashMap fields = new HashMap();
 		fields.put("id", izin.getIzinler().clone());
 		if (izin.getPersonel().getSirket().getDepartman().isAdminMi()) {
@@ -180,7 +205,16 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> bakiyeIzinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+		List<PersonelIzin> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+		for (PersonelIzin personelIzin : list) {
+			if (idList.contains(personelIzin.getId())) {
+				PersonelIzin personelIzin2 = (PersonelIzin) personelIzin.clone();
+				personelIzin2.setIzinSuresi(0.0d);
+				bakiyeIzinler.add(personelIzin2);
+			} else
+				bakiyeIzinler.add(personelIzin);
+
+		}
 		if (gelecekIzinGoster)
 			bakiyeIzinler = borcluIzinleriSifirla(bakiyeIzinler);
 		for (PersonelIzin personelIzin : bakiyeIzinler) {
@@ -190,13 +224,27 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 			}
 		}
 		ArrayList<PersonelIzin> yillikIzinler = (ArrayList<PersonelIzin>) PdksUtil.sortListByAlanAdi(bakiyeIzinler, "baslangicZamani", Boolean.FALSE);
+		bakiyeIzinler.clear();
 		for (Iterator iterator = yillikIzinler.iterator(); iterator.hasNext();) {
 			PersonelIzin personelIzin = (PersonelIzin) iterator.next();
+			if (idList.contains(personelIzin.getId())) {
+				PersonelIzin personelIzin2 = (PersonelIzin) personelIzin.clone();
+				personelIzin2.setIzinSuresi(0.0d);
+				bakiyeIzinler.add(personelIzin2);
+			} else
+				bakiyeIzinler.add(personelIzin);
 			personelIzin.setIslemYapildi(iterator.hasNext());
 		}
-		updateTempIzin.setYillikIzinler(yillikIzinler);
+		updateTempIzin.setYillikIzinler((ArrayList<PersonelIzin>) bakiyeIzinler);
 		updateTempIzin.bakiyeHesapla();
 		String sayfa = pdfTekAktar(updateTempIzin);
+		if (!idList.isEmpty()) {
+			for (PersonelIzin personelIzin : bakiyeIzinler) {
+				if (idList.contains(personelIzin.getId()))
+					personelIzin.setDevirIzin(Boolean.TRUE);
+
+			}
+		}
 		return sayfa;
 	}
 
@@ -816,6 +864,7 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 				izinMap = ortakIslemler.senelikIzinListesiOlustur(sicilNoList, gecerlilikTarih, sirket, harcananIzinlerHepsi, Boolean.TRUE, iptalIzinleriGetir, session);
+
 			}
 
 		}
@@ -1825,6 +1874,14 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 	public void izinGoster(TempIzin tempIzin) {
 		izinTipiList = null;
+		List<Long> idList = new ArrayList<Long>();
+		if (gelecekIzinGoster == false) {
+			for (PersonelIzin bakiye : tempIzin.getYillikIzinler()) {
+				if (bakiye.getDevirIzin() && bakiye.getIzinSuresi().doubleValue() == 0.0d)
+					idList.add(bakiye.getId());
+
+			}
+		}
 		Personel pdksPersonel = tempIzin.getPersonel();
 		setUpdateTempIzin(tempIzin);
 		HashMap fields = new HashMap();
@@ -1838,8 +1895,17 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> izinList1 = tempIzin.getIzinler().isEmpty() ? new ArrayList<PersonelIzin>() : pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+		List<PersonelIzin> list = tempIzin.getIzinler().isEmpty() ? new ArrayList<PersonelIzin>() : pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+		List<PersonelIzin> izinList1 = new ArrayList<PersonelIzin>();
+		for (PersonelIzin personelIzin : list) {
+			if (idList.contains(personelIzin.getId())) {
+				PersonelIzin personelIzin2 = (PersonelIzin) personelIzin.clone();
+				personelIzin2.setIzinSuresi(0.0d);
+				izinList1.add(personelIzin2);
+			} else
+				izinList1.add(personelIzin);
 
+		}
 		suaVar = Boolean.FALSE;
 		if (gelecekIzinGoster)
 			izinList1 = borcluIzinleriSifirla(izinList1);

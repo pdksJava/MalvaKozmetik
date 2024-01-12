@@ -99,7 +99,7 @@ public class TempIzin implements Serializable {
 				++sayfaNo;
 				bakiyeIzin.setSayfaNo(sayfaNo);
 				bakiyeIzin.setBirOncekiHakedisTarih(onceki);
-				if (bakiyeIzin.getDevirIzin() == false)
+				if (bakiyeIzin.getDevirIzin() != null && bakiyeIzin.getDevirIzin() == false)
 					onceki = bakiyeIzin.getBitisZamani();
 				List<PersonelIzin> harcananDigerIzinler = new ArrayList<PersonelIzin>();
 				try {

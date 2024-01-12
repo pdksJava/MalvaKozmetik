@@ -87,7 +87,7 @@ public class PersonelIzin extends BaseObject {
 
 	private IzinTipi izinTipi;
 
-	private Boolean izinKagidiGeldi, yilbasi = Boolean.FALSE,devirIzin;
+	private Boolean izinKagidiGeldi, yilbasi = Boolean.FALSE, devirIzin;
 
 	private PersonelIzin kontrolIzin, orjIzin;
 
@@ -824,14 +824,21 @@ public class PersonelIzin extends BaseObject {
 		this.referansERP = referansERP;
 	}
 
-	 
 	@Transient
 	public Boolean getDevirIzin() {
+		if (devirIzin == null)  
+			try {
+				devirIzin = baslangicZamani.getTime() == PdksUtil.getBakiyeYil().getTime();
+			} catch (Exception e) {
+ 			}
+			
+		 
 		return devirIzin;
 	}
 
 	/**
-	 * @param devirIzin the devirIzin to set
+	 * @param devirIzin
+	 *            the devirIzin to set
 	 */
 	public void setDevirIzin(Boolean devirIzin) {
 		this.devirIzin = devirIzin;

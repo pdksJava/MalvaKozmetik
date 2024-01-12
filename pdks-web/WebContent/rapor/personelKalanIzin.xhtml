@@ -430,7 +430,7 @@
 									<f:facet name="header">
 										<h:outputText value="" />
 									</f:facet>
-									<ui:fragment rendered="#{izinler.toplamBakiyeIzin>0}">
+									<ui:fragment rendered="#{izinler.toplamBakiyeIzin!=0}">
 										<TABLE>
 											<TR>
 												<ui:fragment rendered="#{izinler.izinler!=null}">
@@ -647,7 +647,7 @@
 							</f:facet>
 							<TABLE>
 								<TR>
-									<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+									<ui:fragment rendered="#{kalanIzinler.devirIzin==false and ( authenticatedUser.admin or authenticatedUser.IK)}">
 
 										<TD nowrap="nowrap"><ui:fragment>
 
@@ -716,7 +716,9 @@
 							<f:facet name="header">
 								<h:outputText value="Toplam İzin Süresi" />
 							</f:facet>
-							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(kalanIzinler.izinSuresi)} Gün" />
+							<ui:fragment rendered="#{kalanIzinler.izinSuresi!=0}">
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(kalanIzinler.izinSuresi)} Gün" />
+							</ui:fragment>
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
