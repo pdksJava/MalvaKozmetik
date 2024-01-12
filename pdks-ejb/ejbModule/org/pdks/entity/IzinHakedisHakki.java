@@ -133,6 +133,18 @@ public class IzinHakedisHakki extends BaseObject {
 	}
 
 	@Transient
+	public static String getHakedisKey(int kidemYil, int yasTipi, boolean suaDurum, Departman departman) {
+		String hakedisKey = departman.getDepartmanTanim().getKodu() + "_" + (suaDurum ? 1 : 0) + "_" + kidemYil + "_" + yasTipi;
+		return hakedisKey;
+	}
+
+	@Transient
+	public String getHakedisKey() {
+		String hakedisKey = getHakedisKey(kidemYili, yasTipi, suaDurum, departman);
+		return hakedisKey;
+	}
+
+	@Transient
 	public String getYasTipiStr() {
 		return getYasTipiStr(yasTipi, departman, this.isSuaDurum());
 	}

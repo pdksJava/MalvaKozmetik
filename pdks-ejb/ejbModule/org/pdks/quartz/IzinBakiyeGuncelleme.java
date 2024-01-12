@@ -26,6 +26,7 @@ import org.jboss.seam.annotations.async.Expiration;
 import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
 import org.jboss.seam.faces.Renderer;
+import org.pdks.entity.IzinHakedisHakki;
 import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Parameter;
 import org.pdks.entity.Personel;
@@ -361,6 +362,8 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		HashMap dataMap = new HashMap();
 		int sayac = 0;
 		boolean logGoster = PdksUtil.getUrl().indexOf("localhost") >= 0;
+		HashMap<String, IzinHakedisHakki> hakedisMap = ortakIslemler.getHakedisMap(userSession);
+
 		while (!list.isEmpty() && sayac < 10) {
 			sayac++;
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
@@ -380,7 +383,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 						if (sicilNo != null) {
 							if (logGoster)
 								logger.debug(sicilNo);
-							ortakIslemler.getKidemHesabi(null, pdksPersonel, null, null, user, userSession, dataMap, gecmisHesapla, Boolean.TRUE);
+							ortakIslemler.getKidemHesabi(null, pdksPersonel, null, hakedisMap, user, userSession, dataMap, gecmisHesapla, Boolean.TRUE);
 						}
 
 					}

@@ -9746,7 +9746,7 @@ public class OrtakIslemler implements Serializable {
 							yasTipi = IzinHakedisHakki.YAS_TIPI_YASLI;
 						izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
 					}
- 					String aciklama = String.valueOf(kidemYil);
+					String aciklama = String.valueOf(kidemYil);
 					if (genelDirektorIzinSuresi != 0)
 						izinHakedisHakki.setIzinSuresi(genelDirektorIzinSuresi);
 					double izinSuresi = tarihGelmedi && yillikIzinMaxBakiye > 0 ? yillikIzinMaxBakiye : (double) izinHakedisHakki.getIzinSuresi();
@@ -9883,7 +9883,6 @@ public class OrtakIslemler implements Serializable {
 	 */
 	private IzinHakedisHakki getIzinHakedis(int kidemYil, HashMap<String, IzinHakedisHakki> hakedisMap, Session session, int yasTipi, boolean suaDurum, Departman departman, HashMap map) {
 		IzinHakedisHakki izinHakedisHakki;
-		String hakedisKey;
 		if (hakedisMap == null) {
 			map.clear();
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -9895,7 +9894,7 @@ public class OrtakIslemler implements Serializable {
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			izinHakedisHakki = (IzinHakedisHakki) pdksEntityController.getObjectByInnerObject(map, IzinHakedisHakki.class);
 		} else {
-			hakedisKey = departman.getDepartmanTanim().getKodu() + "_" + (suaDurum ? 1 : 0) + "_" + kidemYil + "_" + yasTipi;
+			String hakedisKey = IzinHakedisHakki.getHakedisKey(kidemYil, yasTipi, suaDurum, departman);
 			izinHakedisHakki = hakedisMap.get(hakedisKey);
 		}
 		return izinHakedisHakki;
@@ -11383,6 +11382,8 @@ public class OrtakIslemler implements Serializable {
 		if (dataMap == null)
 			dataMap = new HashMap();
 		personel.setIzinBakiyeMap(new HashMap<String, Double>());
+		if (hakedisMap == null)
+			hakedisMap = getHakedisMap(session);
 
 		String departmanKey = personel.getSirket().getDepartman().getId() + "_";
 		Calendar cal = Calendar.getInstance();
@@ -11394,8 +11395,6 @@ public class OrtakIslemler implements Serializable {
 			return kidemMap;
 		int kidemYili = 0;
 		String izinERPUpdate = getParameterKey("izinERPUpdate");
-		HashMap<String, Object> veriMap = new HashMap<String, Object>();
-		User sistemYonetici = getSistemAdminUser(session);
 		if (!izinERPUpdate.equals("1") || personel.getSirket().getDepartman().getIzinGirilebilir()) {
 
 			if (personel.getIzinHakEdisTarihi() != null) {
@@ -11415,6 +11414,8 @@ public class OrtakIslemler implements Serializable {
 						else
 							ekle = Boolean.TRUE;
 						if (personel.getIzinHakEdisTarihi().before(bugun)) {
+							HashMap<String, Object> veriMap = new HashMap<String, Object>();
+							User sistemYonetici = getSistemAdminUser(session);
 							boolean suaDurum = personel.isSuaOlur();
 							// izinTipi = senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, yeniBakiyeOlustur);
 							veriMap.put("izinSahibi", personel);
@@ -11467,16 +11468,12 @@ public class OrtakIslemler implements Serializable {
 									if (personel.getIzinHakEdisTarihi().before(bugun) && yil > 1) {
 										// int kidemYil = yil - 1;
 										// senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, Boolean.FALSE);
-										veriMap.put("izinSahibi", personel);
 										veriMap.put("suaDurum", suaDurum);
 										veriMap.put("yil", buYil);
 										veriMap.put("kidemYil", yil);
-										veriMap.put("hakedisMap", hakedisMap);
-										veriMap.put("user", user);
 										veriMap.put("izinTipi", izinTipi);
 										veriMap.put("islemTarihi", bugun);
 										veriMap.put("yeniBakiyeOlustur", Boolean.FALSE);
-										veriMap.put("sistemYonetici", sistemYonetici);
 										izinTipi = senelikIzinOlustur(veriMap, session);
 									}
 
@@ -11566,6 +11563,22 @@ public class OrtakIslemler implements Serializable {
 		// session.getTransaction().commit();
 
 		return kidemMap;
+	}
+
+	/**
+	 * @param session
+	 * @return
+	 */
+	public HashMap<String, IzinHakedisHakki> getHakedisMap(Session session) {
+		HashMap<String, IzinHakedisHakki> hakedisMap = new HashMap<String, IzinHakedisHakki>();
+		HashMap fields = new HashMap();
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<IzinHakedisHakki> list = pdksEntityController.getObjectByInnerObjectList(fields, IzinHakedisHakki.class);
+		for (IzinHakedisHakki izinHakedisHakki : list)
+			hakedisMap.put(izinHakedisHakki.getHakedisKey(), izinHakedisHakki);
+		list = null;
+		return hakedisMap;
 	}
 
 	/**
