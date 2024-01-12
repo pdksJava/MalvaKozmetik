@@ -9600,20 +9600,11 @@ public class OrtakIslemler implements Serializable {
 		return tarihGelmedi;
 	}
 
+ 
 	/**
-	 * @param izinSahibi
-	 * @param suaDurum
-	 * @param yil
-	 * @param kidemYil
-	 * @param izinTipiMap
-	 * @param hakedisMap
-	 * @param user
+	 * @param veriMap
 	 * @param session
-	 * @param izinTipi
-	 * @param bugun
-	 * @param yeniBakiyeOlustur
 	 * @return
-	 * @throws Exception
 	 */
 	@Transactional
 	public IzinTipi senelikIzinOlustur(HashMap<String, Object> veriMap, Session session) {
