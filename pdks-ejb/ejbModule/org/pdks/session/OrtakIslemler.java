@@ -9600,7 +9600,6 @@ public class OrtakIslemler implements Serializable {
 		return tarihGelmedi;
 	}
 
- 
 	/**
 	 * @param veriMap
 	 * @param session
@@ -11356,7 +11355,9 @@ public class OrtakIslemler implements Serializable {
 		return vardiyaGunList;
 	}
 
+	 
 	/**
+	 * @param sistemYonetici
 	 * @param bugun
 	 * @param personel
 	 * @param izinTipiMap
@@ -11369,7 +11370,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public HashMap<Integer, Integer> getKidemHesabi(Date bugun, Personel personel, HashMap<String, IzinTipi> izinTipiMap, HashMap<String, IzinHakedisHakki> hakedisMap, User user, Session session, HashMap dataMap, boolean gecmis, boolean yeniBakiyeOlustur) throws Exception {
+	public HashMap<Integer, Integer> getKidemHesabi(User sistemYonetici, Date bugun, Personel personel, HashMap<String, IzinTipi> izinTipiMap, HashMap<String, IzinHakedisHakki> hakedisMap, User user, Session session, HashMap dataMap, boolean gecmis, boolean yeniBakiyeOlustur) throws Exception {
 		if (dataMap == null)
 			dataMap = new HashMap();
 		personel.setIzinBakiyeMap(new HashMap<String, Double>());
@@ -11406,7 +11407,8 @@ public class OrtakIslemler implements Serializable {
 							ekle = Boolean.TRUE;
 						if (personel.getIzinHakEdisTarihi().before(bugun)) {
 							HashMap<String, Object> veriMap = new HashMap<String, Object>();
-							User sistemYonetici = getSistemAdminUser(session);
+							if (sistemYonetici == null)
+								sistemYonetici = getSistemAdminUser(session);
 							boolean suaDurum = personel.isSuaOlur();
 							// izinTipi = senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, yeniBakiyeOlustur);
 							veriMap.put("izinSahibi", personel);

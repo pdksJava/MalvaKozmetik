@@ -363,7 +363,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		int sayac = 0;
 		boolean logGoster = PdksUtil.getUrl().indexOf("localhost") >= 0;
 		HashMap<String, IzinHakedisHakki> hakedisMap = ortakIslemler.getHakedisMap(userSession);
-
+		User sistemYonetici = ortakIslemler.getSistemAdminUser(userSession);
 		while (!list.isEmpty() && sayac < 10) {
 			sayac++;
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
@@ -383,7 +383,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 						if (sicilNo != null) {
 							if (logGoster)
 								logger.debug(sicilNo);
-							ortakIslemler.getKidemHesabi(null, pdksPersonel, null, hakedisMap, user, userSession, dataMap, gecmisHesapla, Boolean.TRUE);
+							ortakIslemler.getKidemHesabi(sistemYonetici, null, pdksPersonel, null, hakedisMap, user, userSession, dataMap, gecmisHesapla, Boolean.TRUE);
 						}
 
 					}

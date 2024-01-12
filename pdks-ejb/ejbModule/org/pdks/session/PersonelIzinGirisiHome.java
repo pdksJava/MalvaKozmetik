@@ -405,7 +405,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 		try {
 			Personel izinSahibi = masterIzin.getIzinSahibi();
-			HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(izinBaslangicZamani, izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
+			HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(null, izinBaslangicZamani, izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
 			int artiAy = kidemHesabiMap.get(Calendar.YEAR) > 0 ? 0 : 12;
 			HashMap map = new HashMap();
 			map.put("izinSahibi.id =", izinSahibi.getId());
@@ -3394,7 +3394,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					if (bakiyeIzinTip != null) {
 						cal.set(bakiyeYil, 0, 1);
 						Date izinBaslangicZamani = PdksUtil.getDate(cal.getTime());
-						HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(izinBaslangicZamani, izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
+						HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(null, izinBaslangicZamani, izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
 						int izinKidemYil = kidemHesabiMap.containsKey(Calendar.YEAR) ? kidemHesabiMap.get(Calendar.YEAR) : 0;
 						User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
 						ortakIslemler.getBakiyeIzin(sistemAdminUser, izinSahibi, izinBaslangicZamani, bakiyeIzinTip, null, izinKidemYil, session);
@@ -3437,7 +3437,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 				}
 
-				HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(PdksUtil.getDate(personelIzin.getBaslangicZamani()), izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
+				HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(null, PdksUtil.getDate(personelIzin.getBaslangicZamani()), izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
 
 				int izinKidemYil = kidemHesabiMap.containsKey(Calendar.YEAR) ? kidemHesabiMap.get(Calendar.YEAR) : 0;
 
@@ -4594,7 +4594,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				if (guncellenecekIzin == null)
 					getInstance().setIzinSahibi(izinSahibi);
 				try {
-					HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(null, izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
+					HashMap<Integer, Integer> kidemHesabiMap = ortakIslemler.getKidemHesabi(null, null, izinSahibi, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
 					session.flush();
 					setKidemYil(kidemHesabiMap.containsKey(Calendar.YEAR) ? kidemHesabiMap.get(Calendar.YEAR) : 0);
 					setKidemAy(kidemHesabiMap.containsKey(Calendar.MONTH) ? kidemHesabiMap.get(Calendar.MONTH) : 0);

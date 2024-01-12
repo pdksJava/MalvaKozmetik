@@ -411,7 +411,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 						try {
 							pdksEntityController.execSP(map, sb);
 							if (yil > izinHakEdisYil && bugun >= izinHakEdisTarihi)
-								ortakIslemler.getKidemHesabi(null, izinSahibiClone, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
+								ortakIslemler.getKidemHesabi(null, null, izinSahibiClone, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
 							session.flush();
 						} catch (Exception re) {
 							veriMap.get(izinSahibiId).setSecim(Boolean.FALSE);
