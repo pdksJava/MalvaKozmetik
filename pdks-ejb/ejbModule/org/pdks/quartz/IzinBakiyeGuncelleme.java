@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -364,6 +365,13 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		boolean logGoster = PdksUtil.getUrl().indexOf("localhost") >= 0;
 		HashMap<String, IzinHakedisHakki> hakedisMap = ortakIslemler.getHakedisMap(userSession);
 		User sistemYonetici = ortakIslemler.getSistemAdminUser(userSession);
+		LinkedHashMap<String, Object> dataKidemMap = new LinkedHashMap<String, Object>();
+		dataKidemMap.put("sistemYonetici", sistemYonetici);
+		dataKidemMap.put("hakedisMap", hakedisMap);
+		dataKidemMap.put("user", user);
+		dataKidemMap.put("dataMap", dataMap);
+		dataKidemMap.put("gecmis", gecmisHesapla);
+		dataKidemMap.put("yeniBakiyeOlustur", Boolean.TRUE);
 		while (!list.isEmpty() && sayac < 10) {
 			sayac++;
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
@@ -383,7 +391,8 @@ public class IzinBakiyeGuncelleme implements Serializable {
 						if (sicilNo != null) {
 							if (logGoster)
 								logger.debug(sicilNo);
-							ortakIslemler.getKidemHesabi(sistemYonetici, null, pdksPersonel, null, hakedisMap, user, userSession, dataMap, gecmisHesapla, Boolean.TRUE);
+							dataKidemMap.put("personel", pdksPersonel);
+							ortakIslemler.getKidemHesabi(dataKidemMap, userSession);
 						}
 
 					}

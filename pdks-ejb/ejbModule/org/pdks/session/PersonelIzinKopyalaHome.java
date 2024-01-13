@@ -410,9 +410,16 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 						try {
 							pdksEntityController.execSP(map, sb);
-							if (yil > izinHakEdisYil && bugun >= izinHakEdisTarihi)
-								ortakIslemler.getKidemHesabi(null, null, izinSahibiClone, null, null, authenticatedUser, session, null, Boolean.TRUE, Boolean.FALSE);
-							session.flush();
+							if (yil > izinHakEdisYil && bugun >= izinHakEdisTarihi) {
+								LinkedHashMap<String, Object> dataKidemMap = new LinkedHashMap<String, Object>();
+								dataKidemMap.put("sistemYonetici", null);
+ 								dataKidemMap.put("personel", izinSahibiClone);
+ 								dataKidemMap.put("user", authenticatedUser);
+	 							dataKidemMap.put("gecmis", Boolean.TRUE);
+								dataKidemMap.put("yeniBakiyeOlustur", Boolean.FALSE);
+								ortakIslemler.getKidemHesabi(dataKidemMap, session);
+								session.flush();
+							}
 						} catch (Exception re) {
 							veriMap.get(izinSahibiId).setSecim(Boolean.FALSE);
 							re.printStackTrace();

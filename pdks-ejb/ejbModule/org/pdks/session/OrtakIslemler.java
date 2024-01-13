@@ -10334,8 +10334,9 @@ public class OrtakIslemler implements Serializable {
 		}
 
 		if (!izinMap.isEmpty()) {
-
 			for (Long perId : izinMap.keySet()) {
+				if (!vMap.containsKey(perId))
+					continue;
 				List<VardiyaGun> vgList = vMap.get(perId);
 				for (VardiyaGun vardiyaGun : vgList) {
 					if (tatillerMap.containsKey(vardiyaGun.getVardiyaDateStr()))
@@ -11357,20 +11358,22 @@ public class OrtakIslemler implements Serializable {
 
 	 
 	/**
-	 * @param sistemYonetici
-	 * @param bugun
-	 * @param personel
-	 * @param izinTipiMap
-	 * @param hakedisMap
-	 * @param user
+	 * @param dataKidemMap
 	 * @param session
-	 * @param dataMap
-	 * @param gecmis
-	 * @param yeniBakiyeOlustur
 	 * @return
 	 * @throws Exception
 	 */
-	public HashMap<Integer, Integer> getKidemHesabi(User sistemYonetici, Date bugun, Personel personel, HashMap<String, IzinTipi> izinTipiMap, HashMap<String, IzinHakedisHakki> hakedisMap, User user, Session session, HashMap dataMap, boolean gecmis, boolean yeniBakiyeOlustur) throws Exception {
+	public HashMap<Integer, Integer> getKidemHesabi(LinkedHashMap<String, Object> dataKidemMap, Session session) throws Exception {
+		User sistemYonetici = (User) dataKidemMap.get("sistemYonetici");
+		Date bugun = (Date) dataKidemMap.get("bugun");
+		Personel personel = (Personel) dataKidemMap.get("personel");
+		HashMap<String, IzinTipi> izinTipiMap = (HashMap<String, IzinTipi>) dataKidemMap.get("izinTipiMap");
+		HashMap<String, IzinHakedisHakki> hakedisMap = (HashMap<String, IzinHakedisHakki>) dataKidemMap.get("hakedisMap");
+		User user = (User) dataKidemMap.get("user");
+		HashMap dataMap = (HashMap) dataKidemMap.get("dataMap");
+		boolean gecmis = (Boolean) dataKidemMap.get("gecmis");
+		boolean yeniBakiyeOlustur = (Boolean) dataKidemMap.get("yeniBakiyeOlustur");
+
 		if (dataMap == null)
 			dataMap = new HashMap();
 		personel.setIzinBakiyeMap(new HashMap<String, Double>());
