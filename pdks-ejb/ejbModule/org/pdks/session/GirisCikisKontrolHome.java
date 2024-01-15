@@ -3,7 +3,6 @@ package org.pdks.session;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -252,8 +251,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 	private void fillHareketListOlustur() {
 		Calendar cal = Calendar.getInstance();
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
-		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
-		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
+	 	List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		Date oncekiGun = ortakIslemler.tariheGunEkleCikar(cal, date, -1);
 		HashMap map = new HashMap();
 		map.put("pdks=", Boolean.TRUE);
@@ -300,15 +298,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 
 		Date tarih1 = null;
 		Date tarih2 = null;
-		HashMap parametreMap = new HashMap();
-		parametreMap.put("izinTipi.bakiyeIzinTipi=", null);
-		parametreMap.put("izinSahibi.id", perIdList);
-		parametreMap.put("izinDurumu not ", Arrays.asList(new Integer[] { PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL, PersonelIzin.IZIN_DURUMU_REDEDILDI }));
-		parametreMap.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, (Date) date.clone(), 1));
-		parametreMap.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, (Date) date.clone(), -1));
-		if (session != null)
-			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PersonelIzin.class);
+ 
 		// butun personeller icin hareket cekerken bu en kucuk tarih ile en
 		// buyuk tarih araligini kullanacaktir
 		// bu araliktaki tum hareketleri cekecektir.
@@ -378,16 +368,8 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 						iterator1.remove();
 				}
 				HareketKGS kgsHareketGiris = vardiyaGun.getGirisHareket(), kgsHareketCikis = vardiyaGun.getCikisHareket();
-				PersonelIzin izin = null;
-				for (Iterator iterator2 = izinList.iterator(); iterator2.hasNext();) {
-					PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-					if (personel.getId() == personelIzin.getIzinSahibi().getId()) {
-						izin = personelIzin;
-						iterator2.remove();
-						break;
-					}
-
-				}
+				PersonelIzin izin = vardiyaGun.getIzin();
+				 
 				boolean yaz = !(vardiyaGun.getHareketDurum()) && simdikiZaman.getTime() < bitZaman2;
 
 				if (vardiyaGun.getVardiya().isCalisma()) {

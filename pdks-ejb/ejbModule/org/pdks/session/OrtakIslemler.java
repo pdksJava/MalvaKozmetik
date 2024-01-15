@@ -2462,6 +2462,51 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param dataIdList
+	 * @param sb
+	 * @param fieldName
+	 * @param fieldsOrj
+	 * @param class1
+	 * @param session
+	 * @return
+	 */
+	public List getSQLParamLongList(List<Long> dataIdList, StringBuffer sb, String fieldName, HashMap<String, Object> fieldsOrj, Class class1, Session session) {
+		List<Long> idList = new ArrayList<Long>();
+		List veriList = new ArrayList();
+		try {
+			int size = 1800 - fieldsOrj.size();
+			List<Long> idInputList = new ArrayList<Long>(dataIdList);
+			while (!idInputList.isEmpty()) {
+				HashMap map = new HashMap();
+				for (Iterator iterator = idInputList.iterator(); iterator.hasNext();) {
+					Long long1 = (Long) iterator.next();
+					idList.add(long1);
+					iterator.remove();
+					if (idList.size() + map.size() >= size)
+						break;
+				}
+				HashMap<String, Object> fields = new HashMap<String, Object>();
+				fields.putAll(fieldsOrj);
+				fields.put(fieldName, idList);
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List list = pdksEntityController.getObjectBySQLList(sb, fields, class1);
+				if (!list.isEmpty())
+					veriList.addAll(list);
+				list = null;
+				fields = null;
+				idList.clear();
+			}
+			idInputList = null;
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+
+		return veriList;
+	}
+
+	/**
 	 * @param idInputList
 	 * @param spName
 	 * @param fieldName
@@ -6146,45 +6191,9 @@ public class OrtakIslemler implements Serializable {
 		for (Personel personel : perList)
 			pIdler.add(personel.getId());
 		Calendar cal = Calendar.getInstance();
-		HashMap parametreMap = new HashMap();
-		List<Integer> izinDurumuList = getAktifIzinDurumList();
-		StringBuffer sb = new StringBuffer();
-		sb.append("SELECT  I.* FROM " + PersonelIzin.TABLE_NAME + " I WITH(nolock) ");
-		sb.append(" INNER JOIN " + IzinTipi.TABLE_NAME + " T ON T." + IzinTipi.COLUMN_NAME_ID + "=I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI + " AND T." + IzinTipi.COLUMN_NAME_BAKIYE_IZIN_TIPI + " IS NULL");
-		sb.append(" WHERE I." + PersonelIzin.COLUMN_NAME_PERSONEL + " :pId");
-		sb.append(" AND I." + PersonelIzin.COLUMN_NAME_BITIS_ZAMANI + ">=:bitTarih AND I." + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + "<=:basTarih");
-		parametreMap.put("bitTarih", tariheGunEkleCikar(cal, denklestirmeDonemi.getBaslangicTarih(), -2));
-		parametreMap.put("basTarih", tariheGunEkleCikar(cal, denklestirmeDonemi.getBitisTarih(), 1));
-		parametreMap.put("pId", pIdler);
-		if (session != null)
-			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> personelIzinler = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelIzin.class);
-		pIdler = null;
-		for (Iterator iterator = personelIzinler.iterator(); iterator.hasNext();) {
-			PersonelIzin personelIzin = (PersonelIzin) iterator.next();
-			if (!izinDurumuList.contains(personelIzin.getIzinDurumu()))
-				iterator.remove();
-
-		}
-		HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
-		if (!personelIzinler.isEmpty()) {
-			personelIzinler = PdksUtil.sortListByAlanAdi(personelIzinler, "baslangicZamani", Boolean.FALSE);
-			for (PersonelIzin personelIzin : personelIzinler) {
-				List<PersonelIzin> izinList = izinMap.containsKey(personelIzin.getIzinSahibi().getId()) ? izinMap.get(personelIzin.getIzinSahibi().getId()) : new ArrayList<PersonelIzin>();
-				// Ardisik rapor izinleri birlestiriliyor
-				// if (personelIzin.getIzinTipi().isRaporIzin() && !izinList.isEmpty()) {
-				// int index = izinList.size() - 1;
-				// PersonelIzin oncekiIzin = izinList.get(index);
-				// if (oncekiIzin.getIzinTipi().isRaporIzin() && PdksUtil.tarihKarsilastirNumeric(personelIzin.getBaslangicZamani(), oncekiIzin.getBitisZamani()) == 0) {
-				// oncekiIzin.setBitisZamani(personelIzin.getBitisZamani());
-				// izinList.set(index, oncekiIzin);
-				// continue;
-				// }
-				// }
-				izinList.add(personelIzin);
-				izinMap.put(personelIzin.getIzinSahibi().getId(), izinList);
-			}
-		}
+		Date basTarih = tariheGunEkleCikar(cal, denklestirmeDonemi.getBaslangicTarih(), -2);
+		Date bitTarih = tariheGunEkleCikar(cal, denklestirmeDonemi.getBitisTarih(), 1);
+		HashMap<Long, List<PersonelIzin>> izinMap = getPersonelIzinMap(getBaseObjectIdList(perList), basTarih, bitTarih, session);
 		return izinMap;
 	}
 
@@ -10171,6 +10180,42 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param perIdList
+	 * @param baslamaTarih
+	 * @param bitisTarih
+	 * @param session
+	 * @return
+	 */
+	public HashMap<Long, List<PersonelIzin>> getPersonelIzinMap(List<Long> perIdList, Date baslamaTarih, Date bitisTarih, Session session) {
+		HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
+		if (perIdList != null && !perIdList.isEmpty()) {
+			HashMap fields = new HashMap();
+			StringBuffer sb = new StringBuffer();
+			sb.append("SELECT  I.* FROM " + PersonelIzin.TABLE_NAME + " I WITH(nolock) ");
+			sb.append(" INNER JOIN " + IzinTipi.TABLE_NAME + " T ON T." + IzinTipi.COLUMN_NAME_ID + "=I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI + " AND T." + IzinTipi.COLUMN_NAME_BAKIYE_IZIN_TIPI + " IS NULL");
+			sb.append(" WHERE I." + PersonelIzin.COLUMN_NAME_PERSONEL + " :pId");
+			sb.append(" AND I." + PersonelIzin.COLUMN_NAME_BITIS_ZAMANI + ">=:basTarih AND I." + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + "<=:bitTarih");
+			sb.append(" AND I." + PersonelIzin.COLUMN_NAME_IZIN_DURUMU + " NOT IN (" + PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL + "," + PersonelIzin.IZIN_DURUMU_REDEDILDI + ")");
+			sb.append(" ORDER BY I." + PersonelIzin.COLUMN_NAME_PERSONEL + ",I." + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI);
+			fields.put("bitTarih", bitisTarih);
+			fields.put("basTarih", baslamaTarih);
+			fields.put("pId", null);
+			List<PersonelIzin> izinList = getSQLParamLongList(perIdList, sb, "pId", fields, PersonelIzin.class, session);
+			for (PersonelIzin izin : izinList) {
+				Long id = izin.getIzinSahibi().getId();
+				List<PersonelIzin> list = izinMap.containsKey(id) ? izinMap.get(id) : new ArrayList<PersonelIzin>();
+				if (list.isEmpty()) {
+					logger.debug(id);
+					izinMap.put(id, list);
+				}
+				list.add(izin);
+			}
+			izinList = null;
+		}
+		return izinMap;
+	}
+
+	/**
 	 * @param personeller
 	 * @param baslamaTarih
 	 * @param bitisTarih
@@ -10182,40 +10227,9 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public TreeMap<String, VardiyaGun> getIslemVardiyalar(List<Personel> personeller, Date baslamaTarih, Date bitisTarih, boolean veriYaz, Session session, boolean zamanGuncelle) throws Exception {
 		Calendar cal = Calendar.getInstance();
-		List<Long> perIdList = new ArrayList<Long>();
-		for (Iterator iterator = personeller.iterator(); iterator.hasNext();) {
-			Personel per = (Personel) iterator.next();
- 			perIdList.add(per.getId());
- 		}
-		List<Integer> izinDurumList = new ArrayList<Integer>();
-		// izinDurumList.add(PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA);
-		izinDurumList.add(PersonelIzin.IZIN_DURUMU_REDEDILDI);
-		izinDurumList.add(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
-		HashMap fields = new HashMap();
-		fields.put("baslangicZamani<", bitisTarih);
-		fields.put("bitisZamani>", baslamaTarih);
-		fields.put("izinTipi.bakiyeIzinTipi=", null);
-		fields.put("izinSahibi.id", perIdList);
-		if (izinDurumList.size() > 1)
-			fields.put("izinDurumu not ", izinDurumList);
-		else
-			fields.put("izinDurumu <> ", PersonelIzin.IZIN_DURUMU_REDEDILDI);
-		if (session != null)
-			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> izinList = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
-		HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
-		for (PersonelIzin izin : izinList) {
-			Long id = izin.getIzinSahibi().getId();
-			List<PersonelIzin> list = izinMap.containsKey(id) ? izinMap.get(id) : new ArrayList<PersonelIzin>();
-			if (list.isEmpty()) {
-				logger.debug(id);
-				izinMap.put(id, list);
-			}
 
-			list.add(izin);
-		}
-		izinList = null;
-		izinDurumList = null;
+		HashMap<Long, List<PersonelIzin>> izinMap = getPersonelIzinMap(getBaseObjectIdList(personeller), baslamaTarih, bitisTarih, session);
+
 		TreeMap<String, VardiyaGun> vardiyaMap = getVardiyalar(personeller, tariheGunEkleCikar(cal, baslamaTarih, -3), tariheGunEkleCikar(cal, bitisTarih, 3), izinMap, veriYaz, session, zamanGuncelle);
 		fazlaMesaiSaatiAyarla(vardiyaMap);
 		Long id = null;
@@ -10241,6 +10255,22 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param list
+	 * @return
+	 */
+	public List<Long> getBaseObjectIdList(List list) {
+		List<Long> idList = null;
+		if (list != null && !list.isEmpty()) {
+			idList = new ArrayList<Long>();
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				BaseObject bo = (BaseObject) iterator.next();
+				idList.add(bo.getId());
+			}
+		}
+		return idList;
+	}
+
+	/**
 	 * @param personeller
 	 * @param baslamaTarih
 	 * @param bitisTarih
@@ -10253,6 +10283,8 @@ public class OrtakIslemler implements Serializable {
 	 */
 	@Transactional
 	public TreeMap<String, VardiyaGun> getVardiyalar(List<Personel> personeller, Date baslamaTarih, Date bitisTarih, HashMap<Long, List<PersonelIzin>> izinMap, boolean veriYaz, Session session, boolean zamanGuncelle) throws Exception {
+		if (izinMap == null)
+			izinMap = getPersonelIzinMap(getBaseObjectIdList(personeller), baslamaTarih, bitisTarih, session);
 		List saveList = new ArrayList();
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
@@ -11028,7 +11060,6 @@ public class OrtakIslemler implements Serializable {
 		if (!vardiyaGunList.isEmpty()) {
 			HashMap<Long, List<VardiyaGun>> vMap = new HashMap<Long, List<VardiyaGun>>();
 			for (VardiyaGun vardiyaGun : vardiyaGunList) {
-				vardiyaGun.setIzin(null);
 				Long perId = vardiyaGun.getPersonel().getId();
 				List<VardiyaGun> list = vMap.containsKey(perId) ? vMap.get(perId) : new ArrayList<VardiyaGun>();
 				if (list.isEmpty())
@@ -11040,6 +11071,13 @@ public class OrtakIslemler implements Serializable {
 						break;
 				}
 
+			}
+			if (!izinMap.isEmpty()) {
+				for (Long key : izinMap.keySet()) {
+					if (vMap.containsKey(key)) {
+						vardiyaIzinleriGuncelle(izinMap.get(key), vMap.get(key));
+					}
+				}
 			}
 			TreeMap<String, Tatil> tatilMap = getTatilGunleri(null, basTarih, bitTarih, session);
 			boolean tatilKontrolEt = tatilMap != null && !tatilMap.isEmpty();
@@ -11245,41 +11283,6 @@ public class OrtakIslemler implements Serializable {
 		map = null;
 		return vardiyaGunList;
 
-	}
-
-	/**
-	 * @param personelIdler
-	 * @param basTarih
-	 * @param bitTarih
-	 * @param session
-	 * @return
-	 */
-	public HashMap<Long, List<PersonelIzin>> getPersonelIzinMap(List<Long> personelIdler, Date basTarih, Date bitTarih, Session session) {
-		Calendar cal = Calendar.getInstance();
-		HashMap fields = new HashMap();
-		fields.put("bitisZamani>=", tariheGunEkleCikar(cal, basTarih, -2));
-		fields.put("baslangicZamani<=", tariheGunEkleCikar(cal, bitTarih, 1));
-		fields.put("izinSahibi.id", new ArrayList(personelIdler));
-		fields.put("izinDurumu", getAktifIzinDurumList());
-		if (session != null)
-			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
-		HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
-		for (Iterator iterator = izinler.iterator(); iterator.hasNext();) {
-			PersonelIzin personelIzin = (PersonelIzin) iterator.next();
-			IzinTipi izinTipi = personelIzin.getIzinTipi();
-			if (izinTipi.getBakiyeIzinTipi() != null)
-				iterator.remove();
-			else {
-				Long perId = personelIzin.getIzinSahibi().getId();
-				List<PersonelIzin> list = izinMap.containsKey(perId) ? izinMap.get(perId) : new ArrayList<PersonelIzin>();
-				if (list.isEmpty())
-					izinMap.put(perId, list);
-				list.add(personelIzin);
-			}
-
-		}
-		return izinMap;
 	}
 
 	/**
@@ -15032,9 +15035,6 @@ public class OrtakIslemler implements Serializable {
 				vardiyaGun.setTatil(vardiyaGunSablon.getTatil());
 				vardiyaGun.setFiiliHesapla(fiiliHesapla);
 				puantajVardiyaGunleri.add(vardiyaGun);
-				if (!fiiliHesapla) {
-					vardiyaGun.setIzin(null);
-				}
 
 				if (vardiyaGunMap != null)
 					vardiyaGunMap.put(vardiyaGun.getVardiyaDateStr(), vardiyaGun);

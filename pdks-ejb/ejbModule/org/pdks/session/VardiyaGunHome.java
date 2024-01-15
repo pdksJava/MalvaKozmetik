@@ -3744,16 +3744,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				vList.add(pGun);
 			}
 		}
-		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
-		for (Iterator<PersonelIzin> iterator = izinler.iterator(); iterator.hasNext();) {
-			PersonelIzin personelIzin = (PersonelIzin) iterator.next();
-			if (personelIzin.getIzinSahibi().getId().longValue() == personelId) {
-				izinList.add(personelIzin);
+		if (izinler != null) {
+			List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
+			for (Iterator<PersonelIzin> iterator = izinler.iterator(); iterator.hasNext();) {
+				PersonelIzin personelIzin = (PersonelIzin) iterator.next();
+				if (personelIzin.getIzinSahibi().getId().longValue() == personelId) {
+					izinList.add(personelIzin);
+				}
 			}
+			if (!izinList.isEmpty())
+				ortakIslemler.vardiyaIzinleriGuncelle(izinList, vList);
+			izinList = null;
 		}
-		if (!izinList.isEmpty())
-			ortakIslemler.vardiyaIzinleriGuncelle(izinList, vList);
-		izinList = null;
+
 		vList = null;
 	}
 
@@ -5845,29 +5848,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (testDurum)
 						logger.info("aylikPuantajOlusturuluyor 3000 " + PdksUtil.getCurrentTimeStampStr());
 					List<VardiyaGun> vardiyaGunList = null;
-					fields.clear();
-					fields.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemiGecenAy.getBaslangicTarih(), -2));
-					fields.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
-					fields.put("izinSahibi.id", perIdler.clone());
-					fields.put("izinDurumu", ortakIslemler.getAktifIzinDurumList());
-					if (session != null)
-						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
-					HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
-					for (Iterator iterator = izinler.iterator(); iterator.hasNext();) {
-						PersonelIzin personelIzin = (PersonelIzin) iterator.next();
-						IzinTipi izinTipi = personelIzin.getIzinTipi();
-						if (izinTipi.getBakiyeIzinTipi() != null)
-							iterator.remove();
-						else {
-							Long key = personelIzin.getIzinSahibi().getId();
-							List<PersonelIzin> list = izinMap.containsKey(key) ? izinMap.get(key) : new ArrayList<PersonelIzin>();
-							if (list.isEmpty())
-								izinMap.put(key, list);
-							list.add(personelIzin);
-						}
+					HashMap<Long, List<PersonelIzin>> izinMap = ortakIslemler.getPersonelIzinMap(perIdler, ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemiGecenAy.getBaslangicTarih(), -2), ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1), session);
 
-					}
 					TreeMap<String, VardiyaGun> yeniVardiyaMap = null;
 					if (denklestirmeAyDurum) {
 						try {
@@ -6449,7 +6431,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 						List<VardiyaGun> list = PdksUtil.sortListByAlanAdi(new ArrayList(vardiyalarMap.values()), "vardiyaDate", Boolean.FALSE);
 
-						setIzin(plan.getPersonel().getId(), izinler, list);
+						setIzin(plan.getPersonel().getId(), izinMap.get(plan.getPersonel().getId()), list);
 						try {
 							if (gecenAylikPuantaj.getPersonelDenklestirmeAylik() != null && !helpPersonel(personel) && loginUser.getLogin()) {
 								gecenAylikPuantaj.setCalismaModeliAy(gecenAylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy());
@@ -9829,6 +9811,18 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							if (session != null)
 								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 							List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+							HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
+							for (PersonelIzin izin : izinler) {
+								Long id = izin.getIzinSahibi().getId();
+								List<PersonelIzin> list = izinMap.containsKey(id) ? izinMap.get(id) : new ArrayList<PersonelIzin>();
+								if (list.isEmpty()) {
+									logger.debug(id);
+									izinMap.put(id, list);
+								}
+
+								list.add(izin);
+							}
+							izinler = null;
 							List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 
 							for (String sicilNo : perList) {
@@ -9901,7 +9895,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 											if (PdksUtil.hasStringValue(vardiyaKey)) {
 												if (izinler != null && !izinler.isEmpty()) {
 													vardiyaList.add(pdksVardiyaGun);
-													setIzin(personel.getId(), izinler, vardiyaList);
+													setIzin(personel.getId(), izinMap.get(personel.getId()), vardiyaList);
 													vardiyaList.clear();
 												}
 												if (pdksVardiyaGun.getIzin() != null) {

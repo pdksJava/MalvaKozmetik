@@ -35,7 +35,6 @@ import org.pdks.entity.AramaSecenekleri;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.HareketKGS;
-import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Liste;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelIzin;
@@ -289,7 +288,6 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
 		ArrayList<Personel> tumPersoneller = (ArrayList<Personel>) pdksEntityController.getObjectByInnerObjectListInLogic(map, Personel.class);
 
-		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		Date tarih1 = null;
 		Date tarih2 = null;
@@ -328,61 +326,13 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 			Date bugun = new Date();
 			List<Long> perIdList = new ArrayList<Long>();
 
-			HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
-			try {
-				if (!vardiyaGunList.isEmpty()) {
-					HashMap parametreMap = new HashMap();
-					parametreMap.put("bakiyeIzinTipi", null);
-					if (session != null)
-						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<IzinTipi> izinler = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinTipi.class);
-					if (!izinler.isEmpty()) {
-						HashMap parametreMap2 = new HashMap();
-						parametreMap2.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
-						parametreMap2.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, basTarih, -1));
-						parametreMap2.put("izinTipi", izinler);
-						parametreMap2.put("izinSahibi", tumPersoneller.clone());
-						if (session != null)
-							parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
-						izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelIzin.class);
-						parametreMap2 = null;
-					} else
-						izinList = new ArrayList<PersonelIzin>();
-					for (PersonelIzin izin : izinList) {
-						Long perId = izin.getIzinSahibi().getId();
-						List<PersonelIzin> list = izinMap.containsKey(perId) ? izinMap.get(perId) : new ArrayList<PersonelIzin>();
-						if (list.isEmpty())
-							izinMap.put(perId, list);
-						list.add(izin);
-					}
-					izinler = null;
-				}
-			} catch (Exception e) {
-				logger.error("PDKS hata in : \n");
-				e.printStackTrace();
-				logger.error("PDKS hata out : " + e.getMessage());
-				logger.debug(e.getMessage());
-			}
-
 			for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 				VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
 				Vardiya islemVardiya = pdksVardiyaGun.getIslemVardiya(), vardiya = pdksVardiyaGun.getVardiya();
 				Personel personel = pdksVardiyaGun.getPersonel();
 				Long personelId = personel.getId();
 				if (vardiya.isCalisma()) {
-					if (izinMap.containsKey(personelId)) {
-						List<PersonelIzin> perIzinList = izinMap.get(personelId);
-						for (Iterator iterator2 = perIzinList.iterator(); iterator2.hasNext();) {
-							PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-							ortakIslemler.setIzinDurum(pdksVardiyaGun, personelIzin);
-							if (pdksVardiyaGun.getIzin() != null) {
-								iterator2.remove();
-								break;
-							}
 
-						}
-
-					}
 				}
 				// boolean sil = false;
 				// if (gunDurum == 1 || islemVardiya == null || vardiya.getId() == null || perIdList.contains(personelId)) {
@@ -486,8 +436,6 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							vardiyaGun.setHareketler(null);
 							vardiyaGun.setGirisHareketleri(null);
 							vardiyaGun.setCikisHareketleri(null);
-							vardiyaGun.setIzin(null);
-							vardiyaGun.setIzinler(null);
 							vardiyaGun.setIlkGiris(null);
 							vardiyaGun.setSonCikis(null);
 

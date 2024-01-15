@@ -2950,7 +2950,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				}
 				TreeMap<String, VardiyaGun> vardiyaGunMap = new TreeMap<String, VardiyaGun>();
 				for (VardiyaGun pdksVardiyaGun : vardiyaGunler) {
-					pdksVardiyaGun.setIzin(null);
+				 
 
 					vardiyaGunMap.put(String.valueOf(pdksVardiyaGun.getVardiyaDateStr()), pdksVardiyaGun);
 				}
@@ -4496,17 +4496,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 										sonGunVardiya = pdksVardiyaGun.getIslemVardiya().getVardiyaBitZaman();
 							}
 
-							fields.clear();
-							fields.put("izinTipi.bakiyeIzinTipi=", null);
-							fields.put("bitisZamani>=", aylikPuantajSablon.getIlkGun());
-							fields.put("baslangicZamani<=", sonGunVardiya);
-							fields.put("izinDurumu not ", Arrays.asList(new Integer[] { PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL, PersonelIzin.IZIN_DURUMU_REDEDILDI }));
-							fields.put("izinSahibi.pdksSicilNo", new ArrayList(perMap.keySet()));
-							if (session != null)
-								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-							List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
-							List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
-
 							for (String sicilNo : perList) {
 								Personel personel = personelMap.get(sicilNo);
 								boolean hataVar = Boolean.FALSE, renk = Boolean.TRUE;
@@ -4564,11 +4553,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 										String vardiyaKey = list.get(gun++);
 										Vardiya pdksVardiya = null;
 										if (vardiyaKey != null && !vardiyaKey.equals("")) {
-											if (izinler != null && !izinler.isEmpty()) {
-												vardiyaList.add(pdksVardiyaGun);
-												setIzin(personel.getId(), izinler, vardiyaList);
-												vardiyaList.clear();
-											}
 											if (pdksVardiyaGun.getIzin() != null) {
 												pdksVardiya = pdksVardiyaGun.getVardiya();
 												if (aylikPuantajSablonNew.getCalismaModeli() != null) {
@@ -4592,8 +4576,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 										if (!calisiyor) {
 											if (!personel.isCalisiyorGun(vardiyaDate)) {
 												pdksVardiyaGun.setYeniVardiya(null);
-												pdksVardiyaGun.setIzin(null);
-												pdksVardiyaGun.setGuncellendi(Boolean.TRUE);
+	 											pdksVardiyaGun.setGuncellendi(Boolean.TRUE);
 
 											}
 										}

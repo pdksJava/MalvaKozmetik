@@ -44,7 +44,6 @@ import org.pdks.entity.Parameter;
 import org.pdks.entity.PdksLog;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelGeciciYonetici;
-import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.PersonelView;
 import org.pdks.entity.Sirket;
@@ -462,24 +461,10 @@ public class IseGelmemeUyari implements Serializable {
 						map.put(PdksEntityController.MAP_KEY_MAP, "getPersonelGeciciId");
 						TreeMap<Long, PersonelGeciciYonetici> geciciYoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, PersonelGeciciYonetici.class, Boolean.FALSE);
 						session.clear();
-						List<Integer> izinDurumList = new ArrayList<Integer>();
-						// izinDurumList.add(PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA);
-						izinDurumList.add(PersonelIzin.IZIN_DURUMU_REDEDILDI);
-						izinDurumList.add(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
+			 
 						List<Long> perIdList = new ArrayList<Long>();
 						for (Long long1 : kgsPerMap.keySet())
 							perIdList.add(kgsPerMap.get(long1).getId());
-						map.clear();
-						map.put(PdksEntityController.MAP_KEY_SESSION, session);
-						map.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, (Date) tarih.clone(), 1));
-						map.put("bitisZamani>=", vardiyaBas);
-						map.put("izinTipi.bakiyeIzinTipi=", null);
-						map.put("izinSahibi.id", perIdList);
-						if (izinDurumList.size() > 1)
-							map.put("izinDurumu not ", izinDurumList);
-						else
-							map.put("izinDurumu <> ", PersonelIzin.IZIN_DURUMU_REDEDILDI);
-						List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(map, PersonelIzin.class);
 						// Hareket kayıtları okunuyor
 						// HashMap<Long, ArrayList<HareketKGS>> personelHareketMap = ortakIslemler.fillKaradagPersonelHareketMap(new ArrayList(karadagPerMap.keySet()), vardiyaBas, vardiyaBitTar, session);
 						HashMap<Long, ArrayList<HareketKGS>> personelHareketMap = ortakIslemler.fillPersonelKGSHareketMap(new ArrayList(kgsPerMap.keySet()), vardiyaBas, vardiyaBitTar, session);
@@ -487,19 +472,11 @@ public class IseGelmemeUyari implements Serializable {
 						// Hareket kayıtları vardiya günlerine işleniyor
 						boolean kayitVar = false;
 
-						if ((!izinler.isEmpty() || (personelHareketMap != null && !personelHareketMap.isEmpty())) || (!mailGonder)) {
+						if (((personelHareketMap != null && !personelHareketMap.isEmpty())) || (!mailGonder)) {
 							hareketExcelGonderDurum = ortakIslemler.getParameterKey("hareketExcelGonder");
 							userYoneticiMap = new TreeMap<Long, User>();
 							yoneticiPerListMap = new HashMap<Long, List<Long>>();
 							perHareketListMap = new HashMap<Long, List<HareketKGS>>();
-							TreeMap<Long, List<PersonelIzin>> izinMap = new TreeMap<Long, List<PersonelIzin>>();
-							for (PersonelIzin personelIzin : izinler) {
-								Long key = personelIzin.getIzinSahibi().getId();
-								List<PersonelIzin> list1 = izinMap.containsKey(key) ? izinMap.get(key) : new ArrayList<PersonelIzin>();
-								if (list1.isEmpty())
-									izinMap.put(key, list1);
-								list1.add(personelIzin);
-							}
 
 							for (Iterator iterator1 = vardiyaList.iterator(); iterator1.hasNext();) {
 								VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator1.next();
@@ -515,7 +492,7 @@ public class IseGelmemeUyari implements Serializable {
 								Long depId = pdksPersonel.getSirket().getDepartman().getId();
 								boolean hareketVar = personelHareketMap.containsKey(perNoId) && !personelHareketMap.get(perNoId).isEmpty();
 								if (!hareketVar) {
-									hareketVar = izinMap.containsKey(pdksPersonel.getId());
+									hareketVar = pdksVardiyaGun.getIzin() != null;
 									if (hareketVar) {
 										logger.debug(pdksPersonel.getPdksSicilNo() + " - " + pdksPersonel.getAdSoyad());
 									}
@@ -528,7 +505,7 @@ public class IseGelmemeUyari implements Serializable {
 								Personel yoneticisi = pdksPersonel.getYoneticisi() != null ? (Personel) pdksPersonel.getYoneticisi().clone() : yoneticiYok;
 								if (hareketVar) {
 									List<HareketKGS> hareketler = new ArrayList<HareketKGS>();
-									ekle = vardiyaHareketKontrol(bugun, hareketler, izinMap, personelHareketMap, pdksVardiyaGun);
+									ekle = vardiyaHareketKontrol(bugun, hareketler, personelHareketMap, pdksVardiyaGun);
 									if (ekle && calisma == false)
 										ekle = pdksVardiyaGun.getHareketler() != null && !pdksVardiyaGun.getHareketler().isEmpty();
 
@@ -1683,13 +1660,11 @@ public class IseGelmemeUyari implements Serializable {
 	/**
 	 * @param bugun
 	 * @param hareketler
-	 * @param izinMap
 	 * @param personelHareketMap
 	 * @param pdksVardiyaGun
 	 * @return
 	 */
-	private boolean vardiyaHareketKontrol(Date bugun, List<HareketKGS> hareketler, TreeMap<Long, List<PersonelIzin>> izinMap, HashMap<Long, ArrayList<HareketKGS>> personelHareketMap, VardiyaGun pdksVardiyaGun) {
-		pdksVardiyaGun.setIzin(null);
+	private boolean vardiyaHareketKontrol(Date bugun, List<HareketKGS> hareketler, HashMap<Long, ArrayList<HareketKGS>> personelHareketMap, VardiyaGun pdksVardiyaGun) {
 
 		Vardiya islemVardiya = pdksVardiyaGun.getIslemVardiya();
 		PersonelView personelView = new PersonelView();
@@ -1700,19 +1675,7 @@ public class IseGelmemeUyari implements Serializable {
 			boolean baslangicTatil = Boolean.FALSE, bitisTatil = Boolean.FALSE;// islemVardiya.getVardiyaTelorans1BitZaman().getTime()
 			// <=
 			// bugun.getTime();
-			if (izinMap.containsKey(pdksVardiyaGun.getPersonel().getId())) {
-				List<PersonelIzin> izinler = izinMap.get(pdksVardiyaGun.getPersonel().getId());
-				for (PersonelIzin personelIzin : izinler) {
-					if (!personelIzin.getIzinSahibi().getId().equals(pdksVardiyaGun.getPersonel().getId()))
-						continue;
-					PersonelIzin izin = ortakIslemler.setIzinDurum(pdksVardiyaGun, personelIzin);
-					if (izin != null) {
-						ekle = pdksVardiyaGun.getHareketler() != null && !pdksVardiyaGun.getHareketler().isEmpty();
-						pdksVardiyaGun.setIzin(izin);
-					}
 
-				}
-			}
 			ArrayList<HareketKGS> perHareketList = null;
 			if (personelHareketMap.containsKey(perNoId))
 				perHareketList = personelHareketMap.get(perNoId);

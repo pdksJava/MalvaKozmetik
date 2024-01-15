@@ -66,7 +66,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 	List<User> userList;
 	Date date;
 	List<Personel> devamsizlikList = new ArrayList<Personel>();
-	List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
+
 	List<Personel> personelList = new ArrayList<Personel>();
 
 	List<HareketKGS> hareketList = new ArrayList<HareketKGS>();
@@ -308,7 +308,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			tumPersonelIzinler = null;
 		}
 		List<VardiyaGun> vardiyaGunList = new ArrayList<VardiyaGun>();
-		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
+
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		Date tarih1 = null;
 		Date tarih2 = null;
@@ -355,31 +355,6 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			}
 			if (!vardiyaGunList.isEmpty()) {
 
-				try {
-					HashMap parametreMap = new HashMap();
-					parametreMap.put("bakiyeIzinTipi", null);
-					if (session != null)
-						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<IzinTipi> izinler = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinTipi.class);
-					if (!izinler.isEmpty()) {
-						HashMap parametreMap2 = new HashMap();
-						parametreMap2.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, tarih2, 1));
-						parametreMap2.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, tarih2, -1));
-						parametreMap2.put("izinTipi", izinler);
-						parametreMap2.put("izinSahibi", tumPersoneller.clone());
-						if (session != null)
-							parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
-						izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelIzin.class);
-						parametreMap2 = null;
-					} else
-						izinList = new ArrayList<PersonelIzin>();
-					izinler = null;
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					logger.debug(e.getMessage());
-				}
 				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 				if (kapiIdler != null && !kapiIdler.isEmpty())
 					kgsList = ortakIslemler.getPdksHareketBilgileri(Boolean.TRUE, kapiIdler, (List<Personel>) tumPersoneller.clone(), ortakIslemler.tariheGunEkleCikar(cal, tarih1, -1), ortakIslemler.tariheGunEkleCikar(cal, tarih2, 1), HareketKGS.class, session);
@@ -411,8 +386,7 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 						vardiyaGun.setHareketler(null);
 						vardiyaGun.setGirisHareketleri(null);
 						vardiyaGun.setCikisHareketleri(null);
-						vardiyaGun.setIzin(null);
-						vardiyaGun.setIzinler(null);
+ 
 						vardiyaGun.setIlkGiris(null);
 						vardiyaGun.setSonCikis(null);
 
@@ -423,23 +397,13 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 							HareketKGS kgsHareket = (HareketKGS) iterator1.next();
 							if (vardiyaGun.addHareket(kgsHareket, Boolean.FALSE))
 								iterator1.remove();
-
 						}
 						PersonelIzin izin = null;
+						PersonelIzin personelIzin = vardiyaGun.getIzin();
 						boolean fmi = vardiya.isFMI();
-						for (Iterator iterator2 = izinList.iterator(); iterator2.hasNext();) {
-							PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-							if (vardiya.isCalisma() && vardiyaGun.getPersonel().getId().equals(personelIzin.getIzinSahibi().getId())) {
-								ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
+						if (personelIzin != null) {
+							if (vardiya.isCalisma()) {
 								izin = vardiyaGun.getIzin();
-								if (izin != null && !izin.getIzinTipi().isFazlaMesai()) {
-									iterator2.remove();
-									break;
-								} else {
-									fmi = true;
-									izin = null;
-								}
-
 							}
 
 						}
@@ -631,14 +595,6 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 
 	public void setDevamsizlikList(List<Personel> devamsizlikList) {
 		this.devamsizlikList = devamsizlikList;
-	}
-
-	public List<PersonelIzin> getIzinList() {
-		return izinList;
-	}
-
-	public void setIzinList(List<PersonelIzin> izinList) {
-		this.izinList = izinList;
 	}
 
 	public List<HareketKGS> getHareketList() {

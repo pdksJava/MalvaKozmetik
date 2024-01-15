@@ -33,7 +33,6 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.HareketKGS;
-import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.Tanim;
@@ -335,7 +334,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		 * gosteririrz. Diyelim hic mazeret girmemiş 4 saat gösteririz
 		 */
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
-		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
+
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		Date tarih1 = null;
 		Date tarih2 = null;
@@ -391,31 +390,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 			}
 			if (tarih1 != null && tarih2 != null) {
-				try {
-					HashMap parametreMap = new HashMap();
-					parametreMap.put("bakiyeIzinTipi", null);
-					if (session != null)
-						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<IzinTipi> izinler = pdksEntityController.getObjectByInnerObjectList(parametreMap, IzinTipi.class);
-					if (!izinler.isEmpty()) {
-						HashMap parametreMap2 = new HashMap();
-						parametreMap2.put("baslangicZamani<=", tarih2);
-						parametreMap2.put("bitisZamani>=", tarih1);
-						parametreMap2.put("izinTipi", izinler);
-						parametreMap2.put("izinSahibi", tumPersoneller.clone());
-						if (session != null)
-							parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
-						izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelIzin.class);
-						parametreMap2 = null;
-					} else
-						izinList = new ArrayList<PersonelIzin>();
-					izinler = null;
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					logger.debug(e.getMessage());
-				}
+
 				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih1, tarih2, session);
 				kgsList = null;
 				if (kapiIdler != null && !kapiIdler.isEmpty()) {
@@ -489,23 +464,10 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							}
 						}
 
-						PersonelIzin izin = null;
-						if (izinMap.containsKey(id)) {
-							List<PersonelIzin> list = izinMap.get(id);
-							for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {
-								PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-								izin = ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
-								if (izin != null) {
-									iterator2.remove();
-									break;
-								}
-							}
-						}
-
 						boolean yaz = Boolean.TRUE;
 						if (vardiyaGun.getVardiya().isCalisma()) {
 							if (vardiyaGun.getHareketDurum()) {
-
+								PersonelIzin izin = vardiyaGun.getIzin();
 								boolean izinDurum = Boolean.FALSE;
 								if (izin != null) {
 									long izinBaslangic = izin.getBaslangicZamani().getTime();
@@ -515,7 +477,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 								if (izinDurum) {
 									izinDurum = izinliGoster || gelenGoster;
 									yaz = izinDurum;
-									vardiyaGun.setIzin(izin);
+
 								}
 
 								if (yaz && vardiyaGun.getHareketDurum()) {

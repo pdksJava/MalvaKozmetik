@@ -622,7 +622,6 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 		denklestirmeAyDurum = fazlaMesaiOrtakIslemler.getDurum(pdksDenklestirmeAy);
 		ArrayList<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
 		List<PersonelFazlaMesai> mesaiList = new ArrayList<PersonelFazlaMesai>();
-		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList1 = new ArrayList<HareketKGS>();
 		ArrayList<Personel> personeller = null;
 		if (sicilNoList != null && !sicilNoList.isEmpty()) {
@@ -663,15 +662,6 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 					Personel personel = (Personel) iterator.next();
 					personelIdList.add(personel.getId());
 				}
-				HashMap parametreMapIzin = new HashMap();
-				parametreMapIzin.put("izinTipi.bakiyeIzinTipi=", null);
-				parametreMapIzin.put("bitisZamani>=", date);
-				parametreMapIzin.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, date, 1));
-				parametreMapIzin.put("izinDurumu", ortakIslemler.getAktifIzinDurumList());
-				parametreMapIzin.put("izinSahibi.id", personelIdList);
-				if (session != null)
-					parametreMapIzin.put(PdksEntityController.MAP_KEY_SESSION, session);
-				izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMapIzin, PersonelIzin.class);
 
 				List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 
@@ -871,20 +861,11 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 						List<HareketKGS> girisHareketleri = vardiyaGun.getGirisHareketleri(), cikisHareketleri = vardiyaGun.getCikisHareketleri();
 						if (girisHareketleri == null || cikisHareketleri == null || cikisHareketleri.size() != girisHareketleri.size())
 							continue;
-						vardiyaGun.setIzin(null);
-						Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+ 						Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 						double molaSaat = islemVardiya.getCikisMolaSaat() != null && islemVardiya.getCikisMolaSaat().intValue() > 0 ? (double) islemVardiya.getCikisMolaSaat() / 60.0d : 0.0d;
 						if (vardiyaGun.getHareketDurum() || bugun.getTime() < islemVardiya.getVardiyaTelorans2BitZaman().getTime()) {
-							PersonelIzin izin = null;
-							for (Iterator iterator2 = izinList.iterator(); iterator2.hasNext();) {
-								PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-								izin = ortakIslemler.setIzinDurum(vardiyaGun, personelIzin);
-								if (izin != null)
-									break;
-
-							}
-
-							if (vardiyaGun.getVardiya().isCalisma() && !vardiyaGun.getVardiya().isIcapVardiyasi()) {
+							PersonelIzin izin = vardiyaGun.getIzin();
+ 							if (vardiyaGun.getVardiya().isCalisma() && !vardiyaGun.getVardiya().isIcapVardiyasi()) {
 								bitZaman2 = islemVardiya.getVardiyaTelorans2BitZaman().getTime();
 								bitFazlaMesai = islemVardiya.getVardiyaFazlaMesaiBitZaman().getTime();
 								if (vardiyaGun.getHareketDurum() && izin == null && cikisHareketleri.size() > 0) {

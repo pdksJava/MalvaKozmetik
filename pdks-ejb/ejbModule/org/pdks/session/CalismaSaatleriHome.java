@@ -253,7 +253,6 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 	public void fillHareketListOlustur() {
 		Calendar cal = Calendar.getInstance();
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
-		List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		List<Long> perIdList = new ArrayList<Long>();
 		// List<Personel> tumPersoneller = new ArrayList<Personel>(authenticatedUser.getTumPersoneller());
@@ -289,36 +288,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			else
 				iterator.remove();
 		}
-		List<Integer> izinDurumList = new ArrayList<Integer>();
-		// izinDurumList.add(PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA);
-		izinDurumList.add(PersonelIzin.IZIN_DURUMU_REDEDILDI);
-		izinDurumList.add(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
-		TreeMap<Long, List<PersonelIzin>> izinMap = new TreeMap<Long, List<PersonelIzin>>();
-		if (!perIdList.isEmpty()) {
-			HashMap parametreMap2 = new HashMap();
-			parametreMap2.put("baslangicZamani<", ortakIslemler.tariheGunEkleCikar(cal, date, 1));
-			parametreMap2.put("bitisZamani>", ortakIslemler.tariheGunEkleCikar(cal, date, -1));
-			parametreMap2.put("izinTipi.bakiyeIzinTipi=", null);
-			parametreMap2.put("izinSahibi.id", perIdList);
-			if (izinDurumList.size() > 1)
-				parametreMap2.put("izinDurumu not ", izinDurumList);
-			else
-				parametreMap2.put("izinDurumu <> ", PersonelIzin.IZIN_DURUMU_REDEDILDI);
-			if (session != null)
-				parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
-			izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelIzin.class);
-			for (PersonelIzin izin : izinList) {
-				Long id = izin.getIzinSahibi().getId();
-				List<PersonelIzin> list = izinMap.containsKey(id) ? izinMap.get(id) : new ArrayList<PersonelIzin>();
-				if (list.isEmpty()) {
-					logger.debug(id);
-					izinMap.put(id, list);
-				}
 
-				list.add(izin);
-			}
-			izinList = null;
-		}
 		TreeMap<String, VardiyaGun> vardiyaMap = null;
 		try {
 			if (!tumPersoneller.isEmpty())
@@ -344,17 +314,9 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			VardiyaGun pdksVardiyaGun = (VardiyaGun) iterator.next();
 			Personel personel = pdksVardiyaGun.getPersonel();
 			Long personelId = personel.getId();
-			pdksVardiyaGun.setIzin(null);
+
 			Vardiya islemVardiya = pdksVardiyaGun.getIslemVardiya(), vardiya = pdksVardiyaGun.getVardiya();
-			if (izinMap.containsKey(personelId)) {
-				List<PersonelIzin> list = izinMap.get(personelId);
-				for (Iterator iterator2 = list.iterator(); iterator2.hasNext();) {
-					PersonelIzin personelIzin = (PersonelIzin) iterator2.next();
-					if (ortakIslemler.setIzinDurum(pdksVardiyaGun, (PersonelIzin) personelIzin.clone()) != null) {
-						pdksVardiyaGun.setIzin(personelIzin);
-					}
-				}
-			}
+
 			boolean sil = false;
 			if (islemVardiya == null || gunDurum == 1 || vardiya.getId() == null || perIdList.contains(personelId)) {
 				sil = true;
