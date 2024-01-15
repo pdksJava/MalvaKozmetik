@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -74,8 +75,17 @@ public class OpenSessionHome extends EntityHome<User> implements Serializable {
 		super.create();
 	}
 
-	public boolean isKapatilabir(HttpSession session) {
-		boolean kapatilabir = session != null && !session.getId().equals(httpSession.getId()) && session.getAttribute(SessionListener.SESSION_USER_NAME) != null;
+	/**
+	 * @param session
+	 * @return
+	 */
+	public Boolean isKapatilabir(HttpSession session) {
+		Boolean kapatilabir = null;
+		try {
+			kapatilabir = session != null && !session.getId().equals(httpSession.getId()) && session.getAttribute(SessionListener.SESSION_USER_NAME) != null;
+		} catch (Exception e) {
+
+		}
 		return kapatilabir;
 	}
 
@@ -138,6 +148,14 @@ public class OpenSessionHome extends EntityHome<User> implements Serializable {
 		}
 		if (sessionFilterList.size() > 1)
 			sessionFilterList = PdksUtil.sortListByAlanAdi(sessionFilterList, "lastAccessedTime", Boolean.FALSE);
+		for (Iterator iterator = sessionList.iterator(); iterator.hasNext();) {
+			HttpSession httpSession = (HttpSession) iterator.next();
+			Boolean status = isKapatilabir(httpSession);
+			if (status == null) {
+				iterator.remove();
+			}
+
+		}
 		sessionList = null;
 		map = null;
 		return "";
