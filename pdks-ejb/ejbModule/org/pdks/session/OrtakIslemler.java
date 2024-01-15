@@ -10182,7 +10182,41 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public TreeMap<String, VardiyaGun> getIslemVardiyalar(List<Personel> personeller, Date baslamaTarih, Date bitisTarih, boolean veriYaz, Session session, boolean zamanGuncelle) throws Exception {
 		Calendar cal = Calendar.getInstance();
-		TreeMap<String, VardiyaGun> vardiyaMap = getVardiyalar(personeller, tariheGunEkleCikar(cal, baslamaTarih, -3), tariheGunEkleCikar(cal, bitisTarih, 3), null, veriYaz, session, zamanGuncelle);
+		List<Long> perIdList = new ArrayList<Long>();
+		for (Iterator iterator = personeller.iterator(); iterator.hasNext();) {
+			Personel per = (Personel) iterator.next();
+ 			perIdList.add(per.getId());
+ 		}
+		List<Integer> izinDurumList = new ArrayList<Integer>();
+		// izinDurumList.add(PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA);
+		izinDurumList.add(PersonelIzin.IZIN_DURUMU_REDEDILDI);
+		izinDurumList.add(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
+		HashMap parametreMap2 = new HashMap();
+		parametreMap2.put("baslangicZamani<", bitisTarih);
+		parametreMap2.put("bitisZamani>", baslamaTarih);
+		parametreMap2.put("izinTipi.bakiyeIzinTipi=", null);
+		parametreMap2.put("izinSahibi.id", perIdList);
+		if (izinDurumList.size() > 1)
+			parametreMap2.put("izinDurumu not ", izinDurumList);
+		else
+			parametreMap2.put("izinDurumu <> ", PersonelIzin.IZIN_DURUMU_REDEDILDI);
+		if (session != null)
+			parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<PersonelIzin> izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelIzin.class);
+		HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
+		for (PersonelIzin izin : izinList) {
+			Long id = izin.getIzinSahibi().getId();
+			List<PersonelIzin> list = izinMap.containsKey(id) ? izinMap.get(id) : new ArrayList<PersonelIzin>();
+			if (list.isEmpty()) {
+				logger.debug(id);
+				izinMap.put(id, list);
+			}
+
+			list.add(izin);
+		}
+		izinList = null;
+		izinDurumList = null;
+		TreeMap<String, VardiyaGun> vardiyaMap = getVardiyalar(personeller, tariheGunEkleCikar(cal, baslamaTarih, -3), tariheGunEkleCikar(cal, bitisTarih, 3), izinMap, veriYaz, session, zamanGuncelle);
 		fazlaMesaiSaatiAyarla(vardiyaMap);
 		Long id = null;
 		Date tarih1 = null, tarih2 = null;
@@ -11356,7 +11390,6 @@ public class OrtakIslemler implements Serializable {
 		return vardiyaGunList;
 	}
 
-	 
 	/**
 	 * @param dataKidemMap
 	 * @param session
