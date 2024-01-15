@@ -10263,9 +10263,22 @@ public class OrtakIslemler implements Serializable {
 		if (list != null && !list.isEmpty()) {
 			idList = new ArrayList<Long>();
 			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-				BaseObject bo = (BaseObject) iterator.next();
-				idList.add(bo.getId());
+				Object object = (Object) iterator.next();
+				try {
+					if (object == null)
+						continue;
+					if (object instanceof BaseObject) {
+						BaseObject bo = (BaseObject) object;
+						if (bo.getId() != null)
+							idList.add(bo.getId());
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+
 			}
+			if (idList.isEmpty())
+				idList = null;
 		}
 		return idList;
 	}
