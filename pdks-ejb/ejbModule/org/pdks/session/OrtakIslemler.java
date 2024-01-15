@@ -10191,18 +10191,18 @@ public class OrtakIslemler implements Serializable {
 		// izinDurumList.add(PersonelIzin.IZIN_DURUMU_BIRINCI_YONETICI_ONAYINDA);
 		izinDurumList.add(PersonelIzin.IZIN_DURUMU_REDEDILDI);
 		izinDurumList.add(PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
-		HashMap parametreMap2 = new HashMap();
-		parametreMap2.put("baslangicZamani<", bitisTarih);
-		parametreMap2.put("bitisZamani>", baslamaTarih);
-		parametreMap2.put("izinTipi.bakiyeIzinTipi=", null);
-		parametreMap2.put("izinSahibi.id", perIdList);
+		HashMap fields = new HashMap();
+		fields.put("baslangicZamani<", bitisTarih);
+		fields.put("bitisZamani>", baslamaTarih);
+		fields.put("izinTipi.bakiyeIzinTipi=", null);
+		fields.put("izinSahibi.id", perIdList);
 		if (izinDurumList.size() > 1)
-			parametreMap2.put("izinDurumu not ", izinDurumList);
+			fields.put("izinDurumu not ", izinDurumList);
 		else
-			parametreMap2.put("izinDurumu <> ", PersonelIzin.IZIN_DURUMU_REDEDILDI);
+			fields.put("izinDurumu <> ", PersonelIzin.IZIN_DURUMU_REDEDILDI);
 		if (session != null)
-			parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelIzin.class);
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<PersonelIzin> izinList = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
 		HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
 		for (PersonelIzin izin : izinList) {
 			Long id = izin.getIzinSahibi().getId();
