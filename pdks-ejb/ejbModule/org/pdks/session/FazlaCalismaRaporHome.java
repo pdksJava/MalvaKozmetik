@@ -718,7 +718,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param aylikPuantajSablon
 	 * @param denklestirmeDonemi
 	 */
-	public void fillPersonelDenklestirmeRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
+	public void fillPersonelDenklestirmeRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) throws Exception {
 		session.clear();
 		sirket = null;
 		denklestirmeDinamikAlanlar = null;
@@ -734,10 +734,11 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		departmanBolumAyni = Boolean.FALSE;
 		saveLastParameter();
 		departmanBolumAyni = (sirket != null) && (!sirket.isTesisDurumu());
-		if (sicilNo != null)
-			sicilNo = sicilNo.trim();
-		listeTemizle();
+
 		try {
+			if (sicilNo != null)
+				sicilNo = sicilNo.trim();
+			listeTemizle();
 			seciliBolum = null;
 
 			if (aylikPuantajDefault == null)
@@ -957,9 +958,8 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (!veriDolu())
 				PdksUtil.addMessageAvailableWarn("Aranan kriterlerde veri bulunmadı!");
 		} catch (Exception e3) {
-			logger.error("Pdks hata in : \n");
-			e3.printStackTrace();
-			logger.error("Pdks hata out : " + e3.getMessage());
+			ortakIslemler.loggerErrorYaz(sayfaURL, e3);
+			throw new Exception(e3);
 		}
 	}
 

@@ -26,8 +26,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
-import org.hibernate.validator.InvalidStateException;
-import org.hibernate.validator.InvalidValue;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.FlushModeType;
@@ -71,6 +69,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 	 */
 	private static final long serialVersionUID = 5201033120905302620L;
 	static Logger logger = Logger.getLogger(FazlaMesaiKontrolRaporHome.class);
+	public static String sayfaURL = "fazlaMesaiKontrolRapor";
 
 	@RequestParameter
 	Long personelDenklestirmeId;
@@ -669,7 +668,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 	 * @param denklestirmeDonemi
 	 */
 	@Transactional
-	public void fillFazlaMesaiKontrolRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
+	public void fillFazlaMesaiKontrolRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) throws Exception {
 		fazlaMesaiVardiyaGun = null;
 		Map<String, String> map1 = null;
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
@@ -707,25 +706,26 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		} catch (Exception e) {
 
 		}
-		departmanBolumAyni = sirket != null && sirket.isTesisDurumu() == false;
-		adres = map1.containsKey("host") ? map1.get("host") : "";
-		if (sicilNo != null)
-			sicilNo = sicilNo.trim();
-		hataYok = Boolean.FALSE;
-		sutIzniGoster = Boolean.FALSE;
-		partTimeGoster = Boolean.FALSE;
-		aylikPuantajSablon.getVardiyalar();
-		setAylikPuantajDefault(aylikPuantajSablon);
-		List<AylikPuantaj> puantajList = new ArrayList();
-		kaydetDurum = Boolean.FALSE;
-		String aksamBordroBasZamani = ortakIslemler.getParameterKey("aksamBordroBasZamani"), aksamBordroBitZamani = ortakIslemler.getParameterKey("aksamBordroBitZamani");
-		Integer[] basZaman = ortakIslemler.getSaatDakika(aksamBordroBasZamani), bitZaman = ortakIslemler.getSaatDakika(aksamBordroBitZamani);
-		aksamVardiyaBasSaat = basZaman[0];
-		aksamVardiyaBasDakika = basZaman[1];
-		aksamVardiyaBitDakika = bitZaman[1];
-
 		DenklestirmeAy gecenAy = null;
+		List<AylikPuantaj> puantajList = new ArrayList();
 		try {
+			departmanBolumAyni = sirket != null && sirket.isTesisDurumu() == false;
+			adres = map1.containsKey("host") ? map1.get("host") : "";
+			if (sicilNo != null)
+				sicilNo = sicilNo.trim();
+			hataYok = Boolean.FALSE;
+			sutIzniGoster = Boolean.FALSE;
+			partTimeGoster = Boolean.FALSE;
+			aylikPuantajSablon.getVardiyalar();
+			setAylikPuantajDefault(aylikPuantajSablon);
+
+			kaydetDurum = Boolean.FALSE;
+			String aksamBordroBasZamani = ortakIslemler.getParameterKey("aksamBordroBasZamani"), aksamBordroBitZamani = ortakIslemler.getParameterKey("aksamBordroBitZamani");
+			Integer[] basZaman = ortakIslemler.getSaatDakika(aksamBordroBasZamani), bitZaman = ortakIslemler.getSaatDakika(aksamBordroBitZamani);
+			aksamVardiyaBasSaat = basZaman[0];
+			aksamVardiyaBasDakika = basZaman[1];
+			aksamVardiyaBitDakika = bitZaman[1];
+
 			seciliBolum = null;
 
 			setVardiyaGun(null);
@@ -1438,25 +1438,9 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 				hataYok = sonCikisZamani != null && bugun.after(sonCikisZamani);
 			}
 
-		} catch (InvalidStateException e) {
-			InvalidValue[] invalidValues = e.getInvalidValues();
-			if (invalidValues != null) {
-				for (InvalidValue invalidValue : invalidValues) {
-					Object object = invalidValue.getBean();
-					if (object != null && object instanceof VardiyaGun) {
-						VardiyaGun vardiyaGun = (VardiyaGun) object;
-						PdksUtil.addMessageAvailableWarn(PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), PdksUtil.getDateFormat()) + " günü  alanı : " + invalidValue.getPropertyName() + " with message: " + invalidValue.getMessage());
-					} else
-						PdksUtil.addMessageAvailableWarn("Instance of bean class: " + invalidValue.getBeanClass().getSimpleName() + " has an invalid property: " + invalidValue.getPropertyName() + " with message: " + invalidValue.getMessage());
-				}
-			}
-			logger.error(e);
-			e.printStackTrace();
-
 		} catch (Exception e3) {
-			logger.error("Pdks hata in : \n");
-			e3.printStackTrace();
-			logger.error("Pdks hata out : " + e3.getMessage());
+			ortakIslemler.loggerErrorYaz(sayfaURL, e3);
+			throw new Exception(e3);
 
 		} finally {
 

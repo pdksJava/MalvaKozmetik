@@ -3383,6 +3383,22 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param sayfaAdi
+	 * @param ex
+	 */
+	public void loggerErrorYaz(String sayfaAdi, Exception ex) throws Exception {
+		StringBuffer sb = new StringBuffer();
+		sb.append(ex);
+		if (authenticatedUser != null && PdksUtil.hasStringValue(sayfaAdi) && PdksUtil.hasStringValue(authenticatedUser.getParametreJSON())) {
+			if (authenticatedUser.getParametreJSON().indexOf(sayfaAdi) > 0)
+				sb.append(authenticatedUser.getParametreJSON() + "\n");
+		}
+		logger.error(sb.toString());
+		sb = null;
+		throw new Exception(ex);
+	}
+
+	/**
 	 * @param user
 	 * @param session
 	 * @return
@@ -16207,45 +16223,49 @@ public class OrtakIslemler implements Serializable {
 								if (hareketKGS.getKapiView() != null && hareketKGS.getKapiView().getKapi() != null && hareketKGS.getKapiView().getKapi().isCikisKapi()) {
 									Vardiya islemVardiya = pdksVardiyaGun.getIslemVardiya(), oncekiIslemVardiya = oncekiVardiyaGun.getIslemVardiya();
 									if (islemVardiya != null && (islemVardiya.isCalisma() == false || hareketKGS.getZaman().after(oncekiIslemVardiya.getVardiyaFazlaMesaiBitZaman()))) {
-										Long cikisId = -oncekiVardiyaGun.getId(), girisId = -pdksVardiyaGun.getIdLong();
-										HareketKGS manuelCikis = new HareketKGS();
-										manuelCikis.setGecerliDegil(Boolean.FALSE);
-										manuelCikis.setKapiView(cikisKapi);
-										manuelCikis.setPersonel(hareketKGS.getPersonel());
-										manuelCikis.setZaman(PdksUtil.getDateTime(oncekiIslemVardiya.getVardiyaFazlaMesaiBitZaman()));
-										String aciklama = "";
+										try {
+											Long cikisId = -oncekiVardiyaGun.getId(), girisId = -pdksVardiyaGun.getIdLong();
+											HareketKGS manuelCikis = new HareketKGS();
+											manuelCikis.setGecerliDegil(Boolean.FALSE);
+											manuelCikis.setKapiView(cikisKapi);
+											manuelCikis.setPersonel(hareketKGS.getPersonel());
+											manuelCikis.setZaman(PdksUtil.getDateTime(oncekiIslemVardiya.getVardiyaFazlaMesaiBitZaman()));
+											String aciklama = "";
 
-										if (hareketKaydet)
-											cikisId = pdksEntityController.hareketEkle(manuelCikis.getKapiView(), manuelCikis.getPersonel(), manuelCikis.getZaman(), sistemUser, neden.getId(), aciklama, session);
-										manuelCikis = getHareketKGS(manuelCikis, cikisId, session);
-										oncekiVardiyaGun.addHareket(manuelCikis, hareketKaydet);
-										oncekiVardiyaGun.setHareketHatali(false);
-										HareketKGS manuelGiris = new HareketKGS();
-										manuelGiris.setGecerliDegil(Boolean.FALSE);
-										manuelGiris.setKapiView(girisKapi);
-										manuelGiris.setPersonel(hareketKGS.getPersonel());
-										manuelGiris.setZaman(PdksUtil.getDateTime(islemVardiya.getVardiyaFazlaMesaiBasZaman()));
-										if (hareketKaydet)
-											girisId = pdksEntityController.hareketEkle(manuelGiris.getKapiView(), manuelGiris.getPersonel(), manuelGiris.getZaman(), sistemUser, neden.getId(), aciklama, session);
+											if (hareketKaydet)
+												cikisId = pdksEntityController.hareketEkle(manuelCikis.getKapiView(), manuelCikis.getPersonel(), manuelCikis.getZaman(), sistemUser, neden.getId(), aciklama, session);
+											manuelCikis = getHareketKGS(manuelCikis, cikisId, session);
+											oncekiVardiyaGun.addHareket(manuelCikis, hareketKaydet);
+											oncekiVardiyaGun.setHareketHatali(false);
+											HareketKGS manuelGiris = new HareketKGS();
+											manuelGiris.setGecerliDegil(Boolean.FALSE);
+											manuelGiris.setKapiView(girisKapi);
+											manuelGiris.setPersonel(hareketKGS.getPersonel());
+											manuelGiris.setZaman(PdksUtil.getDateTime(islemVardiya.getVardiyaFazlaMesaiBasZaman()));
+											if (hareketKaydet)
+												girisId = pdksEntityController.hareketEkle(manuelGiris.getKapiView(), manuelGiris.getPersonel(), manuelGiris.getZaman(), sistemUser, neden.getId(), aciklama, session);
 
-										manuelGiris = getHareketKGS(manuelGiris, girisId, session);
-										ArrayList<HareketKGS> girisHareketler = new ArrayList<HareketKGS>(), hareketler = new ArrayList<HareketKGS>();
-										hareketler.addAll(pdksVardiyaGun.getHareketler());
-										if (pdksVardiyaGun.getGirisHareketleri() != null) {
-											girisHareketler.addAll(pdksVardiyaGun.getGirisHareketleri());
-											pdksVardiyaGun.getGirisHareketleri().clear();
+											manuelGiris = getHareketKGS(manuelGiris, girisId, session);
+											ArrayList<HareketKGS> girisHareketler = new ArrayList<HareketKGS>(), hareketler = new ArrayList<HareketKGS>();
+											hareketler.addAll(pdksVardiyaGun.getHareketler());
+											if (pdksVardiyaGun.getGirisHareketleri() != null) {
+												girisHareketler.addAll(pdksVardiyaGun.getGirisHareketleri());
+												pdksVardiyaGun.getGirisHareketleri().clear();
+											}
+											pdksVardiyaGun.setHareketler(null);
+											pdksVardiyaGun.addHareket(manuelGiris, hareketKaydet);
+											if (hareketler != null) {
+												if (pdksVardiyaGun.getHareketler() == null)
+													pdksVardiyaGun.setHareketler(new ArrayList<HareketKGS>());
+												pdksVardiyaGun.getHareketler().addAll(hareketler);
+											}
+											if (!girisHareketler.isEmpty())
+												pdksVardiyaGun.getGirisHareketleri().addAll(girisHareketler);
+											oncekiVardiyaGun.setAyrikHareketVar(Boolean.TRUE);
+											pdksVardiyaGun.setAyrikHareketVar(Boolean.TRUE);
+										} catch (Exception e) {
+											logger.error(pdksVardiyaGun.getVardiyaKeyStr() + " " + PdksUtil.getCurrentTimeStampStr());
 										}
-										pdksVardiyaGun.setHareketler(null);
-										pdksVardiyaGun.addHareket(manuelGiris, hareketKaydet);
-										if (hareketler != null) {
-											if (pdksVardiyaGun.getHareketler() == null)
-												pdksVardiyaGun.setHareketler(new ArrayList<HareketKGS>());
-											pdksVardiyaGun.getHareketler().addAll(hareketler);
-										}
-										if (!girisHareketler.isEmpty())
-											pdksVardiyaGun.getGirisHareketleri().addAll(girisHareketler);
-										oncekiVardiyaGun.setAyrikHareketVar(Boolean.TRUE);
-										pdksVardiyaGun.setAyrikHareketVar(Boolean.TRUE);
 
 									}
 								}

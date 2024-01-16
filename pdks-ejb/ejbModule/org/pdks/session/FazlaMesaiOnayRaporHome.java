@@ -28,7 +28,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
-import org.hibernate.validator.InvalidStateException;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.FlushModeType;
@@ -66,7 +65,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	static Logger logger = Logger.getLogger(FazlaMesaiOnayRaporHome.class);
 	public static String sayfaURL = "fazlaMesaiOnayRapor";
-	
+
 	@RequestParameter
 	Long personelDenklestirmeId;
 	@In(required = false, create = true)
@@ -624,7 +623,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	 * @param aylikPuantajSablon
 	 * @param denklestirmeDonemi
 	 */
-	public void fillPersonelDenklestirmeRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) {
+	public void fillPersonelDenklestirmeRaporDevam(AylikPuantaj aylikPuantajSablon, DepartmanDenklestirmeDonemi denklestirmeDonemi) throws Exception {
 
 		fazlaMesaiVardiyaGun = null;
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
@@ -635,11 +634,11 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		else
 			fmtMap.clear();
 		saveLastParameter();
-		departmanBolumAyni = sirket != null && sirket.isTesisDurumu() == false;
-		if (sicilNo != null)
-			sicilNo = sicilNo.trim();
 
 		try {
+			departmanBolumAyni = sirket != null && sirket.isTesisDurumu() == false;
+			if (sicilNo != null)
+				sicilNo = sicilNo.trim();
 			seciliBolum = null;
 
 			HashMap map = new HashMap();
@@ -756,11 +755,10 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					tabAdi = "onay0";
 
 			}
-		} catch (InvalidStateException e) {
-		} catch (Exception e3) {
-			logger.error("Pdks hata in : \n");
-			e3.printStackTrace();
-			logger.error("Pdks hata out : " + e3.getMessage());
+
+		} catch (Exception ex) {
+			ortakIslemler.loggerErrorYaz(sayfaURL, ex);
+			throw new Exception(ex);
 
 		} finally {
 

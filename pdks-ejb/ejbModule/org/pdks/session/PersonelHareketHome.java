@@ -292,7 +292,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	}
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
-	public String sayfaGirisAction() {
+	public String sayfaGirisAction() throws Exception {
 
 		if (personelList == null)
 			personelList = new ArrayList<Personel>();
@@ -461,7 +461,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	 * @param pdksPersonel
 	 * @return
 	 */
-	public String tekPersonelSecimIslemi(Personel pdksPersonel) {
+	public String tekPersonelSecimIslemi(Personel pdksPersonel) throws Exception {
 		fazlaMesaiPersonel = null;
 		if (pdksPersonel != null) {
 			aramaSecenekleri.setAd(pdksPersonel.getAd());
@@ -661,7 +661,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	}
 
 	@Transactional
-	public String saveGirisCikis() {
+	public String saveGirisCikis() throws Exception {
 		Long abhId = null;
 		try {
 			HareketKGS kgsHareket = getInstance();
@@ -701,7 +701,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 	}
 
 	@Transactional
-	public String save() {
+	public String save() throws Exception {
 		String islem = "";
 		HareketKGS kgsHareket = this.getInstance();
 		if (islemTipi.equals("E")) {
@@ -790,7 +790,7 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 		return islem;
 	}
 
-	public void fillHareketList() {
+	public void fillHareketList() throws Exception {
 		session.clear();
 		TreeMap<Long, KapiView> terminalGirisCikisMap = fillKGSKapiList();
 		manuelHareketDuzenle(false);
@@ -819,67 +819,59 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 				PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		} else {
 			saveLastParameter();
-			List<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.FALSE, session);
-			terminalDegistir = false;
-			if ((fazlaMesaiVardiyaGun != null || visibled != null) && PdksUtil.hasStringValue(sicilNo) && !sicilNoList.contains(sicilNo))
-				sicilNoList.add(sicilNo);
-			List<Personel> perList = null;
+			try {
+				List<String> sicilNoList = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, Boolean.FALSE, session);
+				terminalDegistir = false;
+				if ((fazlaMesaiVardiyaGun != null || visibled != null) && PdksUtil.hasStringValue(sicilNo) && !sicilNoList.contains(sicilNo))
+					sicilNoList.add(sicilNo);
+				List<Personel> perList = null;
 
-			if (ikRole == false && authenticatedUser.isDirektorSuperVisor() == false) {
-				aramaSecenekleri.setSirketId(null);
-				perList = ortakIslemler.getAramaSecenekleriPersonelList(authenticatedUser, tarih, aramaSecenekleri, session);
-				sicilNoList.clear();
-				for (Personel personel : perList)
-					sicilNoList.add(personel.getPdksSicilNo());
-				if (sicilNoList.isEmpty())
-					denklestirmeAyDurum = false;
-			} else
-				perList = ortakIslemler.getAramaSecenekleriPersonelList(authenticatedUser, tarih, aramaSecenekleri, session);
-			if (perList != null && perList.size() == 1)
-				islemVardiyaGun = getSeciliVardiyaGun(perList.get(0));
-			else if (visibled != null)
-				islemVardiyaGun = null;
-			hareket1List.clear();
-			if (sicilNoList != null && !sicilNoList.isEmpty()) {
-				HashMap parametreMap = new HashMap();
-				HashMap map = new HashMap();
-				StringBuffer sb = new StringBuffer();
-				sb.append("SELECT P." + Personel.COLUMN_NAME_KGS_PERSONEL + " from " + Personel.TABLE_NAME + " P WITH(nolock) ");
-				sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :p ");
-				map.put("p", sicilNoList);
-				if (session != null)
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<BigDecimal> idList = pdksEntityController.getObjectBySQLList(sb, map, null);
-				ArrayList<Long> personeller = new ArrayList<Long>();
-				for (BigDecimal bigDecimal : idList) {
-					personeller.add(bigDecimal.longValue());
-				}
-				List<HareketKGS> list = new ArrayList<HareketKGS>();
-				List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih, tarih, session);
+				if (ikRole == false && authenticatedUser.isDirektorSuperVisor() == false) {
+					aramaSecenekleri.setSirketId(null);
+					perList = ortakIslemler.getAramaSecenekleriPersonelList(authenticatedUser, tarih, aramaSecenekleri, session);
+					sicilNoList.clear();
+					for (Personel personel : perList)
+						sicilNoList.add(personel.getPdksSicilNo());
+					if (sicilNoList.isEmpty())
+						denklestirmeAyDurum = false;
+				} else
+					perList = ortakIslemler.getAramaSecenekleriPersonelList(authenticatedUser, tarih, aramaSecenekleri, session);
+				if (perList != null && perList.size() == 1)
+					islemVardiyaGun = getSeciliVardiyaGun(perList.get(0));
+				else if (visibled != null)
+					islemVardiyaGun = null;
+				hareket1List.clear();
+				if (sicilNoList != null && !sicilNoList.isEmpty()) {
+					HashMap parametreMap = new HashMap();
+					HashMap map = new HashMap();
+					StringBuffer sb = new StringBuffer();
+					sb.append("SELECT P." + Personel.COLUMN_NAME_KGS_PERSONEL + " from " + Personel.TABLE_NAME + " P WITH(nolock) ");
+					sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :p ");
+					map.put("p", sicilNoList);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					List<BigDecimal> idList = pdksEntityController.getObjectBySQLList(sb, map, null);
+					ArrayList<Long> personeller = new ArrayList<Long>();
+					for (BigDecimal bigDecimal : idList) {
+						personeller.add(bigDecimal.longValue());
+					}
+					List<HareketKGS> list = new ArrayList<HareketKGS>();
+					List<Long> kapiIdler = ortakIslemler.getPdksDonemselKapiIdler(tarih, tarih, session);
 
-				try {
 					parametreMap.clear();
 
-					try {
-						if (kapiIdler != null && !kapiIdler.isEmpty()) {
-							if (islemVardiyaGun == null)
-								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, PdksUtil.getDate(tarih), PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, tarih, 1)), HareketKGS.class, session);
-							else {
-								Vardiya vardiya = islemVardiyaGun.getIslemVardiya();
-								Date bitTarih = vardiya.getVardiyaFazlaMesaiBitZaman(), basTarih = vardiya.getVardiyaFazlaMesaiBasZaman();
-								if (vardiya.getVardiyaBitZaman().after(bitTarih))
-									bitTarih = vardiya.getVardiyaBitZaman();
-								list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, basTarih, bitTarih, HareketKGS.class, session);
-							}
+					if (kapiIdler != null && !kapiIdler.isEmpty()) {
+						if (islemVardiyaGun == null)
+							list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, PdksUtil.getDate(tarih), PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, tarih, 1)), HareketKGS.class, session);
+						else {
+							Vardiya vardiya = islemVardiyaGun.getIslemVardiya();
+							Date bitTarih = vardiya.getVardiyaFazlaMesaiBitZaman(), basTarih = vardiya.getVardiyaFazlaMesaiBasZaman();
+							if (vardiya.getVardiyaBitZaman().after(bitTarih))
+								bitTarih = vardiya.getVardiyaBitZaman();
+							list = ortakIslemler.getHareketBilgileri(kapiIdler, personeller, basTarih, bitTarih, HareketKGS.class, session);
 						}
-					} catch (Exception e) {
-						logger.error("Pdks hata in : \n");
-						e.printStackTrace();
-						logger.error("Pdks hata out : " + e.getMessage());
-
-						list = new ArrayList<HareketKGS>();
-
 					}
+
 					if (PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo())) {
 						if (personeller.size() == 1) {
 							map1.clear();
@@ -942,14 +934,13 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 						personel.setCheckBoxDurum(!puantajOnayDurum);
 						hareket1List.add(hareket);
 					}
-				} catch (Exception e) {
-					logger.error("Pdks hata in : \n");
-					e.printStackTrace();
-					logger.error("Pdks hata out : " + e.getMessage());
 
 				}
-
+			} catch (Exception ex) {
+				ortakIslemler.loggerErrorYaz(sayfaURL, ex);
+				throw new Exception(ex);
 			}
+
 		}
 		setPdksDenklestirmeAy(denklestirmeAy);
 		if (denklestirmeAyDurum && !hareket1List.isEmpty()) {

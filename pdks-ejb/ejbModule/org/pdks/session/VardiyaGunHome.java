@@ -7351,9 +7351,15 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		haftaTatilMesaiDurum = Boolean.FALSE;
 		if (!islemYapiliyor) {
 			islemYapiliyor = Boolean.TRUE;
-			if (aylikPuantajOlusturuluyor())
-				aylikPuantajOlusturuluyor();
-			islemYapiliyor = Boolean.FALSE;
+			try {
+				if (aylikPuantajOlusturuluyor())
+					aylikPuantajOlusturuluyor();
+				islemYapiliyor = Boolean.FALSE;
+			} catch (Exception ex) {
+				ortakIslemler.loggerErrorYaz(sayfaURL, ex);
+				throw new Exception(ex);
+			}
+
 		}
 		if (!(ikRole))
 			departmanBolumAyni = false;

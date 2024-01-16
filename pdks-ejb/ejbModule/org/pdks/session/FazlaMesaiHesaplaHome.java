@@ -1159,8 +1159,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 				} catch (Exception ex) {
 					list = new ArrayList<PersonelDenklestirmeTasiyici>();
-					logger.equals(ex);
-					ex.printStackTrace();
+					ortakIslemler.loggerErrorYaz(sayfaURL, ex);
 				}
 				if (testDurum)
 					logger.info("fillPersonelDenklestirmeDevam 5000 " + PdksUtil.getCurrentTimeStampStr());
