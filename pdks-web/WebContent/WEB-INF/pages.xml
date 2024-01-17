@@ -38,7 +38,7 @@
 	</exception>
 	<exception class="org.jboss.seam.security.AuthorizationException">
 		<redirect view-id="/error.xhtml">
-			<message severity="error">You don't have permission to access this resource</message>
+			<message severity="error">#{messages['org.jboss.seam.notAccessAuthorization']}</message>
 		</redirect>
 	</exception>
 	<exception class="org.jboss.seam.security.NotLoggedInException">
@@ -48,12 +48,12 @@
 	</exception>
 	<exception class="javax.faces.application.ViewExpiredException">
 		<redirect view-id="/login.xhtml">
-			<message>Oturum süreniz doldu, tekrar giriş yapınız</message>
+			<message severity="warn">#{messages['org.jboss.seam.sessionExpired']}</message>
 		</redirect>
 	</exception>
 	<exception>
 		<redirect view-id="/error.xhtml">
-			<message severity="error">Unexpected error, please try again</message>
+			<message severity="error">#{messages['org.jboss.seam.unExpectedError']}</message>
 		</redirect>
 	</exception>
 	<!-- <exception > <redirect view-id="/login.xhtml"> <message>Oturum süreniz doldu, tekrar giriş yapınız</message> </redirect> </exception> <exception> 
