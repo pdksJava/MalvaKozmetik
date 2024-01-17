@@ -8,7 +8,7 @@
 			</rule>
 		</navigation>
 	</page>
-	<page view-id="*">
+ 	<page view-id="*">
 		<navigation>
 			<rule if-outcome="login">
 				<redirect view-id="/login.xhtml" />
@@ -17,23 +17,23 @@
 	</page>
 	<exception class="org.jboss.seam.framework.EntityNotFoundException">
 		<redirect view-id="/error.xhtml">
-			<message severity="warn">Record not found</message>
+			<message severity="warn">#{messages['org.jboss.seam.recordNotFound']}</message>
 		</redirect>
 	</exception>
 	<exception class="javax.persistence.EntityNotFoundException">
 		<redirect view-id="/error.xhtml">
-			<message severity="warn">Record not found</message>
+			<message severity="warn">#{messages['org.jboss.seam.recordNotFound']}</message>
 		</redirect>
 	</exception>
 	<exception class="javax.persistence.EntityExistsException">
 		<redirect view-id="/error.xhtml">
-			<message severity="warn">Duplicate record</message>
+			<message severity="warn">#{messages['org.jboss.seam.duplicateRecord']}</message>
 		</redirect>
 	</exception>
 	<exception class="javax.persistence.OptimisticLockException">
 		<end-conversation />
 		<redirect view-id="/error.xhtml">
-			<message severity="warn">Another user changed the same data, please try again</message>
+			<message severity="warn">#{messages['org.jboss.seam.anotherUserChangedSameData']}</message>
 		</redirect>
 	</exception>
 	<exception class="org.jboss.seam.security.AuthorizationException">
