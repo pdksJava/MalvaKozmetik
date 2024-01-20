@@ -13,6 +13,8 @@ import org.pdks.entity.PersonelIzin;
 import org.pdks.security.entity.User;
 import org.hibernate.Session;
 
+import com.pdks.webservice.PersonelERP;
+
 public interface ERPController {
 
 	/**
@@ -20,7 +22,7 @@ public interface ERPController {
 	 * @param user
 	 * @throws Exception
 	 */
-	void setFazlaMesaiUcretRFC(List<PersonelDenklestirme> sapMesaiList,User user, Session session) throws Exception;
+	void setFazlaMesaiUcretRFC(List<PersonelDenklestirme> sapMesaiList, User user, Session session) throws Exception;
 
 	/**
 	 * @param izin
@@ -28,6 +30,16 @@ public interface ERPController {
 	 * @throws Exception
 	 */
 	String setIzinRFC(PersonelIzin izin) throws Exception;
+
+	/**
+	 * @param session
+	 * @param personelList
+	 * @param baslangicZamani
+	 * @param bitisZamani
+	 * @return
+	 * @throws Exception
+	 */
+	List<PersonelERP> topluHaldePersonelBilgisiNoSapDBGetir(Session session, List<String> personelList, Date baslangicZamani, Date bitisZamani) throws Exception;
 
 	/**
 	 * @param session
@@ -67,7 +79,6 @@ public interface ERPController {
 	 */
 	LinkedHashMap topluHaldeIscileriVeriGetir(Session session, int icDerinlik, boolean yoneticiEkle, ArrayList<String> personelNo, Date baslangicZamani, Date bitisZamani, TreeMap bordroAltBirimiMap, TreeMap masrafYeriMap) throws Exception;
 
-	
 	/**
 	 * @param perNoList
 	 * @param sapKodu
@@ -75,12 +86,12 @@ public interface ERPController {
 	 * @throws Exception
 	 */
 	public List<Personel> pdksTanimsizPersonel(List<String> perNoList, String sapKodu) throws Exception;
-	
+
 	/**
 	 * @param izinList
 	 * @return
 	 * @throws Exception
 	 */
 	public TreeMap<Long, String> setRFCIzinList(List<PersonelIzin> izinList) throws Exception;
-	
+
 }

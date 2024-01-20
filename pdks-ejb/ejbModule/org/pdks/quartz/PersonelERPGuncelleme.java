@@ -154,35 +154,39 @@ public class PersonelERPGuncelleme implements Serializable {
 		User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
 
 		try {
-			List<Long> personelIdList = personelERPGuncelle(sistemAdminUser, session);
-			if (!personelIdList.isEmpty()) {
-				HashMap fields = new HashMap();
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				fields.put("id", personelIdList);
-				List<PersonelView> personelList = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectList(fields, PersonelKGS.class));
-				HashMap sonucMap = ortakIslemler.fillEkSahaTanimBul(Boolean.TRUE, null, session);
-				TreeMap<String, Tanim> tanimMap = (TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap");
-				if (sistemAdminUser != null)
-					sistemAdminUser.setAdmin(Boolean.TRUE);
-				bo = ortakIslemler.personelExcelDevam(Boolean.TRUE, personelList, tanimMap, sistemAdminUser, null, session);
-				if (bo != null) {
-					List<Dosya> fileList = new ArrayList<Dosya>();
-					Dosya dosyaExcel = new Dosya();
-					if (time == null)
-						time = new Date();
-					dosyaExcel.setDosyaAdi("personelERP_" + PdksUtil.convertToDateString(time, "yyyyMMdd") + "Listesi.xlsx");
-					dosyaExcel.setDosyaIcerik(bo.toByteArray());
-					fileList.add(dosyaExcel);
-					String zipDosyaAdi = "personelERP_" + PdksUtil.convertToDateString(time, "yyyyMMdd") + ".zip";
-					File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, fileList);
-					if (file != null && file.exists()) {
-						dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
-						file.deleteOnExit();
+			if (ortakIslemler.getParameterKeyHasStringValue("personelERPTableViewAdi")) {
+				ortakIslemler.personelERPDBGuncelle(null, session);
+			} else {
+
+				List<Long> personelIdList = personelERPGuncelle(sistemAdminUser, session);
+				if (!personelIdList.isEmpty()) {
+					HashMap fields = new HashMap();
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+					fields.put("id", personelIdList);
+					List<PersonelView> personelList = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectList(fields, PersonelKGS.class));
+					HashMap sonucMap = ortakIslemler.fillEkSahaTanimBul(Boolean.TRUE, null, session);
+					TreeMap<String, Tanim> tanimMap = (TreeMap<String, Tanim>) sonucMap.get("ekSahaTanimMap");
+					if (sistemAdminUser != null)
+						sistemAdminUser.setAdmin(Boolean.TRUE);
+					bo = ortakIslemler.personelExcelDevam(Boolean.TRUE, personelList, tanimMap, sistemAdminUser, null, session);
+					if (bo != null) {
+						List<Dosya> fileList = new ArrayList<Dosya>();
+						Dosya dosyaExcel = new Dosya();
+						if (time == null)
+							time = new Date();
+						dosyaExcel.setDosyaAdi("personelERP_" + PdksUtil.convertToDateString(time, "yyyyMMdd") + "Listesi.xlsx");
+						dosyaExcel.setDosyaIcerik(bo.toByteArray());
+						fileList.add(dosyaExcel);
+						String zipDosyaAdi = "personelERP_" + PdksUtil.convertToDateString(time, "yyyyMMdd") + ".zip";
+						File file = ortakIslemler.dosyaZipFileOlustur(zipDosyaAdi, fileList);
+						if (file != null && file.exists()) {
+							dosya = ortakIslemler.dosyaFileOlustur(zipDosyaAdi, file, Boolean.TRUE);
+							file.deleteOnExit();
+						}
 					}
+
 				}
-
 			}
-
 		} catch (Exception ex) {
 			logger.error(ex);
 			ex.printStackTrace();

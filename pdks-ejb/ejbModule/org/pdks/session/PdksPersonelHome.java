@@ -1021,18 +1021,51 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	/**
 	 * @return
+	 * @throws Exception
 	 */
-	public String erpVeriGuncelle() {
-		erpVeriGuncelle(null, getInstance(), Boolean.FALSE);
+	public String erpVeriGuncelle() throws Exception {
+		Personel personel = getInstance();
+ 		if (personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("E"))
+			erpVeriGuncelle(null, personel, Boolean.FALSE);
+		else if (ortakIslemler.getParameterKeyHasStringValue("personelERPTableViewAdi")) {
+			List<String> perNoList = new ArrayList<String>();
+			perNoList.add(personel.getPdksSicilNo());
+			List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(perNoList, session);
+			if (updateList != null && updateList.isEmpty()) {
+				HashMap fields = new HashMap();
+				fields.put("pdksSicilNo", personel.getPdksSicilNo());
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				Personel personel2 = (Personel) pdksEntityController.getObjectByInnerObject(fields, Personel.class);
+				if (personel2 != null)
+					setInstance(personel2);
+			}
+		}
+
 		return "";
 	}
 
 	/**
 	 * @param personelView
+	 * @throws Exception
 	 */
-	public void kayitSapGuncelle(PersonelView personelView) {
+	public void kayitERPGuncelle(PersonelView personelView) throws Exception {
 		Personel personel = personelView.getPdksPersonel();
-		erpVeriGuncelle(personelView, personel, Boolean.TRUE);
+		if (personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("E"))
+			erpVeriGuncelle(personelView, personel, Boolean.TRUE);
+		else if (ortakIslemler.getParameterKeyHasStringValue("personelERPTableViewAdi")) {
+			if (personel != null && PdksUtil.hasStringValue(personel.getPdksSicilNo())) {
+				List<String> list = new ArrayList<String>();
+				list.add(personelView.getPdksPersonel().getPdksSicilNo());
+				List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(list, session);
+				if (updateList != null) {
+					if (updateList.isEmpty()) {
+						fillPersonelKGSList();
+						PdksUtil.addMessageInfo(personel.getPdksSicilNo() + " " + personel.getAdSoyad() + " güncellendi");
+					}
+				}
+			}
+		}
 	}
 
 	/**

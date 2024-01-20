@@ -655,23 +655,12 @@ public class PersonelERP extends BaseERPObject {
 		this.yoneticiPerNo = value;
 	}
 
-	/**
-	 * Gets the value of the grubaGirisTarihi property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
+	 
 	public String getGrubaGirisTarihi() {
 		return grubaGirisTarihi;
 	}
 
-	/**
-	 * Sets the value of the grubaGirisTarihi property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
+ 
 	public void setGrubaGirisTarihi(String value) {
 		this.grubaGirisTarihi = value;
 	}

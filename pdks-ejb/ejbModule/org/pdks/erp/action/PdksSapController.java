@@ -34,6 +34,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage.Severity;
 
+import com.pdks.webservice.PersonelERP;
 import com.sap.mw.jco.IFunctionTemplate;
 import com.sap.mw.jco.IRepository;
 import com.sap.mw.jco.JCO;
@@ -977,4 +978,8 @@ public class PdksSapController implements ERPController, Serializable {
 		return map;
 	}
 
+	public List<PersonelERP> topluHaldePersonelBilgisiNoSapDBGetir(Session session, List<String> personelList, Date baslangicZamani, Date bitisZamani) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

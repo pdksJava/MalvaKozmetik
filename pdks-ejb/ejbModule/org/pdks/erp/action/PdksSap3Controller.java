@@ -31,6 +31,7 @@ import org.hibernate.Session;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 
+import com.pdks.webservice.PersonelERP;
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoFunction;
 import com.sap.conn.jco.JCoParameterList;
@@ -902,4 +903,8 @@ public class PdksSap3Controller implements ERPController, Serializable {
 
 	}
 
+	public List<PersonelERP> topluHaldePersonelBilgisiNoSapDBGetir(Session session, List<String> personelList, Date baslangicZamani, Date bitisZamani) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

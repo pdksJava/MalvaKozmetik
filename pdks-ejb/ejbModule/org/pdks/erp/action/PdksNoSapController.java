@@ -24,6 +24,8 @@ import org.hibernate.Session;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 
+import com.pdks.webservice.PersonelERP;
+
 @Name("pdksNoSapController")
 public class PdksNoSapController implements ERPController, Serializable {
 
@@ -109,6 +111,11 @@ public class PdksNoSapController implements ERPController, Serializable {
 
 	public TreeMap<Long, String> setRFCIzinList(List<PersonelIzin> izinList) throws Exception {
 		 
+		return null;
+	}
+
+	public List<PersonelERP> topluHaldePersonelBilgisiNoSapDBGetir(Session session, List<String> personelList, Date baslangicZamani, Date bitisZamani) throws Exception {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

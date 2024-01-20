@@ -140,6 +140,7 @@ import org.pdks.pdf.action.HeaderIText;
 import org.pdks.pdf.action.HeaderLowagie;
 import org.pdks.pdf.action.PDFITextUtils;
 import org.pdks.pdf.action.PDFUtils;
+import org.pdks.sap.entity.PersonelERPDB;
 import org.pdks.security.entity.MenuItemConstant;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
@@ -169,12 +170,14 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.lowagie.text.Table;
 import com.pdks.mail.model.MailManager;
 import com.pdks.notUse.IsKurVardiyaGun;
+import com.pdks.webservice.Exception_Exception;
 import com.pdks.webservice.MailFile;
 import com.pdks.webservice.MailObject;
 import com.pdks.webservice.MailPersonel;
 import com.pdks.webservice.MailStatu;
 import com.pdks.webservice.PdksSoapVeriAktar;
 import com.pdks.webservice.PdksSoapVeriAktarService;
+import com.pdks.webservice.PersonelERP;
 
 /**
  * @author Hasan Sayar
@@ -4817,6 +4820,108 @@ public class OrtakIslemler implements Serializable {
 		String value = getParameterKey(key);
 		boolean deger = PdksUtil.hasStringValue(value);
 		return deger;
+	}
+
+	/**
+	 * @param perNoList
+	 * @param session
+	 * @return
+	 * @throws Exception_Exception
+	 */
+	public List<PersonelERP> personelERPDBGuncelle(List<String> perNoList, Session session) throws Exception {
+		List<PersonelERP> personelERPReturnList = null;
+		String parameterName = "personelERPTableViewAdi";
+		if (getParameterKeyHasStringValue(parameterName)) {
+			List<PersonelERPDB> personelList = getPersonelERPDBList(perNoList, parameterName, session);
+			if (personelList != null && !personelList.isEmpty()) {
+				List<PersonelERP> personelERPList = new ArrayList<PersonelERP>();
+				for (PersonelERPDB personelERPDB : personelList) {
+					personelERPList.add(personelERPDB.getPersonelERP());
+				}
+				PdksSoapVeriAktar service = getPdksSoapVeriAktar();
+				try {
+					personelERPReturnList = service.savePersoneller(personelERPList);
+				} catch (Exception ex) {
+					loggerErrorYaz(null, ex);
+				}
+				if (authenticatedUser != null) {
+					if (personelERPReturnList != null) {
+						for (Iterator iterator = personelERPReturnList.iterator(); iterator.hasNext();) {
+							PersonelERP personelERP = (PersonelERP) iterator.next();
+							if (personelERP.getYazildi() != null && personelERP.getYazildi().booleanValue())
+								iterator.remove();
+							else if (perNoList == null) {
+								for (String message : personelERP.getHataList()) {
+									PdksUtil.addMessageWarn(message);
+								}
+
+							}
+
+						}
+
+					}
+				} else
+					personelERPReturnList = null;
+				personelERPList = null;
+			}
+			personelList = null;
+
+		}
+		return personelERPReturnList;
+	}
+
+	/**
+	 * @param perNoList
+	 * @param parameterName
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PersonelERPDB> getPersonelERPDBList(List<String> perNoList, String parameterName, Session session) throws Exception {
+		String personelERPTableViewAdi = getParameterKey(parameterName);
+		List<Tanim> list = getTanimList(Tanim.TIPI_ERP_PERSONEL_DB, session);
+		List<PersonelERPDB> personelList = null;
+		Parameter parameter = null;
+		if (!list.isEmpty()) {
+			HashMap parametreMap = new HashMap();
+			StringBuffer sb = new StringBuffer("SELECT ");
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Tanim tanim = (Tanim) iterator.next();
+				String erpAlan = (PdksUtil.hasStringValue(tanim.getErpKodu()) ? tanim.getErpKodu() : "null");
+				sb.append((erpAlan.equalsIgnoreCase(tanim.getKodu()) ? "" : erpAlan + " AS ") + "" + tanim.getKodu());
+				if (iterator.hasNext())
+					sb.append(", ");
+			}
+			sb.append(" FROM " + personelERPTableViewAdi + " WITH(nolock) ");
+			if (perNoList != null && !perNoList.isEmpty()) {
+				sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_PERSONEL_NO + " :p ");
+				parametreMap.put("p", perNoList);
+			} else {
+				parameter = getParameter(session, parameterName);
+				Date tarih = parameter.getChangeDate();
+				if (tarih != null) {
+					tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
+					sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_ISTEN_AYRILMA_TARIHI + " >=:t ");
+					parametreMap.put("t", tarih);
+				}
+			}
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+
+			try {
+				personelList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelERPDB.class);
+			} catch (Exception ex1) {
+				loggerErrorYaz(null, ex1);
+			}
+			if (personelList != null && !personelList.isEmpty()) {
+				if (parameter != null) {
+					parameter.setChangeDate(new Date());
+					pdksEntityController.saveOrUpdate(session, entityManager, parameter);
+					session.flush();
+				}
+			}
+		}
+		return personelList;
 	}
 
 	/**
