@@ -2082,15 +2082,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 			map.put("b2", izinlerBitTarih);
 			map.put("d1", PersonelIzin.IZIN_DURUMU_REDEDILDI);
 			map.put("d2", PersonelIzin.IZIN_DURUMU_SISTEM_IPTAL);
-			List<Object[]> list = pdksDAO.getNativeSQLList(map, sb, null);
+			List<Object[]> list = PdksUtil.isPazar() == false ? pdksDAO.getNativeSQLList(map, sb, null) : null;
 			map.clear();
-			for (Object[] objects : list) {
-				String ref = (String) objects[0];
-				if (!kayitIzinList.contains(ref)) {
-					map.put(((BigDecimal) objects[2]).longValue(), objects[1]);
+			if (list != null) {
+				for (Object[] objects : list) {
+					String ref = (String) objects[0];
+					if (!kayitIzinList.contains(ref))
+						map.put(((BigDecimal) objects[2]).longValue(), objects[1]);
 				}
 			}
-			if (!map.isEmpty() && PdksUtil.isPazar() == false) {
+			if (!map.isEmpty()) {
 				List<IzinReferansERP> personelIzinList = pdksDAO.getObjectByInnerObjectList("izin.id", new ArrayList<Long>(map.keySet()), IzinReferansERP.class);
 				Date dateBugun = PdksUtil.getDate(new Date());
 				for (Iterator iterator = personelIzinList.iterator(); iterator.hasNext();) {
