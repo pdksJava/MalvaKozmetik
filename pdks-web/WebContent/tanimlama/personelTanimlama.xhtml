@@ -46,8 +46,8 @@
 								<ui:fragment
 									rendered="#{pdksPersonelHome.personelERPGuncelleme=='1' or ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView)}">
 									<ui:fragment rendered="#{authenticatedUser.admin}">
-										<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.yeniPersonelleriGuncelle()}"
-											value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle" />
+										<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.yeniPersonelleriGuncelle()}" reRender="pdksPersonelList,aramaSonuc"
+											value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Yeni Güncelle" />
 									</ui:fragment>
 								</ui:fragment>
 

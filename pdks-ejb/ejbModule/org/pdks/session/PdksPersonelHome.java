@@ -1895,7 +1895,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	public String yeniPersonelleriGuncelle() throws Exception {
 		List<PersonelView> list = null;
 		try {
-
 			if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelKGS.TABLE_NAME + " PS WITH(nolock) ");
@@ -1906,7 +1905,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				HashMap fields = new HashMap();
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<String> perNoList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelKGS.class);
+				List<String> perNoList = pdksEntityController.getObjectBySQLList(sb, fields, null);
 				if (!perNoList.isEmpty()) {
 					List<PersonelERPDB> personelERPDBList = ortakIslemler.getPersonelERPDBList(perNoList, ortakIslemler.getParametrePersonelERPTableView(), session);
 					if (!personelERPDBList.isEmpty()) {
@@ -1915,14 +1914,21 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							perNoDbList.add(personelERPDB.getPersonelNo());
 						}
 						List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(perNoDbList, session);
-						if (updateList != null && updateList.isEmpty()) {
+						if (updateList != null) {
 							fields.clear();
 							fields.put("pdksPersonel.pdksSicilNo", perNoDbList);
 							if (session != null)
 								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 							List<PersonelView> personelList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelView.class);
-							if (!personelList.isEmpty())
-								list = new ArrayList<PersonelView>(personelList);
+							if (!personelList.isEmpty()) {
+								list = new ArrayList<PersonelView>();
+								Date bugun = new Date();
+								for (PersonelView personelView : personelList) {
+									PersonelKGS personelKGS = personelView.getPersonelKGS();
+									if (personelKGS.getKapiSirket() != null && personelKGS.getKapiSirket().getDurum() && personelKGS.getKapiSirket().getBitTarih().after(bugun))
+										list.add(personelView);
+								}
+ 							}
 							personelList = null;
 						}
 						updateList = null;
