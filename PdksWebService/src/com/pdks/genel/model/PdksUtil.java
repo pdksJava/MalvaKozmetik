@@ -2026,44 +2026,87 @@ public class PdksUtil implements Serializable {
 				delim = ":";
 			else if (str.indexOf(".") > 0)
 				delim = ".";
-			else if (str.indexOf("-") > 0)
-				delim = "-";
-			if (delim != null) {
-				StringTokenizer st = new StringTokenizer(str, delim);
-				String saatStr = st.nextToken();
-				try {
-					saatDeger = Integer.parseInt(saatStr);
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					saatDeger = -1;
-				}
-				String dakikaStr = st.nextToken();
-				try {
-					dakikaDeger = Integer.parseInt(dakikaStr);
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					dakikaDeger = -1;
-				}
-				st = null;
-			} else {
-				try {
-					saatDeger = Integer.parseInt(str);
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					saatDeger = -1;
-				}
-				dakikaDeger = 0;
+
+			if (delim == null) {
+				delim = ":";
+				str = str + delim + "0";
 			}
-			durum = saat == saatDeger && dakika == dakikaDeger;
+			StringTokenizer st = new StringTokenizer(str, delim);
+			String saatStr = st.nextToken();
+			String dakikaStr = st.nextToken();
+			List<String> saatList = new ArrayList<String>(), dakikaList = new ArrayList<String>();
+			try {
+				getQuartList(saatStr, saatList, 24);
+				getQuartList(dakikaStr, dakikaList, 60);
+			} catch (Exception e) {
+			}
+			durum = false;
+			st = null;
+			for (String saatData : saatList) {
+				try {
+					saatDeger = Integer.parseInt(saatData);
+				} catch (Exception e) {
+					saatDeger = -1;
+				}
+				if (saatDeger < 0 || saatDeger > 23)
+					continue;
+				for (String dakikaData : dakikaList) {
+					try {
+						dakikaDeger = Integer.parseInt(dakikaData);
+					} catch (Exception e) {
+						dakikaDeger = -1;
+					}
+					if (dakikaDeger < 0 || dakikaDeger > 59)
+						continue;
+					durum = saat == saatDeger && dakika == dakikaDeger;
+					if (durum)
+						break;
+				}
+				if (durum)
+					break;
+			}
+			saatList = null;
+			dakikaList = null;
 
 		}
 		return durum;
+	}
+
+	/**
+	 * @param str
+	 * @param list
+	 * @param lastIndex
+	 */
+	private static void getQuartList(String str, List<String> list, int lastIndex) throws Exception {
+		if (str.equals("*") || str.equals("-") || str.equals(",")) {
+			for (int i = 0; i < lastIndex; i++)
+				list.add(String.valueOf(i));
+		} else if (str.indexOf(",") > 0) {
+			list.addAll(getListStringTokenizer(str, ","));
+		} else if (str.indexOf("-") >= 0) {
+			int bas = 0, bit = lastIndex;
+			if (str.startsWith("-")) {
+				if (str.length() > 1)
+					bit = Integer.parseInt(str.substring(1));
+			} else if (str.endsWith("-")) {
+				bas = Integer.parseInt(str.substring(0, str.length() - 1));
+			} else {
+				StringTokenizer st2 = new StringTokenizer(str, "-");
+				String basStr = st2.nextToken();
+				String bitStr = st2.nextToken();
+				bas = Integer.parseInt(basStr);
+				if (bas < 0)
+					bas = 0;
+				bit = Integer.parseInt(bitStr) + 1;
+				if (bit > lastIndex)
+					bit = lastIndex;
+			}
+
+			for (int i = bas; i < bit; i++)
+				list.add(String.valueOf(i));
+
+		} else
+			list.add(str);
 	}
 
 	public static void setBundleName(String bundleName) {

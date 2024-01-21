@@ -28,6 +28,7 @@ public class Sirket extends BaseObject {
 	public static final String COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR = "ISTEN_AYR_TAR_CALISIYOR";
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
 	public static final String COLUMN_NAME_TESIS_DURUM = "TESIS_DURUM";
+	public static final String COLUMN_NAME_ERP_DURUM = "ERP_DURUM";
 	public static final String SIRKET_ERP_KODU = "3030";
 	private String ad, aciklama, erpKodu, lpdapOnEk;
 	private Boolean erp = Boolean.FALSE, ldap = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE;
@@ -110,7 +111,7 @@ public class Sirket extends BaseObject {
 		this.lpdapOnEk = lpdapOnEk;
 	}
 
-	@Column(name = "ERP_DURUM", nullable = false)
+	@Column(name = SIRKET_ERP_KODU, nullable = false)
 	public Boolean getErp() {
 		return erp;
 	}

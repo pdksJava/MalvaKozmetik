@@ -56,7 +56,6 @@ import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaSablonu;
-import org.pdks.sap.entity.PersonelERPDB;
 import org.pdks.security.entity.DefaultPasswordGenerator;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
@@ -1895,48 +1894,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	public String yeniPersonelleriGuncelle() throws Exception {
 		List<PersonelView> list = null;
 		try {
-			if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
-				StringBuffer sb = new StringBuffer();
-				sb.append("SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelKGS.TABLE_NAME + " PS WITH(nolock) ");
-				sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
-				sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
-				sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = PS." + PersonelKGS.COLUMN_NAME_ID);
-				sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 AND P." + Personel.COLUMN_NAME_ID + " IS NULL");
-				sb.append(" AND PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " NOT IN ( SELECT " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " FROM " + Personel.TABLE_NAME + " WITH(nolock) )");
-				HashMap fields = new HashMap();
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<String> perNoList = pdksEntityController.getObjectBySQLList(sb, fields, null);
-				if (!perNoList.isEmpty()) {
-					List<PersonelERPDB> personelERPDBList = ortakIslemler.getPersonelERPDBList(perNoList, ortakIslemler.getParametrePersonelERPTableView(), session);
-					if (!personelERPDBList.isEmpty()) {
-						List<String> perNoDbList = new ArrayList<String>();
-						for (PersonelERPDB personelERPDB : personelERPDBList) {
-							perNoDbList.add(personelERPDB.getPersonelNo());
-						}
-						List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(perNoDbList, session);
-						if (updateList != null) {
-							fields.clear();
-							fields.put("pdksPersonel.pdksSicilNo", perNoDbList);
-							if (session != null)
-								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-							List<PersonelView> personelList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelView.class);
-							if (!personelList.isEmpty()) {
-								list = new ArrayList<PersonelView>();
-								Date bugun = new Date();
-								for (PersonelView personelView : personelList) {
-									PersonelKGS personelKGS = personelView.getPersonelKGS();
-									if (personelKGS.getKapiSirket() != null && personelKGS.getKapiSirket().getDurum() && personelKGS.getKapiSirket().getBitTarih().after(bugun))
-										list.add(personelView);
-								}
-							}
-							personelList = null;
-						}
-						updateList = null;
-					}
-				}
-			} else if (personelERPGuncelleme.equals("1"))
-				list = ortakIslemler.yeniPersonelleriOlustur(session);
+			list = ortakIslemler.yeniPersonelleriOlustur(session);
 			if (list != null && !list.isEmpty())
 				fillPersonelTablolar(true);
 		} catch (Exception ex) {

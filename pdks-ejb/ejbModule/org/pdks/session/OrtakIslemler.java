@@ -3391,11 +3391,11 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public void loggerErrorYaz(String sayfaAdi, Exception ex) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		sb.append(ex);
 		if (authenticatedUser != null && PdksUtil.hasStringValue(sayfaAdi) && PdksUtil.hasStringValue(authenticatedUser.getParametreJSON())) {
 			if (authenticatedUser.getParametreJSON().indexOf(sayfaAdi) > 0)
 				sb.append(authenticatedUser.getParametreJSON() + "\n");
 		}
+		sb.append(ex);
 		logger.error(sb.toString());
 		sb = null;
 		throw new Exception(ex);
@@ -3876,142 +3876,187 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @param session
 	 * @return
+	 * @throws Exception
 	 */
 	@Transactional
-	public List<PersonelView> yeniPersonelleriOlustur(Session session) {
+	public List<PersonelView> yeniPersonelleriOlustur(Session session) throws Exception {
+		List<PersonelView> list = new ArrayList<PersonelView>();
 		if (session == null)
 			session = PdksUtil.getSession(entityManager, true);
-		List<PersonelView> list = new ArrayList<PersonelView>();
-		HashMap map = new HashMap();
-		StringBuffer sb = new StringBuffer();
-		sb.append("SELECT P.* from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
-		sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_PERSONEL_ID + " IS NULL AND   P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " LIKE '9%' AND  LEN(P." + PersonelKGS.COLUMN_NAME_SICIL_NO + ") = 8   AND ");
-		sb.append(" (NOT (UPPER(P." + PersonelKGS.COLUMN_NAME_ACIKLAMA + ") LIKE '%İPTAL %' OR   UPPER(P." + PersonelKGS.COLUMN_NAME_ACIKLAMA + ") LIKE '%IPTAL %'))");
-
-		if (session != null)
-			map.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelView> perList = getPersonelViewByPersonelKGSList(pdksEntityController.getObjectBySQLList(sb, map, PersonelKGS.class));
-		if (!perList.isEmpty()) {
-			logger.info("yeniPersonelleriOlustur (" + perList.size() + ") in " + getCurrentTimeStampStr());
-			List<String> siciller = new ArrayList<String>();
-			// perList.clear();
-			String sicilNo = "";
-			for (Iterator iterator = perList.iterator(); iterator.hasNext();) {
-				PersonelView personelView = (PersonelView) iterator.next();
-				try {
-					if (PdksUtil.hasStringValue(personelView.getPersonelKGS().getSicilNo()))
-						sicilNo = String.valueOf(Long.parseLong(personelView.getPersonelKGS().getSicilNo()));
-					else
-						sicilNo = personelView.getPersonelKGS().getSicilNo();
-					String personelAciklama = PdksUtil.setTurkishStr(personelView.getPdksPersonelAciklama()).toUpperCase(Locale.ENGLISH);
-					if ((!sicilNo.startsWith("9")) || sicilNo.trim().length() != 8 || personelAciklama.indexOf("IPTAL") >= 0)
-						iterator.remove();
-					else
-						siciller.add(sicilNo);
-				} catch (Exception e) {
-					iterator.remove();
+		String parametreKey = getParametrePersonelERPTableView();
+		if (getParameterKeyHasStringValue(parametreKey)) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelKGS.TABLE_NAME + " PS WITH(nolock) ");
+			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
+			sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
+			sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = PS." + PersonelKGS.COLUMN_NAME_ID);
+			sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 AND P." + Personel.COLUMN_NAME_ID + " IS NULL");
+			sb.append(" AND PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " NOT IN ( SELECT " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " FROM " + Personel.TABLE_NAME + " WITH(nolock) )");
+			HashMap fields = new HashMap();
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List<String> perNoList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+			if (!perNoList.isEmpty()) {
+				List<PersonelERPDB> personelERPDBList = getPersonelERPDBList(perNoList, parametreKey, session);
+				if (!personelERPDBList.isEmpty()) {
+					List<String> perNoDbList = new ArrayList<String>();
+					for (PersonelERPDB personelERPDB : personelERPDBList) {
+						perNoDbList.add(personelERPDB.getPersonelNo());
+					}
+					List<PersonelERP> updateList = personelERPDBGuncelle(perNoDbList, session);
+					if (updateList != null) {
+						fields.clear();
+						fields.put("pdksPersonel.pdksSicilNo", perNoDbList);
+						if (session != null)
+							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+						List<PersonelView> personelList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelView.class);
+						if (!personelList.isEmpty()) {
+							list = new ArrayList<PersonelView>();
+							Date bugun = new Date();
+							for (PersonelView personelView : personelList) {
+								PersonelKGS personelKGS = personelView.getPersonelKGS();
+								if (personelKGS.getKapiSirket() != null && personelKGS.getKapiSirket().getDurum() && personelKGS.getKapiSirket().getBitTarih().after(bugun))
+									list.add(personelView);
+							}
+						}
+						personelList = null;
+					}
+					updateList = null;
 				}
 			}
-			if (!siciller.isEmpty()) {
-				map.clear();
-				String sablonKodu = getParameterKey("sapSablonKodu");
-				if (PdksUtil.hasStringValue(sablonKodu))
-					map.put("adi", sablonKodu);
-				else
-					map.put("id", 1L);
-				map.put("departman.admin", true);
-				if (session != null)
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				VardiyaSablonu sablon = (VardiyaSablonu) pdksEntityController.getObjectByInnerObject(map, VardiyaSablonu.class);
 
-				map.clear();
-				map.put("durum", Boolean.TRUE);
-				map.put("ldap", Boolean.TRUE);
-				map.put("erpDurum", Boolean.TRUE);
-				map.put("pdks", Boolean.TRUE);
-				if (session != null)
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<Sirket> sirketList = pdksEntityController.getObjectByInnerObjectList(map, Sirket.class);
-				for (Iterator iterator = sirketList.iterator(); iterator.hasNext();) {
-					Sirket sirket = (Sirket) iterator.next();
-					if (sirket.getLpdapOnEk() == null) {
+		} else {
+
+			HashMap map = new HashMap();
+			StringBuffer sb = new StringBuffer();
+			sb.append("SELECT P.* from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
+			sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_PERSONEL_ID + " IS NULL AND   P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " LIKE '9%' AND  LEN(P." + PersonelKGS.COLUMN_NAME_SICIL_NO + ") = 8   AND ");
+			sb.append(" (NOT (UPPER(P." + PersonelKGS.COLUMN_NAME_ACIKLAMA + ") LIKE '%İPTAL %' OR   UPPER(P." + PersonelKGS.COLUMN_NAME_ACIKLAMA + ") LIKE '%IPTAL %'))");
+
+			if (session != null)
+				map.put(PdksEntityController.MAP_KEY_SESSION, session);
+			List<PersonelView> perList = getPersonelViewByPersonelKGSList(pdksEntityController.getObjectBySQLList(sb, map, PersonelKGS.class));
+			if (!perList.isEmpty()) {
+				logger.info("yeniPersonelleriOlustur (" + perList.size() + ") in " + getCurrentTimeStampStr());
+				List<String> siciller = new ArrayList<String>();
+				// perList.clear();
+				String sicilNo = "";
+				for (Iterator iterator = perList.iterator(); iterator.hasNext();) {
+					PersonelView personelView = (PersonelView) iterator.next();
+					try {
+						if (PdksUtil.hasStringValue(personelView.getPersonelKGS().getSicilNo()))
+							sicilNo = String.valueOf(Long.parseLong(personelView.getPersonelKGS().getSicilNo()));
+						else
+							sicilNo = personelView.getPersonelKGS().getSicilNo();
+						String personelAciklama = PdksUtil.setTurkishStr(personelView.getPdksPersonelAciklama()).toUpperCase(Locale.ENGLISH);
+						if ((!sicilNo.startsWith("9")) || sicilNo.trim().length() != 8 || personelAciklama.indexOf("IPTAL") >= 0)
+							iterator.remove();
+						else
+							siciller.add(sicilNo);
+					} catch (Exception e) {
 						iterator.remove();
-						continue;
 					}
 				}
-				map.clear();
-				map.put(PdksEntityController.MAP_KEY_MAP, "getKodu");
-				map.put("tipi", Tanim.TIPI_SAP_MASRAF_YERI);
-				if (session != null)
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				TreeMap masrafYeriMap = pdksEntityController.getObjectByInnerObjectMap(map, Tanim.class, Boolean.FALSE);
-				map.clear();
-				map.put(PdksEntityController.MAP_KEY_MAP, "getKodu");
-				map.put("tipi", Tanim.TIPI_BORDRO_ALT_BIRIMI);
-				if (session != null)
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				TreeMap bordroAltBirimiMap = pdksEntityController.getObjectByInnerObjectMap(map, Tanim.class, Boolean.FALSE);
+				if (!siciller.isEmpty()) {
+					map.clear();
+					String sablonKodu = getParameterKey("sapSablonKodu");
+					if (PdksUtil.hasStringValue(sablonKodu))
+						map.put("adi", sablonKodu);
+					else
+						map.put("id", 1L);
+					map.put("departman.admin", true);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					VardiyaSablonu sablon = (VardiyaSablonu) pdksEntityController.getObjectByInnerObject(map, VardiyaSablonu.class);
 
-				map.clear();
-				map.put("pdksSicilNo", siciller);
-				if (session != null)
-					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				TreeMap<String, Personel> personelMap = pdksEntityController.getObjectByInnerObjectMap(map, Personel.class, Boolean.FALSE);
-
-				for (Iterator iterator1 = perList.iterator(); iterator1.hasNext();) {
-					PersonelView personelView = (PersonelView) iterator1.next();
-					Personel personel = null;
-					sicilNo = String.valueOf(Long.parseLong(personelView.getPersonelKGS().getSicilNo()));
-					if (personelMap.containsKey(sicilNo)) {
-						iterator1.remove();
-						continue;
-					}
-
+					map.clear();
+					map.put("durum", Boolean.TRUE);
+					map.put("ldap", Boolean.TRUE);
+					map.put("erpDurum", Boolean.TRUE);
+					map.put("pdks", Boolean.TRUE);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					List<Sirket> sirketList = pdksEntityController.getObjectByInnerObjectList(map, Sirket.class);
 					for (Iterator iterator = sirketList.iterator(); iterator.hasNext();) {
 						Sirket sirket = (Sirket) iterator.next();
-						String kullaniciAdi = sirket.getLpdapOnEk().trim() + sicilNo.substring(3).trim();
-						User ldapUser = kullaniciBul(kullaniciAdi, LDAPUserManager.USER_ATTRIBUTES_SAM_ACCOUNT_NAME);
-						if (ldapUser != null && !ldapUser.isDurum())
-							ldapUser = null;
-						if (ldapUser != null) {
-							personel = new Personel();
-							personel.setPersonelKGS(personelView.getPersonelKGS());
-							personel.setPdksSicilNo(sicilNo);
-							personel.setSirket(sirket);
-							personel.setSablon(sablon);
-							personel.setDurum(Boolean.TRUE);
-							try {
-								sapVeriGuncelle(session, null, bordroAltBirimiMap, masrafYeriMap, personel, null, Boolean.TRUE, session == null, Boolean.TRUE);
-								personel.setPdksSicilNo(personelView.getPersonelKGS().getSicilNo());
-								if (personel.getId() != null) {
-									ldapUser.setDurum(Boolean.FALSE);
-									ldapUser.setPdksPersonel(personel);
-									ldapUser.setDepartman(personel.getSirket().getDepartman());
-									pdksEntityController.saveOrUpdate(session, entityManager, ldapUser);
-									session.flush();
-									personelView.setPdksPersonel(personel);
-									personelView.setKullanici(ldapUser);
-									list.add(personelView);
-									iterator1.remove();
-								}
-
-							} catch (Exception e) {
-								logger.error("Pdks hata in : \n");
-								e.printStackTrace();
-								logger.error("Pdks hata out : " + e.getMessage());
-								logger.error(e.getLocalizedMessage());
-							}
-							break;
+						if (sirket.getLpdapOnEk() == null) {
+							iterator.remove();
+							continue;
 						}
 					}
+					map.clear();
+					map.put(PdksEntityController.MAP_KEY_MAP, "getKodu");
+					map.put("tipi", Tanim.TIPI_SAP_MASRAF_YERI);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					TreeMap masrafYeriMap = pdksEntityController.getObjectByInnerObjectMap(map, Tanim.class, Boolean.FALSE);
+					map.clear();
+					map.put(PdksEntityController.MAP_KEY_MAP, "getKodu");
+					map.put("tipi", Tanim.TIPI_BORDRO_ALT_BIRIMI);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					TreeMap bordroAltBirimiMap = pdksEntityController.getObjectByInnerObjectMap(map, Tanim.class, Boolean.FALSE);
 
+					map.clear();
+					map.put("pdksSicilNo", siciller);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					TreeMap<String, Personel> personelMap = pdksEntityController.getObjectByInnerObjectMap(map, Personel.class, Boolean.FALSE);
+
+					for (Iterator iterator1 = perList.iterator(); iterator1.hasNext();) {
+						PersonelView personelView = (PersonelView) iterator1.next();
+						Personel personel = null;
+						sicilNo = String.valueOf(Long.parseLong(personelView.getPersonelKGS().getSicilNo()));
+						if (personelMap.containsKey(sicilNo)) {
+							iterator1.remove();
+							continue;
+						}
+
+						for (Iterator iterator = sirketList.iterator(); iterator.hasNext();) {
+							Sirket sirket = (Sirket) iterator.next();
+							String kullaniciAdi = sirket.getLpdapOnEk().trim() + sicilNo.substring(3).trim();
+							User ldapUser = kullaniciBul(kullaniciAdi, LDAPUserManager.USER_ATTRIBUTES_SAM_ACCOUNT_NAME);
+							if (ldapUser != null && !ldapUser.isDurum())
+								ldapUser = null;
+							if (ldapUser != null) {
+								personel = new Personel();
+								personel.setPersonelKGS(personelView.getPersonelKGS());
+								personel.setPdksSicilNo(sicilNo);
+								personel.setSirket(sirket);
+								personel.setSablon(sablon);
+								personel.setDurum(Boolean.TRUE);
+								try {
+									sapVeriGuncelle(session, null, bordroAltBirimiMap, masrafYeriMap, personel, null, Boolean.TRUE, session == null, Boolean.TRUE);
+									personel.setPdksSicilNo(personelView.getPersonelKGS().getSicilNo());
+									if (personel.getId() != null) {
+										ldapUser.setDurum(Boolean.FALSE);
+										ldapUser.setPdksPersonel(personel);
+										ldapUser.setDepartman(personel.getSirket().getDepartman());
+										pdksEntityController.saveOrUpdate(session, entityManager, ldapUser);
+										session.flush();
+										personelView.setPdksPersonel(personel);
+										personelView.setKullanici(ldapUser);
+										list.add(personelView);
+										iterator1.remove();
+									}
+
+								} catch (Exception e) {
+									logger.error("Pdks hata in : \n");
+									e.printStackTrace();
+									logger.error("Pdks hata out : " + e.getMessage());
+									logger.error(e.getLocalizedMessage());
+								}
+								break;
+							}
+						}
+
+					}
 				}
+				logger.info("yeniPersonelleriOlustur (" + perList.size() + ") out " + getCurrentTimeStampStr());
+				siciller = null;
 			}
-			logger.info("yeniPersonelleriOlustur (" + perList.size() + ") out " + getCurrentTimeStampStr());
-			siciller = null;
+			perList = null;
 		}
-		perList = null;
-
 		return list;
 	}
 
@@ -4846,8 +4891,9 @@ public class OrtakIslemler implements Serializable {
 				for (PersonelERPDB personelERPDB : personelList) {
 					personelERPList.add(personelERPDB.getPersonelERP());
 				}
-				PdksSoapVeriAktar service = getPdksSoapVeriAktar();
+
 				try {
+					PdksSoapVeriAktar service = getPdksSoapVeriAktar();
 					personelERPReturnList = service.savePersoneller(personelERPList);
 				} catch (Exception ex) {
 					loggerErrorYaz(null, ex);

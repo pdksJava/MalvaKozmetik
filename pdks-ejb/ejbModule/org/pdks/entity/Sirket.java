@@ -26,6 +26,8 @@ public class Sirket extends BaseObject {
 	public static final String COLUMN_NAME_PDKS = "PDKS_DURUM";
 	public static final String COLUMN_NAME_FAZLA_MESAI = "FAZLA_MESAI";
 	public static final String COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR = "ISTEN_AYR_TAR_CALISIYOR";
+	public static final String COLUMN_NAME_ERP_DURUM = "ERP_DURUM";
+	
 
 	public static final String COLUMN_NAME_FAZLA_MESAI_IZIN_KULLAN = "FAZLA_MESAI_IZIN_KULLAN";
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
@@ -130,7 +132,7 @@ public class Sirket extends BaseObject {
 		this.lpdapOnEk = lpdapOnEk;
 	}
 
-	@Column(name = "ERP_DURUM", nullable = false)
+	@Column(name = COLUMN_NAME_ERP_DURUM, nullable = false)
 	public Boolean getErpDurum() {
 		return erpDurum;
 	}
