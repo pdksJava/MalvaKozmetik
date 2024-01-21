@@ -2090,7 +2090,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					map.put(((BigDecimal) objects[2]).longValue(), objects[1]);
 				}
 			}
-			if (!map.isEmpty()) {
+			if (!map.isEmpty() && PdksUtil.isPazar() == false) {
 				List<IzinReferansERP> personelIzinList = pdksDAO.getObjectByInnerObjectList("izin.id", new ArrayList<Long>(map.keySet()), IzinReferansERP.class);
 				Date dateBugun = PdksUtil.getDate(new Date());
 				for (Iterator iterator = personelIzinList.iterator(); iterator.hasNext();) {
