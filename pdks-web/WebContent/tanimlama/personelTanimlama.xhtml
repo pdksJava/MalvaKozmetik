@@ -43,8 +43,12 @@
 										action="#{pdksPersonelHome.personelDosyaOkuBasla()}"
 										oncomplete="if (#{not empty pdksPersonelHome.dosyaTanimList}) #{rich:component('dosyaTransferPanel')}.show();" reRender="dosyaTransferPanel" />
 								</ui:fragment>
-								<ui:fragment rendered="#{pdksPersonelHome.personelERPGuncelleme=='1' and authenticatedUser.admin}">
-									<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.yeniPersonelleriGuncelle()}" value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle" />
+								<ui:fragment
+									rendered="#{pdksPersonelHome.personelERPGuncelleme=='1' or ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView)}">
+									<ui:fragment rendered="#{authenticatedUser.admin}">
+										<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.yeniPersonelleriGuncelle()}"
+											value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle" />
+									</ui:fragment>
 								</ui:fragment>
 
 
@@ -80,7 +84,7 @@
 													for="editKapiGiris">Personel Değiştir</rich:toolTip></TD>
 										</ui:fragment>
 										<TD><ui:fragment
-												rendered="#{ortakIslemler.getParameterKeyHasStringValue('personelERPTableViewAdi') or pdksPersonelHome.personelERPGuncelleme=='E'}">
+												rendered="#{ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView) or pdksPersonelHome.personelERPGuncelleme=='E'}">
 												<a4j:commandButton status="ajaxStatus" id="editERPLink" image="/img/left_16.png" rendered="#{personelView.pdksPersonel.sirket.erp==true}"
 													action="#{pdksPersonelHome.kayitERPGuncelle(personelView)}" reRender="pdksPersonelList" ajaxSingle="true" />
 												<rich:toolTip for="editERPLink">#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle #{personelView.pdksPersonel.pdksSicilNo}</rich:toolTip>
@@ -1344,9 +1348,10 @@
 					<!--  -->
 					<a4j:outputPanel id="butonlar">
 						<ui:fragment rendered="#{authenticatedUser.admin or pdksPersonelHome.instance.kullanici.admin==false}">
-							<ui:fragment rendered="#{ortakIslemler.getParameterKeyHasStringValue('personelERPTableViewAdi') or pdksPersonelHome.personelERPGuncelleme=='1'}">
-								<a4j:commandButton status="ajaxStatus" ajaxSingle="true" value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle" action="#{pdksPersonelHome.erpVeriGuncelle()}"
-									reRender="personelBilgi" rendered="#{pdksPersonelHome.instance.sirket.erp}" />
+							<ui:fragment
+								rendered="#{ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView) or pdksPersonelHome.personelERPGuncelleme=='1'}">
+								<a4j:commandButton status="ajaxStatus" ajaxSingle="true" value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle"
+									action="#{pdksPersonelHome.erpVeriGuncelle()}" reRender="personelBilgi" rendered="#{pdksPersonelHome.instance.sirket.erp}" />
 							</ui:fragment>
 							<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelHome.save}" reRender="pdksPersonelList,roller"
 								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />

@@ -56,6 +56,7 @@ import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaSablonu;
+import org.pdks.sap.entity.PersonelERPDB;
 import org.pdks.security.entity.DefaultPasswordGenerator;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
@@ -1025,9 +1026,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 */
 	public String erpVeriGuncelle() throws Exception {
 		Personel personel = getInstance();
- 		if (personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("E"))
+		if (personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("E"))
 			erpVeriGuncelle(null, personel, Boolean.FALSE);
-		else if (ortakIslemler.getParameterKeyHasStringValue("personelERPTableViewAdi")) {
+		else if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
 			List<String> perNoList = new ArrayList<String>();
 			perNoList.add(personel.getPdksSicilNo());
 			List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(perNoList, session);
@@ -1053,7 +1054,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		Personel personel = personelView.getPdksPersonel();
 		if (personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("E"))
 			erpVeriGuncelle(personelView, personel, Boolean.TRUE);
-		else if (ortakIslemler.getParameterKeyHasStringValue("personelERPTableViewAdi")) {
+		else if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
 			if (personel != null && PdksUtil.hasStringValue(personel.getPdksSicilNo())) {
 				List<String> list = new ArrayList<String>();
 				list.add(personelView.getPdksPersonel().getPdksSicilNo());
@@ -1889,18 +1890,50 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	/**
 	 * @return
+	 * @throws Exception
 	 */
-	public String yeniPersonelleriGuncelle() {
+	public String yeniPersonelleriGuncelle() throws Exception {
 		List<PersonelView> list = null;
 		try {
-			list = ortakIslemler.yeniPersonelleriOlustur(session);
-			if (!list.isEmpty())
+
+			if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
+				StringBuffer sb = new StringBuffer();
+				sb.append("SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelKGS.TABLE_NAME + " PS WITH(nolock) ");
+				sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
+				sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
+				sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = PS." + PersonelKGS.COLUMN_NAME_ID);
+				sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 AND P." + Personel.COLUMN_NAME_ID + " IS NULL");
+				HashMap fields = new HashMap();
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<String> perNoList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelKGS.class);
+				if (!perNoList.isEmpty()) {
+					List<PersonelERPDB> personelERPDBList = ortakIslemler.getPersonelERPDBList(perNoList, ortakIslemler.getParametrePersonelERPTableView(), session);
+					if (!personelERPDBList.isEmpty()) {
+						List<String> perNoDbList = new ArrayList<String>();
+						for (PersonelERPDB personelERPDB : personelERPDBList) {
+							perNoDbList.add(personelERPDB.getPersonelNo());
+						}
+						List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(perNoDbList, session);
+						if (updateList != null && updateList.isEmpty()) {
+							fields.clear();
+							fields.put("pdksPersonel.pdksSicilNo", perNoDbList);
+							if (session != null)
+								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+							List<PersonelView> personelList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelView.class);
+							if (!personelList.isEmpty())
+								list = new ArrayList<PersonelView>(personelList);
+							personelList = null;
+						}
+						updateList = null;
+					}
+				}
+			} else if (personelERPGuncelleme.equals("1"))
+				list = ortakIslemler.yeniPersonelleriOlustur(session);
+			if (list != null && !list.isEmpty())
 				fillPersonelTablolar(true);
-		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-			PdksUtil.addMessageError("yeniPersonelleriGuncelle hata : " + e.getMessage());
+		} catch (Exception ex) {
+			ortakIslemler.loggerErrorYaz(null, ex);
 		}
 		setTanimsizPersonelList(list);
 		return "";
@@ -4668,4 +4701,5 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	public void setGebeSecim(Boolean gebeSecim) {
 		this.gebeSecim = gebeSecim;
 	}
+
 }

@@ -3866,6 +3866,14 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @return
+	 */
+	public String getParametrePersonelERPTableView() {
+		String str = "personelERPTableViewAdi";
+		return str;
+	}
+
+	/**
 	 * @param session
 	 * @return
 	 */
@@ -4830,7 +4838,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public List<PersonelERP> personelERPDBGuncelle(List<String> perNoList, Session session) throws Exception {
 		List<PersonelERP> personelERPReturnList = null;
-		String parameterName = "personelERPTableViewAdi";
+		String parameterName = getParametrePersonelERPTableView();
 		if (getParameterKeyHasStringValue(parameterName)) {
 			List<PersonelERPDB> personelList = getPersonelERPDBList(perNoList, parameterName, session);
 			if (personelList != null && !personelList.isEmpty()) {
