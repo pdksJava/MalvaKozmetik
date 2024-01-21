@@ -1902,6 +1902,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
 				sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = PS." + PersonelKGS.COLUMN_NAME_ID);
 				sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 AND P." + Personel.COLUMN_NAME_ID + " IS NULL");
+				sb.append(" AND PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " NOT IN ( SELECT " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " FROM " + Personel.TABLE_NAME + " WITH(nolock) )");
 				HashMap fields = new HashMap();
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -1928,7 +1929,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 									if (personelKGS.getKapiSirket() != null && personelKGS.getKapiSirket().getDurum() && personelKGS.getKapiSirket().getBitTarih().after(bugun))
 										list.add(personelView);
 								}
- 							}
+							}
 							personelList = null;
 						}
 						updateList = null;
