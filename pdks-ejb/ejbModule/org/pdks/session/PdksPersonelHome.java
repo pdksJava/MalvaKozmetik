@@ -1665,7 +1665,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						iterator.remove();
 				}
 				idList = null;
-				Personel pdksPersonel = personelView.getPdksPersonel(), yoneticisi = null, asilYonetici1 = null, asilYonetici2 = null;
+				Personel pdksPersonel = personelView != null ? personelView.getPdksPersonel() : null, yoneticisi = null, asilYonetici1 = null, asilYonetici2 = null;
 				if (pdksPersonel != null) {
 					yoneticisi = pdksPersonel.getYoneticisi();
 					asilYonetici1 = pdksPersonel.getAsilYonetici1();
