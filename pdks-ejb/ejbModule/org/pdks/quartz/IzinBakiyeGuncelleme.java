@@ -27,6 +27,7 @@ import org.jboss.seam.annotations.async.Expiration;
 import org.jboss.seam.annotations.async.IntervalCron;
 import org.jboss.seam.async.QuartzTriggerHandle;
 import org.jboss.seam.faces.Renderer;
+import org.pdks.entity.Departman;
 import org.pdks.entity.IzinHakedisHakki;
 import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Parameter;
@@ -84,7 +85,8 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		hataKonum = "izinBakiyeGuncellemeTimer başladı ";
 		if (pdksEntityController != null && !isCalisiyor()) {
 			Session session = null;
-			if (PdksUtil.getCanliSunucuDurum() || PdksUtil.getTestSunucuDurum())
+			boolean sunucuDurum = PdksUtil.getCanliSunucuDurum() || PdksUtil.getTestSunucuDurum();
+			if (sunucuDurum)
 				izinGuncelemeCalistir(false, session);
 		}
 		return null;
@@ -98,6 +100,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 		setCalisiyor(Boolean.TRUE);
 		ozelKontrol = Boolean.FALSE;
 		boolean hataGonder = Boolean.FALSE;
+		StringBuffer sb = new StringBuffer();
 		try {
 			if (session == null)
 				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
@@ -108,27 +111,29 @@ public class IzinBakiyeGuncelleme implements Serializable {
 			String value = (parameter != null) ? parameter.getValue() : null;
 			boolean zamanDurum = manuel || (PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(PersonelIzin.TABLE_NAME, session));
 			hataKonum = "Paramatre okundu ";
+
 			if (zamanDurum) {
 				hataKonum = "İzin durum kontrolu yapılıyor ";
 				HashMap fields = new HashMap();
-				fields.put("durum=", Boolean.TRUE);
-				fields.put("departman.izinGirilebilir=", Boolean.TRUE);
-				fields.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
+				sb.append(" SELECT DISTINCT  IT." + IzinTipi.COLUMN_NAME_ID + " FROM " + IzinTipi.TABLE_NAME + " IT  WITH(nolock) ");
+				sb.append(" INNER JOIN " + Departman.TABLE_NAME + "  D ON D." + Departman.COLUMN_NAME_ID + "=IT." + IzinTipi.COLUMN_NAME_DEPARTMAN);
+				sb.append(" AND D." + Departman.COLUMN_NAME_IZIN_GIRILEBILIR + " = 1 ");
+				sb.append(" WHERE IT." + IzinTipi.COLUMN_NAME_DURUM + "=1 AND IT." + IzinTipi.COLUMN_NAME_GIRIS_TIPI + "<>:t");
+				fields.put("t", IzinTipi.GIRIS_TIPI_YOK);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
+				List list = pdksEntityController.getObjectBySQLList(sb, fields, null);
 				if (!list.isEmpty())
 					izinBakiyeGuncellemeCalistir(session, true);
-				if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametreIzinERPTableView())) {
+				list = null;
+				if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametreIzinERPTableView()))
 					ortakIslemler.izinERPDBGuncelle(session);
-				}
 
 			}
 
 		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
+			logger.error(sb.toString() + " " + e);
 			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
 			if (hataGonder)
 				try {
 					zamanlayici.mailGonder(session, null, "İzin Bakiye Güncellemesi", "İzin bakiyeleri güncellenmemiştir." + e.getMessage() + " ( " + hataKonum + " )", null, Boolean.TRUE);

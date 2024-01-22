@@ -30,6 +30,9 @@ public class Departman extends BaseObject {
 
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
 	public static final String COLUMN_NAME_SIRKET_EKLENEBILIR = "SIRKET_EKLENEBILIR";
+	public static final String COLUMN_NAME_IZIN_GIRILEBILIR = "IZIN_GIRILEBILIR";
+	
+	
 
 	private Integer version = 0;
 
