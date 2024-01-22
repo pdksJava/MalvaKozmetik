@@ -85,7 +85,7 @@ public class Zamanlayici implements Serializable {
 	}
 
 	public void izinBakiyeGuncellemeTimer() {
-		izinBakiyeGuncelleme.izinBakiyeGuncellemeTimer(new Date(), "0 0/5 3-18 ? * *");
+		izinBakiyeGuncelleme.izinBakiyeGuncellemeTimer(new Date(), "0 0/5 3-23 ? * *");
 		logger.info("izinBakiyeGuncellemeTimer start : " + PdksUtil.getCurrentTimeStampStr());
 	}
 

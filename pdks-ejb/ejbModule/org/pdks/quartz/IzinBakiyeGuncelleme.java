@@ -119,6 +119,9 @@ public class IzinBakiyeGuncelleme implements Serializable {
 				List<IzinTipi> list = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
 				if (!list.isEmpty())
 					izinBakiyeGuncellemeCalistir(session, true);
+				if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametreIzinERPTableView())) {
+					ortakIslemler.izinERPDBGuncelle(session);
+				}
 
 			}
 

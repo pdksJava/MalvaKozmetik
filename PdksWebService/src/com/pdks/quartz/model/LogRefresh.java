@@ -10,10 +10,10 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import com.pdks.dao.PdksDAO;
 import com.pdks.dao.impl.BaseDAOHibernate;
-import com.pdks.entity.Parameter;
 import com.pdks.entity.ServiceData;
 import com.pdks.genel.model.Constants;
 import com.pdks.genel.model.PdksUtil;
+import com.pdks.webService.PdksVeriOrtakAktar;
 
 public final class LogRefresh extends QuartzJobBean {
 
@@ -27,19 +27,18 @@ public final class LogRefresh extends QuartzJobBean {
 	public void tesisRefresh(Logger logger) {
 		PdksDAO pdksDAO = Constants.pdksDAO;
 		HashMap fields = new HashMap();
-		fields.put("name", "kgsMasterUpdate");
-		fields.put("active", Boolean.TRUE);
-		Parameter parameter = (Parameter) pdksDAO.getObjectByInnerObject(fields, Parameter.class);
-		if (parameter != null && parameter.getValue().equals("2")) {
-			LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
-			veriMap.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_PDKS_SIRKET_ISLEM");
-			try {
+		try {
+			PdksVeriOrtakAktar p = new PdksVeriOrtakAktar();
+			String parameter = p.getParametreDeger("kgsMasterUpdate");
+			if (parameter != null && parameter.equals("2")) {
+				LinkedHashMap<String, Object> veriMap = new LinkedHashMap<String, Object>();
+				veriMap.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_PDKS_SIRKET_ISLEM");
 				pdksDAO.execSP(veriMap);
-			} catch (Exception e) {
-				logger.error(e);
-				e.printStackTrace();
 			}
 
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
 		}
 		try {
 			fields.clear();

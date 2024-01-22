@@ -183,6 +183,27 @@ public class PdksVeriOrtakAktar implements Serializable {
 	}
 
 	/**
+	 * @param adi
+	 * @return
+	 */
+	public String getParametreDeger(String adi) {
+		PdksDAO pdksDAO = Constants.pdksDAO;
+		String deger = null;
+		HashMap fields = new HashMap();
+		fields.put("name", adi);
+		StringBuffer sb = new StringBuffer();
+		sb.append("select dbo.FN_GET_PARAMETRE_DEGER(:name) ");
+		List<Object> veriList = pdksDAO.getNativeSQLList(fields, sb, null);
+		if (veriList != null && !veriList.isEmpty()) {
+			Object object = veriList.get(0);
+			if (object != null && object instanceof String)
+				deger = (String) object;
+
+		}
+		return deger;
+	}
+
+	/**
 	 * @param dao
 	 */
 	private void personelKontrolVerileriAyarla(PdksDAO dao) {
@@ -333,26 +354,34 @@ public class PdksVeriOrtakAktar implements Serializable {
 	public void sistemVerileriniYukle(PdksDAO dao) {
 		if (dao != null) {
 			mesaj = null;
-			fields.clear();
-			// fields.put("active", Boolean.TRUE);
-			List<Parameter> list = dao.getObjectByInnerObjectList(fields, Parameter.class);
+			List<String> helpDeskList = new ArrayList<String>();
 			if (mailMap == null)
 				mailMap = new HashMap<String, Object>();
 			else
 				mailMap.clear();
-			sistemDestekVar = false;
 			HashMap<String, Parameter> pmMap = new HashMap<String, Parameter>();
-			List<String> helpDeskList = new ArrayList<String>();
-			for (Parameter parameter : list) {
-				String key = parameter.getName().trim(), deger = parameter.getValue().trim();
-				pmMap.put(key, parameter);
-				if (parameter.getActive() != null && parameter.getActive()) {
-					mailMap.put(key, deger);
-					if (parameter.isHelpDeskMi())
-						helpDeskList.add(key);
-				}
+			islemYapan = getSistemAdminUser(dao);
 
+			try {
+				fields.clear();
+				List<Parameter> list = dao.getObjectByInnerObjectList(fields, Parameter.class);
+				for (Parameter parameter : list) {
+					String key = parameter.getName().trim(), deger = parameter.getValue().trim();
+					pmMap.put(key, parameter);
+					if (parameter.getActive() != null && parameter.getActive()) {
+						mailMap.put(key, deger);
+						if (parameter.isHelpDeskMi())
+							helpDeskList.add(key);
+					}
+
+				}
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
 			}
+
+			sistemDestekVar = false;
+
 			String testSunucu = "srvglftest";
 			if (mailMap.containsKey("testSunucu"))
 				testSunucu = (String) mailMap.get("testSunucu");
@@ -410,8 +439,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 			PdksUtil.setSistemBaslangicYili(mailMap.containsKey("sistemBaslangicYili") ? Integer.parseInt((String) mailMap.get("sistemBaslangicYili")) : 2010);
 			PdksUtil.setSistemDestekVar(sistemDestekVar);
 
-			islemYapan = getSistemAdminUser(dao);
-
 			setHelpDeskParametre(pmMap, dao);
 			pmMap = null;
 
@@ -426,6 +453,18 @@ public class PdksVeriOrtakAktar implements Serializable {
 	public static User getSistemAdminUser(PdksDAO dao) {
 		if (dao == null)
 			dao = Constants.pdksDAO;
+//		try {
+//			Departman departman = (Departman) dao.getObjectByInnerObject("id", 1L, Departman.class);
+//			if (departman != null) {
+//				Sirket sirket = (Sirket) dao.getObjectByInnerObject("id", 2L, Sirket.class);
+//				if (sirket != null)
+//					System.out.println(sirket.getAd());
+//			}
+//
+//		} catch (Exception e) {
+//			System.err.println(e);
+//			e.printStackTrace();
+//		}
 		User user = null;
 		try {
 			LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
@@ -2808,7 +2847,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								sirket.setDepartman(departman);
 								sirket.setFazlaMesaiTalepGirilebilir(departman.getFazlaMesaiTalepGirilebilir());
 								sirket.setErpKodu(personelERP.getSirketKodu());
-								sirket.setErp(Boolean.TRUE);
+								sirket.setErpDurum(Boolean.TRUE);
 								sirket.setAd(personelERP.getSirketAdi());
 								sirket.setAciklama(personelERP.getSirketAdi());
 								sirket.setPdks(Boolean.TRUE);

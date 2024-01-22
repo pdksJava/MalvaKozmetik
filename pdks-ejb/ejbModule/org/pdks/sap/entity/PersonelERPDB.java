@@ -27,6 +27,7 @@ public class PersonelERPDB implements Serializable, Cloneable {
 
 	public static final String FORMAT_DATE = "yyyy-MM-dd";
 	public static final String COLUMN_NAME_ISTEN_AYRILMA_TARIHI = "ISTEN_AYRILMA_TARIHI";
+	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEME_TARIHI";
 	public static final String COLUMN_NAME_PERSONEL_NO = "PERSONEL_NO";
 
 	static Logger logger = Logger.getLogger(PersonelERPDB.class);
@@ -60,8 +61,7 @@ public class PersonelERPDB implements Serializable, Cloneable {
 	private String yoneticiPerNo;
 	private Date grubaGirisTarihi;
 	private String yonetici2PerNo;
-
-	// private String guncellemeTarihi;
+	private Date guncellemeTarihi;
 
 	public PersonelERPDB() {
 		super();
@@ -334,15 +334,15 @@ public class PersonelERPDB implements Serializable, Cloneable {
 		this.yonetici2PerNo = yonetici2PerNo;
 	}
 
-	// @Column(name = "GUNCELLEMETARIHI")
-	// @Temporal(TemporalType.TIMESTAMP)
-	// public String getGuncellemeTarihi() {
-	// return guncellemeTarihi;
-	// }
-	//
-	// public void setGuncellemeTarihi(String guncellemeTarihi) {
-	// this.guncellemeTarihi = guncellemeTarihi;
-	// }
+	@Column(name = COLUMN_NAME_GUNCELLEME_TARIHI)
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getGuncellemeTarihi() {
+		return guncellemeTarihi;
+	}
+
+	public void setGuncellemeTarihi(Date guncellemeTarihi) {
+		this.guncellemeTarihi = guncellemeTarihi;
+	}
 
 	@Transient
 	public PersonelERP getPersonelERP() {

@@ -23,23 +23,29 @@ public class Sirket extends BaseObject {
 
 	public static final String TABLE_NAME = "SIRKET";
 	public static final String COLUMN_NAME_DEPARTMAN = "DEPARTMAN_ID";
+	public static final String COLUMN_NAME_SIRKET_GRUP = "SIRKET_GRUP_ID";
 	public static final String COLUMN_NAME_PDKS = "PDKS_DURUM";
-	public static final String COLUMN_NAME_FAZLA_MESAI = "FAZLA_MESAI_DURUM";
+	public static final String COLUMN_NAME_FAZLA_MESAI = "FAZLA_MESAI";
 	public static final String COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR = "ISTEN_AYR_TAR_CALISIYOR";
+	public static final String COLUMN_NAME_ERP_DURUM = "ERP_DURUM";
+
+	public static final String COLUMN_NAME_FAZLA_MESAI_IZIN_KULLAN = "FAZLA_MESAI_IZIN_KULLAN";
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
 	public static final String COLUMN_NAME_TESIS_DURUM = "TESIS_DURUM";
-	public static final String COLUMN_NAME_ERP_DURUM = "ERP_DURUM";
+	public static final String COLUMN_NAME_AD = "AD";
 	public static final String SIRKET_ERP_KODU = "3030";
-	private String ad, aciklama, erpKodu, lpdapOnEk;
-	private Boolean erp = Boolean.FALSE, ldap = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE;
-	private Boolean fazlaMesaiOde = Boolean.FALSE, fazlaMesai = Boolean.FALSE, tesisDurum = Boolean.FALSE;
-	private Boolean guncellendi = Boolean.FALSE, istenAyrilmaTarihindeCalisiyor = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE;
+	private Long sirketGrupId;
+	private String ad, aciklama, erpKodu = "", lpdapOnEk = "";
+	private Boolean erpDurum = Boolean.FALSE, ldapDurum = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE, tesisDurum = Boolean.FALSE;
+	private Boolean fazlaMesaiOde = Boolean.FALSE, fazlaMesai = Boolean.FALSE, istenAyrilmaTarihindeCalisiyor = Boolean.FALSE;
+	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE, guncellendi = Boolean.FALSE;
+	private Tanim sirketGrup;
 	private Departman departman;
 	private Integer version = 0;
 
 	public Sirket() {
 		super();
-		guncellendi = Boolean.FALSE;
+
 	}
 
 	public Sirket(Long id) {
@@ -56,14 +62,13 @@ public class Sirket extends BaseObject {
 		this.version = version;
 	}
 
-	@Column(name = "AD", nullable = false)
+	@Column(name = COLUMN_NAME_AD, nullable = false)
 	public String getAd() {
 		return ad;
 	}
 
 	public void setAd(String ad) {
 		ad = PdksUtil.convertUTF8(ad);
-
 		this.ad = ad;
 	}
 
@@ -76,10 +81,6 @@ public class Sirket extends BaseObject {
 		aciklama = PdksUtil.convertUTF8(aciklama);
 
 		this.aciklama = aciklama;
-	}
-
-	public void setLdap(boolean ldap) {
-		this.ldap = ldap;
 	}
 
 	@Column(name = "ERP_KODU")
@@ -102,6 +103,26 @@ public class Sirket extends BaseObject {
 		this.departman = departman;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	@JoinColumn(name = COLUMN_NAME_SIRKET_GRUP, insertable = false, updatable = false)
+	@Fetch(FetchMode.JOIN)
+	public Tanim getSirketGrup() {
+		return sirketGrup;
+	}
+
+	public void setSirketGrup(Tanim sirketGrup) {
+		this.sirketGrup = sirketGrup;
+	}
+
+	@Column(name = COLUMN_NAME_SIRKET_GRUP)
+	public Long getSirketGrupId() {
+		return sirketGrupId;
+	}
+
+	public void setSirketGrupId(Long sirketGrupId) {
+		this.sirketGrupId = sirketGrupId;
+	}
+
 	@Column(name = "LDAP_ON_EK")
 	public String getLpdapOnEk() {
 		return lpdapOnEk;
@@ -111,22 +132,22 @@ public class Sirket extends BaseObject {
 		this.lpdapOnEk = lpdapOnEk;
 	}
 
-	@Column(name = SIRKET_ERP_KODU, nullable = false)
-	public Boolean getErp() {
-		return erp;
+	@Column(name = COLUMN_NAME_ERP_DURUM, nullable = false)
+	public Boolean getErpDurum() {
+		return erpDurum;
 	}
 
-	public void setErp(Boolean erp) {
-		this.erp = erp;
+	public void setErpDurum(Boolean erpDurum) {
+		this.erpDurum = erpDurum;
 	}
 
 	@Column(name = "LDAP_DURUM", nullable = false)
-	public Boolean getLdap() {
-		return ldap;
+	public Boolean getLdapDurum() {
+		return ldapDurum;
 	}
 
-	public void setLdap(Boolean ldap) {
-		this.ldap = ldap;
+	public void setLdapDurum(Boolean ldapDurum) {
+		this.ldapDurum = ldapDurum;
 	}
 
 	@Column(name = COLUMN_NAME_PDKS)
@@ -156,13 +177,13 @@ public class Sirket extends BaseObject {
 		this.fazlaMesaiOde = fazlaMesaiOde;
 	}
 
-	@Column(name = COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR)
-	public Boolean getIstenAyrilmaTarihindeCalisiyor() {
-		return istenAyrilmaTarihindeCalisiyor;
+	@Column(name = COLUMN_NAME_FAZLA_MESAI)
+	public Boolean getFazlaMesai() {
+		return fazlaMesai;
 	}
 
-	public void setIstenAyrilmaTarihindeCalisiyor(Boolean istenAyrilmaTarihindeCalisiyor) {
-		this.istenAyrilmaTarihindeCalisiyor = istenAyrilmaTarihindeCalisiyor;
+	public void setFazlaMesai(Boolean fazlaMesai) {
+		this.fazlaMesai = fazlaMesai;
 	}
 
 	@Column(name = COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR)
@@ -188,23 +209,27 @@ public class Sirket extends BaseObject {
 		return tesisDurum != null && tesisDurum.booleanValue();
 	}
 
-	@Column(name = "FAZLA_MESAI")
-	public Boolean getFazlaMesai() {
-		return fazlaMesai;
+	@Column(name = COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR)
+	public Boolean getIstenAyrilmaTarihindeCalisiyor() {
+		return istenAyrilmaTarihindeCalisiyor;
 	}
 
-	public void setFazlaMesai(Boolean fazlaMesai) {
-		this.fazlaMesai = fazlaMesai;
+	public void setIstenAyrilmaTarihindeCalisiyor(Boolean istenAyrilmaTarihindeCalisiyor) {
+		this.istenAyrilmaTarihindeCalisiyor = istenAyrilmaTarihindeCalisiyor;
+	}
+
+	@Column(name = COLUMN_NAME_FAZLA_MESAI_IZIN_KULLAN)
+	public Boolean getFazlaMesaiIzinKullan() {
+		return fazlaMesaiIzinKullan;
+	}
+
+	public void setFazlaMesaiIzinKullan(Boolean fazlaMesaiIzinKullan) {
+		this.fazlaMesaiIzinKullan = fazlaMesaiIzinKullan;
 	}
 
 	@Transient
 	public boolean isLdap() {
-		return ldap != null ? ldap.booleanValue() : false;
-	}
-
-	@Transient
-	public boolean isLdapDurum() {
-		return ldap != null ? ldap.booleanValue() : false;
+		return ldapDurum != null ? ldapDurum.booleanValue() : false;
 	}
 
 	@Transient
@@ -214,12 +239,12 @@ public class Sirket extends BaseObject {
 
 	@Transient
 	public boolean isErp() {
-		return erp != null ? erp.booleanValue() : false;
+		return erpDurum != null ? erpDurum.booleanValue() : false;
 	}
 
 	@Transient
-	public boolean isSapDurum() {
-		return erp != null ? erp.booleanValue() : false;
+	public boolean isFazlaMesaiTalepGirer() {
+		return fazlaMesaiTalepGirilebilir != null && fazlaMesaiTalepGirilebilir.booleanValue();
 	}
 
 	@Transient
@@ -229,11 +254,6 @@ public class Sirket extends BaseObject {
 
 	public void setGuncellendi(Boolean guncellendi) {
 		this.guncellendi = guncellendi;
-	}
-
-	@Transient
-	public boolean isFazlaMesaiTalepGirer() {
-		return fazlaMesaiTalepGirilebilir != null && fazlaMesaiTalepGirilebilir.booleanValue();
 	}
 
 }

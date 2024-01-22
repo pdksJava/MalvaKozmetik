@@ -94,6 +94,7 @@ public class PersonelERPGuncelleme implements Serializable {
 			try {
 				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 				boolean sunucuDurum = PdksUtil.getCanliSunucuDurum() || PdksUtil.getTestSunucuDurum();
+				// sunucuDurum=true;
 				if (sunucuDurum) {
 					Parameter parameter = ortakIslemler.getParameter(session, "kgsMasterUpdate");
 					if (parameter != null && parameter.getValue().equals("1"))
@@ -152,8 +153,8 @@ public class PersonelERPGuncelleme implements Serializable {
 		boolean sapDurum = false;
 		try {
 			User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
- 			if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
- 				ortakIslemler.personelERPDBGuncelle(null, session);
+			if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
+				ortakIslemler.personelERPDBGuncelle(null, session);
 
 			} else {
 
