@@ -154,8 +154,10 @@ public class PersonelERPGuncelleme implements Serializable {
 		try {
 			User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
 			if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
+				String uygulamaBordro = ortakIslemler.getParameterKey("uygulamaBordro");
+				logger.info(uygulamaBordro + " personel bilgileri güncelleniyor in " + PdksUtil.getCurrentTimeStampStr());
 				ortakIslemler.personelERPDBGuncelle(null, session);
-
+				logger.info(uygulamaBordro + " personel bilgileri güncelleniyor out " + PdksUtil.getCurrentTimeStampStr());
 			} else {
 
 				List<Long> personelIdList = personelERPGuncelle(sistemAdminUser, session);

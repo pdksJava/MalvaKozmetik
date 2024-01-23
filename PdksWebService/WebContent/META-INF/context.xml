@@ -13,7 +13,7 @@
  <Resource name="jdbc/pdks" global="jdbc/pdks" auth="Container"
 		type="javax.sql.DataSource" maxActive="100" maxIdle="30" maxWait="10000"
 		driverClassName="net.sourceforge.jtds.jdbc.Driver" 		username="sa" password="a123A123" 
-		url="jdbc:jtds:sqlserver://10.41.40.69:1433;DatabaseName=MERKEZPDKS_TEST"
+		url="jdbc:jtds:sqlserver://10.41.40.2:1433;DatabaseName=MERKEZPDKS_TEST"
 		defaultAutoCommit="true" removeAbandoned="true"
 		removeAbandonedTimeout="60" logAbandoned="true" />	
   		

@@ -111,9 +111,15 @@ public class IzinBakiyeGuncelleme implements Serializable {
 			String value = (parameter != null) ? parameter.getValue() : null;
 			boolean zamanDurum = manuel || (PdksUtil.zamanKontrol(PARAMETER_KEY, value, time) && ortakIslemler.getGuncellemeDurum(PersonelIzin.TABLE_NAME, session));
 			hataKonum = "Paramatre okundu ";
-
 			if (zamanDurum) {
 				hataKonum = "İzin durum kontrolu yapılıyor ";
+				if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametreIzinERPTableView())) {
+					String uygulamaBordro = ortakIslemler.getParameterKey("uygulamaBordro");
+					logger.info(uygulamaBordro + " izin bilgileri güncelleniyor in " + PdksUtil.getCurrentTimeStampStr());
+					ortakIslemler.izinERPDBGuncelle(session);
+					logger.info(uygulamaBordro + " izin bilgileri güncelleniyor out " + PdksUtil.getCurrentTimeStampStr());
+				}
+
 				HashMap fields = new HashMap();
 				sb.append(" SELECT DISTINCT  IT." + IzinTipi.COLUMN_NAME_ID + " FROM " + IzinTipi.TABLE_NAME + " IT  WITH(nolock) ");
 				sb.append(" INNER JOIN " + Departman.TABLE_NAME + "  D ON D." + Departman.COLUMN_NAME_ID + "=IT." + IzinTipi.COLUMN_NAME_DEPARTMAN);
@@ -126,8 +132,6 @@ public class IzinBakiyeGuncelleme implements Serializable {
 				if (!list.isEmpty())
 					izinBakiyeGuncellemeCalistir(session, true);
 				list = null;
-				if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametreIzinERPTableView()))
-					ortakIslemler.izinERPDBGuncelle(session);
 
 			}
 
