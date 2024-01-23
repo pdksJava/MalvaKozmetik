@@ -5072,12 +5072,13 @@ public class OrtakIslemler implements Serializable {
 					sb.append(", ");
 			}
 			sb.append(" FROM " + personelERPTableViewAdi + " WITH(nolock) ");
+			Date tarih = null;
 			if (perNoList != null && !perNoList.isEmpty()) {
 				sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_PERSONEL_NO + " :p ");
 				parametreMap.put("p", perNoList);
 			} else {
 				parameter = getParameter(session, parameterName);
-				Date tarih = parameter.getChangeDate();
+				tarih = parameter.getChangeDate();
 				if (tarih != null) {
 					tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
 					sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_ISTEN_AYRILMA_TARIHI + " >=:t ");
@@ -5088,12 +5089,34 @@ public class OrtakIslemler implements Serializable {
 			}
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-
+			TreeMap<String, PersonelERPDB> ayrilanMap = new TreeMap<String, PersonelERPDB>();
 			try {
+				if (tarih == null)
+					tarih = new Date();
 				personelList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelERPDB.class);
+				for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
+					PersonelERPDB personelERPDB = (PersonelERPDB) iterator.next();
+					if (personelERPDB.getIstenAyrilmaTarihi().before(tarih)) {
+						ayrilanMap.put(personelERPDB.getPersonelNo(), personelERPDB);
+						iterator.remove();
+					}
+				}
 			} catch (Exception ex1) {
 				loggerErrorYaz(null, ex1);
 			}
+			if (!ayrilanMap.isEmpty()) {
+				parametreMap.clear();
+				parametreMap.put("pdksSicilNo", new ArrayList(ayrilanMap.keySet()));
+				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "pdksSicilNo");
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<String> sicilNoList = pdksEntityController.getObjectByInnerObjectList(parametreMap, Personel.class);
+				for (String key : sicilNoList) {
+					personelList.add(ayrilanMap.get(key));
+				}
+				sicilNoList = null;
+			}
+			ayrilanMap = null;
 			if (personelList != null && !personelList.isEmpty()) {
 				if (parameter != null) {
 					parameter.setChangeDate(new Date());
