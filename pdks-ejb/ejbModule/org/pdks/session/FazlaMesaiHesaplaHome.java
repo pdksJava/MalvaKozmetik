@@ -2439,9 +2439,21 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			logger.info("fillPersonelDenklestirmeDevam 9200 " + PdksUtil.getCurrentTimeStampStr());
 		if (!modelGoster) {
 			HashMap<Boolean, Long> sanalDurum = new HashMap<Boolean, Long>();
-			if (puantajList != null)
-				for (AylikPuantaj ap : aylikPuantajList)
-					sanalDurum.put(ap.getPdksPersonel().getSanalPersonel(), ap.getPdksPersonel().getId());
+			if (puantajList != null) {
+				try {
+					for (AylikPuantaj ap : aylikPuantajList) {
+						Personel personel = ap.getPdksPersonel();
+						if (personel != null)
+							sanalDurum.put(personel.getSanalPersonel(), personel.getId());
+					}
+
+				} catch (Exception e) {
+					logger.error(e);
+					e.printStackTrace();
+				}
+
+			}
+
 			modelGoster = sanalDurum.size() > 1;
 		}
 		if (adminRole || denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle)) {
