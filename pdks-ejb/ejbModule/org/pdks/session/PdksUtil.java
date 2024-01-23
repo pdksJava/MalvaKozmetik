@@ -2587,13 +2587,13 @@ public class PdksUtil implements Serializable {
 			String dakikaStr = st.nextToken();
 			List<String> saatList = new ArrayList<String>(), dakikaList = new ArrayList<String>();
 			try {
-				getQuartList(saatStr, saatList, 24);
-				getQuartList(dakikaStr, dakikaList, 60);
+				getQuartList(saatStr, saatList, 24, 1);
+				getQuartList(dakikaStr, dakikaList, 60, 5);
 			} catch (Exception e) {
 			}
 			durum = false;
 			st = null;
- 			for (String saatData : saatList) {
+			for (String saatData : saatList) {
 				try {
 					saatDeger = Integer.parseInt(saatData);
 				} catch (Exception e) {
@@ -2605,11 +2605,11 @@ public class PdksUtil implements Serializable {
 					try {
 						dakikaDeger = Integer.parseInt(dakikaData);
 					} catch (Exception e) {
- 						dakikaDeger = -1;
+						dakikaDeger = -1;
 					}
 					if (dakikaDeger < 0 || dakikaDeger > 59)
 						continue;
- 					durum = saat == saatDeger && dakika == dakikaDeger;
+					durum = saat == saatDeger && dakika == dakikaDeger;
 					if (durum)
 						break;
 				}
@@ -2627,8 +2627,10 @@ public class PdksUtil implements Serializable {
 	 * @param str
 	 * @param list
 	 * @param lastIndex
+	 * @param step
+	 * @throws Exception
 	 */
-	private static void getQuartList(String str, List<String> list, int lastIndex) throws Exception {
+	private static void getQuartList(String str, List<String> list, int lastIndex, int step) throws Exception {
 		if (str.equals("*") || str.equals("-") || str.equals(",")) {
 			for (int i = 0; i < lastIndex; i++)
 				list.add(String.valueOf(i));
@@ -2653,7 +2655,7 @@ public class PdksUtil implements Serializable {
 					bit = lastIndex;
 			}
 
-			for (int i = bas; i < bit; i++)
+			for (int i = bas; i < bit; i += step)
 				list.add(String.valueOf(i));
 
 		} else

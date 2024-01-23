@@ -4898,10 +4898,8 @@ public class OrtakIslemler implements Serializable {
 			List<PersonelERPDB> personelList = getPersonelERPDBList(perNoList, parameterName, session);
 			if (personelList != null && !personelList.isEmpty()) {
 				List<PersonelERP> personelERPList = new ArrayList<PersonelERP>();
-				for (PersonelERPDB personelERPDB : personelList) {
+				for (PersonelERPDB personelERPDB : personelList)
 					personelERPList.add(personelERPDB.getPersonelERP());
-				}
-
 				try {
 					PdksSoapVeriAktar service = getPdksSoapVeriAktar();
 					personelERPReturnList = service.savePersoneller(personelERPList);
@@ -4918,11 +4916,8 @@ public class OrtakIslemler implements Serializable {
 								for (String message : personelERP.getHataList()) {
 									PdksUtil.addMessageWarn(message);
 								}
-
 							}
-
 						}
-
 					}
 				} else
 					personelERPReturnList = null;
@@ -5091,12 +5086,13 @@ public class OrtakIslemler implements Serializable {
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			TreeMap<String, PersonelERPDB> ayrilanMap = new TreeMap<String, PersonelERPDB>();
 			try {
+				personelList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelERPDB.class);
 				if (tarih == null)
 					tarih = new Date();
-				personelList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelERPDB.class);
+				tarih = PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(tarih, -1));
 				for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
 					PersonelERPDB personelERPDB = (PersonelERPDB) iterator.next();
-					if (personelERPDB.getIstenAyrilmaTarihi().before(tarih)) {
+					if (personelERPDB.getIstenAyrilmaTarihi() != null && personelERPDB.getIstenAyrilmaTarihi().before(tarih)) {
 						ayrilanMap.put(personelERPDB.getPersonelNo(), personelERPDB);
 						iterator.remove();
 					}
@@ -5106,14 +5102,19 @@ public class OrtakIslemler implements Serializable {
 			}
 			if (!ayrilanMap.isEmpty()) {
 				parametreMap.clear();
-				parametreMap.put("pdksSicilNo", new ArrayList(ayrilanMap.keySet()));
-				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "pdksSicilNo");
+				sb = new StringBuffer();
+				sb.append("SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelKGS.TABLE_NAME + " PS WITH(nolock) ");
+				sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
+				sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
+				sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " = :p AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 ");
+				HashMap fields = new HashMap();
+				parametreMap.put("p", new ArrayList(ayrilanMap.keySet()));
 				if (session != null)
-					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<String> sicilNoList = pdksEntityController.getObjectByInnerObjectList(parametreMap, Personel.class);
-				for (String key : sicilNoList) {
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List<String> sicilNoList = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
+				for (String key : sicilNoList)
 					personelList.add(ayrilanMap.get(key));
-				}
+
 				sicilNoList = null;
 			}
 			ayrilanMap = null;
