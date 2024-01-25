@@ -101,6 +101,9 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 
 	public static final String DEFAULT_DOVIZ_KODU = "TL";
 	public static final String IKINCI_YONETICI_ONAYLAMAZ = "ikinciYoneticiOlmaz";
+	 
+	
+	
 
 	private String tipi;
 	private Tanim parentTanim;

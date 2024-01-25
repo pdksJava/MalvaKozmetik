@@ -361,6 +361,7 @@
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.haftaTatilMesai)}"
 										rendered="#{puantaj.denklestirmeBordro.haftaTatilMesai!=0}" />
 								</rich:column>
+
 								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilDurum}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_MESAI)}" />
@@ -384,12 +385,29 @@
 										rendered="#{puantaj.denklestirmeBordro.aksamSaatMesai!=0}" />
 
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.maasKesintiGoster}">
+								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.aksamSaat}">
 									<f:facet name="header">
-										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_EKSIK_CALISMA)}" />
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_AKSAM_SAAT_MESAI)}" />
 									</f:facet>
-									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.eksikCalismaSure)}"
-										rendered="#{puantaj.denklestirmeBordro.eksikCalismaSure!=0}" />
+									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.aksamSaatMesai)}"
+										rendered="#{puantaj.denklestirmeBordro.aksamSaatMesai!=0}" />
+
+								</rich:column>
+								<rich:column style="text-align: center;"
+									rendered="#{denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_DEVAMLILIK_PRIMI)}">
+									<f:facet name="header">
+										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_DEVAMLILIK_PRIMI)}" />
+									</f:facet>
+									<ui:fragment rendered="#{puantaj.denklestirmeBordro.devamlilikPrimi!=null}">
+
+										<ui:fragment rendered="#{puantaj.denklestirmeBordro.devamlilikPrimi}">
+											<SPAN style="color: black; font-weight: bold;font-size: 16px;">+</SPAN>
+										</ui:fragment>
+										<ui:fragment rendered="#{puantaj.denklestirmeBordro.devamlilikPrimi==false}">
+											<SPAN style="color: red; font-weight: bold;font-size: 16px;">-</SPAN>
+										</ui:fragment>
+
+									</ui:fragment>
 								</rich:column>
 								<f:facet name="footer">
 									<rich:datascroller renderIfSinglePage="false" maxPages="5" />

@@ -1312,7 +1312,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				bosCalismaList = null;
 				haftaSonuList = null;
 				TreeMap<String, PersonelDenklestirmeDinamikAlan> devamlilikPrimiMap = new TreeMap<String, PersonelDenklestirmeDinamikAlan>();
-				devamlilikPrimi = denklestirmeMantiksalBilgiBul(PersonelDenklestirmeDinamikAlan.TIPI_DENKLESTIRME_DEVAMLILIK_PRIMI);
+				devamlilikPrimi = denklestirmeMantiksalBilgiBul(PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI);
 				if (devamlilikPrimi != null)
 					setDenklestirmeDinamikDurum(denklestirmeIdList, devamlilikPrimiMap);
 				Date izinCalismayanMailSonGun = ortakIslemler.tariheGunEkleCikar(cal, aylikPuantajSablon.getSonGun(), -5);
@@ -1391,6 +1391,34 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				boolean yoneticiTanimli = !ortakIslemler.getParameterKeyHasStringValue(("yoneticiTanimsiz"));
 				String idariVardiyaKisaAdi = ortakIslemler.getParameterKey("idariVardiyaKisaAdi");
 				Vardiya normalCalismaVardiya = ortakIslemler.getNormalCalismaVardiya(idariVardiyaKisaAdi, session);
+				List<Long> devamsizList = new ArrayList<Long>();
+				if (devamlilikPrimi != null) {
+					List<Long> idList = new ArrayList<Long>();
+					for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
+						AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
+						if (puantaj.getPersonelDenklestirmeAylik() != null) {
+							if (puantaj.getPersonelDenklestirmeAylik() != null) {
+								PersonelDenklestirme personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
+								String key = PersonelDenklestirmeDinamikAlan.getKey(devamlilikPrimi, personelDenklestirme);
+								if (devamlilikPrimiMap.containsKey(key)) {
+									idList.add(personelDenklestirme.getPersonelId());
+								}
+							}
+						}
+					}
+					if (!idList.isEmpty()) {
+
+						List<VardiyaGun> vgList = ortakIslemler.getPersonelEksikVardiyaCalismaList(idList, aylikPuantajSablon.getIlkGun(), aylikPuantajSablon.getSonGun(), session);
+						if (vgList != null) {
+							for (VardiyaGun vardiyaGun : vgList) {
+								Long perId = vardiyaGun.getPersonel().getId();
+								if (!devamsizList.contains(perId))
+									devamsizList.add(perId);
+							}
+						}
+					}
+
+				}
 				for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 					AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
 					double negatifBakiyeDenkSaat = 0.0;
@@ -2092,8 +2120,18 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							puantaj.getDinamikAlanMap().put(devamlilikPrimi.getId(), denklestirmeDinamikAlan);
 							if (devamlilikPrimi.getDurum() && denklestirmeAyDurum) {
 								try {
-									if (!flush)
-										flush = devamlilikPrimiHesapla(puantaj, denklestirmeDinamikAlan);
+									if (devamsizList.contains(personel.getId()) || !personelDenklestirme.getDurum()) {
+										if (denklestirmeDinamikAlan.getIslemDurum() == null || denklestirmeDinamikAlan.getIslemDurum().equals(Boolean.TRUE) || !personelDenklestirme.getDurum()) {
+											denklestirmeDinamikAlan.setIslemDurum(Boolean.FALSE);
+											pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeDinamikAlan);
+											flush = true;
+										}
+									} else {
+										boolean flushDurum = devamlilikPrimiHesapla(puantaj, denklestirmeDinamikAlan);
+										if (!flush)
+											flush = flushDurum;
+									}
+
 								} catch (Exception ed) {
 									logger.error(ed);
 									ed.printStackTrace();
@@ -2220,7 +2258,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					TreeMap<Long, Tanim> dinamikTanimMap = new TreeMap<Long, Tanim>();
 					for (String key : devamlilikPrimiMap.keySet()) {
 						PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan = devamlilikPrimiMap.get(key);
-						if (denklestirmeDinamikAlan.getIslemDurum())
+						if (denklestirmeDinamikAlan.getDurum())
 							dinamikTanimMap.put(denklestirmeDinamikAlan.getAlan().getId(), denklestirmeDinamikAlan.getAlan());
 					}
 					denklestirmeDinamikAlanlar.clear();
@@ -2935,8 +2973,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	private boolean devamlilikPrimiHesapla(AylikPuantaj aylikPuantaj, PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan) {
 		Boolean islemDurum = aylikPuantaj.getPersonelDenklestirmeAylik().getDurum(), flush = Boolean.FALSE;
+		CalismaModeli cm = denklestirmeDinamikAlan.getPersonelDenklestirme().getCalismaModeli();
+		boolean cumartesiCalisiyor = cm.getHaftaSonu() > 0.0d;
 		List<VardiyaGun> vardiyalar = aylikPuantaj.getVardiyalar();
-		int adet = 0, gunAdet = 0;
+		int adet = 0;
 		for (VardiyaGun vardiyaGun : vardiyalar) {
 			if (vardiyaGun.isAyinGunu()) {
 				Vardiya vardiya = vardiyaGun.getVardiya();
@@ -2944,6 +2984,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					adet = 0;
 					break;
 				}
+				++adet;
 				if (vardiyaGun.getIzin() != null) {
 					IzinTipi izinTipi = vardiyaGun.getIzin().getIzinTipi();
 					if (devamlilikPrimIzinTipleri.contains(izinTipi.getIzinTipiTanim().getErpKodu())) {
@@ -2952,31 +2993,18 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					}
 					continue;
 				}
-				double calismaSuresi = vardiyaGun.getCalismaSuresi();
-				if (vardiyaGun.getFazlaMesailer() != null) {
-					for (PersonelFazlaMesai fm : vardiyaGun.getFazlaMesailer()) {
-						if (fm.isOnaylandi())
-							calismaSuresi -= fm.getFazlaMesaiSaati();
-					}
-				}
-				if (vardiya.isOffGun() && vardiyaGun.isHaftaIci()) {
-					adet = 0;
-					break;
-				}
-				long fark = new Double((vardiya.getNetCalismaSuresi() - calismaSuresi) * 60).longValue();
-				if (fark > 0) {
-					gunAdet++;
-					logger.debug(vardiyaGun.getCalismaSuresi() + " " + calismaSuresi + " " + fark);
-					if (fark >= 50) {
+				if (vardiya.isOffGun()) {
+					int haftaninGunu = vardiyaGun.getHaftaninGunu();
+					boolean cumartesi = haftaninGunu == Calendar.SATURDAY, pazar = haftaninGunu == Calendar.SUNDAY;
+					if ((pazar == false && cumartesi == false) || (cumartesi && cumartesiCalisiyor)) {
 						adet = 0;
 						break;
-
 					}
 				}
-				adet++;
+
 			}
 		}
-		if (adet == 0 || gunAdet > 1)
+		if (adet == 0)
 			islemDurum = Boolean.FALSE;
 		logger.debug(aylikPuantaj.getPersonelDenklestirmeAylik().getPersonel().getAdSoyad() + " " + islemDurum);
 		if (!islemDurum.equals(denklestirmeDinamikAlan.getIslemDurum())) {

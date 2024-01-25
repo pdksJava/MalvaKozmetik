@@ -53,6 +53,7 @@ import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeBordro;
 import org.pdks.entity.PersonelDenklestirmeBordroDetay;
+import org.pdks.entity.PersonelDenklestirmeDinamikAlan;
 import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.Sirket;
@@ -544,16 +545,24 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					col = 0;
 					PersonelKGS personelKGS = personel.getPersonelKGS();
 					StringBuffer sb = null;
-					if (ap.getVardiyalar() != null && !ap.getVardiyalar().isEmpty()) {
-						sb = new StringBuffer();
-						String pattern = PdksUtil.getDateFormat();
-						for (VardiyaGun vg : ap.getVardiyalar()) {
-							if (sb.length() > 0)
-								sb.append("\n");
-							Vardiya vardiya = vg.getVardiya();
-							sb.append(PdksUtil.convertToDateString(vg.getVardiyaDate(), pattern) + " " + vardiya.getKisaAdi() + " [ " + vg.getVardiyaAdi() + " ] ");
+					try {
+						if (ap.getVardiyalar() != null && !ap.getVardiyalar().isEmpty()) {
+							sb = new StringBuffer();
+							String pattern = PdksUtil.getDateFormat();
+							for (VardiyaGun vg : ap.getVardiyalar()) {
+								Vardiya vardiya = vg.getVardiya();
+								if (vardiya == null)
+									continue;
+								if (sb.length() > 0)
+									sb.append("\n");
+
+								sb.append(PdksUtil.convertToDateString(vg.getVardiyaDate(), pattern) + " " + vardiya.getKisaAdi() + " [ " + vg.getVardiyaAdi() + " ] ");
+							}
 						}
+					} catch (Exception e) {
+						logger.equals(e);
 					}
+
 					for (String kodu : baslikMap.keySet()) {
 						if (kodu.startsWith(home.COL_CALISMA_MODELI)) {
 							ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ap.getCalismaModeli().getAciklama());
@@ -571,8 +580,13 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ay);
 						else if (kodu.equals(home.COL_AY_ADI))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(ayAdi);
-
-						else if (kodu.equals(home.COL_PERSONEL_NO)) {
+						else if (kodu.equals(home.COL_DEVAMLILIK_PRIMI)) {
+							String dp = "";
+							Boolean dpDurum = denklestirmeBordro.getDevamlilikPrimi();
+							if (dpDurum != null)
+								dp = dpDurum ? "+" : "-";
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(dp);
+						} else if (kodu.equals(home.COL_PERSONEL_NO)) {
 							Cell perNoCell = ExcelUtil.getCell(sheet, row, col++, styleCenter);
 							perNoCell.setCellValue(personel.getPdksSicilNo());
 							if (sb != null) {
@@ -831,6 +845,17 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				if (!(personelDenklestirme.getDurum() || fazlaMesaiHesapla == false))
 					continue;
 				boolean flush = false;
+				PersonelDenklestirmeDinamikAlan devamPrim = null;
+				if (ap.getDinamikAlanMap() != null) {
+					for (Object key : ap.getDinamikAlanMap().keySet()) {
+						PersonelDenklestirmeDinamikAlan personelDenklestirmeDinamikAlan = ap.getDinamikAlanMap().get(key);
+						if (personelDenklestirmeDinamikAlan.getDurum() && personelDenklestirmeDinamikAlan.getAlan().getKodu().equals(PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI)) {
+							devamPrim = personelDenklestirmeDinamikAlan;
+						}
+
+					}
+
+				}
 				CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
 				try {
 					for (VardiyaHafta vardiyaHafta : ap.getVardiyaHaftaList()) {
@@ -1071,6 +1096,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay> detayMap1 = new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>();
 					denklestirmeBordro.setDetayMap(detayMap1);
 					if (kaydet || fazlaMesaiHesapla) {
+						if (devamPrim != null) {
+							detayMap.put(BordroDetayTipi.DEVAMSIZLIK_PRIMI, devamPrim.getIslemDurum() != null && devamPrim.getIslemDurum() ? 1.0d : 0.0d);
+						}
 						if (!detayMap.isEmpty()) {
 							for (BordroDetayTipi bordroDetayTipi : detayMap.keySet()) {
 								PersonelDenklestirmeBordroDetay bordroDetay = null;

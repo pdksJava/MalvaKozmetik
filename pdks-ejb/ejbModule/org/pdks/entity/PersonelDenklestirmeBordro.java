@@ -166,6 +166,15 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	@Transient
+	public Boolean getDevamlilikPrimi() {
+		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroDetayTipi.DEVAMSIZLIK_PRIMI);
+		Boolean value = null;
+		if (detay != null)
+			value = detay.getMiktar() != null && detay.getMiktar().doubleValue() > 0.0d;
+		return value;
+	}
+
+	@Transient
 	public Double getSaatResmiTatil() {
 		PersonelDenklestirmeBordroDetay detay = getBordroDetay(BordroDetayTipi.SAAT_RESMI_TATIL);
 		Double value = detay != null ? detay.getMiktar().doubleValue() : 0.0d;

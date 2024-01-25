@@ -49,6 +49,7 @@ import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Liste;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
+import org.pdks.entity.PersonelDenklestirmeDinamikAlan;
 import org.pdks.entity.PersonelDinamikAlan;
 import org.pdks.entity.PersonelFazlaMesai;
 import org.pdks.entity.PersonelIzin;
@@ -776,29 +777,11 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 					personelList = pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
 				} else if (raporSecim.equals("minGunCalismaSaat")) {
-					Double saat = null;
-					try {
-						if (ortakIslemler.getParameterKeyHasStringValue("minGunCalismaSaat"))
-							saat = Double.parseDouble(ortakIslemler.getParameterKey("minGunCalismaSaat"));
-					} catch (Exception e) {
-						// TODO: handle exception
-					}
-					if (saat == null || saat.doubleValue() < 0.0d)
-						saat = 0.5d;
+
 					List<Long> personelIdler = new ArrayList<Long>();
 					for (Personel personel : personelList)
 						personelIdler.add(personel.getId());
-					String formatStr = "yyyy-MM-dd HH:mm:ss";
-					String basTarihStr = basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null;
-					String bitTarihStr = bitTarih != null ? PdksUtil.convertToDateString(bitTarih, formatStr) : null;
-					String fieldName = "personel";
-					LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
-					fields.put("saat", saat);
-					fields.put(fieldName, "");
-					fields.put("basTarih", basTarihStr);
-					fields.put("bitTarih", bitTarihStr);
-					fields.put("df", null);
-					vardiyaGunPerList = ortakIslemler.getSPParamLongList(personelIdler, "SP_GET_EKSIK_CALISAN_VARDIYALAR", fieldName, fields, VardiyaGun.class, session);
+					vardiyaGunPerList = ortakIslemler.getPersonelEksikVardiyaCalismaList(personelIdler, basTarih, bitTarih, session);
 					if (!vardiyaGunPerList.isEmpty()) {
 						TreeMap<Long, Personel> perMap = new TreeMap<Long, Personel>();
 						for (VardiyaGun vg : vardiyaGunPerList) {
@@ -808,7 +791,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 						HashMap parametreMap = new HashMap();
 						StringBuffer sb = new StringBuffer();
 						sb.append("SELECT PD.* FROM " + PersonelDinamikAlan.TABLE_NAME + " PD  WITH(nolock) ");
-						sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T  ON T." + Tanim.COLUMN_NAME_ID + "=PD." + PersonelDinamikAlan.COLUMN_NAME_ALAN + " AND T.KODU='devamlikDurum'");
+						sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T  ON T." + Tanim.COLUMN_NAME_ID + "=PD." + PersonelDinamikAlan.COLUMN_NAME_ALAN + " AND T.KODU='" + PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI + "'");
 						sb.append(" AND T." + Tanim.COLUMN_NAME_DURUM + "=1");
 						sb.append(" WHERE PD." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " :p");
 						if (session != null)
@@ -1026,7 +1009,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			list = null;
 		}
 
-		List<VardiyaGun> list = getVardiyaList(personelIdler, calSure);
+		List<VardiyaGun> list = ortakIslemler.getVardiyaList(personelIdler, calSure, basTarih, bitTarih, session);
 		if (!list.isEmpty()) {
 			TreeMap<String, VardiyaGun> varMap = new TreeMap<String, VardiyaGun>();
 			for (VardiyaGun gun : list) {
@@ -1112,35 +1095,10 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	/**
 	 * @param personelIdler
-	 * @param calSure
-	 * @return
-	 */
-	private List<VardiyaGun> getVardiyaList(List<Long> personelIdler, Double calSure) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("SP_GET_FAZLA_MESAI_VARDIYA");
-		LinkedHashMap linkedHashMap = new LinkedHashMap();
-		linkedHashMap.put("perList", ortakIslemler.getListIdStr(personelIdler));
-		linkedHashMap.put("basTarih", PdksUtil.convertToDateString(basTarih, "yyyyMMdd"));
-		linkedHashMap.put("bitTarih", PdksUtil.convertToDateString(bitTarih, "yyyyMMdd"));
-		linkedHashMap.put("calSure", calSure);
-		linkedHashMap.put("format", null);
-		if (session != null)
-			linkedHashMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List list = null;
-		try {
-			list = pdksEntityController.execSPList(linkedHashMap, sb, VardiyaGun.class);
-		} catch (Exception e) {
-			list = new ArrayList();
-		}
-		return list;
-	}
-
-	/**
-	 * @param personelIdler
 	 * @param puantajMap
 	 */
 	private void maxToplamMesaiHazirla(List<Long> personelIdler, TreeMap<Long, AylikPuantaj> puantajMap) {
-		List<VardiyaGun> list = getVardiyaList(personelIdler, null);
+		List<VardiyaGun> list = ortakIslemler.getVardiyaList(personelIdler, null, basTarih, bitTarih, session);
 		if (!list.isEmpty()) {
 			Calendar cal = Calendar.getInstance();
 			TreeMap gunMap = new TreeMap();

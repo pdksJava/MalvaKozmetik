@@ -354,15 +354,18 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private TreeMap<String, VardiyaGun> bosVardiya() {
 		TreeMap<String, VardiyaGun> map = new TreeMap<String, VardiyaGun>();
-		Date tarih = (Date) ilkGun.clone();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(tarih);
-		for (int i = 0; i < gunSayisi; i++) {
-			VardiyaGun pdksVardiyaGun = new VardiyaGun(pdksPersonel, null, cal.getTime());
-			String key = PdksUtil.convertToDateString(pdksVardiyaGun.getVardiyaDate(), "yyyyMMdd");
-			map.put(key, pdksVardiyaGun);
-			cal.add(Calendar.DATE, 1);
+		if (ilkGun != null) {
+			Date tarih = (Date) ilkGun.clone();
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(tarih);
+			for (int i = 0; i < gunSayisi; i++) {
+				VardiyaGun pdksVardiyaGun = new VardiyaGun(pdksPersonel, null, cal.getTime());
+				String key = PdksUtil.convertToDateString(pdksVardiyaGun.getVardiyaDate(), "yyyyMMdd");
+				map.put(key, pdksVardiyaGun);
+				cal.add(Calendar.DATE, 1);
+			}
 		}
+
 		return map;
 	}
 

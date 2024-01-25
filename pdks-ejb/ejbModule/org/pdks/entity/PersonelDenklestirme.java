@@ -89,6 +89,8 @@ public class PersonelDenklestirme extends BaseObject {
 		if (cmAy != null) {
 			CalismaModeli cm = cmAy.getCalismaModeli();
 			this.onaylandi = cm.isIlkPlanOnaylidir() || cm.isFazlaMesaiVarMi() == false;
+			if (cm.isFazlaMesaiVarMi() == false)
+				this.fazlaMesaiOde = false;
 		}
 
 		this.setGuncellendi(Boolean.FALSE);

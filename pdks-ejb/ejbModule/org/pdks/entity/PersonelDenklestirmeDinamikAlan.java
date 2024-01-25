@@ -31,7 +31,7 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	public static final String COLUMN_NAME_ALAN = "ALAN_ID";
 	public static final String COLUMN_NAME_DENKLESTIRME_ALAN_DURUM = "ALAN_DURUM";
 	public static final String COLUMN_NAME_DENKLESTIRME_ISLEM_DURUM = "ISLEM_DURUM";
-	public static final String TIPI_DENKLESTIRME_DEVAMLILIK_PRIMI = "devamlilikPrimi";
+	public static final String TIPI_DEVAMLILIK_PRIMI = "devamlikDurum";
 
 	private Integer version = 0;
 

@@ -244,6 +244,33 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param personelIdler
+	 * @param calSure
+	 * @param basTarih
+	 * @param bitTarih
+	 * @param session
+	 * @return
+	 */
+	public List<VardiyaGun> getVardiyaList(List<Long> personelIdler, Double calSure, Date basTarih, Date bitTarih, Session session) {
+		LinkedHashMap linkedHashMap = new LinkedHashMap();
+		linkedHashMap.put("perList", null);
+		linkedHashMap.put("basTarih", PdksUtil.convertToDateString(basTarih, "yyyyMMdd"));
+		linkedHashMap.put("bitTarih", PdksUtil.convertToDateString(bitTarih, "yyyyMMdd"));
+		linkedHashMap.put("calSure", calSure);
+		linkedHashMap.put("format", null);
+		if (session != null)
+			linkedHashMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List list = null;
+		try {
+			list = getSPParamLongList(personelIdler, "SP_GET_FAZLA_MESAI_VARDIYA", "perList", linkedHashMap, VardiyaGun.class, session);
+		} catch (Exception e) {
+			list = new ArrayList();
+		}
+		linkedHashMap = null;
+		return list;
+	}
+
+	/**
 	 * @param tarih
 	 * @param mailList
 	 * @param session
@@ -2509,6 +2536,37 @@ public class OrtakIslemler implements Serializable {
 		}
 
 		return veriList;
+	}
+
+	/**
+	 * @param personelIdler
+	 * @param basTarih
+	 * @param bitTarih
+	 * @param saat
+	 * @param session
+	 * @return
+	 */
+	public List<VardiyaGun> getPersonelEksikVardiyaCalismaList(List<Long> personelIdler, Date basTarih, Date bitTarih, Session session) {
+		Double saat = null;
+		try {
+			if (getParameterKeyHasStringValue("minGunCalismaSaat"))
+				saat = Double.parseDouble(getParameterKey("minGunCalismaSaat"));
+		} catch (Exception e) {
+		}
+		if (saat == null || saat.doubleValue() < 0.0d)
+			saat = 0.5d;
+		String formatStr = "yyyy-MM-dd HH:mm:ss";
+		String basTarihStr = basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null;
+		String bitTarihStr = bitTarih != null ? PdksUtil.convertToDateString(bitTarih, formatStr) : null;
+		String fieldName = "personel";
+		LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
+		fields.put("saat", saat);
+		fields.put(fieldName, "");
+		fields.put("basTarih", basTarihStr);
+		fields.put("bitTarih", bitTarihStr);
+		fields.put("df", null);
+		List<VardiyaGun> list = getSPParamLongList(personelIdler, "SP_GET_EKSIK_CALISAN_VARDIYALAR", fieldName, fields, VardiyaGun.class, session);
+		return list;
 	}
 
 	/**

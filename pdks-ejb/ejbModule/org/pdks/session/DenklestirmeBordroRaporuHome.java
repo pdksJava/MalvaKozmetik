@@ -44,6 +44,7 @@ import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeBordro;
 import org.pdks.entity.PersonelDenklestirmeBordroDetay;
+import org.pdks.entity.PersonelDenklestirmeDinamikAlan;
 import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
@@ -136,6 +137,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	public String COL_AKSAM_SAAT_MESAI = "aksamSaatMesai";
 	public String COL_AKSAM_GUN_MESAI = "aksamGunMesai";
 	public String COL_EKSIK_CALISMA = "eksikCalisma";
+	public String COL_DEVAMLILIK_PRIMI = PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI;
 	public String COL_CALISMA_MODELI = "calismaModeli";
 
 	public String COL_ISE_BASLAMA_TARIHI = "iseBaslamaTarihi";
@@ -154,7 +156,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private Dosya fazlaMesaiDosya = new Dosya();
 	private Boolean aksamGun = Boolean.FALSE, haftaCalisma = Boolean.FALSE, calismaModeliDurum = Boolean.FALSE, aksamSaat = Boolean.FALSE, erpAktarimDurum = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE;
-	private Boolean hataliVeriGetir, eksikCalisanVeriGetir, adminRole, ikRole;
+	private Boolean hataliVeriGetir, eksikCalisanVeriGetir, adminRole, ikRole, devamlikPrimGoster;
 	private List<Vardiya> izinTipiVardiyaList;
 	private TreeMap<String, TreeMap<String, List<VardiyaGun>>> izinTipiPersonelVardiyaMap;
 	private TreeMap<String, Tanim> baslikMap;
@@ -845,6 +847,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							boolean aksamGunBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_GUN_MESAI));
 							boolean aksamSaatBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_AKSAM_SAAT_MESAI));
 							boolean eksikCalismaBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_EKSIK_CALISMA));
+							boolean devamlikDurumBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_DEVAMLILIK_PRIMI));
 							for (AylikPuantaj ap : personelDenklestirmeList) {
 								PersonelDenklestirme pd = ap.getPersonelDenklestirmeAylik();
 								PersonelDenklestirmeBordro personelDenklestirmeBordro = ap.getDenklestirmeBordro();
@@ -888,8 +891,11 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 									resmiTatilSaatDurum = personelDenklestirmeBordro.getSaatResmiTatil() != null && personelDenklestirmeBordro.getSaatResmiTatil().doubleValue() > 0.0d;
 								if (!izinSaatDurum)
 									izinSaatDurum = personelDenklestirmeBordro.getSaatIzin() != null && personelDenklestirmeBordro.getSaatIzin().doubleValue() > 0.0d;
+								if (!devamlikDurumBaslik)
+									devamlikDurumBaslik = personelDenklestirmeBordro.getDevamlilikPrimi() != null && personelDenklestirmeBordro.getDevamlilikPrimi();
 
 							}
+							setDevamlikPrimGoster(devamlikDurumBaslik);
 						}
 					} catch (Exception es) {
 						ortakIslemler.setExceptionLog(null, es);
@@ -1856,5 +1862,41 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setFazlaMesaiHesaplaMenuAdi(String fazlaMesaiHesaplaMenuAdi) {
 		this.fazlaMesaiHesaplaMenuAdi = fazlaMesaiHesaplaMenuAdi;
+	}
+
+	public String getCOL_DEVAMLILIK_PRIMI() {
+		return COL_DEVAMLILIK_PRIMI;
+	}
+
+	public void setCOL_DEVAMLILIK_PRIMI(String cOL_DEVAMLILIK_PRIMI) {
+		COL_DEVAMLILIK_PRIMI = cOL_DEVAMLILIK_PRIMI;
+	}
+
+	public boolean booleanValue() {
+		return devamlikPrimGoster.booleanValue();
+	}
+
+	public String toString() {
+		return devamlikPrimGoster.toString();
+	}
+
+	public int hashCode() {
+		return devamlikPrimGoster.hashCode();
+	}
+
+	public boolean equals(Object obj) {
+		return devamlikPrimGoster.equals(obj);
+	}
+
+	public int compareTo(Boolean b) {
+		return devamlikPrimGoster.compareTo(b);
+	}
+
+	public Boolean getDevamlikPrimGoster() {
+		return devamlikPrimGoster;
+	}
+
+	public void setDevamlikPrimGoster(Boolean devamlikPrimGoster) {
+		this.devamlikPrimGoster = devamlikPrimGoster;
 	}
 }
