@@ -17316,71 +17316,7 @@ public class OrtakIslemler implements Serializable {
 
 			}
 			if (!hareketKapiUpdateMap.isEmpty()) {
-				HashMap fields = new HashMap();
-				fields.put("id", new ArrayList(hareketKapiUpdateMap.keySet()));
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<PdksLog> list = pdksEntityController.getObjectByInnerObjectList(fields, PdksLog.class);
-				if (!list.isEmpty()) {
-					Tanim islemNeden = getOtomatikKapGirisiNeden(session);
-					User onaylayanUser = getSistemAdminUser(session);
-					Date guncellemeZamani = new Date();
-
-					for (PdksLog pdksLog : list) {
-						if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
-							KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
-							if (hareketKopyala || pdksLog.getKgsId() < 0l) {
-								if (pdksLog.getKgsId() < 0l) {
-									pdksLog.setGuncellemeZamani(guncellemeZamani);
-									pdksLog.setKapiId(kapiKGS.getKgsId());
-									session.saveOrUpdate(pdksLog);
-								} else {
-									PdksLog pdksLog2 = (PdksLog) pdksLog.clone();
-									pdksLog2.setId(null);
-									pdksLog2.setGuncellemeZamani(null);
-									pdksLog2.setKapiId(kapiKGS.getKgsId());
-									session.saveOrUpdate(pdksLog2);
-									if (islemNeden != null) {
-										PersonelHareketIslem islem = new PersonelHareketIslem();
-										islem.setAciklama(pdksLog2.getKgsId() + " " + kapiKGS.getKapi().getAciklama() + " olarak güncellendi. [ " + pdksLog2.getId() + " ]");
-										islem.setOnayDurum(PersonelHareketIslem.ONAY_DURUM_ONAYLANDI);
-										islem.setOlusturmaTarihi(guncellemeZamani);
-										islem.setGuncelleyenUser(onaylayanUser);
-										islem.setOnaylayanUser(loginUser);
-										islem.setZaman(pdksLog.getZaman());
-										islem.setIslemTipi("U");
-										islem.setNeden(islemNeden);
-										session.saveOrUpdate(islem);
-										pdksLog.setIslemId(islem.getId());
-									}
-									pdksLog.setGuncellemeZamani(guncellemeZamani);
-									pdksLog.setDurum(Boolean.FALSE);
-									session.saveOrUpdate(pdksLog);
-								}
-
-							} else {
-								StringBuffer sp = new StringBuffer();
-								sp.append("SP_POOL_TERMINAL_UPDATE");
-								LinkedHashMap map = new LinkedHashMap();
-								if (session != null)
-									map.put(PdksEntityController.MAP_KEY_SESSION, session);
-								map.put("eklenenId", pdksLog.getKgsId());
-								map.put("pdks", 1);
-								try {
-									pdksEntityController.execSPList(map, sp, null);
-								} catch (Exception e) {
-									pdksLog.setGuncellemeZamani(guncellemeZamani);
-									pdksLog.setKapiId(kapiKGS.getKgsId());
-									session.saveOrUpdate(pdksLog);
-								}
-								sp = null;
-							}
-
-						}
-					}
-					session.flush();
-				}
-				list = null;
+				hareketKapiUpdate(hareketKapiUpdateMap, hareketKopyala, loginUser, session);
 			}
 			hareketKapiUpdateMap = null;
 		}
@@ -17458,6 +17394,79 @@ public class OrtakIslemler implements Serializable {
 				logger.info(perNoId + " denklestirmeOlustur 0200 " + getCurrentTimeStampStr());
 
 		}
+	}
+
+	/**
+	 * @param hareketKapiUpdateMap
+	 * @param hareketKopyala
+	 * @param loginUser
+	 * @param session
+	 */
+	public void hareketKapiUpdate(HashMap<Long, KapiKGS> hareketKapiUpdateMap, boolean hareketKopyala, User loginUser, Session session) {
+		HashMap fields = new HashMap();
+		fields.put("id", new ArrayList(hareketKapiUpdateMap.keySet()));
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<PdksLog> list = pdksEntityController.getObjectByInnerObjectList(fields, PdksLog.class);
+		if (!list.isEmpty()) {
+			Tanim islemNeden = getOtomatikKapGirisiNeden(session);
+			User onaylayanUser = getSistemAdminUser(session);
+			Date guncellemeZamani = new Date();
+ 			for (PdksLog pdksLog : list) {
+				if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
+					KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
+					if (hareketKopyala || pdksLog.getKgsId() < 0l) {
+						if (pdksLog.getKgsId() < 0l) {
+							pdksLog.setGuncellemeZamani(guncellemeZamani);
+							pdksLog.setKapiId(kapiKGS.getKgsId());
+							session.saveOrUpdate(pdksLog);
+						} else {
+							PdksLog pdksLog2 = (PdksLog) pdksLog.clone();
+							pdksLog2.setId(null);
+							pdksLog2.setGuncellemeZamani(null);
+							pdksLog2.setKapiId(kapiKGS.getKgsId());
+							session.saveOrUpdate(pdksLog2);
+							if (islemNeden != null) {
+								PersonelHareketIslem islem = new PersonelHareketIslem();
+								islem.setAciklama(pdksLog2.getKgsId() + " " + kapiKGS.getKapi().getAciklama() + " olarak güncellendi. [ " + pdksLog2.getId() + " ]");
+								islem.setOnayDurum(PersonelHareketIslem.ONAY_DURUM_ONAYLANDI);
+								islem.setOlusturmaTarihi(guncellemeZamani);
+								islem.setGuncelleyenUser(onaylayanUser);
+								islem.setOnaylayanUser(loginUser);
+								islem.setZaman(pdksLog.getZaman());
+								islem.setIslemTipi("U");
+								islem.setNeden(islemNeden);
+								session.saveOrUpdate(islem);
+								pdksLog.setIslemId(islem.getId());
+							}
+							pdksLog.setGuncellemeZamani(guncellemeZamani);
+							pdksLog.setDurum(Boolean.FALSE);
+							session.saveOrUpdate(pdksLog);
+						}
+
+					} else {
+						StringBuffer sp = new StringBuffer();
+						sp.append("SP_POOL_TERMINAL_UPDATE");
+						LinkedHashMap map = new LinkedHashMap();
+						if (session != null)
+							map.put(PdksEntityController.MAP_KEY_SESSION, session);
+						map.put("eklenenId", pdksLog.getKgsId());
+						map.put("pdks", 1);
+						try {
+							pdksEntityController.execSPList(map, sp, null);
+						} catch (Exception e) {
+							pdksLog.setGuncellemeZamani(guncellemeZamani);
+							pdksLog.setKapiId(kapiKGS.getKgsId());
+							session.saveOrUpdate(pdksLog);
+						}
+						sp = null;
+					}
+
+				}
+			}
+			session.flush();
+		}
+		list = null;
 	}
 
 	/**
