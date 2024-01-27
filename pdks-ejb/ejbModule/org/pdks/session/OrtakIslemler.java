@@ -15882,6 +15882,7 @@ public class OrtakIslemler implements Serializable {
 								if (girisZaman.before(ilkGun) && PdksUtil.hasStringValue(cikisId) == false)
 									continue;
 								PersonelFazlaMesai personelFazlaMesai = girisHareket.getPersonelFazlaMesai() != null ? girisHareket.getPersonelFazlaMesai() : cikisHareket.getPersonelFazlaMesai();
+								
 								if (tatilGunu == false && (girisHareket.isOrjinalZamanGetir() || cikisHareket.isOrjinalZamanGetir())) {
 									if (personelFazlaMesai == null) {
 										boolean devam = true;
@@ -17090,7 +17091,6 @@ public class OrtakIslemler implements Serializable {
 								if (vardiyaGun.addHareket(hareket, Boolean.TRUE)) {
 									// TODO isOtomatikFazlaCalismaOnaylansinmi GETİR
 									List<HareketKGS> vardiyaHareketler = null;
-
 									hareket.setOrjinalZamanGetir(false);
 									if (otomatikOnayKontrol && hareket.getKapiView() != null && hareket.getKapiView().getKapi() != null)
 										vardiyaHareketler = hareket.getKapiView().getKapi().isGirisKapi() ? vardiyaGun.getGirisHareketleri() : vardiyaGun.getCikisHareketleri();

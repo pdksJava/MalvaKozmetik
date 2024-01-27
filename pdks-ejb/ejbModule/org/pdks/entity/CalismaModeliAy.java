@@ -50,6 +50,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 		if (calismaModeli != null) {
 			this.negatifBakiyeDenkSaat = calismaModeli.getNegatifBakiyeDenkSaat();
 			this.hareketKaydiVardiyaBul = calismaModeli.getHareketKaydiVardiyaBul();
+			this.otomatikFazlaCalismaOnaylansin = calismaModeli.getOtomatikFazlaCalismaOnaylansin();
 		}
 	}
 

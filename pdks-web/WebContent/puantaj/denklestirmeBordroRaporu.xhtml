@@ -143,6 +143,37 @@
 												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
 													<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi}">
 														<span style="color: red; font-style: 14;">#{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi} Hatalı Göster</span>
+														<ui:fragment rendered="#{puantaj.vardiyalar!=null}">
+															<rich:dataTable rowClasses="acik,koyu" value="#{puantaj.vardiyalar}" var="vardiyaGun">
+
+																<f:facet name="header">
+																	<ui:fragment>
+																		<h:outputText value="#{puantaj.pdksPersonel.pdksSicilNo} #{puantaj.pdksPersonel.adSoyad}" />
+																		<br></br>
+																		<br></br>
+												
+														Kapı Giriş Hatalı veya Fazla Çalışması Onay Bekleyen Günler
+														</ui:fragment>
+																</f:facet>
+
+																<rich:column style="text-align: center;">
+																	<f:facet name="header">
+															Tarih
+														</f:facet>
+																	<h:outputText value="#{authenticatedUser.dateFormatla(vardiyaGun.vardiyaDate)}" />
+																</rich:column>
+																<rich:column style="text-align: left;">
+																	<f:facet name="header">
+															Vardiya
+														</f:facet>
+																	<h:outputText value="#{vardiyaGun.vardiya.kisaAdi } [ #{vardiyaGun.vardiyaAdi } ]" />
+																</rich:column>
+
+															</rich:dataTable>
+														</ui:fragment>
+
+
+
 													</ui:fragment>
 													<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi==false}">
 
@@ -195,7 +226,7 @@
 															<br></br>
 												
 														Kapı Giriş Kayıtı ve İzin Girilmeyen Günler
-</ui:fragment>
+														</ui:fragment>
 													</f:facet>
 
 													<rich:column style="text-align: center;">
@@ -401,10 +432,10 @@
 									<ui:fragment rendered="#{puantaj.denklestirmeBordro.devamlilikPrimi!=null}">
 
 										<ui:fragment rendered="#{puantaj.denklestirmeBordro.devamlilikPrimi}">
-											<SPAN style="color: black; font-weight: bold;font-size: 16px;">+</SPAN>
+											<SPAN style="color: black; font-weight: bold; font-size: 16px;">+</SPAN>
 										</ui:fragment>
 										<ui:fragment rendered="#{puantaj.denklestirmeBordro.devamlilikPrimi==false}">
-											<SPAN style="color: red; font-weight: bold;font-size: 16px;">-</SPAN>
+											<SPAN style="color: red; font-weight: bold; font-size: 16px;">-</SPAN>
 										</ui:fragment>
 
 									</ui:fragment>
