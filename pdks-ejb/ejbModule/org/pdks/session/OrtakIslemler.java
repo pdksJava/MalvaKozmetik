@@ -9993,6 +9993,12 @@ public class OrtakIslemler implements Serializable {
 		return tarihGelmedi;
 	}
 
+	public int getYillikIzinMaxBakiye() {
+		int yillikIzinMaxBakiye = PersonelIzin.getYillikIzinMaxBakiye();
+		return yillikIzinMaxBakiye;
+
+	}
+
 	/**
 	 * @param veriMap
 	 * @param session
@@ -10027,7 +10033,7 @@ public class OrtakIslemler implements Serializable {
 		if (kidemYok)
 			logger.debug("");
 
-		int yillikIzinMaxBakiye = PersonelIzin.getYillikIzinMaxBakiye();
+		int yillikIzinMaxBakiye = getYillikIzinMaxBakiye();
 
 		cal.set(Calendar.YEAR, yil);
 		Date izinHakEttigiTarihi = PdksUtil.getDate((Date) cal.getTime().clone());
@@ -10223,8 +10229,8 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (personelIzin.getId() == null)
 						personelIzin.setOlusturanUser(sistemYonetici);
-					if (yeniBakiyeOlustur || personelIzin.getId() != null) {
-						if (personelIzin.getIzinKagidiGeldi() == null && kidemYil > 0) {
+					if (personelIzin.getIzinKagidiGeldi() == null) {
+						if (kidemYil > 0 && (yeniBakiyeOlustur || personelIzin.getId() != null)) {
 							if (izinSuresi > 0 && izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
 								if (personelIzin.getId() != null) {
 									if (user != null)
@@ -11894,16 +11900,19 @@ public class OrtakIslemler implements Serializable {
 									// kidemMap = getTarihMap(personel != null ?
 									// personel.getIzinHakEdisTarihi() : null,
 									// bugun);
-									if (personel.getIzinHakEdisTarihi().before(bugun) && yil > 1) {
-										// int kidemYil = yil - 1;
-										// senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, Boolean.FALSE);
-										veriMap.put("suaDurum", suaDurum);
-										veriMap.put("yil", buYil);
-										veriMap.put("kidemYil", yil);
-										veriMap.put("izinTipi", izinTipi);
-										veriMap.put("islemTarihi", bugun);
-										veriMap.put("yeniBakiyeOlustur", Boolean.FALSE);
-										izinTipi = senelikIzinOlustur(veriMap, session);
+									if (yil >= 1) {
+										Date kidemBaslangicTarihi = PdksUtil.tariheAyEkleCikar(personel.getIzinHakEdisTarihi(), 12);
+										if (kidemBaslangicTarihi.before(bugun)) {
+											// int kidemYil = yil - 1;
+											// senelikIzinOlustur(personel, suaDurum, buYil, yil, izinTipiMap, hakedisMap, user, session, izinTipi, bugun, Boolean.FALSE);
+											veriMap.put("suaDurum", suaDurum);
+											veriMap.put("yil", buYil);
+											veriMap.put("kidemYil", yil);
+											veriMap.put("izinTipi", izinTipi);
+											veriMap.put("islemTarihi", bugun);
+											veriMap.put("yeniBakiyeOlustur", Boolean.FALSE);
+											izinTipi = senelikIzinOlustur(veriMap, session);
+										}
 									}
 
 								}
@@ -17412,7 +17421,7 @@ public class OrtakIslemler implements Serializable {
 			Tanim islemNeden = getOtomatikKapGirisiNeden(session);
 			User onaylayanUser = getSistemAdminUser(session);
 			Date guncellemeZamani = new Date();
- 			for (PdksLog pdksLog : list) {
+			for (PdksLog pdksLog : list) {
 				if (hareketKapiUpdateMap.containsKey(pdksLog.getId())) {
 					KapiKGS kapiKGS = hareketKapiUpdateMap.get(pdksLog.getId());
 					if (hareketKopyala || pdksLog.getKgsId() < 0l) {

@@ -661,7 +661,7 @@
 													rendered="#{authenticatedUser.IK  and kalanIzinler.izinKagidiGeldi==null}" action="#{personelKalanIzinHome.guncelle(kalanIzinler)}"
 													oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel" />
 												<a4j:commandButton image="/img/beklemede.gif" title="Sıfırla" status="ajaxStatus"
-													rendered="#{kalanIzinler.kontrolIzin==null and (authenticatedUser.admin or authenticatedUser.IKAdmin) and kalanIzinler.izinKagidiGeldi==null and kalanIzinler.harcananIzin le 0.0}"
+													rendered="#{kalanIzinler.kontrolIzin==null and (authenticatedUser.admin or ( authenticatedUser.IKAdmin and ortakIslemler.yillikIzinMaxBakiye gt 0) ) and kalanIzinler.izinKagidiGeldi==null and kalanIzinler.harcananIzin le 0.0}"
 													action="#{personelKalanIzinHome.sifirla(kalanIzinler)}" oncomplete="#{rich:component('izinDetayPanel')}.hide()" reRender="izinPanel" />
 											</ui:fragment></TD>
 									</ui:fragment>
