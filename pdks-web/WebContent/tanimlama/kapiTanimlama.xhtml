@@ -36,7 +36,7 @@
 							<f:facet name="header">
 								<h:outputText value="Kapılar" />
 							</f:facet>
-							<rich:column>
+							<rich:column  style="text-align: center;">
 								<f:facet name="header">İşlemler</f:facet>
 								<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{kapiHome.kapiGuncelle(kapi)}"
 									oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
@@ -68,20 +68,20 @@
 								</f:facet>
 								<h:outputText value="#{kapi.aciklama}" />
 							</rich:column>
-							<rich:column>
+							<rich:column  style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="PDKS Kapı Tipi" />
 								</f:facet>
 								<h:outputText value="#{kapi.tipi.aciklama}" />
 							</rich:column>
 
-							<rich:column>
+							<rich:column  style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="PDKS" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(kapi.pdks)}" />
 							</rich:column>
-							<rich:column>
+							<rich:column  style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="Aktif" />
 								</f:facet>
@@ -95,7 +95,7 @@
 								<h:outputText value="#{kapi.sonIslemYapan.adSoyad}" />
 							</rich:column>
 
-							<rich:column>
+							<rich:column  style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="Son İşlem Tarihi" />
 								</f:facet>
