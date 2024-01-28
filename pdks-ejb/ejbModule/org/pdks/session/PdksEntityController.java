@@ -606,7 +606,7 @@ public class PdksEntityController implements Serializable {
 	 * @param uzerineYaz
 	 * @return
 	 */
-	private TreeMap getTreeMapByList(List list, String method, boolean uzerineYaz) {
+	public TreeMap getTreeMapByList(List list, String method, boolean uzerineYaz) {
 		TreeMap treeMap = new TreeMap();
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			Object object = (Object) iter.next();

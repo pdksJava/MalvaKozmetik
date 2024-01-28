@@ -2059,26 +2059,32 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					try {
 						String birdenFazlaKGSSirketSQL = ortakIslemler.getBirdenFazlaKGSSirketSQL(null, null, session);
 						TreeMap<Long, Long> iliskiMap = new TreeMap<Long, Long>();
+						List pList = new ArrayList(idMap.keySet());
+						String fieldName = "p";
 						fields.clear();
 						sb = new StringBuffer();
 						sb.append("SELECT P." + PersonelKGS.COLUMN_NAME_ID + ", K." + PersonelKGS.COLUMN_NAME_ID + " AS REF from " + PersonelKGS.TABLE_NAME + " P WITH(nolock) ");
 						sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " K ON " + birdenFazlaKGSSirketSQL);
-						sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :p AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
-						fields.put("p", new ArrayList(idMap.keySet()));
+						sb.append(" WHERE P." + PersonelKGS.COLUMN_NAME_ID + " :" + fieldName + " AND  P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " <>''");
+						fields.put(fieldName, pList);
 						if (session != null)
 							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-						List<Object[]> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+						// List<Object[]> perList = pdksEntityController.getObjectBySQLList(sb, fields, null);
+						List<Object[]> perList = ortakIslemler.getSQLParamList(pList, sb, fieldName, fields, null, session);
 						for (Object[] objects : perList) {
 							BigDecimal refId = (BigDecimal) objects[1], id = (BigDecimal) objects[0];
 							if (refId.longValue() != id.longValue())
 								iliskiMap.put(refId.longValue(), id.longValue());
 						}
 						if (!iliskiMap.isEmpty()) {
+							List idList = new ArrayList<Long>(iliskiMap.keySet());
+							fieldName = "id";
 							fields.clear();
-							fields.put("id", new ArrayList<Long>(iliskiMap.keySet()));
+							fields.put(fieldName, idList);
 							if (session != null)
 								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-							List<PersonelKGS> personelKGSList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelKGS.class);
+							// List<PersonelKGS> personelKGSList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelKGS.class);
+							List<PersonelKGS> personelKGSList = ortakIslemler.getParamList(false, idList, fieldName, fields, PersonelKGS.class, session);
 							for (PersonelKGS personelKGS : personelKGSList) {
 								if (personelKGS.getKapiSirket().getDurum()) {
 									Long id = iliskiMap.get(personelKGS.getId());
@@ -3084,12 +3090,16 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						}
 					}
 					if (listeDolu) {
+						String fieldName = "sicilNo";
+						List dataIdList = new ArrayList(perMap.keySet());
 						session.clear();
 						HashMap fields = new HashMap();
-						fields.put(PdksEntityController.MAP_KEY_MAP, "getSicilNo");
-						fields.put("sicilNo", new ArrayList(perMap.keySet()));
-						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-						TreeMap<String, PersonelKGS> personelKGSMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelKGS.class, false);
+						fields.put(fieldName, dataIdList);
+						if (session != null)
+							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+						// fields.put(PdksEntityController.MAP_KEY_MAP, "getSicilNo");
+						// TreeMap<String, PersonelKGS> personelKGSMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelKGS.class, false);
+						TreeMap<String, PersonelKGS> personelKGSMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getSicilNo", false, dataIdList, fieldName, fields, PersonelKGS.class, session);
 						for (String sicilNo : perNoList) {
 							if (personelKGSMap.containsKey(sicilNo))
 								personelERPList.add(perMap.get(sicilNo));

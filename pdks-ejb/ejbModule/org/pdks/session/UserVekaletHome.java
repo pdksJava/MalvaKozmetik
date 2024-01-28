@@ -325,15 +325,18 @@ public class UserVekaletHome extends EntityHome<UserVekalet> implements Serializ
 						userMap.put(user.getPdksPersonel().getId(), user);
 				}
 				list.clear();
+				List dataIdList = new ArrayList(userMap.keySet());
+				String fieldName = "yoneticisi.id";
 				parametreMap.clear();
-				parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getId");
 				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "yoneticisi");
-				parametreMap.put("yoneticisi.id", new ArrayList(userMap.keySet()));
+				parametreMap.put(fieldName, dataIdList);
 				parametreMap.put("sskCikisTarihi>=", bugun);
 				parametreMap.put("iseBaslamaTarihi<=", bugun);
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				TreeMap<Long, Personel> yoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(parametreMap, Personel.class, false);
+				// parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getId");
+				// TreeMap<Long, Personel> yoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(parametreMap, Personel.class, false);
+				TreeMap<Long, Personel> yoneticiMap = ortakIslemler.getParamTreeMap(Boolean.TRUE, "getId", Boolean.FALSE, dataIdList, fieldName, parametreMap, Personel.class, session);
 				for (Long ld : yoneticiMap.keySet()) {
 					if (userMap.containsKey(ld))
 						list.add(userMap.get(ld));

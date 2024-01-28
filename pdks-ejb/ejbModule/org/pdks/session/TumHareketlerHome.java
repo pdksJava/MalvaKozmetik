@@ -492,23 +492,30 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				if (kapiMap == null) {
 					kapiMap = new TreeMap<Long, KapiView>();
 					logger.debug(authenticatedUser.getAdSoyad() + " Kapı bilgileri okunuyor.");
+					String fieldName = "id";
+					List idList = new ArrayList(kapilarMap.values());
 					parametreMap.clear();
-					parametreMap.put("id", new ArrayList(kapilarMap.values()));
+					parametreMap.put(fieldName, idList);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<KapiKGS> list1 = pdksEntityController.getObjectByInnerObjectList(parametreMap, KapiKGS.class);
+					// List<KapiKGS> list1 = pdksEntityController.getObjectByInnerObjectList(parametreMap, KapiKGS.class);
+					List<KapiKGS> list1 = ortakIslemler.getParamList(false, idList, fieldName, parametreMap, KapiKGS.class, session);
+
 					for (KapiKGS kapiKGS : list1)
 						kapiMap.put(kapiKGS.getId(), kapiKGS.getKapiView());
 					list1 = null;
 				}
 				if (personelId.isEmpty()) {
+					String fieldName = "id";
+					List idList = new ArrayList(perMap.keySet());
 					logger.debug(authenticatedUser.getAdSoyad() + " Personel bilgileri okunuyor.");
 					parametreMap.clear();
 					// parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getId");
-					parametreMap.put("id", new ArrayList(perMap.keySet()));
+					parametreMap.put(fieldName, idList);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<PersonelKGS> list = pdksEntityController.getObjectByInnerObjectList(parametreMap, PersonelKGS.class);
+					// List<PersonelKGS> list = pdksEntityController.getObjectByInnerObjectList(parametreMap, PersonelKGS.class);
+					List<PersonelKGS> list = ortakIslemler.getParamList(false, idList, fieldName, parametreMap, PersonelKGS.class, session);
 
 					perMap.clear();
 

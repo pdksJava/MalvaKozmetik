@@ -327,12 +327,15 @@ public class IseGelmemeUyari implements Serializable {
 					kgsPerMap.put(per.getPersonelKGS().getId(), per);
 				}
 				if (!kgsPerMap.isEmpty() && !yoneticiler.isEmpty()) {
+					List dataIdList = new ArrayList<Long>(yoneticiler.values());
+					String fieldName = "pdksPersonel.id";
 					map.clear();
-					map.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-					map.put("pdksPersonel.id", new ArrayList<Long>(yoneticiler.values()));
-					TreeMap<Long, User> userMap = pdksEntityController.getObjectByInnerObjectMap(map, User.class, Boolean.FALSE);
-					if (!userMap.isEmpty())
+					map.put(fieldName, dataIdList);
+					// map.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
+					// TreeMap<Long, User> userMap = pdksEntityController.getObjectByInnerObjectMap(map, User.class, Boolean.FALSE);
+					TreeMap<Long, User> userMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getPersonelId", false, dataIdList, fieldName, map, User.class, session);
+					if (userMap != null && !userMap.isEmpty())
 						ortakIslemler.setUserRoller(new ArrayList<User>(userMap.values()), session);
 					TreeMap<String, Tatil> resmiTatilGunleri = ortakIslemler.getTatilGunleri(personeller, oncekiGun, tarih, session);
 					Date sonrakiGun = ortakIslemler.tariheGunEkleCikar(cal, tarih, 1);
@@ -461,7 +464,7 @@ public class IseGelmemeUyari implements Serializable {
 						map.put(PdksEntityController.MAP_KEY_MAP, "getPersonelGeciciId");
 						TreeMap<Long, PersonelGeciciYonetici> geciciYoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, PersonelGeciciYonetici.class, Boolean.FALSE);
 						session.clear();
-			 
+
 						List<Long> perIdList = new ArrayList<Long>();
 						for (Long long1 : kgsPerMap.keySet())
 							perIdList.add(kgsPerMap.get(long1).getId());

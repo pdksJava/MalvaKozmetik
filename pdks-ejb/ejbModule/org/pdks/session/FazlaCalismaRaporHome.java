@@ -788,18 +788,19 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 							perMap.put(vg.getPdksPersonel().getId(), vg.getPdksPersonel());
 						}
 						personelList = new ArrayList<Personel>(perMap.values());
+						List idList = new ArrayList(perMap.keySet());
+						String fieldName = "p";
 						HashMap parametreMap = new HashMap();
 						StringBuffer sb = new StringBuffer();
 						sb.append("SELECT PD.* FROM " + PersonelDinamikAlan.TABLE_NAME + " PD  WITH(nolock) ");
 						sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T  ON T." + Tanim.COLUMN_NAME_ID + "=PD." + PersonelDinamikAlan.COLUMN_NAME_ALAN + " AND T.KODU='" + PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI + "'");
 						sb.append(" AND T." + Tanim.COLUMN_NAME_DURUM + "=1");
-						sb.append(" WHERE PD." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " :p");
+						sb.append(" WHERE PD." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " :" + fieldName);
 						if (session != null)
 							parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-						List idList = new ArrayList(perMap.keySet());
-						parametreMap.put("p", idList);
+						parametreMap.put(fieldName, idList);
 						// List<PersonelDinamikAlan> pdList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelDinamikAlan.class);
-						List<PersonelDinamikAlan> pdList = ortakIslemler.getSQLParamList(idList, sb, "p", parametreMap, PersonelDinamikAlan.class, session);
+						List<PersonelDinamikAlan> pdList = ortakIslemler.getSQLParamList(idList, sb, fieldName, parametreMap, PersonelDinamikAlan.class, session);
 
 						if (!pdList.isEmpty()) {
 							TreeMap<Long, Tanim> alanMap = new TreeMap<Long, Tanim>();
@@ -1200,7 +1201,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			HashMap parametreMap = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT I.* FROM " + PersonelFazlaMesai.TABLE_NAME + " I  WITH(nolock) ");
-			sb.append(" WHERE I." + PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN + " :v");
+			sb.append(" WHERE I." + PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN + " :" + fieldName);
 			sb.append(" AND I." + PersonelFazlaMesai.COLUMN_NAME_DURUM + "=1");
 			parametreMap.put(fieldName, new ArrayList(gunMap.keySet()));
 			if (session != null)

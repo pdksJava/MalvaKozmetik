@@ -2889,12 +2889,15 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 						}
 						if (!idMap.isEmpty()) {
+							List dataIdList = new ArrayList(idMap.values());
+							String fieldName = "id";
 							HashMap fields = new HashMap();
-							fields.put("id", new ArrayList(idMap.values()));
-							fields.put(PdksEntityController.MAP_KEY_MAP, "getId");
+							fields.put(fieldName, dataIdList);
 							if (session != null)
 								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-							TreeMap<Long, Personel> perMap = pdksEntityController.getObjectByInnerObjectMap(fields, Personel.class, false);
+							// fields.put(PdksEntityController.MAP_KEY_MAP, "getId");
+							// TreeMap<Long, Personel> perMap = pdksEntityController.getObjectByInnerObjectMap(fields, Personel.class, false);
+							TreeMap<Long, Personel> perMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getId", false, dataIdList, fieldName, fields, Personel.class, session);
 							for (Long key : idMap.keySet()) {
 								Long kgID = idMap.get(key);
 								if (perMap.containsKey(kgID))

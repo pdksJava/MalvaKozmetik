@@ -287,16 +287,18 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 								izinList.add(personelIzin);
 								izinDepartmanMap.put(departmanId, izinList);
 							}
+							List idList = new ArrayList(izinDepartmanMap.keySet());
+							String fieldName = "user.departman.id";
 							parametreMap.clear();
 							parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "user");
 							parametreMap.put("role.rolename", Role.TIPI_IK);
-							parametreMap.put("user.departman.id", new ArrayList(izinDepartmanMap.keySet()));
+							parametreMap.put(fieldName, idList);
 							parametreMap.put("user.durum", Boolean.TRUE);
 							parametreMap.put("user.pdksPersonel.durum", Boolean.TRUE);
 							if (session != null)
 								parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-							List ikList = pdksEntityController.getObjectByInnerObjectList(parametreMap, UserRoles.class);
-
+							// List ikList = pdksEntityController.getObjectByInnerObjectList(parametreMap, UserRoles.class);
+							List ikList = ortakIslemler.getParamList(false, idList, fieldName, parametreMap, UserRoles.class, session);
 							for (Iterator<Long> iterator = izinDepartmanMap.keySet().iterator(); iterator.hasNext();) {
 								Long departmanId = iterator.next();
 								ArrayList<PersonelIzin> izinList = izinDepartmanMap.get(departmanId);

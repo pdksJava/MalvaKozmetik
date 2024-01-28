@@ -470,11 +470,14 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 			}
 			if (!vardiyaMap.isEmpty()) {
 				try {
+					String fieldName = "vardiya.id";
+					List idList = new ArrayList(vardiyaMap.keySet());
 					parametreMap.clear();
-					parametreMap.put("vardiya.id", new ArrayList(vardiyaMap.keySet()));
+					parametreMap.put(fieldName, idList);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<VardiyaYemekIzin> vardiyaYemekIzinList = pdksEntityController.getObjectByInnerObjectList(parametreMap, VardiyaYemekIzin.class);
+					// List<VardiyaYemekIzin> vardiyaYemekIzinList = pdksEntityController.getObjectByInnerObjectList(parametreMap, VardiyaYemekIzin.class);
+					List<VardiyaYemekIzin> vardiyaYemekIzinList = ortakIslemler.getParamList(false, idList, fieldName, parametreMap, VardiyaYemekIzin.class, session);
 					if (!vardiyaYemekIzinList.isEmpty()) {
 						if (vardiyaYemekIzinList.size() > 1)
 							vardiyaYemekIzinList = PdksUtil.sortListByAlanAdi(vardiyaYemekIzinList, "yemekNumeric", true);

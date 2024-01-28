@@ -548,6 +548,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 				if (authenticatedUser.isIK())
 					yilDegisti();
 			}
+			if (aylar == null)
+				yilDegisti();
 
 			// return ortakIslemler.yetkiIKAdmin(Boolean.FALSE);
 			fillEkSahaTanim();

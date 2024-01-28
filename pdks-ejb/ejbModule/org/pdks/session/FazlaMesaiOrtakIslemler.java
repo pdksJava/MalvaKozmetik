@@ -229,11 +229,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 			perList = null;
 			if (!idMap.isEmpty()) {
+				String fieldName = "personelDenklestirmeBordro.id";
+				List idList = new ArrayList(idMap.keySet());
 				fields.clear();
-				fields.put("personelDenklestirmeBordro.id", new ArrayList(idMap.keySet()));
+				fields.put(fieldName, idList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<PersonelDenklestirmeBordroDetay> list = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordroDetay.class);
+				// List<PersonelDenklestirmeBordroDetay> list = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordroDetay.class);
+				List<PersonelDenklestirmeBordroDetay> list = ortakIslemler.getParamList(false, idList, fieldName, fields, PersonelDenklestirmeBordroDetay.class, session);
 				for (PersonelDenklestirmeBordroDetay detay : list) {
 					Long key = detay.getPersonelDenklestirmeBordro().getId();
 					BordroDetayTipi bordroDetayTipi = BordroDetayTipi.fromValue(detay.getTipi());
@@ -860,12 +863,15 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				puantajMap.put(personelDenklestirme.getId(), ap);
 		}
 		if (!puantajMap.isEmpty()) {
+			List dataIdList = new ArrayList(puantajMap.keySet());
+			String fieldName = "personelDenklestirme.id";
 			fields.clear();
-			fields.put("personelDenklestirme.id", new ArrayList(puantajMap.keySet()));
-			fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelDenklestirmeId");
+			fields.put(fieldName, dataIdList);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			TreeMap<Long, PersonelDenklestirmeBordro> bordroMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordro.class, false);
+			// fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelDenklestirmeId");
+			// TreeMap<Long, PersonelDenklestirmeBordro> bordroMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordro.class, false);
+			TreeMap<Long, PersonelDenklestirmeBordro> bordroMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getPersonelDenklestirmeId", false, dataIdList, fieldName, fields, PersonelDenklestirmeBordro.class, session);
 			TreeMap<String, PersonelDenklestirmeBordroDetay> bordroDetayMap = null;
 			List<Long> idList = new ArrayList<Long>();
 			if (!bordroMap.isEmpty()) {

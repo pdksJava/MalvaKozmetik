@@ -157,11 +157,14 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 					}
 				}
 				if (!sicilMap.isEmpty()) {
+					List idList = new ArrayList(sicilMap.keySet());
+					String fieldName = "pdksSicilNo";
 					HashMap parametreMap = new HashMap();
-					parametreMap.put("pdksSicilNo", new ArrayList(sicilMap.keySet()));
+					parametreMap.put(fieldName, idList);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<PersonelView> list = ortakIslemler.getPersonelViewList(pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PdksPersonelView.class));
+					// List<PersonelView> list = ortakIslemler.getPersonelViewList(pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PdksPersonelView.class));
+					List<PersonelView> list = ortakIslemler.getParamList(false, idList, fieldName, parametreMap, PdksPersonelView.class, session);
 					TreeMap<String, PersonelView> map1 = new TreeMap<String, PersonelView>();
 					for (PersonelView personelView : list) {
 						if (personelView.getPdksPersonel() != null) {
@@ -277,11 +280,14 @@ public class PersonelKulllaniciExcelUpdateHome extends EntityHome<PersonelView> 
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				yoneticiMap = pdksEntityController.getObjectByInnerObjectMapInLogic(parametreMap, PdksPersonelView.class, Boolean.FALSE);
 				if (!yoneticiMap.isEmpty()) {
+					List idList = new ArrayList(yoneticiSicilMap.keySet());
+					String fieldName = "sicilNo";
 					parametreMap.clear();
-					parametreMap.put("sicilNo", new ArrayList(yoneticiSicilMap.keySet()));
+					parametreMap.put(fieldName, idList);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<PersonelView> list = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectList(parametreMap, PersonelKGS.class));
+					List veriler = ortakIslemler.getParamList(false, idList, fieldName, parametreMap, PersonelKGS.class, session);
+					List<PersonelView> list = ortakIslemler.getPersonelViewByPersonelKGSList(veriler);
 					TreeMap<String, PersonelView> map1 = new TreeMap<String, PersonelView>();
 					for (PersonelView personelView : list) {
 						if (personelView.getPdksPersonel() != null) {

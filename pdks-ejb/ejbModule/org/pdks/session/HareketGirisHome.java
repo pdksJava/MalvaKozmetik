@@ -229,12 +229,15 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 			}
 		}
 		if (!veriMap.isEmpty()) {
+			List dataIdList = new ArrayList(veriMap.keySet());
+			String fieldName = "pdksSicilNo";
 			HashMap parametreMap = new HashMap();
-			parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getPdksSicilNo");
-			parametreMap.put("pdksSicilNo", new ArrayList(veriMap.keySet()));
+			parametreMap.put("pdksSicilNo", dataIdList);
 			if (session != null)
-				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			TreeMap<String, Personel> personelMap = pdksEntityController.getObjectByInnerObjectMap(parametreMap, Personel.class, false);
+				parametreMap.put(PdksEntityController.MAP_KEY_MAP, "getPdksSicilNo");
+			// parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			// TreeMap<String, Personel> personelMap = pdksEntityController.getObjectByInnerObjectMap(parametreMap, Personel.class, false);
+			TreeMap<String, Personel> personelMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getPdksSicilNo", false, dataIdList, fieldName, parametreMap, Personel.class, session);
 			List<Personel> list = new ArrayList<Personel>();
 			for (String pdksSicilNo : veriMap.keySet()) {
 				Personel personel = personelMap.containsKey(pdksSicilNo) ? personelMap.get(pdksSicilNo) : new Personel();
