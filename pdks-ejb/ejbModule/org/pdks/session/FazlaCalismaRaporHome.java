@@ -796,8 +796,11 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 						sb.append(" WHERE PD." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " :p");
 						if (session != null)
 							parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-						parametreMap.put("p", new ArrayList(perMap.keySet()));
-						List<PersonelDinamikAlan> pdList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelDinamikAlan.class);
+						List idList = new ArrayList(perMap.keySet());
+						parametreMap.put("p", idList);
+						// List<PersonelDinamikAlan> pdList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelDinamikAlan.class);
+						List<PersonelDinamikAlan> pdList = ortakIslemler.getSQLParamList(idList, sb, "p", parametreMap, PersonelDinamikAlan.class, session);
+
 						if (!pdList.isEmpty()) {
 							TreeMap<Long, Tanim> alanMap = new TreeMap<Long, Tanim>();
 							for (PersonelDinamikAlan personelDinamikAlan : pdList) {
@@ -900,15 +903,18 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 					}
 					if (!raporSecim.equals("maxToplamMesai")) {
+						List idList = new ArrayList(vMaps.keySet());
+						String fieldName = "izinSahibi.id";
 						Calendar cal = Calendar.getInstance();
 						HashMap fields = new HashMap();
 						fields.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, basTarih, -2));
 						fields.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
-						fields.put("izinSahibi.id", new ArrayList(vMaps.keySet()));
+						fields.put(fieldName, idList);
 						fields.put("izinDurumu", ortakIslemler.getAktifIzinDurumList());
 						if (session != null)
 							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-						List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+						// List<PersonelIzin> izinler = pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
+						List<PersonelIzin> izinler = ortakIslemler.getParamList(true, idList, fieldName, fields, PersonelIzin.class, session);
 						HashMap<Long, List<PersonelIzin>> izinMap = new HashMap<Long, List<PersonelIzin>>();
 						for (Iterator iterator = izinler.iterator(); iterator.hasNext();) {
 							PersonelIzin personelIzin = (PersonelIzin) iterator.next();
@@ -1189,15 +1195,19 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		}
 
 		if (!gunMap.isEmpty()) {
+			List idList = new ArrayList(gunMap.keySet());
+			String fieldName = "v";
 			HashMap parametreMap = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT I.* FROM " + PersonelFazlaMesai.TABLE_NAME + " I  WITH(nolock) ");
 			sb.append(" WHERE I." + PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN + " :v");
 			sb.append(" AND I." + PersonelFazlaMesai.COLUMN_NAME_DURUM + "=1");
-			parametreMap.put("v", new ArrayList(gunMap.keySet()));
+			parametreMap.put(fieldName, new ArrayList(gunMap.keySet()));
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<PersonelFazlaMesai> list = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelFazlaMesai.class);
+			// List<PersonelFazlaMesai> list = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelFazlaMesai.class);
+			List<PersonelFazlaMesai> list = ortakIslemler.getSQLParamList(idList, sb, fieldName, parametreMap, PersonelFazlaMesai.class, session);
+
 			if (!list.isEmpty()) {
 				String patern = "yyyyMMdd" + (maxGeceCalismaSaatStr.indexOf(":") > 0 ? "HH:mm" : "HHmm");
 				Date tarih2;

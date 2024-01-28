@@ -2494,6 +2494,55 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param logic
+	 * @param dataIdList
+	 * @param fieldName
+	 * @param fieldsOrj
+	 * @param class1
+	 * @param session
+	 * @return
+	 */
+	public List getParamList(boolean logic, List dataIdList, String fieldName, HashMap<String, Object> fieldsOrj, Class class1, Session session) {
+		List idList = new ArrayList();
+		List veriList = new ArrayList();
+		try {
+			int size = 1800 - fieldsOrj.size();
+			List idInputList = new ArrayList(dataIdList);
+			while (!idInputList.isEmpty()) {
+				HashMap map = new HashMap();
+				for (Iterator iterator = idInputList.iterator(); iterator.hasNext();) {
+					Object long1 = (Object) iterator.next();
+					idList.add(long1);
+					iterator.remove();
+					if (idList.size() + map.size() >= size)
+						break;
+				}
+				HashMap<String, Object> fields = new HashMap<String, Object>();
+				fields.putAll(fieldsOrj);
+				// if (idList.size() == 1)
+				// fields.put(fieldName + (logic ? "=" : ""), idList.get(0));
+				// else
+					fields.put(fieldName, idList);
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				List list = logic ? pdksEntityController.getObjectByInnerObjectListInLogic(fields, class1) : pdksEntityController.getObjectByInnerObjectList(fields, class1);
+				if (!list.isEmpty())
+					veriList.addAll(list);
+				list = null;
+				fields = null;
+				idList.clear();
+			}
+			idInputList = null;
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+
+		return veriList;
+
+	}
+
+	/**
 	 * @param dataIdList
 	 * @param sb
 	 * @param fieldName
@@ -2502,16 +2551,16 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	public List getSQLParamLongList(List<Long> dataIdList, StringBuffer sb, String fieldName, HashMap<String, Object> fieldsOrj, Class class1, Session session) {
-		List<Long> idList = new ArrayList<Long>();
+	public List getSQLParamList(List dataIdList, StringBuffer sb, String fieldName, HashMap<String, Object> fieldsOrj, Class class1, Session session) {
+		List idList = new ArrayList();
 		List veriList = new ArrayList();
 		try {
 			int size = 1800 - fieldsOrj.size();
-			List<Long> idInputList = new ArrayList<Long>(dataIdList);
+			List idInputList = new ArrayList(dataIdList);
 			while (!idInputList.isEmpty()) {
 				HashMap map = new HashMap();
 				for (Iterator iterator = idInputList.iterator(); iterator.hasNext();) {
-					Long long1 = (Long) iterator.next();
+					Object long1 = (Object) iterator.next();
 					idList.add(long1);
 					iterator.remove();
 					if (idList.size() + map.size() >= size)
@@ -2578,7 +2627,7 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	public List getSPParamLongList(List<Long> idInputList, String spName, String fieldName, LinkedHashMap<String, Object> fieldsOrj, Class class1, Session session) {
+	public List getSPParamLongList(List idInputList, String spName, String fieldName, LinkedHashMap<String, Object> fieldsOrj, Class class1, Session session) {
 		StringBuffer sb = new StringBuffer(spName);
 		List<Long> idList = new ArrayList<Long>();
 		List veriList = new ArrayList();
@@ -10591,7 +10640,7 @@ public class OrtakIslemler implements Serializable {
 			fields.put("bitTarih", bitisTarih);
 			fields.put("basTarih", baslamaTarih);
 			fields.put("pId", null);
-			List<PersonelIzin> izinList = getSQLParamLongList(perIdList, sb, "pId", fields, PersonelIzin.class, session);
+			List<PersonelIzin> izinList = getSQLParamList(perIdList, sb, "pId", fields, PersonelIzin.class, session);
 			for (PersonelIzin izin : izinList) {
 				Long id = izin.getIzinSahibi().getId();
 				List<PersonelIzin> list = izinMap.containsKey(id) ? izinMap.get(id) : new ArrayList<PersonelIzin>();
