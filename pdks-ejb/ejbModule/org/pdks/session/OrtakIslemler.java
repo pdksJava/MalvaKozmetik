@@ -5164,7 +5164,8 @@ public class OrtakIslemler implements Serializable {
 				sb.append("SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelKGS.TABLE_NAME + " PS WITH(nolock) ");
 				sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
 				sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
-				sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " = :p AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 ");
+				sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " :p ");
+				// sb.append(" AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 ");
 				HashMap fields = new HashMap();
 				parametreMap.put("p", new ArrayList(ayrilanMap.keySet()));
 				if (session != null)
@@ -15882,7 +15883,7 @@ public class OrtakIslemler implements Serializable {
 								if (girisZaman.before(ilkGun) && PdksUtil.hasStringValue(cikisId) == false)
 									continue;
 								PersonelFazlaMesai personelFazlaMesai = girisHareket.getPersonelFazlaMesai() != null ? girisHareket.getPersonelFazlaMesai() : cikisHareket.getPersonelFazlaMesai();
-								
+
 								if (tatilGunu == false && (girisHareket.isOrjinalZamanGetir() || cikisHareket.isOrjinalZamanGetir())) {
 									if (personelFazlaMesai == null) {
 										boolean devam = true;
