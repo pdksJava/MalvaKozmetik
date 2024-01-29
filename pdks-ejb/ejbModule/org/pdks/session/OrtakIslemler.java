@@ -230,6 +230,22 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param prefix
+	 * @param sicilNo
+	 * @return
+	 */
+	public boolean isStringEqual(String prefix, String sicilNo) {
+		boolean sonuc = false;
+		if (PdksUtil.hasStringValue(prefix) && PdksUtil.hasStringValue(sicilNo)) {
+			if (PdksUtil.getSicilNoUzunluk() != null) {
+				sonuc = prefix.trim().equals(sicilNo.trim());
+			} else
+				sonuc = PdksUtil.isStringEqual(prefix, sicilNo);
+		}
+		return sonuc;
+	}
+
+	/**
 	 * @param entityManagerInput
 	 * @param pdksEntityControllerInput
 	 * @param loginUser
@@ -6058,17 +6074,23 @@ public class OrtakIslemler implements Serializable {
 		return kidemBasTarihiAciklama;
 	}
 
+	/**
+	 * @param sicilNo
+	 * @return
+	 */
 	public String getSicilNo(String sicilNo) {
-		String sicilNoUzunlukStr = getParameterKey("sicilNoUzunluk");
 		int maxTextLength = 0;
-		try {
-			if (PdksUtil.hasStringValue(sicilNoUzunlukStr))
-				maxTextLength = Integer.parseInt(sicilNoUzunlukStr);
-		} catch (Exception e) {
-			maxTextLength = 0;
+		if (PdksUtil.getSicilNoUzunluk() != null) {
+			try {
+				maxTextLength = PdksUtil.getSicilNoUzunluk();
+			} catch (Exception e) {
+				maxTextLength = 0;
+			}
 		}
-		if (PdksUtil.hasStringValue(sicilNo) && sicilNo.trim().length() < maxTextLength)
-			sicilNo = PdksUtil.textBaslangicinaKarakterEkle(sicilNo.trim(), '0', maxTextLength);
+		if (sicilNo != null)
+			sicilNo = sicilNo.trim();
+		if (maxTextLength > 0 && PdksUtil.hasStringValue(sicilNo) && sicilNo.length() < maxTextLength)
+			sicilNo = PdksUtil.textBaslangicinaKarakterEkle(sicilNo, '0', maxTextLength);
 
 		return sicilNo;
 
@@ -6086,7 +6108,6 @@ public class OrtakIslemler implements Serializable {
 		String ad = aramaSecenekleri.getAd(), soyad = aramaSecenekleri.getSoyad(), sicilNo = aramaSecenekleri.getSicilNo();
 
 		if (sicilNo != null) {
-			sicilNo = getSicilNo(sicilNo);
 			aramaSecenekleri.setSicilNo(sicilNo);
 		}
 
@@ -6151,13 +6172,20 @@ public class OrtakIslemler implements Serializable {
 		if (PdksUtil.hasStringValue(sicilNo))
 			sicilNo = getSicilNo(sicilNo);
 		if (istenAyrilanEkle == false && PdksUtil.hasStringValue(sicilNo)) {
-			if (perNoList.contains(sicilNo)) {
-				perNoList = new ArrayList<String>();
-				if (!perNoList.contains(sicilNo))
-					perNoList.add(sicilNo);
-
-			} else
-				perNoList.clear();
+			List<String> list = new ArrayList<String>();
+			if (PdksUtil.getSicilNoUzunluk() != null) {
+				if (perNoList.contains(sicilNo))
+					list.add(sicilNo);
+			} else {
+				for (String pSicil : perNoList) {
+					if (isStringEqual(sicilNo, pSicil))
+						list.add(pSicil);
+				}
+			}
+			perNoList.clear();
+			if (!list.isEmpty())
+				perNoList.addAll(list);
+			list = null;
 
 		} else if (PdksUtil.hasStringValue(sicilNo) || PdksUtil.hasStringValue(ad) || PdksUtil.hasStringValue(soyad) || gelenSirket != null || sirket != null || tesis != null || ekSaha1 != null || ekSaha2 != null || ekSaha3 != null || ekSaha4 != null) {
 			HashMap parametreMap = new HashMap();

@@ -1935,9 +1935,27 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 		if (PdksUtil.hasStringValue(sicilNo)) {
 			sicilNo = ortakIslemler.getSicilNo(sicilNo);
-			fields.put("sicilNo1", sicilNo.trim());
-			fields.put("sicilNo2", sicilNo.trim());
-			sb.append(str + " (V." + PersonelKGS.COLUMN_NAME_SICIL_NO + " =:sicilNo1 or Y." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " =:sicilNo2 )");
+			String eqStr = "=";
+			if (PdksUtil.getSicilNoUzunluk() != null) {
+				fields.put("sicilNo1", sicilNo.trim());
+				fields.put("sicilNo2", sicilNo.trim());
+
+			} else {
+				eqStr = "LIKE";
+				Long sayi = null;
+				try {
+					sayi = Long.parseLong(sicilNo);
+				} catch (Exception e) {
+				}
+				if (sayi != null && sayi.longValue() > 0) {
+					fields.put("sicilNo1", "%" + sicilNo.trim());
+					fields.put("sicilNo2", "%" + sicilNo.trim());
+				} else {
+					fields.put("sicilNo1", sicilNo.trim() + "%");
+					fields.put("sicilNo2", sicilNo.trim() + "%");
+				}
+			}
+			sb.append(str + " (V." + PersonelKGS.COLUMN_NAME_SICIL_NO + " " + eqStr + " :sicilNo1 or Y." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " " + eqStr + " :sicilNo2 )");
 			str = " AND ";
 		}
 		Long userTesisId = null;
@@ -1949,9 +1967,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			userTesisId = authenticatedUser.getPdksPersonel().getTesis().getId();
 
 		boolean eksahaGoster = Boolean.FALSE;
-
 		try {
-
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			list = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectBySQLList(sb, fields, PersonelKGS.class));
@@ -1968,7 +1984,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 						}
 					}
-
 					if (pdksPersonel == null && !personelKGS.getDurum()) {
 						iterator.remove();
 					} else {

@@ -316,8 +316,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		}
 		boolean admin = ikRole || authenticatedUser.isAdmin() || authenticatedUser.isGenelMudur();
 		if (PdksUtil.hasStringValue(sicilNo) || PdksUtil.hasStringValue(adi) || PdksUtil.hasStringValue(soyadi)) {
-			if (PdksUtil.hasStringValue(sicilNo))
-				sicilNo = ortakIslemler.getSicilNo(sicilNo);
+
 			// if (authenticatedUser.isAdmin() || (authenticatedUser.isIK() && authenticatedUser.getDepartman().isAdminMi()) || yetkiTumPersonelNoList.contains(sicilNo)) {
 			HashMap map = new HashMap();
 
@@ -328,8 +327,22 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				else if (departmanId != null)
 					map.put("pdksPersonel.sirket.departman.id=", departmanId);
 			}
-			if (PdksUtil.hasStringValue(sicilNo))
-				map.put("pdksPersonel.pdksSicilNo=", sicilNo);
+			if (PdksUtil.hasStringValue(sicilNo)) {
+				if (PdksUtil.getSicilNoUzunluk() != null)
+					map.put("pdksPersonel.pdksSicilNo=", sicilNo);
+				else {
+					Long sayi = null;
+					try {
+						sayi = Long.parseLong(sicilNo);
+					} catch (Exception e) {
+					}
+					if (sayi != null && sayi.longValue() > 0)
+						map.put("pdksPersonel.pdksSicilNo like ", "%" + sicilNo.trim());
+					else
+						map.put("pdksPersonel.pdksSicilNo like ", sicilNo.trim() + "%");
+				}
+			}
+
 			else {
 				if (PdksUtil.hasStringValue(adi))
 					map.put("pdksPersonel.ad like ", "%" + adi.trim() + "%");
@@ -348,7 +361,6 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					PersonelView personelView = (PersonelView) iterator.next();
 					if (!yetkiTumPersonelNoList.contains(personelView.getSicilNo()))
 						iterator.remove();
-
 				}
 			}
 			devam = !personeller.isEmpty();

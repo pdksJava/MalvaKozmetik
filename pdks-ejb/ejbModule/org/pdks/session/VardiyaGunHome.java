@@ -218,7 +218,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	private User loginUser = null;
 
-	private String sicilNo = "", dosyaAdi, donusAdres = "";
+	private String sicilNo = "", sicilYeniNo = "", dosyaAdi, donusAdres = "";
 
 	private Boolean denklestirmeHesapla = Boolean.FALSE, gunSec = Boolean.FALSE, gorevli = false, ozelIstek = Boolean.FALSE, islemYapiliyor = Boolean.FALSE, departmanBolumAyni = Boolean.FALSE;
 
@@ -5542,7 +5542,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			gunSec = Boolean.FALSE;
 			DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi(), denklestirmeDonemiGecenAy = new DepartmanDenklestirmeDonemi();
 			HashMap fields = new HashMap();
-			sicilNo = ortakIslemler.getSicilNo(sicilNo);
+			sicilYeniNo = ortakIslemler.getSicilNo(sicilNo);
 			if (aramaSecenekleri.getSirketId() != null) {
 				fields.clear();
 				fields.put("id", aramaSecenekleri.getSirketId());
@@ -5727,10 +5727,13 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					denklestirmeAy != null ? aylikPuantajDonem : null, getDenklestirmeDurum(), session);
 			if (testDurum)
 				logger.info("aylikPuantajOlusturuluyor 2000 " + PdksUtil.getCurrentTimeStampStr());
-			sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			for (Personel personel : donemPerList) {
-				if (PdksUtil.hasStringValue(sicilNo) == false || sicilNo.trim().equals(personel.getPdksSicilNo().trim()))
+				if (PdksUtil.hasStringValue(sicilNo) == false || ortakIslemler.isStringEqual(sicilYeniNo, personel.getPdksSicilNo())) {
+					if (PdksUtil.hasStringValue(sicilNo) && personel.getPdksSicilNo().endsWith(sicilYeniNo))
+						sicilNo = personel.getPdksSicilNo();
 					perList.add(personel.getPdksSicilNo());
+				}
+
 			}
 
 			if (!loginUser.isDirektorSuperVisor() && !loginUser.isIK() && (loginUser.isYonetici() || loginUser.isYoneticiKontratli())) {
@@ -8272,7 +8275,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			List<Personel> personelList = fazlaMesaiOrtakIslemler.getFazlaMesaiMudurPersonelList(aramaSecenekleri.getSirket(), tesisId != null ? "" + tesisId : null, seciliEkSaha3Id, (denklestirmeAy != null ? aylikPuantajDonem : null), getDenklestirmeDurum(), fazlaMesaiTalepDurum, session);
 			List<String> perList = new ArrayList<String>();
 			for (Personel personel : personelList) {
-				if (PdksUtil.hasStringValue(sicilNo) == false || sicilNo.equals(personel.getPdksSicilNo()))
+				if (PdksUtil.hasStringValue(sicilNo) == false || ortakIslemler.isStringEqual(sicilNo, personel.getPdksSicilNo()))
 					perList.add(personel.getPdksSicilNo());
 
 			}
@@ -9763,7 +9766,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 						// TreeMap<String, Personel> personelMap = pdksEntityController.getObjectBySQLMap(sb, fields, Personel.class, false);
 						TreeMap<String, Personel> personelMap = ortakIslemler.getSQLParamTreeMap("getPdksSicilNo", false, dataIdList, sb, fieldName, fields, Personel.class, session);
- 						if (personelMap.size() == perMap.size()) {
+						if (personelMap.size() == perMap.size()) {
 							fieldName = "personel.pdksSicilNo";
 							List idList = new ArrayList(perMap.keySet());
 							fields.clear();

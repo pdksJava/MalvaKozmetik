@@ -129,9 +129,42 @@ public class PdksUtil implements Serializable {
 
 	private static double odenenFazlaMesaiSaati = 30d;
 
-	private static Integer yarimYuvarlaLast = 1;
+	private static Integer yarimYuvarlaLast = 1, sicilNoUzunluk = null;
 
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
+
+	/**
+	 * @param prefix
+	 * @param sicilNo
+	 * @return
+	 */
+	public static boolean isStringEqual(String prefix, String sicilNo) {
+		boolean sonuc = false;
+		if (PdksUtil.hasStringValue(prefix) && PdksUtil.hasStringValue(sicilNo)) {
+			sicilNo = sicilNo.trim();
+			prefix = prefix.trim();
+			if (!prefix.equals(sicilNo)) {
+				boolean sayisal = false;
+				Long sayi = null;
+				try {
+					sayi = Long.parseLong(prefix);
+				} catch (Exception e) {
+					sayi = null;
+				}
+				sayisal = sayi != null && sayi.longValue() > 0L;
+				if (sayisal) {
+					sonuc = sicilNo.endsWith(prefix);
+				} else {
+					String str1 = sicilNo.toLowerCase(TR_LOCALE);
+					String str2 = prefix.toLowerCase(TR_LOCALE);
+					sonuc = str1.startsWith(str2);
+				}
+			} else
+				sonuc = true;
+
+		}
+		return sonuc;
+	}
 
 	/**
 	 * @return
@@ -3530,6 +3563,14 @@ public class PdksUtil implements Serializable {
 
 	public static void setPuantajSorguAltBolumGir(boolean puantajSorguAltBolumGir) {
 		PdksUtil.puantajSorguAltBolumGir = puantajSorguAltBolumGir;
+	}
+
+	public static Integer getSicilNoUzunluk() {
+		return sicilNoUzunluk;
+	}
+
+	public static void setSicilNoUzunluk(Integer sicilNoUzunluk) {
+		PdksUtil.sicilNoUzunluk = sicilNoUzunluk;
 	}
 
 }

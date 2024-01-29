@@ -649,11 +649,21 @@ public class StartupAction implements Serializable {
 		AylikPuantaj.setEksikCalismaUyariYuzdesi(eksikCalismaUyariYuzdesi);
 
 		SapRfcManager.setParameterMap(parameterMap);
+		Integer sicilNoUzunluk = null;
 		if (!parameterList.isEmpty())
 			try {
 				// Setting up LDAP attributes..
 				PdksEntityController.setShowSQL(parameterMap.containsKey("showSql") && parameterMap.get("showSql").equals("1"));
 				VardiyaGun.setHaftaTatilDurum(parameterMap.containsKey("haftaTatilDurum") && parameterMap.get("haftaTatilDurum").equals("1"));
+				if (parameterMap.containsKey("sicilNoUzunluk")) {
+					try {
+						sicilNoUzunluk = Integer.parseInt(parameterMap.get("sicilNoUzunluk"));
+						if (sicilNoUzunluk < 1)
+							sicilNoUzunluk = null;
+					} catch (Exception e) {
+						sicilNoUzunluk = null;
+					}
+				}
 
 				setSmtpHost(parameterMap.get("smtpHost"));
 				setSmtpHostPort(parameterMap.containsKey("smtpHostPort") ? Integer.parseInt(parameterMap.get("smtpHostPort")) : 0);
@@ -684,6 +694,7 @@ public class StartupAction implements Serializable {
 				e.printStackTrace();
 				logger.error("PDKS hata out : " + e.getMessage());
 			}
+		PdksUtil.setSicilNoUzunluk(sicilNoUzunluk);
 		fillSirketList(session);
 		setHelpDeskParametre(session, pmMap);
 		pmMap = null;

@@ -137,7 +137,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			List<Long> perList = new ArrayList<Long>();
 
 			for (Personel personel : donemPerList) {
-				if (sicilDolu && !personel.getPdksSicilNo().trim().equals(sicilNo.trim()))
+				if (sicilDolu && !ortakIslemler.isStringEqual(sicilNo, personel.getPdksSicilNo()))
 					continue;
 				perList.add(personel.getId());
 			}

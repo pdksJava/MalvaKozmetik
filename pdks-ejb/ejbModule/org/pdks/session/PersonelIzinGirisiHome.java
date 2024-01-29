@@ -535,9 +535,26 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			parametreMap.put("soyad", soyadi.trim() + "%");
 		}
 		if (PdksUtil.hasStringValue(sicilNo)) {
-			sb.append(whereStr + " P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " =:sicilNo");
+			String eqStr = "=";
+			sicilNo = ortakIslemler.getSicilNo(sicilNo.trim());
+			if (PdksUtil.getSicilNoUzunluk() != null) {
+				parametreMap.put("sicilNo", sicilNo);
+			} else {
+				eqStr = "LIKE";
+				Long sayi = null;
+				try {
+					sayi = Long.parseLong(sicilNo);
+				} catch (Exception e) {
+				}
+				if (sayi != null && sayi.longValue() > 0) {
+					parametreMap.put("sicilNo", "%" + sicilNo);
+				} else {
+					parametreMap.put("sicilNo", sicilNo + "%");
+				}
+			}
+
+			sb.append(whereStr + " P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " " + eqStr + " :sicilNo");
 			whereStr = " AND ";
-			parametreMap.put("sicilNo", ortakIslemler.getSicilNo(sicilNo.trim()));
 		}
 		Long seciliSirketId = aramaSecenekleri.getSirketId();
 		if (authenticatedUser.isYoneticiKontratli()) {
@@ -987,7 +1004,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			fillGirisEkSahaTanim();
 			HashMap hashMap = new HashMap();
 			if (!authenticatedUser.isAdmin())
-				hashMap.put("departman.id", authenticatedUser.getDepartman().getId());
+				hashMap.put("departman.id=", authenticatedUser.getDepartman().getId());
 			// hashMap.put("izinTipiTanim.kodu like", IzinTipi.SSK_ISTIRAHAT);
 			hashMap.put("izinTipiTanim.kodu like", "%I%");
 			hashMap.put("personelGirisTipi<>", IzinTipi.GIRIS_TIPI_YOK);
@@ -2268,10 +2285,20 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			sb.append("SELECT P." + Personel.COLUMN_NAME_ID + " from " + Personel.TABLE_NAME + " P WITH(nolock) ");
 			sb.append(" WHERE P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basTarih ");
 			sb.append(" AND P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<:bitTarih ");
-			sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " =:p ");
+			sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " like :p ");
 			map.put("basTarih", startDatedt);
 			map.put("bitTarih", endDatedt);
-			map.put("p", sicilNo);
+			Long sayi = null;
+			try {
+				sayi = Long.parseLong(sicilNo);
+			} catch (Exception e) {
+			}
+			if (sayi != null && sayi.longValue() > 0) {
+				map.put("p", "%" + sicilNo.trim());
+			} else {
+				map.put("p", sicilNo.trim() + "%");
+			}
+
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<Personel> personeller = ortakIslemler.getPersonelList(sb, map);

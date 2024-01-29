@@ -175,7 +175,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private String msgError, msgFazlaMesaiError, msgFazlaMesaiInfo, sanalPersonelAciklama, bolumAciklama, tmpAlan, linkBordroAdres;
 	private Double eksikSaatYuzde = null;
-	private String sicilNo = "", excelDosyaAdi, mailKonu, mailIcerik, msgwarnImg = "";
+	private String sicilNo = "", sicilYeniNo = "", excelDosyaAdi, mailKonu, mailIcerik, msgwarnImg = "";
 	private List<YemekIzin> yemekAraliklari;
 	private CalismaModeli perCalismaModeli;
 	private Long seciliEkSaha3Id, sirketId = null, departmanId, gorevTipiId, tesisId, seciliEkSaha4Id;
@@ -823,7 +823,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (!PdksUtil.hasStringValue(sicilNo))
 			aylikPuantajList.clear();
 		else {
-			sicilNo = ortakIslemler.getSicilNo(sicilNo);
+			sicilYeniNo = ortakIslemler.getSicilNo(sicilNo);
+			if (sicilNo != null && !sicilYeniNo.equals(sicilNo))
+				sicilNo = sicilYeniNo;
 			try {
 				fillPersonelDenklestirmeList();
 			} catch (Exception e) {
@@ -984,15 +986,18 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			setSeciliVardiyaGun(null);
 			HashMap map = new HashMap();
 			List<String> perList = new ArrayList<String>();
-			sicilNo = ortakIslemler.getSicilNo(sicilNo);
+			sicilYeniNo = ortakIslemler.getSicilNo(sicilNo);
 			List<Personel> donemPerList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, seciliEkSaha4Id, denklestirmeAy != null ? aylikPuantajSablon : null, sadeceFazlaMesai, session);
-			sicilNo = ortakIslemler.getSicilNo(sicilNo);
 			if (testDurum)
 				logger.info("fillPersonelDenklestirmeDevam 1000 " + basTarih);
 			List<Long> perIdList = new ArrayList<Long>();
 			for (Personel personel : donemPerList) {
-				if (PdksUtil.hasStringValue(sicilNo) == false || sicilNo.trim().equals(personel.getPdksSicilNo().trim()))
+				if (PdksUtil.hasStringValue(sicilNo) == false || ortakIslemler.isStringEqual(sicilYeniNo, personel.getPdksSicilNo())) {
+					if (PdksUtil.hasStringValue(sicilNo) && personel.getPdksSicilNo().endsWith(sicilYeniNo))
+						sicilNo = personel.getPdksSicilNo();
 					perIdList.add(personel.getId());
+				}
+
 			}
 			if (loginUser.getDepartman().isAdminMi() == false && (loginUser.isSuperVisor() || loginUser.isProjeMuduru())) {
 				sirket = loginUser.getPdksPersonel().getSirket();

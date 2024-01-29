@@ -829,12 +829,24 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 	 */
 	public void fillIzinList(Date gecerlilikTarih, boolean gelecekIzinGoster, boolean harcananIzinlerHepsi) throws Exception {
 		bakiyeIzinGoster = ortakIslemler.getParameterKeyHasStringValue("bakiyeIzinGoster");
+		String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo().trim());
 		if (istenAyrilanEkle && PdksUtil.hasStringValue(aramaSecenekleri.getSicilNo())) {
-			String sicilNo = ortakIslemler.getSicilNo(aramaSecenekleri.getSicilNo().trim());
 			HashMap fields = new HashMap();
-			fields.put("pdksSicilNo", sicilNo);
+			if (PdksUtil.getSicilNoUzunluk() != null)
+				fields.put("pdksSicilNo=", sicilNo);
+			else {
+				Long sayi = null;
+				try {
+					sayi = Long.parseLong(sicilNo);
+				} catch (Exception e) {
+				}
+				if (sayi != null && sayi.longValue() > 0)
+					fields.put("pdksSicilNo like ", "%" + sicilNo.trim());
+				else
+					fields.put("pdksSicilNo like ", sicilNo.trim() + "%");
+			}
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<Personel> personelList = pdksEntityController.getObjectByInnerObjectList(fields, Personel.class);
+			List<Personel> personelList = pdksEntityController.getObjectByInnerObjectListInLogic(fields, Personel.class);
 			if (personelList.size() == 1) {
 				Personel personel = personelList.get(0);
 				if (personel.isCalisiyor() == false) {
@@ -850,7 +862,6 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 				gecerlilikTarih = null;
 
 		}
-		String sicilNo = aramaSecenekleri.getSicilNo();
 		setInstance(null);
 		HashMap<Long, TempIzin> izinMap = new HashMap<Long, TempIzin>();
 		if (PdksUtil.hasStringValue(sicilNo) == false && aramaSecenekleri.getSirketId() == null && (authenticatedUser.isIK() || authenticatedUser.isAdmin()))
