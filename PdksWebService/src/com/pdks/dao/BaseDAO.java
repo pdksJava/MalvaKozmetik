@@ -24,12 +24,26 @@ import com.pdks.genel.model.DAO;
  */
 public interface BaseDAO extends DAO {
 
+	/**
+	 * @return
+	 */
 	public Session openSession();
 
+	/**
+	 * @return
+	 */
 	public Session getHibernateCurrentSession();
+	
+	/**
+	 * @param list
+	 * @param method
+	 * @param uzerineYaz
+	 * @return
+	 */
+	public TreeMap getTreeMapByList(List list, String method, boolean uzerineYaz);
 
 	/**
-	 * obje listesini d�nd�r�r.
+	 * obje listesini döndürür.
 	 * 
 	 * @param class1
 	 * @return
@@ -37,7 +51,7 @@ public interface BaseDAO extends DAO {
 	public List getObjectList(Class class1);
 
 	/**
-	 * id bilgisi verilen objeyi d�nd�r�r.
+	 * id bilgisi verilen objeyi döndürür.
 	 * 
 	 * @param id
 	 * @param class1
@@ -46,7 +60,7 @@ public interface BaseDAO extends DAO {
 	public Object getObjectStringId(String id, Class class1);
 
 	/**
-	 * Inner Objecti ve id bilgisi verilen obje listesini d�nd�r�r.
+	 * Inner Objecti ve id bilgisi verilen obje listesini döndürür.
 	 * 
 	 * @param id
 	 * @param class1
@@ -56,7 +70,7 @@ public interface BaseDAO extends DAO {
 	public List getObjectByInnerObjectList(String fieldName, Object fieldValue, Class class1);
 
 	/**
-	 * Istenilgi kadar parametre HashMap e eklenerek g�nderilir ve obje listesi d�nd�r�l�r.
+	 * Istenilgi kadar parametre HashMap e eklenerek gönderilir ve obje listesi döndürür.
 	 * 
 	 * @param fields
 	 * @param class1
@@ -66,7 +80,7 @@ public interface BaseDAO extends DAO {
 	public List getObjectByInnerObjectList(HashMap fields, Class class1);
 
 	/**
-	 * Istenilgi kadar parametre HashMap e eklenerek g�nderilir ve obje d�nd�r�l�r.
+	 * Istenilgi kadar parametre HashMap e eklenerek gönderilir ve obje döndürür.
 	 * 
 	 * @param fields
 	 * @param class1
@@ -75,7 +89,7 @@ public interface BaseDAO extends DAO {
 	public Object getObjectByInnerObject(HashMap fields, Class class1);
 
 	/**
-	 * Inner Objecti ve id bilgisi verilen objeyi d�nd�r�r.
+	 * Inner Objecti ve id bilgisi verilen objeyi döndürür.
 	 * 
 	 * @param id
 	 * @param class1
@@ -84,7 +98,7 @@ public interface BaseDAO extends DAO {
 	public Object getObjectByInnerObject(String fieldName, Object fieldValue, Class class1);
 
 	/**
-	 * id bilgisi verilen objeyi d�nd�r�r.
+	 * id bilgisi verilen objeyi döndürür.
 	 * 
 	 * @param id
 	 * @param class1
@@ -100,12 +114,12 @@ public interface BaseDAO extends DAO {
 	public void saveObject(Object object);
 
 	/**
-	 * Verilen listedeki objelerin listesini d�nd�r�r.
+	 * Verilen listedeki objelerin listesini döndürür.
 	 * 
 	 * @param list
 	 *            obje key stringleri listesi
 	 * @param class1
-	 *            class bilgisi i�in d�n�lecek nesnelerin tipinde olmal�d�r.
+	 *            class bilgisi için dönülecek nesnelerin tipinde olmalıdır.
 	 * @return
 	 */
 	public List getObjectList(List list, Class class1);
@@ -125,7 +139,7 @@ public interface BaseDAO extends DAO {
 	public void deleteObjectList(List list);
 
 	/**
-	 * Objeleri liste olarak kaydetme ve silme i�lemlerini y�r�t�r.
+	 * Objeleri liste olarak kaydetme ve silme işlemlerini yürütür.
 	 * 
 	 * @param saveList
 	 * @param deleteList
@@ -145,7 +159,7 @@ public interface BaseDAO extends DAO {
 	public void saveObjectList(List objectList);
 
 	/**
-	 * Istenilgi kadar parametre HashMap e eklenerek g�nderilir ve obje listesi d�nd�r�l�r.
+	 * Istenilgi kadar parametre HashMap e eklenerek gönderilir ve obje listesi döndürür.
 	 * 
 	 * @param fields
 	 * @param class1
@@ -154,7 +168,7 @@ public interface BaseDAO extends DAO {
 	public List getObjectByInnerObjectListInLogic(HashMap fields, Class class1);
 
 	/**
-	 * Obje ve obje'ye ba�l� listeyi kaydeder.
+	 * Obje ve obje'ye bağlı listeyi kaydeder.
 	 * 
 	 * @param object
 	 * @param saveDetayObjectList
@@ -162,7 +176,7 @@ public interface BaseDAO extends DAO {
 	public void saveObjectAndList(Object object, List saveDetayObjectList);
 
 	/**
-	 * Istenilgi kadar parametre HashMap e eklenerek g�nderilir ve obje treemap'de d�nd�r�l�r.
+	 * Istenilgi kadar parametre HashMap e eklenerek gönderilir ve obje treemap'de döndürür.
 	 * 
 	 * @param fields
 	 * @param class1
@@ -171,7 +185,7 @@ public interface BaseDAO extends DAO {
 	public TreeMap getObjectByInnerObjectMapInLogic(HashMap fields, Class class1, boolean uzerineYaz);
 
 	/**
-	 * Istenilgi kadar parametre HashMap e eklenerek g�nderilir ve obje treemap'de d�nd�r�l�r.
+	 * Istenilgi kadar parametre HashMap e eklenerek gönderilir ve obje treemap'de döndürür.
 	 * 
 	 * @param fields
 	 * @param class1
@@ -198,7 +212,7 @@ public interface BaseDAO extends DAO {
 	public TreeMap getObjectByInnerObjectMap(String method, String fieldName, Object fieldValue, Class class1, boolean uzerineYaz);
 
 	/**
-	 * obje kaydeder objeye ba�l� saveList'deki detay objeleri kaydedip ,deleteList'deki objeleri de siler.
+	 * obje kaydeder objeye bağlı saveList'deki detay objeleri kaydedip ,deleteList'deki objeleri de siler.
 	 * 
 	 * @param object
 	 * @param saveList
