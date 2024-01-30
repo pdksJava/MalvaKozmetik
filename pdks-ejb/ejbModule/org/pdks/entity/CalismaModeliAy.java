@@ -30,6 +30,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_SURE = "SURE";
 	public static final String COLUMN_NAME_OTOMATIK_FAZLA_CALISMA_ONAYLANSIN = "OTOMATIK_FAZLA_CALISMA_ONAYLANSIN";
 	public static final String COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL = "HAREKET_KAYDI_VARDIYA_BUL";
+	public static final String COLUMN_NAME_GUN_MAX_CALISMA_SURESI_ODENIR = "GUN_MAX_CALISMA_SURESI_ODENIR";
 
 	private DenklestirmeAy denklestirmeAy;
 
@@ -37,7 +38,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 
 	private double sure = 0, toplamIzinSure = 0, negatifBakiyeDenkSaat = 0.0d;
 
-	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
+	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
 
 	public CalismaModeliAy() {
 		super();
@@ -51,6 +52,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 			this.negatifBakiyeDenkSaat = calismaModeli.getNegatifBakiyeDenkSaat();
 			this.hareketKaydiVardiyaBul = calismaModeli.getHareketKaydiVardiyaBul();
 			this.otomatikFazlaCalismaOnaylansin = calismaModeli.getOtomatikFazlaCalismaOnaylansin();
+			this.gunMaxCalismaOdemeDurum = calismaModeli.isGunMaxCalismaOdenir();
 		}
 	}
 
@@ -121,6 +123,15 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 		this.otomatikFazlaCalismaOnaylansin = otomatikFazlaCalismaOnaylansin;
 	}
 
+	@Column(name = COLUMN_NAME_GUN_MAX_CALISMA_SURESI_ODENIR)
+	public Boolean getGunMaxCalismaOdemeDurum() {
+		return gunMaxCalismaOdemeDurum;
+	}
+
+	public void setGunMaxCalismaOdemeDurum(Boolean gunMaxCalismaOdemeDurum) {
+		this.gunMaxCalismaOdemeDurum = gunMaxCalismaOdemeDurum;
+	}
+
 	@Transient
 	public static String getKey(DenklestirmeAy xDenklestirmeAy, CalismaModeli xCalismaModeli) {
 		String key = (xDenklestirmeAy != null ? xDenklestirmeAy.getId() : 0) + "_" + (xCalismaModeli != null ? xCalismaModeli.getId() : 0);
@@ -143,4 +154,8 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 		return key;
 	}
 
+	@Transient
+	public boolean isGunMaxCalismaOdenir() {
+		return gunMaxCalismaOdemeDurum != null && gunMaxCalismaOdemeDurum;
+	}
 }

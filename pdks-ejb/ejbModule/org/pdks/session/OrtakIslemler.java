@@ -14691,10 +14691,10 @@ public class OrtakIslemler implements Serializable {
 				if (getParameterKeyHasStringValue("fazlaMesaiMaxSure"))
 					fazlaMesaiMaxSure = Double.parseDouble(getParameterKey("fazlaMesaiMaxSure"));
 			} catch (Exception e) {
-				fazlaMesaiMaxSure = 11.5d;
+				fazlaMesaiMaxSure = 11d;
 			}
-			if (fazlaMesaiMaxSure == 0d)
-				fazlaMesaiMaxSure = 11.5d;
+			if (fazlaMesaiMaxSure <= 0d)
+				fazlaMesaiMaxSure = 11d;
 		}
 		return fazlaMesaiMaxSure;
 	}
@@ -15319,15 +15319,18 @@ public class OrtakIslemler implements Serializable {
 					if (personelDenklestirme.getFazlaMesaiIzinKullan() && personel.isCalisiyorGun(puantajData.getSonGun())) {
 						// TODO KISMI UCRET_ODE
 						double aylikNetFazlaMesai = new BigDecimal(puantajData.getDevredenSure() + puantajData.getFazlaMesaiSure()).doubleValue();
+						boolean otomatikFazlaCalismaOnaylansin = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir() : true;
+						Double ucretiOdenenMesaiSureAylik = otomatikFazlaCalismaOnaylansin ? puantajData.getUcretiOdenenMesaiSure() : 0.0d;
+						aylikNetFazlaMesai = aylikNetFazlaMesai - ucretiOdenenMesaiSureAylik;
 						if (personelDenklestirme.isFazlaMesaiIzinKullanacak() && personelDenklestirme.getKismiOdemeSure() != null && personelDenklestirme.getKismiOdemeSure() > 0 && personelDenklestirme.getKismiOdemeSure() <= aylikNetFazlaMesai) {
 							BigDecimal devredenSure = new BigDecimal(aylikNetFazlaMesai - personelDenklestirme.getKismiOdemeSure());
 							puantajData.setDevredenSure(devredenSure.doubleValue());
-							puantajData.setFazlaMesaiSure(personelDenklestirme.getKismiOdemeSure());
+							puantajData.setFazlaMesaiSure(personelDenklestirme.getKismiOdemeSure() + ucretiOdenenMesaiSureAylik);
 							puantajData.setUcretiOdenenMesaiSure(0.0d);
 						} else {
 							puantajData.setDevredenSure(aylikNetFazlaMesai);
-							puantajData.setFazlaMesaiSure(0.0d);
-							puantajData.setUcretiOdenenMesaiSure(0.0d);
+							puantajData.setFazlaMesaiSure(ucretiOdenenMesaiSureAylik);
+							puantajData.setUcretiOdenenMesaiSure(0.0);
 						}
 
 					}
