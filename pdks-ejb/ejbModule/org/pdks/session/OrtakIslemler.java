@@ -15843,6 +15843,7 @@ public class OrtakIslemler implements Serializable {
 					if (vardiyaGun.getVardiya() == null)
 						continue;
 					VardiyaGun vardiyaHaftaTatil = null;
+					boolean fazlaMesaiOnayla = calismaModeli.isFazlaMesaiVarMi() == false && vardiyaGun.getVardiya().isCalisma() == false;
 					try {
 						Vardiya vardiya = vardiyaGun.getIslemVardiya();
 						String key = vGun;
@@ -15937,7 +15938,8 @@ public class OrtakIslemler implements Serializable {
 
 							}
 						}
-						if (gunlukSaat > 0 || fmSaat > 0) {
+
+						if (gunlukSaat > 0 || fmSaat > 0 || fazlaMesaiOnayla) {
 							ArrayList<HareketKGS> girisHareketleri = new ArrayList<HareketKGS>(), cikisHareketleri = new ArrayList<HareketKGS>();
 							vardiyaYemekSuresi = vardiyaGun.getIslemVardiya() != null && vardiyaGun.getIslemVardiya().getYemekSuresi() != null ? vardiyaGun.getIslemVardiya().getYemekSuresi() / 60 : 0d;
 							vardiyaGun.setNormalSure(gunlukSaat);
@@ -16069,7 +16071,7 @@ public class OrtakIslemler implements Serializable {
 									continue;
 								PersonelFazlaMesai personelFazlaMesai = girisHareket.getPersonelFazlaMesai() != null ? girisHareket.getPersonelFazlaMesai() : cikisHareket.getPersonelFazlaMesai();
 
-								if (tatilGunu == false && (girisHareket.isOrjinalZamanGetir() || cikisHareket.isOrjinalZamanGetir())) {
+								if (tatilGunu == false && (fazlaMesaiOnayla || girisHareket.isOrjinalZamanGetir() || cikisHareket.isOrjinalZamanGetir())) {
 									if (personelFazlaMesai == null) {
 										boolean devam = true;
 										List<String> idList = new ArrayList<String>();
@@ -16088,7 +16090,6 @@ public class OrtakIslemler implements Serializable {
 											fields = null;
 										}
 										idList = null;
-
 										if (devam) {
 											if (fazlaMesaiOnayDurum == null)
 												fazlaMesaiOnayDurum = otomatikFazlaMesaiOnayTanimGetir(session);
@@ -16110,6 +16111,11 @@ public class OrtakIslemler implements Serializable {
 											if (bitZaman == null) {
 												girisHareket.setPersonelFazlaMesai(personelFazlaMesai);
 												bitZaman = islemVardiya.getVardiyaBasZaman();
+											}
+											if (vardiyaGun.getVardiya().isCalisma() == false) {
+												basZaman = girisHareket.getOrjinalZaman();
+												bitZaman = cikisHareket.getOrjinalZaman();
+												personelFazlaMesai.setHareketId(girisId);
 											}
 											if (vardiyaGun.getHareketler() != null) {
 												for (HareketKGS hareket : vardiyaGun.getHareketler()) {
@@ -16320,6 +16326,8 @@ public class OrtakIslemler implements Serializable {
 							if (resmiTatilSure > 0.0d)
 								resmiTatilMesai += resmiTatilSure;
 						}
+						if (fazlaMesaiOnayla)
+							calSure = 0;
 						if (!vardiyaGun.getVardiya().isIcapVardiyasi())
 							vardiyaGun.addCalismaSuresi(calSure);
 						if (vardiyaGun.isHareketHatali()) {
@@ -17277,7 +17285,7 @@ public class OrtakIslemler implements Serializable {
 								if (vardiyaGun.addHareket(hareket, Boolean.TRUE)) {
 									// TODO isOtomatikFazlaCalismaOnaylansinmi GETİR
 									List<HareketKGS> vardiyaHareketler = null;
-									hareket.setOrjinalZamanGetir(false);
+									hareket.setOrjinalZamanGetir(vardiyaGun.getVardiya().isCalisma() == false);
 									if (otomatikOnayKontrol && hareket.getKapiView() != null && hareket.getKapiView().getKapi() != null)
 										vardiyaHareketler = hareket.getKapiView().getKapi().isGirisKapi() ? vardiyaGun.getGirisHareketleri() : vardiyaGun.getCikisHareketleri();
 									if (vardiyaHareketler != null && !vardiyaHareketler.isEmpty()) {
