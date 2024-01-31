@@ -427,6 +427,21 @@ public class StartupAction implements Serializable {
 		if (dateFormat == null)
 			dateFormat = "dd/MM/yyyy";
 		PdksUtil.setDateFormat(dateFormat);
+		String saatFormat = null;
+		if (parameterMap.containsKey("saatFormat")) {
+			String str = null;
+			try {
+				str = PdksUtil.convertToDateString(new Date(), parameterMap.get("saatFormat"));
+				if (str != null && str.length() > 1)
+					saatFormat = parameterMap.get("saatFormat");
+			} catch (Exception e) {
+			}
+		}
+		if (saatFormat == null)
+			saatFormat = "H:mm";
+		PdksUtil.setSaatFormat(saatFormat);
+		String dateTimeFormat = dateFormat + " " + saatFormat;
+		PdksUtil.setDateTimeFormat(dateTimeFormat);
 		try {
 			String gebelikGuncelle = "";
 			if (parameterMap.containsKey("gebelikGuncelle"))

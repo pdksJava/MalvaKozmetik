@@ -3516,12 +3516,12 @@ public class PdksUtil implements Serializable {
 	}
 
 	public static String getDateTimeFormat() {
-		String str = dateTimeFormat != null ? dateTimeFormat : getDateFormat() + " " + saatFormat;
+		String str = dateTimeFormat != null ? dateTimeFormat : getDateFormat() + " " + getSaatFormat();
 		return str;
 	}
 
 	public static String getDateTimeLongFormat() {
-		String str = dateTimeLongFormat != null ? dateTimeLongFormat : getDateFormat() + " " + saatFormat + ":ss";
+		String str = dateTimeLongFormat != null ? dateTimeLongFormat : getDateFormat() + " " + (saatFormat.indexOf("ss") < 0 ? saatFormat + ":ss" : saatFormat);
 		return str;
 	}
 
@@ -3571,6 +3571,14 @@ public class PdksUtil implements Serializable {
 
 	public static void setSicilNoUzunluk(Integer sicilNoUzunluk) {
 		PdksUtil.sicilNoUzunluk = sicilNoUzunluk;
+	}
+
+	public static void setDateTimeFormat(String dateTimeFormat) {
+		PdksUtil.dateTimeFormat = dateTimeFormat;
+	}
+
+	public static void setDateTimeLongFormat(String dateTimeLongFormat) {
+		PdksUtil.dateTimeLongFormat = dateTimeLongFormat;
 	}
 
 }
