@@ -6640,9 +6640,9 @@ public class OrtakIslemler implements Serializable {
 						}
 						if (izinList.isEmpty()) {
 							if (islemVardiya.getVardiyaBasZaman().getTime() < fazlaMesai.getBasZaman().getTime())
-								logger.info(str + " Geç çıkma");
+								logger.debug(str + " Geç çıkma");
 							else
-								logger.info(str + " Erken gelme");
+								logger.debug(str + " Erken gelme");
 							if (iptalDurum) {
 								fazlaMesai.setDurum(Boolean.FALSE);
 								if (!loginUser.isAdmin()) {
