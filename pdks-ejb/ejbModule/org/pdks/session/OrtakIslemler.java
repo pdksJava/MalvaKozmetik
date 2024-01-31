@@ -16113,7 +16113,11 @@ public class OrtakIslemler implements Serializable {
 												bitZaman = islemVardiya.getVardiyaBasZaman();
 											}
 											if (fazlaMesaiOnayla) {
-												String hareketId = (girisId.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS) || girisId.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS)) ? girisId : cikisId;
+												String hareketId = null;
+												if (girisId.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS) || girisId.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS))
+													hareketId = girisId;
+												else if (cikisId.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS) || cikisId.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_PDKS))
+													hareketId = cikisId;
 												basZaman = girisHareket.getOrjinalZaman();
 												bitZaman = cikisHareket.getOrjinalZaman();
 												personelFazlaMesai.setHareketId(hareketId);
@@ -16136,7 +16140,7 @@ public class OrtakIslemler implements Serializable {
 											personelFazlaMesai.setOlusturanUser(sistemUser != null ? sistemUser : loginUser);
 											if (cikisHareket.isTatil())
 												tatilMesaiMap.put(personelFazlaMesai.getHareketId(), personelFazlaMesai.getFazlaMesaiSaati());
-											if (bitZaman.after(basZaman)) {
+											if (personelFazlaMesai.getHareketId() != null && bitZaman.after(basZaman)) {
 												vardiyaGun.addPersonelFazlaMesai(personelFazlaMesai);
 												pdksEntityController.saveOrUpdate(session, entityManager, personelFazlaMesai);
 												flush = true;
