@@ -1574,7 +1574,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					IzinTipi izinTipi = oncekiVardiyaGun.getIzin().getIzinTipi();
 					if (izinTipi.isBaslamaZamaniCalismadir()) {
 						cal.setTime(vardiyaGun.getVardiyaDate());
-						if (izinTipi.isCumaCumartesiTekIzinSaysin() == false || cal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
+						if (vardiya.isHaftaTatil() == false && (izinTipi.isCumaCumartesiTekIzinSaysin() == false || cal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY)) {
 							yaz = false;
 							if (izinSonrasiOffDurum.length() > 0)
 								izinSonrasiOffDurum.append(", ");
@@ -5444,7 +5444,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (calismaModeliAy != null && calismaModeliAy.isHareketKaydiVardiyaBulsunmu()) {
 				for (VardiyaGun vg : aylikPuantaj.getVardiyalar()) {
 					if (!vg.getDurum() && vg.isAyinGunu() && vg.getId() != null) {
-						if (vg.getIslemVardiya() == null || (vg.getIslemVardiya().getVardiyaTelorans2BitZaman() != null && bugun.before(vg.getIslemVardiya().getVardiyaTelorans2BitZaman())))
+						if (vg.getIslemVardiya() == null || bugun.before(vg.getIslemVardiya().getVardiyaTelorans2BitZaman()))
 							continue;
 
 						if (vg.getVersion() == 0)

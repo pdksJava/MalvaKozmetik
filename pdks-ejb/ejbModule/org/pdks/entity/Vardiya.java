@@ -1328,6 +1328,16 @@ public class Vardiya extends BaseObject {
 
 	@Transient
 	public Date getVardiyaTelorans1BasZaman() {
+		if (vardiyaTarih != null && vardiyaTelorans1BasZaman == null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(vardiyaTarih);
+			if (this.isCalisma()) {
+				cal.add(Calendar.HOUR_OF_DAY, basSaat);
+				cal.add(Calendar.MINUTE, basDakika - getGirisErkenToleransDakika());
+			}
+			vardiyaTelorans1BasZaman = cal.getTime();
+
+		}
 		return vardiyaTelorans1BasZaman;
 	}
 
@@ -1337,6 +1347,16 @@ public class Vardiya extends BaseObject {
 
 	@Transient
 	public Date getVardiyaTelorans2BasZaman() {
+		if (vardiyaTarih != null && vardiyaTelorans2BasZaman == null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(vardiyaTarih);
+			if (this.isCalisma()) {
+				cal.add(Calendar.HOUR_OF_DAY, basSaat);
+				cal.add(Calendar.MINUTE, basDakika + getGirisGecikmeToleransDakika());
+			}
+			vardiyaTelorans2BasZaman = cal.getTime();
+
+		}
 		return vardiyaTelorans2BasZaman;
 	}
 
@@ -1346,6 +1366,20 @@ public class Vardiya extends BaseObject {
 
 	@Transient
 	public Date getVardiyaTelorans1BitZaman() {
+		if (vardiyaTarih != null && vardiyaTelorans1BitZaman == null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(vardiyaTarih);
+			if (this.isCalisma()) {
+				if (basSaat > bitSaat)
+					cal.add(Calendar.DATE, 1);
+				cal.add(Calendar.HOUR_OF_DAY, bitSaat);
+				cal.add(Calendar.MINUTE, bitDakika - getCikisErkenToleransDakika());
+			} else
+				cal.add(Calendar.DATE, 1);
+			Date zaman = cal.getTime();
+			vardiyaTelorans1BitZaman = zaman;
+
+		}
 		return vardiyaTelorans1BitZaman;
 	}
 
@@ -1355,6 +1389,21 @@ public class Vardiya extends BaseObject {
 
 	@Transient
 	public Date getVardiyaTelorans2BitZaman() {
+		if (vardiyaTarih != null && vardiyaTelorans2BitZaman == null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(vardiyaTarih);
+			if (this.isCalisma()) {
+				if (basSaat > bitSaat)
+					cal.add(Calendar.DATE, 1);
+				cal.add(Calendar.HOUR_OF_DAY, bitSaat);
+				cal.add(Calendar.MINUTE, bitDakika + getCikisGecikmeToleransDakika());
+
+			} else
+				cal.add(Calendar.DATE, 1);
+
+			vardiyaTelorans2BitZaman = cal.getTime();
+		}
+
 		return vardiyaTelorans2BitZaman;
 	}
 
