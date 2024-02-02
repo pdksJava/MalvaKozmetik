@@ -3824,7 +3824,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			sb.append(" INNER JOIN " + FazlaMesaiTalep.TABLE_NAME + " FT ON FT." + FazlaMesaiTalep.COLUMN_NAME_VARDIYA_GUN + "=VG." + VardiyaGun.COLUMN_NAME_ID);
 			sb.append(" AND FT." + FazlaMesaiTalep.COLUMN_NAME_DURUM + " =1");
 		}
-		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y");
+		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y  AND D." + DenklestirmeAy.COLUMN_NAME_AY + ">0 ");
 		if (yil == maxYil) {
 			sb.append(" AND ((D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + ")<=:s");
 			fields.put("s", sonDonem);

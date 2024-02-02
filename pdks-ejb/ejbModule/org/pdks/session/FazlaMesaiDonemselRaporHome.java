@@ -194,7 +194,7 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 			sb.append("  AND PD." + PersonelDenklestirme.COLUMN_NAME_DURUM + " =1 AND  PD." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1 AND  PD." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
 			sb.append(" INNER  JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=PD." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 			sb.append(" INNER  JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_SIRKET);
-			sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y");
+			sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y  AND D." + DenklestirmeAy.COLUMN_NAME_AY + ">0 ");
 			sb.append(" AND ((D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + ")<=:s");
 			if (basAy != null) {
 				sb.append(" AND D." + DenklestirmeAy.COLUMN_NAME_AY + ">=:d1");

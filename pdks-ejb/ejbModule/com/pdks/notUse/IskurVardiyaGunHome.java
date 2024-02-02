@@ -2020,8 +2020,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			sb.append(" INNER  JOIN " + IsKurVardiyaGun.TABLE_NAME + " V ON YEAR(V." + IsKurVardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ")= D." + DenklestirmeAy.COLUMN_NAME_YIL);
 			sb.append(" AND  MONTH(V." + IsKurVardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ")= D." + DenklestirmeAy.COLUMN_NAME_AY);
 		}
-
-		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y");
+ 		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y  AND D." + DenklestirmeAy.COLUMN_NAME_AY + ">0 ");
 		if (yil == maxYil) {
 			sb.append(" AND ((D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + ")<=:s");
 			fields.put("s", sonDonem);

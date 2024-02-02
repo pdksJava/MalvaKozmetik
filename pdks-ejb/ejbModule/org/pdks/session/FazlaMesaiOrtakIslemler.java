@@ -758,7 +758,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 */
 	public int aylariDoldur(int donemYil, int donemAy, List<SelectItem> aylar, Session session) {
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MONTH, 1);
 		int maxYil = cal.get(Calendar.YEAR);
 		int sonDonem = (maxYil * 100) + cal.get(Calendar.MONTH) + 1;
 		HashMap fields = new HashMap();
@@ -766,7 +765,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		sb.append("SELECT DISTINCT D.* from " + DenklestirmeAy.TABLE_NAME + " D WITH(nolock) ");
 		sb.append(" INNER  JOIN " + PersonelDenklestirme.TABLE_NAME + " PD ON PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=D." + DenklestirmeAy.COLUMN_NAME_ID);
 		sb.append("    AND  PD." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
-		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y");
+		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + "=:y  AND D." + DenklestirmeAy.COLUMN_NAME_AY + ">0 ");
 		if (donemYil == maxYil) {
 			sb.append(" AND ((D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + ")<=:s");
 			fields.put("s", sonDonem);
