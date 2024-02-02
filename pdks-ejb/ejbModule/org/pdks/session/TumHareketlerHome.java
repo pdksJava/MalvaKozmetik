@@ -299,7 +299,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			}
 
 		}
-
+		parametreMap.clear();
 		ArrayList<Personel> tumPersoneller = null;
 		List<String> yetkiTumPersonelNoList = null;
 		if (!authenticatedUser.isIKAdmin()) {
@@ -377,9 +377,9 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 		} else {
 			devam = Boolean.TRUE;
+			parametreMap.clear();
 			if (!authenticatedUser.isAdmin() && !ikRole && !authenticatedUser.isGenelMudur()) {
 				logger.debug(authenticatedUser.getAdSoyad() + " Personel bilgiler okunuyor.");
-				parametreMap.clear();
 				if (tumPersoneller != null && !tumPersoneller.isEmpty())
 					parametreMap.put("pdksPersonel", tumPersoneller);
 				if (!parametreMap.isEmpty()) {
@@ -400,9 +400,9 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		if (devam && kapiMap != null && kapiMap.isEmpty())
 			devam = Boolean.FALSE;
 
+		parametreMap.clear();
 		if (devam) {
 			Calendar cal = Calendar.getInstance();
-			parametreMap.clear();
 			StringBuffer sb = null;
 			if ((personelId == null || personelId.isEmpty()) && (sirketId != null || departmanId != null)) {
 				sb = new StringBuffer();
@@ -437,6 +437,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				personelId.addAll(new ArrayList(perMap.keySet()));
 			}
 
+			parametreMap.clear();
 			sb = new StringBuffer();
 			sb.append("SELECT  V." + HareketKGS.COLUMN_NAME_ID + " FROM " + HareketKGS.TABLE_NAME + " V WITH(nolock) ");
 
