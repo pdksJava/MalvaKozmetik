@@ -960,9 +960,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							IzinTipi izinTipi = null;
 							if (vardiyaGun.getIzin() != null) {
 								PersonelIzin personelIzin = vardiyaGun.getIzin();
- 								if (personelIzin.getOrjIzin() != null)
+								if (personelIzin.getOrjIzin() != null)
 									personelIzin = personelIzin.getOrjIzin();
-								if (vardiyaGun.getVardiyaDateStr().equals("20240106"))
+								if (vardiyaGun.getVardiyaDateStr().equals("20240121"))
 									logger.debug("x");
 								izinTipi = personelIzin.getIzinTipi();
 								if (izinTipi != null) {
@@ -1005,7 +1005,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 										}
 									}
 									if (izinTipi.getUcretli() && resmiTatil == false)
-										izinGunAdet += 1;
+										izinGunAdet += artiGun;
 
 								}
 
@@ -1050,15 +1050,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 									resmiTatilAdet += calismaGun;
 								}
 							}
-							if (!haftaTatil)
+							if (!haftaTatil) {
 								normalGunAdet += calismaGun;
+								// logger.info(vardiyaGun.getVardiyaDateStr() + " " + normalGunAdet);
+							}
 							else {
-
 								haftaTatilAdet += calismaGun;
 							}
-							// logger.info(vardiyaGun.getVardiyaDateStr() + " " + (normalGunAdet + haftaTatilAdet + resmiTatilAdet));
 						}
-
 						if (vardiyaGun.isIzinli() == false) {
 							if (resmiTatil) {
 								if (!tatil.isYarimGunMu())
@@ -1079,7 +1078,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				}
 
-				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet;
+				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet + izinGunAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
 				double normalCalisma = ap.getSaatToplami() > ap.getPlanlananSure() ? ap.getPlanlananSure() : ap.getSaatToplami();
 				if (!detayMap.isEmpty() || (saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
@@ -1114,8 +1113,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					}
 					if (izinGunAdet > 0) {
 						detayMap.put(BordroDetayTipi.IZIN_GUN, izinGunAdet);
-						if (calismaModeli.isSaatlikOdeme() == false)
-							normalGunAdet -= izinGunAdet;
+						// if (calismaModeli.isSaatlikOdeme() == false)
+						// normalGunAdet -= izinGunAdet;
 					}
 
 					if (normalCalisma != 0)
