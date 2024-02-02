@@ -10176,153 +10176,224 @@ public class OrtakIslemler implements Serializable {
 	 */
 	@Transactional
 	public IzinTipi senelikIzinOlustur(HashMap<String, Object> veriMap, Session session) {
-		Personel izinSahibi = (Personel) veriMap.get("izinSahibi");
-		boolean suaDurum = (Boolean) veriMap.get("suaDurum");
-		int yil = (Integer) veriMap.get("yil");
-		HashMap<String, IzinHakedisHakki> hakedisMap = (HashMap<String, IzinHakedisHakki>) veriMap.get("hakedisMap");
-		User user = (User) veriMap.get("user");
-		boolean yeniBakiyeOlustur = (Boolean) veriMap.get("yeniBakiyeOlustur");
-		int kidemYil = (Integer) veriMap.get("kidemYil") - (yeniBakiyeOlustur ? 0 : 1);
 		IzinTipi izinTipi = (IzinTipi) veriMap.get("izinTipi");
-		Date islemTarihi = (Date) veriMap.get("islemTarihi");
-		User sistemYonetici = (User) veriMap.get("sistemYonetici");
-		if (yeniBakiyeOlustur == false)
-			logger.debug(yil + " " + kidemYil);
-		int sistemKontrolYili = PdksUtil.getSistemBaslangicYili() - 1;
-		Calendar cal = Calendar.getInstance();
-		Date bugun = PdksUtil.getDate(cal.getTime());
-		cal.setTime(islemTarihi);
-		// onceki yas tipini de bulalim
+		int yil = (Integer) veriMap.get("yil");
+		if (yil >= PdksUtil.getSistemBaslangicYili()) {
+			Personel izinSahibi = (Personel) veriMap.get("izinSahibi");
+			boolean suaDurum = (Boolean) veriMap.get("suaDurum");
+			HashMap<String, IzinHakedisHakki> hakedisMap = (HashMap<String, IzinHakedisHakki>) veriMap.get("hakedisMap");
+			User user = (User) veriMap.get("user");
+			boolean yeniBakiyeOlustur = (Boolean) veriMap.get("yeniBakiyeOlustur");
+			int kidemYil = (Integer) veriMap.get("kidemYil") - (yeniBakiyeOlustur ? 0 : 1);
+			Date islemTarihi = (Date) veriMap.get("islemTarihi");
+			User sistemYonetici = (User) veriMap.get("sistemYonetici");
+			if (yeniBakiyeOlustur == false)
+				logger.debug(yil + " " + kidemYil);
+			int sistemKontrolYili = PdksUtil.getSistemBaslangicYili() - 1;
+			Calendar cal = Calendar.getInstance();
+			Date bugun = PdksUtil.getDate(cal.getTime());
+			cal.setTime(islemTarihi);
+			// onceki yas tipini de bulalim
 
-		// int yil = cal.get(Calendar.YEAR);
-		cal.setTime(izinSahibi.getIzinHakEdisTarihi());
-		int girisYil = cal.get(Calendar.YEAR);
-		PersonelIzin personelIzin = null;
-		HashMap map = new HashMap();
-		boolean kidemYok = yeniBakiyeOlustur && girisYil <= yil && kidemYil == 0;
-		if (kidemYok)
-			logger.debug("");
+			// int yil = cal.get(Calendar.YEAR);
+			cal.setTime(izinSahibi.getIzinHakEdisTarihi());
+			int girisYil = cal.get(Calendar.YEAR);
+			PersonelIzin personelIzin = null;
+			HashMap map = new HashMap();
+			boolean kidemYok = yeniBakiyeOlustur && girisYil <= yil && kidemYil == 0;
+			if (kidemYok)
+				logger.debug("");
 
-		int yillikIzinMaxBakiye = getYillikIzinMaxBakiye();
+			int yillikIzinMaxBakiye = getYillikIzinMaxBakiye();
 
-		cal.set(Calendar.YEAR, yil);
-		Date izinHakEttigiTarihi = PdksUtil.getDate((Date) cal.getTime().clone());
+			cal.set(Calendar.YEAR, yil);
+			Date izinHakEttigiTarihi = PdksUtil.getDate((Date) cal.getTime().clone());
 
-		boolean tarihGelmedi = PdksUtil.tarihKarsilastirNumeric(izinHakEttigiTarihi, islemTarihi) == 1;
-		IzinHakedisHakki izinHakedisHakki = null;
-		int genelDirektorIzinSuresi = 0;
-		String genelDirektorIzinSuresiPrm = getParameterKey("genelDirektorIzinSuresi");
-		boolean flush = false;
-		try {
-			if (PdksUtil.hasStringValue(genelDirektorIzinSuresiPrm) && izinSahibi.isGenelDirektor() && getGenelMudur(null, izinSahibi, session))
-				try {
-					genelDirektorIzinSuresi = Integer.parseInt(genelDirektorIzinSuresiPrm);
-				} catch (Exception e) {
-					logger.error("Pdks hata in : \n");
-					e.printStackTrace();
-					logger.error("Pdks hata out : " + e.getMessage());
-					genelDirektorIzinSuresi = 0;
-				}
-		} catch (Exception e) {
-			logger.error("Pdks hata in : \n");
-			e.printStackTrace();
-			logger.error("Pdks hata out : " + e.getMessage());
-			genelDirektorIzinSuresi = 0;
-		}
-
-		if (izinTipi == null) {
-			map.clear();
-			map.put(PdksEntityController.MAP_KEY_SESSION, session);
-			map.put("bakiyeIzinTipi.izinTipiTanim.kodu", IzinTipi.YILLIK_UCRETLI_IZIN);
-			map.put("bakiyeIzinTipi.departman.id", izinSahibi.getSirket().getDepartman().getId());
-			if (session != null)
-				map.put(PdksEntityController.MAP_KEY_SESSION, session);
+			boolean tarihGelmedi = PdksUtil.tarihKarsilastirNumeric(izinHakEttigiTarihi, islemTarihi) == 1;
+			IzinHakedisHakki izinHakedisHakki = null;
+			int genelDirektorIzinSuresi = 0;
+			String genelDirektorIzinSuresiPrm = getParameterKey("genelDirektorIzinSuresi");
+			boolean flush = false;
 			try {
-				izinTipi = (IzinTipi) pdksEntityController.getObjectByInnerObject(map, IzinTipi.class);
-
+				if (PdksUtil.hasStringValue(genelDirektorIzinSuresiPrm) && izinSahibi.isGenelDirektor() && getGenelMudur(null, izinSahibi, session))
+					try {
+						genelDirektorIzinSuresi = Integer.parseInt(genelDirektorIzinSuresiPrm);
+					} catch (Exception e) {
+						logger.error("Pdks hata in : \n");
+						e.printStackTrace();
+						logger.error("Pdks hata out : " + e.getMessage());
+						genelDirektorIzinSuresi = 0;
+					}
 			} catch (Exception e) {
 				logger.error("Pdks hata in : \n");
 				e.printStackTrace();
 				logger.error("Pdks hata out : " + e.getMessage());
-
-				izinTipi = null;
+				genelDirektorIzinSuresi = 0;
 			}
 
-		}
-		HashMap<Integer, Integer> kidemMap = getTarihMap(izinSahibi != null ? izinSahibi.getDogumTarihi() : null, islemTarihi);
-		int yas = kidemMap.get(Calendar.YEAR);
-		int yasTipi = IzinHakedisHakki.YAS_TIPI_GENC;
-		Departman departman = izinSahibi.getSirket().getDepartman();
-		if (departman.getCocukYasUstSiniri() >= yas)
-			yasTipi = IzinHakedisHakki.YAS_TIPI_COCUK;
-		else if (departman.getYasliYasAltSiniri() <= yas)
-			yasTipi = IzinHakedisHakki.YAS_TIPI_YASLI;
-		boolean kidemEkle = false;
-		if (izinTipi != null) {
-			if (yillikIzinMaxBakiye < 0 && (kidemYil == 0 || tarihGelmedi)) {
-				kidemEkle = kidemYil == 0;
-				if (tarihGelmedi && yeniBakiyeOlustur)
-					kidemYil++;
-				kidemMap.put(Calendar.YEAR, kidemYil);
-				if (kidemEkle) {
-					kidemYil++;
-					cal.setTime(izinHakEttigiTarihi);
-					if (yil == girisYil)
-						cal.add(Calendar.YEAR, 1);
-					izinHakEttigiTarihi = cal.getTime();
+			if (izinTipi == null) {
+				map.clear();
+				map.put(PdksEntityController.MAP_KEY_SESSION, session);
+				map.put("bakiyeIzinTipi.izinTipiTanim.kodu", IzinTipi.YILLIK_UCRETLI_IZIN);
+				map.put("bakiyeIzinTipi.departman.id", izinSahibi.getSirket().getDepartman().getId());
+				if (session != null)
+					map.put(PdksEntityController.MAP_KEY_SESSION, session);
+				try {
+					izinTipi = (IzinTipi) pdksEntityController.getObjectByInnerObject(map, IzinTipi.class);
+
+				} catch (Exception e) {
+					logger.error("Pdks hata in : \n");
+					e.printStackTrace();
+					logger.error("Pdks hata out : " + e.getMessage());
+
+					izinTipi = null;
 				}
 
 			}
+			HashMap<Integer, Integer> kidemMap = getTarihMap(izinSahibi != null ? izinSahibi.getDogumTarihi() : null, islemTarihi);
+			int yas = kidemMap.get(Calendar.YEAR);
+			int yasTipi = IzinHakedisHakki.YAS_TIPI_GENC;
+			Departman departman = izinSahibi.getSirket().getDepartman();
+			if (departman.getCocukYasUstSiniri() >= yas)
+				yasTipi = IzinHakedisHakki.YAS_TIPI_COCUK;
+			else if (departman.getYasliYasAltSiniri() <= yas)
+				yasTipi = IzinHakedisHakki.YAS_TIPI_YASLI;
+			boolean kidemEkle = false;
+			if (izinTipi != null) {
+				if (yillikIzinMaxBakiye < 0 && (kidemYil == 0 || tarihGelmedi)) {
+					kidemEkle = kidemYil == 0;
+					if (tarihGelmedi && yeniBakiyeOlustur)
+						kidemYil++;
+					kidemMap.put(Calendar.YEAR, kidemYil);
+					if (kidemEkle) {
+						kidemYil++;
+						cal.setTime(izinHakEttigiTarihi);
+						if (yil == girisYil)
+							cal.add(Calendar.YEAR, 1);
+						izinHakEttigiTarihi = cal.getTime();
+					}
 
-			if (kidemYil > 0 || kidemEkle) {
-				if (!tarihGelmedi)
-					izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
-				else {
-					if (yillikIzinMaxBakiye > 0) {
-						izinHakedisHakki = new IzinHakedisHakki();
-						izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
-					} else
+				}
+
+				if (kidemYil > 0 || kidemEkle) {
+					if (!tarihGelmedi)
 						izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
-				}
+					else {
+						if (yillikIzinMaxBakiye > 0) {
+							izinHakedisHakki = new IzinHakedisHakki();
+							izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
+						} else
+							izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
+					}
 
-				if (izinHakedisHakki != null && izinTipi != null) {
-					Date baslangicZamani = PdksUtil.getDate(cal.getTime());
+					if (izinHakedisHakki != null && izinTipi != null) {
+						Date baslangicZamani = PdksUtil.getDate(cal.getTime());
+						cal.setTime(izinSahibi.getIzinHakEdisTarihi());
+						cal.set(Calendar.YEAR, yil);
+						if (girisYil == yil)
+							cal.add(Calendar.YEAR, 1);
+						izinHakEttigiTarihi = PdksUtil.getDate(cal.getTime());
+						Date kidemTarih = kidemYok || yeniBakiyeOlustur == false || tarihGelmedi ? izinHakEttigiTarihi : PdksUtil.getDate(bugun);
+						kidemMap = getTarihMap(izinSahibi != null ? izinSahibi.getIzinHakEdisTarihi() : null, kidemTarih);
+						kidemYil = kidemMap.get(Calendar.YEAR);
+						HashMap<Integer, Integer> yasMap = getTarihMap(izinSahibi != null ? izinSahibi.getDogumTarihi() : null, kidemTarih);
+						int yasYeni = yasMap.get(Calendar.YEAR);
+						if (yasYeni != yas) {
+							yasTipi = IzinHakedisHakki.YAS_TIPI_GENC;
+							if (departman.getCocukYasUstSiniri() >= yasYeni)
+								yasTipi = IzinHakedisHakki.YAS_TIPI_COCUK;
+							else if (departman.getYasliYasAltSiniri() <= yasYeni)
+								yasTipi = IzinHakedisHakki.YAS_TIPI_YASLI;
+							izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
+						}
+						String aciklama = String.valueOf(kidemYil);
+						if (genelDirektorIzinSuresi != 0)
+							izinHakedisHakki.setIzinSuresi(genelDirektorIzinSuresi);
+						double izinSuresi = tarihGelmedi && yillikIzinMaxBakiye > 0 ? yillikIzinMaxBakiye : (double) izinHakedisHakki.getIzinSuresi();
+						try {
+							personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						if (personelIzin != null)
+							flush = personelIzin.isCheckBoxDurum();
+						Date oncekiHakedisTarihi = PdksUtil.addTarih(izinHakEttigiTarihi, Calendar.YEAR, -1);
+						if (yil > sistemKontrolYili && (personelIzin != null || bugun.after(oncekiHakedisTarihi))) {
+							if (personelIzin == null) {
+								personelIzin = new PersonelIzin();
+								personelIzin.setIzinSahibi(izinSahibi);
+								personelIzin.setBaslangicZamani(baslangicZamani);
+								personelIzin.setBitisZamani(izinHakEttigiTarihi);
+								personelIzin.setIzinTipi(izinTipi);
+								personelIzin.setIzinSuresi(izinSuresi);
+								personelIzin.setKullanilanIzinSuresi(0D);
+							}
+							if (personelIzin.getId() == null)
+								personelIzin.setOlusturanUser(sistemYonetici);
+							if (personelIzin.getIzinKagidiGeldi() == null) {
+								if (personelIzin.getGuncellemeTarihi() != null && !PdksUtil.getDate(islemTarihi).after(PdksUtil.getDate(personelIzin.getGuncellemeTarihi())))
+									izinSuresi = personelIzin.getIzinSuresi().intValue();
+								if (genelDirektorIzinSuresi != 0)
+									izinSuresi = genelDirektorIzinSuresi;
+								if (izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
+									if (personelIzin.getId() != null) {
+										if (user != null)
+											personelIzin.setGuncelleyenUser(user);
+										personelIzin.setGuncellemeTarihi(new Date());
+									}
+									personelIzin.setIzinSuresi(izinSuresi);
+									personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
+									personelIzin.setAciklama(aciklama);
+									if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime()) {
+										personelIzin.setBitisZamani(izinHakEttigiTarihi);
+										pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
+										flush = true;
+									} else
+										logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
+
+								}
+							}
+						}
+					}
+				}
+				cal.setTime(izinHakEttigiTarihi);
+				// cal.add(Calendar.YEAR, -1);
+				Date hakedisTarihi = cal.getTime();
+				boolean yeniKidemBakiyeOlustur = yeniBakiyeOlustur && bugun.after(hakedisTarihi) && kidemYok == false;
+				if (yeniKidemBakiyeOlustur) {
+					if (((tarihGelmedi == false || yillikIzinMaxBakiye < 0) && kidemYil > 0) || yil == girisYil)
+						++yil;
+					cal.set(yil, 0, 1);
+					Date baslangicZamani = PdksUtil.convertToJavaDate(yil + "0101", "yyyyMMdd");
 					cal.setTime(izinSahibi.getIzinHakEdisTarihi());
 					cal.set(Calendar.YEAR, yil);
-					if (girisYil == yil)
-						cal.add(Calendar.YEAR, 1);
 					izinHakEttigiTarihi = PdksUtil.getDate(cal.getTime());
-					Date kidemTarih = kidemYok || yeniBakiyeOlustur == false || tarihGelmedi ? izinHakEttigiTarihi : PdksUtil.getDate(bugun);
-					kidemMap = getTarihMap(izinSahibi != null ? izinSahibi.getIzinHakEdisTarihi() : null, kidemTarih);
-					kidemYil = kidemMap.get(Calendar.YEAR);
-					HashMap<Integer, Integer> yasMap = getTarihMap(izinSahibi != null ? izinSahibi.getDogumTarihi() : null, kidemTarih);
-					int yasYeni = yasMap.get(Calendar.YEAR);
-					if (yasYeni != yas) {
-						yasTipi = IzinHakedisHakki.YAS_TIPI_GENC;
-						if (departman.getCocukYasUstSiniri() >= yasYeni)
-							yasTipi = IzinHakedisHakki.YAS_TIPI_COCUK;
-						else if (departman.getYasliYasAltSiniri() <= yasYeni)
-							yasTipi = IzinHakedisHakki.YAS_TIPI_YASLI;
-						izinHakedisHakki = getIzinHakedis(kidemYil, hakedisMap, session, yasTipi, suaDurum, departman, map);
-					}
-					String aciklama = String.valueOf(kidemYil);
-					if (genelDirektorIzinSuresi != 0)
-						izinHakedisHakki.setIzinSuresi(genelDirektorIzinSuresi);
-					double izinSuresi = tarihGelmedi && yillikIzinMaxBakiye > 0 ? yillikIzinMaxBakiye : (double) izinHakedisHakki.getIzinSuresi();
-					try {
-						personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					if (personelIzin != null)
-						flush = personelIzin.isCheckBoxDurum();
-					Date oncekiHakedisTarihi = PdksUtil.addTarih(izinHakEttigiTarihi, Calendar.YEAR, -1);
-					if (yil > sistemKontrolYili && (personelIzin != null || bugun.after(oncekiHakedisTarihi))) {
+					if (baslangicZamani.after(izinSahibi.getIzinHakEdisTarihi())) {
+						if (yillikIzinMaxBakiye > 0) {
+							izinHakedisHakki = new IzinHakedisHakki();
+							izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
+						} else
+							izinHakedisHakki = getIzinHakedis(kidemYil + 1, hakedisMap, session, yasTipi, suaDurum, departman, map);
+
+						HashMap<Integer, Integer> map1 = getTarihMap(izinSahibi != null ? izinSahibi.getIzinHakEdisTarihi() : null, izinHakEttigiTarihi);
+						kidemYil = map1.get(Calendar.YEAR);
+						String aciklama = String.valueOf(kidemYil);
+						double izinSuresi = (double) izinHakedisHakki.getIzinSuresi();
+						if (genelDirektorIzinSuresi != 0)
+							izinSuresi = genelDirektorIzinSuresi;
+						try {
+							personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						if (flush == false && personelIzin != null)
+							flush = personelIzin.isCheckBoxDurum();
 						if (personelIzin == null) {
 							personelIzin = new PersonelIzin();
 							personelIzin.setIzinSahibi(izinSahibi);
 							personelIzin.setBaslangicZamani(baslangicZamani);
 							personelIzin.setBitisZamani(izinHakEttigiTarihi);
+							personelIzin.setAciklama(aciklama);
 							personelIzin.setIzinTipi(izinTipi);
 							personelIzin.setIzinSuresi(izinSuresi);
 							personelIzin.setKullanilanIzinSuresi(0D);
@@ -10330,102 +10401,33 @@ public class OrtakIslemler implements Serializable {
 						if (personelIzin.getId() == null)
 							personelIzin.setOlusturanUser(sistemYonetici);
 						if (personelIzin.getIzinKagidiGeldi() == null) {
-							if (personelIzin.getGuncellemeTarihi() != null && !PdksUtil.getDate(islemTarihi).after(PdksUtil.getDate(personelIzin.getGuncellemeTarihi())))
-								izinSuresi = personelIzin.getIzinSuresi().intValue();
-							if (genelDirektorIzinSuresi != 0)
-								izinSuresi = genelDirektorIzinSuresi;
-							if (izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
-								if (personelIzin.getId() != null) {
-									if (user != null)
-										personelIzin.setGuncelleyenUser(user);
-									personelIzin.setGuncellemeTarihi(new Date());
+							if (kidemYil > 0 && (yeniBakiyeOlustur || personelIzin.getId() != null)) {
+								if (izinSuresi > 0 && izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
+									if (personelIzin.getId() != null) {
+										if (user != null)
+											personelIzin.setGuncelleyenUser(user);
+										personelIzin.setGuncellemeTarihi(new Date());
+									}
+									personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
+									personelIzin.setIzinSuresi(izinSuresi);
+									personelIzin.setAciklama(aciklama);
+									if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime()) {
+										personelIzin.setBitisZamani(izinHakEttigiTarihi);
+										pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
+										flush = true;
+									} else
+										logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
 								}
-								personelIzin.setIzinSuresi(izinSuresi);
-								personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
-								personelIzin.setAciklama(aciklama);
-								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime()) {
-									personelIzin.setBitisZamani(izinHakEttigiTarihi);
-									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
-									flush = true;
-								} else
-									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
-
 							}
 						}
 					}
 				}
 			}
-			cal.setTime(izinHakEttigiTarihi);
-			// cal.add(Calendar.YEAR, -1);
-			Date hakedisTarihi = cal.getTime();
-			boolean yeniKidemBakiyeOlustur = yeniBakiyeOlustur && bugun.after(hakedisTarihi) && kidemYok == false;
-			if (yeniKidemBakiyeOlustur) {
-				if (((tarihGelmedi == false || yillikIzinMaxBakiye < 0) && kidemYil > 0) || yil == girisYil)
-					++yil;
-				cal.set(yil, 0, 1);
-				Date baslangicZamani = PdksUtil.convertToJavaDate(yil + "0101", "yyyyMMdd");
-				cal.setTime(izinSahibi.getIzinHakEdisTarihi());
-				cal.set(Calendar.YEAR, yil);
-				izinHakEttigiTarihi = PdksUtil.getDate(cal.getTime());
-				if (baslangicZamani.after(izinSahibi.getIzinHakEdisTarihi())) {
-					if (yillikIzinMaxBakiye > 0) {
-						izinHakedisHakki = new IzinHakedisHakki();
-						izinHakedisHakki.setIzinSuresi(yillikIzinMaxBakiye);
-					} else
-						izinHakedisHakki = getIzinHakedis(kidemYil + 1, hakedisMap, session, yasTipi, suaDurum, departman, map);
-
-					HashMap<Integer, Integer> map1 = getTarihMap(izinSahibi != null ? izinSahibi.getIzinHakEdisTarihi() : null, izinHakEttigiTarihi);
-					kidemYil = map1.get(Calendar.YEAR);
-					String aciklama = String.valueOf(kidemYil);
-					double izinSuresi = (double) izinHakedisHakki.getIzinSuresi();
-					if (genelDirektorIzinSuresi != 0)
-						izinSuresi = genelDirektorIzinSuresi;
-					try {
-						personelIzin = getBakiyeIzin(sistemYonetici, izinSahibi, baslangicZamani, izinTipi, izinSuresi, kidemYil, session);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					if (flush == false && personelIzin != null)
-						flush = personelIzin.isCheckBoxDurum();
-					if (personelIzin == null) {
-						personelIzin = new PersonelIzin();
-						personelIzin.setIzinSahibi(izinSahibi);
-						personelIzin.setBaslangicZamani(baslangicZamani);
-						personelIzin.setBitisZamani(izinHakEttigiTarihi);
-						personelIzin.setAciklama(aciklama);
-						personelIzin.setIzinTipi(izinTipi);
-						personelIzin.setIzinSuresi(izinSuresi);
-						personelIzin.setKullanilanIzinSuresi(0D);
-					}
-					if (personelIzin.getId() == null)
-						personelIzin.setOlusturanUser(sistemYonetici);
-					if (personelIzin.getIzinKagidiGeldi() == null) {
-						if (kidemYil > 0 && (yeniBakiyeOlustur || personelIzin.getId() != null)) {
-							if (izinSuresi > 0 && izinDegisti(personelIzin, izinHakEttigiTarihi, izinSuresi, aciklama)) {
-								if (personelIzin.getId() != null) {
-									if (user != null)
-										personelIzin.setGuncelleyenUser(user);
-									personelIzin.setGuncellemeTarihi(new Date());
-								}
-								personelIzin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
-								personelIzin.setIzinSuresi(izinSuresi);
-								personelIzin.setAciklama(aciklama);
-								if (izinHakEttigiTarihi.getTime() >= personelIzin.getBaslangicZamani().getTime()) {
-									personelIzin.setBitisZamani(izinHakEttigiTarihi);
-									pdksEntityController.saveOrUpdate(session, entityManager, personelIzin);
-									flush = true;
-								} else
-									logger.info(personelIzin.getPdksPersonel().getPdksSicilNo() + " " + aciklama);
-							}
-						}
-					}
-				}
-			}
+			if (flush)
+				session.flush();
+			// if (kidemYil == 0)
+			// izinTipi = null;
 		}
-		if (flush)
-			session.flush();
-		// if (kidemYil == 0)
-		// izinTipi = null;
 		return izinTipi;
 
 	}
