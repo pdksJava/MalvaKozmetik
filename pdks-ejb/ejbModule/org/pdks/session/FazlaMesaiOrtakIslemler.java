@@ -961,6 +961,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							IzinTipi izinTipi = null;
 							if (vardiyaGun.getIzin() != null) {
 								PersonelIzin personelIzin = vardiyaGun.getIzin();
+ 								if (personelIzin.getOrjIzin() != null)
+									personelIzin = personelIzin.getOrjIzin();
 								if (vardiyaGun.getVardiyaDateStr().equals("20240106"))
 									logger.debug("x");
 								izinTipi = personelIzin.getIzinTipi();
