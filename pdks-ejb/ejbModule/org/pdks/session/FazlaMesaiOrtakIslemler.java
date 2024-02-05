@@ -178,8 +178,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						pdMap.put(pd.getId(), pd);
 
 						AylikPuantaj aylikPuantaj = new AylikPuantaj();
-						if (hataliVeriGetir && pd.getDurum().equals(Boolean.FALSE) && pd.isOnaylandi())
+						if (hataliVeriGetir != null && hataliVeriGetir && pd.getDurum().equals(Boolean.FALSE) && pd.isOnaylandi())
 							hataliMap.put(pd.getPdksPersonel().getId(), aylikPuantaj);
+
 						aylikPuantaj.setPersonelDenklestirmeAylik(pd);
 						aylikPuantaj.setPdksPersonel(pd.getPdksPersonel());
 						aylikPuantaj.setEksikCalismaSure(null);
@@ -1053,8 +1054,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							if (!haftaTatil) {
 								normalGunAdet += calismaGun;
 								// logger.info(vardiyaGun.getVardiyaDateStr() + " " + normalGunAdet);
-							}
-							else {
+							} else {
 								haftaTatilAdet += calismaGun;
 							}
 						}

@@ -99,11 +99,23 @@
 						<h:panelGrid columns="4">
 							<a4j:commandButton status="ajaxStatus" action="#{denklestirmeBordroRaporuHome.fillPersonelDenklestirmeList}" value="Getir"
 								reRender="denklestirmeDonemiTable,anaForm" />
-							<ui:fragment
-								rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and (denklestirmeBordroRaporuHome.adminRole or ortakIslemler.getParameterKeyHasStringValue('sirketFazlaMesaiGuncelleme')) }">
+							<ui:fragment rendered="#{denklestirmeBordroRaporuHome.adminRole or ortakIslemler.getParameterKeyHasStringValue('sirketFazlaMesaiGuncelleme') }">
 								<ui:fragment rendered="#{denklestirmeBordroRaporuHome.sirket.tesisDurum==false or denklestirmeBordroRaporuHome.tesisId gt 0 }">
-									<a4j:commandButton status="ajaxStatus" value="#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla"
-										action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable,anaForm" />
+									<ui:fragment rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum}">
+										<a4j:commandButton status="ajaxStatus" value="#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla"
+											action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable,anaForm" />
+									</ui:fragment>
+									<ui:fragment rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum==false and denklestirmeBordroRaporuHome.adminRole}">
+										<a4j:commandButton id="donemKapali#{denklestirmeBordroRaporuHome.denklestirmeAy.id}" status="ajaxStatus"
+											value="#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla"
+											oncomplete="#{rich:component('onayFazlaMesaiHesapPanel')}.show()" reRender="onayFazlaMesaiHesapPanel">
+
+
+										</a4j:commandButton>
+										<rich:toolTip for="donemKapali#{denklestirmeBordroRaporuHome.denklestirmeAy.id}">
+											 Dönem kapalı hesaplama onaylı hesaplama yapılacaktır.
+											</rich:toolTip>
+									</ui:fragment>
 								</ui:fragment>
 							</ui:fragment>
 							<h:commandLink value="Excel" action="#{denklestirmeBordroRaporuHome.denklestirmeExcelAktar}" target="blank"
@@ -332,14 +344,16 @@
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.haftaTatilAdet)}"
 										rendered="#{puantaj.denklestirmeBordro.haftaTatilAdet!=0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.resmiTatilGunDurum and denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_ADET)}">
+								<rich:column style="text-align: right;"
+									rendered="#{denklestirmeBordroRaporuHome.resmiTatilGunDurum and denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_ADET)}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_RESMI_TATIL_ADET)}" />
 									</f:facet>
 									<h:outputText value="#{authenticatedUser.sayiFormatliGoster(puantaj.denklestirmeBordro.resmiTatilAdet)}"
 										rendered="#{puantaj.denklestirmeBordro.resmiTatilAdet!=0}" />
 								</rich:column>
-								<rich:column style="text-align: right;" rendered="#{denklestirmeBordroRaporuHome.artikGunDurum and denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_ARTIK_ADET)}">
+								<rich:column style="text-align: right;"
+									rendered="#{denklestirmeBordroRaporuHome.artikGunDurum and denklestirmeBordroRaporuHome.baslikMap.containsKey(denklestirmeBordroRaporuHome.COL_ARTIK_ADET)}">
 									<f:facet name="header">
 										<h:outputText value="#{denklestirmeBordroRaporuHome.getBaslikAciklama(denklestirmeBordroRaporuHome.COL_ARTIK_ADET)}" />
 									</f:facet>
@@ -465,7 +479,34 @@
 			</rich:panel>
 
 		</h:form>
+		<rich:modalPanel id="onayFazlaMesaiHesapPanel" autosized="true" width="750">
+			<f:facet name="header">
+				<ui:fragment>
+					<DIV>#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla</DIV>
 
+				</ui:fragment>
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/close.png" id="editIzinliHareketlink" styleClass="hidelink" />
+					<rich:componentControl for="onayFazlaMesaiHesapPanel" attachTo="editIzinliHareketlink" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<table width="100%">
+					<tbody>
+						<tr>
+							<td align="center" width="20%"><a4j:commandButton status="ajaxStatus" value="Evet"
+									action="#{denklestirmeBordroRaporuHome.sirketFazlaMesaiGuncelleme()}" reRender="denklestirmeDonemiTable,anaForm"
+									oncomplete="#{rich:component('onayFazlaMesaiHesapPanel')}.hide();" /> <a4j:commandButton status="ajaxStatus" value="Vazgeç"
+									oncomplete="#{rich:component('onayFazlaMesaiHesapPanel')}.hide();" /></td>
+						</tr>
+					</tbody>
+				</table>
+
+
+			</h:form>
+		</rich:modalPanel>
 
 	</ui:define>
 
