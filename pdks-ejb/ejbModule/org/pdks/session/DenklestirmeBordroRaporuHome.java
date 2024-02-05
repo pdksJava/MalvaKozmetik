@@ -809,7 +809,10 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					as.setTesisId(tesisId);
 					as.setLoginUser(authenticatedUser);
 					try {
-						personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, hataliVeriGetir, eksikCalisanVeriGetir, session);
+						boolean denkDurum = denklestirmeAy != null && denklestirmeAy.getDurum();
+						if (denkDurum == false)
+							denkDurum = authenticatedUser.isAdmin() == false;
+						personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, denkDurum == false || hataliVeriGetir, denkDurum == false || eksikCalisanVeriGetir, session);
 						if (!personelDenklestirmeList.isEmpty()) {
 							List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 							if (bordroAlanlari.isEmpty()) {
