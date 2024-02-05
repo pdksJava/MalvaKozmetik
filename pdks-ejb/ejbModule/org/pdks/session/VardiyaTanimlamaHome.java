@@ -76,7 +76,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 	private List<DenklestirmeAy> denklestirmeAylar;
 
 	private DenklestirmeAy denklestirmeAy;
-	boolean guncelle = Boolean.FALSE, denklestirmeKesintiYap = Boolean.FALSE;
+	boolean guncelle = Boolean.FALSE, denklestirmeKesintiYap = Boolean.FALSE, disabled = false;
 	private TreeMap<String, PersonelDenklestirme> bakiySonrakiMap;
 	private List<CalismaModeli> calismaModeliList = new ArrayList<CalismaModeli>();
 	private List<SelectItem> kesintiTuruList = new ArrayList<SelectItem>();
@@ -716,6 +716,10 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 		if (personelDenklestirmeler != null)
 			personelDenklestirmeler.clear();
 		denklestirmeAy = getInstance();
+
+		int donem = Integer.parseInt(PdksUtil.convertToDateString(new Date(), "yyyyMM")), seciliDonem = yil * 100 + denklestirmeAy.getAy();
+		disabled = seciliDonem > donem;
+
 		int adet = getGirisKolonSayisi();
 		kesintiTuruList.clear();
 		if (authenticatedUser.isAdmin() && adet > 2 && (!denklestirmeAy.isKesintiYok() || denklestirmeKesintiYap)) {
@@ -917,6 +921,14 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 	 */
 	public void setOtomatikFazlaCalismaOnaylansinVar(Boolean otomatikFazlaCalismaOnaylansinVar) {
 		this.otomatikFazlaCalismaOnaylansinVar = otomatikFazlaCalismaOnaylansinVar;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 }

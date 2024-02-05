@@ -212,8 +212,7 @@
 							</h:panelGrid>
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">Aktif</ui:define>
-								<h:selectBooleanCheckbox value="#{vardiyaTanimlaHome.denklestirmeAy.durum}"
-									disabled="#{!(authenticatedUser.admin or authenticatedUser.IKAdmin)}">
+								<h:selectBooleanCheckbox value="#{vardiyaTanimlaHome.denklestirmeAy.durum}" disabled="#{vardiyaTanimlaHome.disabled}">
 									<a4j:support event="onclick" reRender="bakiyePanel,vardiyaTanimlama" ajaxSingle="true" />
 								</h:selectBooleanCheckbox>
 							</s:decorate>
