@@ -1030,7 +1030,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		else if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
 			List<String> perNoList = new ArrayList<String>();
 			perNoList.add(personel.getPdksSicilNo());
-			List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(perNoList, session);
+			List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(false, perNoList, session);
 			if (updateList != null && updateList.isEmpty()) {
 				HashMap fields = new HashMap();
 				fields.put("pdksSicilNo", personel.getPdksSicilNo());
@@ -1057,7 +1057,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (personel != null && PdksUtil.hasStringValue(personel.getPdksSicilNo())) {
 				List<String> list = new ArrayList<String>();
 				list.add(personelView.getPdksPersonel().getPdksSicilNo());
-				List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(list, session);
+				List<PersonelERP> updateList = ortakIslemler.personelERPDBGuncelle(false, list, session);
 				if (updateList != null) {
 					if (updateList.isEmpty()) {
 						fillPersonelKGSList();

@@ -171,7 +171,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.lowagie.text.Table;
 import com.pdks.mail.model.MailManager;
 import com.pdks.notUse.IsKurVardiyaGun;
-import com.pdks.webservice.Exception_Exception;
 import com.pdks.webservice.IzinERP;
 import com.pdks.webservice.MailFile;
 import com.pdks.webservice.MailObject;
@@ -4099,13 +4098,13 @@ public class OrtakIslemler implements Serializable {
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<String> perNoList = pdksEntityController.getObjectBySQLList(sb, fields, null);
 			if (!perNoList.isEmpty()) {
-				List<PersonelERPDB> personelERPDBList = getPersonelERPDBList(perNoList, parametreKey, session);
+				List<PersonelERPDB> personelERPDBList = getPersonelERPDBList(false, perNoList, parametreKey, session);
 				if (!personelERPDBList.isEmpty()) {
 					List<String> perNoDbList = new ArrayList<String>();
 					for (PersonelERPDB personelERPDB : personelERPDBList) {
 						perNoDbList.add(personelERPDB.getPersonelNo());
 					}
-					List<PersonelERP> updateList = personelERPDBGuncelle(perNoDbList, session);
+					List<PersonelERP> updateList = personelERPDBGuncelle(false, perNoDbList, session);
 					if (updateList != null) {
 						fields.clear();
 						fields.put("pdksPersonel.pdksSicilNo", perNoDbList);
@@ -5078,16 +5077,17 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param guncellemeDurum
 	 * @param perNoList
 	 * @param session
 	 * @return
-	 * @throws Exception_Exception
+	 * @throws Exception
 	 */
-	public List<PersonelERP> personelERPDBGuncelle(List<String> perNoList, Session session) throws Exception {
+	public List<PersonelERP> personelERPDBGuncelle(boolean guncellemeDurum, List<String> perNoList, Session session) throws Exception {
 		List<PersonelERP> personelERPReturnList = null;
 		String parameterName = getParametrePersonelERPTableView();
 		if (getParameterKeyHasStringValue(parameterName)) {
-			List<PersonelERPDB> personelList = getPersonelERPDBList(perNoList, parameterName, session);
+			List<PersonelERPDB> personelList = getPersonelERPDBList(guncellemeDurum, perNoList, parameterName, session);
 			if (personelList != null && !personelList.isEmpty()) {
 				List<PersonelERP> personelERPList = new ArrayList<PersonelERP>();
 				for (PersonelERPDB personelERPDB : personelList)
@@ -5122,15 +5122,16 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param guncellemeDurum
 	 * @param session
 	 * @return
 	 * @throws Exception
 	 */
-	public List<IzinERP> izinERPDBGuncelle(Session session) throws Exception {
+	public List<IzinERP> izinERPDBGuncelle(boolean guncellemeDurum, Session session) throws Exception {
 		List<IzinERP> izinERPReturnList = null;
 		String parameterName = getParametreIzinERPTableView();
 		if (getParameterKeyHasStringValue(parameterName)) {
-			List<IzinERPDB> izinList = getIzinERPDBList(parameterName, session);
+			List<IzinERPDB> izinList = getIzinERPDBList(guncellemeDurum, parameterName, session);
 			if (izinList != null && !izinList.isEmpty()) {
 				List<IzinERP> izinERPList = new ArrayList<IzinERP>();
 				for (IzinERPDB izinERPDB : izinList) {
@@ -5164,12 +5165,13 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param guncellemeDurum
 	 * @param parameterName
 	 * @param session
 	 * @return
 	 * @throws Exception
 	 */
-	private List<IzinERPDB> getIzinERPDBList(String parameterName, Session session) throws Exception {
+	private List<IzinERPDB> getIzinERPDBList(boolean guncellemeDurum, String parameterName, Session session) throws Exception {
 		String izinERPTableViewAdi = getParameterKey(parameterName);
 		List<Tanim> list = getTanimList(Tanim.TIPI_ERP_IZIN_DB, session);
 		List<IzinERPDB> izinList = null;
@@ -5189,11 +5191,13 @@ public class OrtakIslemler implements Serializable {
 			parameter = getParameter(session, parameterName);
 			Date tarih = parameter.getChangeDate();
 			if (tarih != null) {
-				tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
-				sb.append(" WHERE " + IzinERPDB.COLUMN_NAME_BIT_TARIHI + " >=:t ");
-				sb.append(" OR " + IzinERPDB.COLUMN_NAME_GUNCELLEME_TARIHI + " >=:g ");
-				parametreMap.put("t", tarih);
-				parametreMap.put("g", tarih);
+				if (guncellemeDurum == false)
+					tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
+				if (guncellemeDurum == false)
+					sb.append(" WHERE " + IzinERPDB.COLUMN_NAME_BIT_TARIHI + " >=:t ");
+				else
+					sb.append(" WHERE " + IzinERPDB.COLUMN_NAME_GUNCELLEME_TARIHI + " >=:t ");
+				parametreMap.put("t", PdksUtil.getDate(tarih));
 			}
 
 			if (session != null)
@@ -5240,13 +5244,14 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param guncellemeDurum
 	 * @param perNoList
 	 * @param parameterName
 	 * @param session
 	 * @return
 	 * @throws Exception
 	 */
-	public List<PersonelERPDB> getPersonelERPDBList(List<String> perNoList, String parameterName, Session session) throws Exception {
+	public List<PersonelERPDB> getPersonelERPDBList(boolean guncellemeDurum, List<String> perNoList, String parameterName, Session session) throws Exception {
 		String personelERPTableViewAdi = getParameterKey(parameterName);
 		List<Tanim> list = getTanimList(Tanim.TIPI_ERP_PERSONEL_DB, session);
 		List<PersonelERPDB> personelList = null;
@@ -5270,17 +5275,18 @@ public class OrtakIslemler implements Serializable {
 				parameter = getParameter(session, parameterName);
 				tarih = parameter.getChangeDate();
 				if (tarih != null) {
-					tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
-					sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_ISTEN_AYRILMA_TARIHI + " >=:t ");
-					sb.append(" OR " + PersonelERPDB.COLUMN_NAME_GUNCELLEME_TARIHI + " >=:g ");
-					parametreMap.put("t", tarih);
-					parametreMap.put("g", tarih);
+					if (guncellemeDurum == false) {
+						tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
+						sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_ISTEN_AYRILMA_TARIHI + " >=:t ");
+					} else
+						sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_GUNCELLEME_TARIHI + " >=:t ");
+					parametreMap.put("t", PdksUtil.getDate(tarih));
 				}
 			}
-			if (session != null)
-				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			TreeMap<String, PersonelERPDB> ayrilanMap = new TreeMap<String, PersonelERPDB>();
 			try {
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 				personelList = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelERPDB.class);
 				if (tarih == null)
 					tarih = new Date();

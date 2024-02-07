@@ -79,6 +79,7 @@ public class PersonelERPGuncelleme implements Serializable {
 	private List<Personel> personelList, personelERPList;
 	private static boolean ozelKontrol = Boolean.FALSE;
 	private User islemUser = new User();
+	private boolean guncellemeDBDurum = Boolean.FALSE, zamanDurum = Boolean.FALSE;
 
 	@Asynchronous
 	@SuppressWarnings("unchecked")
@@ -91,11 +92,13 @@ public class PersonelERPGuncelleme implements Serializable {
 			setCalisiyor(Boolean.TRUE);
 			boolean hataGonder = Boolean.FALSE;
 			Session session = null;
+			zamanDurum = Boolean.FALSE;
 			try {
 				session = PdksUtil.getSession(entityManager, Boolean.TRUE);
 				boolean sunucuDurum = PdksUtil.getCanliSunucuDurum() || PdksUtil.getTestSunucuDurum();
-				// sunucuDurum=true;
+				// sunucuDurum = true;
 				if (sunucuDurum) {
+					guncellemeDBDurum = Boolean.FALSE;
 					Parameter parameter = ortakIslemler.getParameter(session, "kgsMasterUpdate");
 					if (parameter != null && parameter.getValue().equals("1"))
 						ortakIslemler.kgsMasterUpdate(session);
@@ -103,15 +106,23 @@ public class PersonelERPGuncelleme implements Serializable {
 					parameter = ortakIslemler.getParameter(session, PARAMETER_KEY);
 					String value = (parameter != null) ? parameter.getValue() : null;
 					hataKonum = "Paramatre okundu ";
-					if (value != null) {
+					guncellemeDBDurum = false;
+					String personelERPTableViewAdi = ortakIslemler.getParameterKey(ortakIslemler.getParametrePersonelERPTableView());
+					boolean tableERPOku = PdksUtil.hasStringValue(personelERPTableViewAdi);
+					if (value != null || tableERPOku) {
 						hataGonder = Boolean.TRUE;
 						hataKonum = "Zaman kontrolu yapılıyor ";
 						Date tarih = zamanlayici.getDbTime(session);
-						boolean zamanDurum = PdksUtil.zamanKontrol(PARAMETER_KEY, value, tarih) && ortakIslemler.getGuncellemeDurum(Personel.TABLE_NAME, session);
-						// if (!zamanDurum)
-						// zamanDurum = pdksUtil.getUrl() != null && pdksUtil.getUrl().indexOf("localhost") >= 0;
-						if (zamanDurum) {
-							personelERPGuncellemeCalistir(session, tarih, true);
+						zamanDurum = value != null && PdksUtil.zamanKontrol(PARAMETER_KEY, value, tarih);
+						if (!zamanDurum & tableERPOku) {
+							String parameterUpdateKey = PARAMETER_KEY + "Update";
+							value = ortakIslemler.getParameterKey(PARAMETER_KEY + "Update");
+							guncellemeDBDurum = PdksUtil.zamanKontrol(parameterUpdateKey, value, tarih);
+
+						}
+						if (zamanDurum || guncellemeDBDurum) {
+							if (ortakIslemler.getGuncellemeDurum(Personel.TABLE_NAME, session))
+								personelERPGuncellemeCalistir(session, tarih, true);
 						}
 					}
 				}
@@ -154,11 +165,12 @@ public class PersonelERPGuncelleme implements Serializable {
 		try {
 			User sistemAdminUser = ortakIslemler.getSistemAdminUser(session);
 			if (ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView())) {
+				mailGonder = false;
 				String uygulamaBordro = ortakIslemler.getParameterKey("uygulamaBordro");
 				logger.info(uygulamaBordro + " personel bilgileri güncelleniyor in " + PdksUtil.getCurrentTimeStampStr());
-				ortakIslemler.personelERPDBGuncelle(null, session);
+				ortakIslemler.personelERPDBGuncelle(guncellemeDBDurum, null, session);
 				logger.info(uygulamaBordro + " personel bilgileri güncelleniyor out " + PdksUtil.getCurrentTimeStampStr());
-			} else {
+			} else if (guncellemeDBDurum == false) {
 
 				List<Long> personelIdList = personelERPGuncelle(sistemAdminUser, session);
 				if (!personelIdList.isEmpty()) {
@@ -196,19 +208,20 @@ public class PersonelERPGuncelleme implements Serializable {
 		}
 
 		try {
-			logger.info("ozel islemler in  " + PdksUtil.getCurrentTimeStampStr());
-			kullaniciGuncelle(session, null);
-			if (sapDurum) {
-				ortakIslemler.yeniPersonelleriOlustur(session);
-				if (ozelKontrol)
-					hataliVeriPersonelBul(session, null);
+			if (guncellemeDBDurum == false) {
+				logger.info("ozel islemler in  " + PdksUtil.getCurrentTimeStampStr());
+				kullaniciGuncelle(session, null);
+				if (sapDurum) {
+					ortakIslemler.yeniPersonelleriOlustur(session);
+					if (ozelKontrol)
+						hataliVeriPersonelBul(session, null);
+				}
+				ortakIslemler.setIkinciYoneticiSifirla(session);
+				logger.info("ozel islemler out " + PdksUtil.getCurrentTimeStampStr());
+				logger.info("aktif Mail Adress Guncelle in " + PdksUtil.getCurrentTimeStampStr());
+				aktifMailAdressGuncelle(session);
+				logger.info("aktif Mail Adress Guncelle out " + PdksUtil.getCurrentTimeStampStr());
 			}
-
-			ortakIslemler.setIkinciYoneticiSifirla(session);
-			logger.info("ozel islemler out " + PdksUtil.getCurrentTimeStampStr());
-			logger.info("aktif Mail Adress Guncelle in " + PdksUtil.getCurrentTimeStampStr());
-			aktifMailAdressGuncelle(session);
-			logger.info("aktif Mail Adress Guncelle out " + PdksUtil.getCurrentTimeStampStr());
 		} catch (Exception e) {
 			hataKonum = "ozel islemler tamamlandı ";
 		}

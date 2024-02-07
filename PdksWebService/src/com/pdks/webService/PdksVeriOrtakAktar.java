@@ -221,7 +221,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		sb.append("	IZIN_DURUM AS (");
 		sb.append("		SELECT COUNT(I.ID) AS IZIN_TIPI_ADET FROM " + IzinTipi.TABLE_NAME + " I WITH(nolock)");
 		sb.append("			INNER JOIN " + Departman.TABLE_NAME + " D ON D." + Departman.COLUMN_NAME_ID + "=I." + IzinTipi.COLUMN_NAME_DEPARTMAN + " AND D." + Departman.COLUMN_NAME_ADMIN_DURUM + "=1 AND D." + Departman.COLUMN_NAME_DURUM + "=1");
-		sb.append("		WHERE I." + IzinTipi.COLUMN_NAME_DURUM + "=1  AND I." + IzinTipi.COLUMN_NAME_BAKIYE_IZIN_TIPI + " IS NULL AND I." + IzinTipi.COLUMN_NAME_GIRIS_TIPI + "<>'" + IzinTipi.GIRIS_TIPI_YOK + "'");
+		sb.append("		WHERE I." + IzinTipi.COLUMN_NAME_DEPARTMAN + "=1 AND I." + IzinTipi.COLUMN_NAME_DURUM + "=1  AND I." + IzinTipi.COLUMN_NAME_BAKIYE_IZIN_TIPI + " IS NULL AND I." + IzinTipi.COLUMN_NAME_GIRIS_TIPI + "<>'" + IzinTipi.GIRIS_TIPI_YOK + "'");
 		sb.append("	)");
 		sb.append("	SELECT COALESCE(DY.DEP_YONETICI_ROL_ADI,'') DEP_YONETICI_ROL_ADI,");
 		sb.append("		COALESCE(ID.IZIN_TIPI_ADET,0) IZIN_TIPI_ADET, GETDATE() AS TARIH FROM BUGUN B ");
@@ -3185,6 +3185,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								str = "Doğum tarihi boş olamaz!";
 							else if (sistemDestekVar == false || personelERP.getDogumTarihi().length() > 5)
 								str = "Doğum tarihi hatalıdır! (" + personelERP.getDogumTarihi() + " --> format : " + FORMAT_DATE + " )";
+
 							if (str != null) {
 								if (!izinERPUpdate)
 									addHatalist(personelERP.getHataList(), str);
@@ -3206,6 +3207,20 @@ public class PdksVeriOrtakAktar implements Serializable {
 								kidemHataList.add(str);
 							}
 
+						}
+
+					}
+					if (dogumTarihi != null) {
+						String str = null;
+						if (iseBaslamaTarihi != null && iseBaslamaTarihi.before(dogumTarihi))
+							str = "İşe giriş tarihi doğum tarihinden önce olamaz!";
+						else if (grubaGirisTarihi != null && grubaGirisTarihi.before(dogumTarihi))
+							str = "Gruba giriş tarihi doğum tarihinden önce olamaz!";
+						if (str != null) {
+							if (izinGirisiVar == false)
+								kidemHataList.add(str);
+							else
+								addHatalist(personelERP.getHataList(), str);
 						}
 
 					}
@@ -3267,8 +3282,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 							personel.setGrubaGirisTarihi(grubaGirisTarihi);
 
 					} else {
-						if (dogumTarihi != null && grubaGirisTarihi.before(dogumTarihi))
-							addHatalist(personelERP.getHataList(), "Grubu giriş tarihi doğum tarihinden önce olamaz!");
 						if (iseBaslamaTarihi != null && iseBaslamaTarihi.before(grubaGirisTarihi))
 							addHatalist(personelERP.getHataList(), "İşe giriş tarihi grubu giriş tarihinden önce olamaz!");
 						if (izinHakEdisTarihi != null && izinHakEdisTarihi.before(grubaGirisTarihi))
