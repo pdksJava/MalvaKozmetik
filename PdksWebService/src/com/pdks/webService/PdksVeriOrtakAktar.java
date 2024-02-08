@@ -3039,19 +3039,14 @@ public class PdksVeriOrtakAktar implements Serializable {
 						sablonList.addAll(sablonlar);
 						modelList.addAll(modeller);
 						if (personelTipi != null && personelCalismaModeliVar) {
-							try {
-								long id = personelTipi.getId().longValue();
-								for (Iterator iterator = modelList.iterator(); iterator.hasNext();) {
-									CalismaModeli calismaModeli = (CalismaModeli) iterator.next();
-									if (calismaModeli.getPersonelTipi() != null && calismaModeli.getPersonelTipi().getId().longValue() != id)
-										iterator.remove();
-								}
-								if (modelList.size() == 1)
-									personel.setCalismaModeli(modelList.get(0));
-							} catch (Exception e) {
-								logger.debug(e);
+							long id = personelTipi.getId().longValue();
+							for (Iterator iterator = modelList.iterator(); iterator.hasNext();) {
+								CalismaModeli calismaModeli = (CalismaModeli) iterator.next();
+								if (calismaModeli.getPersonelTipi() != null && calismaModeli.getPersonelTipi().getId().longValue() != id)
+									iterator.remove();
 							}
-
+							if (modelList.size() == 1)
+								personel.setCalismaModeli(modelList.get(0));
 						}
 						CalismaModeli cm = personel.getCalismaModeli();
 						if (cm != null && sablonCalismaModeliVar) {
