@@ -62,6 +62,7 @@ public class Personel extends BaseObject {
 	public static final String COLUMN_NAME_SSK_CIKIS_TARIHI = "SSK_CIKIS_TARIHI";
 	public static final String COLUMN_NAME_IZIN_HAKEDIS_TARIHI = "IZIN_HAKEDIS_TARIHI";
 	public static final String COLUMN_NAME_ISKUR_SABLON = "ISKUR_SABLON_ID";
+	public static final String COLUMN_NAME_PERSONEL_TIPI = "PERSONEL_TIPI_ID";
 
 	public static final String STATU_HEKIM = "2";
 
@@ -80,7 +81,7 @@ public class Personel extends BaseObject {
 	private MailGrubu mailGrubuCC, mailGrubuBCC, hareketMailGrubu;
 	private Sirket sirket;
 	private CalismaModeli calismaModeli;
-	private Tanim gorevTipi, ekSaha1, ekSaha2, ekSaha3, ekSaha4, tesis, masrafYeri, ekSaha, cinsiyet, bordroAltAlan;
+	private Tanim gorevTipi, ekSaha1, ekSaha2, ekSaha3, ekSaha4, tesis, masrafYeri, ekSaha, cinsiyet, bordroAltAlan, personelTipi;
 	private Boolean pdks = Boolean.FALSE, mailTakip = Boolean.FALSE, icapciOlabilir = Boolean.FALSE, ustYonetici = Boolean.FALSE, sutIzni = Boolean.FALSE;
 	private Boolean suaOlabilir = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, sanalPersonel = Boolean.FALSE, onaysizIzinKullanilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE;
 	private Boolean partTime = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, gebeMi = Boolean.FALSE;
@@ -198,8 +199,10 @@ public class Personel extends BaseObject {
 		return calismaModeli;
 	}
 
-	public void setCalismaModeli(CalismaModeli calismaModeli) {
-		this.calismaModeli = calismaModeli;
+	public void setCalismaModeli(CalismaModeli value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(calismaModeli != null ? calismaModeli.getId() : null, value != null ? value.getId() : null));
+		this.calismaModeli = value;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -317,6 +320,19 @@ public class Personel extends BaseObject {
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = COLUMN_NAME_PERSONEL_TIPI)
+	@Fetch(FetchMode.JOIN)
+	public Tanim getPersonelTipi() {
+		return personelTipi;
+	}
+
+	public void setPersonelTipi(Tanim value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isTanimDegisti(personelTipi, value));
+		this.personelTipi = value;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = "CINSIYET_ID")
 	@Fetch(FetchMode.JOIN)
 	public Tanim getCinsiyet() {
@@ -391,8 +407,10 @@ public class Personel extends BaseObject {
 		return sablon;
 	}
 
-	public void setSablon(VardiyaSablonu sablon) {
-		this.sablon = sablon;
+	public void setSablon(VardiyaSablonu value) {
+		if (this.isDegisti() == false)
+			this.setDegisti(PdksUtil.isLongDegisti(sablon != null ? sablon.getId() : null, value != null ? value.getId() : null));
+		this.sablon = value;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)

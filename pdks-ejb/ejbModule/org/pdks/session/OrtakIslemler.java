@@ -6001,6 +6001,14 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @return
 	 */
+	public String personelTipiAciklama() {
+		String personelTipiAciklama = getBaslikAciklama("personelTipiAciklama", "Personel Tipi");
+		return personelTipiAciklama;
+	}
+
+	/**
+	 * @return
+	 */
 	public String eksikCalismaAciklama() {
 		String eksikCalismaAciklama = getBaslikAciklama("eksikCalismaAciklama", "Maaş Kesinti");
 		return eksikCalismaAciklama;
@@ -12642,7 +12650,7 @@ public class OrtakIslemler implements Serializable {
 	public TreeMap<String, Boolean> mantiksalAlanlariDoldur(List<PersonelView> list) {
 		TreeMap<String, Boolean> map = new TreeMap<String, Boolean>();
 		Boolean fazlaMesaiIzinKullan = Boolean.FALSE, tesisDurum = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE;
-		Boolean kullaniciPersonel = Boolean.FALSE, gebeMi = Boolean.FALSE, sutIzni = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE;
+		Boolean kullaniciPersonel = Boolean.FALSE, gebeMi = Boolean.FALSE, sutIzni = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE, personelTipiGoster = Boolean.FALSE;
 		Boolean ustYonetici = Boolean.FALSE, partTimeDurum = Boolean.FALSE, egitimDonemi = Boolean.FALSE, suaOlabilir = Boolean.FALSE;
 		Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, bordroAltAlani = Boolean.FALSE, kimlikNoGoster = Boolean.FALSE, masrafYeriGoster = Boolean.FALSE;
 		boolean ikRol = authenticatedUser.isSistemYoneticisi() || authenticatedUser.isAdmin();
@@ -12755,6 +12763,8 @@ public class OrtakIslemler implements Serializable {
 							if (gebeMi)
 								map.put("gebeMi", gebeMi);
 						}
+						if (!personelTipiGoster)
+							personelTipiGoster = personel.getPersonelTipi() != null;
 
 					}
 
@@ -12764,6 +12774,9 @@ public class OrtakIslemler implements Serializable {
 		}
 		if (kartNoGoster != null && kartNoGoster)
 			map.put("kartNoGoster", Boolean.TRUE);
+
+		if (personelTipiGoster)
+			map.put("personelTipiGoster", Boolean.TRUE);
 		if (tesisDurum)
 			map.put("tesisDurum", Boolean.TRUE);
 		if (istenAyrilmaGoster)
@@ -12831,6 +12844,7 @@ public class OrtakIslemler implements Serializable {
 		boolean emailCCDurum = map.containsKey("emailCCDurum"), emailBCCDurum = map.containsKey("emailBCCDurum"), bordroAltAlani = map.containsKey("bordroAltAlani");
 		boolean kimlikNoGoster = map.containsKey("kimlikNoGoster"), onaysizIzinKullanilir = map.containsKey("onaysizIzinKullanilir"), tesisDurum = map.containsKey("tesisDurum"), ikinciYoneticiIzinOnayla = map.containsKey("ikinciYoneticiIzinOnayla");
 		boolean departmanGoster = map.containsKey("departmanGoster"), istenAyrilmaGoster = map.containsKey("istenAyrilmaGoster"), masrafYeriGoster = map.containsKey("masrafYeriGoster"), kartNoGoster = map.containsKey("kartNoGoster");
+		boolean personelTipiGoster = map.containsKey("personelTipiGoster");
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		for (Iterator iter = personelList.iterator(); iter.hasNext();) {
@@ -12878,6 +12892,9 @@ public class OrtakIslemler implements Serializable {
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(yonetici2Aciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya Şablon");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(calismaModeliAciklama());
+		if (personelTipiGoster)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(personelTipiAciklama());
+
 		if (!izinERPUpdate)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(kidemBasTarihiAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşe Giriş Tarihi");
@@ -13019,6 +13036,8 @@ public class OrtakIslemler implements Serializable {
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getYonetici2() != null ? personel.getYonetici2().getAdSoyad() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSablon() != null ? personel.getSablon().getAdi() : "");
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getCalismaModeli() != null ? personel.getCalismaModeli().getAciklama() : "");
+				if (personelTipiGoster)
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getPersonelTipi() != null ? personel.getPersonelTipi().getAciklama() : "");
 				if (!izinERPUpdate) {
 					if (personel.getIzinHakEdisTarihi() != null)
 						ExcelUtil.getCell(sheet, row, col++, cellStyleDate).setCellValue(personel.getIzinHakEdisTarihi());

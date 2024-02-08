@@ -283,7 +283,12 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.gorevTipi.aciklama}" />
 							</rich:column>
-
+							<rich:column rendered="#{pdksPersonelHome.personelTipiGoster and (authenticatedUser.admin or authenticatedUser.IKAdmin)}">
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelTipiAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.personelTipi.aciklama}" />
+							</rich:column>
 							<rich:column rendered="#{pdksPersonelHome.partTimeDurum}">
 								<f:facet name="header">
 									Part Time
@@ -582,13 +587,19 @@
 										</f:facet>
 										<h:outputText value="#{personelERP.cinsiyeti}" title="Cinsiyet Kodu : #{personelERP.cinsiyetKodu}" />
 									</rich:column>
+									
 									<rich:column rendered="#{ortakIslemler.tesisDurumu and pdksPersonelHome.COL_TESIS_ADI>=0}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.tesisAciklama()} Adı" />
 										</f:facet>
 										<h:outputText value="#{personelERP.tesisAdi}" title="#{ortakIslemler.tesisAciklama()} Kodu : #{personelERP.tesisKodu}" />
 									</rich:column>
-
+<rich:column rendered="#{pdksPersonelHome.COL_PERSONEL_TIPI_ADI>=0}">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.personelTipiAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{personelERP.personelTipi}" title="#{ortakIslemler.personelTipiAciklama()} Kodu : #{personelERP.personelTipiKodu}" />
+									</rich:column>
 									<rich:column rendered="#{pdksPersonelHome.COL_DEPARTMAN_ADI>=0}">
 										<f:facet name="header">
 											<h:outputText value="#{pdksPersonelHome.departmanAciklama}" />
@@ -811,6 +822,16 @@
 												<s:selectItems var="comp" value="#{pdksPersonelHome.sablonlar}" label="#{comp.adi}" noSelectionLabel="Lütfen seçiniz" />
 												<a4j:support event="onchange" action="#{pdksPersonelHome.sablonDegisti()}" reRender="sirketDegisti" status="ajaxStatus" ajaxSingle="true" />
 
+												<s:convertEntity />
+											</h:selectOneMenu>
+										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" id="tipler" rendered="#{not empty pdksPersonelHome.personelTipleri}">
+											<ui:define name="label">#{ortakIslemler.personelTipiAciklama()}</ui:define>
+											<h:selectOneMenu value="#{pdksPersonelHome.instance.personelTipi}" required="#{pdksPersonelHome.instance.pdks}"
+												disabled="#{pdksPersonelHome.personelTipleri.size()==1 and pdksPersonelHome.instance.personelTipi!=null}">
+												<s:selectItems var="comp" value="#{pdksPersonelHome.personelTipleri}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
+												<a4j:support event="onchange" action="#{pdksPersonelHome.personelTipiDegisti()}" reRender="sirketDegisti" status="ajaxStatus"
+													ajaxSingle="true" />
 												<s:convertEntity />
 											</h:selectOneMenu>
 										</s:decorate>

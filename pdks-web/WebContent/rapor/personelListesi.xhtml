@@ -118,6 +118,12 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.cinsiyet.aciklama}" />
 							</rich:column>
+								<rich:column rendered="#{pdksPersonelHome.personelTipiGoster and (authenticatedUser.admin or authenticatedUser.IKAdmin)}">
+								<f:facet name="header">
+									<h:outputText value="#{ortakIslemler.personelTipiAciklama()}" />
+								</f:facet>
+								<h:outputText value="#{personelView.pdksPersonel.personelTipi.aciklama}" />
+							</rich:column>
 							<rich:column rendered="#{pdksPersonelHome.icapDurum}">
 								<f:facet name="header">
 									<h:outputText value="İcapçı" />

@@ -23,7 +23,7 @@ import com.pdks.genel.model.Constants;
 import com.pdks.genel.model.PdksUtil;
 
 @Entity(name = Tanim.TABLE_NAME)
-public class Tanim  extends BasePDKSObject implements Serializable, Cloneable {
+public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 	/**
 	 * 
 	 */
@@ -36,7 +36,7 @@ public class Tanim  extends BasePDKSObject implements Serializable, Cloneable {
 	public static final String COLUMN_NAME_KODU = "KODU";
 	public static final String COLUMN_NAME_ERP_KODU = "ERP_KODU";
 	public static final String COLUMN_NAME_TIPI = "TIPI";
- 
+
 	public static final String COLUMN_NAME_PARENT_ID = "PARENTTANIM_ID";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final int DURUM_PASIF = 0;
@@ -68,6 +68,7 @@ public class Tanim  extends BasePDKSObject implements Serializable, Cloneable {
 	public static final String TIPI_PERSONEL_EK_SAHA_ACIKLAMA = "PERSONEL_EK_SAHA_ACIKLAMA";
 	public static final String TIPI_ISTIRAHAT_KAYNAK = "ISTIRAHAT_KAYNAK";
 	public static final String TIPI_BOLUM_DEPARTMAN = "BOLUM_DEPARTMAN";
+	public static final String TIPI_PERSONEL_TIPI = "PERSONEL_TIPI";
 	public static final String TIPI_SKIN = "SKIN";
 
 	public static final String TIPI_ERP_MASRAF_YERI = "ERP_MASRAF_YERI";
@@ -84,8 +85,7 @@ public class Tanim  extends BasePDKSObject implements Serializable, Cloneable {
 	public static final String GOREV_TIPI_SUPERVISOR = "03";
 	public static final String IKINCI_YONETICI_ONAYLAMAZ = "ikinciYoneticiOlmaz";
 	public static final String DEFAULT_DOVIZ_KODU = "TL";
-	
-	 
+
 	private String tipi;
 	private Tanim parentTanim;
 	private String kodu = "", erpKodu = "";
@@ -109,8 +109,6 @@ public class Tanim  extends BasePDKSObject implements Serializable, Cloneable {
 		super();
 		this.id = id;
 	}
-
- 
 
 	@Length(max = 60)
 	@Column(name = "ACIKLAMATR")

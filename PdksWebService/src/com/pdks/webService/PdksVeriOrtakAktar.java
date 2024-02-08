@@ -95,13 +95,16 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 	private ServiceData serviceData = null;
 
-	private boolean sistemDestekVar = false, izinGirisiVar = false, departmanYoneticiRolVar = false, yoneticiRolVarmi = false, updateYonetici2, altBolumDurum = false;
+	private boolean sistemDestekVar = false, izinGirisiVar = false, personelCalismaModeliVar = false, sablonCalismaModeliVar = false, departmanYoneticiRolVar = false, yoneticiRolVarmi = false, updateYonetici2, altBolumDurum = false;
 
 	private Tanim bosDepartman, ikinciYoneticiOlmaz;
 
 	private TreeMap<String, Tanim> genelTanimMap;
 
 	private List<Long> yoneticiIdList = null;
+
+	private List<CalismaModeli> modeller;
+	private List<VardiyaSablonu> sablonlar;
 
 	public PdksVeriOrtakAktar() {
 		super();
@@ -2802,7 +2805,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 		Personel personelTest = new Personel();
 		String personelERPGuncelleme = mailMap.containsKey("personelERPOku") ? (String) mailMap.get("personelERPOku") : "";
 		boolean personelERPGuncellemeDurum = personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("M");
-
+		List<CalismaModeli> modelList = new ArrayList<CalismaModeli>();
+		List<VardiyaSablonu> sablonList = new ArrayList<VardiyaSablonu>();
 		for (String personelNo : personelList) {
 			kidemHataList.clear();
 			boolean calisiyor = false;
@@ -2813,6 +2817,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				boolean yoneticiPersonel = yoneticiBul || yoneticiNo.equals(personelNo);
 
 				Tanim cinsiyet = getTanim(null, Tanim.TIPI_CINSIYET, personelERP.getCinsiyetKodu(), personelERP.getCinsiyeti(), dataMap, saveList);
+				Tanim personelTipi = getTanim(null, Tanim.TIPI_PERSONEL_TIPI, personelERP.getPersonelTipiKodu(), personelERP.getPersonelTipi(), dataMap, saveList);
 				String soyadi = personelERP.getSoyadi() != null ? new String(personelERP.getSoyadi()) : null;
 				personelTest.setCinsiyet(bayanSoyadKontrol ? cinsiyet : null);
 				boolean bayanSoyad = false;
@@ -3030,6 +3035,37 @@ public class PdksVeriOrtakAktar implements Serializable {
 					Personel personel = personelPDKSMap.containsKey(personelNo) ? personelPDKSMap.get(personelNo) : null;
 					if (personel != null) {
 						personel.setCinsiyet(cinsiyet);
+						personel.setPersonelTipi(personelTipi);
+						sablonList.addAll(sablonlar);
+						modelList.addAll(modeller);
+						if (personelTipi != null && personelCalismaModeliVar) {
+							try {
+								long id = personelTipi.getId().longValue();
+								for (Iterator iterator = modelList.iterator(); iterator.hasNext();) {
+									CalismaModeli calismaModeli = (CalismaModeli) iterator.next();
+									if (calismaModeli.getPersonelTipi() != null && calismaModeli.getPersonelTipi().getId().longValue() != id)
+										iterator.remove();
+								}
+								if (modelList.size() == 1)
+									personel.setCalismaModeli(modelList.get(0));
+							} catch (Exception e) {
+								logger.debug(e);
+							}
+
+						}
+						CalismaModeli cm = personel.getCalismaModeli();
+						if (cm != null && sablonCalismaModeliVar) {
+							long id = cm.getId().longValue();
+							for (Iterator iterator = sablonList.iterator(); iterator.hasNext();) {
+								VardiyaSablonu vardiyaSablonu = (VardiyaSablonu) iterator.next();
+								if (vardiyaSablonu.getCalismaModeli() != null && vardiyaSablonu.getCalismaModeli().getId().longValue() != id)
+									iterator.remove();
+							}
+						}
+						if (sablonList.size() == 1)
+							personel.setSablon(sablonList.get(0));
+						sablonList.clear();
+						modelList.clear();
 						PersonelKGS personelKGS2 = personel.getPersonelKGS();
 						personel.setDegisti(personel.getId() == null);
 						if (kapiSirket != null && personelKGS2.getKapiSirket() != null && !personelKGS2.getId().equals(personelKGS.getId()) && !personelKGS2.getKapiSirket().getId().equals(kapiSirket.getId())) {
@@ -3441,6 +3477,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 
 		}
+		sablonList = null;
+		modelList = null;
 		personelTest = null;
 		if (yoneticiBul || kendiYonetici) {
 			for (String personelNo : personelList) {
@@ -3811,8 +3849,28 @@ public class PdksVeriOrtakAktar implements Serializable {
 		fields.put("beyazYakaDefault", Boolean.TRUE);
 		fields.put("isKur", Boolean.TRUE);
 		isKurVardiyaSablonu = (VardiyaSablonu) pdksDAO.getObjectByInnerObject(fields, VardiyaSablonu.class);
+		sablonCalismaModeliVar = false;
+		personelCalismaModeliVar = false;
+		fields.clear();
+		fields.put("durum", Boolean.TRUE);
+		fields.put("isKur", Boolean.FALSE);
+		sablonlar = pdksDAO.getObjectByInnerObjectList(fields, VardiyaSablonu.class);
+		for (Iterator iterator = sablonlar.iterator(); iterator.hasNext();) {
+			VardiyaSablonu sablon = (VardiyaSablonu) iterator.next();
+			if (sablon.getDepartman() != null && sablon.getDepartman().isAdminMi() == false)
+				iterator.remove();
+			else if (!sablonCalismaModeliVar)
+				sablonCalismaModeliVar = sablon.getCalismaModeli() != null;
 
-		List<CalismaModeli> modeller = pdksDAO.getObjectByInnerObjectList("durum", Boolean.TRUE, CalismaModeli.class);
+		}
+		modeller = pdksDAO.getObjectByInnerObjectList("durum", Boolean.TRUE, CalismaModeli.class);
+		for (Iterator iterator = modeller.iterator(); iterator.hasNext();) {
+			CalismaModeli calismaModeli = (CalismaModeli) iterator.next();
+			if (calismaModeli.getDepartman() != null && calismaModeli.getDepartman().isAdminMi() == false)
+				iterator.remove();
+			else if (!personelCalismaModeliVar)
+				personelCalismaModeliVar = calismaModeli.getPersonelTipi() != null;
+		}
 		if (!modeller.isEmpty()) {
 			if (modeller.size() == 1)
 				calismaModeli = modeller.get(0);
@@ -3899,6 +3957,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		tanimGetir(personelEKSahaVeriMap, Tanim.TIPI_BORDRO_ALT_BIRIMI);
 		tanimGetir(personelEKSahaVeriMap, Tanim.TIPI_ERP_MASRAF_YERI);
 		tanimGetir(personelEKSahaVeriMap, Tanim.TIPI_TESIS);
+		tanimGetir(personelEKSahaVeriMap, Tanim.TIPI_PERSONEL_TIPI);
 		dataMap.put("personelEKSahaVeriMap", personelEKSahaVeriMap);
 		dataMap.put("personelEKSahaMap", personelEKSahaMap);
 		dataMap.put("personelPDKSMap", personelPDKSMap);

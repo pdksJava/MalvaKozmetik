@@ -64,6 +64,7 @@ public class Personel extends BaseObject {
 	public static final String COLUMN_NAME_SSK_CIKIS_TARIHI = "SSK_CIKIS_TARIHI";
 	public static final String COLUMN_NAME_CALISMA_MODELI = "CALISMA_MODELI_ID";
 	public static final String COLUMN_NAME_ISKUR_SABLON = "ISKUR_SABLON_ID";
+	public static final String COLUMN_NAME_PERSONEL_TIPI = "PERSONEL_TIPI_ID";
 
 	public static final String COLUMN_NAME_MAIL_TAKIP = "MAIL_TAKIP";
 
@@ -85,7 +86,7 @@ public class Personel extends BaseObject {
 	private VardiyaSablonu sablon, isKurVardiyaSablonu;
 	private Sirket sirket;
 	private CalismaModeli calismaModeli;
-	private Tanim gorevTipi, ekSaha1, ekSaha2, ekSaha3, ekSaha4, tesis, masrafYeri, ekSaha, cinsiyet, bordroAltAlan;
+	private Tanim gorevTipi, ekSaha1, ekSaha2, ekSaha3, ekSaha4, tesis, masrafYeri, ekSaha, cinsiyet, bordroAltAlan, personelTipi;
 	private Boolean pdks = Boolean.FALSE, mailTakip = Boolean.FALSE, icapciOlabilir = Boolean.FALSE, ustYonetici = Boolean.FALSE, sutIzni = Boolean.FALSE;
 	private Boolean suaOlabilir = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, sanalPersonel = Boolean.FALSE, onaysizIzinKullanilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE;
 	private Boolean partTime = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, gebeMi = Boolean.FALSE;
@@ -262,6 +263,17 @@ public class Personel extends BaseObject {
 
 	public void setBordroAltAlan(Tanim bordroAltAlan) {
 		this.bordroAltAlan = bordroAltAlan;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+	@JoinColumn(name = COLUMN_NAME_PERSONEL_TIPI)
+	@Fetch(FetchMode.JOIN)
+	public Tanim getPersonelTipi() {
+		return personelTipi;
+	}
+
+	public void setPersonelTipi(Tanim personelTipi) {
+		this.personelTipi = personelTipi;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
