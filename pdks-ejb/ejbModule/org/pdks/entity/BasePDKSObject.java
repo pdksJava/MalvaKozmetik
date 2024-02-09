@@ -45,6 +45,12 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 	}
 
 	@Transient
+	public long getIdLong() {
+		long value = id != null ? id.longValue() : 0;
+		return value;
+	}
+
+	@Transient
 	public Object cloneEmpty() {
 		BasePDKSObject object = null;
 		try {

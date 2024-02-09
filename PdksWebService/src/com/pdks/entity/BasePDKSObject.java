@@ -46,11 +46,17 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 
 	public void setDegisti(boolean value) {
 		if (value) {
-//			if (id != null)
-//				logger.debug(id);
+			// if (id != null)
+			// logger.debug(id);
 		}
 
 		this.degisti = value;
+	}
+
+	@Transient
+	public long getIdLong() {
+		long value = id != null ? id.longValue() : 0;
+		return value;
 	}
 
 	@Transient
