@@ -493,8 +493,10 @@ public class PersonelDenklestirme extends BaseObject {
 	@Transient
 	public Double getMaksimumSure(double izinSure, double arifeToplamSure) {
 		double aylikSure = calismaModeliAy != null ? calismaModeliAy.getSure() : denklestirmeAy.getSure();
-		if (calismaModeliAy != null && calismaModeliAy.getCalismaModeli().getToplamGunGuncelle())
-			aylikSure = planlanSure;
+		if (calismaModeliAy != null && calismaModeliAy.getCalismaModeli().getToplamGunGuncelle() && sutIzniSaatSayisi > 0) {
+			aylikSure = sutIzniSaatSayisi;
+		}
+
 		if (izinSure != 0.0d)
 			aylikSure -= izinSure;
 		Double gunlukCalismaSuresi = calismaModeliAy != null ? calismaModeliAy.getCalismaModeli().getHaftaIci() : null;
@@ -502,10 +504,10 @@ public class PersonelDenklestirme extends BaseObject {
 			aylikSure = aylikSureHesapla(aylikSure - arifeToplamSure, calismaSuaSaati, gunlukCalismaSuresi) + arifeToplamSure;
 		} else if (isPartTimeDurumu())
 			aylikSure = aylikSureHesapla(aylikSure - arifeToplamSure, calismaSaatiPartTime, gunlukCalismaSuresi) + arifeToplamSure;
-		double sutIzniSure = sutIzniSaatSayisi != null && sutIzniSaatSayisi.doubleValue() > 0.0d && sutIzniSaatSayisi.doubleValue() != denklestirmeAy.getToplamIzinSure() && sutIzniSaatSayisi.doubleValue() <= aylikSure ? sutIzniSaatSayisi.doubleValue() : denklestirmeAy.getToplamIzinSure();
-		double sure = sutIzniDurum == null || sutIzniDurum.equals(Boolean.FALSE) || planlanSure == 0 ? aylikSure : sutIzniSure;
+		double sutIzniSure = sutIzniSaatSayisi != null && sutIzniSaatSayisi.doubleValue() > 0.0d && sutIzniSaatSayisi.doubleValue() != denklestirmeAy.getToplamIzinSure()  ? sutIzniSaatSayisi.doubleValue() : denklestirmeAy.getToplamIzinSure();
+		double maxSure = sutIzniDurum == null || sutIzniDurum.equals(Boolean.FALSE) || planlanSure == 0 ? aylikSure : sutIzniSure;
 
-		return sure;
+		return maxSure;
 	}
 
 	/**

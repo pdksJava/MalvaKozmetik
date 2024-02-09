@@ -489,7 +489,7 @@
 						<s:decorate template="/layout/edit.xhtml"
 							rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy!=null and vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.updateCGS}">
 							<ui:define name="label">Planlan Süre</ui:define>
-							<h:inputText value="#{vardiyaGunHome.personelDenklestirme.planlanSure}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
+							<h:inputText value="#{vardiyaGunHome.personelDenklestirme.sutIzniSaatSayisi}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
 								validatorMessage="Hatalı giriş">
 								<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
 							</h:inputText>
@@ -545,7 +545,7 @@
 							</rich:inputNumberSpinner>
 
 						</s:decorate>
-						<ui:fragment rendered="#{ vardiyaGunHome.gebeSutIzniGuncelle}">
+						<ui:fragment rendered="#{vardiyaGunHome.gebeSutIzniGuncelle}">
 							<c:choose>
 								<c:when test="#{ vardiyaGunHome.personelDenklestirme.sutIzniDurum or  vardiyaGunHome.personelDenklestirme.personel.sutIzniKullan}">
 									<s:decorate template="/layout/edit.xhtml">
