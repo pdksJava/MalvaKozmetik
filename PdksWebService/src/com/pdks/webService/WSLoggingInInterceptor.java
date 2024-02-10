@@ -26,7 +26,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.pdks.genel.model.PdksUtil;
+import org.pdks.genel.model.PdksUtil;
 
 public class WSLoggingInInterceptor extends AbstractSoapInterceptor {
 

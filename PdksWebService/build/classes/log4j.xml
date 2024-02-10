@@ -25,7 +25,7 @@
 		<level value="WARN" />
 	</logger>
 
-	<logger name="com.pdks">
+	<logger name="org.pdks">
 		<level value="INFO" />
 	</logger>
 	<logger name="org.apache">

@@ -314,7 +314,7 @@
 		<rich:modalPanel id="editAylikPanel" autosized="true" width="900" top="30">
 			<f:facet name="header">
 				<h:outputText
-					value="#{vardiyaGunHome.personelAylikPuantaj.pdksPersonel.pdksSicilNo} #{vardiyaGunHome.personelAylikPuantaj.pdksPersonel.adSoyad} Çalışma Planı Güncelleme" />
+					value="#{vardiyaGunHome.personelAylikPuantaj.pdksPersonel.pdksSicilNo} #{vardiyaGunHome.personelAylikPuantaj.pdksPersonel.adSoyad} Çalışma Planı Güncelleme [ #{vardiyaGunHome.seciliBolum.aciklama} #{vardiyaGunHome.seciliAltBolum.aciklama} ]" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:panelGroup>
@@ -332,6 +332,7 @@
 					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
 				</a4j:outputPanel>
 				<a4j:outputPanel id="secimler">
+
 					<table class="mars">
 						<a4j:repeat value="#{vardiyaGunHome.personelAylikPuantaj.vardiyaHaftaList}" var="vardiyaHafta">
 							<ui:fragment rendered="#{vardiyaHafta.hafta==1}">
@@ -590,6 +591,7 @@
 						</s:decorate>
 
 					</h:panelGrid>
+
 				</a4j:outputPanel>
 				<a4j:commandButton value="Kaydet" action="#{vardiyaGunHome.aylikKaydet}" reRender="vardiyaPanel" onclick="#{rich:component('wait')}.show()"
 					oncomplete="if (#{facesContext.maximumSeverity==null}) { #{rich:component('editAylikPanel')}.hide();}#{rich:component('wait')}.hide();" />

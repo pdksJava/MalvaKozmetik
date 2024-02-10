@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import com.pdks.genel.model.PdksUtil;
-import com.pdks.mail.model.MailObject;
-import com.pdks.mail.model.MailStatu;
+import org.pdks.genel.model.PdksUtil;
+import org.pdks.mail.model.MailObject;
+import org.pdks.mail.model.MailStatu;
 
 @Service
 @Path("/services")

@@ -22,9 +22,9 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.XML;
 
-import com.pdks.entity.ServiceData;
-import com.pdks.genel.model.Constants;
-import com.pdks.genel.model.PdksUtil;
+import org.pdks.entity.ServiceData;
+import org.pdks.genel.model.Constants;
+import org.pdks.genel.model.PdksUtil;
 
 public class WSLoggingOutInterceptor extends AbstractSoapInterceptor {
 	public Logger logger = Logger.getLogger(WSLoggingOutInterceptor.class);

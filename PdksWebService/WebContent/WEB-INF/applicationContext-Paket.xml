@@ -6,7 +6,7 @@
 	<!-- ########################################### -->
 	<!-- # pdks # -->
 	<!-- ########################################### -->
-	<bean id="pdksDAO" class="com.pdks.dao.impl.PdksDAOHibernate">
+	<bean id="pdksDAO" class="org.pdks.dao.impl.PdksDAOHibernate">
 		<property name="sessionFactory">
 			<ref bean="PDKSSessionFactory" />
 		</property>
@@ -19,7 +19,7 @@
 			<ref bean="pdksDAO" />
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.pdks.dao.PdksDAO</value>
+			<value>org.pdks.dao.PdksDAO</value>
 		</property>
 		<property name="interceptorNames">
 			<list>

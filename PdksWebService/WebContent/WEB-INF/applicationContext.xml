@@ -49,35 +49,35 @@
 		<property name="annotatedClasses">
 			<list>
 			
-				<value>com.pdks.entity.CalismaModeli</value>
-				<value>com.pdks.entity.CalismaModeliAy</value>
-				<value>com.pdks.entity.DenklestirmeAy</value>
-				<value>com.pdks.entity.Departman</value>
-				<value>com.pdks.entity.IzinReferansERP</value>
-				<value>com.pdks.entity.IzinTipi</value>
- 				<value>com.pdks.entity.MailGrubu</value>
-				<value>com.pdks.entity.Parameter</value>
-				<value>com.pdks.entity.PdksPersonelView</value>
-				<value>com.pdks.entity.KapiSirket</value>
-				<value>com.pdks.entity.Personel</value>
-				<value>com.pdks.entity.PersonelDenklestirme</value>
-				<value>com.pdks.entity.PersonelMesai</value>
-				<value>com.pdks.entity.PersonelIzin</value>
-				<value>com.pdks.entity.PersonelIzinDetay</value>
-				<value>com.pdks.entity.ERPPersonel</value>
-				<value>com.pdks.entity.PersonelKGS</value>
-				<value>com.pdks.entity.PersonelView</value>
-				<value>com.pdks.entity.Role</value>
-				<value>com.pdks.entity.Sirket</value>
-				<value>com.pdks.entity.ServiceData</value>
-				<value>com.pdks.entity.Tanim</value>
-				<value>com.pdks.entity.User</value>
-				<value>com.pdks.entity.UserRoles</value>
-				<value>com.pdks.entity.Vardiya</value>
-				<value>com.pdks.entity.VardiyaGun</value>
-				<value>com.pdks.entity.VardiyaSablonu</value>
-				<value>com.pdks.entity.HataliPersonel</value>
-				<value>com.pdks.entity.PersonelDinamikAlan</value>
+				<value>org.pdks.entity.CalismaModeli</value>
+				<value>org.pdks.entity.CalismaModeliAy</value>
+				<value>org.pdks.entity.DenklestirmeAy</value>
+				<value>org.pdks.entity.Departman</value>
+				<value>org.pdks.entity.IzinReferansERP</value>
+				<value>org.pdks.entity.IzinTipi</value>
+ 				<value>org.pdks.entity.MailGrubu</value>
+				<value>org.pdks.entity.Parameter</value>
+				<value>org.pdks.entity.PdksPersonelView</value>
+				<value>org.pdks.entity.KapiSirket</value>
+				<value>org.pdks.entity.Personel</value>
+				<value>org.pdks.entity.PersonelDenklestirme</value>
+				<value>org.pdks.entity.PersonelMesai</value>
+				<value>org.pdks.entity.PersonelIzin</value>
+				<value>org.pdks.entity.PersonelIzinDetay</value>
+				<value>org.pdks.entity.ERPPersonel</value>
+				<value>org.pdks.entity.PersonelKGS</value>
+				<value>org.pdks.entity.PersonelView</value>
+				<value>org.pdks.entity.Role</value>
+				<value>org.pdks.entity.Sirket</value>
+				<value>org.pdks.entity.ServiceData</value>
+				<value>org.pdks.entity.Tanim</value>
+				<value>org.pdks.entity.User</value>
+				<value>org.pdks.entity.UserRoles</value>
+				<value>org.pdks.entity.Vardiya</value>
+				<value>org.pdks.entity.VardiyaGun</value>
+				<value>org.pdks.entity.VardiyaSablonu</value>
+				<value>org.pdks.entity.HataliPersonel</value>
+				<value>org.pdks.entity.PersonelDinamikAlan</value>
 
 			</list>
 		</property>

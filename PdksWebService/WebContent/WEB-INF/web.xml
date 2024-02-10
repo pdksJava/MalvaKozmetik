@@ -18,7 +18,7 @@
   <servlet>
     <display-name>Startup</display-name>
     <servlet-name>Startup</servlet-name>
-    <servlet-class>com.pdks.system.action.Startup</servlet-class>
+    <servlet-class>org.pdks.system.action.Startup</servlet-class>
     <init-param>
       <param-name>webDS</param-name>
       <param-value>java:comp/env/jdbc/pdks</param-value>

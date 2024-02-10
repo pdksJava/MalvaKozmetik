@@ -4,7 +4,7 @@
 <beans>
 	<bean name="personelKontrol" class="org.springframework.scheduling.quartz.JobDetailBean">
 		<property name="jobClass">
-			<value>com.pdks.quartz.model.PersonelKontrol</value>
+			<value>org.pdks.quartz.model.PersonelKontrol</value>
 		</property>
 		<property name="jobDataAsMap">
 			<map>
@@ -18,13 +18,13 @@
 		</property>
 		<property name="cronExpression">
 		<!-- <value>0 0/5 * ? * MON-FRI</value> -->
- 			<value>0 0 6 ? * MON-FRI</value>
+ 			<value>0 0 7 ? * MON-FRI</value>
  			
  		</property>
 	</bean>
 	<bean name="logRefresh" class="org.springframework.scheduling.quartz.JobDetailBean">
 		<property name="jobClass">
-			<value>com.pdks.quartz.model.LogRefresh</value>
+			<value>org.pdks.quartz.model.LogRefresh</value>
 		</property>
 		<property name="jobDataAsMap">
 			<map>

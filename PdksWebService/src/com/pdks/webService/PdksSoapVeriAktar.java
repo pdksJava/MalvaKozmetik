@@ -15,9 +15,9 @@ import org.apache.cxf.annotations.WSDLDocumentation;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.log4j.Logger;
 
-import com.pdks.genel.model.PdksUtil;
-import com.pdks.mail.model.MailObject;
-import com.pdks.mail.model.MailStatu;
+import org.pdks.genel.model.PdksUtil;
+import org.pdks.mail.model.MailObject;
+import org.pdks.mail.model.MailStatu;
 
 @WebService(targetNamespace = "http://webService.pdks.com/", portName = "PdksSoapVeriAktarPort", serviceName = "PdksSoapVeriAktarService")
 @InInterceptors(interceptors = { "com.pdks.webService.WSLoggingInInterceptor" })

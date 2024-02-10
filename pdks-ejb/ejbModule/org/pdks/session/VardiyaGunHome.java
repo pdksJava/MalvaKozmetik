@@ -234,7 +234,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	private DepartmanDenklestirmeDonemi denklestirmeDonemi;
 
-	private Tanim gorevYeri;
+	private Tanim gorevYeri, seciliBolum, seciliAltBolum;
 
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 
@@ -5499,6 +5499,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	public Boolean aylikPuantajOlusturuluyor() {
 		if (loginUser == null)
 			loginUser = authenticatedUser;
+
+		seciliBolum = null;
+		seciliAltBolum = null;
 		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
 		yoneticiERP1Kontrol = !ortakIslemler.getParameterKeyHasStringValue("yoneticiERP1Kontrol");
 		bordroAlanKapat();
@@ -5732,6 +5735,25 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (PdksUtil.hasStringValue(sicilNo) && personel.getPdksSicilNo().endsWith(sicilYeniNo))
 						sicilNo = personel.getPdksSicilNo();
 					perList.add(personel.getPdksSicilNo());
+				}
+
+			}
+			if (!perList.isEmpty()) {
+				if (aramaSecenekleri.getEkSaha3Id() != null && PdksUtil.isSistemDestekVar()) {
+					HashMap parametreMap = new HashMap();
+					parametreMap.put("id", aramaSecenekleri.getEkSaha3Id());
+					if (session != null)
+						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+					seciliBolum = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+
+				}
+				if (aramaSecenekleri.getEkSaha4Id() != null && PdksUtil.isSistemDestekVar()) {
+					HashMap parametreMap = new HashMap();
+					parametreMap.put("id", aramaSecenekleri.getEkSaha4Id());
+					if (session != null)
+						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+					seciliAltBolum = (Tanim) pdksEntityController.getObjectByInnerObject(parametreMap, Tanim.class);
+
 				}
 
 			}
@@ -8928,6 +8950,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		bordroAlanKapat();
+		seciliBolum = null;
+		seciliAltBolum = null;
 		adminRoleDurum(authenticatedUser);
 		loginUser = authenticatedUser;
 		loginUser.setLogin(authenticatedUser != null);
@@ -11510,5 +11534,21 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	public void setLinkBordroAdres(String linkBordroAdres) {
 		this.linkBordroAdres = linkBordroAdres;
+	}
+
+	public Tanim getSeciliBolum() {
+		return seciliBolum;
+	}
+
+	public void setSeciliBolum(Tanim seciliBolum) {
+		this.seciliBolum = seciliBolum;
+	}
+
+	public Tanim getSeciliAltBolum() {
+		return seciliAltBolum;
+	}
+
+	public void setSeciliAltBolum(Tanim seciliAltBolum) {
+		this.seciliAltBolum = seciliAltBolum;
 	}
 }
