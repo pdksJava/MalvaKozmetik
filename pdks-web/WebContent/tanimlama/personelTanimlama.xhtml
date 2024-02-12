@@ -885,14 +885,14 @@
 
 											</h:selectOneMenu>
 										</s:decorate>
-										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.cinsiyetBayan}">
+										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.gebelikSutIzinVar}">
 											<ui:define name="label">Süt İzni</ui:define>
 											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.sutIzni}">
 												<a4j:support event="onclick" action="#{pdksPersonelHome.durumGebeSutIzni('S')}" reRender="sirketDegisti" status="ajaxStatus"
 													ajaxSingle="true" />
 											</h:selectBooleanCheckbox>
 										</s:decorate>
-										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.cinsiyetBayan and pdksPersonelHome.gebeSecim}">
+										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.gebelikSutIzinVar and pdksPersonelHome.gebeSecim}">
 											<ui:define name="label">GebeMi</ui:define>
 											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.gebeMi}">
 												<a4j:support event="onclick" action="#{pdksPersonelHome.durumGebeSutIzni('G')}" reRender="sirketDegisti" status="ajaxStatus"

@@ -27,7 +27,6 @@ public class Sirket extends BaseObject {
 	public static final String COLUMN_NAME_FAZLA_MESAI = "FAZLA_MESAI";
 	public static final String COLUMN_NAME_ISTEN_AYR_TAR_CALISIYOR = "ISTEN_AYR_TAR_CALISIYOR";
 	public static final String COLUMN_NAME_ERP_DURUM = "ERP_DURUM";
-	
 
 	public static final String COLUMN_NAME_FAZLA_MESAI_IZIN_KULLAN = "FAZLA_MESAI_IZIN_KULLAN";
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
@@ -38,7 +37,7 @@ public class Sirket extends BaseObject {
 	private String ad, aciklama, erpKodu = "", lpdapOnEk = "";
 	private Boolean erpDurum = Boolean.FALSE, ldapDurum = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean fazlaMesaiOde = Boolean.FALSE, fazlaMesai = Boolean.FALSE, istenAyrilmaTarihindeCalisiyor = Boolean.FALSE;
-	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE;
+	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE, gebelikSutIzin = Boolean.FALSE;
 	private Tanim sirketGrup;
 	private Departman departman;
 	private Integer version = 0;
@@ -227,6 +226,15 @@ public class Sirket extends BaseObject {
 		this.fazlaMesaiIzinKullan = fazlaMesaiIzinKullan;
 	}
 
+	@Column(name = "GEBELIK_SUT_IZIN")
+	public Boolean getGebelikSutIzin() {
+		return gebelikSutIzin;
+	}
+
+	public void setGebelikSutIzin(Boolean gebelikSutIzin) {
+		this.gebelikSutIzin = gebelikSutIzin;
+	}
+
 	@Transient
 	public boolean isLdap() {
 		return ldapDurum != null ? ldapDurum.booleanValue() : false;
@@ -245,6 +253,11 @@ public class Sirket extends BaseObject {
 	@Transient
 	public boolean isFazlaMesaiTalepGirer() {
 		return fazlaMesaiTalepGirilebilir != null && fazlaMesaiTalepGirilebilir.booleanValue();
+	}
+
+	@Transient
+	public boolean isGebelikSutIzinVar() {
+		return gebelikSutIzin != null && gebelikSutIzin;
 	}
 
 }

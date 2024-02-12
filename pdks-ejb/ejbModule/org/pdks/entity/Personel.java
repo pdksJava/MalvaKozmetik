@@ -879,15 +879,21 @@ public class Personel extends BaseObject {
 	@Transient
 	public Boolean getCinsiyetBay() {
 		Boolean cinsiyetDurum = cinsiyet != null && cinsiyet.getKodu().equalsIgnoreCase("e");
-
 		return cinsiyetDurum;
 	}
 
 	@Transient
 	public Boolean getCinsiyetBayan() {
 		Boolean cinsiyetDurum = cinsiyet != null && cinsiyet.getKodu().equalsIgnoreCase("k");
-
 		return cinsiyetDurum;
+	}
+
+	@Transient
+	public boolean isGebelikSutIzinVar() {
+		boolean gebelikDurum = getCinsiyetBayan();
+		if (gebelikDurum && sirket != null)
+			gebelikDurum = sirket.isGebelikSutIzinVar();
+		return gebelikDurum;
 	}
 
 	@Transient
