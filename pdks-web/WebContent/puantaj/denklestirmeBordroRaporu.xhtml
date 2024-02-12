@@ -153,7 +153,7 @@
 												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
 													<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi}">
 														<span style="color: red; font-size: 14px;">#{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi} Hatalı Göster</span>
-														<ui:fragment rendered="#{puantaj.vardiyalar!=null}">
+														<ui:fragment rendered="#{not empty puantaj.vardiyalar}">
 															<p style="height: 10px;"></p>
 															<rich:dataTable rowClasses="acik,koyu" value="#{puantaj.vardiyalar}" var="vardiyaGun">
 
