@@ -83,6 +83,7 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private String bolumAciklama;
+	private Date basTarih, bitTarih;
 	private Session session;
 
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
@@ -353,6 +354,10 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+
+		CellStyle styleDateEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleDateOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
@@ -384,6 +389,8 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşe Giriş Tarihi");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşten Ayrılma Tarihi");
 
 		CreationHelper factory = wb.getCreationHelper();
 		Drawing drawing = sheet.createDrawingPatriarch();
@@ -402,16 +409,15 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 			Personel personel = (Personel) iter.next();
 			row++;
 			col = 0;
-			CellStyle styleGenel = null, styleCenter = null;
-
+			CellStyle styleGenel = null, styleCenter = null, styleDate = null;
 			if (row % 2 != 0) {
 				styleGenel = styleOdd;
 				styleCenter = styleOddCenter;
-			}
-
-			else {
+				styleDate = styleDateOdd;
+			} else {
 				styleGenel = styleEven;
 				styleCenter = styleEvenCenter;
+				styleDate = styleDateEven;
 			}
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getAdSoyad());
@@ -420,6 +426,14 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getYoneticisi() != null ? personel.getYoneticisi().getAdSoyad() : "");
+			if (personel.getIseBaslamaTarihi() != null && personel.getIseBaslamaTarihi().before(basTarih) == false)
+				ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getIseBaslamaTarihi());
+			else
+				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+			if (personel.getSskCikisTarihi() != null && personel.getSskCikisTarihi().after(bitTarih) == false)
+				ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(personel.getSskCikisTarihi());
+			else
+				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 			for (Iterator iterator = denklestirmeAyList.iterator(); iterator.hasNext();) {
 				DenklestirmeAy dm = (DenklestirmeAy) iterator.next();
 
@@ -530,7 +544,11 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
+
 		if (!list.isEmpty()) {
+			basTarih = PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + basAy) + "01", "yyyyMMdd");
+			bitTarih = PdksUtil.tariheGunEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + bitAy) + "01", "yyyyMMdd"), 1);
+
 			fillEkSahaTanim();
 			TreeMap<Long, DenklestirmeAy> denkMap = new TreeMap<Long, DenklestirmeAy>();
 			TreeMap<Long, Personel> perMap = new TreeMap<Long, Personel>();
@@ -712,6 +730,22 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 
 	public void setBolumAciklama(String bolumAciklama) {
 		this.bolumAciklama = bolumAciklama;
+	}
+
+	public Date getBasTarih() {
+		return basTarih;
+	}
+
+	public void setBasTarih(Date basTarih) {
+		this.basTarih = basTarih;
+	}
+
+	public Date getBitTarih() {
+		return bitTarih;
+	}
+
+	public void setBitTarih(Date bitTarih) {
+		this.bitTarih = bitTarih;
 	}
 
 }

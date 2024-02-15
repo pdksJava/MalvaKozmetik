@@ -113,7 +113,8 @@
 									</f:facet>
 									<h:outputText value="#{pdksPersonel.sirket.ad}" style="width:autostretch ;white-space: nowrap;" />
 								</rich:column>
-								<rich:column style="width: 100px;" rendered="#{fazlaMesaiDonemselRaporHome.tesisId==null and ortakIslemler.getListTesisDurum(fazlaMesaiDonemselRaporHome.personelList)}">
+								<rich:column style="width: 100px;"
+									rendered="#{fazlaMesaiDonemselRaporHome.tesisId==null and ortakIslemler.getListTesisDurum(fazlaMesaiDonemselRaporHome.personelList)}">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.tesisAciklama()}" />
 									</f:facet>
@@ -134,9 +135,25 @@
 
 										</ui:fragment></SPAN>
 								</rich:column>
+								<rich:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="İşe Giriş Tarihi" />
+										</f:facet>
+										<ui:fragment rendered="#{pdksPersonel.iseBaslamaTarihi.before(fazlaMesaiDonemselRaporHome.basTarih)==false}">
+											<h:outputText value="#{authenticatedUser.dateFormatla(pdksPersonel.iseBaslamaTarihi)}" />
+										</ui:fragment>
+									</rich:column>
+									<rich:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="İşten Ayrılma Tarihi" />
+										</f:facet>
+										<ui:fragment rendered="#{pdksPersonel.sskCikisTarihi.after(fazlaMesaiDonemselRaporHome.bitTarih)==false}">
+											<h:outputText value="#{authenticatedUser.dateFormatla(pdksPersonel.istenAyrilisTarihi)}" />
+										</ui:fragment>
+									</rich:column>
 								<c:if test="#{fazlaMesaiDonemselRaporHome.denklestirmeAyList!=null }">
 									<c:forEach items="#{fazlaMesaiDonemselRaporHome.denklestirmeAyList}" var="dm">
-										<rich:column style="width: 30px;" rendered="#{authenticatedUser.admin}">
+										<rich:column style="width: 30px;">
 											<f:facet name="header">
 												<ui:fragment>
 													<SPAN id="tcs#{dm.id}">#{dm.ayAdi}<bR />TÇS
@@ -152,7 +169,7 @@
 													rendered="#{fazlaMesaiDonemselRaporHome.denklestirme.hesaplananSure!=0}" />
 											</ui:fragment>
 										</rich:column>
-										<rich:column style="width: 30px;" rendered="#{authenticatedUser.admin}">
+										<rich:column style="width: 30px;">
 											<f:facet name="header">
 												<ui:fragment>
 													<SPAN id="cgs#{dm.id}">#{dm.ayAdi}<bR />ÇGS

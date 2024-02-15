@@ -127,8 +127,15 @@
 								<h:outputText value="#{devamsizlikRaporuHome.getVardiyaAciklama(calismaPlani)}" />
 							</ui:fragment>
 							<ui:fragment rendered="#{calismaPlani.izin!=null}">
-								<SPAN style="font-weight: bold; font-size: 12px; color: red;" title="#{calismaPlani.izin.izinTipi.izinTipiTanim.aciklama}"><h:outputText
+								<SPAN id="calismaPlani#{calismaPlani.id}" style="font-weight: bold; font-size: 12px; color: red;"><h:outputText
 										value="#{devamsizlikRaporuHome.getVardiyaAciklama(calismaPlani)}" /></SPAN>
+								<rich:toolTip for="calismaPlani#{calismaPlani.id}">
+										#{calismaPlani.izin.izinTipi.izinTipiTanim.aciklama}<br />
+										<ui:fragment rendered="#{calismaPlani.izin.orjIzin!=null}">
+										#{authenticatedUser.dateTimeFormatla(calismaPlani.izin.orjIzin.baslangicZamani)} - 
+										#{authenticatedUser.dateTimeFormatla(calismaPlani.izin.orjIzin.bitisZamani)}
+										</ui:fragment>
+								</rich:toolTip>
 							</ui:fragment>
 						</rich:column>
 						<rich:column width="60" style="text-align:center" rendered="#{devamsizlikRaporuHome.hareketleriGoster}">

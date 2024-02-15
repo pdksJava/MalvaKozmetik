@@ -451,6 +451,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							iterator.remove();
 							continue;
 						}
+						Vardiya vardiya = vardiyaGun.getVardiya();
 						vardiyaGun.setHareketler(null);
 						vardiyaGun.setGirisHareketleri(null);
 						vardiyaGun.setCikisHareketleri(null);
@@ -465,7 +466,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 						}
 
 						boolean yaz = Boolean.TRUE;
-						if (vardiyaGun.getVardiya().isCalisma()) {
+						if (vardiya.isCalisma()) {
 							if (vardiyaGun.getHareketDurum()) {
 								PersonelIzin izin = vardiyaGun.getIzin();
 								boolean izinDurum = Boolean.FALSE;
@@ -500,7 +501,7 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 												calismaSaati += PdksUtil.getSaatFarki(cikisHareket.getZaman(), girisHareket.getZaman());
 											}
 											if (calismaSaati > 0) {
-												double netSure = vardiyaGun.getVardiya().getNetCalismaSuresi();
+												double netSure = vardiya.getNetCalismaSuresi();
 												yaz = gelenGoster || izinDurum;
 												if (calismaSaati > netSure)
 													calismaSaati = netSure;
@@ -525,8 +526,13 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							}
 
 						}
-						if (!yaz)
-							iterator.remove();
+						if (!yaz) {
+							if (vardiyaGun.getIzin() == null || vardiya.isCalisma() == false)
+								iterator.remove();
+							else
+								logger.debug(vardiyaGun.getVardiyaKeyStr());
+						}
+
 					}
 					ortakIslemler.otomatikHareketEkle(new ArrayList<VardiyaGun>(vardiyaMap.values()), session);
 				} catch (Exception e) {
