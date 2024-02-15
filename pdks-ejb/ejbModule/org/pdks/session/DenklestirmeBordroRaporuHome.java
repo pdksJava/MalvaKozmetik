@@ -233,6 +233,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			fazlaMesaiHesaplaHome.setSicilNo("");
 			fazlaMesaiHesaplaHome.setSeciliEkSaha4Id(null);
 			fazlaMesaiHesaplaHome.setDenklestirmeAyDurum(true);
+			if (!denklestirmeAy.getDurum())
+				fazlaMesaiHesaplaHome.setBakiyeGuncelle(true);
 
 			vardiyaGunHome.setDenklestirmeAy(denklestirmeAy);
 			vardiyaGunHome.setYil(denklestirmeAy.getYil());
