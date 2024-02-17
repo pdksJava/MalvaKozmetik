@@ -65,7 +65,7 @@
 							<f:facet name="header">
 								<h:outputText value="Personeller" />
 							</f:facet>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
                       			  İşlemler
               		 			 </f:facet>
@@ -83,6 +83,14 @@
 													action="#{pdksPersonelHome.personelDegistir(personelView)}" reRender="pdksPersonelList" ajaxSingle="true" /> <rich:toolTip
 													for="editKapiGiris">Personel Değiştir</rich:toolTip></TD>
 										</ui:fragment>
+										<ui:fragment rendered="#{personelView.pdksPersonel!=null and pdksPersonelHome.gebeSutIzniDurumList.contains(personelView.pdksPersonel.id)}">
+											<TD><a4j:commandLink status="ajaxStatus" id="editGebeGiris" action="#{pdksPersonelHome.gebeSutIzniSecimi(personelView.pdksPersonel)}"
+													oncomplete="if (#{pdksPersonelHome.donemselDurumList!=null}) #{rich:component('editWomanPanel')}.show()" reRender="editWomanPanel"
+													ajaxSingle="true">
+													<h:graphicImage value="/img/pregnant-woman.png" style="border:0" alt="Edit" height="14px" />
+
+												</a4j:commandLink> <rich:toolTip for="editGebeGiris">Gebe/Süt İzin</rich:toolTip></TD>
+										</ui:fragment>
 										<TD><ui:fragment
 												rendered="#{ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView) or pdksPersonelHome.personelERPGuncelleme=='E'}">
 												<a4j:commandButton status="ajaxStatus" id="editERPLink" image="/img/left_16.png" rendered="#{personelView.pdksPersonel.sirket.erp==true}"
@@ -92,13 +100,13 @@
 									</TR>
 								</TABLE>
 							</rich:column>
-							<rich:column rendered="#{authenticatedUser.admin}">
+							<rich:column rendered="#{authenticatedUser.admin}" style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="Personel Id" />
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.id}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 								</f:facet>
@@ -128,7 +136,7 @@
 								<h:outputText value="#{personelView.pdksPersonel.sirket.ad}" />
 
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.kimlikNoGoster}">
+							<rich:column rendered="#{pdksPersonelHome.kimlikNoGoster}" style="text-align:center">
 								<f:facet name="header">
 
 									<h:outputText value="#{ortakIslemler.kimlikNoAciklama()}" />
@@ -136,7 +144,7 @@
 								<h:outputText value="#{personelView.pdksPersonel.personelKGS.kimlikNo}" />
 
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.kartNoGoster}">
+							<rich:column rendered="#{pdksPersonelHome.kartNoGoster}" style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.getParameterKey('kartNoAciklama')}" />
 								</f:facet>
@@ -182,25 +190,25 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.calismaModeli.aciklama}" id="calismaModeli" />
 							</rich:column>
-							<rich:column rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
+							<rich:column style="text-align:center" rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.dateFormatla(personelView.pdksPersonel.izinHakEdisTarihi)}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="İşe Giriş Tarihi" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.dateFormatla(personelView.pdksPersonel.iseBaslamaTarihi)}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="İşten Ayrılma Tarihi" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.dateFormatla(personelView.pdksPersonel.istenAyrilisTarihi)}" />
 							</rich:column>
-							<rich:column rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
+							<rich:column style="text-align:center" rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
 								<f:facet name="header">
 									<h:outputText value="Doğum Tarihi" />
 								</f:facet>
@@ -218,28 +226,29 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.cinsiyet.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.icapDurum}">
+							<rich:column rendered="#{pdksPersonelHome.icapDurum}" style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="İcapçı" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.icapciOlabilir)}" />
 							</rich:column>
 
-							<rich:column rendered="#{pdksPersonelHome.personelDurumMap.get('onaysizIzinKullanilir')}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.personelDurumMap.get('onaysizIzinKullanilir')}">
 								<f:facet name="header">
 									<h:outputText value="Onaysız İzin Girebilir" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.onaysizIzinKullanilir)}"
 									rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.yoneticiRolVarmi and pdksPersonelHome.personelDurumMap.get('ikinciYoneticiIzinOnayla')}">
+							<rich:column style="text-align:center"
+								rendered="#{pdksPersonelHome.yoneticiRolVarmi and pdksPersonelHome.personelDurumMap.get('ikinciYoneticiIzinOnayla')}">
 								<f:facet name="header">
 									<h:outputText value="İzni #{ortakIslemler.yonetici2Aciklama()} Onaylasın" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.ikinciYoneticiIzinOnayla)}"
 									rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.ustYonetici}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.ustYonetici}">
 								<f:facet name="header">
 									<h:outputText value="Üst #{ortakIslemler.yoneticiAciklama()}" />
 								</f:facet>
@@ -289,39 +298,39 @@
 								</f:facet>
 								<h:outputText value="#{personelView.pdksPersonel.personelTipi.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.partTimeDurum}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.partTimeDurum}">
 								<f:facet name="header">
 									Part Time
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.partTime)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.fazlaMesaiOde}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.fazlaMesaiOde}">
 								<f:facet name="header">
 									<h:outputText value="Fazla Mesai Öde" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiOde)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
 
-							<rich:column rendered="#{pdksPersonelHome.fazlaMesaiIzinKullan }">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.fazlaMesaiIzinKullan }">
 								<f:facet name="header">
 									<h:outputText value="Fazla Mesai İzin Kullandır" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.fazlaMesaiIzinKullan)}"
 									rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.suaOlabilir}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.suaOlabilir}">
 								<f:facet name="header">
 									Şua
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.suaOlabilir)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.sutIzni}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.sutIzni}">
 								<f:facet name="header">
 									Süt İzni
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sutIzni)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.gebeMi}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.gebeMi}">
 								<f:facet name="header">
 									<h:outputText value="Gebelik Durumu" />
 								</f:facet>
@@ -330,14 +339,14 @@
 								</ui:fragment>
 
 							</rich:column>
-							<rich:column rendered="#{pdksPersonelHome.sanalPersonel}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.sanalPersonel}">
 								<f:facet name="header">
 									<h:outputText value="#{pdksPersonelHome.sanalPersonelAciklama}" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(personelView.pdksPersonel.sanalPersonel)}" rendered="#{personelView.pdksPersonel.id!=null}" />
 							</rich:column>
 							<c:forEach items="#{pdksPersonelHome.dinamikDurumList}" var="alan">
-								<rich:column>
+								<rich:column style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="#{alan.aciklama}" />
 									</f:facet>
@@ -383,14 +392,14 @@
 							</rich:column>
 
 
-							<rich:column rendered="#{pdksPersonelHome.kullaniciPersonel}">
+							<rich:column style="text-align:center" rendered="#{pdksPersonelHome.kullaniciPersonel}">
 								<f:facet name="header">
 									<h:outputText value="Kullanıcı Aktif" />
 								</f:facet>
 								<h:outputText rendered="#{personelView.kullanici!=null}" value="#{authenticatedUser.getYesNo(personelView.kullanici.durum)}" />
 							</rich:column>
 
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="Aktif" />
 								</f:facet>
@@ -527,7 +536,7 @@
 									<f:facet name="header">
 										<h:outputText value="Personeller" />
 									</f:facet>
-									<rich:column rendered="#{pdksPersonelHome.COL_SICIL_NO>=0}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_SICIL_NO>=0}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 										</f:facet>
@@ -551,31 +560,31 @@
 										</f:facet>
 										<h:outputText value="#{personelERP.sirketAdi}" title="#{ortakIslemler.sirketAciklama()} Kodu : #{personelERP.sirketKodu}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.COL_GRUBA_GIRIS_TARIHI>=0}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_GRUBA_GIRIS_TARIHI>=0}">
 										<f:facet name="header">
 											<h:outputText value="Gruba Giriş Tarihi" />
 										</f:facet>
 										<h:outputText value="#{personelERP.grubaGirisTarihi}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.COL_ISE_BASLAMA_TARIHI>=0}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_ISE_BASLAMA_TARIHI>=0}">
 										<f:facet name="header">
 											<h:outputText value="İşe Giriş Tarihi" />
 										</f:facet>
 										<h:outputText value="#{personelERP.iseGirisTarihi}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.COL_ISTEN_AYRILMA_TARIHI>=0}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_ISTEN_AYRILMA_TARIHI>=0}">
 										<f:facet name="header">
 											<h:outputText value="İşten Ayrılma Tarihi" />
 										</f:facet>
 										<h:outputText value="#{personelERP.istenAyrilmaTarihi}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.COL_DOGUM_TARIHI>=0}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_DOGUM_TARIHI>=0}">
 										<f:facet name="header">
 											<h:outputText value="Doğum Tarihi" />
 										</f:facet>
 										<h:outputText value="#{personelERP.dogumTarihi}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.COL_KIDEM_TARIHI>=0}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_KIDEM_TARIHI>=0}">
 										<f:facet name="header">
 											<h:outputText value="Kıdem Tarihi" />
 										</f:facet>
@@ -587,14 +596,14 @@
 										</f:facet>
 										<h:outputText value="#{personelERP.cinsiyeti}" title="Cinsiyet Kodu : #{personelERP.cinsiyetKodu}" />
 									</rich:column>
-									
+
 									<rich:column rendered="#{ortakIslemler.tesisDurumu and pdksPersonelHome.COL_TESIS_ADI>=0}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.tesisAciklama()} Adı" />
 										</f:facet>
 										<h:outputText value="#{personelERP.tesisAdi}" title="#{ortakIslemler.tesisAciklama()} Kodu : #{personelERP.tesisKodu}" />
 									</rich:column>
-<rich:column rendered="#{pdksPersonelHome.COL_PERSONEL_TIPI_ADI>=0}">
+									<rich:column rendered="#{pdksPersonelHome.COL_PERSONEL_TIPI_ADI>=0}">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.personelTipiAciklama()}" />
 										</f:facet>
@@ -642,13 +651,13 @@
 										</f:facet>
 										<h:outputText value="#{personelERP.yonetici2PerNo}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.COL_BORDRO_SANAL_PERSONEL>=0}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_BORDRO_SANAL_PERSONEL>=0}">
 										<f:facet name="header">
 											<h:outputText value="#{pdksPersonelHome.sanalPersonelAciklama}" />
 										</f:facet>
 										<h:outputText value="#{authenticatedUser.getYesNo(personelERP.sanalPersonel)}" />
 									</rich:column>
-									<rich:column rendered="#{pdksPersonelHome.servisCalisti}">
+									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.servisCalisti}">
 										<f:facet name="header">
 											<h:outputText value="Veri Yazıldı" />
 										</f:facet>
@@ -1389,7 +1398,7 @@
 			</f:facet>
 			<f:facet name="controls">
 				<h:panelGroup>
-					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink2" id="hidelink2" />
+					<h:graphicImage value="/img/close.png" styleClass="hidelink2" id="hidelink2" />
 					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
 				</h:panelGroup>
 			</f:facet>
@@ -1615,8 +1624,126 @@
 			</h:form>
 		</rich:modalPanel>
 
+		<rich:modalPanel id="editWomanPanel" autosized="true" width="900" top="30">
+			<f:facet name="header">
+				<h:outputText value="#{pdksPersonelHome.instance.pdksSicilNo} #{pdksPersonelHome.instance.adSoyad}  Özel Durum Giriş" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hideGunlink" styleClass="hidelink">
+							<a4j:support event="onclick" onclick="#{rich:component('wait')}.show()" action="#{pdksPersonelHome.fillPersonelKGSList}"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) { #{rich:component('editWomanPanel')}.hide();#{rich:component('wait')}.hide();}"
+								ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<a4j:outputPanel id="seciliOzelDurum" rendered="#{not empty pdksPersonelHome.personelDurumTipiList}">
+					<ui:fragment rendered="#{pdksPersonelHome.instance.calisiyor}">
+						<h:panelGrid columns="1">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Başlangıç Zamanı</ui:define>
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{pdksPersonelHome.donemselDurum.basTarih}" showWeekDaysBar="false"
+									showWeeksBar="false" required="true" requiredMessage="Başlangıç zamanı seçiniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Bitiş Zamanı</ui:define>
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{pdksPersonelHome.donemselDurum.bitTarih}" showWeekDaysBar="false"
+									showWeeksBar="false" required="true" requiredMessage="Bitiş zamanı seçiniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.personelDurumTipiList.size()>0}">
+								<ui:define name="label">Durum Tipi</ui:define>
+								<h:selectOneRadio value="#{pdksPersonelHome.donemselDurum.personelDurumTipiId}" disabled="#{pdksPersonelHome.personelDurumTipiList.size()==1}"
+									required="true" requiredMessage="Durum tipi seçiniz">
+									<f:selectItems value="#{pdksPersonelHome.personelDurumTipiList}" />
+
+								</h:selectOneRadio>
+
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Aktif</ui:define>
+								<h:selectBooleanCheckbox value="#{pdksPersonelHome.donemselDurum.durum}" />
+							</s:decorate>
+						</h:panelGrid>
+						<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelHome.savePersonelDonemselDurum()}" reRender="seciliOzelDurum" />
+						<a4j:commandButton status="ajaxStatus" value="Yeni Özel Durum" action="#{pdksPersonelHome.setPersonelDonemselDurum(null)}" ajaxSingle="true"
+							reRender="seciliOzelDurum" />
+					</ui:fragment>
+					<ui:fragment rendered="#{empty pdksPersonelHome.donemselDurumList and pdksPersonelHome.instance.calisiyor==false}">
+						<SPAN style="color: red; font-size: 18px; font-weight: bold;"> İşten ayrılan personele ait Gebe/Süt izni bulunmamaktadır. </SPAN>
+					</ui:fragment>
+					<rich:dataTable rowClasses="acik,koyu" value="#{pdksPersonelHome.donemselDurumList}" var="ozelDurum" rows="50" rowKeyVar="row"
+						rendered="#{not empty pdksPersonelHome.donemselDurumList}" id="ozelDurumTable">
+						<f:facet name="header">
+							<h:outputText value="Özel Durumlar" />
+						</f:facet>
+						<rich:column style="text-align:center;" rendered="#{pdksPersonelHome.instance.calisiyor}">
+							<f:facet name="header">
+
+							</f:facet>
+							<a4j:commandLink id="editOzelDurumLink" status="ajaxStatus" action="#{pdksPersonelHome.setPersonelDonemselDurum( ozelDurum)}" ajaxSingle="true"
+								reRender="seciliOzelDurum">
+								<h:graphicImage value="/img/edit.gif" style="border:0" alt="Güncelle" />
+
+							</a4j:commandLink>
+							<rich:toolTip for="editOzelDurumLink" value="Güncelle" />
+
+						</rich:column>
+						<rich:column style="text-align:center">
+							<f:facet name="header">
+								<h:outputText value="Başlangıç Zamanı" />
+
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateFormatla(ozelDurum.basTarih)}" />
 
 
+						</rich:column>
+						<rich:column style="text-align:center">
+							<f:facet name="header">
+								<h:outputText value="Bitiş Zamanı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.dateFormatla(ozelDurum.bitTarih)}" />
 
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Özel Durum" />
+
+							</f:facet>
+							<h:outputText value="#{ozelDurum.personelDurumTipiAciklama}" />
+
+						</rich:column>
+						<rich:column style="text-align:center">
+							<f:facet name="header">
+								<h:outputText value="Aktif" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(ozelDurum.durum)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Yapan" />
+							</f:facet>
+							<h:outputText value="#{ozelDurum.sonIslemYapan.adSoyad}" />
+						</rich:column>
+
+						<rich:column style="text-align:center">
+							<f:facet name="header">
+								<h:outputText value="Son İşlem Tarihi" />
+							</f:facet>
+							<h:outputText value="#{ozelDurum.sonIslemTarihiStr}" />
+						</rich:column>
+
+						<f:facet name="footer">
+							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+						</f:facet>
+					</rich:dataTable>
+				</a4j:outputPanel>
+			</h:form>
+		</rich:modalPanel>
 	</ui:define>
 </ui:composition>

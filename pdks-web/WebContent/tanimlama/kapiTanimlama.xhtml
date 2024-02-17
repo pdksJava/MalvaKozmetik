@@ -36,7 +36,7 @@
 							<f:facet name="header">
 								<h:outputText value="Kapılar" />
 							</f:facet>
-							<rich:column  style="text-align: center;">
+							<rich:column style="text-align: center;">
 								<f:facet name="header">İşlemler</f:facet>
 								<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="editlink" action="#{kapiHome.kapiGuncelle(kapi)}"
 									oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
@@ -55,8 +55,9 @@
 								</f:facet>
 								<SPAN id="#{kapi.kapiView.kapiKGS.id}"> <h:outputText value="#{kapi.kapiView.kapiKGSAciklama}" /> <ui:fragment
 										rendered="#{kapiHome.birdenFazlaKGSSirketSQL!=''}">
- 										<rich:toolTip for="#{kapi.kapiView.kapiKGS.id}">
-											<B>KGS Uygulama Adı : </B><h:outputText value="#{kapi.kapiView.kapiKGS.kapiSirket.aciklama}" />
+										<rich:toolTip for="#{kapi.kapiView.kapiKGS.id}">
+											<B>KGS Uygulama Adı : </B>
+											<h:outputText value="#{kapi.kapiView.kapiKGS.kapiSirket.aciklama}" />
 										</rich:toolTip>
 									</ui:fragment>
 
@@ -68,20 +69,20 @@
 								</f:facet>
 								<h:outputText value="#{kapi.aciklama}" />
 							</rich:column>
-							<rich:column  style="text-align: center;">
+							<rich:column style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="PDKS Kapı Tipi" />
 								</f:facet>
 								<h:outputText value="#{kapi.tipi.aciklama}" />
 							</rich:column>
 
-							<rich:column  style="text-align: center;">
+							<rich:column style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="PDKS" />
 								</f:facet>
 								<h:outputText value="#{authenticatedUser.getYesNo(kapi.pdks)}" />
 							</rich:column>
-							<rich:column  style="text-align: center;">
+							<rich:column style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="Aktif" />
 								</f:facet>
@@ -95,7 +96,7 @@
 								<h:outputText value="#{kapi.sonIslemYapan.adSoyad}" />
 							</rich:column>
 
-							<rich:column  style="text-align: center;">
+							<rich:column style="text-align: center;">
 								<f:facet name="header">
 									<h:outputText value="Son İşlem Tarihi" />
 								</f:facet>
@@ -193,28 +194,7 @@
 				</h:panelGrid>
 			</h:form>
 		</rich:modalPanel>
-		<rich:modalPanel id="deletePanel" autosized="true" width="200">
-			<f:facet name="header">
-				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
-			</f:facet>
-			<f:facet name="controls">
-				<h:panelGroup>
-					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
-					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
-				</h:panelGroup>
-			</f:facet>
-			<h:form>
-				<table width="100%">
-					<tbody>
-						<tr>
-							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{kapiHome.remove}"
-									oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
-							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
-						</tr>
-					</tbody>
-				</table>
-			</h:form>
-		</rich:modalPanel>
+
 
 
 	</ui:define>

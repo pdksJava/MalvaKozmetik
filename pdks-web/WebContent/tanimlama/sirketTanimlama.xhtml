@@ -464,28 +464,6 @@
 				</h:panelGrid>
 			</h:form>
 		</rich:modalPanel>
-		<rich:modalPanel id="deletePanel" autosized="true" width="200">
-			<f:facet name="header">
-				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
-			</f:facet>
-			<f:facet name="controls">
-				<h:panelGroup>
-					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
-					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
-				</h:panelGroup>
-			</f:facet>
-			<h:form>
-				<table width="100%">
-					<tbody>
-						<tr>
-							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{sirketHome.remove}"
-									oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
-							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
-						</tr>
-					</tbody>
-				</table>
-			</h:form>
-		</rich:modalPanel>
 
 
 	</ui:define>

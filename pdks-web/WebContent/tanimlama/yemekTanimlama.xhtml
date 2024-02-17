@@ -1,7 +1,8 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
-	template="/layout/template.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
 	<ui:define name="title">
 		<h:outputText value="#{ortakIslemler.getMenuAdi('yemekTanimlama')}" />
 	</ui:define>
@@ -84,7 +85,8 @@
 						</f:facet>
 					</rich:dataTable>
 					<h:panelGrid columns="1" id="kapiEkle">
-						<a4j:commandButton status="ajaxStatus" value="Yemek Ekle" action="#{yemekHome.yemekEkle}" oncomplete="#{rich:component('editPanel')}.show()" reRender="editPanel">
+						<a4j:commandButton status="ajaxStatus" value="Yemek Ekle" action="#{yemekHome.yemekEkle}" oncomplete="#{rich:component('editPanel')}.show()"
+							reRender="editPanel">
 							<f:setPropertyActionListener value="#{yemek}" target="#{yemekHome.instance}">
 								<s:convertEntity />
 							</f:setPropertyActionListener>
@@ -103,7 +105,8 @@
 				<h:panelGroup>
 					<h:form>
 						<h:graphicImage value="/img/close.png" id="hidelink" styleClass="hidelink">
-							<a4j:support event="onclick" action="#{yemekHome.instanceRefresh}" reRender="yemekTable" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" />
+							<a4j:support event="onclick" action="#{yemekHome.instanceRefresh}" reRender="yemekTable"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" ajaxSingle="true" />
 						</h:graphicImage>
 					</h:form>
 				</h:panelGroup>
@@ -139,7 +142,8 @@
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">Geçerlilik Başlangıç Tarihi</ui:define>
-								<rich:calendar value="#{yemekHome.instance.basTarih}" datePattern="#{authenticatedUser.dateFormat}" required="true" requiredMessage="İşe Başlama Tarihi Seçiniz" />
+								<rich:calendar value="#{yemekHome.instance.basTarih}" datePattern="#{authenticatedUser.dateFormat}" required="true"
+									requiredMessage="İşe Başlama Tarihi Seçiniz" />
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" id="istenAyrilisTarihi">
 								<ui:define name="label">Geçerlilik Bitiş Tarihi</ui:define>
@@ -158,7 +162,8 @@
 					</a4j:outputPanel>
 					<!--  -->
 
-					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{yemekHome.save}" reRender="yemekTable" oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+					<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{yemekHome.save}" reRender="yemekTable"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
 
 
 
@@ -166,27 +171,7 @@
 
 			</h:form>
 		</rich:modalPanel>
-		<rich:modalPanel id="deletePanel" autosized="true" width="200">
-			<f:facet name="header">
-				<h:outputText value="Kaydı silmek istediğinizden emin misiniz?" style="padding-right:15px;" />
-			</f:facet>
-			<f:facet name="controls">
-				<h:panelGroup>
-					<h:graphicImage value="/images/modal/close.png" styleClass="hidelink" id="hidelink2" />
-					<rich:componentControl for="deletePanel" attachTo="hidelink2" operation="hide" event="onclick" />
-				</h:panelGroup>
-			</f:facet>
-			<h:form>
-				<table width="100%">
-					<tbody>
-						<tr>
-							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Evet" ajaxSingle="true" action="#{yemekHome.remove}" oncomplete="#{rich:component('deletePanel')}.hide();" reRender="table" /></td>
-							<td align="center" width="50%"><a4j:commandButton status="ajaxStatus" value="Hayır" oncomplete="#{rich:component('deletePanel')}.hide();" /></td>
-						</tr>
-					</tbody>
-				</table>
-			</h:form>
-		</rich:modalPanel>
+
 
 
 	</ui:define>
