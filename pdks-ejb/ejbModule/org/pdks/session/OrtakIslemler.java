@@ -4087,12 +4087,13 @@ public class OrtakIslemler implements Serializable {
 		String parametreKey = getParametrePersonelERPTableView();
 		if (getParameterKeyHasStringValue(parametreKey)) {
 			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelKGS.TABLE_NAME + " PS WITH(nolock) ");
-			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET);
+			sb.append(" SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelERPDB.VIEW_NAME + " D WITH(nolock) ");
+			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " PS ON PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=D." + PersonelERPDB.COLUMN_NAME_PERSONEL_NO);
+			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET + "  AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1");
 			sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
 			sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = PS." + PersonelKGS.COLUMN_NAME_ID);
-			sb.append(" WHERE PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 AND P." + Personel.COLUMN_NAME_ID + " IS NULL");
-			sb.append(" AND PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " NOT IN ( SELECT " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " FROM " + Personel.TABLE_NAME + " WITH(nolock) )");
+			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " IS NULL");
+			sb.append(" AND PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " NOT IN ( SELECT " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " FROM " + Personel.TABLE_NAME + ")");
 			HashMap fields = new HashMap();
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -5327,11 +5328,13 @@ public class OrtakIslemler implements Serializable {
 				if (tarih == null)
 					tarih = new Date();
 				tarih = PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(tarih, -1));
-				for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
-					PersonelERPDB personelERPDB = (PersonelERPDB) iterator.next();
-					if (personelERPDB.getIstenAyrilmaTarihi() != null && personelERPDB.getIstenAyrilmaTarihi().before(tarih)) {
-						ayrilanMap.put(personelERPDB.getPersonelNo(), personelERPDB);
-						iterator.remove();
+				if (perNoList == null || perNoList.isEmpty()) {
+					for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
+						PersonelERPDB personelERPDB = (PersonelERPDB) iterator.next();
+						if (personelERPDB.getIstenAyrilmaTarihi() != null && personelERPDB.getIstenAyrilmaTarihi().before(tarih)) {
+							ayrilanMap.put(personelERPDB.getPersonelNo(), personelERPDB);
+							iterator.remove();
+						}
 					}
 				}
 			} catch (Exception ex1) {

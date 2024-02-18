@@ -2772,7 +2772,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		updateValue = false;
 		if (tableERPOku && (authenticatedUser.isIK() || authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi()))
 			updateValue = (authenticatedUser.isIK() == false && PdksUtil.getTestSunucuDurum()) || ortakIslemler.getParameterKeyHasStringValue(PersonelERPGuncelleme.PARAMETER_KEY + "Update");
-
 		dosyaGuncelleDurum();
 		yeniPersonelOlustur();
 	}
@@ -2793,7 +2792,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			}
 
 		}
-		
+
 		return "";
 	}
 
@@ -2802,9 +2801,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		String key = ortakIslemler.getParametrePersonelERPTableView();
 		if (ortakIslemler.getParameterKeyHasStringValue(key)) {
 			StringBuffer sb = new StringBuffer();
-			sb.append(" SELECT TOP 1 D.* FROM " + PersonelERPDB.VIEW_NAME + " D WITH(nolock) ");
-			sb.append(" WHERE  D." + PersonelERPDB.COLUMN_NAME_PERSONEL_NO + "  NOT IN ");
-			sb.append("  ( SELECT  " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " FROM   " + Personel.TABLE_NAME + " )");
+			sb.append(" SELECT D.* FROM " + PersonelERPDB.VIEW_NAME + " D WITH(nolock) ");
+			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " PS ON PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=D." + PersonelERPDB.COLUMN_NAME_PERSONEL_NO);
+			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET + "  AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1");
+			sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
+			sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = PS." + PersonelKGS.COLUMN_NAME_ID);
+			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " IS NULL");
+			sb.append(" AND PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " NOT IN ( SELECT " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " FROM " + Personel.TABLE_NAME + ")");
 			HashMap fields = new HashMap();
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
