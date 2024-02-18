@@ -2767,7 +2767,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		boolean tableERPOku = ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView());
 		updateValue = false;
 		if (tableERPOku && (authenticatedUser.isIK() || authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi()))
-			updateValue = ortakIslemler.getParameterKeyHasStringValue(PersonelERPGuncelleme.PARAMETER_KEY + "Update");
+			updateValue = (authenticatedUser.isIK() == false && PdksUtil.getTestSunucuDurum()) || ortakIslemler.getParameterKeyHasStringValue(PersonelERPGuncelleme.PARAMETER_KEY + "Update");
 		dosyaGuncelleDurum();
 	}
 
