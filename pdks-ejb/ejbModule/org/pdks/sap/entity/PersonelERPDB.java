@@ -16,7 +16,7 @@ import org.pdks.session.PdksUtil;
 
 import com.pdks.webservice.PersonelERP;
 
-@Entity(name = "Z_NOT_USED_PERSONEL_ERP_DB")
+@Entity(name = PersonelERPDB.VIEW_NAME)
 @Immutable
 public class PersonelERPDB implements Serializable, Cloneable {
 
@@ -25,7 +25,8 @@ public class PersonelERPDB implements Serializable, Cloneable {
 	 */
 	private static final long serialVersionUID = 6726325986460092413L;
 
-	public static final String FORMAT_DATE = "yyyy-MM-dd";
+	public static final String VIEW_NAME = "PERSONEL_ERP_VIEW";
+ 	public static final String FORMAT_DATE = "yyyy-MM-dd";
 	public static final String COLUMN_NAME_ISTEN_AYRILMA_TARIHI = "ISTEN_AYRILMA_TARIHI";
 	public static final String COLUMN_NAME_GUNCELLEME_TARIHI = "GUNCELLEME_TARIHI";
 	public static final String COLUMN_NAME_PERSONEL_NO = "PERSONEL_NO";

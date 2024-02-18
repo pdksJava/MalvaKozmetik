@@ -46,18 +46,17 @@
 										action="#{pdksPersonelHome.personelDosyaOkuBasla()}"
 										oncomplete="if (#{not empty pdksPersonelHome.dosyaTanimList}) #{rich:component('dosyaTransferPanel')}.show();" reRender="dosyaTransferPanel" />
 								</ui:fragment>
-								<ui:fragment
-									rendered="#{pdksPersonelHome.personelERPGuncelleme=='1' or ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView)}">
-									<ui:fragment rendered="#{authenticatedUser.admin}">
-										<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.yeniPersonelleriGuncelle()}" reRender="pdksPersonelList,aramaSonuc"
-											value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Yeni Güncelle" />
-									</ui:fragment>
-								</ui:fragment>
+
 								<ui:fragment rendered="#{pdksPersonelHome.updateValue}">
 									<a4j:commandButton status="ajaxStatus" value="#{ortakIslemler.getParameterKey('uygulamaBordro')}  Güncelle"
 										action="#{pdksPersonelHome.personelERPDBGuncelle()}" />
 								</ui:fragment>
-
+								<ui:fragment rendered="#{pdksPersonelHome.personelERPGuncelleme=='1' or pdksPersonelHome.yeniPersonelGuncelle}">
+									<ui:fragment rendered="#{authenticatedUser.admin}">
+										<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.yeniPersonelleriGuncelle()}" reRender="pdksPersonelList,aramaSonuc"
+											value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Yeni Personel Güncelle" />
+									</ui:fragment>
+								</ui:fragment>
 							</h:panelGrid>
 						</s:decorate>
 					</h:panelGrid>
