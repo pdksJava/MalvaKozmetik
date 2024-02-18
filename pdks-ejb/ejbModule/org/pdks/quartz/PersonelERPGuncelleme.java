@@ -71,7 +71,7 @@ public class PersonelERPGuncelleme implements Serializable {
 	StartupAction startupAction;
 	private static boolean calisiyor = Boolean.FALSE;
 
-	private static final String PARAMETER_KEY = "personelERPZamani";
+	public static final String PARAMETER_KEY = "personelERPZamani";
 	private String hataKonum, aciklama;
 	private ByteArrayOutputStream bo = null;
 	private Dosya dosya = null;

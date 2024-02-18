@@ -5095,6 +5095,13 @@ public class OrtakIslemler implements Serializable {
 				try {
 					PdksSoapVeriAktar service = getPdksSoapVeriAktar();
 					personelERPReturnList = service.savePersoneller(personelERPList);
+					Parameter parameter = getParameter(session, parameterName);
+					if (parameter != null) {
+						parameter.setChangeDate(new Date());
+						pdksEntityController.saveOrUpdate(session, entityManager, parameter);
+						session.flush();
+					}
+
 				} catch (Exception ex) {
 					loggerErrorYaz(null, ex);
 				}
@@ -5141,6 +5148,13 @@ public class OrtakIslemler implements Serializable {
 				try {
 					PdksSoapVeriAktar service = getPdksSoapVeriAktar();
 					izinERPReturnList = service.saveIzinler(izinERPList);
+					Parameter parameter = getParameter(session, parameterName);
+					if (parameter != null) {
+						parameter.setChangeDate(new Date());
+						pdksEntityController.saveOrUpdate(session, entityManager, parameter);
+						session.flush();
+					}
+
 				} catch (Exception ex) {
 					loggerErrorYaz(null, ex);
 				}
@@ -5193,6 +5207,9 @@ public class OrtakIslemler implements Serializable {
 			if (tarih != null) {
 				if (guncellemeDurum == false)
 					tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
+				else {
+					tarih = getERPManuelTarih(tarih, null);
+				}
 				if (guncellemeDurum == false)
 					sb.append(" WHERE " + IzinERPDB.COLUMN_NAME_BIT_TARIHI + " >=:t ");
 				else
@@ -5232,15 +5249,31 @@ public class OrtakIslemler implements Serializable {
 				referansNoList = null;
 			}
 			iptalMap = null;
-			if (izinList != null && !izinList.isEmpty()) {
-				if (parameter != null) {
-					parameter.setChangeDate(new Date());
-					pdksEntityController.saveOrUpdate(session, entityManager, parameter);
-					session.flush();
-				}
-			}
+
 		}
 		return izinList;
+	}
+
+	/**
+	 * @param tarih
+	 * @param key
+	 * @return
+	 */
+	private Date getERPManuelTarih(Date tarih, String key) {
+		int eksiGun = 0;
+		if (!PdksUtil.hasStringValue(key))
+			key = "erpVeriGuncelleGunAdet";
+		String erpVeriGuncelleGunAdet = getParameterKey(key);
+		if (PdksUtil.hasStringValue(erpVeriGuncelleGunAdet)) {
+			try {
+				eksiGun = Integer.parseInt(erpVeriGuncelleGunAdet);
+			} catch (Exception e) {
+				eksiGun = 0;
+			}
+		}
+		if (eksiGun > 0)
+			tarih = PdksUtil.tariheGunEkleCikar(PdksUtil.getDate(tarih), -eksiGun);
+		return tarih;
 	}
 
 	/**
@@ -5278,8 +5311,11 @@ public class OrtakIslemler implements Serializable {
 					if (guncellemeDurum == false) {
 						tarih = PdksUtil.tariheAyEkleCikar(PdksUtil.getDate(tarih), -5);
 						sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_ISTEN_AYRILMA_TARIHI + " >=:t ");
-					} else
+					} else {
+						tarih = getERPManuelTarih(tarih, null);
 						sb.append(" WHERE " + PersonelERPDB.COLUMN_NAME_GUNCELLEME_TARIHI + " >=:t ");
+					}
+
 					parametreMap.put("t", PdksUtil.getDate(tarih));
 				}
 			}
@@ -5323,13 +5359,7 @@ public class OrtakIslemler implements Serializable {
 				sicilNoList = null;
 			}
 			ayrilanMap = null;
-			if (personelList != null && !personelList.isEmpty()) {
-				if (parameter != null) {
-					parameter.setChangeDate(new Date());
-					pdksEntityController.saveOrUpdate(session, entityManager, parameter);
-					session.flush();
-				}
-			}
+
 		}
 		return personelList;
 	}

@@ -59,6 +59,7 @@ import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaSablonu;
+import org.pdks.quartz.PersonelERPGuncelleme;
 import org.pdks.security.entity.DefaultPasswordGenerator;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
@@ -156,7 +157,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Sirket oldSirket;
 	private Personel asilYonetici1;
 	private String hataMesaj = "", personelERPGuncelleme = "";
-	private Boolean pdks, servisCalisti = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, gebeMi = Boolean.FALSE, tesisYetki = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE;
+	private Boolean updateValue, pdks, servisCalisti = Boolean.FALSE, fazlaMesaiIzinKullan = Boolean.FALSE, gebeMi = Boolean.FALSE, tesisYetki = Boolean.FALSE, istenAyrilmaGoster = Boolean.FALSE;
 	private Boolean sutIzni = Boolean.FALSE, kimlikNoGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, sanalPersonel = Boolean.FALSE, icapDurum = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
 	private Boolean ustYonetici = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, suaOlabilir = Boolean.FALSE, egitimDonemi = Boolean.FALSE, partTimeDurum = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
@@ -2763,8 +2764,31 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		PersonelIzin izin = new PersonelIzin();
 		izin.setIzinSuresi(0D);
 		personel.setPersonelIzin(izin);
+		boolean tableERPOku = ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametrePersonelERPTableView());
+		updateValue = false;
+		if (tableERPOku && (authenticatedUser.isIK() || authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi()))
+			updateValue = ortakIslemler.getParameterKeyHasStringValue(PersonelERPGuncelleme.PARAMETER_KEY + "Update");
 		dosyaGuncelleDurum();
+	}
 
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	public String personelERPDBGuncelle() throws Exception {
+		try {
+			ortakIslemler.personelERPDBGuncelle(true, null, session);
+
+		} catch (Exception ex) {
+			try {
+				ortakIslemler.loggerErrorYaz(authenticatedUser.getCalistigiSayfa(), ex);
+			} catch (Exception e) {
+				PdksUtil.addMessageWarn(e.getLocalizedMessage());
+			}
+
+		}
+
+		return "";
 	}
 
 	/**
@@ -5000,6 +5024,14 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setPersonelDurumTipiList(List<SelectItem> personelDurumTipiList) {
 		this.personelDurumTipiList = personelDurumTipiList;
+	}
+
+	public Boolean getUpdateValue() {
+		return updateValue;
+	}
+
+	public void setUpdateValue(Boolean updateValue) {
+		this.updateValue = updateValue;
 	}
 
 }

@@ -11,6 +11,9 @@
 		<h:form id="personelTanimlamaForm">
 
 			<rich:panel style="vardiyaGun" header="#{ortakIslemler.getMenuUserAdi(pdksPersonelHome.session,'personelTanimlama')}">
+				<a4j:outputPanel ajaxRendered="true" id="anaForm">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
 				<a4j:outputPanel id="aramaSonuc">
 					<h:panelGrid columns="2" cellpadding="0" cellspacing="0">
 
@@ -35,7 +38,7 @@
 						</h:panelGrid>
 
 						<s:decorate template="/layout/edit.xhtml">
-							<h:panelGrid columns="1">
+							<h:panelGrid columns="2">
 								<a4j:commandButton status="ajaxStatus" action="#{pdksPersonelHome.fillPersonelKGSList}" value="PDKS Personel Ara"
 									reRender="pdksPersonelList,aramaSonuc" />
 								<ui:fragment rendered="#{pdksPersonelHome.dosyaGuncellemeYetki}">
@@ -50,7 +53,10 @@
 											value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Yeni Güncelle" />
 									</ui:fragment>
 								</ui:fragment>
-
+								<ui:fragment rendered="#{pdksPersonelHome.updateValue}">
+									<a4j:commandButton status="ajaxStatus" value="#{ortakIslemler.getParameterKey('uygulamaBordro')}  Güncelle"
+										action="#{pdksPersonelHome.personelERPDBGuncelle()}" />
+								</ui:fragment>
 
 							</h:panelGrid>
 						</s:decorate>

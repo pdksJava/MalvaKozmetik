@@ -68,6 +68,7 @@ import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGun;
 import org.pdks.entity.VardiyaHafta;
 import org.pdks.entity.YemekIzin;
+import org.pdks.quartz.IzinBakiyeGuncelleme;
 import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserVekalet;
 import org.richfaces.event.UploadEvent;
@@ -130,7 +131,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	private boolean userArama = Boolean.FALSE;
 
-	private boolean visibled = Boolean.FALSE;
+	private boolean visibled = Boolean.FALSE, updateValue = Boolean.FALSE;
 
 	private boolean personelArama = Boolean.TRUE, servisAktarDurum = Boolean.FALSE;
 
@@ -1043,6 +1044,10 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			if (session == null)
 				session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 			session.clear();
+			boolean tableERPOku = ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.getParametreIzinERPTableView());
+			updateValue = false;
+			if (tableERPOku && (authenticatedUser.isIK() || authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi()))
+				updateValue = ortakIslemler.getParameterKeyHasStringValue(IzinBakiyeGuncelleme.PARAMETER_KEY + "Update");
 			if (authenticatedUser.isAdmin() == false || aramaSecenekleri == null || aramaListeSecenekleri == null) {
 				aramaListeSecenekleri = new AramaSecenekleri(authenticatedUser);
 				aramaSecenekleri = new AramaSecenekleri(authenticatedUser);
@@ -2244,6 +2249,21 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 	public String secim(PersonelIzin personelIzin) {
 		setIzin(personelIzin);
 		return "/izin/izinPdf.xhtml";
+	}
+
+	public String izinERPDBGuncelle() throws Exception {
+		try {
+			ortakIslemler.izinERPDBGuncelle(true, session);
+			izinListele(null, null);
+		} catch (Exception ex) {
+			try {
+				ortakIslemler.loggerErrorYaz(authenticatedUser.getCalistigiSayfa(), ex);
+			} catch (Exception e) {
+				PdksUtil.addMessageWarn(e.getLocalizedMessage());
+			}
+		}
+
+		return "";
 	}
 
 	/**
@@ -5841,6 +5861,14 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 	public void setMailIzin(PersonelIzin mailIzin) {
 		this.mailIzin = mailIzin;
+	}
+
+	public boolean isUpdateValue() {
+		return updateValue;
+	}
+
+	public void setUpdateValue(boolean updateValue) {
+		this.updateValue = updateValue;
 	}
 
 }

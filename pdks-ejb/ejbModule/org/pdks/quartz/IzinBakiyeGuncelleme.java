@@ -74,7 +74,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 	private String hataKonum;
 	private List<User> toList;
 	private List<PersonelIzin> izinList;
-	private static final String PARAMETER_KEY = "izinBakiyeGuncelleme";
+	public static final String PARAMETER_KEY = "izinBakiyeGuncelleme";
 	private static boolean ozelKontrol = Boolean.FALSE;
 	private boolean guncellemeDBDurum = Boolean.FALSE, zamanDurum = false;
 
@@ -118,7 +118,7 @@ public class IzinBakiyeGuncelleme implements Serializable {
 			boolean tableERPOku = PdksUtil.hasStringValue(izinERPTableViewAdi);
 			if (!zamanDurum && tableERPOku) {
 				String parameterUpdateKey = PARAMETER_KEY + "Update";
-				value = ortakIslemler.getParameterKey(PARAMETER_KEY + "Update");
+				value = ortakIslemler.getParameterKey(parameterUpdateKey);
 				guncellemeDBDurum = PdksUtil.zamanKontrol(parameterUpdateKey, value, time);
 			}
 			hataKonum = "Paramatre okundu ";

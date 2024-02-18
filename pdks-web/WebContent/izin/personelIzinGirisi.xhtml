@@ -395,6 +395,10 @@
 					<s:decorate template="/layout/edit.xhtml">
 						<a4j:commandButton status="ajaxStatus" value="İzin Listele" action="#{personelIzinGirisiHome.izinListele(null,null)}" reRender="izinListPanel" />
 					</s:decorate>
+					<s:decorate template="/layout/edit.xhtml" rendered="#{personelIzinGirisiHome.updateValue}">
+						<a4j:commandButton status="ajaxStatus" value="#{ortakIslemler.getParameterKey('uygulamaBordro')}  Güncelle"
+							action="#{personelIzinGirisiHome.izinERPDBGuncelle()}" reRender="izinListPanel" />
+					</s:decorate>
 					<s:decorate template="/layout/edit.xhtml" rendered="#{false and ( authenticatedUser.admin or authenticatedUser.IK )}">
 						<a4j:commandButton status="ajaxStatus" value="İzin Güncelle" action="#{izinBakiyeGuncelleme.izinleriHesapla(authenticatedUser)}" />
 					</s:decorate>
