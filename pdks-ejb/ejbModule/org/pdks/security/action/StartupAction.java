@@ -60,7 +60,7 @@ import org.pdks.entity.VardiyaHafta;
 import org.pdks.entity.VardiyaYemekIzin;
 import org.pdks.entity.YemekKartsiz;
 import org.pdks.erp.action.SapRfcManager;
-import org.pdks.sap.entity.SAPSunucu;
+import org.pdks.erp.entity.SAPSunucu;
 import org.pdks.security.entity.MenuItemConstant;
 import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserRoles;

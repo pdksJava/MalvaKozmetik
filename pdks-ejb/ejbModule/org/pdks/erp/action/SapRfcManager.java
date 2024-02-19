@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.log.Log;
-import org.pdks.sap.entity.SAPSunucu;
+import org.pdks.erp.entity.SAPSunucu;
 import org.pdks.session.PdksUtil;
 
 import com.sap.mw.jco.JCO;

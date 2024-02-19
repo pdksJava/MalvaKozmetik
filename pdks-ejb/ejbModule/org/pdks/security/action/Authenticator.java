@@ -24,7 +24,7 @@ import org.jboss.seam.security.management.IdentityManager;
 import org.jboss.seam.security.permission.PermissionManager;
 import org.pdks.entity.Personel;
 import org.pdks.erp.action.SapRfcManager;
-import org.pdks.sap.entity.SAPSunucu;
+import org.pdks.erp.entity.SAPSunucu;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
 import org.pdks.session.IAuthenticator;

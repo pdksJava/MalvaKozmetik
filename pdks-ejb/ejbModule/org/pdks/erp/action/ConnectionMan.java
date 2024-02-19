@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.pdks.erp.entity.SAPSunucu;
 import org.pdks.session.PdksUtil;
 
-import org.pdks.sap.entity.SAPSunucu;
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoDestinationManager;
 import com.sap.conn.jco.JCoFunction;

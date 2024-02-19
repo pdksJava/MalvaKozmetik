@@ -19,7 +19,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.framework.EntityHome;
-import org.pdks.sap.entity.SAPSunucu;
+import org.pdks.erp.entity.SAPSunucu;
 import org.pdks.security.entity.User;
 
 @Name("sapServerTanimlamaHome")

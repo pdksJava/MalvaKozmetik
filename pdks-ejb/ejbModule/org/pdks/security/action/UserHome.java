@@ -65,6 +65,7 @@ public class UserHome extends EntityHome<User> implements Serializable {
 	private String newPassword1, newPassword2, passwordHash, oldUserName;
 	private String changeUserName = "";
 	private List<User> allUserList = new ArrayList<User>();
+	private List ikYetkiliRoller = Arrays.asList(new String[] { Role.TIPI_ANAHTAR_KULLANICI, Role.TIPI_IK_Tesis, Role.TIPI_IK_DIREKTOR, Role.TIPI_SISTEM_YONETICI, Role.TIPI_GENEL_MUDUR });
 	private Session session;
 
 	@Override
@@ -103,8 +104,8 @@ public class UserHome extends EntityHome<User> implements Serializable {
 				currentUser.setPasswordHash(passwordEncoded);
 
 			}
- 			pdksEntityController.saveOrUpdate(session, entityManager, currentUser);
- 			session.flush();
+			pdksEntityController.saveOrUpdate(session, entityManager, currentUser);
+			session.flush();
 			assignId(PersistenceProvider.instance().getId(getInstance(), entityManager));
 			// createdMessage();
 			raiseAfterTransactionSuccessEvent();
@@ -114,6 +115,7 @@ public class UserHome extends EntityHome<User> implements Serializable {
 		return sonuc;
 
 	}
+
 	@Transactional
 	public String changePassword() {
 		User user = getInstance();
@@ -259,28 +261,23 @@ public class UserHome extends EntityHome<User> implements Serializable {
 					else if (authenticatedUser.getYetkiliRollerim() != null) {
 						for (Object obj : authenticatedUser.getYetkiliRollerim().toArray()) {
 							Role role = (Role) obj;
-							if (role.getRolename().equals(Role.TIPI_IK_Tesis) || role.getRolename().equals(Role.TIPI_IK_DIREKTOR)) {
+							String roleName = role.getRolename();
+							if (ikYetkiliRoller.contains(roleName)) {
 								key = action + "-" + target + "-" + AccountPermission.IK_ROLE + "-" + AccountPermission.DISCRIMINATOR_ROLE;
 								if (accountPermissionMap.containsKey(key)) {
 									sonuc = getSonuc(target);
 									break;
 								}
-							} else if (role.getRolename().equals(AccountPermission.ADMIN_ROLE)) {// admin
+							} else if (roleName.equals(AccountPermission.ADMIN_ROLE)) {// admin
 								// herşeye
 								// yetkilidir
 								sonuc = getSonuc(target);
 								break;
 							}
-							key = action + "-" + target + "-" + role.getRolename() + "-" + AccountPermission.DISCRIMINATOR_ROLE;
+							key = action + "-" + target + "-" + roleName + "-" + AccountPermission.DISCRIMINATOR_ROLE;
 							if (accountPermissionMap.containsKey(key)) {
 								sonuc = getSonuc(target);
 								break;
-							} else if (role.getRolename().equals(Role.TIPI_SISTEM_YONETICI)) {
-								key = action + "-" + target + "-" + Role.TIPI_IK + "-" + AccountPermission.DISCRIMINATOR_ROLE;
-								if (accountPermissionMap.containsKey(key)) {
-									sonuc = getSonuc(target);
-									break;
-								}
 							}
 						}
 					}

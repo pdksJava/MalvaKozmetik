@@ -59,8 +59,8 @@ import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaSablonu;
+import org.pdks.erp.entity.PersonelERPDB;
 import org.pdks.quartz.PersonelERPGuncelleme;
-import org.pdks.sap.entity.PersonelERPDB;
 import org.pdks.security.entity.DefaultPasswordGenerator;
 import org.pdks.security.entity.Role;
 import org.pdks.security.entity.User;
@@ -2100,6 +2100,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		List<PersonelView> list = null;
 		try {
 			list = ortakIslemler.yeniPersonelleriOlustur(session);
+			session.clear();
 			if (list != null && !list.isEmpty())
 				fillPersonelTablolar(true);
 		} catch (Exception ex) {
@@ -2796,12 +2797,15 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * 
+	 */
 	private void yeniPersonelOlustur() {
-		yeniPersonelGuncelle = false;
+		yeniPersonelGuncelle = Boolean.FALSE;
 		String key = ortakIslemler.getParametrePersonelERPTableView();
 		if (ortakIslemler.getParameterKeyHasStringValue(key)) {
 			StringBuffer sb = new StringBuffer();
-			sb.append(" SELECT D.* FROM " + PersonelERPDB.VIEW_NAME + " D WITH(nolock) ");
+			sb.append(" SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelERPDB.VIEW_NAME + " D WITH(nolock) ");
 			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " PS ON PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=D." + PersonelERPDB.COLUMN_NAME_PERSONEL_NO);
 			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET + "  AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1");
 			sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
@@ -2811,9 +2815,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			HashMap fields = new HashMap();
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<PersonelERPDB> list2 = pdksEntityController.getObjectBySQLList(sb, fields, PersonelERPDB.class);
-			yeniPersonelGuncelle = !list2.isEmpty();
-			list2 = null;
+			List<String> list = pdksEntityController.getObjectBySQLList(sb, fields, null);
+			yeniPersonelGuncelle = !list.isEmpty();
+			list = null;
 		}
 
 	}

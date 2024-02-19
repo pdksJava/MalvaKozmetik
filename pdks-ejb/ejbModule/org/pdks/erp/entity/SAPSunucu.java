@@ -1,4 +1,4 @@
-package org.pdks.sap.entity;
+package org.pdks.erp.entity;
 
 import java.io.Serializable;
 
