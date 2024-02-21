@@ -454,10 +454,12 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			else
 				personelDenklestirmeList = new ArrayList<AylikPuantaj>();
 			Calendar cal = Calendar.getInstance();
+
 			ortakIslemler.gunCikar(cal, 2);
 			modelGoster = Boolean.FALSE;
 			ay = cal.get(Calendar.MONTH) + 1;
 			yil = cal.get(Calendar.YEAR);
+ 			maxYil = yil;
 			try {
 				minYil = Integer.parseInt(ortakIslemler.getParameterKey("sistemBaslangicYili"));
 				if (str.length() > 5)
@@ -468,7 +470,6 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			if (baslikMap == null)
 				baslikMap = new TreeMap<String, Tanim>();
 
-			maxYil = yil + 1;
 			sicilNo = "";
 			if (session == null)
 				session = PdksUtil.getSessionUser(entityManager, authenticatedUser);

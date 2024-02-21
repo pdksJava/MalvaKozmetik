@@ -1866,8 +1866,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								logger.debug(personelDenklestirme.getPersonel().getPdksSicilNo() + " " + fazlaMesaiSure);
 							if (personelDenklestirme.isErpAktarildi() && personelDenklestirme.getOdenecekSure() > 0)
 								puantaj.setFazlaMesaiSure(personelDenklestirme.getOdenecekSure());
-							else
+							else {
 								personelDenklestirme.setOdenenSure(fazlaMesaiSure);
+							}
+
 							if (bakiyeGuncelle == null || bakiyeGuncelle.equals(Boolean.FALSE) || puantaj.isFazlaMesaiHesapla() == false) {
 								double devredenSure = 0.0;
 								if (personelDenklestirme.getDevredenSure() != null) {
@@ -1876,9 +1878,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 								puantaj.setDevredenSure(devredenSure);
 								puantaj.setKesilenSure(personelDenklestirme.getKesilenSure());
-							}
-
-							else if (denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle)) {
+							} else if (denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle)) {
 								personelDenklestirme.setDevredenSure(puantaj.getDevredenSure());
 								personelDenklestirme.setEksikCalismaSure(puantaj.getEksikCalismaSure());
 								personelDenklestirme.setFazlaMesaiSure(puantaj.getAylikNetFazlaMesai());
@@ -1915,8 +1915,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							personelDenklestirme.setEksikCalismaSure(puantaj.getEksikCalismaSure());
 							personelDenklestirme.setPlanlanSure(puantaj.getPlanlananSure());
 							personelDenklestirme.setHesaplananSure(puantaj.getSaatToplami());
+							personelDenklestirme.setFazlaMesaiSure(puantaj.getAylikNetFazlaMesai());
 							if (denklestirmeAyDurum && denklestirmeAy.getDurum() == false) {
-								personelDenklestirme.setFazlaMesaiSure(puantaj.getAylikNetFazlaMesai());
 								personelDenklestirme.setDevredenSure(puantaj.getDevredenSure());
 								personelDenklestirme.setResmiTatilSure(puantaj.getResmiTatilToplami());
 								personelDenklestirme.setHaftaCalismaSuresi(puantaj.getHaftaCalismaSuresi());
@@ -4181,6 +4181,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							personelDenklestirmeAy.setAksamVardiyaSayisi((double) puantajAylik.getAksamVardiyaSayisi());
 							personelDenklestirmeAy.setDevredenSure(puantajAylik.getDevredenSure());
 						}
+						personelDenklestirmeAy.setFazlaMesaiSure(puantajAylik.getAylikNetFazlaMesai());
 						personelDenklestirmeAy.setHaftaCalismaSuresi(puantajAylik.getHaftaCalismaSuresi());
 						personelDenklestirmeAy.setResmiTatilSure(puantajAylik.getResmiTatilToplami());
 						personelDenklestirmeAy.setOdenenSure(puantajAylik.getFazlaMesaiSure());
