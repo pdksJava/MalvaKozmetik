@@ -10837,9 +10837,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public TreeMap<String, VardiyaGun> getIslemVardiyalar(List<Personel> personeller, Date baslamaTarih, Date bitisTarih, boolean veriYaz, Session session, boolean zamanGuncelle) throws Exception {
 		Calendar cal = Calendar.getInstance();
-
-		HashMap<Long, List<PersonelIzin>> izinMap = getPersonelIzinMap(getBaseObjectIdList(personeller), baslamaTarih, bitisTarih, session);
-
+		HashMap<Long, List<PersonelIzin>> izinMap = getPersonelIzinMap(getBaseObjectIdList(personeller), tariheGunEkleCikar(cal, baslamaTarih, -1), tariheGunEkleCikar(cal, bitisTarih, 1), session);
 		TreeMap<String, VardiyaGun> vardiyaMap = getVardiyalar(personeller, tariheGunEkleCikar(cal, baslamaTarih, -3), tariheGunEkleCikar(cal, bitisTarih, 3), izinMap, veriYaz, session, zamanGuncelle);
 		fazlaMesaiSaatiAyarla(vardiyaMap);
 		Long id = null;
@@ -11476,6 +11474,16 @@ public class OrtakIslemler implements Serializable {
 							islemVardiya.setVardiyaFazlaMesaiBitZaman(addTarih(cal, vardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -40));
 						}
 					}
+				}
+				if (islemVardiya.isCalisma() && vardiyaGun.getSonrakiVardiyaGun() != null && vardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() != null && islemVardiya.getVardiyaBitZaman().getTime() == vardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().getVardiyaBasZaman().getTime()) {
+					Vardiya vardiyaSonraki = vardiyaGun.getSonrakiVardiyaGun().getIslemVardiya();
+					if (vardiyaSonraki.isCalisma()) {
+						Date vardiyaTelorans2BitZaman = addTarih(cal, vardiyaSonraki.getVardiyaBasZaman(), Calendar.MILLISECOND, -40);
+						islemVardiya.setVardiyaFazlaMesaiBitZaman(addTarih(cal, vardiyaTelorans2BitZaman, Calendar.MILLISECOND, 20));
+						vardiyaSonraki.setVardiyaTelorans1BasZaman(vardiyaSonraki.getVardiyaBasZaman());
+						vardiyaSonraki.setVardiyaFazlaMesaiBasZaman(vardiyaSonraki.getVardiyaBasZaman());
+					}
+		
 				}
 				if (vardiyaGun.getSonrakiVardiyaGun() == null || islemVardiya.getVardiyaBitZaman().after(islemVardiya.getVardiyaFazlaMesaiBitZaman()) || islemVardiya.getVardiyaTelorans2BitZaman() == null) {
 					Date vardiyaTelorans2BitZaman = addTarih(cal, islemVardiya.getVardiyaFazlaMesaiBitZaman(), Calendar.MILLISECOND, -20);
@@ -18206,8 +18214,8 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public List<VardiyaGorev> getVardiyaGorevYerleri(User user, Date basTarih, Date bitTarih, List<Long> gorevYerileri, Session session) {
 		List<VardiyaGorev> list = null;
-
-		if (user != null && gorevYerileri != null && !gorevYerileri.isEmpty()) {
+		boolean bolumGorevlendirmeVar = getParameterKey("bolumGorevlendirmeVar").equals("1");
+		if (bolumGorevlendirmeVar && user != null && gorevYerileri != null && !gorevYerileri.isEmpty()) {
 			List<String> yetkiliPersonelNoList = user.getYetkiliPersonelNoList();
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();

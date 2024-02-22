@@ -480,7 +480,7 @@
 		<rich:modalPanel id="onayFazlaMesaiHesapPanel" autosized="true" width="750">
 			<f:facet name="header">
 				<ui:fragment>
-					<DIV>#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla</DIV>
+					<DIV>#{ortakIslemler.getSelectItemText(denklestirmeBordroRaporuHome.sirketId,denklestirmeBordroRaporuHome.sirketler)} #{ortakIslemler.getSelectItemText(denklestirmeBordroRaporuHome.tesisId,denklestirmeBordroRaporuHome.tesisList)} #{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla</DIV>
 
 				</ui:fragment>
 			</f:facet>

@@ -100,7 +100,7 @@
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.denklestirmeAy.toplamIzinSure)}" />
 						</s:decorate>
 						<s:decorate id="ozelIstekSec" template="/layout/edit.xhtml"
-							rendered="#{ not empty vardiyaGunHome.aylikPuantajList and vardiyaGunHome.aramaSecenekleri.sirket.erp and ortakIslemler.getParameterKey('uygulamaTipi')=='H'}">
+							rendered="#{ not empty vardiyaGunHome.aylikPuantajList and vardiyaGunHome.aramaSecenekleri.sirket.erp and ortakIslemler.getParameterKey('bolumGorevlendirmeVar')=='1'}">
 							<ui:define name="label">Özel Durum</ui:define>
 							<h:selectBooleanCheckbox value="#{vardiyaGunHome.ozelIstek}">
 								<a4j:support event="onclick" status="ajaxStatus" ajaxSingle="true" reRender="ozelIstekSec" />
