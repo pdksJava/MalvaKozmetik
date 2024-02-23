@@ -861,11 +861,9 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 					maxHaftaCalismaSaatKontrol();
 				else if (!raporSecim.equals("maxToplamMesai") && !raporSecim.equals("minGunCalismaSaat"))
 					aylikPuantajList.clear();
-				for (SelectItem st : raporList) {
-					if (st.getValue().equals(raporSecim))
-						raporAdi = st.getLabel() + " Raporu";
-
-				}
+				raporAdi = PdksUtil.getSelectItemLabel(raporSecim, raporList);
+				if (PdksUtil.hasStringValue(raporAdi))
+					raporAdi = raporAdi + " Raporu";
 				if (!aylikPuantajList.isEmpty()) {
 					HashMap<Long, List<VardiyaGun>> vMaps = new HashMap<Long, List<VardiyaGun>>();
 					TreeMap<String, Liste> listeMap = new TreeMap<String, Liste>();

@@ -115,10 +115,7 @@ public class NoticeHome extends EntityHome<Notice> {
 				notice = new Notice();
 				notice.setName(duyuruTip);
 				notice.setVersion(0);
-				for (SelectItem selectItem : duyuruTipleri) {
-					if (selectItem.getValue().equals(duyuruTip))
-						notice.setDescription((String) selectItem.getLabel());
-				}
+				notice.setDescription(PdksUtil.getSelectItemLabel(duyuruTip, duyuruTipleri));
 				notice.setChangeUser(authenticatedUser);
 				notice.setChangeDate(new Date());
 				notice.setActive(Boolean.TRUE);

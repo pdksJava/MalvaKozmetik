@@ -134,6 +134,26 @@ public class PdksUtil implements Serializable {
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
 
 	/**
+	 * @param value
+	 * @param list
+	 * @return
+	 */
+	public static String getSelectItemText(Object value, List<SelectItem> list) {
+		String aciklama = "";
+		if (value != null && list != null) {
+			for (SelectItem selectItem : list) {
+				if (selectItem.getValue() != null && selectItem.getValue().equals(value)) {
+					aciklama = selectItem.getLabel();
+					break;
+				}
+
+			}
+		}
+		return aciklama;
+
+	}
+
+	/**
 	 * @param prefix
 	 * @param sicilNo
 	 * @return
