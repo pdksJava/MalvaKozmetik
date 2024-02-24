@@ -255,7 +255,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=P." + Personel.getIseGirisTarihiColumn());
 				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
 				sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
-				sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <CONVERT(DATE, GETDATE() ) AND  V." + VardiyaGun.COLUMN_NAME_DURUM + " = 0 ");
+				sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <=CONVERT(DATE, GETDATE() ) AND  V." + VardiyaGun.COLUMN_NAME_DURUM + " = 0 ");
 				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
 				sb.append(" ORDER BY V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI);
 				Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
@@ -296,7 +296,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					sb.append(" INNER JOIN  " + Vardiya.TABLE_NAME + " VA ON VA." + Vardiya.COLUMN_NAME_ID + "=V." + VardiyaGun.COLUMN_NAME_VARDIYA + " AND VA.VARDIYATIPI=''");
 					sb.append(" INNER JOIN  " + VardiyaGun.TABLE_NAME + " VG ON VG." + VardiyaGun.COLUMN_NAME_ID + "=V.VARDIYA_GUN_ID ");
 					sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
-					sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <CONVERT(DATE, GETDATE() ) AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
+					sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <=CONVERT(DATE, GETDATE() ) AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
 					sb.append("  AND  V." + VardiyaSaat.COLUMN_NAME_NORMAL_SURE + " > 0   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
 					Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
 					Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
