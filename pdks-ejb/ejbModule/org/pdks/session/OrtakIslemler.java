@@ -191,6 +191,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	private static final long serialVersionUID = 8530535795343437404L;
 	static Logger logger = Logger.getLogger(OrtakIslemler.class);
+	public static final int LIST_MAX_SIZE = 1800;
 
 	@In
 	Identity identity;
@@ -2551,7 +2552,9 @@ public class OrtakIslemler implements Serializable {
 		List idList = new ArrayList();
 		List veriList = new ArrayList();
 		try {
-			int size = PdksEntityController.LIST_MAX_SIZE - fieldsOrj.size();
+			int size = LIST_MAX_SIZE - fieldsOrj.size();
+			if (session == null && fieldsOrj != null && fieldsOrj.containsKey(PdksEntityController.MAP_KEY_SESSION))
+				session = (Session) fieldsOrj.get(PdksEntityController.MAP_KEY_SESSION);
 			List idInputList = new ArrayList(dataIdList);
 			while (!idInputList.isEmpty()) {
 				HashMap map = new HashMap();
@@ -2641,7 +2644,9 @@ public class OrtakIslemler implements Serializable {
 		List idList = new ArrayList();
 		List veriList = new ArrayList();
 		try {
-			int size = PdksEntityController.LIST_MAX_SIZE - fieldsOrj.size();
+			if (session == null && fieldsOrj != null && fieldsOrj.containsKey(PdksEntityController.MAP_KEY_SESSION))
+				session = (Session) fieldsOrj.get(PdksEntityController.MAP_KEY_SESSION);
+			int size = LIST_MAX_SIZE - fieldsOrj.size();
 			List idInputList = new ArrayList(dataIdList);
 			while (!idInputList.isEmpty()) {
 				HashMap map = new HashMap();
@@ -2726,7 +2731,9 @@ public class OrtakIslemler implements Serializable {
 		List<Long> idList = new ArrayList<Long>();
 		List veriList = new ArrayList();
 		try {
-			int size =  PdksEntityController.LIST_MAX_SIZE - fieldsOrj.size();
+			if (session == null && fieldsOrj != null && fieldsOrj.containsKey(PdksEntityController.MAP_KEY_SESSION))
+				session = (Session) fieldsOrj.get(PdksEntityController.MAP_KEY_SESSION);
+			int size = LIST_MAX_SIZE - fieldsOrj.size();
 			while (!idInputList.isEmpty()) {
 				HashMap map = new HashMap();
 				for (Iterator iterator = idInputList.iterator(); iterator.hasNext();) {
@@ -2802,7 +2809,7 @@ public class OrtakIslemler implements Serializable {
 				Long long1 = (Long) iterator.next();
 				idList.add(long1);
 				iterator.remove();
-				if (idList.size() + map.size() >=  PdksEntityController.LIST_MAX_SIZE)
+				if (idList.size() + map.size() >= LIST_MAX_SIZE)
 					break;
 			}
 			map.put(fieldName, idList);
@@ -6280,13 +6287,20 @@ public class OrtakIslemler implements Serializable {
 				siciller = new ArrayList<String>();
 				siciller.add(sicilNo.trim());
 			}
-			if (siciller != null && !siciller.isEmpty())
-				parametreMap.put("pdksSicilNo", siciller);
+			String fieldName = null;
+			if (siciller != null && !siciller.isEmpty()) {
+				fieldName = "pdksSicilNo";
+				parametreMap.put(fieldName, siciller);
+			}
+
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			if (!hata)
-				perNoList = (ArrayList<String>) pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, Personel.class);
-			else {
+			if (!hata) {
+				if (fieldName != null)
+					perNoList = (ArrayList<String>) getParamList(true, siciller, fieldName, parametreMap, Personel.class, session);
+				else
+					perNoList = (ArrayList<String>) pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, Personel.class);
+			} else {
 				perNoList = new ArrayList<String>();
 				PdksUtil.addMessageAvailableWarn(sirketAciklama() + " seçiniz!");
 			}
@@ -6577,7 +6591,7 @@ public class OrtakIslemler implements Serializable {
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelView> perList;
 		try {
-//			perList = getPersonelViewList(pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PdksPersonelView.class));
+			// perList = getPersonelViewList(pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PdksPersonelView.class));
 			perList = getPersonelViewList(getParamList(true, (List) value, fieldName, parametreMap, PdksPersonelView.class, session));
 		} catch (Exception e) {
 			logger.error("Pdks hata in : \n");
@@ -8678,10 +8692,16 @@ public class OrtakIslemler implements Serializable {
 		if (idList != null && !idList.isEmpty()) {
 			if (session == null)
 				session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
+			String fieldName = "s";
+			HashMap fields = new HashMap();
+			fields.put(fieldName, idList);
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT P.* from " + Personel.TABLE_NAME + " P WITH(nolock) ");
-			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " :s");
-			perList = pdksEntityController.getObjectBySQLList(session, PdksEntityController.LIST_MAX_SIZE / 2, sb.toString(), "s", idList, Personel.class);
+			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " :" + fieldName);
+			// perList = pdksEntityController.getObjectBySQLList(session, LIST_MAX_SIZE / 2, sb.toString(), "s", idList, Personel.class);
+			perList = getSQLParamList(idList, sb, fieldName, fields, Personel.class, session);
 		}
 		if (perList == null)
 			perList = new ArrayList<Personel>();

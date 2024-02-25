@@ -731,7 +731,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 					}
 					HashMap parametreMap2 = new HashMap();
 					List idler = new ArrayList();
-
+					String fieldName = "id";
 					for (Personel personel : personeller) {
 						// if (personel.getPdksSicilNo().equals("90019025"))
 						idler.add(personel.getId());
@@ -744,23 +744,28 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 					else
 						parametreMap2.put("grubaGirisTarihi<=", date);
 					// parametreMap2.put("pdks=", Boolean.TRUE);
-					parametreMap2.put("id", idler);
+					parametreMap2.put(fieldName, idler);
 					if (session != null)
 						parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
 
-					ArrayList personelList = (ArrayList) pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, Personel.class);
-					idler = null;
+	 				List<Personel> personelList = ortakIslemler.getParamList(true, idler, fieldName, parametreMap2, Personel.class, session);
 					if (!personelList.isEmpty()) {
+						idler.clear();
+						for (Personel personel : personelList) {
+							idler.add(personel.getId());
+						}
+						fieldName = "vardiyaGun.personel.id";
 						parametreMap2.clear();
 						parametreMap2.put("vardiyaGun.vardiyaDate=", date);
-						parametreMap2.put("vardiyaGun.personel", personelList.clone());
+						parametreMap2.put(fieldName, idler);
 						parametreMap2.put("durum=", Boolean.TRUE);
 						if (session != null)
 							parametreMap2.put(PdksEntityController.MAP_KEY_SESSION, session);
-						mesaiList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelFazlaMesai.class);
+						// mesaiList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap2, PersonelFazlaMesai.class);
+						mesaiList = ortakIslemler.getParamList(true, idler, fieldName, parametreMap2, PersonelFazlaMesai.class, session);
 					} else
 						mesaiList = new ArrayList<PersonelFazlaMesai>();
-
+					idler = null;
 					for (VardiyaGun pdksVardiyaGun : vardiyaList) {
 						pdksVardiyaGun.setHareketler(null);
 						pdksVardiyaGun.setGirisHareketleri(null);

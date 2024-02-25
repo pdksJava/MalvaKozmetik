@@ -842,15 +842,18 @@ public class PersonelHareketHome extends EntityHome<HareketKGS> implements Seria
 					islemVardiyaGun = null;
 				hareket1List.clear();
 				if (sicilNoList != null && !sicilNoList.isEmpty()) {
+					String fieldName = "p";
 					HashMap parametreMap = new HashMap();
 					HashMap map = new HashMap();
 					StringBuffer sb = new StringBuffer();
 					sb.append("SELECT P." + Personel.COLUMN_NAME_KGS_PERSONEL + " from " + Personel.TABLE_NAME + " P WITH(nolock) ");
-					sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :p ");
-					map.put("p", sicilNoList);
+					sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :" + fieldName);
+					map.put(fieldName, sicilNoList);
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<BigDecimal> idList = pdksEntityController.getObjectBySQLList(sb, map, null);
+					// List<BigDecimal> idList = pdksEntityController.getObjectBySQLList(sb, map, null);
+					List<BigDecimal> idList = ortakIslemler.getSQLParamList(sicilNoList, sb, fieldName, map, null, session);
+
 					ArrayList<Long> personeller = new ArrayList<Long>();
 					for (BigDecimal bigDecimal : idList) {
 						personeller.add(bigDecimal.longValue());
