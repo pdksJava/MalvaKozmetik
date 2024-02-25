@@ -1140,10 +1140,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					sabahVardiya = null;
 				setInstance(denklestirmeDonemi);
 				map.clear();
-				map.put("pdksSicilNo", perList);
+				String fieldName = "pdksSicilNo";
+				map.put(fieldName, perList);
 				if (session != null)
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<Personel> perListesi = pdksEntityController.getObjectByInnerObjectList(map, Personel.class);
+				// List<Personel> perListesi = pdksEntityController.getObjectByInnerObjectList(map, Personel.class);
+
+				List<Personel> perListesi = ortakIslemler.getParamList(false, perList, fieldName, map, Personel.class, session);
+
 				TreeMap<String, Tatil> tatilGunleriMap = ortakIslemler.getTatilGunleri(perListesi, ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBaslangicTarih(), -1), ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBitisTarih(), 1), session);
 				boolean ayBitmedi = denklestirmeDonemi.getBitisTarih().getTime() >= PdksUtil.getDate(bugun).getTime();
 				List<PersonelDenklestirmeTasiyici> list = null;
@@ -2307,11 +2311,13 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				izinMap = null;
 				if (!vgIdList.isEmpty()) {
 					map.clear();
-					map.put("vardiyaGun.id", vgIdList);
+					fieldName = "vardiyaGun.id";
+					map.put(fieldName, vgIdList);
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<FazlaMesaiTalep> fList = pdksEntityController.getObjectByInnerObjectList(map, FazlaMesaiTalep.class);
-					if (!fList.isEmpty()) {
+					// List<FazlaMesaiTalep> fList = pdksEntityController.getObjectByInnerObjectList(map, FazlaMesaiTalep.class);
+					List<FazlaMesaiTalep> fList = ortakIslemler.getParamList(false, vgIdList, fieldName, map, FazlaMesaiTalep.class, session);
+ 					if (!fList.isEmpty()) {
 						fList = PdksUtil.sortListByAlanAdi(fList, "baslangicZamani", true);
 						for (Iterator iterator = fList.iterator(); iterator.hasNext();) {
 							FazlaMesaiTalep fazlaMesaiTalep = (FazlaMesaiTalep) iterator.next();

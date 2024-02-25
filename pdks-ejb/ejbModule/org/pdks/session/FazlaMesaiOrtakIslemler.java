@@ -886,13 +886,15 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			if (!bordroMap.isEmpty()) {
 				for (Long key : bordroMap.keySet())
 					idList.add(bordroMap.get(key).getId());
-
+				fieldName = "personelDenklestirmeBordro.id";
 				fields.clear();
-				fields.put("personelDenklestirmeBordro.id", idList);
-				fields.put(PdksEntityController.MAP_KEY_MAP, "getDetayKey");
+				fields.put(fieldName, idList);
+				// fields.put(PdksEntityController.MAP_KEY_MAP, "getDetayKey");
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				bordroDetayMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordroDetay.class, false);
+	//			bordroDetayMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordroDetay.class, false);
+				bordroDetayMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getDetayKey", false, idList, fieldName, fields, PersonelDenklestirmeBordroDetay.class, session);
+
 			} else
 				bordroDetayMap = new TreeMap<String, PersonelDenklestirmeBordroDetay>();
 

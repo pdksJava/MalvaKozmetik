@@ -5924,8 +5924,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						fields.put("pdksSicilNo", perList);
 					if (departmanBolumAyni == false && aramaSecenekleri.getSirketId() != null)
 						fields.put("sirket.id=", aramaSecenekleri.getSirketId());
-
-					fields.put("pdksSicilNo", perList);
+					String fieldName = "pdksSicilNo";
+					fields.put(fieldName, perList);
 					if (!Personel.getGrubaGirisTarihiAlanAdi().equalsIgnoreCase(Personel.COLUMN_NAME_GRUBA_GIRIS_TARIHI))
 						fields.put("iseBaslamaTarihi<=", bitTarih);
 					else
@@ -5935,7 +5935,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 					try {
-						personelList = (ArrayList<Personel>) pdksEntityController.getObjectByInnerObjectListInLogic(fields, Personel.class);
+						// personelList = (ArrayList<Personel>) pdksEntityController.getObjectByInnerObjectListInLogic(fields, Personel.class);
+
+						personelList = (ArrayList<Personel>) ortakIslemler.getParamList(true, perList, fieldName, fields, Personel.class, session);
+
 						if (aramaSecenekleri.getEkSaha3Id() != null && !personelList.isEmpty() && !gorevliPersonelMap.isEmpty()) {
 							for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
 								Personel personel = (Personel) iterator.next();
@@ -6002,11 +6005,13 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 					perKeyMap = null;
 					fields.clear();
-					fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
-					fields.put("personel.id", perIdler.clone());
+					String fieldName = "personel.id";
+					// fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
+					fields.put(fieldName, perIdler.clone());
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-					TreeMap<Long, PersonelExtra> extraMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelExtra.class, Boolean.FALSE);
+					// TreeMap<Long, PersonelExtra> extraMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelExtra.class, Boolean.FALSE);
+					TreeMap<Long, PersonelExtra> extraMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getPersonelId", false, (List) perIdler.clone(), fieldName, fields, PersonelExtra.class, session);
 
 					fields.clear();
 					fields.put("vardiyaTipi", Vardiya.TIPI_OFF);
@@ -6023,7 +6028,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 								idList.add(personel.getId());
 						}
 						if (!idList.isEmpty()) {
-							String fieldName = "personel.id";
+							fieldName = "personel.id";
 							Date basTarih = PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + ay) + "01", "yyyyMMdd");
 							cal.setTime(basTarih);
 							cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
@@ -6050,13 +6055,15 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					TreeMap<String, VardiyaHafta> vardiyaHaftaMap = getVardiyaHaftaMap(perIdler);
 					if (!flush)
 						flush = vardiyaHaftaMap.isEmpty();
-
+					boolean bolumGorevlendirmeVar = ortakIslemler.getParameterKey("bolumGorevlendirmeVar").equals("1");
 					fields.clear();
-					fields.put(PdksEntityController.MAP_KEY_MAP, "getVardiyaGunId");
-					fields.put("vardiyaGun", vardiyaGunList);
+					// fields.put(PdksEntityController.MAP_KEY_MAP, "getVardiyaGunId");
+					fieldName = "vardiyaGun.id";
+					fields.put(fieldName, vardiyaGunList);
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-					TreeMap<Long, VardiyaGorev> vardiyaGunGorevMap = pdksEntityController.getObjectByInnerObjectMapInLogic(fields, VardiyaGorev.class, false);
+					// TreeMap<Long, VardiyaGorev> vardiyaGunGorevMap = pdksEntityController.getObjectByInnerObjectMapInLogic(fields, VardiyaGorev.class, false);
+					TreeMap<Long, VardiyaGorev> vardiyaGunGorevMap = bolumGorevlendirmeVar ? ortakIslemler.getParamTreeMap(Boolean.FALSE, "getVardiyaGunId", false, vardiyaGunList, fieldName, fields, VardiyaGorev.class, session) : new TreeMap<Long, VardiyaGorev>();
 
 					List<Long> idList = null;
 					if ((loginUser.isYonetici() || loginUser.isYoneticiKontratli()) && !loginUser.isDirektorSuperVisor()) {
@@ -7601,16 +7608,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	private TreeMap<String, VardiyaHafta> getVardiyaHaftaMap(ArrayList<Long> idler) {
 		HashMap map = new HashMap();
+		String fieldName = "pId";
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT DISTINCT * FROM " + VardiyaHafta.TABLE_NAME + " WITH(nolock) ");
 		sb.append(" WHERE " + VardiyaHafta.COLUMN_NAME_BAS_TARIH + "<= :bitTarih AND " + VardiyaHafta.COLUMN_NAME_BIT_TARIH + ">= :basTarih AND " + VardiyaHafta.COLUMN_NAME_PERSONEL + ":pId ");
-		map.put(PdksEntityController.MAP_KEY_MAP, "getKeyHafta");
-		map.put("pId", idler);
+		// map.put(PdksEntityController.MAP_KEY_MAP, "getKeyHafta");
+		map.put(fieldName, idler);
 		map.put("basTarih", basTarih);
 		map.put("bitTarih", bitTarih);
 		if (session != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, session);
-		TreeMap<String, VardiyaHafta> vardiyaHaftaMap = pdksEntityController.getObjectBySQLMap(sb, map, VardiyaHafta.class, Boolean.FALSE);
+		// TreeMap<String, VardiyaHafta> vardiyaHaftaMap = pdksEntityController.getObjectBySQLMap(sb, map, VardiyaHafta.class, Boolean.FALSE);
+		TreeMap<String, VardiyaHafta> vardiyaHaftaMap = ortakIslemler.getSQLParamTreeMap("getKeyHafta", false, idler, sb, fieldName, map, VardiyaHafta.class, session);
+
 		idler = null;
 		return vardiyaHaftaMap;
 	}

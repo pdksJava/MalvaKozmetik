@@ -45,7 +45,7 @@ public class PdksEntityController implements Serializable {
 	 */
 	private static final long serialVersionUID = -1084375085063213335L;
 
-	public static final int LIST_MAX_SIZE = 384;
+	public static final int LIST_MAX_SIZE = 750;
 	private static boolean showSQL = Boolean.FALSE;
 
 	public static final String MAP_KEY_MAP = "Map";
