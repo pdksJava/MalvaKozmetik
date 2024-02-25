@@ -151,17 +151,18 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			TreeMap<Long, PersonelDenklestirmeBordro> idMap = new TreeMap<Long, PersonelDenklestirmeBordro>();
 			TreeMap<Long, AylikPuantaj> hataliMap = new TreeMap<Long, AylikPuantaj>();
 			if (!perList.isEmpty()) {
+				String fieldName = "p";
 				fields.clear();
 				sb = new StringBuffer();
 				sb.append("SELECT V.* FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
-				sb.append(" WHERE V." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + dm.getId() + " AND V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
+				sb.append(" WHERE V." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + dm.getId() + " AND V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :" + fieldName);
 				if (sicilDolu == false && (hataliVeriGetir == null || hataliVeriGetir == false)) {
 					hataliDurum = true;
 				}
-				fields.put("p", perList);
+				fields.put(fieldName, perList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<PersonelDenklestirme> pdlist = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
+				List<PersonelDenklestirme> pdlist = ortakIslemler.getSQLParamList(perList, sb, fieldName, fields, PersonelDenklestirme.class, session);
 				perList.clear();
 				for (PersonelDenklestirme pd : pdlist) {
 					boolean ekle = true;
@@ -211,11 +212,13 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				}
 				if (!perList.isEmpty()) {
+					fieldName = "personelDenklestirme.id";
 					fields.clear();
-					fields.put("personelDenklestirme.id", perList);
+					fields.put(fieldName, perList);
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordro.class);
+					// List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = pdksEntityController.getObjectByInnerObjectList(fields, PersonelDenklestirmeBordro.class);
+					List<PersonelDenklestirmeBordro> borDenklestirmeBordroList = ortakIslemler.getParamList(false, perList, fieldName, fields, PersonelDenklestirmeBordro.class, session);
 					for (PersonelDenklestirmeBordro personelDenklestirmeBordro : borDenklestirmeBordroList) {
 						PersonelDenklestirme pd = personelDenklestirmeBordro.getPersonelDenklestirme();
 						if (aylikPuantajMap.containsKey(pd.getId()))
@@ -248,6 +251,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			String donem = String.valueOf(dm.getYil() * 100 + dm.getAy());
 			if (!hataliMap.isEmpty()) {
 				List<Long> perIdList = new ArrayList<Long>(hataliMap.keySet());
+				String fieldName = "p";
 				HashMap map = new HashMap();
 				sb = new StringBuffer();
 				sb.append("SELECT DISTINCT V.* FROM " + VardiyaGun.TABLE_NAME + " V WITH(nolock) ");
@@ -256,16 +260,18 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<=P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI);
 				sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
 				sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <=CONVERT(DATE, GETDATE() ) AND  V." + VardiyaGun.COLUMN_NAME_DURUM + " = 0 ");
-				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
+				sb.append(" AND V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :" + fieldName);
 				sb.append(" ORDER BY V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI);
 				Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
 				Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
-				map.put("p", perIdList);
+				map.put(fieldName, perIdList);
 				map.put("basTarih", basTarih);
 				map.put("bitTarih", bitTarih);
 				if (session != null)
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<VardiyaGun> vardiyaGunList = pdksEntityController.getObjectBySQLList(sb, map, VardiyaGun.class);
+				// List<VardiyaGun> vardiyaGunList = pdksEntityController.getObjectBySQLList(sb, map, VardiyaGun.class);
+				List<VardiyaGun> vardiyaGunList = ortakIslemler.getSQLParamList(perIdList, sb, fieldName, map, VardiyaGun.class, session);
+
 				for (VardiyaGun vardiyaGun : vardiyaGunList) {
 					String vardiyaDateStr = vardiyaGun.getVardiyaDateStr();
 					if (vardiyaDateStr.startsWith(donem)) {
@@ -287,6 +293,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				}
 				try {
 					List<Long> perIdList = new ArrayList<Long>(perDMap.keySet());
+					String fieldName = "p";
 					HashMap map = new HashMap();
 					sb = new StringBuffer();
 					sb.append("SELECT DISTINCT VG.* FROM VARDIYA_GUN_SAAT_VIEW V WITH(nolock) ");
@@ -297,15 +304,17 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					sb.append(" INNER JOIN  " + VardiyaGun.TABLE_NAME + " VG ON VG." + VardiyaGun.COLUMN_NAME_ID + "=V.VARDIYA_GUN_ID ");
 					sb.append(" WHERE V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">= :basTarih AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "< :bitTarih  ");
 					sb.append("  AND V." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " < CONVERT(DATE, GETDATE() ) AND  V." + VardiyaSaat.COLUMN_NAME_CALISMA_SURESI + " = 0 ");
-					sb.append("  AND  V." + VardiyaSaat.COLUMN_NAME_NORMAL_SURE + " > 0   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p");
+					sb.append("  AND  V." + VardiyaSaat.COLUMN_NAME_NORMAL_SURE + " > 0   AND  V." + VardiyaGun.COLUMN_NAME_PERSONEL + " :" + fieldName);
 					Date basTarih = PdksUtil.getDateFromString((yil * 100 + ay) + "01");
 					Date bitTarih = ortakIslemler.tariheAyEkleCikar(cal, basTarih, 1);
-					map.put("p", perIdList);
+					map.put(fieldName, perIdList);
 					map.put("basTarih", basTarih);
 					map.put("bitTarih", bitTarih);
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
-					List<VardiyaGun> vardiyaGunList = pdksEntityController.getObjectBySQLList(sb, map, VardiyaGun.class);
+					// List<VardiyaGun> vardiyaGunList = pdksEntityController.getObjectBySQLList(sb, map, VardiyaGun.class);
+					List<VardiyaGun> vardiyaGunList = ortakIslemler.getSQLParamList(perIdList, sb, fieldName, map, VardiyaGun.class, session);
+
 					if (vardiyaGunList.size() > 1)
 						vardiyaGunList = PdksUtil.sortListByAlanAdi(vardiyaGunList, "vardiyaDate", false);
 					TreeMap<String, Tatil> tatilGunleriMap = ortakIslemler.getTatilGunleri(null, ortakIslemler.tariheGunEkleCikar(cal, basTarih, -1), ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1), session);
