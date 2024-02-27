@@ -1124,6 +1124,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 
 			sb = null;
 			if (denklestirmeAyDurum) {
+				String fieldName = "p";
 				fields.clear();
 				sb = new StringBuffer();
 				sb.append("SELECT  V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_ID + " FROM " + PersonelDenklestirmeOnaylanmayan.TABLE_NAME + " V WITH(nolock) ");
@@ -1132,11 +1133,12 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "= " + sirketId);
 				}
 				sb.append(" WHERE v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
-				sb.append(" AND V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID + " :p ");
-				fields.put("p", authenticatedUser.getYetkiliPersonelIdler());
+				sb.append(" AND V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID + " :" + fieldName);
+				fields.put(fieldName, authenticatedUser.getYetkiliPersonelIdler());
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<BigDecimal> list = pdksEntityController.getObjectBySQLList(sb, fields, null);
+				// List<BigDecimal> list = pdksEntityController.getObjectBySQLList(sb, fields, null);
+				List<BigDecimal> list = ortakIslemler.getSQLParamList(authenticatedUser.getYetkiliPersonelIdler(), sb, fieldName, fields, null, session);
 				if (!list.isEmpty())
 					onaylanmayanDurum = Boolean.FALSE;
 				list = null;
@@ -1208,22 +1210,23 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 				for (PersonelDenklestirme personelDenklestirme : personelDenklestirmeList) {
 					perIdList.add(personelDenklestirme.getPersonelId());
 				}
-
+				String fieldName = "p";
 				fields.clear();
 				sb = new StringBuffer();
 				sb.append("select DISTINCT G.* from " + VardiyaGun.TABLE_NAME + " G WITH(nolock) ");
 				sb.append(" INNER JOIN " + Vardiya.TABLE_NAME + " V ON V." + Vardiya.COLUMN_NAME_ID + "=G." + VardiyaGun.COLUMN_NAME_VARDIYA);
 				sb.append("  AND   V." + Vardiya.COLUMN_NAME_VARDIYA_TIPI + " IN ('" + Vardiya.TIPI_IZIN + "','" + Vardiya.TIPI_HASTALIK_RAPOR + "') ");
 				sb.append(" WHERE G." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=:t1 AND G." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<:t2");
-				sb.append(" AND G." + VardiyaGun.COLUMN_NAME_PERSONEL + " :p ");
-				fields.put("p", perIdList);
+				sb.append(" AND G." + VardiyaGun.COLUMN_NAME_PERSONEL + " :" + fieldName);
+				fields.put(fieldName, perIdList);
 				fields.put("t1", basTarih);
 				fields.put("t2", bitTarih);
 				List<VardiyaGun> vgList = null;
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				try {
-					vgList = pdksEntityController.getObjectBySQLList(sb, fields, VardiyaGun.class);
+					// vgList = pdksEntityController.getObjectBySQLList(sb, fields, VardiyaGun.class);
+					vgList = ortakIslemler.getSQLParamList(perIdList, sb, fieldName, fields, VardiyaGun.class, session);
 
 				} catch (Exception e) {
 					logger.error(sb.toString());

@@ -471,15 +471,17 @@ public class OrtakIslemler implements Serializable {
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 						DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(map, DenklestirmeAy.class);
 						if (denklestirmeAy != null) {
+							String fieldName = "p";
 							map.clear();
 							StringBuffer sb = new StringBuffer();
 							sb.append(" SELECT R.* FROM " + PersonelDenklestirme.TABLE_NAME + " R  WITH(nolock)");
-							sb.append("		WHERE R." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND R." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
+							sb.append("		WHERE R." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND R." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :" + fieldName);
 							List<Long> list = donemPerMap.get(key);
-							map.put("p", list);
+							map.put(fieldName, list);
 							if (session != null)
 								map.put(PdksEntityController.MAP_KEY_SESSION, session);
-							List<PersonelDenklestirme> veriList = pdksEntityController.getObjectBySQLList(sb, map, PersonelDenklestirme.class);
+							// List<PersonelDenklestirme> veriList = pdksEntityController.getObjectBySQLList(sb, map, PersonelDenklestirme.class);
+							List<PersonelDenklestirme> veriList = getSQLParamList(list, sb, fieldName, map, PersonelDenklestirme.class, session);
 							for (PersonelDenklestirme personelDenklestirme : veriList)
 								donemPerDenkMap.put(key + "_" + personelDenklestirme.getPersonelId(), personelDenklestirme);
 							veriList = null;
@@ -8258,14 +8260,16 @@ public class OrtakIslemler implements Serializable {
 			superVisorHemsireIslemleri(user, basTarih, bitTarih, session);
 		if (!(user.isSuperVisor() || user.isProjeMuduru())) {
 			if (user.getYetkiTumPersonelNoList() != null && !user.getYetkiTumPersonelNoList().isEmpty()) {
+				String fieldName = "s";
 				HashMap fields = new HashMap();
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT P.* from " + Personel.TABLE_NAME + " P WITH(nolock) ");
-				sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :s");
-				fields.put("s", user.getYetkiTumPersonelNoList());
+				sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :" + fieldName);
+				fields.put(fieldName, user.getYetkiTumPersonelNoList());
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<Personel> yetkiliPersoneller = pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
+				// List<Personel> yetkiliPersoneller = pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
+				List<Personel> yetkiliPersoneller = getSQLParamList(user.getYetkiTumPersonelNoList(), sb, fieldName, fields, Personel.class, session);
 				long lBitTarih = bitTarih.getTime(), lBasTarih = basTarih.getTime();
 				ArrayList<String> perNoList = new ArrayList<String>();
 				for (Iterator iterator = yetkiliPersoneller.iterator(); iterator.hasNext();) {
@@ -10801,17 +10805,19 @@ public class OrtakIslemler implements Serializable {
 		Session session = map.containsKey(PdksEntityController.MAP_KEY_SESSION) ? (Session) map.get(PdksEntityController.MAP_KEY_SESSION) : PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		List idler = pdksEntityController.getObjectBySQLList(sb, map, null);
 		if (idler != null && !idler.isEmpty()) {
+			String fieldName = "id";
 			if (idColumn == null)
 				idColumn = BaseObject.COLUMN_NAME_ID;
 			map.clear();
 			sb = null;
 			sb = new StringBuffer();
 			sb.append("SELECT V.* FROM " + tableName + " V WITH(nolock) ");
-			sb.append(" WHERE V." + idColumn + ":id");
-			map.put("id", idler);
+			sb.append(" WHERE V." + idColumn + ":" + fieldName);
+			map.put(fieldName, idler);
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
-			list = pdksEntityController.getObjectBySQLList(sb, map, class1);
+			list = getSQLParamList(idler, sb, fieldName, map, class1, session);
+
 		}
 		if (list == null)
 			list = new ArrayList();
@@ -10976,6 +10982,7 @@ public class OrtakIslemler implements Serializable {
 			for (Personel personel : personeller) {
 				idList.add(personel.getId());
 			}
+			String fieldName = "p";
 			HashMap parametreMap = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("WITH TATILLER AS ( ");
@@ -10992,12 +10999,13 @@ public class OrtakIslemler implements Serializable {
 			sb.append(" INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CA ON (CA.ID=PD." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY + " OR (D." + DenklestirmeAy.COLUMN_NAME_ID + "=CA." + CalismaModeliAy.COLUMN_NAME_DONEM + " AND CA." + CalismaModeliAy.COLUMN_NAME_CALISMA_MODELI + "=P."
 					+ Personel.COLUMN_NAME_CALISMA_MODELI + ")) ");
 			sb.append(" AND CA." + CalismaModeliAy.COLUMN_NAME_HAREKET_KAYDI_VARDIYA_BUL + "=1 ");
-			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " :p");
+			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " :" + fieldName);
 			sb.append(" ORDER BY 2,1");
-			parametreMap.put("p", idList);
+			parametreMap.put(fieldName, idList);
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<Object[]> objectList = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
+			// List<Object[]> objectList = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
+			List<Object[]> objectList = getSQLParamList(idList, sb, fieldName, parametreMap, null, session);
 			for (Object[] objects : objectList) {
 				tatilDonemList.add(objects[1] + "_" + objects[0]);
 			}
@@ -18382,19 +18390,20 @@ public class OrtakIslemler implements Serializable {
 				map1 = null;
 			}
 			Date istenAyrilmaTarihi = PdksUtil.getDate(tariheGunEkleCikar(cal, new Date(), -14));
+			String fieldName = "e";
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT DISTINCT U.*  FROM  " + User.TABLE_NAME + " U WITH(nolock) ");
 			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=U." + User.COLUMN_NAME_PERSONEL + " AND (P." + Personel.COLUMN_NAME_DURUM + "=1 ");
 			sb.append(" OR U." + User.COLUMN_NAME_DURUM + "=1 AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= :t) ");
-			sb.append(" WHERE  U." + User.COLUMN_NAME_EMAIL + " :e ");
+			sb.append(" WHERE  U." + User.COLUMN_NAME_EMAIL + " :" + fieldName);
 			sb.append(" ORDER BY  U." + User.COLUMN_NAME_EMAIL);
-			fields.put("e", mailList);
+			fields.put(fieldName, mailList);
 			fields.put("t", istenAyrilmaTarihi);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			userList = pdksEntityController.getObjectBySQLList(sb, fields, User.class);
-
+			// userList = pdksEntityController.getObjectBySQLList(sb, fields, User.class);
+			userList = getSQLParamList(mailList, sb, fieldName, fields, User.class, session);
 			sb = null;
 		}
 		if (userList == null)

@@ -257,16 +257,18 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 				donemler.add(new SelectItem(denklestirmeAy.getAy(), denklestirmeAy.getAyAdi()));
 			}
 			if (!idList.isEmpty()) {
+				String fieldName = "d";
 				sb = new StringBuffer();
 				sb.append("select DISTINCT S.* from " + PersonelDenklestirme.TABLE_NAME + " PD WITH(nolock) ");
 				sb.append(" INNER  JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=PD." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 				sb.append(" INNER  JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_SIRKET);
-				sb.append(" WHERE PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + " :d  ");
+				sb.append(" WHERE PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + " :" + fieldName);
 				sb.append("  AND PD." + PersonelDenklestirme.COLUMN_NAME_DURUM + " =1 AND  PD." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1 AND  PD." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
 				sb.append(" ORDER BY S." + Sirket.COLUMN_NAME_ID);
-				fields.put("d", idList);
+				fields.put(fieldName, idList);
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<Sirket> sirketList = pdksEntityController.getObjectBySQLList(sb, fields, Sirket.class);
+				// List<Sirket> sirketList = pdksEntityController.getObjectBySQLList(sb, fields, Sirket.class);
+				List<Sirket> sirketList = ortakIslemler.getSQLParamList(idList, sb, fieldName, fields, Sirket.class, session);
 				if (!sirketList.isEmpty()) {
 					if (sirketList.size() == 1) {
 						sirketId = sirketList.get(0).getId();
