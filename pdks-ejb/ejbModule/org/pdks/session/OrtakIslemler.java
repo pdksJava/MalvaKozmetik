@@ -2573,13 +2573,11 @@ public class OrtakIslemler implements Serializable {
 					fields.remove(PdksEntityController.MAP_KEY_SESSION);
 				Object data = idList;
 				String key = fieldName;
-				if (idList.size() == 1) {
+				if (idList.size() == 1 && fields.containsKey(fieldName)) {
+					fields.remove(fieldName);
 					data = idList.get(0);
-					if (logic) {
-						if (fields.containsKey(fieldName))
-							fields.remove(fieldName);
+					if (logic)
 						key = fieldName + "=";
-					}
 				}
 				fields.put(key, data);
 				if (session != null)
@@ -2650,6 +2648,7 @@ public class OrtakIslemler implements Serializable {
 				session = (Session) fieldsOrj.get(PdksEntityController.MAP_KEY_SESSION);
 			int size = LIST_MAX_SIZE - fieldsOrj.size();
 			List idInputList = new ArrayList(dataIdList);
+			String str = ":" + fieldName, sqlStr = sb.toString();
 			while (!idInputList.isEmpty()) {
 				HashMap map = new HashMap();
 				for (Iterator iterator = idInputList.iterator(); iterator.hasNext();) {
@@ -2663,7 +2662,12 @@ public class OrtakIslemler implements Serializable {
 				fields.putAll(fieldsOrj);
 				if (fields.containsKey(PdksEntityController.MAP_KEY_SESSION))
 					fields.remove(PdksEntityController.MAP_KEY_SESSION);
-				fields.put(fieldName, idList);
+				if (idList.size() > 1 || sqlStr.indexOf(str) < 1)
+					fields.put(fieldName, idList);
+				else {
+					sb = new StringBuffer(PdksUtil.replaceAllManuel(sqlStr, str, "=:" + fieldName));
+					fields.put(fieldName, idList.get(0));
+				}
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				try {
