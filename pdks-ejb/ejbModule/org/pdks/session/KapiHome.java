@@ -144,15 +144,18 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 			}
 			if (!idList.isEmpty()) {
 				List<Kapi> tanimliPkdsList = new ArrayList<Kapi>(), tanimliList = new ArrayList<Kapi>();
+				String fieldName = "k";
 				HashMap fields = new HashMap();
 				sb = new StringBuffer();
 				sb.append("SELECT P.*   FROM  " + KapiKGS.TABLE_NAME + "  P   WITH(nolock) ");
-				sb.append(" where  P." + KapiKGS.COLUMN_NAME_ID + " :k  ");
+				sb.append(" where  P." + KapiKGS.COLUMN_NAME_ID + " :" + fieldName);
 				sb.append(" ORDER BY  " + KapiKGS.COLUMN_NAME_ACIKLAMA);
-				fields.put("k", idList);
+				fields.put(fieldName, idList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				kapiKGSList = pdksEntityController.getObjectBySQLList(sb, fields, KapiKGS.class);
+				// kapiKGSList = pdksEntityController.getObjectBySQLList(sb, fields, KapiKGS.class);
+				kapiKGSList = ortakIslemler.getSQLParamList(idList, sb, fieldName, fields, KapiKGS.class, session);
+
 				list.clear();
 				for (Iterator iterator = kapiKGSList.iterator(); iterator.hasNext();) {
 					KapiKGS kapiKGS = (KapiKGS) iterator.next();

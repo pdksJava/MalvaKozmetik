@@ -3067,16 +3067,19 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		HashMap fields = new HashMap();
 
 		if (list != null && !list.isEmpty()) {
+			String fieldName = "s";
 			fields.clear();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT S.* from " + PersonelDenklestirmeDinamikAlan.TABLE_NAME + " S WITH(nolock) ");
-			sb.append(" WHERE S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_PERSONEL_DENKLESTIRME + " :s ");
+			sb.append(" WHERE S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_PERSONEL_DENKLESTIRME + " :" + fieldName);
 			sb.append(" AND S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_DENKLESTIRME_ALAN_DURUM + "=1");
 			sb.append(" ORDER BY S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_ALAN);
-			fields.put("s", list);
+			fields.put(fieldName, list);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<PersonelDenklestirmeDinamikAlan> alanList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeDinamikAlan.class);
+			// List<PersonelDenklestirmeDinamikAlan> alanList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeDinamikAlan.class);
+			List<PersonelDenklestirmeDinamikAlan> alanList = ortakIslemler.getSQLParamList(list, sb, fieldName, fields, PersonelDenklestirmeDinamikAlan.class, session);
+
 			if (!alanList.isEmpty()) {
 				Tanim tanim = null;
 				List<Long> idList = new ArrayList<Long>();

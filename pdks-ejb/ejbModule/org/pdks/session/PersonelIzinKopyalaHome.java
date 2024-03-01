@@ -565,59 +565,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 		personelBakiyeIzinler = null;
 	}
 
-	/**
-	 * @param idStr
-	 * @param idler
-	 */
-	protected void eskiKayitlariSilJava(String idStr, List<Long> idler) {
-		HashMap fields = new HashMap();
-		StringBuffer sb = new StringBuffer();
-		sb.append("SELECT  I.* FROM " + PersonelIzin.TABLE_NAME + " I WITH(nolock) ");
-		sb.append(" INNER JOIN " + IzinTipi.TABLE_NAME + " T ON T." + IzinTipi.COLUMN_NAME_ID + "=I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI);
-		sb.append(" WHERE I." + PersonelIzin.COLUMN_NAME_PERSONEL + " :pId");
-		if (idStr.length() > 0)
-			sb.append(" AND I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI + " IN (" + idStr + ") ");
-		fields.put("pId", idler);
-		fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelIzin> personelBakiyeIzinler = pdksEntityController.getObjectBySQLList(sb, fields, PersonelIzin.class);
-		if (!personelBakiyeIzinler.isEmpty()) {
-			List deleteIzinler = new ArrayList();
-			idler.clear();
-			for (PersonelIzin personelIzin : personelBakiyeIzinler)
-				idler.add(personelIzin.getId());
-			fields.clear();
-			fields.put("hakEdisIzin.id", idler);
-			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<PersonelIzinDetay> personelHarcananIzinler = pdksEntityController.getObjectByInnerObjectList(fields, PersonelIzinDetay.class);
-			idler.clear();
-			if (!personelHarcananIzinler.isEmpty()) {
-				for (PersonelIzinDetay personelIzinDetay : personelHarcananIzinler)
-					idler.add(personelIzinDetay.getPersonelIzin().getId());
-				fields.clear();
-				fields.put("personelIzin.id", idler);
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<PersonelIzinOnay> izinOnaylar = pdksEntityController.getObjectByInnerObjectList(fields, PersonelIzinOnay.class);
-				if (!izinOnaylar.isEmpty())
-					deleteIzinler.addAll(izinOnaylar);
-				deleteIzinler.addAll(personelHarcananIzinler);
-				for (PersonelIzinDetay personelIzinDetay : personelHarcananIzinler)
-					deleteIzinler.add(personelIzinDetay.getPersonelIzin());
-
-			}
-			deleteIzinler.addAll(personelBakiyeIzinler);
-			for (Iterator iterator = deleteIzinler.iterator(); iterator.hasNext();) {
-				Object personelIzinVeri = (Object) iterator.next();
-				if (personelIzinVeri != null) {
-					pdksEntityController.deleteObject(session, entityManager, personelIzinVeri);
-
-				}
-
-			}
-			deleteIzinler = null;
-		}
-		personelBakiyeIzinler = null;
-	}
-
+ 
 	/**
 	 * @param sheet
 	 * @param row

@@ -1967,15 +1967,18 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				for (Personel personel : yonetici2List)
 					if (!yIdList.contains(personel.getId()))
 						idList.add(personel.getId());
+				fields.clear();
+				String fieldName = "p";
 				StringBuffer sb = new StringBuffer();
 				sb.append(" SELECT D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " FROM " + PersonelDinamikAlan.TABLE_NAME + " D WITH(nolock) ");
-				sb.append(" WHERE  D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + ":p AND  " + PersonelDinamikAlan.COLUMN_NAME_ALAN + "=" + ikinciYoneticiOlmaz.getId());
+				sb.append(" WHERE  D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + ":" + fieldName + " AND  " + PersonelDinamikAlan.COLUMN_NAME_ALAN + "=" + ikinciYoneticiOlmaz.getId());
 				sb.append(" AND  " + PersonelDinamikAlan.COLUMN_NAME_DURUM_SECIM + "=1");
-				fields.clear();
-				fields.put("p", idList);
+				fields.put(fieldName, idList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<BigDecimal> list2 = pdksEntityController.getObjectBySQLList(sb, fields, null);
+				// List<BigDecimal> list2 = pdksEntityController.getObjectBySQLList(sb, fields, null);
+				List<BigDecimal> list2 = ortakIslemler.getSQLParamList(idList, sb, fieldName, fields, null, session);
+
 				for (BigDecimal bigDecimal : list2) {
 					yIdList.add(bigDecimal.longValue());
 				}

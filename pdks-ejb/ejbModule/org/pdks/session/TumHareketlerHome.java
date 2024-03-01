@@ -576,18 +576,20 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 					TreeMap<Long, PersonelHareketIslem> islemMap = pdksEntityController.getObjectByInnerObjectMap(parametreMap, PersonelHareketIslem.class, Boolean.FALSE);
-
+					String fieldName = "s";
 					parametreMap.clear();
 					sb = new StringBuffer();
 					sb.append("SELECT P.ISLEM_ID,HAREKET_ZAMANI from PDKS_LOG P WITH(nolock) ");
 					sb.append(" INNER JOIN PDKS_ISLEM I ON I.ID=P.ISLEM_ID AND I.ISLEM_TIPI='U' ");
 
-					sb.append(" WHERE P.ISLEM_ID :s AND P.DURUM=0 ");
-					parametreMap.put("s", islemIdler);
+					sb.append(" WHERE P.ISLEM_ID :" + fieldName + " AND P.DURUM=0 ");
+					parametreMap.put(fieldName, islemIdler);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 					TreeMap<Long, Date> islemTarihMap = new TreeMap<Long, Date>();
-					List<Object[]> islemList = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
+					// List<Object[]> islemList = pdksEntityController.getObjectBySQLList(sb, parametreMap, null);
+					List<Object[]> islemList = ortakIslemler.getSQLParamList(islemIdler, sb, fieldName, parametreMap, null, session);
+
 					for (Object[] objects : islemList) {
 						Long key = ((BigInteger) objects[0]).longValue();
 						Date orjinalZaman = new Date(((Timestamp) objects[1]).getTime());

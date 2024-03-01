@@ -892,7 +892,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				// fields.put(PdksEntityController.MAP_KEY_MAP, "getDetayKey");
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-	//			bordroDetayMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordroDetay.class, false);
+				// bordroDetayMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelDenklestirmeBordroDetay.class, false);
 				bordroDetayMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getDetayKey", false, idList, fieldName, fields, PersonelDenklestirmeBordroDetay.class, session);
 
 			} else
@@ -1635,6 +1635,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			List<Long> idList = new ArrayList<Long>();
 			for (Personel personel : perList)
 				idList.add(personel.getId());
+			String fieldName = "s";
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT DISTINCT P.* FROM " + PersonelDenklestirme.TABLE_NAME + " PD WITH(nolock) ");
 			sb.append(" INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CD ON CD." + CalismaModeliAy.COLUMN_NAME_ID + "=PD." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY);
@@ -1642,13 +1643,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=" + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 			sb.append(" WHERE PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + dm.getId());
 			sb.append(" AND (P.MAIL_TAKIP=1 OR P.PDKS=1 OR CM.FAZLA_CALISMA_GORUNTULENSIN=1)");
-			sb.append(" AND PD." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :s");
+			sb.append(" AND PD." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :" + fieldName);
 			HashMap fields = new HashMap();
-			fields.put("s", idList);
+			fields.put(fieldName, idList);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			try {
-				list = pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
+				// list = pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
+				list = ortakIslemler.getSQLParamList(idList, sb, fieldName, fields, Personel.class, session);
 			} catch (Exception e) {
 				logger.error(e);
 				e.printStackTrace();
@@ -1947,9 +1949,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					idler.add(sirket.getId());
 
 			StringBuffer sb = new StringBuffer();
+			String fieldName = "s";
 			sb.append("SELECT DISTINCT S.* FROM " + PersonelDenklestirme.TABLE_NAME + " PD WITH(nolock) ");
 			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=" + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
-			sb.append(" AND " + Personel.COLUMN_NAME_SIRKET + " :s");
+			sb.append(" AND " + Personel.COLUMN_NAME_SIRKET + " :" + fieldName);
 			if (bitTarih != null) {
 				sb.append(" AND P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:a1 ");
 				fields.put("a1", bitTarih);
@@ -1962,11 +1965,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			sb.append(" WHERE PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
 			sb.append(" AND PD." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
 			sb.append(" ORDER BY S." + Sirket.COLUMN_NAME_AD);
-			fields.put("s", idler);
+			fields.put(fieldName, idler);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			try {
-				list = pdksEntityController.getObjectBySQLList(sb, fields, Sirket.class);
+				// list = pdksEntityController.getObjectBySQLList(sb, fields, Sirket.class);
+				list = ortakIslemler.getSQLParamList(idler, sb, fieldName, fields, Sirket.class, session);
 				idler = null;
 			} catch (Exception ex) {
 				logger.error(ex + "\n" + sb.toString());
@@ -2307,14 +2311,16 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				if (tesisId != null && tesisId > 0L)
 					sb.append(" AND P." + Personel.COLUMN_NAME_TESIS + "=" + tesisId);
 				sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T ON T." + Tanim.COLUMN_NAME_ID + "=" + (fieldAdi.equals("ekSaha3") ? Personel.COLUMN_NAME_EK_SAHA3 : Personel.COLUMN_NAME_TESIS));
-				sb.append(" AND T." + Tanim.COLUMN_NAME_ID + " :t");
+				String fieldName = "t";
+				sb.append(" AND T." + Tanim.COLUMN_NAME_ID + " :" + fieldName);
 				sb.append(" WHERE PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
 				sb.append(" AND PD." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
-				fields.put("t", idler);
+				fields.put(fieldName, idler);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				try {
-					tanimlar = pdksEntityController.getObjectBySQLList(sb, fields, Tanim.class);
+					// tanimlar = pdksEntityController.getObjectBySQLList(sb, fields, Tanim.class);
+					tanimlar = ortakIslemler.getSQLParamList(idler, sb, fieldName, fields, Tanim.class, session);
 					idler = null;
 				} catch (Exception ex) {
 					logger.error(ex + "\n" + sb.toString());
@@ -2478,15 +2484,18 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (sirketId != null)
 						sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "=" + sirketId);
 
+					String fieldName = "t";
 					sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T ON T." + Tanim.COLUMN_NAME_ID + "=" + Personel.COLUMN_NAME_EK_SAHA3);
-					sb.append(" AND T." + Tanim.COLUMN_NAME_ID + " :t");
+					sb.append(" AND T." + Tanim.COLUMN_NAME_ID + " :" + fieldName);
 					sb.append(" WHERE PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
 					sb.append(" AND PD." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
-					fields.put("t", idler);
+					fields.put(fieldName, idler);
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 					try {
-						bolumler = pdksEntityController.getObjectBySQLList(sb, fields, Tanim.class);
+						// bolumler = pdksEntityController.getObjectBySQLList(sb, fields, Tanim.class);
+						bolumler = ortakIslemler.getSQLParamList(idler, sb, fieldName, fields, Tanim.class, session);
+
 						idler = null;
 					} catch (Exception ex) {
 						logger.error(ex + "\n" + sb.toString());

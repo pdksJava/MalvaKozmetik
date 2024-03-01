@@ -627,7 +627,10 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		AramaSecenekleri aramaSecenekleri = new AramaSecenekleri(authenticatedUser);
 		aramaSecenekleri.setDepartmanId(departmanId);
 		aramaSecenekleri.setSirketId(sirketId);
-		aramaSecenekleri.setTesisId(tesisId);
+		if (tesisList != null && !tesisList.isEmpty())
+			aramaSecenekleri.setTesisId(tesisId);
+		else
+			aramaSecenekleri.setTesisId(null);
 		aramaSecenekleri.setEkSaha3Id(seciliEkSaha3Id);
 		aramaSecenekleri.setSicilNo(sicilNo);
 		List<String> list = ortakIslemler.getAramaPersonelSicilNo(aramaSecenekleri, false, true, session);
@@ -1478,21 +1481,22 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 	 * @return
 	 */
 	private List<PersonelDenklestirme> getPdksPersonelDenklestirmeler(List<String> siciller) {
+		String fieldName = "p";
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT S.* from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
 		sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 		sb.append(" AND P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + " IS NOT NULL AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " IS NOT NULL ");
-		sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :p");
+		sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :" + fieldName);
 		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND S." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
 		sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1 ");
 		if (aylikPuantajDefault.getSonGun().before(new Date()))
 			sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1");
-		fields.put("p", siciller);
+		fields.put(fieldName, siciller);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
-
+		// List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
+		List<PersonelDenklestirme> list = ortakIslemler.getSQLParamList(siciller, sb, fieldName, fields, PersonelDenklestirme.class, session);
 		fields = null;
 		sb = null;
 		return list;

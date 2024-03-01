@@ -1134,11 +1134,12 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 				}
 				sb.append(" WHERE v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
 				sb.append(" AND V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID + " :" + fieldName);
-				fields.put(fieldName, authenticatedUser.getYetkiliPersonelIdler());
+				List veriList = authenticatedUser.getYetkiliPersonelIdler();
+				fields.put(fieldName, veriList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				// List<BigDecimal> list = pdksEntityController.getObjectBySQLList(sb, fields, null);
-				List<BigDecimal> list = ortakIslemler.getSQLParamList(authenticatedUser.getYetkiliPersonelIdler(), sb, fieldName, fields, null, session);
+				List<BigDecimal> list = ortakIslemler.getSQLParamList(veriList, sb, fieldName, fields, null, session);
 				if (!list.isEmpty())
 					onaylanmayanDurum = Boolean.FALSE;
 				list = null;
@@ -1285,11 +1286,14 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			sb.append(" WHERE v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_YIL + "=" + yil + " AND v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_AY + "=" + ay);
 
 			sb.append(" AND V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID + " :p ");
-			fields.put("p", authenticatedUser.getYetkiliPersonelIdler());
+			List veriList = authenticatedUser.getYetkiliPersonelIdler();
+			String fieldName = "p";
+			fields.put(fieldName, veriList);
 			sb.append(" ORDER BY V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_YONETICI + ", V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_BOLUM + "," + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PDKS_SICIL_NO);
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			List<PersonelDenklestirmeOnaylanmayan> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeOnaylanmayan.class);
+			// List<PersonelDenklestirmeOnaylanmayan> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeOnaylanmayan.class);
+			List<PersonelDenklestirmeOnaylanmayan> list = ortakIslemler.getSQLParamList(veriList, sb, fieldName, fields, PersonelDenklestirmeOnaylanmayan.class, session);
 
 			if (!list.isEmpty()) {
 				onaysizPersonelDenklestirmeList = new ArrayList<PersonelDenklestirme>();
