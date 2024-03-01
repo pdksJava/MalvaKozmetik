@@ -31,7 +31,6 @@ public class IzinHakEdisERPDB implements Serializable, Cloneable {
 	static Logger logger = Logger.getLogger(IzinHakEdisERPDB.class);
 
 	private String id;
-
 	private String personelNo;
 	private String kodu;
 	private String erpKodu;
@@ -224,7 +223,7 @@ public class IzinHakEdisERPDB implements Serializable, Cloneable {
 		izinERP.setIzinTipi(this.getErpKodu());
 		izinERP.setIzinTipiAciklama(this.getIzinTipi());
 		izinERP.setPersonelNo(this.getPersonelNo());
-		izinERP.setReferansNoERP(String.valueOf(this.getId()));
+		izinERP.setReferansNoERP(this.getId());
 		izinERP.setSureBirimi(this.getSureBirimi());
 		return izinERP;
 	}
