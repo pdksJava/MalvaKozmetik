@@ -3193,19 +3193,22 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public ArrayList<Personel> getKontratliSiraliPersonel(List<Long> perIdList, Session session) {
+		String fieldName = "p";
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT P.* from " + Personel.TABLE_NAME + " P WITH(nolock) ");
 		if (perIdList != null && !perIdList.isEmpty()) {
-			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " :s");
+			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " :" + fieldName);
 			sb.append(" ORDER BY P." + Personel.COLUMN_NAME_AD + ",P." + Personel.COLUMN_NAME_SOYAD + ",P." + Personel.COLUMN_NAME_ID);
 
 		} else
 			sb.append(" WHERE 1=2");
-		fields.put("s", perIdList);
+		fields.put(fieldName, perIdList);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		ArrayList<Personel> personelList = (ArrayList<Personel>) pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
+		// ArrayList<Personel> personelList = (ArrayList<Personel>) pdksEntityController.getObjectBySQLList(sb, fields, Personel.class);
+		ArrayList<Personel> personelList = (ArrayList<Personel>) getSQLParamList(perIdList, sb, fieldName, fields, Personel.class, session);
+
 		fields = null;
 		sb = null;
 		return personelList;
@@ -6747,9 +6750,13 @@ public class OrtakIslemler implements Serializable {
 		HashMap parametreMap = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT I.* FROM " + PersonelFazlaMesai.TABLE_NAME + " I  WITH(nolock) ");
+		String fieldName = null;
+		List vList = null;
 		if (!vardiyaMap.isEmpty()) {
-			sb.append(" WHERE I." + PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN + " :v");
-			parametreMap.put("v", new ArrayList(vardiyaMap.keySet()));
+			fieldName = "v";
+			vList = new ArrayList(vardiyaMap.keySet());
+			sb.append(" WHERE I." + PersonelFazlaMesai.COLUMN_NAME_VARDIYA_GUN + " :" + fieldName);
+			parametreMap.put(fieldName, vList);
 			sb.append(" AND I." + PersonelFazlaMesai.COLUMN_NAME_DURUM + "=1");
 		} else {
 			if (denklestirmeAy != null) {
@@ -6771,7 +6778,10 @@ public class OrtakIslemler implements Serializable {
 
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		fazlaMesailer = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelFazlaMesai.class);
+		if (fieldName != null)
+			fazlaMesailer = getSQLParamList(vList, sb, fieldName, parametreMap, PersonelDenklestirme.class, session);
+		else
+			fazlaMesailer = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelFazlaMesai.class);
 		if (fazlaMesailer == null)
 			fazlaMesailer = new ArrayList<PersonelFazlaMesai>();
 

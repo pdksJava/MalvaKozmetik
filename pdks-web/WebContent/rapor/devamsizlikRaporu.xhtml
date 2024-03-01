@@ -22,11 +22,11 @@
 								<ui:define name="label">Tarih</ui:define>
 								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{devamsizlikRaporuHome.date}" id="dateFilter" />
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 								<ui:define name="label">İzinli Göster</ui:define>
 								<h:selectBooleanCheckbox value="#{devamsizlikRaporuHome.izinliGoster}" />
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
 								<ui:define name="label">Tümünü Göster</ui:define>
 								<h:selectBooleanCheckbox value="#{devamsizlikRaporuHome.gelenGoster}" />
 							</s:decorate>
@@ -119,7 +119,7 @@
 								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.cikisHareket.orjinalZaman)}" />
 						</rich:column>
 
-						<rich:column width="60" rendered="#{devamsizlikRaporuHome.izinliGoster or devamsizlikRaporuHome.gelenGoster or authenticatedUser.admin}">
+						<rich:column width="60" rendered="#{devamsizlikRaporuHome.izinliGoster or devamsizlikRaporuHome.gelenGoster or (authenticatedUser.admin or authenticatedUser.IK)}">
 							<f:facet name="header">
 								<h:outputText value="Açıklama" />
 							</f:facet>
