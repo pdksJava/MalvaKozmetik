@@ -37,7 +37,7 @@ public class MailStatu {
 	 * Gets the value of the durum property.
 	 * 
 	 */
-	public boolean isDurum() {
+	public Boolean getDurum() {
 		return durum;
 	}
 

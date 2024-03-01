@@ -2158,7 +2158,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					PdksUtil.addMessageError("Mesaj gönderilmemiştir. " + e.getMessage());
 
 				}
-				if (mailSatu != null && mailSatu.isDurum()) {
+				if (mailSatu != null && mailSatu.getDurum()) {
 					if (listeOlustur)
 						PdksUtil.addMessageInfo("Mesaj Gönderildi.");
 				}
@@ -2206,7 +2206,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					PdksUtil.addMessageError("Mesaj gönderilmemiştir. " + e.getMessage());
 
 				}
-				if (mailSatu != null && mailSatu.isDurum()) {
+				if (mailSatu != null && mailSatu.getDurum()) {
 					if (listeOlustur)
 						PdksUtil.addMessageInfo("Onay mesaj gönderildi.");
 				}
@@ -2725,7 +2725,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			PdksUtil.addMessageAvailableInfo("İzin iptal edilmiştir.");
 			izinIptalGoster = false;
 		}
-		if (mailSatu != null && mailSatu.isDurum()) {
+		if (mailSatu != null && mailSatu.getDurum()) {
 			PdksUtil.addMessageAvailableInfo("Mesaj Gönderildi.");
 		}
 
@@ -2783,7 +2783,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					logger.error("Pdks hata out : " + e.getMessage());
 
 				}
-				if (mailSatu != null && mailSatu.isDurum())
+				if (mailSatu != null && mailSatu.getDurum())
 					PdksUtil.addMessageInfo("Mesaj gönderilmiştir.");
 				if (!nedenSor) {
 					redSebebiTanim = null;
@@ -4151,7 +4151,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					logger.error("PDKS hata out : " + e.getMessage());
 					PdksUtil.addMessageError(e.getMessage());
 				}
-				if (mailSatu != null && mailSatu.isDurum() == false) {
+				if (mailSatu != null && mailSatu.getDurum() == false) {
 					if (mailSatu.getHataMesai() != null)
 						PdksUtil.addMessageAvailableError(mailSatu.getHataMesai());
 

@@ -1075,6 +1075,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			LinkedHashMap<String, Object> izinKeyAciklamaMap = new LinkedHashMap<String, Object>();
 			LinkedHashMap<String, String> izinKeyPersonelMap = new LinkedHashMap<String, String>();
 			List<IzinHakedis> izinHakedisHataList = new ArrayList<IzinHakedis>();
+			List<IzinERP> izinList = new ArrayList<IzinERP>();
 			for (Iterator iterator1 = izinHakedisList.iterator(); iterator1.hasNext();) {
 				IzinHakedis izinHakedis = (IzinHakedis) iterator1.next();
 				if (izinHakedis.getHakedisList() == null || izinHakedis.getHakedisList().isEmpty()) {
@@ -1088,11 +1089,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 				izinKeyPersonelMap.put(perHakedisNo, perHakedisNo);
 				for (Iterator iterator = izinHakedis.getHakedisList().iterator(); iterator.hasNext();) {
 					IzinHakedisDetay detay = (IzinHakedisDetay) iterator.next();
-					String key = perHakedisNo + "_" + detay.getHakEdisTarihi().substring(0, 4);
-					izinKeyAciklamaMap.put(key, detay);
-					if (detay.getKullanilanIzinler() == null || detay.getKullanilanIzinler().isEmpty())
+					List<IzinERP> kullanilanIzinler = detay.getKullanilanIzinler();
+					if (kullanilanIzinler == null || kullanilanIzinler.isEmpty())
 						continue;
-					for (IzinERP izin : detay.getKullanilanIzinler()) {
+					izinList.addAll(kullanilanIzinler);
+					for (IzinERP izin : kullanilanIzinler) {
 						String perNo = PdksUtil.textBaslangicinaKarakterEkle(izin.getPersonelNo(), '0', sicilNoUzunluk);
 						if (!izinKeyPersonelMap.containsKey(perNo)) {
 							// izinKeyPersonelMap.put(perNo, "'" + perNo + "'");
@@ -1104,40 +1105,46 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 
 			}
+			saveIzinler(izinList);
 			if (!izinKeyPersonelMap.isEmpty()) {
-				TreeMap<String, Personel> personelMap = pdksDAO.getObjectByInnerObjectMap("getPdksSicilNo", "pdksSicilNo", new ArrayList(izinKeyPersonelMap.values()), Personel.class, false);
+				fields.clear();
+				fields.put("departman.admin=", Boolean.TRUE);
+				fields.put("izinTipiTanim.kodu=", IzinTipi.YILLIK_UCRETLI_IZIN);
+				fields.put("durum=", Boolean.TRUE);
+				List<IzinTipi> izinTipleri = pdksDAO.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
+				IzinTipi hakedisIzinTipi = null;
+				for (IzinTipi izinTipi : izinTipleri) {
+					if (izinTipi.getBakiyeIzinTipi() != null)
+						hakedisIzinTipi = izinTipi;
+				}
+				String fieldName = "izinSahibi.pdksSicilNo";
+				List<String> perNoList = new ArrayList(izinKeyPersonelMap.values());
+				fields.clear();
+				fields.put("izinTipi.id=", hakedisIzinTipi.getId());
+				fields.put(fieldName, perNoList);
+				TreeMap<String, PersonelIzin> hakedisIzinMap = getSQLParamMap("getDonemKey", true, perNoList, fieldName, fields, true, PersonelIzin.class);
+
+				TreeMap<String, Personel> personelMap = getParamListMap("getPdksSicilNo", "pdksSicilNo", perNoList, Personel.class, false);
 				List<String> list = new ArrayList<String>();
 				for (String string : izinKeyAciklamaMap.keySet()) {
 					// list.add("'" + string + "'");
 					list.add(string);
 				}
 
-				TreeMap<String, IzinReferansERP> izinMap = pdksDAO.getObjectByInnerObjectMap("getId", "id", list, IzinReferansERP.class, false);
+				TreeMap<String, IzinReferansERP> izinMap = getParamListMap("getId", "id", list, IzinReferansERP.class, false);
 				List<Long> idList = new ArrayList<Long>();
 				for (String key : izinMap.keySet())
 					idList.add(izinMap.get(key).getIzin().getId());
-				TreeMap<String, PersonelIzinDetay> izinDetayMap = new TreeMap<String, PersonelIzinDetay>();
+				TreeMap<Long, PersonelIzinDetay> izinDetayMap = new TreeMap<Long, PersonelIzinDetay>();
 				if (!idList.isEmpty())
-					izinDetayMap = pdksDAO.getObjectByInnerObjectMap("getHakEdisIzinKey", "hakEdisIzin.id", idList, PersonelIzinDetay.class, false);
+					izinDetayMap = getParamListMap("getPersonelIzinId", "personelIzin.id", idList, PersonelIzinDetay.class, false);
 
 				list = null;
-				fields.clear();
-				fields.put("departman.admin=", Boolean.TRUE);
-				fields.put("izinTipiTanim.kodu=", IzinTipi.YILLIK_UCRETLI_IZIN);
-				fields.put("durum=", Boolean.TRUE);
-				List<IzinTipi> izinTipleri = pdksDAO.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
-				IzinTipi kullanilanIzinTipi = null, hakedisIzinTipi = null;
-				for (IzinTipi izinTipi : izinTipleri) {
-					if (izinTipi.getBakiyeIzinTipi() == null)
-						kullanilanIzinTipi = izinTipi;
-					else
-						hakedisIzinTipi = izinTipi;
-				}
-				String erpIzinKodu = kullanilanIzinTipi != null ? kullanilanIzinTipi.getIzinTipiTanim().getErpKodu() : "";
+
 				List saveList = new ArrayList();
 				Calendar cal = Calendar.getInstance();
 				idList.clear();
-				TreeMap<Long, PersonelIzin> hakedisMap = null;
+
 				if (hakedisIzinTipi != null) {
 					for (IzinHakedis izinHakedis : izinHakedisList) {
 						String perHakedisNo = PdksUtil.textBaslangicinaKarakterEkle(izinHakedis.getPersonelNo(), '0', sicilNoUzunluk);
@@ -1148,17 +1155,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 						}
 					}
 				}
-				if (idList.isEmpty())
-					hakedisMap = new TreeMap<Long, PersonelIzin>();
-				else {
-					fields.clear();
-					fields.put(BaseDAOHibernate.MAP_KEY_MAP, "getId");
-					fields.put("select", "hakEdisIzin");
-					fields.put("hakEdisIzin.izinSahibi.id", idList);
-					hakedisMap = pdksDAO.getObjectByInnerObjectMap(fields, PersonelIzinDetay.class, false);
-				}
-				idList = null;
-
+				String erpEk = "_ERP";
 				for (IzinHakedis izinHakedis : izinHakedisList) {
 					Boolean izinHakedisYazildi = true;
 					if (hakedisIzinTipi == null) {
@@ -1172,29 +1169,35 @@ public class PdksVeriOrtakAktar implements Serializable {
 						izinHakedisHataList.add(izinHakedis);
 						continue;
 					}
-					Personel izinHakedisPersonel = personelMap.get(perHakedisNo);
 					saveList.clear();
+					Personel izinHakedisPersonel = personelMap.get(perHakedisNo);
+					izinHakedisPersonel.setDegisti(false);
+					Date izinHakEdisTarihi = getTarih(izinHakedis.getKidemBaslangicTarihi(), FORMAT_DATE);
+					izinHakedisPersonel.setIzinHakEdisTarihi(izinHakEdisTarihi);
+					if (izinHakedisPersonel.isDegisti()) {
+						izinHakedisPersonel.setGuncellemeTarihi(new Date());
+						izinHakedisPersonel.setGuncelleyenUser(islemYapan);
+						saveList.add(izinHakedisPersonel);
+					}
 					TreeMap<String, Object> izinHakedisERPMap = new TreeMap<String, Object>();
 					TreeMap<String, PersonelIzin> izinHakedisMap = new TreeMap<String, PersonelIzin>();
 					for (Iterator iterator = izinHakedis.getHakedisList().iterator(); iterator.hasNext();) {
 						IzinHakedisDetay detay = (IzinHakedisDetay) iterator.next();
 						String id = PdksUtil.textBaslangicinaKarakterEkle(izinHakedis.getPersonelNo(), '0', sicilNoUzunluk) + "_" + detay.getHakEdisTarihi().substring(0, 4);
 						PersonelIzin hakedisPersonelIzin = null;
-						IzinReferansERP izinReferansERP = null;
-						if (izinMap.containsKey(id)) {
-							izinReferansERP = izinMap.get(id);
-							hakedisPersonelIzin = izinReferansERP.getIzin();
-							if (hakedisMap.containsKey(hakedisPersonelIzin.getId()))
-								hakedisMap.remove(hakedisPersonelIzin.getId());
+						if (hakedisIzinMap.containsKey(id)) {
+							hakedisPersonelIzin = hakedisIzinMap.get(id);
+							detay.setId(hakedisPersonelIzin.getId());
 						} else {
-							izinReferansERP = new IzinReferansERP();
 							hakedisPersonelIzin = new PersonelIzin();
-							izinReferansERP.setId(id);
+							izinHakedisERPMap.put(id, hakedisPersonelIzin);
+							izinHakedisERPMap.put(id + erpEk, detay);
+							hakedisPersonelIzin.setDegisti(true);
 							hakedisPersonelIzin.setIzinTipi(hakedisIzinTipi);
 							hakedisPersonelIzin.setIzinSahibi(izinHakedisPersonel);
 							hakedisPersonelIzin.setHesapTipi(hakedisIzinTipi.getHesapTipi());
-							izinReferansERP.setIzin(hakedisPersonelIzin);
 						}
+						hakedisPersonelIzin.setDegisti(hakedisPersonelIzin.getId() == null);
 
 						Date hakEdisBitisZamani = getTarih(detay.getHakEdisTarihi(), FORMAT_DATE);
 						if (hakEdisBitisZamani == null) {
@@ -1205,24 +1208,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 								addHatalist(izinHakedis.getHataList(), detay.getHakEdisTarihi().trim() + " hakediş tarihi " + FORMAT_DATE + " formatından farklıdır!");
 							continue;
 						}
-						boolean eski = hakedisPersonelIzin.getId() != null, ekli = false;
-						if (!eski) {
-							ekli = true;
-							saveList.add(hakedisPersonelIzin);
-							saveList.add(izinReferansERP);
-						}
+
 						cal.setTime(hakEdisBitisZamani);
-						String aciklama = String.valueOf(detay.kidemYil);
+						String aciklama = detay.kidemYil > 1900 ? String.valueOf(detay.kidemYil) : "Devir Bakiye";
 						Date hakEdisBaslangicZamani = getTarih(cal.get(Calendar.YEAR) + "-01-01", FORMAT_DATE);
 
-						if (eski)
-							eski = hakedisPersonelIzin.getBitisZamani().getTime() == hakEdisBitisZamani.getTime();
-						if (eski)
-							eski = hakedisPersonelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI && detay.getIzinSuresi() > 0.0d;
-						if (eski)
-							eski = hakedisPersonelIzin.getIzinSuresi().doubleValue() == detay.getIzinSuresi();
-						if (eski)
-							eski = aciklama.equals(hakedisPersonelIzin.getAciklama());
 						hakedisPersonelIzin.setBaslangicZamani(hakEdisBaslangicZamani);
 						hakedisPersonelIzin.setBitisZamani(hakEdisBitisZamani);
 						hakedisPersonelIzin.setIzinSuresi(detay.getIzinSuresi());
@@ -1231,123 +1221,39 @@ public class PdksVeriOrtakAktar implements Serializable {
 						if (hakedisPersonelIzin.getId() == null) {
 							hakedisPersonelIzin.setOlusturanUser(islemYapan);
 							hakedisPersonelIzin.setOlusturmaTarihi(new Date());
-							saveList.add(izinReferansERP);
+
 						} else {
 							hakedisPersonelIzin.setGuncellemeTarihi(new Date());
 							hakedisPersonelIzin.setGuncelleyenUser(islemYapan);
 						}
-						izinHakedisERPMap.put(id, detay);
-						izinHakedisMap.put(id, hakedisPersonelIzin);
-						if (eski == false && ekli == false)
+
+						if (hakedisPersonelIzin.isDegisti())
+
 							saveList.add(hakedisPersonelIzin);
-						if (detay.getKullanilanIzinler() != null) {
-							for (IzinERP izinERP : detay.getKullanilanIzinler()) {
-								String perNo = PdksUtil.textBaslangicinaKarakterEkle(izinERP.getPersonelNo(), '0', sicilNoUzunluk);
-								if (!perNo.equals(perHakedisNo) && !personelMap.containsKey(perNo)) {
-									addHatalist(izinERP.getHataList(), perNo + " personel veri yoktur!");
-									izinHakedisYazildi = false;
+
+						List<IzinERP> kullanilanIzinler = detay.getKullanilanIzinler();
+						if (kullanilanIzinler != null) {
+							for (IzinERP izinERP : kullanilanIzinler) {
+								IzinReferansERP izinReferansERP = izinMap.get(izinERP.getReferansNoERP());
+								if (izinReferansERP == null)
 									continue;
-								}
-								if (kullanilanIzinTipi == null) {
-									addHatalist(izinERP.getHataList(), "Kullanılan izin tipi tanımsız!");
-									izinHakedisYazildi = false;
-									continue;
-								}
-								if (!erpIzinKodu.equals(izinERP.getIzinTipi())) {
-									addHatalist(izinERP.getHataList(), izinERP.getIzinTipi() + " " + izinERP.getIzinTipiAciklama() + " hatalı izin tipidir!");
-									izinHakedisYazildi = false;
-									continue;
-								}
-								id = izinERP.getReferansNoERP();
-								PersonelIzin personelIzin = null;
-								IzinReferansERP izinKullanilanERP = null;
-								Personel izinSahibiPersonel = perNo.equals(perHakedisNo) ? izinHakedisPersonel : personelMap.get(perNo);
-								Boolean izinDegisti = false;
-								if (izinMap.containsKey(id)) {
-									izinKullanilanERP = izinMap.get(id);
-									personelIzin = izinKullanilanERP.getIzin();
+								PersonelIzin personelIzin = izinReferansERP.getIzin();
+								if (!izinDetayMap.containsKey(personelIzin.getId())) {
+									PersonelIzinDetay personelIzinDetay = new PersonelIzinDetay();
+									personelIzinDetay.setPersonelIzin(personelIzin);
+									personelIzinDetay.setHakEdisIzin(hakedisPersonelIzin);
+									personelIzinDetay.setIzinMiktari(izinERP.getIzinSuresi());
+									saveList.add(personelIzinDetay);
 								} else {
-									izinKullanilanERP = new IzinReferansERP();
-									personelIzin = new PersonelIzin();
-									izinKullanilanERP.setId(id);
-									personelIzin.setIzinTipi(kullanilanIzinTipi);
-									personelIzin.setIzinSahibi(izinSahibiPersonel);
-									izinKullanilanERP.setIzin(personelIzin);
+									PersonelIzinDetay personelIzinDetay = izinDetayMap.get(personelIzin.getId());
+									personelIzinDetay.setHakEdisIzin(hakedisPersonelIzin);
+									if (personelIzinDetay.getIzinMiktari() != izinERP.getIzinSuresi().doubleValue()) {
+										personelIzinDetay.setIzinMiktari(izinERP.getIzinSuresi());
+										saveList.add(personelIzinDetay);
+									}
 
 								}
 
-								Date baslangicZamani = getTarih(izinERP.getBasZaman(), FORMAT_DATE_TIME);
-								Date bitisZamani = getTarih(izinERP.getBitZaman(), FORMAT_DATE_TIME);
-								boolean izinDurum = personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI;
-								if (personelIzin.getId() != null)
-									izinDegisti = izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime() || bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
-								Double izinSuresi = izinERP.getIzinSuresi();
-								aciklama = izinERP.getAciklama() != null ? izinERP.getAciklama() : kullanilanIzinTipi.getMesaj();
-								personelIzin.setAciklama((aciklama != null ? aciklama.trim() : "") + " ( " + uygulamaBordro + " referans no : " + izinERP.getReferansNoERP() + " )");
-								Integer hesapTipi = null;
-								if (izinERP.getSureBirimi() != null) {
-									hesapTipi = Integer.parseInt(izinERP.getSureBirimi().value());
-									if (kullanilanIzinTipi.getHesapTipi() != null && hesapTipi.intValue() != kullanilanIzinTipi.getHesapTipi().intValue()) {
-										switch (hesapTipi) {
-										case 1:
-											izinSuresi = izinSuresi * 24d;
-											break;
-										case 2:
-											izinSuresi = izinSuresi / 24d;
-											break;
-										default:
-											break;
-										}
-										hesapTipi = kullanilanIzinTipi.getHesapTipi();
-									}
-								} else
-									hesapTipi = kullanilanIzinTipi.getHesapTipi();
-								personelIzin.setBaslangicZamani(baslangicZamani);
-								personelIzin.setBitisZamani(bitisZamani);
-								personelIzin.setIzinSuresi(izinSuresi);
-								personelIzin.setHesapTipi(hesapTipi);
-								personelIzin.setIzinDurumu(izinERP.getDurum() != null && izinERP.getDurum() ? PersonelIzin.IZIN_DURUMU_ONAYLANDI : PersonelIzin.IZIN_DURUMU_REDEDILDI);
-								if (personelIzin.getId() == null) {
-									personelIzin.setOlusturanUser(islemYapan);
-									personelIzin.setOlusturmaTarihi(new Date());
-								} else {
-									personelIzin.setGuncellemeTarihi(new Date());
-									personelIzin.setGuncelleyenUser(islemYapan);
-								}
-								if (baslangicZamani == null || bitisZamani == null)
-									addHatalist(izinERP.getHataList(), "İzin başlangıç zamanı ve bitiş zamanı boş olamaz!");
-								if (izinERP.getHataList().isEmpty() && baslangicZamani.after(bitisZamani))
-									addHatalist(izinERP.getHataList(), "İzin başlangıç zamanı bitiş zamanında büyük olamaz!");
-								if (izinERP.getHataList().isEmpty()) {
-									izinHakedisERPMap.put(izinERP.getReferansNoERP(), izinERP);
-									izinHakedisMap.put(izinERP.getReferansNoERP(), personelIzin);
-									if (personelIzin.getId() == null || izinDegisti) {
-										saveList.add(personelIzin);
-										if (personelIzin.getId() == null)
-											saveList.add(izinKullanilanERP);
-										if (personelIzin.getId() == null || hakedisPersonelIzin.getId() == null) {
-											PersonelIzinDetay personelIzinDetay = new PersonelIzinDetay();
-											personelIzinDetay.setPersonelIzin(personelIzin);
-											personelIzinDetay.setHakEdisIzin(hakedisPersonelIzin);
-											personelIzinDetay.setIzinMiktari(izinERP.getIzinSuresi());
-											saveList.add(personelIzinDetay);
-										} else {
-											String key = PersonelIzinDetay.getHakEdisIzinKeyStr(hakedisPersonelIzin, personelIzin);
-											if (izinDetayMap.containsKey(key)) {
-												PersonelIzinDetay personelIzinDetay = izinDetayMap.get(key);
-												if (personelIzinDetay.getIzinMiktari() != izinERP.getIzinSuresi().doubleValue()) {
-													personelIzinDetay.setIzinMiktari(izinERP.getIzinSuresi());
-													saveList.add(personelIzinDetay);
-												}
-												izinDetayMap.remove(key);
-											}
-										}
-									}
-								}
-								if (izinERP.getHataList().isEmpty()) {
-									izinERP.setYazildi(true);
-									izinERP.setHataList(null);
-								}
 							}
 						}
 						if (detay.getHataList().isEmpty()) {
@@ -1363,7 +1269,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (!saveList.isEmpty()) {
 						try {
 							pdksDAO.saveObjectList(saveList);
-
+							for (String key : izinHakedisERPMap.keySet()) {
+								if (!key.endsWith(erpEk)) {
+									PersonelIzin personelIzin = (PersonelIzin) izinHakedisERPMap.get(key);
+									IzinHakedisDetay detay = (IzinHakedisDetay) izinHakedisERPMap.get(key + erpEk);
+									detay.setId(personelIzin.getId());
+								}
+							}
 						} catch (Exception e) {
 							logger.error(e);
 						}
@@ -1389,19 +1301,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 						}
 					}
 				}
-				saveList.clear();
-				if (!hakedisMap.isEmpty()) {
-					for (Long id : hakedisMap.keySet()) {
-						PersonelIzin izin = hakedisMap.get(id);
-						if (izin.getIzinTipi().getId().equals(hakedisIzinTipi.getId()) && izin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI) {
-							izin.setIzinDurumu(PersonelIzin.IZIN_DURUMU_REDEDILDI);
-							izin.setGuncellemeTarihi(new Date());
-							izin.setGuncelleyenUser(islemYapan);
-							saveList.add(izin);
-						}
-					}
-
-				}
 
 				if (!izinDetayMap.isEmpty() || !saveList.isEmpty()) {
 					try {
@@ -1412,7 +1311,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 				saveList = null;
 				izinDetayMap = null;
-				hakedisMap = null;
+
 				personelMap = null;
 			}
 

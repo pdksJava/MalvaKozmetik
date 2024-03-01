@@ -1201,7 +1201,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			try {
 				MailStatu ms = ortakIslemler.mailSoapServisGonder(false, mailObject, renderer, "/mail.xhtml", session);
 				if (ms != null) {
-					durum = ms.isDurum();
+					durum = ms.getDurum();
 					if (!durum)
 						mesaj = ms.getHataMesai();
 					if (mesaj == null)
@@ -1342,7 +1342,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				}
 
 				if (mailStatu != null) {
-					if (mailStatu.isDurum())
+					if (mailStatu.getDurum())
 						PdksUtil.addMessageInfo(ePosta + " test mesajı gönderilmiştir.");
 					else
 						PdksUtil.addMessageAvailableWarn(mailStatu.getHataMesai());

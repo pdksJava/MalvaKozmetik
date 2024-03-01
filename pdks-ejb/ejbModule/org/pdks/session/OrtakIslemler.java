@@ -137,6 +137,7 @@ import org.pdks.erp.action.PdksNoSapController;
 import org.pdks.erp.action.PdksSap3Controller;
 import org.pdks.erp.action.PdksSapController;
 import org.pdks.erp.entity.IzinERPDB;
+import org.pdks.erp.entity.IzinHakEdisERPDB;
 import org.pdks.erp.entity.PersonelERPDB;
 import org.pdks.pdf.action.HeaderIText;
 import org.pdks.pdf.action.HeaderLowagie;
@@ -172,6 +173,8 @@ import com.lowagie.text.Table;
 import com.pdks.mail.model.MailManager;
 import com.pdks.notUse.IsKurVardiyaGun;
 import com.pdks.webservice.IzinERP;
+import com.pdks.webservice.IzinHakedis;
+import com.pdks.webservice.IzinHakedisDetay;
 import com.pdks.webservice.MailFile;
 import com.pdks.webservice.MailObject;
 import com.pdks.webservice.MailPersonel;
@@ -730,7 +733,7 @@ public class OrtakIslemler implements Serializable {
 
 						try {
 							MailStatu mailSatu = mailSoapServisGonder(true, mail, null, null, session);
-							if (mailSatu != null && mailSatu.isDurum())
+							if (mailSatu != null && mailSatu.getDurum())
 								logger.info(fazlaCalismalar.size());
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -4085,22 +4088,6 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @return
-	 */
-	public String getParametrePersonelERPTableView() {
-		String str = "personelERPTableViewAdi";
-		return str;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getParametreIzinERPTableView() {
-		String str = "izinERPTableViewAdi";
-		return str;
-	}
-
-	/**
 	 * @param session
 	 * @return
 	 * @throws Exception
@@ -5106,6 +5093,102 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param session
+	 * @throws Exception
+	 */
+	public void hakEdisIzinERPDBGuncelle(Session session) throws Exception {
+		String parameterName = getParametreHakEdisIzinERPTableView();
+		if (getParameterKeyHasStringValue(parameterName)) {
+			List<IzinHakEdisERPDB> izinHakEdisERPDBList = getHakEdisIzinDBList(parameterName, session);
+			if (izinHakEdisERPDBList != null) {
+				TreeMap<String, IzinHakedis> map = new TreeMap<String, IzinHakedis>();
+				HashMap<String, IzinHakedisDetay> detayMap = new HashMap<String, IzinHakedisDetay>();
+				for (IzinHakEdisERPDB izinHakEdisERPDB : izinHakEdisERPDBList) {
+					if (izinHakEdisERPDB != null) {
+						String perNo = izinHakEdisERPDB.getPersonelNo();
+						IzinHakedis hakedis = map.containsKey(perNo) ? map.get(perNo) : new IzinHakedis();
+						if (hakedis.getKidemBaslangicTarihi() == null)
+							hakedis.setKidemBaslangicTarihi(PdksUtil.convertToDateString(izinHakEdisERPDB.getKidemBaslangicTarihi(), PersonelERPDB.FORMAT_DATE));
+						if (hakedis.getPersonelNo() == null) {
+							hakedis.setPersonelNo(perNo);
+							map.put(perNo, hakedis);
+						}
+
+						String key = izinHakEdisERPDB.getKey();
+						IzinHakedisDetay hakedisDetay = detayMap.containsKey(key) ? detayMap.get(key) : null;
+						if (hakedisDetay == null) {
+							hakedisDetay = new IzinHakedisDetay();
+							hakedisDetay.setHakEdisTarihi(PdksUtil.convertToDateString(izinHakEdisERPDB.getHakEdisTarihi(), PersonelERPDB.FORMAT_DATE));
+							hakedisDetay.setIzinSuresi(izinHakEdisERPDB.getHakEdisGunSayisi());
+							hakedisDetay.setKidemYil(izinHakEdisERPDB.getKidemYili());
+							hakedis.getHakedisList().add(hakedisDetay);
+							detayMap.put(key, hakedisDetay);
+						}
+						if (izinHakEdisERPDB.getIzinBaslangicZamani() != null)
+							hakedisDetay.getKullanilanIzinler().add(izinHakEdisERPDB.getIzinERP());
+
+					}
+
+				}
+				detayMap = null;
+				try {
+					if (!map.isEmpty()) {
+						PdksSoapVeriAktar service = getPdksSoapVeriAktar();
+						if (service != null)
+							service.saveIzinHakedisler(new ArrayList<IzinHakedis>(map.values()));
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				map = null;
+
+			}
+
+		}
+	}
+
+	/**
+	 * @param guncellemeDurum
+	 * @param perNoList
+	 * @param parameterName
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
+	public List<IzinHakEdisERPDB> getHakEdisIzinDBList(String parameterName, Session session) throws Exception {
+		String hakEdisIzinERPTableViewAdi = getParameterKey(parameterName);
+		List<Tanim> list = getTanimList(Tanim.TIPI_ERP_HAKEDIS_DB, session);
+		List<IzinHakEdisERPDB> izinHakEdisERPDBList = null;
+		if (!list.isEmpty()) {
+			HashMap parametreMap = new HashMap();
+			StringBuffer sb = new StringBuffer("WITH VERILER AS ( ");
+			sb.append("SELECT ");
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Tanim tanim = (Tanim) iterator.next();
+				String erpAlan = (PdksUtil.hasStringValue(tanim.getErpKodu()) ? tanim.getErpKodu() : "null");
+				sb.append((erpAlan.equalsIgnoreCase(tanim.getKodu()) ? "" : erpAlan + " AS ") + "" + tanim.getKodu());
+				if (iterator.hasNext())
+					sb.append(", ");
+			}
+			sb.append(" FROM " + hakEdisIzinERPTableViewAdi + " WITH(nolock) ");
+			sb.append(" ) ");
+			sb.append(" SELECT V.* FROM VERILER V ");
+			sb.append(" ORDER BY V." + IzinHakEdisERPDB.COLUMN_NAME_PERSONEL_NO + ", V." + IzinHakEdisERPDB.COLUMN_NAME_KIDEM_YIL + ", V." + IzinHakEdisERPDB.COLUMN_NAME_ID);
+
+			try {
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				izinHakEdisERPDBList = pdksEntityController.getObjectBySQLList(sb, parametreMap, IzinHakEdisERPDB.class);
+
+			} catch (Exception ex1) {
+				loggerErrorYaz(null, ex1);
+			}
+
+		}
+		return izinHakEdisERPDBList;
+	}
+
+	/**
 	 * @param guncellemeDurum
 	 * @param perNoList
 	 * @param session
@@ -5634,7 +5717,7 @@ public class OrtakIslemler implements Serializable {
 			mailObject.setSmtpPassword(getParameterKey("smtpPassword"));
 			try {
 				mailStatu = mailManager.mailleriDuzenle(mailObject, session);
-				if (mailStatu.isDurum())
+				if (mailStatu.getDurum())
 					mailStatu = mailManager.ePostaGonder(mailObject, session);
 			} catch (Exception e) {
 				logger.error(e);
@@ -5659,7 +5742,7 @@ public class OrtakIslemler implements Serializable {
 				}
 			}
 		}
-		if (mailStatu.isDurum() == false && mailStatu.getHataMesai() == null)
+		if (mailStatu.getDurum() == false && mailStatu.getHataMesai() == null)
 			mailStatu.setHataMesai("Mail gönderiminde hata oluştu");
 
 		return mailStatu;
@@ -14987,6 +15070,7 @@ public class OrtakIslemler implements Serializable {
 									puantajData.setResmiTatilToplami(0.0d);
 								ilkGiris = false;
 							}
+
 							List<YemekIzin> yemekList = yemekHesapla ? pdksVardiyaGun.getYemekList() : yemekBosList;
 							Double izinSaat = null;
 							Tatil tatilOrj = tatilGunleriMap.get(key);
@@ -14996,6 +15080,8 @@ public class OrtakIslemler implements Serializable {
 							Vardiya vardiyaIzin = pdksVardiyaGun.getVardiya();
 							if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null) {
 								CalismaModeli calismaModeliAy = personelDenklestirme.getCalismaModeli();
+								if (key.equals("20240203"))
+									logger.debug("");
 								izinSaat = calismaModeliAy.getIzinSaat(pdksVardiyaGun);
 								if (pdksVardiyaGun.getIzin() != null && pdksVardiyaGun.getIzin().getIzinTipi().isIslemYokCGS()) {
 									izinSaat = 0.0d;
@@ -18673,6 +18759,30 @@ public class OrtakIslemler implements Serializable {
 			sb = null;
 		}
 		return mailAdress;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getParametrePersonelERPTableView() {
+		String str = "personelERPTableViewAdi";
+		return str;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getParametreHakEdisIzinERPTableView() {
+		String str = "hakEdisIzinERPTableViewAdi";
+		return str;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getParametreIzinERPTableView() {
+		String str = "izinERPTableViewAdi";
+		return str;
 	}
 
 	/**

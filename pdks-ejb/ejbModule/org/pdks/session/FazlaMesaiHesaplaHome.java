@@ -4406,7 +4406,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			else
 				mailStatu.setHataMesai("Hata oluştu!");
 		}
-		islemDurum = mailStatu != null && mailStatu.isDurum();
+		islemDurum = mailStatu != null && mailStatu.getDurum();
 
 		return islemDurum;
 	}

@@ -85,6 +85,11 @@ public class PersonelIzinDetay extends BasePDKSObject implements Serializable, C
 	}
 
 	@Transient
+	public Long getPersonelIzinId() {
+		return personelIzin != null ? personelIzin.getId() : 0L;
+	}
+
+	@Transient
 	public String getHakEdisIzinKey() {
 		return getHakEdisIzinKeyStr(hakEdisIzin, personelIzin);
 	}

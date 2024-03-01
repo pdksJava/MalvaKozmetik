@@ -106,7 +106,7 @@ public class GetMesaiPDKS {
 	 * @return possible object is {@link Boolean }
 	 * 
 	 */
-	public Boolean isDonemKapat() {
+	public Boolean getDonemKapat() {
 		return donemKapat;
 	}
 

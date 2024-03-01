@@ -223,7 +223,7 @@ public class IzinKagidiHome extends EntityHome<PersonelIzin> implements Serializ
 
 				PdksUtil.addMessageError(e.getMessage());
 			}
-			if (mailSatu != null && mailSatu.isDurum())
+			if (mailSatu != null && mailSatu.getDurum())
 				PdksUtil.addMessageInfo("Mesaj gönderildi");
 		}
 

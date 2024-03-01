@@ -875,7 +875,7 @@ public class IseGelmemeUyari implements Serializable {
 
 								mailSatu = mailGonder(renderAdres, false, session);
 								// ortakIslemler.mailGonder(renderer, renderAdres);
-								if (mailSatu != null && mailSatu.isDurum())
+								if (mailSatu != null && mailSatu.getDurum())
 
 									logger.info(userYonetici.getPdksPersonel().getSirket().getAd() + " " + user.getAdSoyad() + " " + eposta + " iseGelisUyariMail mesaj gönderildi! ");
 							}
@@ -947,7 +947,7 @@ public class IseGelmemeUyari implements Serializable {
 							baslikAyarla(userYonetici.getPdksPersonel());
 							// ortakIslemler.mailGonder(renderer, renderAdres);
 							mailSatu = mailGonder(renderAdres, true, session);
-							if (mailSatu != null && mailSatu.isDurum())
+							if (mailSatu != null && mailSatu.getDurum())
 								logger.info(userYonetici.getPdksPersonel().getSirket().getAd() + " " + userYonetici.getAdSoyad() + " " + userYonetici.getEmail() + " iseGelisUyariMail mesaj gönderildi! ");
 
 							if (!userYoneticiMap.containsKey(userYonetici.getId())) {

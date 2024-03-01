@@ -1,5 +1,6 @@
 package com.pdks.webservice;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -85,7 +86,9 @@ public class PersonelERP extends BaseERPObject {
 	protected String tesisAdi;
 	protected String tesisKodu;
 	protected String yoneticiPerNo;
+
 	protected String grubaGirisTarihi;
+
 	protected String yonetici2PerNo;
 
 	/**
@@ -655,22 +658,46 @@ public class PersonelERP extends BaseERPObject {
 		this.yoneticiPerNo = value;
 	}
 
-	 
+	/**
+	 * Gets the value of the grubaGirisTarihi property.
+	 * 
+	 * @return possible object is {@link JAXBElement }{@code <}{@link String }{@code >}
+	 * 
+	 */
 	public String getGrubaGirisTarihi() {
 		return grubaGirisTarihi;
 	}
 
- 
+	/**
+	 * Sets the value of the grubaGirisTarihi property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link JAXBElement }{@code <}{@link String }{@code >}
+	 * 
+	 */
 	public void setGrubaGirisTarihi(String value) {
 		this.grubaGirisTarihi = value;
 	}
 
+	/**
+	 * Gets the value of the yonetici2PerNo property.
+	 * 
+	 * @return possible object is {@link JAXBElement }{@code <}{@link String }{@code >}
+	 * 
+	 */
 	public String getYonetici2PerNo() {
 		return yonetici2PerNo;
 	}
 
-	public void setYonetici2PerNo(String yonetici2PerNo) {
-		this.yonetici2PerNo = yonetici2PerNo;
+	/**
+	 * Sets the value of the yonetici2PerNo property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link JAXBElement }{@code <}{@link String }{@code >}
+	 * 
+	 */
+	public void setYonetici2PerNo(String value) {
+		this.yonetici2PerNo = value;
 	}
 
 }

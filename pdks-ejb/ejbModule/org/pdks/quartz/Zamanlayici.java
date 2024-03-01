@@ -159,7 +159,7 @@ public class Zamanlayici implements Serializable {
 				}
 				ortakIslemler.addMailPersonelUserList(userList, mail.getToList());
 				mailSatu = ortakIslemler.mailSoapServisGonder(false, mail, renderer, "/email/" + sayfaAdi, session);
-				if (mailSatu != null && mailSatu.isDurum()) {
+				if (mailSatu != null && mailSatu.getDurum()) {
 					if (thisIp != null)
 						logger.info(xkonu + " " + thisIp + " tamamlandı.");
 				}

@@ -19,21 +19,27 @@ public class ObjectFactory {
 
 	private final static QName _SavePersoneller_QNAME = new QName("http://webService.pdks.com/", "savePersoneller");
 	private final static QName _GetERPPersonelList_QNAME = new QName("http://webService.pdks.com/", "getERPPersonelList");
+	private final static QName _GetIzinHakedisler_QNAME = new QName("http://webService.pdks.com/", "getIzinHakedisler");
 	private final static QName _GetERPPersonelListResponse_QNAME = new QName("http://webService.pdks.com/", "getERPPersonelListResponse");
 	private final static QName _SaveIzinler_QNAME = new QName("http://webService.pdks.com/", "saveIzinler");
 	private final static QName _SendERPIzinlerResponse_QNAME = new QName("http://webService.pdks.com/", "sendERPIzinlerResponse");
+	private final static QName _SaveIzinHakedisler_QNAME = new QName("http://webService.pdks.com/", "saveIzinHakedisler");
 	private final static QName _SendFazlaMesaiListResponse_QNAME = new QName("http://webService.pdks.com/", "sendFazlaMesaiListResponse");
 	private final static QName _SavePersonellerResponse_QNAME = new QName("http://webService.pdks.com/", "savePersonellerResponse");
-	private final static QName _SendMail_QNAME = new QName("http://webService.pdks.com/", "sendMail");
 	private final static QName _SendERPIzinler_QNAME = new QName("http://webService.pdks.com/", "sendERPIzinler");
+	private final static QName _SendMail_QNAME = new QName("http://webService.pdks.com/", "sendMail");
+	private final static QName _SaveIzinHakedislerResponse_QNAME = new QName("http://webService.pdks.com/", "saveIzinHakedislerResponse");
 	private final static QName _GetFazlaMesaiList_QNAME = new QName("http://webService.pdks.com/", "getFazlaMesaiList");
 	private final static QName _Exception_QNAME = new QName("http://webService.pdks.com/", "Exception");
 	private final static QName _SendFazlaMesaiList_QNAME = new QName("http://webService.pdks.com/", "sendFazlaMesaiList");
 	private final static QName _SaveIzinlerResponse_QNAME = new QName("http://webService.pdks.com/", "saveIzinlerResponse");
+	private final static QName _GetIzinHakedislerResponse_QNAME = new QName("http://webService.pdks.com/", "getIzinHakedislerResponse");
 	private final static QName _GetMesaiPDKSResponse_QNAME = new QName("http://webService.pdks.com/", "getMesaiPDKSResponse");
 	private final static QName _GetMesaiPDKS_QNAME = new QName("http://webService.pdks.com/", "getMesaiPDKS");
 	private final static QName _GetFazlaMesaiListResponse_QNAME = new QName("http://webService.pdks.com/", "getFazlaMesaiListResponse");
 	private final static QName _SendMailResponse_QNAME = new QName("http://webService.pdks.com/", "sendMailResponse");
+	private final static QName _PersonelERPYonetici2PerNo_QNAME = new QName("", "yonetici2PerNo");
+	private final static QName _PersonelERPGrubaGirisTarihi_QNAME = new QName("", "grubaGirisTarihi");
 
 	/**
 	 * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.pdks.webservice
@@ -56,6 +62,14 @@ public class ObjectFactory {
 	 */
 	public GetFazlaMesaiListResponse.Return createGetFazlaMesaiListResponseReturn() {
 		return new GetFazlaMesaiListResponse.Return();
+	}
+
+	/**
+	 * Create an instance of {@link GetIzinHakedislerResponse }
+	 * 
+	 */
+	public GetIzinHakedislerResponse createGetIzinHakedislerResponse() {
+		return new GetIzinHakedislerResponse();
 	}
 
 	/**
@@ -131,6 +145,14 @@ public class ObjectFactory {
 	}
 
 	/**
+	 * Create an instance of {@link SaveIzinHakedislerResponse }
+	 * 
+	 */
+	public SaveIzinHakedislerResponse createSaveIzinHakedislerResponse() {
+		return new SaveIzinHakedislerResponse();
+	}
+
+	/**
 	 * Create an instance of {@link SendMail }
 	 * 
 	 */
@@ -160,6 +182,22 @@ public class ObjectFactory {
 	 */
 	public GetERPPersonelListResponse createGetERPPersonelListResponse() {
 		return new GetERPPersonelListResponse();
+	}
+
+	/**
+	 * Create an instance of {@link GetIzinHakedisler }
+	 * 
+	 */
+	public GetIzinHakedisler createGetIzinHakedisler() {
+		return new GetIzinHakedisler();
+	}
+
+	/**
+	 * Create an instance of {@link SaveIzinHakedisler }
+	 * 
+	 */
+	public SaveIzinHakedisler createSaveIzinHakedisler() {
+		return new SaveIzinHakedisler();
 	}
 
 	/**
@@ -203,6 +241,14 @@ public class ObjectFactory {
 	}
 
 	/**
+	 * Create an instance of {@link IzinHakedis }
+	 * 
+	 */
+	public IzinHakedis createIzinHakedis() {
+		return new IzinHakedis();
+	}
+
+	/**
 	 * Create an instance of {@link MesaiPDKS }
 	 * 
 	 */
@@ -243,6 +289,14 @@ public class ObjectFactory {
 	}
 
 	/**
+	 * Create an instance of {@link IzinHakedisDetay }
+	 * 
+	 */
+	public IzinHakedisDetay createIzinHakedisDetay() {
+		return new IzinHakedisDetay();
+	}
+
+	/**
 	 * Create an instance of {@link PersonelERP }
 	 * 
 	 */
@@ -277,6 +331,15 @@ public class ObjectFactory {
 	}
 
 	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link GetIzinHakedisler }{@code >}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "http://webService.pdks.com/", name = "getIzinHakedisler")
+	public JAXBElement<GetIzinHakedisler> createGetIzinHakedisler(GetIzinHakedisler value) {
+		return new JAXBElement<GetIzinHakedisler>(_GetIzinHakedisler_QNAME, GetIzinHakedisler.class, null, value);
+	}
+
+	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link GetERPPersonelListResponse }{@code >}
 	 * 
 	 */
@@ -304,6 +367,15 @@ public class ObjectFactory {
 	}
 
 	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link SaveIzinHakedisler }{@code >}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "http://webService.pdks.com/", name = "saveIzinHakedisler")
+	public JAXBElement<SaveIzinHakedisler> createSaveIzinHakedisler(SaveIzinHakedisler value) {
+		return new JAXBElement<SaveIzinHakedisler>(_SaveIzinHakedisler_QNAME, SaveIzinHakedisler.class, null, value);
+	}
+
+	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link SendFazlaMesaiListResponse }{@code >}
 	 * 
 	 */
@@ -322,6 +394,15 @@ public class ObjectFactory {
 	}
 
 	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link SendERPIzinler }{@code >}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "http://webService.pdks.com/", name = "sendERPIzinler")
+	public JAXBElement<SendERPIzinler> createSendERPIzinler(SendERPIzinler value) {
+		return new JAXBElement<SendERPIzinler>(_SendERPIzinler_QNAME, SendERPIzinler.class, null, value);
+	}
+
+	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link SendMail }{@code >}
 	 * 
 	 */
@@ -331,12 +412,12 @@ public class ObjectFactory {
 	}
 
 	/**
-	 * Create an instance of {@link JAXBElement }{@code <}{@link SendERPIzinler }{@code >}
+	 * Create an instance of {@link JAXBElement }{@code <}{@link SaveIzinHakedislerResponse }{@code >}
 	 * 
 	 */
-	@XmlElementDecl(namespace = "http://webService.pdks.com/", name = "sendERPIzinler")
-	public JAXBElement<SendERPIzinler> createSendERPIzinler(SendERPIzinler value) {
-		return new JAXBElement<SendERPIzinler>(_SendERPIzinler_QNAME, SendERPIzinler.class, null, value);
+	@XmlElementDecl(namespace = "http://webService.pdks.com/", name = "saveIzinHakedislerResponse")
+	public JAXBElement<SaveIzinHakedislerResponse> createSaveIzinHakedislerResponse(SaveIzinHakedislerResponse value) {
+		return new JAXBElement<SaveIzinHakedislerResponse>(_SaveIzinHakedislerResponse_QNAME, SaveIzinHakedislerResponse.class, null, value);
 	}
 
 	/**
@@ -376,6 +457,15 @@ public class ObjectFactory {
 	}
 
 	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link GetIzinHakedislerResponse }{@code >}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "http://webService.pdks.com/", name = "getIzinHakedislerResponse")
+	public JAXBElement<GetIzinHakedislerResponse> createGetIzinHakedislerResponse(GetIzinHakedislerResponse value) {
+		return new JAXBElement<GetIzinHakedislerResponse>(_GetIzinHakedislerResponse_QNAME, GetIzinHakedislerResponse.class, null, value);
+	}
+
+	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link GetMesaiPDKSResponse }{@code >}
 	 * 
 	 */
@@ -409,6 +499,24 @@ public class ObjectFactory {
 	@XmlElementDecl(namespace = "http://webService.pdks.com/", name = "sendMailResponse")
 	public JAXBElement<SendMailResponse> createSendMailResponse(SendMailResponse value) {
 		return new JAXBElement<SendMailResponse>(_SendMailResponse_QNAME, SendMailResponse.class, null, value);
+	}
+
+	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "", name = "yonetici2PerNo", scope = PersonelERP.class)
+	public JAXBElement<String> createPersonelERPYonetici2PerNo(String value) {
+		return new JAXBElement<String>(_PersonelERPYonetici2PerNo_QNAME, String.class, PersonelERP.class, value);
+	}
+
+	/**
+	 * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
+	 * 
+	 */
+	@XmlElementDecl(namespace = "", name = "grubaGirisTarihi", scope = PersonelERP.class)
+	public JAXBElement<String> createPersonelERPGrubaGirisTarihi(String value) {
+		return new JAXBElement<String>(_PersonelERPGrubaGirisTarihi_QNAME, String.class, PersonelERP.class, value);
 	}
 
 }

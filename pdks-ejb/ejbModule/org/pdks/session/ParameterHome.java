@@ -139,7 +139,7 @@ public class ParameterHome extends EntityHome<Parameter> implements Serializable
 			try {
 				mailStatu = ortakIslemler.mailSoapServisGonder(false, mailObject, renderer, "/email/testMail.xhtml", session);
 				if (mailStatu != null) {
-					gonderildi = mailStatu.isDurum();
+					gonderildi = mailStatu.getDurum();
 					if (!gonderildi)
 						PdksUtil.addMessageWarn(mailStatu.getHataMesai());
 				}

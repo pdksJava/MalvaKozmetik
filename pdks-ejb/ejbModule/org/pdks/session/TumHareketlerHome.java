@@ -804,7 +804,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 					logger.error("Onay Akis Hata out  : " + e.getMessage());
 
 				}
-				if (mailSatu != null && mailSatu.isDurum())
+				if (mailSatu != null && mailSatu.getDurum())
 					PdksUtil.addMessageInfo("Hareket dosyası mail gönderildi");
 				if (zipDosya != null && zipDosya.exists())
 					zipDosya.delete();

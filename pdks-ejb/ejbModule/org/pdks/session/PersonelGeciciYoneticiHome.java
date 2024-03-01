@@ -398,7 +398,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 				logger.error("PDKS hata out : " + e.getMessage());
 				PdksUtil.addMessageError(e.getMessage());
 			}
-			if (mailSatu != null && mailSatu.isDurum())
+			if (mailSatu != null && mailSatu.getDurum())
 				PdksUtil.addMessageInfo("Mesaj gönderildi");
 
 			session.flush();

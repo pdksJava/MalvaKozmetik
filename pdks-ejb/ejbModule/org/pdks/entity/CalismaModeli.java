@@ -22,7 +22,6 @@ import org.pdks.session.PdksUtil;
 @Entity(name = CalismaModeli.TABLE_NAME)
 public class CalismaModeli extends BasePDKSObject implements Serializable {
 
-	 
 	/**
 	 * 
 	 */
@@ -390,14 +389,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public double getIzinSaat(VardiyaGun pdksVardiyaGun) {
 		double izinSure = this.getIzin();
-		if (izinhaftaSonu > 0.0d) {
-			Calendar cal = Calendar.getInstance();
-			Date vardiyaDate = pdksVardiyaGun.getVardiyaDate();
-			cal.setTime(vardiyaDate);
-			int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-			if (dayOfWeek == Calendar.SATURDAY)
-				izinSure = izinhaftaSonu;
-		}
+		Calendar cal = Calendar.getInstance();
+		Date vardiyaDate = pdksVardiyaGun.getVardiyaDate();
+		cal.setTime(vardiyaDate);
+		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+		if (dayOfWeek == Calendar.SATURDAY)
+			izinSure = izinhaftaSonu;
+		else if (dayOfWeek == Calendar.SUNDAY)
+			izinSure = 0.0d;
+
 		if (this.isSaatlikOdeme()) {
 			// IzinTipi izinTipi = pdksVardiyaGun.getIzin() != null ? pdksVardiyaGun.getIzin().getIzinTipi() : null;
 			// if (izinTipi != null) {

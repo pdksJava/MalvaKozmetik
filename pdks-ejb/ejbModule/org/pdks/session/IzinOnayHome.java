@@ -234,7 +234,7 @@ public class IzinOnayHome extends EntityHome<PersonelIzin> implements Serializab
 				logger.error("PDKS hata out : " + e.getMessage());
 				PdksUtil.addMessageError(e.getMessage());
 			}
-			if (mailSatu != null && mailSatu.isDurum())
+			if (mailSatu != null && mailSatu.getDurum())
 				PdksUtil.addMessageInfo("Mesaj gönderildi");
 		}
 		return "";

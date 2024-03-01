@@ -3,6 +3,7 @@ package com.pdks.webservice;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -38,11 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mailObject", propOrder = { "attachmentFiles", "bccList", "body", "ccList", "smtpPassword", "smtpUser", "subject", "toList" })
-public class MailObject implements Serializable, Cloneable {
+public class MailObject implements Serializable, Cloneable{
 
-	 
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 5409112400274560540L;
-
 	@XmlElement(nillable = true)
 	protected List<MailFile> attachmentFiles;
 	@XmlElement(nillable = true)
@@ -252,5 +254,4 @@ public class MailObject implements Serializable, Cloneable {
 			throw new InternalError();
 		}
 	}
-
 }

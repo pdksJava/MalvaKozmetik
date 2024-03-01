@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "baseERPObject", propOrder = { "hataList", "id", "yazildi" })
-@XmlSeeAlso({ IzinERP.class, PersonelERP.class })
+@XmlSeeAlso({ IzinHakedis.class, IzinERP.class, IzinHakedisDetay.class, PersonelERP.class })
 public abstract class BaseERPObject {
 
 	@XmlElement(nillable = true)

@@ -859,7 +859,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				logger.error("PDKS hata out : " + e.getMessage());
 				PdksUtil.addMessageError(e.getMessage());
 			}
-			if (mailSatu != null && mailSatu.isDurum())
+			if (mailSatu != null && mailSatu.getDurum())
 				PdksUtil.addMessageAvailableInfo(personel.getAdSoyad() + " " + authenticatedUser.getTarihFormatla(vg.getVardiyaDate(), PdksUtil.getDateFormat()) + " günü " + authenticatedUser.sayiFormatliGoster(fmt.getMesaiSuresi()) + " saat  fazla mesai talep mesajı "
 						+ fmt.getGuncelleyenUser().getAdSoyad() + "  gönderildi.");
 		} catch (Exception e) {
@@ -984,7 +984,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			logger.error("PDKS hata out : " + e.getMessage());
 			PdksUtil.addMessageError(e.getMessage());
 		}
-		if (mailSatu != null && mailSatu.isDurum())
+		if (mailSatu != null && mailSatu.getDurum())
 			PdksUtil.addMessageAvailableInfo(fmt.getOlusturanUser().getAdSoyad() + " fazla mesai talep cevabı gönderildi.");
 
 		return "";

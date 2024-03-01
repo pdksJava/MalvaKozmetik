@@ -490,6 +490,12 @@ public class PersonelIzin extends BaseObject {
 	}
 
 	@Transient
+	public String getDonemKey() {
+		String str = this.getPersonelNo() + "_" + PdksUtil.convertToDateString(this.getBaslangicZamani(), "yyyy");
+		return str;
+	}
+
+	@Transient
 	public Boolean getYilbasi() {
 		return yilbasi;
 	}

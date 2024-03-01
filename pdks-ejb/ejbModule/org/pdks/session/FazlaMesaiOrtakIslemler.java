@@ -974,7 +974,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								PersonelIzin personelIzin = vardiyaGun.getIzin();
 								if (personelIzin.getOrjIzin() != null)
 									personelIzin = personelIzin.getOrjIzin();
-								if (vardiyaGun.getVardiyaDateStr().equals("20240121"))
+								if (vardiyaGun.getVardiyaDateStr().equals("20240211"))
 									logger.debug("x");
 								izinTipi = personelIzin.getIzinTipi();
 								if (izinTipi != null) {
@@ -1067,6 +1067,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								// logger.info(vardiyaGun.getVardiyaDateStr() + " " + normalGunAdet);
 							} else {
 								haftaTatilAdet += calismaGun;
+								logger.debug(vardiyaGun.getVardiyaDateStr() + " " + normalGunAdet);
 							}
 						}
 						if (vardiyaGun.isIzinli() == false) {
