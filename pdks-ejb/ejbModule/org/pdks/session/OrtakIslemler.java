@@ -6794,7 +6794,7 @@ public class OrtakIslemler implements Serializable {
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		if (fieldName != null)
-			fazlaMesailer = getSQLParamList(vList, sb, fieldName, parametreMap, PersonelDenklestirme.class, session);
+			fazlaMesailer = getSQLParamList(vList, sb, fieldName, parametreMap, PersonelFazlaMesai.class, session);
 		else
 			fazlaMesailer = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelFazlaMesai.class);
 		if (fazlaMesailer == null)
