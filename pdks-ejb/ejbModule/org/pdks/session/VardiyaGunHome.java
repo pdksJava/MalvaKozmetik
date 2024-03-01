@@ -7323,17 +7323,18 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @return
 	 */
 	private TreeMap<Long, PersonelDenklestirme> getPersonelDenklestirme(DenklestirmeAy denklestirmeAy, ArrayList<Long> idler) {
+		String fieldName = "p";
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		// sb.append("SELECT S." + PersonelDenklestirme.COLUMN_NAME_ID + " from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
 		sb.append("SELECT S.* from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
-		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p");
-		fields.put("p", idler);
+		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :" + fieldName);
+		fields.put(fieldName, idler);
 		// fields.put(PdksEntityController.MAP_KEY_MAP, "getPersonelId");
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		TreeMap<Long, PersonelDenklestirme> denklestirmeMap = new TreeMap<Long, PersonelDenklestirme>();
-		List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
+		List<PersonelDenklestirme> list = ortakIslemler.getSQLParamList(idler, sb, fieldName, fields, PersonelDenklestirme.class, session);
 		for (PersonelDenklestirme pd : list) {
 			pd.setGuncellendi(Boolean.FALSE);
 			denklestirmeMap.put(pd.getPersonelId(), pd);
@@ -9743,16 +9744,18 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			PdksUtil.addMessageWarn("İşlem yapılacak kayıt seçiniz!");
 		else {
 			if (!perIdList.isEmpty()) {
+				String fieldName = "p";
 				HashMap fields = new HashMap();
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT S.* from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
 				sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + " =" + denklestirmeAy.getId() + " AND (S." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1 OR S." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1 )");
-				sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :p ");
-				fields.put("p", perIdList);
+				sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :" + fieldName);
+				fields.put(fieldName, perIdList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
-				boolean flush = false;
+				// List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
+				List<PersonelDenklestirme> list = ortakIslemler.getSQLParamList(perIdList, sb, fieldName, fields, PersonelDenklestirme.class, session);
+ 				boolean flush = false;
 				for (PersonelDenklestirme personelDenklestirme : list) {
 					savePersonelDenklestirme(personelDenklestirme);
 					flush = true;

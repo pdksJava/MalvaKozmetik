@@ -26,8 +26,6 @@
 					</s:decorate>
 					<h:panelGrid columns="2">
 						<a4j:commandButton status="ajaxStatus" value="Listele" action="#{yemekYiyenlerHome.fillHareketList(true)}" reRender="hareketPanel" />
-						<a4j:commandButton status="ajaxStatus" value="Mükerrer" rendered="#{authenticatedUser.admin}"
-							action="#{yemekMukkerrerBilgilendirme.yemekMukkerrerBilgilendirmeBul(null,yemekYiyenlerHome.basTarih,yemekYiyenlerHome.bitTarih)}" />
 					</h:panelGrid>
 				</h:panelGrid>
 

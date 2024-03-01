@@ -227,42 +227,42 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 
 	public void fillHareketList() {
 		fillYemekList();
-		Calendar cal = Calendar.getInstance();
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		TreeMap<String, HareketKGS> yemekOzetZamanMap = new TreeMap<String, HareketKGS>();
 		TreeMap<String, HareketKGS> yemekMap = new TreeMap<String, HareketKGS>();
 		HashMap parametreMap = new HashMap();
-		ortakIslemler.showSQLQuery(parametreMap);
-		parametreMap.put("basTarih", PdksUtil.getDate(basTarih));
-		parametreMap.put("bitTarih", PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1)));
-		StringBuffer qsb = new StringBuffer();
-		qsb.append("SELECT S." + HareketKGS.COLUMN_NAME_ID + " S." + HareketKGS.COLUMN_NAME_TABLE_ID + " FROM " + HareketKGS.TABLE_NAME + " S  WITH(nolock) ");
-		qsb.append(" where  S." + HareketKGS.COLUMN_NAME_ZAMAN + " >=:basTarih AND S." + HareketKGS.COLUMN_NAME_ZAMAN + " <:bitTarih ");
-		if (!yemekKapiList.isEmpty()) {
-			qsb.append(" AND S." + HareketKGS.COLUMN_NAME_KAPI + " :kapiId");
-			parametreMap.put("kapiId", yemekKapiList);
-		}
-		if (session != null)
-			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		try {
-			List<Object[]> list = pdksEntityController.getObjectBySQLList(qsb, parametreMap, null);
-			kgsList = new ArrayList<HareketKGS>();
-			for (Object[] objects : list) {
-				HareketKGS hareketKGS = new HareketKGS();
-				hareketKGS.setId((String) objects[0]);
-				hareketKGS.setHareketTableId(new Long(objects[1].toString()));
-				kgsList.add(hareketKGS);
-			}
-
-			kgsList = ortakIslemler.getHareketIdBilgileri(kgsList, null, basTarih, bitTarih, session);
-			list = null;
-		} catch (Exception e) {
-			kgsList = new ArrayList<HareketKGS>();
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-		}
-
+		// Calendar cal = Calendar.getInstance();
+		// ortakIslemler.showSQLQuery(parametreMap);
+		// parametreMap.put("basTarih", PdksUtil.getDate(basTarih));
+		// parametreMap.put("bitTarih", PdksUtil.getDate(ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1)));
+		// StringBuffer qsb = new StringBuffer();
+		// qsb.append("SELECT S." + HareketKGS.COLUMN_NAME_ID + " S." + HareketKGS.COLUMN_NAME_TABLE_ID + " FROM " + HareketKGS.TABLE_NAME + " S  WITH(nolock) ");
+		// qsb.append(" where  S." + HareketKGS.COLUMN_NAME_ZAMAN + " >=:basTarih AND S." + HareketKGS.COLUMN_NAME_ZAMAN + " <:bitTarih ");
+		// if (!yemekKapiList.isEmpty()) {
+		// qsb.append(" AND S." + HareketKGS.COLUMN_NAME_KAPI + " :kapiId");
+		// parametreMap.put("kapiId", yemekKapiList);
+		// }
+		// if (session != null)
+		// parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+		// try {
+		// List<Object[]> list = pdksEntityController.getObjectBySQLList(qsb, parametreMap, null);
+		// kgsList = new ArrayList<HareketKGS>();
+		// for (Object[] objects : list) {
+		// HareketKGS hareketKGS = new HareketKGS();
+		// hareketKGS.setId((String) objects[0]);
+		// hareketKGS.setHareketTableId(new Long(objects[1].toString()));
+		// kgsList.add(hareketKGS);
+		// }
+		//
+		// kgsList = ortakIslemler.getHareketIdBilgileri(kgsList, null, basTarih, bitTarih, session);
+		// list = null;
+		// } catch (Exception e) {
+		// kgsList = new ArrayList<HareketKGS>();
+		// logger.error("PDKS hata in : \n");
+		// e.printStackTrace();
+		// logger.error("PDKS hata out : " + e.getMessage());
+		// }
+		kgsList = ortakIslemler.getYemekHareketleri(session, basTarih, bitTarih, false);
 		int yemekMukerrerAraligi = ortakIslemler.getYemekMukerrerAraligi();
 		if (!kgsList.isEmpty())
 			kgsList = PdksUtil.sortListByAlanAdi(kgsList, "zaman", Boolean.FALSE);
