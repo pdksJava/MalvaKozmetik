@@ -130,6 +130,13 @@ public class IzinBakiyeGuncelleme implements Serializable {
 						logger.info(uygulamaBordro + " izin bilgileri güncelleniyor in " + PdksUtil.getCurrentTimeStampStr());
 						ortakIslemler.izinERPDBGuncelle(guncellemeDBDurum, session);
 						logger.info(uygulamaBordro + " izin bilgileri güncelleniyor out " + PdksUtil.getCurrentTimeStampStr());
+						String parameterName = ortakIslemler.getParametreHakEdisIzinERPTableView();
+						if (ortakIslemler.getParameterKeyHasStringValue(parameterName)) {
+							logger.info(uygulamaBordro + " izin hakediş bilgileri güncelleniyor in " + PdksUtil.getCurrentTimeStampStr());
+							ortakIslemler.hakEdisIzinERPDBGuncelle(session);
+							logger.info(uygulamaBordro + " izin hakediş bilgileri güncelleniyor out " + PdksUtil.getCurrentTimeStampStr());
+						}
+
 					}
 					if (zamanDurum) {
 						HashMap fields = new HashMap();
