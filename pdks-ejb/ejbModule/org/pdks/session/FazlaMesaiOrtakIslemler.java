@@ -823,7 +823,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<Tanim> list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
-		TreeMap<String, String> izinGrupMap = new TreeMap<String, String>();
+
 		if (list.isEmpty()) {
 			BordroDetayTipi[] bordroTipileri = new BordroDetayTipi[] { BordroDetayTipi.UCRETLI_IZIN, BordroDetayTipi.UCRETSIZ_IZIN, BordroDetayTipi.RAPORLU_IZIN };
 			for (BordroDetayTipi bordroTipi : bordroTipileri) {
@@ -840,26 +840,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			session.flush();
 		}
 
-		fields.clear();
-		fields.put("tipi", Tanim.TIPI_IZIN_KODU_GRUPLARI);
-		fields.put("durum", Boolean.TRUE);
-		if (session != null)
-			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-		list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
-		if (!list.isEmpty()) {
-			for (Tanim tanim : list) {
-				if (!tanim.getKodu().equals(BordroDetayTipi.TANIMSIZ.value())) {
-					BordroDetayTipi bordroTipi = null;
-					try {
-						if (PdksUtil.hasStringValue(tanim.getKodu()))
-							bordroTipi = BordroDetayTipi.fromValue(tanim.getKodu().trim());
-					} catch (Exception e) {
-					}
-					if (bordroTipi != null)
-						izinGrupMap.put(tanim.getErpKodu(), bordroTipi.value());
-				}
-			}
-		}
+		TreeMap<String, String> izinGrupMap = ortakIslemler.getIzinGrupMap(session);
 		Calendar cal = Calendar.getInstance();
 		// Date bugun = PdksUtil.getDate(cal.getTime());
 		Date tarih = PdksUtil.convertToJavaDate(donemStr + "01", "yyyyMMdd");
@@ -974,21 +955,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								PersonelIzin personelIzin = vardiyaGun.getIzin();
 								if (personelIzin.getOrjIzin() != null)
 									personelIzin = personelIzin.getOrjIzin();
-								if (vardiyaGun.getVardiyaDateStr().equals("20240211"))
-									logger.debug("x");
+								if (haftaTatil)
+									logger.debug(vardiyaGun.getVardiyaDateStr());
 								izinTipi = personelIzin.getIzinTipi();
 								if (izinTipi != null) {
-									izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
-									if (!izinGrupMap.containsKey(izinKodu))
-										izinKodu = null;
-									else
-										izinKodu = izinGrupMap.get(izinKodu);
-									try {
-										izinBordroDetayTipi = BordroDetayTipi.fromValue(izinKodu);
-									} catch (Exception e) {
-										// TODO: handle exception
-									}
-									if (izinTipi.isUcretsizIzinTipi()) {
+									izinBordroDetayTipi = ortakIslemler.getBordroDetayTipi(izinTipi, izinGrupMap);
+									if (izinTipi.isUcretsizIzinTipi() || (izinBordroDetayTipi != null && izinBordroDetayTipi.equals(BordroDetayTipi.UCRETSIZ_IZIN))) {
 										calismaGun = 0;
 									} else if (saatlikCalisma) {
 										if (resmiTatil == false) {
@@ -1084,7 +1056,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							}
 
 						}
-						if (haftaTatil)
+						if (haftaTatil && calismaGun > 0)
 							haftaTatilSaat += vardiyaGun.getSaatCalisanHaftaTatilKatsayisi();
 					}
 

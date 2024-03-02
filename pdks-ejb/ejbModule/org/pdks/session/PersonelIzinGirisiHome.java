@@ -41,6 +41,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AramaSecenekleri;
+import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Dosya;
@@ -4450,6 +4451,26 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 				cumaBasla = PdksUtil.getDateField(izinBasTarih, Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
 			int cumartesi = 0;
 			ortakIslemler.setVardiyaYemekList(new ArrayList<VardiyaGun>(vardiyalar.values()), yemekGenelList);
+			if (izinTipi.isSenelikIzin() == false) {
+				pdksVardiyaGun.setVardiyaDate(PdksUtil.tariheGunEkleCikar(vardiyaDate, -1));
+				if (vardiyalar.containsKey(pdksVardiyaGun.getVardiyaKey())) {
+					VardiyaGun oncekiGun = vardiyalar.get(pdksVardiyaGun.getVardiyaKey());
+					if (oncekiGun.getIzin() != null) {
+						PersonelIzin izin = oncekiGun.getIzin();
+						if (izin.getIzinTipi().isSenelikIzin() == false) {
+							TreeMap<String, String> izinGrupMap = ortakIslemler.getIzinGrupMap(session);
+							BordroDetayTipi izinDetayTipi = ortakIslemler.getBordroDetayTipi(izinTipi, izinGrupMap);
+							if (izinDetayTipi != null && !izinDetayTipi.equals(BordroDetayTipi.UCRETLI_IZIN)) {
+								BordroDetayTipi oncekiIzinDetayTipi = ortakIslemler.getBordroDetayTipi(izin.getIzinTipi(), izinGrupMap);
+								if (oncekiIzinDetayTipi != null && !oncekiIzinDetayTipi.equals(BordroDetayTipi.UCRETLI_IZIN)) {
+									cumaBasla = false;
+								}
+							}
+						}
+					}
+				}
+			}
+
 			while (PdksUtil.tarihKarsilastirNumeric(personelIzin.getBitisZamani(), vardiyaDate) >= durum) {
 				pdksVardiyaGun.setVardiyaDate(vardiyaDate);
 				tarih = (Date) vardiyaDate.clone();

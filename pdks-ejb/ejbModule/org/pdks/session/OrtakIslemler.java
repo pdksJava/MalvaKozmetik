@@ -194,7 +194,6 @@ public class OrtakIslemler implements Serializable {
 	 */
 	private static final long serialVersionUID = 8530535795343437404L;
 	static Logger logger = Logger.getLogger(OrtakIslemler.class);
-	public static final int LIST_MAX_SIZE = 1800;
 
 	@In
 	Identity identity;
@@ -2560,7 +2559,7 @@ public class OrtakIslemler implements Serializable {
 		List idList = new ArrayList();
 		List veriList = new ArrayList();
 		try {
-			int size = LIST_MAX_SIZE - fieldsOrj.size();
+			int size = PdksEntityController.LIST_MAX_SIZE - fieldsOrj.size();
 			if (session == null && fieldsOrj != null && fieldsOrj.containsKey(PdksEntityController.MAP_KEY_SESSION))
 				session = (Session) fieldsOrj.get(PdksEntityController.MAP_KEY_SESSION);
 			List idInputList = new ArrayList(dataIdList);
@@ -2652,7 +2651,7 @@ public class OrtakIslemler implements Serializable {
 		try {
 			if (session == null && fieldsOrj != null && fieldsOrj.containsKey(PdksEntityController.MAP_KEY_SESSION))
 				session = (Session) fieldsOrj.get(PdksEntityController.MAP_KEY_SESSION);
-			int size = LIST_MAX_SIZE - fieldsOrj.size();
+			int size = PdksEntityController.LIST_MAX_SIZE - fieldsOrj.size();
 			List idInputList = new ArrayList(dataIdList);
 			String str = ":" + fieldName, sqlStr = sb.toString();
 			while (!idInputList.isEmpty()) {
@@ -2745,7 +2744,7 @@ public class OrtakIslemler implements Serializable {
 		try {
 			if (session == null && fieldsOrj != null && fieldsOrj.containsKey(PdksEntityController.MAP_KEY_SESSION))
 				session = (Session) fieldsOrj.get(PdksEntityController.MAP_KEY_SESSION);
-			int size = LIST_MAX_SIZE - fieldsOrj.size();
+			int size = PdksEntityController.LIST_MAX_SIZE - fieldsOrj.size();
 			if (idInputList == null) {
 				LinkedHashMap<String, Object> fields = new LinkedHashMap<String, Object>();
 				fields.putAll(fieldsOrj);
@@ -2831,7 +2830,7 @@ public class OrtakIslemler implements Serializable {
 					Long long1 = (Long) iterator.next();
 					idList.add(long1);
 					iterator.remove();
-					if (idList.size() + map.size() >= LIST_MAX_SIZE)
+					if (idList.size() + map.size() >= PdksEntityController.LIST_MAX_SIZE)
 						break;
 				}
 				map.put(fieldName, idList);
@@ -16870,6 +16869,57 @@ public class OrtakIslemler implements Serializable {
 
 		return sonVardiyaGun;
 
+	}
+
+	/**
+	 * @param izinTipi
+	 * @param izinGrupMap
+	 * @return
+	 */
+	public BordroDetayTipi getBordroDetayTipi(IzinTipi izinTipi, TreeMap<String, String> izinGrupMap) {
+		String izinKodu = izinTipi.getIzinTipiTanim().getErpKodu();
+		if (!izinGrupMap.containsKey(izinKodu))
+			izinKodu = null;
+		else
+			izinKodu = izinGrupMap.get(izinKodu);
+		BordroDetayTipi izinBordroDetayTipi = null;
+		try {
+			if (izinKodu != null)
+				izinBordroDetayTipi = BordroDetayTipi.fromValue(izinKodu);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return izinBordroDetayTipi;
+	}
+
+	/**
+	 * @param session
+	 * @return
+	 */
+	public TreeMap<String, String> getIzinGrupMap(Session session) {
+		TreeMap<String, String> izinGrupMap = new TreeMap<String, String>();
+		List<Tanim> list;
+		HashMap fields = new HashMap();
+		fields.put("tipi", Tanim.TIPI_IZIN_KODU_GRUPLARI);
+		fields.put("durum", Boolean.TRUE);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		list = pdksEntityController.getObjectByInnerObjectList(fields, Tanim.class);
+		if (!list.isEmpty()) {
+			for (Tanim tanim : list) {
+				if (!tanim.getKodu().equals(BordroDetayTipi.TANIMSIZ.value())) {
+					BordroDetayTipi bordroTipi = null;
+					try {
+						if (PdksUtil.hasStringValue(tanim.getKodu()))
+							bordroTipi = BordroDetayTipi.fromValue(tanim.getKodu().trim());
+					} catch (Exception e) {
+					}
+					if (bordroTipi != null)
+						izinGrupMap.put(tanim.getErpKodu(), bordroTipi.value());
+				}
+			}
+		}
+		return izinGrupMap;
 	}
 
 	/**
