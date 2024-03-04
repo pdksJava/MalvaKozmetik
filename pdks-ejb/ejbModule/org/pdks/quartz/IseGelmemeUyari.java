@@ -185,9 +185,9 @@ public class IseGelmemeUyari implements Serializable {
 		try {
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT P.*   FROM  " + Personel.TABLE_NAME + "  P WITH(nolock) ");
-			sb.append(" where P." + Personel.COLUMN_NAME_DURUM + "=1 AND P." + Personel.COLUMN_NAME_HAREKET_MAIL_ID + " IS NOT NULL");
-			sb.append(" AND P." + Personel.COLUMN_NAME_MAIL_TAKIP + "=1 AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=CAST(GETDATE() AS date)");
+			sb.append("SELECT P.*   FROM " + Personel.TABLE_NAME + " P WITH(nolock) ");
+			sb.append(" where P." + Personel.COLUMN_NAME_DURUM + " = 1 AND P." + Personel.COLUMN_NAME_HAREKET_MAIL_ID + " IS NOT NULL");
+			sb.append(" AND P." + Personel.COLUMN_NAME_MAIL_TAKIP + " = 1 AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= convert(date,GETDATE())");
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			// fields.put("ad", "hareketMailGrubu");
@@ -1863,7 +1863,7 @@ public class IseGelmemeUyari implements Serializable {
 			sb.append("	),");
 			sb.append("	DEP_YONETICI AS (");
 			sb.append("		SELECT R.ROLENAME DEP_YONETICI_ROL_ADI FROM " + Role.TABLE_NAME + " R WITH(nolock)");
-			sb.append("		WHERE R." + Role.COLUMN_NAME_ROLE_NAME + "='" + Role.TIPI_DEPARTMAN_SUPER_VISOR + "' AND R." + Role.COLUMN_NAME_STATUS + "=1");
+			sb.append("		WHERE R." + Role.COLUMN_NAME_ROLE_NAME + " = '" + Role.TIPI_DEPARTMAN_SUPER_VISOR + "' AND R." + Role.COLUMN_NAME_STATUS + " = 1 ");
 			sb.append("	) ");
 			sb.append("	SELECT COALESCE(DY.DEP_YONETICI_ROL_ADI,'') DEP_YONETICI_ROL_ADI, GETDATE() AS TARIH FROM BUGUN B ");
 			sb.append("	LEFT JOIN DEP_YONETICI DY ON 1=1");

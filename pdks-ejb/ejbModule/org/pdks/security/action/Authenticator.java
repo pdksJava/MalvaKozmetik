@@ -152,10 +152,10 @@ public class Authenticator implements IAuthenticator, Serializable {
 				HashMap parametreMap = new HashMap();
 				StringBuffer sb = new StringBuffer();
 				sb.append("SELECT U.* FROM " + Personel.TABLE_NAME + " P WITH(nolock)");
-				sb.append("INNER JOIN " + User.TABLE_NAME + " U ON P." + Personel.COLUMN_NAME_ID + "=U." + User.COLUMN_NAME_PERSONEL + " AND U." + User.COLUMN_NAME_DURUM + "=1 AND U." + User.COLUMN_NAME_DEPARTMAN + " IS NOT NULL ");
-				sb.append(" WHERE  P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo AND P." + Personel.COLUMN_NAME_DURUM + "=1  ");
-				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=CAST(GETDATE() AS date) AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=CAST(GETDATE() AS date)");
-				sb.append(" AND  P." + Personel.COLUMN_NAME_DURUM + "=1");
+				sb.append("INNER JOIN " + User.TABLE_NAME + " U ON P." + Personel.COLUMN_NAME_ID + " = U." + User.COLUMN_NAME_PERSONEL + " AND U." + User.COLUMN_NAME_DURUM + " = 1 AND U." + User.COLUMN_NAME_DEPARTMAN + " IS NOT NULL ");
+				sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " = :sicilNo AND P." + Personel.COLUMN_NAME_DURUM + " = 1  ");
+				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + " <= convert(date,GETDATE()) AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= convert(date,GETDATE())");
+				sb.append(" AND  P." + Personel.COLUMN_NAME_DURUM + " = 1 ");
 				parametreMap.put("sicilNo", sicilNo);
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -322,7 +322,7 @@ public class Authenticator implements IAuthenticator, Serializable {
 				logger.error("PDKS hata out : " + e.getMessage());
 				logger.debug("Hata : " + e.getMessage());
 			}
-			logger.debug("authenticating  " + username);
+			logger.debug("authenticating " + username);
 			return sonuc;
 		}
 	}
@@ -335,8 +335,8 @@ public class Authenticator implements IAuthenticator, Serializable {
 	private User getKullanici(String userName, String fieldName) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT S.* FROM " + User.TABLE_NAME + " S  WITH(nolock) ");
-		sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=S." + User.COLUMN_NAME_PERSONEL);
-		sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=CAST(GETDATE() AS date) AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=CAST(GETDATE() AS date)");
+		sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + " = S." + User.COLUMN_NAME_PERSONEL);
+		sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + " <= convert(date,GETDATE()) AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= convert(date,GETDATE())");
 		if (userName.indexOf("%") > 0)
 			sb.append(" WHERE S." + fieldName + " LIKE :userName");
 		else

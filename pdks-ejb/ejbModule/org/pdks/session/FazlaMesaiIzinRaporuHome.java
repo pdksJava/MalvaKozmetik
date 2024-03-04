@@ -263,9 +263,9 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			HashMap fields = new HashMap();
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT DISTINCT P.* FROM " + VardiyaGun.TABLE_NAME + " VG WITH(nolock) ");
-			sb.append(" INNER JOIN " + Vardiya.TABLE_NAME + " V ON VG." + VardiyaGun.COLUMN_NAME_VARDIYA + "=V." + Vardiya.COLUMN_NAME_ID);
-			sb.append(" AND V." + Vardiya.COLUMN_NAME_VARDIYA_TIPI + "=:vt");
-			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON VG." + VardiyaGun.COLUMN_NAME_PERSONEL + "=P." + Personel.COLUMN_NAME_ID);
+			sb.append(" INNER JOIN " + Vardiya.TABLE_NAME + " V ON VG." + VardiyaGun.COLUMN_NAME_VARDIYA + " = V." + Vardiya.COLUMN_NAME_ID);
+			sb.append(" AND V." + Vardiya.COLUMN_NAME_VARDIYA_TIPI + " = :vt");
+			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON VG." + VardiyaGun.COLUMN_NAME_PERSONEL + " = P." + Personel.COLUMN_NAME_ID);
 			sb.append("	WHERE VG." + VardiyaGun.COLUMN_NAME_PERSONEL + " :" + fieldName);
 			sb.append("	AND VG." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " >=:b1 AND VG." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " <=:b2 ");
 			fields.put("vt", Vardiya.TIPI_FMI);
@@ -280,10 +280,10 @@ public class FazlaMesaiIzinRaporuHome extends EntityHome<VardiyaGun> implements 
 			fields.clear();
 			sb = new StringBuffer();
 			sb.append("SELECT DISTINCT P.* FROM " + PersonelIzin.TABLE_NAME + " I WITH(nolock) ");
-			sb.append(" INNER JOIN " + IzinTipi.TABLE_NAME + " IT ON I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI + "=IT." + IzinTipi.COLUMN_NAME_ID);
-			sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T ON IT." + IzinTipi.COLUMN_NAME_IZIN_TIPI + "=T." + Tanim.COLUMN_NAME_ID);
-			sb.append(" AND T." + Tanim.COLUMN_NAME_KODU + "=:k");
-			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON I." + PersonelIzin.COLUMN_NAME_PERSONEL + "=P." + Personel.COLUMN_NAME_ID);
+			sb.append(" INNER JOIN " + IzinTipi.TABLE_NAME + " IT ON I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI + " = IT." + IzinTipi.COLUMN_NAME_ID);
+			sb.append(" INNER JOIN " + Tanim.TABLE_NAME + " T ON IT." + IzinTipi.COLUMN_NAME_IZIN_TIPI + " = T." + Tanim.COLUMN_NAME_ID);
+			sb.append(" AND T." + Tanim.COLUMN_NAME_KODU + " = :k");
+			sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON I." + PersonelIzin.COLUMN_NAME_PERSONEL + " = P." + Personel.COLUMN_NAME_ID);
 			sb.append("	WHERE I." + PersonelIzin.COLUMN_NAME_PERSONEL + " :" + fieldName);
 			sb.append("	AND I." + PersonelIzin.COLUMN_NAME_BITIS_ZAMANI + " >=:b1 AND I." + PersonelIzin.COLUMN_NAME_BASLANGIC_ZAMANI + " <=:b2 ");
 			fields.put("k", IzinTipi.FAZLA_MESAI);

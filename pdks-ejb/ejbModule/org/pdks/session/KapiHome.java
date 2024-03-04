@@ -110,7 +110,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT P.*   FROM  VIEW_KAPI_SIRKET_KGS_LIST  P ");
-			String str = " INNER  JOIN " + Kapi.TABLE_NAME + " K ON K." + Kapi.COLUMN_NAME_KGS_ID + "=P." + KapiKGS.COLUMN_NAME_ID;
+			String str = " INNER  JOIN " + Kapi.TABLE_NAME + " K ON K." + Kapi.COLUMN_NAME_KGS_ID + " = P." + KapiKGS.COLUMN_NAME_ID;
 			if (PdksUtil.hasStringValue(kapiView.getKapiAciklama())) {
 				sb.append(str);
 				sb.append(" AND K." + Kapi.COLUMN_NAME_ACIKLAMA + " LIKE :k");
@@ -119,7 +119,7 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 			}
 			if (kapiView.getKapi().getTipi() != null) {
 				sb.append(str);
-				sb.append(" AND K." + Kapi.COLUMN_NAME_KAPI_TIPI + " =:t");
+				sb.append(" AND K." + Kapi.COLUMN_NAME_KAPI_TIPI + " = :t");
 				parametreMap.put("t", kapiView.getKapi().getTipi().getId());
 				str = "";
 			}
@@ -147,9 +147,9 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 				String fieldName = "k";
 				HashMap fields = new HashMap();
 				sb = new StringBuffer();
-				sb.append("SELECT P.*   FROM  " + KapiKGS.TABLE_NAME + "  P   WITH(nolock) ");
+				sb.append("SELECT P.*   FROM " + KapiKGS.TABLE_NAME + " P   WITH(nolock) ");
 				sb.append(" where  P." + KapiKGS.COLUMN_NAME_ID + " :" + fieldName);
-				sb.append(" ORDER BY  " + KapiKGS.COLUMN_NAME_ACIKLAMA);
+				sb.append(" ORDER BY " + KapiKGS.COLUMN_NAME_ACIKLAMA);
 				fields.put(fieldName, idList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);

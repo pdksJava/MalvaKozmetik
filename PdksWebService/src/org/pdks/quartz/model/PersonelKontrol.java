@@ -103,7 +103,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 	 * @param spName
 	 */
 	private void topluUpdate(PdksDAO pdksDAO, String spName) {
-		logger.info(spName + "  in " + PdksUtil.getCurrentTimeStampStr());
+		logger.info(spName + " in " + PdksUtil.getCurrentTimeStampStr());
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put(BaseDAOHibernate.MAP_KEY_SELECT, spName);
 		try {
@@ -112,7 +112,7 @@ public final class PersonelKontrol extends QuartzJobBean {
 			logger.error(e);
 		}
 		pdksDAO.execSP(map);
-		logger.info(spName + "  out " + PdksUtil.getCurrentTimeStampStr());
+		logger.info(spName + " out " + PdksUtil.getCurrentTimeStampStr());
 	}
 
 	/**
@@ -123,10 +123,10 @@ public final class PersonelKontrol extends QuartzJobBean {
 		HashMap fields = new HashMap();
 		StringBuffer sql = new StringBuffer();
 		sql.append(" select P.* from " + Personel.TABLE_NAME + " P ");
-		sql.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_SIRKET + " AND S." + Sirket.COLUMN_NAME_DURUM + "=1 AND S." + Sirket.COLUMN_NAME_ERP_DURUM + "=1 ");
-		sql.append(" INNER JOIN " + Personel.TABLE_NAME + " Y ON Y." + Personel.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_YONETICI + " AND Y." + Personel.COLUMN_NAME_ISTEN_AYRILIS_TARIHI + "<GETDATE() ");
-		sql.append(" WHERE P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=CAST(GETDATE() AS date) AND P." + Personel.COLUMN_NAME_DURUM + "=1 ");
-		sql.append(" AND P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + ">=GETDATE() ");
+		sql.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + " = P." + Personel.COLUMN_NAME_SIRKET + " AND S." + Sirket.COLUMN_NAME_DURUM + " = 1 AND S." + Sirket.COLUMN_NAME_ERP_DURUM + " = 1 ");
+		sql.append(" INNER JOIN " + Personel.TABLE_NAME + " Y ON Y." + Personel.COLUMN_NAME_ID + " = P." + Personel.COLUMN_NAME_YONETICI + " AND Y." + Personel.COLUMN_NAME_ISTEN_AYRILIS_TARIHI + "<GETDATE() ");
+		sql.append(" WHERE P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= convert(date,GETDATE()) AND P." + Personel.COLUMN_NAME_DURUM + " = 1 ");
+		sql.append(" AND P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + " >= GETDATE() ");
 		sql.append(" ORDER BY Y." + Personel.COLUMN_NAME_AD + ",Y." + Personel.COLUMN_NAME_SOYAD + ",Y." + Personel.COLUMN_NAME_ID);
 		List<Personel> hataliPersonelList = pdksDAO.getNativeSQLList(fields, sql, Personel.class);
 		if (!hataliPersonelList.isEmpty()) {

@@ -312,7 +312,7 @@ public class FazlaMesaiGuncelleme implements Serializable {
 
 			}
 			if (manuel == false)
-				logger.debug(sb.toString() + " " + dosyalar.size() + "  " + PdksUtil.getCurrentTimeStampStr());
+				logger.debug(sb.toString() + " " + dosyalar.size() + " " + PdksUtil.getCurrentTimeStampStr());
 			if (sb.length() > 0 || !dosyalar.isEmpty())
 				try {
 					Dosya dosya = null;

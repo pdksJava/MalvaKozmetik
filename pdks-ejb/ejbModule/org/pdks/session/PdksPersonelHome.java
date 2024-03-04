@@ -1971,8 +1971,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				String fieldName = "p";
 				StringBuffer sb = new StringBuffer();
 				sb.append(" SELECT D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " FROM " + PersonelDinamikAlan.TABLE_NAME + " D WITH(nolock) ");
-				sb.append(" WHERE  D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + ":" + fieldName + " AND  " + PersonelDinamikAlan.COLUMN_NAME_ALAN + "=" + ikinciYoneticiOlmaz.getId());
-				sb.append(" AND  " + PersonelDinamikAlan.COLUMN_NAME_DURUM_SECIM + "=1");
+				sb.append(" WHERE D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + ":" + fieldName + " AND " + PersonelDinamikAlan.COLUMN_NAME_ALAN + " = " + ikinciYoneticiOlmaz.getId());
+				sb.append(" AND " + PersonelDinamikAlan.COLUMN_NAME_DURUM_SECIM + " = 1 ");
 				fields.put(fieldName, idList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -2132,8 +2132,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		List<PersonelView> list = null;
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
-		sb.append("SELECT V.*   FROM  " + PersonelKGS.TABLE_NAME + "  V WITH(nolock) ");
-		sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " Y ON Y." + Personel.COLUMN_NAME_KGS_PERSONEL + "=V." + PersonelKGS.COLUMN_NAME_ID);
+		sb.append("SELECT V.*   FROM " + PersonelKGS.TABLE_NAME + " V WITH(nolock) ");
+		sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " Y ON Y." + Personel.COLUMN_NAME_KGS_PERSONEL + " = V." + PersonelKGS.COLUMN_NAME_ID);
 		String str = " WHERE ";
 		if (PdksUtil.hasStringValue(adi)) {
 			fields.put("ad1", "%" + adi.trim() + "%");
@@ -2176,7 +2176,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		boolean bos = fields.isEmpty();
 		Date bugun = PdksUtil.getDate(new Date());
 		if (bos)
-			sb.append(str + " V." + PersonelKGS.COLUMN_NAME_DURUM + " =1 AND V." + PersonelKGS.COLUMN_NAME_PERSONEL_ID + " IS NULL");
+			sb.append(str + " V." + PersonelKGS.COLUMN_NAME_DURUM + " = 1 AND V." + PersonelKGS.COLUMN_NAME_PERSONEL_ID + " IS NULL");
 		if (authenticatedUser.isIK_Tesis() && authenticatedUser.getPdksPersonel().getTesis() != null)
 			userTesisId = authenticatedUser.getPdksPersonel().getTesis().getId();
 
@@ -2809,8 +2809,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		if (ortakIslemler.getParameterKeyHasStringValue(key)) {
 			StringBuffer sb = new StringBuffer();
 			sb.append(" SELECT PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " FROM " + PersonelERPDB.VIEW_NAME + " D WITH(nolock) ");
-			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " PS ON PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=D." + PersonelERPDB.COLUMN_NAME_PERSONEL_NO);
-			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET + "  AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1");
+			sb.append(" INNER JOIN " + PersonelKGS.TABLE_NAME + " PS ON PS." + PersonelKGS.COLUMN_NAME_SICIL_NO + " = D." + PersonelERPDB.COLUMN_NAME_PERSONEL_NO);
+			sb.append(" INNER JOIN " + KapiSirket.TABLE_NAME + " K ON K." + KapiSirket.COLUMN_NAME_ID + " = PS." + PersonelKGS.COLUMN_NAME_KGS_SIRKET + " AND PS." + PersonelKGS.COLUMN_NAME_DURUM + " = 1");
 			sb.append(" AND K." + KapiSirket.COLUMN_NAME_DURUM + " = 1 AND K." + KapiSirket.COLUMN_NAME_BIT_TARIH + " > GETDATE()");
 			sb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = PS." + PersonelKGS.COLUMN_NAME_ID);
 			sb.append(" WHERE P." + Personel.COLUMN_NAME_ID + " IS NULL");

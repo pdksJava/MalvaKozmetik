@@ -407,22 +407,22 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			if ((personelId == null || personelId.isEmpty()) && (sirketId != null || departmanId != null)) {
 				sb = new StringBuffer();
 				sb.append("SELECT  V.* FROM " + PdksPersonelView.TABLE_NAME + " V WITH(nolock) ");
-				sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=V." + PdksPersonelView.COLUMN_NAME_PERSONEL);
+				sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + " = V." + PdksPersonelView.COLUMN_NAME_PERSONEL);
 				if (!admin) {
 					sb.append(" AND  P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :ys");
 					ArrayList<String> list = authenticatedUser.getYetkiTumPersonelNoList();
 					parametreMap.put("ys", list);
 				}
 				if (PdksUtil.hasStringValue(sicilNo)) {
-					sb.append(" AND  P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo");
+					sb.append(" AND  P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " = :sicilNo");
 					parametreMap.put("sicilNo", sicilNo);
 				} else if (admin) {
 					if (sirketId != null) {
-						sb.append(" AND  P." + Personel.COLUMN_NAME_SIRKET + "=:sirketId");
+						sb.append(" AND  P." + Personel.COLUMN_NAME_SIRKET + " = :sirketId");
 						parametreMap.put("sirketId", sirketId);
 					} else if (departmanId != null) {
-						sb.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_SIRKET);
-						sb.append(" AND  S." + Sirket.COLUMN_NAME_DEPARTMAN + "=:departmanId");
+						sb.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + " = P." + Personel.COLUMN_NAME_SIRKET);
+						sb.append(" AND  S." + Sirket.COLUMN_NAME_DEPARTMAN + " = :departmanId");
 						parametreMap.put("departmanId", departmanId);
 					}
 				}
@@ -644,7 +644,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 						try {
 							MailObject mail = new MailObject();
 							mail.setSubject("Kapı hareketleri zip");
-							String body = "<p>" + authenticatedUser.getTarihFormatla(basTarih, PdksUtil.getDateFormat()) + "-" + authenticatedUser.getTarihFormatla(bitTarih, PdksUtil.getDateFormat()) + "  kapı giriş çıkış 	hareketleri ektedir.</p>";
+							String body = "<p>" + authenticatedUser.getTarihFormatla(basTarih, PdksUtil.getDateFormat()) + "-" + authenticatedUser.getTarihFormatla(bitTarih, PdksUtil.getDateFormat()) + " kapı giriş çıkış 	hareketleri ektedir.</p>";
 							mail.setBody(body);
 							mail.getToList().add(authenticatedUser.getMailPersonel());
 							MailFile mf = new MailFile();

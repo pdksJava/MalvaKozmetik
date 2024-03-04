@@ -21,7 +21,7 @@ public class PdksIdentityStore implements Serializable {
 	private static final long serialVersionUID = -2115037909132364966L;
 
 	public boolean authenticate(String arg0, String arg1) {
-		logger.debug("user name :" + arg0 + " passw:  " + arg1);
+		logger.debug("user name :" + arg0 + " passw: " + arg1);
 		return true;
 	}
 

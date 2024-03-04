@@ -928,7 +928,7 @@ public class PdksUtil implements Serializable {
 		long zoneDSTFark = getTimeZoneDSTFark(tarihBit, tarihBas);
 		double fark = getSaatFarkiHesapla(tarihBit, tarihBas);
 		if (zoneDSTFark != 0) {
-			logger.debug(fark + " " + tarihBit + "  " + tarihBas + " " + zoneDSTFark);
+			logger.debug(fark + " " + tarihBit + " " + tarihBas + " " + zoneDSTFark);
 			double fark1 = getSaatFarkiHesapla(tariheAyEkleCikar((Date) tarihBit.clone(), 1), tariheAyEkleCikar((Date) tarihBas.clone(), 1));
 			if (fark1 != fark) {
 				double fark2 = getSaatFarkiHesapla(tariheAyEkleCikar((Date) tarihBit.clone(), 2), tariheAyEkleCikar((Date) tarihBas.clone(), 2));

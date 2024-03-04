@@ -1485,13 +1485,13 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT S.* from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
-		sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + "=S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
+		sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_ID + " = S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
 		sb.append(" AND P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + " IS NOT NULL AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " IS NOT NULL ");
 		sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :" + fieldName);
-		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId() + " AND S." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1");
-		sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1 ");
+		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + " = " + denklestirmeAy.getId() + " AND S." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + " = 1 ");
+		sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + " = 1 ");
 		if (aylikPuantajDefault.getSonGun().before(new Date()))
-			sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1");
+			sb.append(" AND S." + PersonelDenklestirme.COLUMN_NAME_DURUM + " = 1 ");
 		fields.put(fieldName, siciller);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);

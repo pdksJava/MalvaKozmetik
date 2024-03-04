@@ -261,7 +261,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 			}
 			dosyaTamam = list.isEmpty();
 			if (dosyaTamam == false) {
-				PdksUtil.addMessageAvailableInfo("Aşağıdaki personel" + (list.size() > 1 ? "ler" : "") + "   bilgileri bulunamadı!");
+				PdksUtil.addMessageAvailableInfo("Aşağıdaki personel" + (list.size() > 1 ? "ler" : "") + "  bilgileri bulunamadı!");
 				for (Personel personel : list) {
 					PdksUtil.addMessageAvailableWarn(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
 				}

@@ -1306,7 +1306,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		ExcelUtil.setFillForegroundColor(styleEgitim, 0, 0, 255);
 		ExcelUtil.setFillForegroundColor(styleOff, 13, 12, 89);
 		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
-		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(basTarih, PdksUtil.getDateFormat()) + " - " + PdksUtil.convertToDateString(bitTarih, PdksUtil.getDateFormat() + "  "), "_", "");
+		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(basTarih, PdksUtil.getDateFormat()) + " - " + PdksUtil.convertToDateString(bitTarih, PdksUtil.getDateFormat() + " "), "_", "");
 		ExcelUtil.getCell(sheet, row, col, header).setCellValue(aciklamaExcel);
 		for (int i = 0; i < 3; i++)
 			ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");

@@ -477,7 +477,7 @@ public class PersonelIzinKopyalaHome extends EntityHome<PersonelIzin> implements
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
 		sb.append("SELECT  I.* FROM " + PersonelIzin.TABLE_NAME + " I WITH(nolock) ");
-		sb.append(" INNER JOIN " + IzinTipi.TABLE_NAME + " T ON T." + IzinTipi.COLUMN_NAME_ID + "=I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI);
+		sb.append(" INNER JOIN " + IzinTipi.TABLE_NAME + " T ON T." + IzinTipi.COLUMN_NAME_ID + " = I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI);
 		sb.append(" WHERE I." + PersonelIzin.COLUMN_NAME_PERSONEL + " :pId");
 		if (idStr.length() > 0)
 			sb.append(" AND I." + PersonelIzin.COLUMN_NAME_IZIN_TIPI + " IN (" + idStr + ") ");

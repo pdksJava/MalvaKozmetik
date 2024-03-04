@@ -278,7 +278,7 @@ public class PersonelIzin extends BaseObject {
 
 			for (PersonelIzinOnay personelIzinOnay : onaylayanlar) {
 				if (personelIzinOnay.getOnayDurum() == PersonelIzinOnay.ONAY_DURUM_RED)
-					aciklama.append(personelIzinOnay.getOnaylamamaNeden().getAciklama() + "  " + personelIzinOnay.getOnaylamamaNedenAciklama());
+					aciklama.append(personelIzinOnay.getOnaylamamaNeden().getAciklama() + " " + personelIzinOnay.getOnaylamamaNedenAciklama());
 			}
 
 		}

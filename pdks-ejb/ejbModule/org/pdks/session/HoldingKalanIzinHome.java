@@ -188,13 +188,13 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 				sb = new StringBuffer();
 				sb.append("SELECT P." + Personel.COLUMN_NAME_ID + " AS PER_ID," + Personel.COLUMN_NAME_IZIN_HAKEDIS_TARIHI + ", P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " from " + Personel.TABLE_NAME + " P WITH(nolock) ");
 				sb.append(" WHERE P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :" + fieldName);
-				sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "=:t");
+				sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + " = :t");
 				fields.put("t", sirket.getId());
 				if (istenAyrilanEkle) {
 					sb.append(" AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >=:ia");
 					fields.put("ia", istenAyrilmaTarih);
 				}
-				sb.append(" ORDER BY  " + Personel.COLUMN_NAME_IZIN_HAKEDIS_TARIHI + ", P." + Personel.COLUMN_NAME_PDKS_SICIL_NO);
+				sb.append(" ORDER BY " + Personel.COLUMN_NAME_IZIN_HAKEDIS_TARIHI + ", P." + Personel.COLUMN_NAME_PDKS_SICIL_NO);
 
 				fields.put(fieldName, sorguList);
 				if (session != null)
@@ -275,7 +275,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 					sb.append(" AND  P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >=:ia1");
 					fields.put("ia2", hakedisTarihi);
 				}
-				sb.append(" ORDER BY  " + Personel.COLUMN_NAME_IZIN_HAKEDIS_TARIHI + ", P." + Personel.COLUMN_NAME_PDKS_SICIL_NO);
+				sb.append(" ORDER BY " + Personel.COLUMN_NAME_IZIN_HAKEDIS_TARIHI + ", P." + Personel.COLUMN_NAME_PDKS_SICIL_NO);
 				fields.put(fieldName, numStrList);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);

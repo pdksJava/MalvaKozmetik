@@ -209,7 +209,7 @@ public class PersonelERPGuncelleme implements Serializable {
 
 		try {
 			if (guncellemeDBDurum == false) {
-				logger.info("ozel islemler in  " + PdksUtil.getCurrentTimeStampStr());
+				logger.info("ozel islemler in " + PdksUtil.getCurrentTimeStampStr());
 				kullaniciGuncelle(session, null);
 				if (sapDurum) {
 					ortakIslemler.yeniPersonelleriOlustur(session);
@@ -457,9 +457,9 @@ public class PersonelERPGuncelleme implements Serializable {
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("select P.* from " + Personel.TABLE_NAME + " P  WITH(nolock) ");
-		sb.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_SIRKET + " AND S." + Sirket.COLUMN_NAME_DURUM + "=1 AND S." + Sirket.COLUMN_NAME_ERP_DURUM + "=1 ");
-		sb.append(" AND S." + Sirket.COLUMN_NAME_PDKS + "=1  AND S." + Sirket.COLUMN_NAME_FAZLA_MESAI + "=1   ");
-		sb.append(" WHERE P." + Personel.COLUMN_NAME_DURUM + "=0 and P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=CAST(GETDATE() AS date)");
+		sb.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + " = P." + Personel.COLUMN_NAME_SIRKET + " AND S." + Sirket.COLUMN_NAME_DURUM + " = 1 AND S." + Sirket.COLUMN_NAME_ERP_DURUM + " = 1 ");
+		sb.append(" AND S." + Sirket.COLUMN_NAME_PDKS + " = 1  AND S." + Sirket.COLUMN_NAME_FAZLA_MESAI + " = 1   ");
+		sb.append(" WHERE P." + Personel.COLUMN_NAME_DURUM + " = 0 and P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= convert(date,GETDATE())");
 		sb.append(" ORDER BY P." + Personel.COLUMN_NAME_PDKS_SICIL_NO);
 		HashMap fields = new HashMap();
 		if (session != null)
@@ -482,9 +482,9 @@ public class PersonelERPGuncelleme implements Serializable {
 			if (sapKodu != null && sapKodu.trim().length() == 4) {
 				StringBuffer sb = new StringBuffer();
 				sb.append("select P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " from " + Personel.TABLE_NAME + " P  WITH(nolock)");
-				sb.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + "=P." + Personel.COLUMN_NAME_SIRKET + " AND S." + Sirket.COLUMN_NAME_DURUM + "=1 AND S." + Sirket.COLUMN_NAME_DURUM + "=1 ");
-				sb.append(" AND S." + Sirket.COLUMN_NAME_PDKS + "=1  AND S." + Sirket.COLUMN_NAME_FAZLA_MESAI + "=1 AND S.ERP_KODU=:sapKodu ");
-				sb.append(" WHERE P." + Personel.COLUMN_NAME_DURUM + "=1 and P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=CAST(GETDATE() AS date)");
+				sb.append(" INNER JOIN " + Sirket.TABLE_NAME + " S ON S." + Sirket.COLUMN_NAME_ID + " = P." + Personel.COLUMN_NAME_SIRKET + " AND S." + Sirket.COLUMN_NAME_DURUM + " = 1 AND S." + Sirket.COLUMN_NAME_DURUM + " = 1 ");
+				sb.append(" AND S." + Sirket.COLUMN_NAME_PDKS + " = 1  AND S." + Sirket.COLUMN_NAME_FAZLA_MESAI + " = 1 AND S.ERP_KODU=:sapKodu ");
+				sb.append(" WHERE P." + Personel.COLUMN_NAME_DURUM + " = 1 and P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= convert(date,GETDATE())");
 				sb.append(" ORDER BY P." + Personel.COLUMN_NAME_PDKS_SICIL_NO);
 				HashMap fields = new HashMap();
 				fields.put("erpKodu", sapKodu.trim());
@@ -508,9 +508,9 @@ public class PersonelERPGuncelleme implements Serializable {
 	public String aktifMailAdressGuncelle(Session session) {
 		HashMap fields = new HashMap();
 		StringBuffer sb = new StringBuffer();
-		sb.append("SELECT DISTINCT P.*  FROM  " + Personel.TABLE_NAME + " P WITH(nolock) ");
-		sb.append(" WHERE P." + Personel.COLUMN_NAME_DURUM + "=1 AND (" + Personel.COLUMN_NAME_MAIL_CC_ID + " IS NOT NULL OR " + Personel.COLUMN_NAME_MAIL_BCC_ID + " IS NOT NULL OR " + Personel.COLUMN_NAME_HAREKET_MAIL_ID + " IS NOT NULL)");
-		sb.append(" AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >=CAST(GETDATE() AS date)   ");
+		sb.append("SELECT DISTINCT P.*  FROM " + Personel.TABLE_NAME + " P WITH(nolock) ");
+		sb.append(" WHERE P." + Personel.COLUMN_NAME_DURUM + " = 1 AND (" + Personel.COLUMN_NAME_MAIL_CC_ID + " IS NOT NULL OR " + Personel.COLUMN_NAME_MAIL_BCC_ID + " IS NOT NULL OR " + Personel.COLUMN_NAME_HAREKET_MAIL_ID + " IS NOT NULL)");
+		sb.append(" AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >=convert(date,GETDATE())   ");
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		try {

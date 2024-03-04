@@ -962,7 +962,7 @@ public class PdksUtil implements Serializable {
 				else
 					sb.append(sa.charAt(i));
 			}
-			logger.debug("Önceki hali " + sa + "  Sonraki hali: " + sb.toString());
+			logger.debug("Önceki hali " + sa + " Sonraki hali: " + sb.toString());
 			sa = sb.toString();
 			sb = null;
 		}
@@ -1122,7 +1122,7 @@ public class PdksUtil implements Serializable {
 			fark = getSaatFarkiHesapla(tarihBit, tarihBas);
 			long zoneDSTFark = getTimeZoneDSTFark(tarihBit, tarihBas);
 			if (zoneDSTFark != 0) {
-				logger.debug(fark + " " + tarihBit + "  " + tarihBas + " " + zoneDSTFark);
+				logger.debug(fark + " " + tarihBit + " " + tarihBas + " " + zoneDSTFark);
 				double fark1 = getSaatFarkiHesapla(tariheAyEkleCikar((Date) tarihBit.clone(), 1), tariheAyEkleCikar((Date) tarihBas.clone(), 1));
 				if (fark1 != fark) {
 					double fark2 = getSaatFarkiHesapla(tariheAyEkleCikar((Date) tarihBit.clone(), 2), tariheAyEkleCikar((Date) tarihBas.clone(), 2));
@@ -1772,6 +1772,12 @@ public class PdksUtil implements Serializable {
 		return str;
 	}
 
+	/**
+	 * @param str
+	 * @param pattern
+	 * @param replace
+	 * @return
+	 */
 	public static String replaceAllManuel(String str, String pattern, String replace) {
 		StringBuffer lSb = new StringBuffer();
 		if ((str != null) && (pattern != null) && (pattern.length() > 0) && (replace != null)) {

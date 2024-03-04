@@ -296,7 +296,7 @@ public class P10P20Home extends EntityHome<HareketKGS> implements Serializable {
 		String currentSaat = "" + saat.get(Calendar.HOUR_OF_DAY) + ":" + saat.get(Calendar.MINUTE);
 		String curentDate = "" + day + "." + month + "." + year;
 		String upString1 = "------  ------  ------------00\n";
-		String upString2 = currentSaat + " -  " + currentSaat + " -  " + curentDate + " 000\n";
+		String upString2 = currentSaat + " - " + currentSaat + " - " + curentDate + " 000\n";
 		String pCondition = "";
 		String strFile = curentDate + "." + saat.get(Calendar.HOUR_OF_DAY) + "." + saat.get(Calendar.MINUTE) + "." + saat.get(Calendar.SECOND) + ".txt";
 

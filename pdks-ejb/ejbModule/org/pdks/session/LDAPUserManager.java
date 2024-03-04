@@ -232,7 +232,7 @@ public class LDAPUserManager implements Serializable {
 			// specify the LDAP search filter
 			String searchFilter = "(" + objectClass;
 			if (value != null && tip != null)
-				searchFilter += "(" + tip + "=" + value + ")";
+				searchFilter += "(" + tip + " = " + value + ")";
 			searchFilter += ")";
 
 			// Specify the Base for the search

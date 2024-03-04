@@ -386,7 +386,7 @@ public class PersonelGeciciYoneticiHome extends EntityHome<PersonelGeciciYonetic
 			try {
 				MailObject mail = new MailObject();
 				mail.setSubject("Rotasyon Bilgisi");
-				String body = "<p>" + mailAciklamaTarih + " tarihleri arasında " + mailAciklamaUserList + " adlı personel/personeller " + yeniYonetici.getAdSoyad() + "  bağlı çalışacak şekilde personel rotasyonu yapılmıştır.</p>";
+				String body = "<p>" + mailAciklamaTarih + " tarihleri arasında " + mailAciklamaUserList + " adlı personel/personeller " + yeniYonetici.getAdSoyad() + " bağlı çalışacak şekilde personel rotasyonu yapılmıştır.</p>";
 				mail.setBody(body);
 				ortakIslemler.addMailPersonelUserList(toList, mail.getToList());
 

@@ -897,7 +897,7 @@ public class StartupAction implements Serializable {
 						String str = "";
 						for (Iterator iterator = headerMap.keySet().iterator(); iterator.hasNext();) {
 							String key = (String) iterator.next();
-							str += key + "=" + headerMap.get(key);
+							str += key + " = " + headerMap.get(key);
 							if (iterator.hasNext())
 								str += "&";
 						}

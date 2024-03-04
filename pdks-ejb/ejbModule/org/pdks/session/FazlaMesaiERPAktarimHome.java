@@ -247,9 +247,9 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 					HashMap fields = new HashMap();
 					StringBuffer sb = new StringBuffer();
 					sb.append("SELECT  V." + Personel.COLUMN_NAME_ID + " FROM " + Personel.TABLE_NAME + " V WITH(nolock) ");
-					sb.append(" WHERE  " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :pId  ");
-					sb.append(" AND V." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basTarih ");
-					sb.append(" AND V." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<=:bitTarih ");
+					sb.append(" WHERE " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :pId  ");
+					sb.append(" AND V." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= :basTarih ");
+					sb.append(" AND V." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + " <= :bitTarih ");
 					Calendar cal = Calendar.getInstance();
 					cal.set(denklestirmeAy.getYil(), denklestirmeAy.getAy() - 1, 1);
 					Date basTarih = PdksUtil.getDate(cal.getTime());
@@ -271,7 +271,7 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 						fields.clear();
 						sb = new StringBuffer();
 						sb.append("SELECT  V." + PersonelDenklestirme.COLUMN_NAME_ID + " FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
-						sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + "= " + denklestirmeAy.getId() + "  AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
+						sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + " = " + denklestirmeAy.getId() + " AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
 						fields.put(PdksEntityController.MAP_KEY_MAP, "getSicilNo");
 						// fields.put("denklestirmeAy", denklestirmeAy.getId());
 						fields.put("pId", personelIdler);
@@ -1090,28 +1090,28 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			sb.append("SELECT  V." + PersonelDenklestirme.COLUMN_NAME_ID + " FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
 			Boolean ikSirket = departman == null || departman.isAdminMi();
 			if (sirketId != null || (sicilNo != null && sicilNo.length() > 0) || sanalPersonelDurum != 0) {
-				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
-				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basGun ");
+				sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + " = V." + PersonelDenklestirme.COLUMN_NAME_PERSONEL);
+				sb.append(" AND  P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + "<:bitGun AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= :basGun ");
 				fields.put("basGun", basGun);
 				fields.put("bitGun", bitGun);
 				if (sirketId != null) {
 					HashMap parametreMap = new HashMap();
 
 					parametreMap.put("id", sirketId);
-					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "= " + sirketId);
+					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + " = " + sirketId);
 					if (session != null)
 						parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 					sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
 				}
 				if (sicilNo != null && sicilNo.length() > 0) {
-					sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + "=:sicilNo ");
+					sb.append(" AND P." + Personel.COLUMN_NAME_PDKS_SICIL_NO + " = :sicilNo ");
 					fields.put("sicilNo", sicilNo);
 				}
 				if (sanalPersonelDurum != 0)
-					sb.append(" AND P." + Personel.COLUMN_NAME_SANAL_PERSONEL + "=1 ");
+					sb.append(" AND P." + Personel.COLUMN_NAME_SANAL_PERSONEL + " = 1 ");
 			}
-			sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + "=:denklestirmeAy AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + "=1  ");
-			sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + "=1  AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + "=1");
+			sb.append(" WHERE v." + PersonelDenklestirme.COLUMN_NAME_DONEM + " = :denklestirmeAy AND V." + PersonelDenklestirme.COLUMN_NAME_DURUM + " = 1  ");
+			sb.append(" AND V." + PersonelDenklestirme.COLUMN_NAME_ONAYLANDI + " = 1  AND V." + PersonelDenklestirme.COLUMN_NAME_DENKLESTIRME_DURUM + " = 1 ");
 			sb.append(" AND (V." + PersonelDenklestirme.COLUMN_NAME_ODENEN_SURE + ">0  OR V." + PersonelDenklestirme.COLUMN_NAME_HAFTA_TATIL_SURE + ">0 OR V." + PersonelDenklestirme.COLUMN_NAME_RESMI_TATIL_SURE + ">0");
 			sb.append("  OR V." + PersonelDenklestirme.COLUMN_NAME_EKSIK_CALISMA_SURE + ">0  OR V." + PersonelDenklestirme.COLUMN_NAME_AKSAM_VARDIYA_SAAT + ">0 OR V." + PersonelDenklestirme.COLUMN_NAME_AKSAM_VARDIYA_GUN_ADET + ">0 )");
 
@@ -1129,10 +1129,10 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 				sb = new StringBuffer();
 				sb.append("SELECT  V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_ID + " FROM " + PersonelDenklestirmeOnaylanmayan.TABLE_NAME + " V WITH(nolock) ");
 				if (sirketId != null) {
-					sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID);
-					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "= " + sirketId);
+					sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + " = V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID);
+					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + " = " + sirketId);
 				}
-				sb.append(" WHERE v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_DONEM + "=" + denklestirmeAy.getId());
+				sb.append(" WHERE v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_DONEM + " = " + denklestirmeAy.getId());
 				sb.append(" AND V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID + " :" + fieldName);
 				List veriList = authenticatedUser.getYetkiliPersonelIdler();
 				fields.put(fieldName, veriList);
@@ -1215,9 +1215,9 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 				fields.clear();
 				sb = new StringBuffer();
 				sb.append("select DISTINCT G.* from " + VardiyaGun.TABLE_NAME + " G WITH(nolock) ");
-				sb.append(" INNER JOIN " + Vardiya.TABLE_NAME + " V ON V." + Vardiya.COLUMN_NAME_ID + "=G." + VardiyaGun.COLUMN_NAME_VARDIYA);
+				sb.append(" INNER JOIN " + Vardiya.TABLE_NAME + " V ON V." + Vardiya.COLUMN_NAME_ID + " = G." + VardiyaGun.COLUMN_NAME_VARDIYA);
 				sb.append("  AND   V." + Vardiya.COLUMN_NAME_VARDIYA_TIPI + " IN ('" + Vardiya.TIPI_IZIN + "','" + Vardiya.TIPI_HASTALIK_RAPOR + "') ");
-				sb.append(" WHERE G." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ">=:t1 AND G." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<:t2");
+				sb.append(" WHERE G." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + " >= :t1 AND G." + VardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + "<:t2");
 				sb.append(" AND G." + VardiyaGun.COLUMN_NAME_PERSONEL + " :" + fieldName);
 				fields.put(fieldName, perIdList);
 				fields.put("t1", basTarih);
@@ -1277,13 +1277,13 @@ public class FazlaMesaiERPAktarimHome extends EntityHome<DenklestirmeAy> impleme
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT  V.* FROM " + PersonelDenklestirmeOnaylanmayan.TABLE_NAME + " V WITH(nolock) ");
 			if (sirketId != null || sanalPersonelDurum != 0) {
-				sb.append(" INNER JOIN  " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + "=V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID);
+				sb.append(" INNER JOIN " + Personel.TABLE_NAME + " P ON  P." + Personel.COLUMN_NAME_ID + " = V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID);
 				if (sirketId != null)
-					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + "= " + sirketId);
+					sb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + " = " + sirketId);
 				if (sanalPersonelDurum != 0)
-					sb.append(" AND P." + Personel.COLUMN_NAME_SANAL_PERSONEL + "= 1");
+					sb.append(" AND P." + Personel.COLUMN_NAME_SANAL_PERSONEL + " = 1");
 			}
-			sb.append(" WHERE v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_YIL + "=" + yil + " AND v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_AY + "=" + ay);
+			sb.append(" WHERE v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_YIL + " = " + yil + " AND v." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_AY + " = " + ay);
 
 			sb.append(" AND V." + PersonelDenklestirmeOnaylanmayan.COLUMN_NAME_PERSONEL_ID + " :p ");
 			List veriList = authenticatedUser.getYetkiliPersonelIdler();

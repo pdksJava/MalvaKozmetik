@@ -306,9 +306,9 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 					HashMap fields = new HashMap();
 					StringBuffer sb = new StringBuffer();
 					sb.append("SELECT  V." + Personel.COLUMN_NAME_ID + " FROM " + Personel.TABLE_NAME + " V WITH(nolock) ");
-					sb.append(" WHERE  " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :pId  ");
-					sb.append(" AND V." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basTarih ");
-					sb.append(" AND V." + Personel.COLUMN_NAME_GRUBA_GIRIS_TARIHI + "<=:bitTarih ");
+					sb.append(" WHERE " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :pId  ");
+					sb.append(" AND V." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= :basTarih ");
+					sb.append(" AND V." + Personel.COLUMN_NAME_GRUBA_GIRIS_TARIHI + " <= :bitTarih ");
 					Calendar cal = Calendar.getInstance();
 					cal.set(denklestirmeAy.getYil(), denklestirmeAy.getAy() - 1, 1);
 					Date basTarih = PdksUtil.getDate(cal.getTime());
@@ -345,7 +345,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 						fields.clear();
 						sb = new StringBuffer();
 						sb.append("SELECT  V." + PersonelDenklestirme.COLUMN_NAME_ID + " FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
-						sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + "= :denklestirmeAy AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
+						sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + " = :denklestirmeAy AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
 						fields.put(PdksEntityController.MAP_KEY_MAP, "getSicilNo");
 						fields.put("denklestirmeAy", denklestirmeAy.getId());
 						fields.put("pId", personelIdler);
@@ -356,7 +356,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 						if (sonrakiDonem != null) {
 							sb = new StringBuffer();
 							sb.append("SELECT  V." + PersonelDenklestirme.COLUMN_NAME_ID + " FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
-							sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + "= :denklestirmeAy AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
+							sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + " = :denklestirmeAy AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
 							sb.append(" AND GECEN_AY_DENKLESTIRME_ID IS NULL ");
 							fields.put(PdksEntityController.MAP_KEY_MAP, "getSicilNo");
 							fields.put("denklestirmeAy", sonrakiDonem.getId());
@@ -498,9 +498,9 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 					HashMap fields = new HashMap();
 					StringBuffer sb = new StringBuffer();
 					sb.append("SELECT  V." + Personel.COLUMN_NAME_ID + " FROM " + Personel.TABLE_NAME + " V WITH(nolock) ");
-					sb.append(" WHERE  " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :pId  ");
-					sb.append(" AND V." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + ">=:basTarih ");
-					sb.append(" AND V." + Personel.COLUMN_NAME_GRUBA_GIRIS_TARIHI + "<=:bitTarih ");
+					sb.append(" WHERE " + Personel.COLUMN_NAME_PDKS_SICIL_NO + " :pId  ");
+					sb.append(" AND V." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= :basTarih ");
+					sb.append(" AND V." + Personel.COLUMN_NAME_GRUBA_GIRIS_TARIHI + " <= :bitTarih ");
 					Calendar cal = Calendar.getInstance();
 					cal.set(denklestirmeAy.getYil(), denklestirmeAy.getAy() - 1, 1);
 					Date basTarih = PdksUtil.getDate(cal.getTime());
@@ -524,7 +524,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 						fields.clear();
 						sb = new StringBuffer();
 						sb.append("SELECT  V." + PersonelDenklestirme.COLUMN_NAME_ID + " FROM " + PersonelDenklestirme.TABLE_NAME + " V WITH(nolock) ");
-						sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + "= :denklestirmeAy AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
+						sb.append(" WHERE " + PersonelDenklestirme.COLUMN_NAME_DONEM + " = :denklestirmeAy AND " + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :pId  ");
 						fields.put(PdksEntityController.MAP_KEY_MAP, "getSicilNo");
 						fields.put("denklestirmeAy", denklestirmeAy.getId());
 						fields.put("pId", personelIdler);

@@ -837,7 +837,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 						}
 						if (!kgsIptaller.isEmpty()) {
-							PdksUtil.addMessageAvailableInfo("Aşağıdaki personel" + (kgsIptaller.size() > 1 ? "ler" : "") + " " + ortakIslemler.getParameterKey("kapiGirisUygulama") + "  bilgileri aktif değildir.");
+							PdksUtil.addMessageAvailableInfo("Aşağıdaki personel" + (kgsIptaller.size() > 1 ? "ler" : "") + " " + ortakIslemler.getParameterKey("kapiGirisUygulama") + " bilgileri aktif değildir.");
 							for (Personel personel : kgsIptaller) {
 								PdksUtil.addMessageAvailableWarn(personel.getPdksSicilNo() + " " + personel.getAdSoyad());
 							}

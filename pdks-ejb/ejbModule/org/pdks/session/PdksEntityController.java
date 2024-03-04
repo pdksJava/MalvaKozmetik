@@ -732,7 +732,7 @@ public class PdksEntityController implements Serializable {
 				fields.put(MAP_KEY_SESSION, session);
 				sb.append("SELECT  'K' + CAST(Z." + HareketKGS.COLUMN_NAME_ID + " AS VARCHAR(12)) AS ID, 'K' AS SIRKET, Z." + HareketKGS.COLUMN_NAME_ID + " AS TABLE_ID, Z.USERID AS " + HareketKGS.COLUMN_NAME_PERSONEL + " ,");
 				sb.append(" Z.KAPIID AS " + HareketKGS.COLUMN_NAME_KAPI + ", Z.HAREKET_ZAMANI AS ZAMAN, Z.DURUM, Z.ISLEM_ID, NULL AS ORJ_ZAMAN,Z.OLUSTURMA_ZAMANI,Z.KGS_SIRKET_ID   FROM " + HareketKGS.TABLE_NAME + " AS Z WITH (nolock)");
-				sb.append(" WHERE " + HareketKGS.COLUMN_NAME_ID + "=:hareketId");
+				sb.append(" WHERE " + HareketKGS.COLUMN_NAME_ID + " = :hareketId");
 				List<HareketKGS> list1 = getObjectBySQLList(sb, fields, HareketKGS.class);
 				if (!list1.isEmpty())
 					id = list1.get(0);
