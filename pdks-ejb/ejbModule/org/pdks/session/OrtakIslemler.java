@@ -15507,7 +15507,8 @@ public class OrtakIslemler implements Serializable {
 								haftaTatilDigerSure += pdksVardiyaGun.getHaftaTatilDigerSure();
 							if (izinToplam < izinSuresi) {
 								izinToplam = izinSuresi;
-								logger.debug(key + " " + izinSuresi);
+								if (pdksVardiyaGun.getIzin() != null)
+									logger.debug(key + " " + izinSuresi);
 							}
 
 						}
