@@ -12315,9 +12315,7 @@ public class OrtakIslemler implements Serializable {
 							izinTipi = senelikIzinOlustur(veriMap, session);
 							if (gecmis && izinTipi != null) {
 								cal.setTime(bugun);
-								cal.add(Calendar.MONTH, -2);
-								if (senelikKullan)
-									senelikKullan = suaDurum;
+								cal.add(Calendar.MONTH, -3);
 								if (senelikKullan && buYil != cal.get(Calendar.YEAR)) {
 									senelikKullan = buYil > 2020 && buYil >= PdksUtil.getSistemBaslangicYili();
 									HashMap fields = new HashMap();
