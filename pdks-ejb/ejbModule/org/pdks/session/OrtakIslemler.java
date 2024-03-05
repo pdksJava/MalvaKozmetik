@@ -15139,7 +15139,7 @@ public class OrtakIslemler implements Serializable {
 								CalismaModeli calismaModeliAy = personelDenklestirme.getCalismaModeli();
 								if (key.equals("20240203"))
 									logger.debug("");
-								izinSaat = calismaModeliAy.getIzinSaat(pdksVardiyaGun);
+								izinSaat = pdksVardiyaGun.isIzinli() ? calismaModeliAy.getIzinSaat(pdksVardiyaGun) : 0.0d;
 								if (pdksVardiyaGun.getIzin() != null && pdksVardiyaGun.getIzin().getIzinTipi().isIslemYokCGS()) {
 									izinSaat = 0.0d;
 								}
