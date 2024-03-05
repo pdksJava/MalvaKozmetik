@@ -459,7 +459,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			modelGoster = Boolean.FALSE;
 			ay = cal.get(Calendar.MONTH) + 1;
 			yil = cal.get(Calendar.YEAR);
- 			maxYil = yil;
+			maxYil = yil;
 			try {
 				minYil = Integer.parseInt(ortakIslemler.getParameterKey("sistemBaslangicYili"));
 				if (str.length() > 5)
@@ -816,7 +816,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						if (denkDurum == false)
 							denkDurum = authenticatedUser.isAdmin() == false;
 						personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, denkDurum == false || hataliVeriGetir, denkDurum == false || eksikCalisanVeriGetir, session);
-						if (!personelDenklestirmeList.isEmpty()) {
+						if (personelDenklestirmeList != null && !personelDenklestirmeList.isEmpty()) {
 							List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 							if (bordroAlanlari.isEmpty()) {
 								boolean kimlikNoGoster = false;

@@ -2498,7 +2498,7 @@ public class OrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public String getBirdenFazlaKGSSirketSQL(Date basTarih, Date bitTarih, Session session) {
-		String str = "K." + PersonelKGS.COLUMN_NAME_SICIL_NO + "=P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " AND K." + PersonelKGS.COLUMN_NAME_ID + "<>P." + PersonelKGS.COLUMN_NAME_ID;
+		String str = "K." + PersonelKGS.COLUMN_NAME_SICIL_NO + " = P." + PersonelKGS.COLUMN_NAME_SICIL_NO + " AND K." + PersonelKGS.COLUMN_NAME_ID + " <> P." + PersonelKGS.COLUMN_NAME_ID;
 		String birdenFazlaKGSSirketSQL = getParameterKey("birdenFazlaKGSSirketSQL"), sql = str;
 		if (PdksUtil.hasStringValue(birdenFazlaKGSSirketSQL)) {
 			Calendar cal = Calendar.getInstance();
@@ -2515,10 +2515,14 @@ public class OrtakIslemler implements Serializable {
 				sql = birdenFazlaKGSSirketSQL;
 				if (sql.indexOf(str) >= 0)
 					sql = PdksUtil.replaceAllManuel(sql, str, "");
-				sql = str + sql;
+				else {
+					int andIndex = sql.toUpperCase().indexOf("AND");
+					if (andIndex > 1 || andIndex < 0)
+						sql = " AND " + sql;
+				}
+				sql = PdksUtil.replaceAllManuel(str + sql, "  ", " ");
 			}
 		}
-
 		return sql;
 	}
 
@@ -14364,12 +14368,16 @@ public class OrtakIslemler implements Serializable {
 			}
 
 		}
-		if (!hakedisIdList.isEmpty()) {
+		TreeMap<Long, List<PersonelIzin>> map1 = new TreeMap<Long, List<PersonelIzin>>();
+		if (!izinList.isEmpty()) {
+			for (PersonelIzin personelIzin : izinList) {
+				hakedisIdList.add(personelIzin.getId());
+			}
 			String fieldName = "h";
 			parametreMap.clear();
 			parametreMap.put(fieldName, hakedisIdList);
 			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT DISTINCT H.*  FROM " + PersonelIzinDetay.TABLE_NAME + " D  WITH(nolock) ");
+			sb.append("SELECT DISTINCT D.*  FROM " + PersonelIzinDetay.TABLE_NAME + " D  WITH(nolock) ");
 			sb.append(" INNER JOIN " + PersonelIzin.TABLE_NAME + " H ON  H." + PersonelIzin.COLUMN_NAME_ID + " = D." + PersonelIzinDetay.COLUMN_NAME_HAKEDIS_IZIN);
 			sb.append(" INNER JOIN " + PersonelIzin.TABLE_NAME + " I ON  I." + PersonelIzin.COLUMN_NAME_ID + " = D." + PersonelIzinDetay.COLUMN_NAME_IZIN);
 			sb.append(" AND I." + PersonelIzin.COLUMN_NAME_IZIN_DURUMU + " NOT IN (8,9)");
@@ -14378,23 +14386,17 @@ public class OrtakIslemler implements Serializable {
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			try {
 				// List<PersonelIzin> list = pdksEntityController.getObjectBySQLList(sb, parametreMap, PersonelIzin.class);
-				List<PersonelIzin> list = getSQLParamList(hakedisIdList, sb, fieldName, parametreMap, PersonelIzin.class, session);
+				List<PersonelIzinDetay> list = getSQLParamList(hakedisIdList, sb, fieldName, parametreMap, PersonelIzinDetay.class, session);
 
-				TreeMap<Long, PersonelIzin> map1 = new TreeMap<Long, PersonelIzin>();
-				for (PersonelIzin hakEdisIzin : list) {
-					Long key = hakEdisIzin.getId();
-					if (!map1.containsKey(key)) {
-						PersonelIzin izin = (PersonelIzin) hakEdisIzin.clone();
-						izin.setId(null);
-						izin.setIzinSuresi(0.0d);
-						map1.put(key, izin);
-						hakedilmeyenIzinler.add(izin);
-						izin.setDevirIzin(Boolean.TRUE);
-					}
-
+				for (PersonelIzinDetay personelIzinDetay : list) {
+					Long key = personelIzinDetay.getHakEdisIzin().getId();
+					List<PersonelIzin> izinler = map1.containsKey(key) ? map1.get(key) : new ArrayList<PersonelIzin>();
+					if (izinler.isEmpty())
+						map1.put(key, izinler);
+					izinler.add(personelIzinDetay.getPersonelIzin());
 				}
-				map1 = null;
 				list = null;
+
 			} catch (Exception e) {
 
 				logger.error("Pdks hata in : \n");
@@ -14402,8 +14404,7 @@ public class OrtakIslemler implements Serializable {
 				logger.error("Pdks hata out : " + e.getMessage());
 			}
 		}
-		if (!hakedilmeyenIzinler.isEmpty())
-			izinList.addAll(hakedilmeyenIzinler);
+
 		// if (!izinList.isEmpty())
 		// izinList = PdksUtil.sortListByAlanAdi(izinList, "baslangicZamani",
 		// Boolean.TRUE);
@@ -14441,7 +14442,7 @@ public class OrtakIslemler implements Serializable {
 			tempIzin.setToplamKalanIzin(tempIzin.getToplamKalanIzin() + personelIzin.getKalanIzin());
 			tempIzin.setKullanilanIzin(tempIzin.getKullanilanIzin() + personelIzin.getHarcananIzin());
 			tempIzin.setToplamBakiyeIzin(tempIzin.getToplamBakiyeIzin() + personelIzin.getIzinSuresi());
-			if (personelIzin.getDevirIzin() || personelIzin.getIzinKagidiGeldi() == null || iptalIzinleriGetir)
+			if (personelIzin.getDevirIzin() || personelIzin.getIzinKagidiGeldi() == null || iptalIzinleriGetir || map1.containsKey(personelIzin.getId()))
 				tempIzin.getIzinler().add(personelIzin.getId());
 			izinMap.put(perId, tempIzin);
 		}
