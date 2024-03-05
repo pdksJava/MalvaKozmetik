@@ -395,7 +395,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 		if (dayOfWeek == Calendar.SATURDAY)
 			izinSure = izinhaftaSonu;
-		else if (dayOfWeek == Calendar.SUNDAY)
+		else if (dayOfWeek == Calendar.SUNDAY && izinhaftaSonu == 0.0d)
 			izinSure = 0.0d;
 
 		if (this.isSaatlikOdeme()) {
