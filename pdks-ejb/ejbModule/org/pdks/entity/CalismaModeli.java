@@ -48,6 +48,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_ILK_PLAN_ONAYLI = "ILK_PLAN_ONAYLI";
 	public static final String COLUMN_NAME_GUN_MAX_CALISMA_SURESI_ODENIR = "GUN_MAX_CALISMA_SURESI_ODENIR";
 	public static final String COLUMN_NAME_PERSONEL_TIPI = "PERSONEL_TIPI_ID";
+	public static final String COLUMN_NAME_HAFTA_TATIL_PAZAR = "HAFTA_TATIL_PAZAR";
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
@@ -55,6 +56,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
 	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
+	private Boolean haftaTatilPazar = Boolean.FALSE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
 	private Tanim personelTipi;
@@ -252,6 +254,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.gunMaxCalismaOdemeDurum = gunMaxCalismaOdemeDurum;
 	}
 
+	@Column(name = COLUMN_NAME_HAFTA_TATIL_PAZAR)
+	public Boolean getHaftaTatilPazar() {
+		return haftaTatilPazar;
+	}
+
+	public void setHaftaTatilPazar(Boolean haftaTatilPazar) {
+		this.haftaTatilPazar = haftaTatilPazar;
+	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_BAGLI_VARDIYA_SABLON)
 	@Fetch(FetchMode.JOIN)
@@ -395,8 +406,10 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 		if (dayOfWeek == Calendar.SATURDAY)
 			izinSure = izinhaftaSonu;
-		else if (dayOfWeek == Calendar.SUNDAY && izinhaftaSonu == 0.0d)
-			izinSure = 0.0d;
+		else if (dayOfWeek == Calendar.SUNDAY) {
+			if (isHaftaTatilPazardir())
+				izinSure = 0.0d;
+		}
 
 		if (this.isSaatlikOdeme()) {
 			// IzinTipi izinTipi = pdksVardiyaGun.getIzin() != null ? pdksVardiyaGun.getIzin().getIzinTipi() : null;
@@ -433,6 +446,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public boolean isGunMaxCalismaOdenir() {
 		return gunMaxCalismaOdemeDurum != null && gunMaxCalismaOdemeDurum;
+	}
+
+	@Transient
+	public boolean isHaftaTatilPazardir() {
+		return haftaTatilPazar != null && haftaTatilPazar;
 	}
 
 }
