@@ -1908,13 +1908,22 @@ public class PersonelKalanIzinHome extends EntityHome<PersonelIzin> implements S
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelIzin> list = tempIzin.getIzinler().isEmpty() ? new ArrayList<PersonelIzin>() : pdksEntityController.getObjectByInnerObjectListInLogic(fields, PersonelIzin.class);
 		List<PersonelIzin> izinList1 = new ArrayList<PersonelIzin>();
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MONTH, Calendar.JANUARY);
+		cal.set(Calendar.DATE, 1);
+		Date buYilBasi = PdksUtil.getDate(cal.getTime());
 		for (PersonelIzin personelIzin : list) {
+			PersonelIzin personelIzin2 = (PersonelIzin) personelIzin.clone();
 			if (idList.contains(personelIzin.getId())) {
-				PersonelIzin personelIzin2 = (PersonelIzin) personelIzin.clone();
 				personelIzin2.setIzinSuresi(0.0d);
-				izinList1.add(personelIzin2);
-			} else
-				izinList1.add(personelIzin);
+			} else {
+				cal.setTime(personelIzin2.getBaslangicZamani());
+				if (cal.get(Calendar.YEAR) < PdksUtil.getSistemBaslangicYili())
+					personelIzin2.setIzinKagidiGeldi(null);
+				else if (personelIzin2.getBaslangicZamani().before(buYilBasi))
+					personelIzin2.setIzinKagidiGeldi(Boolean.FALSE);
+			}
+			izinList1.add(personelIzin2);
 
 		}
 		suaVar = Boolean.FALSE;

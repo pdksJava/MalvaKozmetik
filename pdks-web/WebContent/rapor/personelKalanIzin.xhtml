@@ -430,7 +430,7 @@
 									<f:facet name="header">
 										<h:outputText value="" />
 									</f:facet>
-									<ui:fragment rendered="#{izinler.toplamBakiyeIzin!=0}">
+									<ui:fragment rendered="#{izinler.toplamBakiyeIzin!=0 or izinler.kullanilanIzin!=0}">
 										<TABLE>
 											<TR>
 												<ui:fragment rendered="#{izinler.izinler!=null}">
