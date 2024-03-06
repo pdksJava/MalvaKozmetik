@@ -542,17 +542,17 @@
 				<h:panelGrid width="500">
 					<rich:dataTable rowClasses="acik,koyu" value="#{personelKalanIzinHome.harcananIzinler}" var="harcananIzin" rows="20" rowKeyVar="row">
 						<f:facet name="header">
-							<h:outputText value="Kullanılan İzinler" />
+							<h:outputText value="#{authenticatedUser.getTarihFormatla(personelKalanIzinHome.updateIzin.baslangicZamani,'yyyy')} İzin Hakediş Yılı Kullanılan İzinler" />
 						</f:facet>
 
-						<rich:column>
+						<rich:column style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="İzin Başlangıç Zamanı" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.dateTimeFormatla(harcananIzin.personelIzin.baslangicZamani)}" />
 
 						</rich:column>
-						<rich:column>
+						<rich:column style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="İşe Başlama Zamanı" />
 							</f:facet>
@@ -579,7 +579,7 @@
 							<h:outputText value="#{harcananIzin.personelIzin.sonIslemYapan.adSoyad}" />
 						</rich:column>
 
-						<rich:column>
+						<rich:column style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Son İşlem Tarihi" />
 							</f:facet>
@@ -686,7 +686,7 @@
 							<h:outputText value="#{kalanIzinler.izinTipi.bakiyeIzinTipi.izinTipiTanim.aciklama}" />
 						</rich:column>
 
-						<rich:column>
+						<rich:column style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="İzin Hakediş Yılı" />
 							</f:facet>
@@ -695,7 +695,7 @@
 							</ui:fragment>
 
 						</rich:column>
-						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}">
+						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Hakettiği Tarihi" />
 							</f:facet>
@@ -704,7 +704,7 @@
 							</ui:fragment>
 
 						</rich:column>
-						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}">
+						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.departman.admin}" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Kıdemi" />
 							</f:facet>
@@ -712,7 +712,7 @@
 
 						</rich:column>
 
-						<rich:column>
+						<rich:column style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Toplam İzin Süresi" />
 							</f:facet>
@@ -720,13 +720,13 @@
 								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(kalanIzinler.izinSuresi)} Gün" />
 							</ui:fragment>
 						</rich:column>
-						<rich:column>
+						<rich:column style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Kullanılan İzin Süresi" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(kalanIzinler.harcananIzin)} Gün" />
 						</rich:column>
-						<rich:column>
+						<rich:column style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Kalan İzin Süresi" />
 							</f:facet>
@@ -739,7 +739,7 @@
 							<h:outputText value="#{kalanIzinler.sonIslemYapan.adSoyad}" />
 						</rich:column>
 
-						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+						<rich:column rendered="#{authenticatedUser.admin or authenticatedUser.IK}" style="text-align:center">
 							<f:facet name="header">
 								<h:outputText value="Son İşlem Tarihi" />
 							</f:facet>
