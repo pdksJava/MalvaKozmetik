@@ -1910,6 +1910,10 @@ public class OrtakIslemler implements Serializable {
 		return service;
 	}
 
+	/**
+	 * @param personelDenklestirme
+	 * @param session
+	 */
 	public void setCalismaModeliAy(PersonelDenklestirme personelDenklestirme, Session session) {
 		CalismaModeliAy calismaModeliAy = null;
 		if (personelDenklestirme.getDenklestirmeAy() != null && personelDenklestirme.getPersonel() != null && personelDenklestirme.getPersonel().getCalismaModeli() != null) {
@@ -2277,6 +2281,10 @@ public class OrtakIslemler implements Serializable {
 
 	}
 
+	/**
+	 * @param user
+	 * @return
+	 */
 	public boolean getAdminRole(User user) {
 		boolean adminRole = false;
 		if (user != null)
@@ -3408,30 +3416,6 @@ public class OrtakIslemler implements Serializable {
 	 * @param user
 	 * @return
 	 */
-	// public String getUserHareketMail(User user) {
-	// StringBuilder mail = null;
-	// String str = null;
-	// if (user.getHareketMail() != null && user.getHareketMail().indexOf("@") > 0) {
-	// mail = new StringBuilder();
-	// List<String> mailler = user.getEMailHareketList();
-	// for (Iterator iterator = mailler.iterator(); iterator.hasNext();) {
-	// String string = (String) iterator.next();
-	// if (mail.indexOf(string) < 0)
-	// mail.append(string + (iterator.hasNext() ? "," : ""));
-	// }
-	// if (!mail.equals(user.getHareketMail())) {
-	// str = mail.toString();
-	// mail = null;
-	// }
-	// }
-	//
-	// return str;
-	// }
-	//
-	/**
-	 * @param user
-	 * @return
-	 */
 	public String getPersonelHareketMail(Personel personel) {
 		StringBuilder mail = null;
 		String str = null;
@@ -3451,30 +3435,6 @@ public class OrtakIslemler implements Serializable {
 
 		return str;
 	}
-
-	/**
-	 * @param user
-	 * @return
-	 */
-	// public String getUserCCMail(User user) {
-	// StringBuilder mail = null;
-	// String str = null;
-	// if (user.getEmailCC() != null && user.getEmailCC().indexOf("@") > 0) {
-	// mail = new StringBuilder();
-	// List<String> mailler = user.getEMailCCList();
-	// for (Iterator iterator = mailler.iterator(); iterator.hasNext();) {
-	// String string = (String) iterator.next();
-	// if (mail.indexOf(string) < 0)
-	// mail.append(string + (iterator.hasNext() ? "," : ""));
-	// }
-	// if (!mail.equals(user.getEmailCC())) {
-	// str = mail.toString();
-	// mail = null;
-	// }
-	// }
-	//
-	// return str;
-	// }
 
 	/**
 	 * @param personel
@@ -3646,6 +3606,7 @@ public class OrtakIslemler implements Serializable {
 			if (authenticatedUser.getParametreJSON().indexOf(sayfaAdi) > 0)
 				sb.append(authenticatedUser.getParametreJSON() + "\n");
 		}
+
 		sb.append(ex);
 		logger.error(sb.toString());
 		sb = null;
@@ -3931,29 +3892,6 @@ public class OrtakIslemler implements Serializable {
 
 		return ikinciYoneticiPersonelleri;
 	}
-
-	// /**
-	// * @param user
-	// * @return
-	// */
-	// public String getUserBCCMail(User user) {
-	// StringBuilder mail = null;
-	// String str = null;
-	// if (user.getEmailBCC() != null && user.getEmailBCC().indexOf("@") > 0) {
-	// mail = new StringBuilder();
-	// List<String> mailler = user.getEMailBCCList();
-	// for (Iterator iterator = mailler.iterator(); iterator.hasNext();) {
-	// String string = (String) iterator.next();
-	// if (mail.toString().indexOf(string) < 0)
-	// mail.append(string + (iterator.hasNext() ? "," : ""));
-	// }
-	// if (!mail.toString().equals(user.getEmailBCC())) {
-	// str = mail.toString();
-	// mail = null;
-	// }
-	// }
-	// return str;
-	// }
 
 	/**
 	 * @param personel
@@ -4513,6 +4451,10 @@ public class OrtakIslemler implements Serializable {
 		}
 	}
 
+	/**
+	 * @param tanimlar
+	 * @return
+	 */
 	public List<SelectItem> getTanimSelectItemByKodu(List<Tanim> tanimlar) {
 
 		List<SelectItem> items = null;
@@ -4525,6 +4467,10 @@ public class OrtakIslemler implements Serializable {
 		return items;
 	}
 
+	/**
+	 * @param tanimlar
+	 * @return
+	 */
 	public List<SelectItem> getTanimSelectItem(List<Tanim> tanimlar) {
 
 		List<SelectItem> items = null;
@@ -4535,6 +4481,13 @@ public class OrtakIslemler implements Serializable {
 					items.add(new SelectItem(tanim.getId(), tanim.getAciklama()));
 		}
 		return items;
+	}
+
+	/**
+	 * @return
+	 */
+	public String emtpyAjaxFunction() {
+		return "";
 	}
 
 	/**
@@ -4929,6 +4882,10 @@ public class OrtakIslemler implements Serializable {
 
 	}
 
+	/**
+	 * @param message
+	 * @param severity
+	 */
 	private void addMessage(String message, Severity severity) {
 
 		// facesMessages.clear();
@@ -4936,18 +4893,30 @@ public class OrtakIslemler implements Serializable {
 
 	}
 
+	/**
+	 * @param message
+	 */
 	public void addMessageError(String message) {
 		addMessage(message, Severity.ERROR);
 	}
 
+	/**
+	 * @param message
+	 */
 	public void addMessageWarn(String message) {
 		addMessage(message, Severity.WARN);
 	}
 
+	/**
+	 * @param message
+	 */
 	public void addMessageInfo(String message) {
 		addMessage(message, Severity.INFO);
 	}
 
+	/**
+	 * @param message
+	 */
 	public void addMessageFatal(String message) {
 		addMessage(message, Severity.FATAL);
 	}
@@ -6048,111 +6017,177 @@ public class OrtakIslemler implements Serializable {
 		return aciklama;
 	}
 
+	/**
+	 * @return
+	 */
 	public String devredenMesaiKod() {
 		String kod = getBaslikAciklama("devredenMesaiKod", "DM");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String kismiOdemeKod() {
 		String kod = getBaslikAciklama("kismiOdemeKod", "KOM");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String ucretiOdenenKod() {
 		String kod = getBaslikAciklama("ucretiOdenenKod", "UOM");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String gerceklesenMesaiKod() {
 		String kod = getBaslikAciklama("gerceklesenMesaiKod", "GM");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String devredenBakiyeKod() {
 		String kod = getBaslikAciklama("devredenBakiyeKod", "B");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String normalCalismaSaatKod() {
 		String kod = getBaslikAciklama("normalCalismaSaatKod", "NMC");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String normalCalismaGunKod() {
 		String kod = normalCalismaSaatKod() + "G";
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String haftaTatilCalismaSaatKod() {
 		String kod = getBaslikAciklama("haftaTatilCalismaSaatKod", "HTC");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String haftaTatilCalismaGunKod() {
 		String kod = haftaTatilCalismaSaatKod() + "G";
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String resmiTatilCalismaSaatKod() {
 		String kod = getBaslikAciklama("resmiTatilCalismaSaatKod", "RTC");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String resmiTatilCalismaGunKod() {
 		String kod = resmiTatilCalismaSaatKod() + "G";
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String izinSureSaatKod() {
 		String kod = getBaslikAciklama("izinSureSaatKod", "IZNS");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String izinSureGunKod() {
 		String kod = izinSureSaatKod() + "G";
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String izinSureGunAdetKod() {
 		String kod = getBaslikAciklama("izinSureGunAdetKod", "IZGA");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String ucretliIzinGunKod() {
 		String kod = getBaslikAciklama("ucretliIzinGunKod", "ULIG");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String ucretsizIzinGunKod() {
 		String kod = getBaslikAciklama("ucretsizIzinGunKod", "USIZG");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String hastalikIzinGunKod() {
 		String kod = getBaslikAciklama("hastalikIzinGunKod", "HASIZG");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String normalGunKod() {
 		String kod = getBaslikAciklama("normalGunKod", "NG");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String haftaTatilGunKod() {
 		String kod = getBaslikAciklama("haftaTatilGunKod", "HG");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String artikGunKod() {
 		String kod = getBaslikAciklama("artikGunKod", "AG");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String resmiTatilGunKod() {
 		String kod = getBaslikAciklama("resmiTatilGunKod", "RG");
 		return kod;
 	}
 
+	/**
+	 * @return
+	 */
 	public String bordroToplamGunKod() {
 		String kod = getBaslikAciklama("bordroToplamGunKod", "TG");
 		return kod;
@@ -6217,7 +6252,6 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @return
 	 */
-
 	public String yonetici2Aciklama() {
 		String yonetici2Aciklama = getBaslikAciklama("yonetici2Aciklama", "2. Yönetici");
 		return yonetici2Aciklama;
@@ -7865,11 +7899,17 @@ public class OrtakIslemler implements Serializable {
 		return menuTanimAdi;
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean getTestDurum() {
 		boolean test = PdksUtil.getTestDurum();
 		return test;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getHostName() {
 		String str = PdksUtil.getHostName(true);
 		return str;
@@ -8141,6 +8181,10 @@ public class OrtakIslemler implements Serializable {
 		return tanimList;
 	}
 
+	/**
+	 * @param session
+	 * @return
+	 */
 	public TreeMap<Long, Departman> getIzinGirenDepartmanMap(Session session) {
 		TreeMap<Long, Departman> map = new TreeMap<Long, Departman>();
 		HashMap fields = new HashMap();
@@ -8657,6 +8701,9 @@ public class OrtakIslemler implements Serializable {
 		personelMap = null;
 	}
 
+	/**
+	 * @return
+	 */
 	public ArrayList<String> getYetkiTumPersonelNoList() {
 		return getYetkiTumPersonelNoListesi(authenticatedUser);
 	}
@@ -10385,6 +10432,9 @@ public class OrtakIslemler implements Serializable {
 		return tarihGelmedi;
 	}
 
+	/**
+	 * @return
+	 */
 	public int getYillikIzinMaxBakiye() {
 		int yillikIzinMaxBakiye = PersonelIzin.getYillikIzinMaxBakiye();
 		return yillikIzinMaxBakiye;
@@ -13959,6 +14009,9 @@ public class OrtakIslemler implements Serializable {
 		return list;
 	}
 
+	/**
+	 * @return
+	 */
 	public HashMap<String, Object> getProjeHeaderImageMap() {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		String projeHeaderImageName = getParameterKey("projeHeaderImageName");
@@ -15976,6 +16029,9 @@ public class OrtakIslemler implements Serializable {
 
 	}
 
+	/**
+	 * @return
+	 */
 	public Boolean getGebelikGuncelle() {
 		return AylikPuantaj.getGebelikGuncelle();
 

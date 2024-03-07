@@ -118,6 +118,7 @@
 				</a4j:outputPanel>
 			</rich:panel>
 		</h:form>
+		
 		<a4j:outputPanel id="idPersonelGirisForm" rendered="#{authenticatedUser.izinGirebilir or ortakIslemler.getParameterKey('izinERPUpdate')!='1'}">
 			<h:form>
 				<ui:fragment rendered="#{personelIzinGirisiHome.donusAdres!=null}">
@@ -165,15 +166,16 @@
 					rendered="#{personelIzinGirisiHome.visibled==false and personelIzinGirisiHome.personel!=null and personelIzinGirisiHome.izinTipiList!=null and personelIzinGirisiHome.izinTipiList.size()>0}">
 
 					<h:panelGrid columns="1" cellpadding="0" cellspacing="0">
-						<h:panelGrid columns="2">
+						<h:panelGrid columns="2" id="seciliIzinTipi">
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">İzin Tipi</ui:define>
-								<h:selectOneMenu value="#{personelIzinGirisiHome.seciliIzinTipi}" required="true" requiredMessage="İzin tipi Giriniz">
+								<h:selectOneMenu value="#{personelIzinGirisiHome.seciliIzinTipi}" required="false" requiredMessage="İzin tipi Giriniz">
 									<s:selectItems var="comp" value="#{personelIzinGirisiHome.izinTipiList}" label="#{comp.izinTipiTanim.aciklama}"
 										noSelectionLabel="Lütfen seçiniz" />
 									<a4j:support event="onchange"
 										action="#{personelIzinGirisiHome.setIzinTipi(personelIzinGirisiHome.instance,personelIzinGirisiHome.seciliIzinTipi)}"
-										reRender="radioAlan,izinTipiAlan,gorevNeden,istirahat,dosyaPaneli" limitToList="true" status="ajaxStatus" ajaxSingle="true" />
+										reRender="izinKaydet,seciliIzinTipi,radioAlan,izinTipiAlan,gorevNeden,istirahat,dosyaPaneli" limitToList="true" status="ajaxStatus"
+										ajaxSingle="true" />
 									<s:convertEntity />
 								</h:selectOneMenu>
 							</s:decorate>
@@ -207,7 +209,9 @@
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">İzin Başlangıç Zamanı</ui:define>
 									<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.instance.baslangicZamani}"
-										showWeekDaysBar="false" showWeeksBar="false" />
+										showWeekDaysBar="false" showWeeksBar="false" disabled="#{personelIzinGirisiHome.seciliIzinTipi==null}">
+										<a4j:support event="onchanged" action="#{ortakIslemler.emtpyAjaxFunction()}" ajaxSingle="true" status="ajaxStatus" reRender="izinTipiAlan" />
+									</rich:calendar>
 								</s:decorate>
 								<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
 									<ui:fragment rendered="#{personelIzinGirisiHome.seciliIzinTipi.saatGosterilecek and personelIzinGirisiHome.saatGosterilecek}">
@@ -223,7 +227,9 @@
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">İşe Başlama Zamanı</ui:define>
 									<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.instance.bitisZamani}" showWeekDaysBar="false"
-										showWeeksBar="false" />
+										showWeeksBar="false" disabled="#{personelIzinGirisiHome.seciliIzinTipi==null}">
+										<a4j:support event="onchanged" action="#{ortakIslemler.emtpyAjaxFunction()}" ajaxSingle="true" status="ajaxStatus" reRender="izinTipiAlan" />
+									</rich:calendar>
 								</s:decorate>
 
 								<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
@@ -237,24 +243,23 @@
 										</TABLE>
 									</ui:fragment>
 								</s:decorate>
+
 							</h:panelGrid>
+							<s:decorate template="/layout/edit.xhtml">
+								<rich:spacer width="5px;" />
+								<b>İzin Açıklama</b>
+								<br />
+							#{messages['pdks.genel.etiket.kalanKarakterSayisi']}: <SPAN id="Counter">#{255 - personelIzinGirisiHome.instance.aciklama.length()}</SPAN>
+								<br />
+								<rich:spacer width="5px;" />
+								<h:inputTextarea value="#{personelIzinGirisiHome.instance.aciklama}" required="#{personelIzinGirisiHome.seciliIzinTipi!=null}"
+									requiredMessage="İzin açıklaması giriniz" rows="4" disabled="#{personelIzinGirisiHome.seciliIzinTipi==null}" cols="80"
+									onkeypress="return limitText(this,255,'Counter')" onkeyup="return limitText(this,255, 'Counter')" />
+
+							</s:decorate>
 						</a4j:outputPanel>
 					</h:panelGrid>
-
-
-					<s:decorate template="/layout/edit.xhtml">
-						<rich:spacer width="5px;" />
-						<b>İzin Açıklama</b>
-						<br />
-							#{messages['pdks.genel.etiket.kalanKarakterSayisi']}: <SPAN id="Counter">#{255 - personelIzinGirisiHome.instance.aciklama.length()}</SPAN>
-						<br />
-						<rich:spacer width="5px;" />
-
-						<h:inputTextarea value="#{personelIzinGirisiHome.instance.aciklama}" required="true" requiredMessage="İzin açıklaması giriniz" rows="4"
-							cols="80" onkeypress="return limitText(this,255,'Counter')" onkeyup="return limitText(this,255, 'Counter')" />
-
-					</s:decorate>
-
+ 
 					<a4j:outputPanel id="istirahat">
 						<rich:panel header="SSK İstirahat Bilgileri" rendered="#{personelIzinGirisiHome.seciliIzinTipi.SSKIstirahat}">
 							<h:panelGrid columns="1">
@@ -263,9 +268,7 @@
 									<ui:define name="label">Teşhis</ui:define>
 									<h:inputText value="#{personelIzinGirisiHome.istirahat.teshis}" required="true" requiredMessage="Teşhis giriniz!" />
 								</s:decorate>
-
-
-								<s:decorate template="/layout/edit.xhtml" rendered="#{personelIzinGirisiHome.seciliIzinTipi!=null}">
+ 							<s:decorate template="/layout/edit.xhtml" rendered="#{personelIzinGirisiHome.seciliIzinTipi!=null}">
 									<ui:define name="label">Rapor Kaynağı</ui:define>
 									<h:selectOneMenu value="#{personelIzinGirisiHome.istirahat.raporKaynagi}" required="true" requiredMessage="Rapor kaynağı seçiniz">
 										<f:selectItem itemLabel="Lütfen seçiniz" />
@@ -315,9 +318,14 @@
 						</rich:panel>
 					</a4j:outputPanel>
 
-					<s:decorate template="/layout/edit.xhtml">
-						<a4j:commandButton status="ajaxStatus" rendered="#{personelIzinGirisiHome.izinliSahibi!=null}" action="#{personelIzinGirisiHome.kaydet}"
-							value="İzin Kaydet" reRender="idPersonelGirisForm,izinListPanel" />
+					<s:decorate template="/layout/edit.xhtml" id="izinKaydet">
+						<a4j:commandButton value="İzin Kaydet" status="ajaxStatus" ajaxSingle="true" action="#{personelIzinGirisiHome.kaydetBasla()}"
+							rendered="#{personelIzinGirisiHome.izinliSahibi!=null}" disabled="#{personelIzinGirisiHome.seciliIzinTipi==null}"
+							reRender="idPersonelGirisForm,izinListPanel,bakiyeYetersizPanel" onclick="#{rich:component('wait')}.show()"
+							oncomplete="#{rich:component('wait')}.hide();if (#{personelIzinGirisiHome.bakiyeYetersizGoster}) { #{rich:component('bakiyeYetersizPanel')}.show();}">
+
+
+						</a4j:commandButton>
 
 					</s:decorate>
 				</h:panelGrid>
@@ -795,6 +803,46 @@
 
 		</rich:modalPanel>
 
+		<rich:modalPanel id="bakiyeYetersizPanel" autosized="true" width="600">
+			<f:facet name="header">
+				<ui:fragment rendered="#{personelIzinGirisiHome.bakiyeYetersiz!=null and personelIzinGirisiHome.bakiyeYetersiz}">
+					<h:outputText
+						value="#{personelIzinGirisiHome.instance.izinTipiAciklama}- #{personelIzinGirisiHome.instance.izinSahibi.adSoyad} Bakiye İzin Onaylama" />
+				</ui:fragment>
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+
+					<rich:componentControl for="bakiyeYetersizPanel" attachTo="hidelink1z" operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<table width="40%" align="center">
+					<tbody>
+						<tr>
+							<td align="center" width="50%"><a4j:commandLink status="ajaxStatus" ajaxSingle="true" action="#{personelIzinGirisiHome.kaydetDevam(true)}"
+									oncomplete="#{rich:component('bakiyeYetersizPanel')}.hide();" reRender="idPersonelGirisForm,izinListPanel">
+									<h:graphicImage value="/img/save.png" id="saveIzin" height="24px" />
+									<rich:toolTip for="saveIzin">
+										<SPAN style="color: green; font-size: 14px;"><B>Yetersiz İzin Bakiye Kaydet</B></SPAN>
+									</rich:toolTip>
+								</a4j:commandLink></td>
+							<td align="center" width="50%"><a4j:commandLink status="ajaxStatus" oncomplete="#{rich:component('bakiyeYetersizPanel')}.hide();">
+									<h:graphicImage value="/img/close.png" id="closeIzin" height="24px" />
+									<rich:toolTip for="closeIzin">
+										<SPAN style="color: red; font-size: 14px;"><B>Yetersiz İzin Bakiye Onaylama</B></SPAN>
+									</rich:toolTip>
+								</a4j:commandLink></td>
+						</tr>
+					</tbody>
+				</table>
+
+			</h:form>
+		</rich:modalPanel>
+
 		<rich:modalPanel id="editPanelIzinKagidi" autosized="true" width="600">
 			<f:facet name="header">
 				<h:outputText
@@ -908,7 +956,9 @@
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">İzin Başlangıç Zamanı</ui:define>
 								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.guncellenecekIzin.baslangicZamani}"
-									showWeekDaysBar="false" showWeeksBar="false" />
+									showWeekDaysBar="false" showWeeksBar="false">
+									<a4j:support event="onchanged" action="#{ortakIslemler.isStringEqual('','')}" ajaxSingle="true" status="ajaxStatus" reRender="izinTipiAlan2" />
+								</rich:calendar>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
 								<ui:fragment rendered="#{personelIzinGirisiHome.guncellenecekIzin.izinTipi.saatGosterilecek and personelIzinGirisiHome.saatGosterilecek}">
@@ -925,7 +975,9 @@
 							<s:decorate template="/layout/edit.xhtml">
 								<ui:define name="label">İşe Başlama Zamanı</ui:define>
 								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{personelIzinGirisiHome.guncellenecekIzin.bitisZamani}"
-									showWeekDaysBar="false" showWeeksBar="false" />
+									showWeekDaysBar="false" showWeeksBar="false">
+									<a4j:support event="onchanged" action="#{ortakIslemler.isStringEqual('','')}" ajaxSingle="true" status="ajaxStatus" reRender="izinTipiAlan2" />
+								</rich:calendar>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" style="width: 200px;">
 								<ui:fragment rendered="#{personelIzinGirisiHome.guncellenecekIzin.izinTipi.saatGosterilecek and personelIzinGirisiHome.saatGosterilecek}">

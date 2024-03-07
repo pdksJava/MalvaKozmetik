@@ -289,7 +289,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	}
 
 	/**
-	 * @param personel
 	 * @return
 	 */
 	@Transactional
@@ -373,6 +372,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return dinamikAlan;
 	}
 
+	/**
+	 * @return
+	 */
 	public String cinsiyetDegisti() {
 		gebeSecim = Boolean.FALSE;
 		Personel pdksPersonel = getInstance();
@@ -434,6 +436,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * @return
+	 */
 	public String personelTipiDegisti() {
 		Personel personel = getInstance();
 		fillCalismaModeli(personel);
@@ -453,6 +458,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * @return
+	 */
 	public String sablonDegisti() {
 		Personel personel = getInstance();
 		if (personel.getSablon() != null) {
@@ -465,6 +473,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * @return
+	 */
 	public String modelDegisti() {
 		Personel personel = getInstance();
 		if (personel.getCalismaModeli() != null) {
@@ -475,6 +486,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * @param adresList
+	 * @return
+	 */
 	private String adresDuzelt(List<String> adresList) {
 		StringBuilder sb = new StringBuilder();
 		if (adresList.size() > 1) {
@@ -496,6 +511,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return str;
 	}
 
+	/**
+	 * @param adres
+	 * @return
+	 */
 	public String adresSil(String adres) {
 		if (adresTipi.equals(MAIL_CC)) {
 			if (ccAdresList.contains(adres))
@@ -514,6 +533,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * @return
+	 */
 	public String adresEkle() {
 		String eMail = PdksUtil.setTurkishStr(ccAdres.trim()).toLowerCase(Locale.ENGLISH);
 		List<String> adresler = null;
@@ -572,6 +594,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * @param adres
+	 * @param xAdresTipi
+	 * @return
+	 */
 	public String adresAyarla(String adres, String xAdresTipi) {
 		ccAdres = "";
 		setAdresTipi(xAdresTipi);
@@ -603,6 +630,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * 
+	 */
 	public void fillPdksCalismaModeliList() {
 		try {
 			Personel pdksPersonel = getInstance();
@@ -651,6 +681,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void fillPdksVardiyaSablonList() {
 		List<VardiyaSablonu> sablonList = null;
 		try {
@@ -731,6 +764,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void ldapKontrol() {
 		setHataMesaj("");
 		Personel pdksPersonel = getInstance();
@@ -752,6 +788,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * @return
+	 */
 	@Transactional
 	public String detaysizSave() {
 
@@ -776,10 +815,16 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * 
+	 */
 	public void istenAyrilmaTarihiUzat() {
 		getInstance().setIstenAyrilisTarihi(PdksUtil.getSonSistemTarih());
 	}
 
+	/**
+	 * @return
+	 */
 	@Transactional
 	public String saveKullanici() {
 		Personel pdksPersonel = getInstance();
@@ -799,6 +844,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * @param personelView
+	 * @return
+	 */
 	@Transactional
 	public String personelDegistir(PersonelView personelView) {
 		if (personelView != null) {
@@ -823,6 +872,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * @return
+	 */
 	@Transactional
 	public String save() {
 		Personel pdksPersonel = getInstance();
@@ -1301,6 +1353,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public String denemeMesajHazirla() {
 		Personel personel = getInstance();
 		if (ePosta == null || ePosta.indexOf("@") < 2)
@@ -1309,6 +1364,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * @return
+	 */
 	public String denemeMesajGonder() {
 		try {
 			Personel personel = getInstance();
@@ -1685,6 +1743,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ekSahaDisable();
 	}
 
+	/**
+	 * 
+	 */
 	private void saveIkinciYoneticiOlmazList() {
 		if (ikinciYoneticiHataliList != null) {
 			Date guncellemeTarihi = new Date();
@@ -1729,6 +1790,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * @return
+	 */
 	public String durumIK() {
 		Personel seciliPersonel = getInstance();
 		if (seciliPersonel != null) {
@@ -1841,6 +1905,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void fillYoneticiList() {
 		setYoneticiList(null);
 		if (authenticatedUser.isAdmin() || (authenticatedUser.isIK() && authenticatedUser.getDepartman().isAdminMi())) {
@@ -1992,6 +2059,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * 
+	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public void fillPersonelList() {
 		personelDurumMap.clear();
@@ -2033,9 +2103,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			personelDurumMap.put(key, map.get(key));
 		if (authenticatedUser.isAdmin())
 			for (PersonelView personelView : list) {
-
 				try {
-					// User user = personelView.getKullanici();
 					Personel pdksPersonel = personelView.getPdksPersonel();
 					if (pdksPersonel.getEmailCC() == null && pdksPersonel.getEmailBCC() == null)
 						continue;
@@ -2617,7 +2685,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	}
 
 	/**
-	 * @param menuItem
+	 * @param user
 	 * @return
 	 */
 	private String userMenuList(User user) {
@@ -2635,31 +2703,49 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * 
+	 */
 	private void fillMasrafYeriTanimList() {
 		List<Tanim> tanimList = ortakIslemler.getTanimList(Tanim.TIPI_SAP_MASRAF_YERI, session);
 		setMasrafYeriList(tanimList);
 	}
 
+	/**
+	 * 
+	 */
 	private void fillVardiyaGirisTipiList() {
 		List<Tanim> girisTipiList = ortakIslemler.getTanimList(Tanim.TIPI_GIRIS_TIPI, session);
 		setVardiyaGirisTipiTanimList(girisTipiList);
 	}
 
+	/**
+	 * 
+	 */
 	private void fillYoneticiVardiyaTipiTanimList() {
 		List<Tanim> tanimList = ortakIslemler.getTanimList(Tanim.TIPI_YONETICI_VARDIYA, session);
 		setYoneticiVardiyaTipiList(tanimList);
 	}
 
+	/**
+	 * 
+	 */
 	private void fillGorevTipiTanimList() {
 		List<Tanim> tanimList = ortakIslemler.getTanimList(Tanim.TIPI_GOREV_TIPI, session);
 		setUnvanTanimList(tanimList);
 	}
 
+	/**
+	 * 
+	 */
 	private void fillTesisTanimList() {
 		List<Tanim> tanimList = ortakIslemler.getTanimList(Tanim.TIPI_TESIS, session);
 		setTesisList(tanimList);
 	}
 
+	/**
+	 * 
+	 */
 	public void fillDepartmanTanimList() {
 		List<Departman> list = ortakIslemler.fillDepartmanTanimList(session);
 		departmanKullaniciList = new ArrayList<Departman>(list);
@@ -2674,21 +2760,33 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setDepartmanTanimList(list);
 	}
 
+	/**
+	 * 
+	 */
 	private void fillCinsiyetList() {
 		List<Tanim> tanimList = ortakIslemler.getTanimList(Tanim.TIPI_CINSIYET, session);
 		setCinsiyetList(tanimList);
 	}
 
+	/**
+	 * 
+	 */
 	private void fillPersonelTipList() {
 		List<Tanim> tanimList = ortakIslemler.getTanimList(Tanim.TIPI_PERSONEL_TIPI, session);
 		setPersonelTipleri(tanimList);
 	}
 
+	/**
+	 * 
+	 */
 	private void fillDepartmanPDKSTanimList() {
 		List<Tanim> tanimList = ortakIslemler.getTanimList(Tanim.TIPI_PDKS_DEPARTMAN, session);
 		setDepartmanPDKSTanimList(tanimList);
 	}
 
+	/**
+	 * 
+	 */
 	public void instanceRefresh() {
 		Personel pdksPersonel = getInstance();
 		if (pdksPersonel != null && pdksPersonel.getId() != null) {
@@ -2709,14 +2807,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
-	public void getYoneticiler(String tipi) {
-		setYoneticiTipi(tipi);
-	}
-
-	public void setYoneticisi(Personel seciliYonetici) {
-
-	}
-
+	/**
+	 * 
+	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public void sayfaGirisAction() {
 		fazlaMesaiIzinKullan = Boolean.FALSE;
@@ -2838,6 +2931,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public String personelDosyaYaz() throws Exception {
 
 		TreeMap<String, PersonelERP> perMap = new TreeMap<String, PersonelERP>();
@@ -2884,8 +2980,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return "";
 	}
 
+	/**
+	 * 
+	 */
 	public String personelDosyaRestYaz() throws Exception {
-
 		servisCalisti = Boolean.FALSE;
 		String adres = ortakIslemler.getParameterKey("pdksWebService");
 		if (!PdksUtil.hasStringValue(adres))
@@ -2960,6 +3058,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	public String personelDosyaOkuBasla() throws Exception {
 		session.clear();
 		servisBilgileriOlustur();
@@ -3408,8 +3510,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						fields.put(fieldName, dataIdList);
 						if (session != null)
 							fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-						// fields.put(PdksEntityController.MAP_KEY_MAP, "getSicilNo");
-						// TreeMap<String, PersonelKGS> personelKGSMap = pdksEntityController.getObjectByInnerObjectMap(fields, PersonelKGS.class, false);
 						TreeMap<String, PersonelKGS> personelKGSMap = ortakIslemler.getParamTreeMap(Boolean.FALSE, "getSicilNo", false, dataIdList, fieldName, fields, PersonelKGS.class, session);
 						for (String sicilNo : perNoList) {
 							if (personelKGSMap.containsKey(sicilNo))
@@ -3479,6 +3579,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return alanMap;
 	}
 
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	public String personelDosyaSifirla() throws Exception {
 		servisCalisti = Boolean.FALSE;
 		personelERPList.clear();
@@ -3507,6 +3611,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	}
 
+	/**
+	 * 
+	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public void detaysizSayfaGirisAction() {
 		if (session == null)
@@ -3600,6 +3707,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return yoneticiOlmayanRoller;
 	}
 
+	/**
+	 * 
+	 */
 	public void fillDistinctTesisList() {
 		List<Tanim> allTesis = ortakIslemler.getTesisDurumu() ? ortakIslemler.getTanimList(Tanim.TIPI_TESIS, session) : new ArrayList<Tanim>();
 		Personel seciliPersonel = getInstance();
@@ -3615,6 +3725,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setDistinctTesisList(allTesis);
 	}
 
+	/**
+	 * @return
+	 */
 	public String excelServiceAktar() {
 		try {
 			ByteArrayOutputStream baosDosya = excelServiceAktarDevam(personelList);
@@ -3835,6 +3948,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		return baos;
 	}
 
+	/**
+	 * 
+	 */
 	private void ekSahaDisable() {
 		ekSaha1Disable = false;
 		ekSaha2Disable = false;
@@ -3878,6 +3994,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 	}
 
+	/**
+	 * @param list
+	 * @return
+	 */
 	public String excelAktar(List<PersonelView> list) {
 		try {
 			if (list == null)
@@ -5076,4 +5196,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		this.yeniPersonelGuncelle = yeniPersonelGuncelle;
 	}
 
+	public void getYoneticiler(String tipi) {
+		setYoneticiTipi(tipi);
+	}
+
+	public void setYoneticisi(Personel seciliYonetici) {
+
+	}
 }

@@ -372,6 +372,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	}
 
+	/**
+	 * @return
+	 */
 	private Vardiya getNormalCalismaVardiya() {
 		if (normalCalismaVardiya == null) {
 			String idariVardiyaKisaAdi = ortakIslemler.getParameterKey("idariVardiyaKisaAdi");
@@ -453,10 +456,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		hareketPdksList = null;
 		mesaiNedenId = null;
 		boolean kullaniciYetkili = denklestirmeAyDurum;
-		// PersonelDenklestirme personelDenklestirme = personelAylikPuantaj.getPersonelDenklestirmeAylik();
-		// if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu()) {
-		// kullaniciYetkili = vg.getVersion() >= 0;
-		// }
 		vg.setKullaniciYetkili(kullaniciYetkili);
 		setFazlaMesaiTalep(null);
 		if (kullaniciYetkili == false) {
@@ -688,7 +687,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	}
 
 	/**
-	 * @param fmt
 	 * @return
 	 * @throws Exception
 	 */
@@ -1133,10 +1131,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				fmt.setOlusturanUser(authenticatedUser);
 				fmt.setGuncelleyenUser(mudurKullanici);
 				mesaiNedenTanimList = ortakIslemler.getTanimSelectItem(ortakIslemler.getTanimList(Tanim.TIPI_FAZLA_MESAI_NEDEN, session));
-				// seciliVardiyaGun.setIslemVardiya(null);
-				// seciliVardiyaGun.setIslendi(false);
 				if (seciliVardiyaGun.getVardiya().isCalisma()) {
-					// seciliVardiyaGun.setVardiyaZamani();
 					Vardiya islemVardiya = seciliVardiyaGun.getIslemVardiya();
 					fmt.setBaslangicZamani(islemVardiya.getVardiyaBitZaman());
 					fmt.setBitisZamani(islemVardiya.getVardiyaBitZaman());
@@ -2626,13 +2621,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						} else if (pdd.isSutIzni()) {
 							if (donemIci)
 								personelSutIzniDurum = pdd;
-							// if (personelSutIzniDurum == null) {
-							// personelSutIzniDurum = new PersonelDonemselDurum();
-							// personelSutIzniDurum.setBasTarih(PdksUtil.tariheGunEkleCikar(basTarih, -36));
-							// personelSutIzniDurum.setBitTarih(PdksUtil.tariheGunEkleCikar(basTarih, -1));
-							// personelSutIzniDurum.setPersonel(aylikPuantaj.getPdksPersonel());
-							// personelSutIzniDurum.setPersonelDurumTipiId(PersonelDurumTipi.SUT_IZNI.value());
-							// }
 						}
 
 					} else
@@ -3082,7 +3070,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	/**
 	 * @return
 	 */
-
 	public String gunlukListeKaydet() {
 
 		return "";
@@ -3131,12 +3118,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 		}
 		gorevli = helpPersonel(aylikPuantaj.getPdksPersonel());
-		// List<Vardiya> vardiyalar1 = null;
-		// if (vardiyaBolumList == null) {
-		// vardiyaBolumList = fillAylikVardiyaList(null, null);
-		//
-		// }
-		// vardiyalar = vardiyaBolumList;
 
 		List<YemekIzin> yemekler = null;
 		Date aksamVardiyaBaslangicZamani = null, aksamVardiyaBitisZamani = null;
@@ -5132,13 +5113,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	/**
 	 * @return
 	 */
-	public String bosIslem() {
-		return "";
-	}
-
-	/**
-	 * @return
-	 */
 	public String mesaiTopluKaydet() {
 		List<String> mesajlar = new ArrayList<String>();
 		HashMap<Long, AylikPuantaj> puantajMap = new HashMap<Long, AylikPuantaj>();
@@ -5545,6 +5519,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	@Transactional
 	public String aylikHareketKaydiVardiyaBulGuncelle() {
 		try {
@@ -8842,7 +8819,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	}
 
 	/**
-	 * @param puantajList
 	 * @return
 	 */
 	private ByteArrayOutputStream fazlaMesaiTalepExcelDevam() {
@@ -8965,6 +8941,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		return baos;
 	}
 
+	/**
+	 * 
+	 */
 	private void bordroAlanKapat() {
 		gerceklesenMesaiKod = Boolean.TRUE;
 		devredenBakiyeKod = Boolean.TRUE;
@@ -9110,6 +9089,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	}
 
+	/**
+	 * @return
+	 */
 	public String altBolumDoldur() {
 		aylikPuantajList.clear();
 		List<SelectItem> altBolumIdList = null;
@@ -11787,4 +11769,5 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	public void setPersonelSutIzniDurum(PersonelDonemselDurum personelSutIzniDurum) {
 		this.personelSutIzniDurum = personelSutIzniDurum;
 	}
+
 }

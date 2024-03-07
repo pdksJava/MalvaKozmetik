@@ -517,6 +517,10 @@ public class PdksUtil implements Serializable {
 		return matches;
 	}
 
+	/**
+	 * @param date
+	 * @return
+	 */
 	public static Date getDateTime(Date date) {
 		Date tarih = null;
 		if (date != null) {
@@ -553,21 +557,6 @@ public class PdksUtil implements Serializable {
 		return formatXML;
 	}
 
-	public Locale getLocale_TR() {
-		return TR_LOCALE;
-
-	}
-
-	public Locale getLocale_RU() {
-		return RU_LOCALE;
-
-	}
-
-	public Locale getLocale_EN() {
-		return Locale.ENGLISH;
-
-	}
-
 	/**
 	 * @param jsonString
 	 * @return
@@ -590,6 +579,10 @@ public class PdksUtil implements Serializable {
 		return prettyJson;
 	}
 
+	/**
+	 * @param key
+	 * @return
+	 */
 	public static String getValidValue(String key) {
 		String deger = null;
 
@@ -726,14 +719,26 @@ public class PdksUtil implements Serializable {
 		return hostName;
 	}
 
+	/**
+	 * @param string
+	 * @return
+	 */
 	public static String getEncodeStringByBase64(String string) {
 		return new String(Base64.encode((string).getBytes()));
 	}
 
+	/**
+	 * @param string
+	 * @return
+	 */
 	public static String getDecodeStringByBase64(String string) {
 		return new String(Base64.decode((string).getBytes()));
 	}
 
+	/**
+	 * @param req
+	 * @return
+	 */
 	public static boolean isInternetExplorer(HttpServletRequest req) {
 		boolean ie9 = Boolean.FALSE;
 		if (req.getHeader("user-agent") != null) {
@@ -748,6 +753,10 @@ public class PdksUtil implements Serializable {
 		return ie9;
 	}
 
+	/**
+	 * @param key
+	 * @return
+	 */
 	public static HashMap<String, String> getDecodeMapByBase64(String key) {
 		String planKey = getDecodeStringByBase64(key);
 		StringTokenizer st = new StringTokenizer(planKey, "&");
@@ -762,6 +771,9 @@ public class PdksUtil implements Serializable {
 		return veriMap;
 	}
 
+	/**
+	 * 
+	 */
 	public static void setTimeZome() {
 		String system = System.getProperty("os.name");
 		if (system == null)
@@ -774,6 +786,10 @@ public class PdksUtil implements Serializable {
 		}
 	}
 
+	/**
+	 * @param mesajList
+	 * @return
+	 */
 	public static ValidatorException setMesajYaz(List<String> mesajList) {
 
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -827,6 +843,11 @@ public class PdksUtil implements Serializable {
 		return dosyaIcerik;
 	}
 
+	/**
+	 * @param fileName
+	 * @param s
+	 * @return
+	 */
 	public static File dosyaOlustur(String fileName, byte[] s) {
 
 		try {
@@ -843,6 +864,10 @@ public class PdksUtil implements Serializable {
 		return file;
 	}
 
+	/**
+	 * @param mesaj
+	 * @return
+	 */
 	public static ValidatorException setMesajYaz(String mesaj) {
 		if (mesaj == null)
 			mesaj = "";
@@ -854,6 +879,13 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param context
+	 * @param component
+	 * @param objectId
+	 * @return
+	 * @throws Exception
+	 */
 	public static Object getFormValue(FacesContext context, UIComponent component, String objectId) throws Exception {
 		String clientId = (String) component.getAttributes().get(objectId);
 
@@ -916,6 +948,10 @@ public class PdksUtil implements Serializable {
 	// String yeniString=new
 	// String(gelenString.getBytes("ISO-8859-1"),"ISO-8859-9");
 
+	/**
+	 * @param sonuc
+	 * @return
+	 */
 	public static String convertUTF8(String sonuc) {
 		if (sonuc != null) {
 			if (sonuc.indexOf('İ') >= 0) {// I için 1
@@ -940,6 +976,10 @@ public class PdksUtil implements Serializable {
 		return sonuc;
 	}
 
+	/**
+	 * @param sa
+	 * @return
+	 */
 	public static String encode(String sa) {
 
 		if (sa != null) {
@@ -969,6 +1009,12 @@ public class PdksUtil implements Serializable {
 		return sa;
 	}
 
+	/**
+	 * @param bas
+	 * @param son
+	 * @param artis
+	 * @return
+	 */
 	public static List<String> getSayilar(int bas, int son, int artis) {
 
 		List<String> saatListesi = new ArrayList<String>();
@@ -1250,6 +1296,11 @@ public class PdksUtil implements Serializable {
 		return lList;
 	}
 
+	/**
+	 * @param str
+	 * @param delim
+	 * @return
+	 */
 	public static List<String> getListFromString(String str, String delim) {
 		List<String> list = new ArrayList<String>();
 		List<String> mailList = null;
@@ -1457,6 +1508,11 @@ public class PdksUtil implements Serializable {
 		return false;
 	}
 
+	/**
+	 * @param tarih1
+	 * @param tarih2
+	 * @return
+	 */
 	public static int tarihKarsilastirNumeric(Date tarih1, Date tarih2) {
 		long sayi1 = Long.parseLong(convertToDateString(tarih1, "yyyyMMdd"));
 		long sayi2 = Long.parseLong(convertToDateString(tarih2, "yyyyMMdd"));
@@ -1468,6 +1524,12 @@ public class PdksUtil implements Serializable {
 		return sonuc;
 	}
 
+	/**
+	 * @param tarih
+	 * @param field
+	 * @param value
+	 * @return
+	 */
 	public static Date setTarih(Date tarih, int field, int value) {
 		if (tarih != null) {
 			Calendar cal = Calendar.getInstance();
@@ -1485,6 +1547,12 @@ public class PdksUtil implements Serializable {
 		return tarih;
 	}
 
+	/**
+	 * @param tarih
+	 * @param field
+	 * @param value
+	 * @return
+	 */
 	public static Date addTarih(Date tarih, int field, int value) {
 		if (tarih != null) {
 			Calendar cal = Calendar.getInstance();
@@ -1502,6 +1570,11 @@ public class PdksUtil implements Serializable {
 		return tarih;
 	}
 
+	/**
+	 * @param date
+	 * @param field
+	 * @return
+	 */
 	public static int getDateField(Date date, int field) {
 		int dateField = -1;
 		if (date != null) {
@@ -1520,6 +1593,11 @@ public class PdksUtil implements Serializable {
 		return dateField;
 	}
 
+	/**
+	 * @param year
+	 * @param month
+	 * @return
+	 */
 	public static Date getYilAyBirinciGun(Integer year, Integer month) {
 		Date date = null;
 		try {
@@ -1531,6 +1609,11 @@ public class PdksUtil implements Serializable {
 		return date;
 	}
 
+	/**
+	 * @param yil
+	 * @param ay
+	 * @return
+	 */
 	public static Date getYilAySonGun(Integer yil, Integer ay) {
 		Date birinciGun = getYilAyBirinciGun(yil, ay), date = null;
 		try {
@@ -1546,6 +1629,10 @@ public class PdksUtil implements Serializable {
 		return date;
 	}
 
+	/**
+	 * @param date
+	 * @return
+	 */
 	public static Date getDate(Date date) {
 		String pattern = "yyyyMMdd";
 		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
@@ -1559,16 +1646,27 @@ public class PdksUtil implements Serializable {
 		return date;
 	}
 
+	/**
+	 * @return
+	 */
 	public static Date toDay() {
 		Calendar date = Calendar.getInstance();
 		Date tarih = date.getTime();
 		return tarih;
 	}
 
+	/**
+	 * @return
+	 */
 	public static Date buGun() {
 		return getDate(toDay());
 	}
 
+	/**
+	 * @param str
+	 * @param uzunluk
+	 * @return
+	 */
 	public static String getStringKes(String str, int uzunluk) {
 		if (str == null)
 			str = "";
@@ -1697,6 +1795,13 @@ public class PdksUtil implements Serializable {
 		return yeniList;
 	}
 
+	/**
+	 * @param sonEk
+	 * @param veriList
+	 * @param satirSayisi
+	 * @param request
+	 * @return
+	 */
 	public static ArrayList getSayfalaList(String sonEk, ArrayList veriList, int satirSayisi, HttpServletRequest request) {
 		if (sonEk == null)
 			sonEk = "";
@@ -1854,6 +1959,12 @@ public class PdksUtil implements Serializable {
 		}
 	}
 
+	/**
+	 * @param list
+	 * @param method
+	 * @param parametre
+	 * @return
+	 */
 	public static List sortObjectStringAlanList(List list, String method, Object[] parametre) {
 		Locale locale = null;
 		try {
@@ -1971,6 +2082,11 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param dizi
+	 * @param ayrac
+	 * @return
+	 */
 	public static ArrayList getArrayList(String[] dizi, String ayrac) {
 		ArrayList arrayList = null;
 		if (dizi != null && dizi.length > 0) {
@@ -1981,14 +2097,26 @@ public class PdksUtil implements Serializable {
 		return arrayList;
 	}
 
+	/**
+	 * @param dizi
+	 * @return
+	 */
 	public static ArrayList getNumericArrayList(String[] dizi) {
 		return getArrayList(dizi, "");
 	}
 
+	/**
+	 * @param dizi
+	 * @return
+	 */
 	public static ArrayList getStringArrayList(String[] dizi) {
 		return getArrayList(dizi, "'");
 	}
 
+	/**
+	 * @param object
+	 * @return
+	 */
 	public static StringBuilder getObjectXmlString(Object object) {
 		StringBuilder xml = new StringBuilder();
 		xml.append("<?xml version=\"1.0\" encoding=\"ISO-8859-9\"?>");
@@ -1996,6 +2124,11 @@ public class PdksUtil implements Serializable {
 		return xml;
 	}
 
+	/**
+	 * @param deger
+	 * @param fieldAdi
+	 * @return
+	 */
 	public static StringBuilder getObjectXml(Object deger, String fieldAdi) {
 		StringBuilder xml = new StringBuilder();
 		if (deger instanceof String)
@@ -2018,6 +2151,10 @@ public class PdksUtil implements Serializable {
 		return xml;
 	}
 
+	/**
+	 * @param object
+	 * @return
+	 */
 	public static StringBuilder getObjectXml(Object object) {
 		String objectAdi = object.getClass().getName();
 		if (objectAdi.indexOf("java.lang.Class") == 0)
@@ -2085,38 +2222,51 @@ public class PdksUtil implements Serializable {
 		return xml;
 	}
 
+	/**
+	 * @param session
+	 * @param name
+	 */
 	public static void removeSession(HttpSession session, String name) {
 		if (session.getAttribute(name) != null)
 			session.removeAttribute(name);
 	}
 
-	public static void mesajYazOld(String mesaj) {
-		FacesMessage facesMessage = new FacesMessage();
-		facesMessage.setDetail(mesaj);
-		facesMessage.setSummary(mesaj);
-		facesMessage.setSeverity(FacesMessage.SEVERITY_ERROR);
-		FacesContext.getCurrentInstance().addMessage(null, facesMessage);
-	}
-
+	/**
+	 * @return
+	 */
 	public static FacesContext getFacesContext() {
 		return FacesContext.getCurrentInstance();
 	}
 
+	/**
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map getRequestParam() {
 		return getFacesContext().getExternalContext().getRequestParameterMap();
 	}
 
+	/**
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map getRequestScope() {
 		return getFacesContext().getExternalContext().getRequestMap();
 	}
 
+	/**
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map getSessionScope() {
 		return getFacesContext().getExternalContext().getSessionMap();
 	}
 
+	/**
+	 * @param message
+	 * @param severity
+	 * @param yeni
+	 */
 	private static void addMessage(String message, Severity severity, Boolean yeni) {
 		Object object = Component.getInstance("facesMessages");
 		if (object != null) {
@@ -2128,38 +2278,66 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageError(String message) {
 		addMessage(message, Severity.ERROR, Boolean.TRUE);
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageWarn(String message) {
 		addMessage(message, Severity.WARN, Boolean.TRUE);
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageInfo(String message) {
 		addMessage(message, Severity.INFO, Boolean.TRUE);
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageFatal(String message) {
 		addMessage(message, Severity.FATAL, Boolean.TRUE);
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageAvailableError(String message) {
 		addMessage(message, Severity.ERROR, Boolean.FALSE);
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageAvailableWarn(String message) {
 		addMessage(message, Severity.WARN, Boolean.FALSE);
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageAvailableInfo(String message) {
 		addMessage(message, Severity.INFO, Boolean.FALSE);
 	}
 
+	/**
+	 * @param message
+	 */
 	public static void addMessageAvailableFatal(String message) {
 		addMessage(message, Severity.FATAL, Boolean.FALSE);
 	}
 
+	/**
+	 * @param compId
+	 * @param messageText
+	 */
 	public static void addMessageFor(String compId, String messageText) {
 		FacesMessage message = new FacesMessage();
 		message.setDetail(messageText);
@@ -2168,6 +2346,9 @@ public class PdksUtil implements Serializable {
 		getFacesContext().addMessage(compId, message);
 	}
 
+	/**
+	 * @return
+	 */
 	public static String getContextPath() {
 		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
@@ -2180,9 +2361,8 @@ public class PdksUtil implements Serializable {
 	 * {@link UIComponentBase}, which skips recursive scan each time it finds a {@link NamingContainer}, this method examines all components, regardless of their namespace (assuming IDs are unique).
 	 * 
 	 * @param base
-	 *            Base {@link UIComponent} from which to search
 	 * @param id
-	 *            Component identifier to be matched
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static UIComponent findComponent(UIComponent base, String id) {
@@ -2210,6 +2390,10 @@ public class PdksUtil implements Serializable {
 		return result;
 	}
 
+	/**
+	 * @param id
+	 * @return
+	 */
 	public static UIComponent findComponentInRoot(String id) {
 		UIComponent ret = null;
 
@@ -2222,22 +2406,10 @@ public class PdksUtil implements Serializable {
 		return ret;
 	}
 
-	public static HttpServletRequest getHttpServletRequest() {
-		return httpServletRequest;
-	}
-
-	public static void setHttpServletRequest(HttpServletRequest httpServletRequest) {
-		PdksUtil.httpServletRequest = httpServletRequest;
-	}
-
-	public static String getUrl() {
-		return url;
-	}
-
-	public static void setUrl(String url) {
-		PdksUtil.url = url;
-	}
-
+	/**
+	 * @param str
+	 * @return
+	 */
 	public static String encodePassword(String str) {
 		String lockToken = "";
 		try {
@@ -2253,6 +2425,9 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @return
+	 */
 	public static Date getSonSistemTarih() {
 		if (sonSistemTarih == null) {
 			Calendar calendar = Calendar.getInstance();
@@ -2273,6 +2448,11 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param locale
+	 * @param key
+	 * @return
+	 */
 	public static String getMessageBundleMessage(Locale locale, String key) {
 		String message = "";
 		String bundleAdi = bundleName;
@@ -2318,11 +2498,18 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param key
+	 * @return
+	 */
 	public static String getMessageBundleMessage(String key) {
 		Locale locale = Constants.TR_LOCALE;
 		return getMessageBundleMessage(locale, key);
 	}
 
+	/**
+	 * @return
+	 */
 	public static Date ayinIlkGunu() {
 		Calendar cal = Calendar.getInstance();
 		GregorianCalendar calendar = new GregorianCalendar();
@@ -2330,6 +2517,9 @@ public class PdksUtil implements Serializable {
 		return getDate(cal.getTime());
 	}
 
+	/**
+	 * @return
+	 */
 	public static Date ayinSonGunu() {
 		Calendar cal = Calendar.getInstance();
 		GregorianCalendar calendar = new GregorianCalendar();
@@ -2344,6 +2534,9 @@ public class PdksUtil implements Serializable {
 		return getDate(cal.getTime());
 	}
 
+	/**
+	 * @param user
+	 */
 	public static void setUserYetki(User user) {
 		if (user != null) {
 			user.setAdmin(Boolean.FALSE);
@@ -2423,6 +2616,10 @@ public class PdksUtil implements Serializable {
 		user.setYetkiSet(Boolean.TRUE);
 	}
 
+	/**
+	 * @param date
+	 * @return
+	 */
 	public static Date tarihiGetir(Date date) {
 		if (date != null) {
 			Calendar cal = Calendar.getInstance();
@@ -2438,7 +2635,7 @@ public class PdksUtil implements Serializable {
 	}
 
 	/**
-	 * @param deger
+	 * @param doubleValue
 	 * @param yarimYuvarla
 	 * @return
 	 */
@@ -2526,38 +2723,6 @@ public class PdksUtil implements Serializable {
 				yuvarlanmisDeger = deger;
 			}
 		return yuvarlanmisDeger;
-	}
-
-	public static int getSistemBaslangicYili() {
-		return sistemBaslangicYili;
-	}
-
-	public static void setSistemBaslangicYili(int sistemBaslangicYili) {
-		PdksUtil.sistemBaslangicYili = sistemBaslangicYili;
-	}
-
-	public static int getIzinOffAdet() {
-		return izinOffAdet;
-	}
-
-	public static void setIzinOffAdet(int izinOffAdet) {
-		PdksUtil.izinOffAdet = izinOffAdet;
-	}
-
-	public static int getIzinHaftaAdet() {
-		return izinHaftaAdet;
-	}
-
-	public static void setIzinHaftaAdet(int izinHaftaAdet) {
-		PdksUtil.izinHaftaAdet = izinHaftaAdet;
-	}
-
-	public static int getPlanOffAdet() {
-		return planOffAdet;
-	}
-
-	public static void setPlanOffAdet(int planOffAdet) {
-		PdksUtil.planOffAdet = planOffAdet;
 	}
 
 	/**
@@ -2749,6 +2914,11 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param em
+	 * @param yeni
+	 * @return
+	 */
 	public static Session getSession(EntityManager em, Boolean yeni) {
 		// Session session1 = (Session) entityManager.getDelegate();
 		Session session1 = null;
@@ -2791,6 +2961,11 @@ public class PdksUtil implements Serializable {
 		PdksUtil.bundleName = bundleName;
 	}
 
+	/**
+	 * @param item
+	 * @param dosya
+	 * @return
+	 */
 	public static Dosya getDosya(UploadItem item, Dosya dosya) {
 		if (dosya == null)
 			dosya = new Dosya();
@@ -2809,6 +2984,10 @@ public class PdksUtil implements Serializable {
 		return dosya;
 	}
 
+	/**
+	 * @param kelime
+	 * @return
+	 */
 	public static String getNotTurkishCharacter(String kelime) {
 		String str = kelime;
 		if (str.indexOf("Ü") >= 0)
@@ -2834,6 +3013,10 @@ public class PdksUtil implements Serializable {
 		return str;
 	}
 
+	/**
+	 * @param date
+	 * @return
+	 */
 	public static Date setGunSonu(Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(getDate(date));
@@ -2844,6 +3027,10 @@ public class PdksUtil implements Serializable {
 		return bitisZamani;
 	}
 
+	/**
+	 * @param mesaj
+	 * @return
+	 */
 	public static String setTurkishStr(String mesaj) {
 		String str = new String(mesaj);
 		if (mesaj != null) {
@@ -2876,6 +3063,11 @@ public class PdksUtil implements Serializable {
 		return str;
 	}
 
+	/**
+	 * @param girisZaman
+	 * @param cikisZaman
+	 * @return
+	 */
 	public static Date getSure(Date girisZaman, Date cikisZaman) {
 		Date gecenZaman = null;
 		if (girisZaman != null && cikisZaman != null) {
@@ -2887,6 +3079,10 @@ public class PdksUtil implements Serializable {
 		return gecenZaman;
 	}
 
+	/**
+	 * @param sayisal
+	 * @return
+	 */
 	public static List<SelectItem> getAyListesi(boolean sayisal) {
 		List<SelectItem> list = new ArrayList<SelectItem>();
 		Calendar cal = Calendar.getInstance();
@@ -2901,6 +3097,12 @@ public class PdksUtil implements Serializable {
 		return list;
 	}
 
+	/**
+	 * @param submittedValue
+	 * @param locale
+	 * @return
+	 * @throws Exception
+	 */
 	public static Double stringFormatConvertNumericValue(String submittedValue, Locale locale) throws Exception {
 		Double degerDouble = null;
 		if (submittedValue != null) {
@@ -2943,6 +3145,12 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param value
+	 * @param locale
+	 * @return
+	 * @throws Exception
+	 */
 	public static String numericValueFormatStr(Object value, Locale locale) throws Exception {
 		String str = null;
 		if (value != null) {
@@ -2974,6 +3182,11 @@ public class PdksUtil implements Serializable {
 		return str;
 	}
 
+	/**
+	 * @param sessionx
+	 * @param simdi
+	 * @return
+	 */
 	public static Date getSession(HttpSession sessionx, Date simdi) {
 		Date tarih = null;
 		Calendar cal = Calendar.getInstance();
@@ -2992,6 +3205,11 @@ public class PdksUtil implements Serializable {
 		return tarih;
 	}
 
+	/**
+	 * @param bilgi
+	 * @param tipi
+	 * @return
+	 */
 	public static User getLDAPKullanici(String bilgi, String tipi) {
 		User kullanici = null;
 		try {
@@ -3004,6 +3222,10 @@ public class PdksUtil implements Serializable {
 		return kullanici;
 	}
 
+	/**
+	 * @param ePosta
+	 * @return
+	 */
 	public static String getMailAdres(String ePosta) {
 		String eMail = null;
 		if (ePosta != null) {
@@ -3025,6 +3247,10 @@ public class PdksUtil implements Serializable {
 		return eMail;
 	}
 
+	/**
+	 * @param tarih
+	 * @return
+	 */
 	public static Date getGunSonu(Date tarih) {
 		Date gunSonu = null;
 		if (tarih != null) {
@@ -3075,6 +3301,9 @@ public class PdksUtil implements Serializable {
 		return personelDenklestirme;
 	}
 
+	/**
+	 * @return
+	 */
 	public static Date getBakiyeYil() {
 		Calendar date = Calendar.getInstance();
 		date.set(1900, 0, 1);
@@ -3082,6 +3311,10 @@ public class PdksUtil implements Serializable {
 		return tarih;
 	}
 
+	/**
+	 * @param eMail
+	 * @return
+	 */
 	public static String getInternetAdres(String eMail) {
 		InternetAddress internetAddress = null;
 		try {
@@ -3111,6 +3344,12 @@ public class PdksUtil implements Serializable {
 		return eMail;
 	}
 
+	/**
+	 * @param jcoClient
+	 * @param function
+	 * @param execute
+	 * @throws Exception
+	 */
 	public static void getXMLFunction(JCO.Client jcoClient, JCO.Function function, boolean execute) throws Exception {
 		if (function != null) {
 			String name = function.getName();
@@ -3210,6 +3449,10 @@ public class PdksUtil implements Serializable {
 		}
 	}
 
+	/**
+	 * @param function
+	 * @throws Exception
+	 */
 	public static void getXMLFunction(JCO.Function function) throws Exception {
 		if (function != null) {
 			String name = function.getName();
@@ -3399,14 +3642,30 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param content
+	 * @param fileName
+	 * @throws Exception
+	 */
 	public static void fileWrite(String content, String fileName) throws Exception {
 		fileWrite(content, fileName, Boolean.FALSE);
 	}
 
+	/**
+	 * @param content
+	 * @param fileName
+	 * @throws Exception
+	 */
 	public static void fileWriteEkle(String content, String fileName) throws Exception {
 		fileWrite(content, fileName, Boolean.TRUE);
 	}
 
+	/**
+	 * @param content
+	 * @param fileName
+	 * @param ekle
+	 * @throws Exception
+	 */
 	private static void fileWrite(String content, String fileName, Boolean ekle) throws Exception {
 		String path = "/tmp/pdks";
 		if (fileName.indexOf("\\") > 0)
@@ -3454,6 +3713,10 @@ public class PdksUtil implements Serializable {
 
 	}
 
+	/**
+	 * @param veri
+	 * @return
+	 */
 	public static Date getDateObjectValue(Object veri) {
 		Date zamanValue = null;
 		if (veri != null) {
@@ -3467,31 +3730,72 @@ public class PdksUtil implements Serializable {
 		return zamanValue;
 	}
 
+	/**
+	 * @param ts
+	 * @return
+	 */
 	public static Date getDateFromTimestamp(Timestamp ts) {
 		Date date = ts != null ? new Date(ts.getTime()) : null;
 		return date;
 	}
 
+	/**
+	 * @param bd
+	 * @return
+	 */
 	public static Long getLongFromBigDecimal(BigDecimal bd) {
 		Long long1 = bd != null ? bd.longValue() : null;
 		return long1;
 	}
 
+	/**
+	 * @param bi
+	 * @return
+	 */
 	public static Long getLongFromBigInteger(BigInteger bi) {
 		Long long1 = bi != null ? bi.longValue() : null;
 		return long1;
 	}
 
+	/**
+	 * @return
+	 */
+	public static String getDateFormat() {
+		String str = dateFormat != null ? dateFormat : "dd/MM/yyyy";
+		return str;
+	}
+
+	/**
+	 * @param value
+	 */
+	public static void setDateFormat(String value) {
+		if (value == null || value.trim().length() < 2) {
+			value = "dd/MM/yyyy";
+		}
+		dateFormat = value;
+		dateTimeFormat = value + " H:mm";
+		dateTimeLongFormat = value + " H:mm:ss";
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getDateTimeFormat() {
+		String str = dateTimeFormat != null ? dateTimeFormat : getDateFormat() + " " + saatFormat;
+		return str;
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getDateTimeLongFormat() {
+		String str = dateTimeLongFormat != null ? dateTimeLongFormat : getDateFormat() + " " + saatFormat + ":ss";
+		return str;
+	}
+
 	public static Locale getLocale() {
 		Locale locale = Constants.TR_LOCALE;
-		// try {
-		// FacesContext fc = FacesContext.getCurrentInstance();
-		// locale = fc.getViewRoot().getLocale();
-		// } catch (Exception e) {
-		// locale = null;
-		// }
-		// if (locale == null)
-		// locale = Constants.TR_LOCALE;
+ 
 		return locale;
 	}
 
@@ -3525,30 +3829,6 @@ public class PdksUtil implements Serializable {
 
 	public static void setSistemDestekVar(boolean sistemDestekVar) {
 		PdksUtil.sistemDestekVar = sistemDestekVar;
-	}
-
-	public static String getDateFormat() {
-		String str = dateFormat != null ? dateFormat : "dd/MM/yyyy";
-		return str;
-	}
-
-	public static void setDateFormat(String value) {
-		if (value == null || value.trim().length() < 2) {
-			value = "dd/MM/yyyy";
-		}
-		dateFormat = value;
-		dateTimeFormat = value + " H:mm";
-		dateTimeLongFormat = value + " H:mm:ss";
-	}
-
-	public static String getDateTimeFormat() {
-		String str = dateTimeFormat != null ? dateTimeFormat : getDateFormat() + " " + saatFormat;
-		return str;
-	}
-
-	public static String getDateTimeLongFormat() {
-		String str = dateTimeLongFormat != null ? dateTimeLongFormat : getDateFormat() + " " + saatFormat + ":ss";
-		return str;
 	}
 
 	public static String getSaatFormat() {
@@ -3599,4 +3879,66 @@ public class PdksUtil implements Serializable {
 		PdksUtil.sicilNoUzunluk = sicilNoUzunluk;
 	}
 
+	public Locale getLocale_TR() {
+		return TR_LOCALE;
+
+	}
+
+	public Locale getLocale_RU() {
+		return RU_LOCALE;
+
+	}
+
+	public Locale getLocale_EN() {
+		return Locale.ENGLISH;
+
+	}
+
+	public static int getSistemBaslangicYili() {
+		return sistemBaslangicYili;
+	}
+
+	public static void setSistemBaslangicYili(int sistemBaslangicYili) {
+		PdksUtil.sistemBaslangicYili = sistemBaslangicYili;
+	}
+
+	public static int getIzinOffAdet() {
+		return izinOffAdet;
+	}
+
+	public static void setIzinOffAdet(int izinOffAdet) {
+		PdksUtil.izinOffAdet = izinOffAdet;
+	}
+
+	public static int getIzinHaftaAdet() {
+		return izinHaftaAdet;
+	}
+
+	public static void setIzinHaftaAdet(int izinHaftaAdet) {
+		PdksUtil.izinHaftaAdet = izinHaftaAdet;
+	}
+
+	public static int getPlanOffAdet() {
+		return planOffAdet;
+	}
+
+	public static void setPlanOffAdet(int planOffAdet) {
+		PdksUtil.planOffAdet = planOffAdet;
+	}
+
+	public static HttpServletRequest getHttpServletRequest() {
+		return httpServletRequest;
+	}
+
+	public static void setHttpServletRequest(HttpServletRequest httpServletRequest) {
+		PdksUtil.httpServletRequest = httpServletRequest;
+	}
+
+	public static String getUrl() {
+		return url;
+	}
+
+	public static void setUrl(String url) {
+		PdksUtil.url = url;
+	}
 }

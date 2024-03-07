@@ -214,7 +214,7 @@
 															rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.planGirisi and authenticatedUser.departman.admin}">
 															<bR />
 
-															<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{vardiyaGunHome.bosIslem()}" status="ajaxStatus" />
+															<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{ortakIslemler.emtpyAjaxFunction()}" status="ajaxStatus" />
 														</ui:fragment></th>
 												</ui:fragment>
 
@@ -225,7 +225,7 @@
 															value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" /> <ui:fragment
 															rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.planGirisi  and authenticatedUser.departman.admin}">
 															<bR />
-															<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{vardiyaGunHome.bosIslem()}" status="ajaxStatus" />
+															<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{ortakIslemler.emtpyAjaxFunction()}" status="ajaxStatus" />
 														</ui:fragment></td>
 												</ui:fragment>
 												<ui:fragment rendered="#{vardiya.tatil.yarimGun==false}">
@@ -235,7 +235,7 @@
 															value="#{authenticatedUser.getTarihFormatla(vardiya.vardiyaDate, 'EEE')}" /> <ui:fragment
 															rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.planGirisi  and authenticatedUser.departman.admin}">
 															<bR />
-															<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{vardiyaGunHome.bosIslem()}" status="ajaxStatus" />
+															<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{ortakIslemler.emtpyAjaxFunction()}" status="ajaxStatus" />
 														</ui:fragment></td>
 												</ui:fragment>
 

@@ -78,7 +78,7 @@
 										rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.planGirisi  and authenticatedUser.departman.admin}">
 										<ui:fragment rendered="#{vardiyaGunHome.aramaSecenekleri.sirket.erp and vardiyaGunHome.gorevYeriGirisDurum}">
 											<bR />
-											<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{vardiyaGunHome.bosIslem()}" status="ajaxStatus" />
+											<h:selectBooleanCheckbox value="#{vardiya.checkBoxDurum}" action="#{ortakIslemler.emtpyAjaxFunction()}" status="ajaxStatus" />
 										</ui:fragment>
 									</ui:fragment> <ui:fragment rendered="#{vardiya.tatil!=null}">
 										<rich:toolTip for="tatil#{vardiya.vardiyaDateStr}">
