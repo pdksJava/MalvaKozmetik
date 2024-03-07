@@ -3126,11 +3126,16 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 
 		VardiyaGun pdksVardiyaGun1 = new VardiyaGun(izinliSahibi, null, personelIzin.getBaslangicZamani());
 		VardiyaGun pdksVardiyaGun2 = new VardiyaGun(izinliSahibi, null, personelIzin.getBitisZamani());
-		VardiyaGun sonIzinVardiyaGun = new VardiyaGun(izinliSahibi, null, PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(personelIzin.getBitisZamani(), -1)));
-		if (vardiyaMap.containsKey(sonIzinVardiyaGun.getVardiyaKeyStr())) {
-			VardiyaGun vg = vardiyaMap.get(sonIzinVardiyaGun.getVardiyaKeyStr());
-			if (vg.getVardiya().isCalisma())
-				sonIzinVardiyaGun = vg;
+		int oncekiGun = 1;
+		VardiyaGun sonIzinVardiyaGun = null;
+		while (sonIzinVardiyaGun == null || sonIzinVardiyaGun.getVardiya() == null || sonIzinVardiyaGun.getVardiya().isCalisma() == false) {
+			sonIzinVardiyaGun = new VardiyaGun(izinliSahibi, null, PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(personelIzin.getBitisZamani(), -oncekiGun)));
+			if (vardiyaMap.containsKey(sonIzinVardiyaGun.getVardiyaKeyStr())) {
+				VardiyaGun vg = vardiyaMap.get(sonIzinVardiyaGun.getVardiyaKeyStr());
+				if (vg.getVardiya().isCalisma())
+					sonIzinVardiyaGun = vg;
+			}
+			++oncekiGun;
 		}
 
 		if (izinTipi == null) {
@@ -3207,23 +3212,28 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 					} else {
 						boolean offGunBasla = pdksVardiyaGun2.getVardiya() != null && pdksVardiyaGun2.getVardiya().isCalisma() == false;
 						if (offGunBasla && izinTipi.isBaslamaZamaniCalismadir() == false) {
-							offGunBasla = !(authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi()) || sonIzinVardiyaGun.getVardiya() == null;
-							if (offGunBasla == false) {
-								Vardiya vardiya = sonIzinVardiyaGun.getVardiya();
-								offGunBasla = vardiya.isCalisma() == false;
-								cal.setTime(PdksUtil.getDate(personelIzin.getBitisZamani()));
-								if (isSaatGosterilecek() == false) {
-									if (vardiya.getBasSaat() < vardiya.getBitSaat()) {
-										cal.set(Calendar.HOUR_OF_DAY, vardiya.getBasSaat());
-										cal.set(Calendar.MINUTE, vardiya.getBasDakika());
-									} else {
-										cal.set(Calendar.HOUR_OF_DAY, vardiya.getBitSaat());
-										cal.set(Calendar.MINUTE, vardiya.getBitDakika());
-									}
-									personelIzin.setBitisZamani(cal.getTime());
-								}
-							} else
+							if (!authenticatedUser.isIK() || authenticatedUser.isSistemYoneticisi()) {
 								offGunBasla = true;
+							} else {
+								offGunBasla = false;
+								Vardiya vardiya = sonIzinVardiyaGun.getVardiya();
+								if (vardiya == null)
+									pdksVardiyaGun1.getVardiya();
+								if (vardiya != null) {
+									cal.setTime(PdksUtil.getDate(personelIzin.getBitisZamani()));
+									if (isSaatGosterilecek() == false) {
+										if (vardiya.getBasSaat() < vardiya.getBitSaat()) {
+											cal.set(Calendar.HOUR_OF_DAY, vardiya.getBasSaat());
+											cal.set(Calendar.MINUTE, vardiya.getBasDakika());
+										} else {
+											cal.set(Calendar.HOUR_OF_DAY, vardiya.getBitSaat());
+											cal.set(Calendar.MINUTE, vardiya.getBitDakika());
+										}
+										personelIzin.setBitisZamani(cal.getTime());
+									}
+								}
+
+							}
 
 						}
 

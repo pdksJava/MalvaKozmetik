@@ -959,7 +959,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 									logger.debug(vardiyaGun.getVardiyaDateStr());
 								izinTipi = personelIzin.getIzinTipi();
 								if (izinTipi != null) {
+
 									izinBordroDetayTipi = ortakIslemler.getBordroDetayTipi(izinTipi, izinGrupMap);
+									izinKodu = izinBordroDetayTipi != null ? izinBordroDetayTipi.value() : izinTipi.getIzinTipiTanim().getErpKodu();
 									if (izinTipi.isUcretsizIzinTipi() || (izinBordroDetayTipi != null && izinBordroDetayTipi.equals(BordroDetayTipi.UCRETSIZ_IZIN))) {
 										calismaGun = 0;
 									} else if (saatlikCalisma) {
