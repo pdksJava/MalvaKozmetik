@@ -18099,7 +18099,7 @@ public class OrtakIslemler implements Serializable {
 						map.put("eklenenId", pdksLog.getKgsId());
 						map.put("pdks", 1);
 						try {
-							pdksEntityController.execSPList(map, sp, null);
+							pdksEntityController.execSP(map, sp);
 						} catch (Exception e) {
 							pdksLog.setGuncellemeZamani(guncellemeZamani);
 							pdksLog.setKapiId(kapiKGS.getKgsId());
