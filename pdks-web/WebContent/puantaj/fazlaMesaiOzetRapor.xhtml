@@ -146,6 +146,12 @@
 
 
 								</rich:column>
+								<rich:column rendered="#{fazlaMesaiOzetRaporHome.kimlikGoster}">
+									<f:facet name="header">
+										<h:outputText value="#{ortakIslemler.kimlikNoAciklama()}" />
+									</f:facet>
+									<h:outputText value="#{aylikPuantaj.pdksPersonel.personelKGS.kimlikNo}" />
+								</rich:column>
 								<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
 									<f:facet name="header">
 										<h:outputText value="Adı Soyadı" />
@@ -201,9 +207,9 @@
 
 										</ui:fragment></SPAN>
 								</rich:column>
-								<rich:column rendered="#{fazlaMesaiOzetRaporHome.fazlaMesaiIzinKullan}" style="text-align: center;width: 60px;">
+								<rich:column rendered="#{fazlaMesaiOzetRaporHome.fazlaMesaiOde}" style="text-align: center;width: 60px;">
 									<f:facet name="header">
-										<h:outputText value="FM Öde" />
+										<h:outputText value="FM Ödeme" />
 									</f:facet>
 									<SPAN> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiOde==false}">
 											<h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiOde)}" />
@@ -225,21 +231,7 @@
 											</SPAN>
 										</ui:fragment></SPAN>
 								</rich:column>
-								<rich:column rendered="#{fazlaMesaiOzetRaporHome.sutIzniGoster}" style="text-align: center;width: 60px;">
-									<f:facet name="header">
-										<h:outputText value="Süt İzni" />
-									</f:facet>
-									<SPAN> <h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeAylik.sutIzniDurum)}" />
-									</SPAN>
-								</rich:column>
-								<rich:column rendered="#{fazlaMesaiOzetRaporHome.partTimeGoster}" style="text-align: center;width: 60px;">
-									<f:facet name="header">
-										<h:outputText value="Part Time" />
-									</f:facet>
-									<SPAN> <h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeAylik.partTime)}" />
-
-									</SPAN>
-								</rich:column>
+								 
 								<c:if test="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar!=null }">
 									<c:forEach items="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar}" var="vg">
 
@@ -277,7 +269,6 @@
 																</rich:toolTip>
 															</ui:fragment>
 														</DIV>
-
 													</ui:fragment>
 													<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.vardiya!=null}">
 														<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.durum==false and aylikPuantaj.vardiyaGun.zamanGelmedi==false}">
@@ -286,7 +277,12 @@
 
 														<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.durum==true or aylikPuantaj.vardiyaGun.zamanGelmedi}">
 															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi>0}">
-																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" />
+																<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi gt fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
+																	<SPAN style="color: red;"><h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" /></SPAN>
+																</ui:fragment>
+																<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi le fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
+																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" />
+																</ui:fragment>
 
 															</ui:fragment>
 															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi==0 and aylikPuantaj.vardiyaGun.izin==null}">

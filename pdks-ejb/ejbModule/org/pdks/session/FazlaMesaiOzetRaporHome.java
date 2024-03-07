@@ -116,10 +116,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	private TreeMap<String, Tatil> tatilGunleriMap;
 
-	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
+	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
 	private Boolean sutIzniGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
-
-	private Boolean aksamGun = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
+	private Boolean kimlikGoster = Boolean.FALSE, aksamGun = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE;
 	private boolean adminRole, ikRole;
 
@@ -221,6 +220,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			sutIzniGoster = Boolean.FALSE;
 			partTimeGoster = Boolean.FALSE;
 			mailGonder = Boolean.FALSE;
+			kimlikGoster = Boolean.FALSE;
+			fazlaMesaiOde = Boolean.FALSE;
+			fazlaMesaiIzinKullan = Boolean.FALSE;
 			setSirket(null);
 			sirketId = null;
 			setTesisId(null);
@@ -689,6 +691,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		haftaTatilVar = Boolean.FALSE;
 		maasKesintiGoster = Boolean.FALSE;
 		fazlaMesaiIzinKullan = Boolean.FALSE;
+		kimlikGoster = Boolean.FALSE;
+		fazlaMesaiOde = Boolean.FALSE;
 		sirketIzinGirisDurum = Boolean.FALSE;
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 		if (fmtMap == null)
@@ -1181,6 +1185,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					}
 					if (!fazlaMesaiIzinKullan)
 						fazlaMesaiIzinKullan = personelDenklestirme.getFazlaMesaiIzinKullan() != null && personelDenklestirme.getFazlaMesaiIzinKullan();
+					if (!fazlaMesaiOde)
+						fazlaMesaiOde = personelDenklestirme.getFazlaMesaiOde() != null && personelDenklestirme.getFazlaMesaiOde();
+					if (!kimlikGoster)
+						kimlikGoster = PdksUtil.hasStringValue(personel.getPersonelKGS().getKimlikNo());
 
 					if (!sutIzniGoster)
 						sutIzniGoster = personelDenklestirme != null && personelDenklestirme.getSutIzniDurum() != null && personelDenklestirme.getSutIzniDurum();
@@ -1434,25 +1442,36 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 
 		CellStyle styleCenterEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleCenterEvenDayRed = ExcelUtil.getStyleDayEven(ExcelUtil.ALIGN_CENTER, wb);
+		ExcelUtil.setFontColor(styleCenterEvenDayRed, Color.RED);
 		CellStyle styleCenterOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleCenterOddDayRed = ExcelUtil.getStyleDayOdd(ExcelUtil.ALIGN_CENTER, wb);
+		ExcelUtil.setFontColor(styleCenterOddDayRed, Color.RED);
 
 		CellStyle styleDay = null, styleGenel = null, styleTutar = null, styleStrDay = null;
 		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleTatilRed = ExcelUtil.getStyleDataCenter(wb);
+		ExcelUtil.setFontColor(styleTatilRed, Color.RED);
 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleEgitim = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleOff = ExcelUtil.getStyleDataCenter(wb);
 		ExcelUtil.setFontColor(styleOff, Color.WHITE);
+		CellStyle styleOffRed = ExcelUtil.getStyleDataCenter(wb);
+		ExcelUtil.setFontColor(styleTatilRed, Color.RED);
+
 		CellStyle styleIzin = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
 		int row = 0, col = 0;
 
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
+		ExcelUtil.setFillForegroundColor(styleTatilRed, 255, 153, 204);
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
 		ExcelUtil.setFillForegroundColor(styleCalisma, 255, 255, 255);
 		ExcelUtil.setFillForegroundColor(styleEgitim, 0, 0, 255);
 		ExcelUtil.setFillForegroundColor(styleOff, 13, 12, 89);
+		ExcelUtil.setFillForegroundColor(styleOffRed, 13, 12, 89);
 		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
 		if (sirket != null) {
 			ExcelUtil.getCell(sheet, row, col, header).setCellValue(sirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : ""));
@@ -1482,14 +1501,17 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		col = 0;
 		ExcelUtil.getCell(sheet, ++row, col++, header).setCellValue("Sıra");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
+		if (kimlikGoster)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kimlikNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		if (seciliEkSaha3Id == null)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
-		if (fazlaMesaiIzinKullan) {
+		if (fazlaMesaiOde)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM Ödeme");
+		if (fazlaMesaiIzinKullan)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM İzin Kullansın");
-		}
+
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(aylikPuantajDefault.getIlkGun());
 		CreationHelper factory = wb.getCreationHelper();
@@ -1536,6 +1558,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		if (modelGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 		int sira = 0;
+		double maxSure = denklestirmeAy.getFazlaMesaiMaxSure() != null ? denklestirmeAy.getFazlaMesaiMaxSure() : 11.0d;
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
 
@@ -1563,6 +1586,12 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					}
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(++sira);
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
+					if (kimlikGoster) {
+						if (PdksUtil.hasStringValue(personel.getPersonelKGS().getKimlikNo()))
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPersonelKGS().getKimlikNo());
+						else
+							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
+					}
 					Cell personelCell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
 					personelCell.setCellValue(personel.getAdSoyad());
 
@@ -1570,10 +1599,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
-					if (fazlaMesaiIzinKullan) {
+					if (fazlaMesaiOde)
 						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getFazlaMesaiOde()));
+					if (fazlaMesaiIzinKullan)
 						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getFazlaMesaiIzinKullan()));
-					}
 
 					List vardiyaList = aylikPuantaj.getAyinVardiyalari();
 
@@ -1582,9 +1611,12 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						Vardiya vardiya = vardiyaGun.getVardiya();
 						String styleText = vardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
 						Double sure = vardiyaGun.getCalismaSuresi();
+						boolean maxSureGecti = sure != null && sure.doubleValue() > maxSure;
 						styleDay = styleStrDay;
+						if (maxSureGecti)
+							styleDay = row % 2 != 0 ? styleCenterOddDayRed : styleCenterEvenDayRed;
 						if (styleText.equals(VardiyaGun.STYLE_CLASS_HAFTA_TATIL)) {
-							styleDay = styleTatil;
+							styleDay = maxSureGecti == false ? styleTatil : styleTatilRed;
 
 						} else if (styleText.equals(VardiyaGun.STYLE_CLASS_IZIN)) {
 							styleDay = styleIzin;
@@ -1596,17 +1628,22 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							styleDay = styleEgitim;
 
 						} else if (styleText.equals(VardiyaGun.STYLE_CLASS_OFF)) {
-							styleDay = styleOff;
+							styleDay = maxSureGecti == false ? styleOff : styleOffRed;
 
 						}
 						cell = ExcelUtil.getCell(sheet, row, col++, styleDay);
 
 						String aciklama = !help || calisan(vardiyaGun) ? vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(sure)) : "";
-						if (aciklama.equals("0")) {
-							if (vardiya.isCalisma() == false || vardiyaGun.getTatil() != null || vardiyaGun.isIzinli())
-								aciklama = ".";
+						if (vardiya != null) {
+							if (aciklama.equals("0")) {
+								if (vardiya.isCalisma() == false || vardiyaGun.getTatil() != null || vardiyaGun.isIzinli())
+									aciklama = ".";
 
+							}
+						} else {
+							aciklama = vardiyaGun.isCalismayiBirakti() ? "İSTİFA" : "ÇALIŞMIYOR";
 						}
+
 						cell.setCellValue(aciklama);
 
 					}
@@ -2553,6 +2590,22 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	 */
 	public void setYoneticiERP1Kontrol(Boolean yoneticiERP1Kontrol) {
 		this.yoneticiERP1Kontrol = yoneticiERP1Kontrol;
+	}
+
+	public Boolean getFazlaMesaiOde() {
+		return fazlaMesaiOde;
+	}
+
+	public void setFazlaMesaiOde(Boolean fazlaMesaiOde) {
+		this.fazlaMesaiOde = fazlaMesaiOde;
+	}
+
+	public Boolean getKimlikGoster() {
+		return kimlikGoster;
+	}
+
+	public void setKimlikGoster(Boolean kimlikGoster) {
+		this.kimlikGoster = kimlikGoster;
 	}
 
 }
