@@ -236,10 +236,10 @@
 									<c:forEach items="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar}" var="vg">
 
 										<rich:column headerClass="#{vg.headerClass}" styleClass="#{aylikPuantaj.getVardiya(vg).getAylikClassAdi(aylikPuantaj.trClass)}"
-											style="width: 8px">
+											style="text-align:center; width:autostretch;white-space: nowrap;">
 											<f:facet name="header">
 												<ui:fragment>
-													<DIV id="tatil#{vg.vardiyaDateStr}">
+													<DIV id="tatil#{vg.vardiyaDateStr}" style="font-size: 12px;">
 														<h:outputText value="#{authenticatedUser.getTarihFormatla(vg.vardiyaDate, 'd')}" />
 														<bR />
 														<h:outputText value="#{authenticatedUser.getTarihFormatla(vg.vardiyaDate, 'EEE')}" />
@@ -253,7 +253,7 @@
 												</ui:fragment>
 											</f:facet>
 											<ui:fragment rendered="#{aylikPuantaj.getVardiyaGun(vg)!=null }">
-												<DIV id="vardiya#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}" style="width: 8px">
+												<DIV id="vardiya#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}" align="center" style="width: 8px;">
 													<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.vardiya==null}">
 														<DIV align="center" id="istifa#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}">
 															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismayiBirakti}">-
@@ -278,7 +278,7 @@
 														<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.durum==true or aylikPuantaj.vardiyaGun.zamanGelmedi}">
 															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi>0}">
 																<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi gt fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
-																	<SPAN style="color: red;"><h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" /></SPAN>
+																	<SPAN style="color: red;font-size: 9px;"><b><h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" /></b></SPAN>
 																</ui:fragment>
 																<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi le fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
 																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" />
