@@ -172,6 +172,12 @@
 												</ui:fragment>
 											</ui:fragment></SPAN>
 									</rich:column>
+									<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaMesaiRaporHome.sirketGoster}">
+										<f:facet name="header">
+											<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
+										</f:facet>
+										<h:outputText value="#{aylikPuantaj.pdksPersonel.sirket.ad}" style="width:autostretch ;white-space: nowrap;" />
+									</rich:column>
 									<rich:column rendered="#{fazlaMesaiRaporHome.modelGoster}" style="width: 40px;width:autostretch ;white-space: nowrap;">
 										<f:facet name="header">
 											<h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" />

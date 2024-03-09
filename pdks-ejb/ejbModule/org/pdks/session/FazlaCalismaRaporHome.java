@@ -111,7 +111,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 	private Sirket sirket;
 	private DenklestirmeAy denklestirmeAy;
 	private boolean adminRole, ikRole, talepGoster, aksamAdetGoster, aksamSaatGoster;
-	private Boolean departmanBolumAyni = Boolean.FALSE, tekSirket, modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, fazlaMesaiSayfa = Boolean.TRUE;
+	private Boolean departmanBolumAyni = Boolean.FALSE, tekSirket, modelGoster = Boolean.FALSE, sirketGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, fazlaMesaiSayfa = Boolean.TRUE;
 	private int ay, yil, maxYil, maxFazlaCalismaGun;
 	private List<PersonelFazlaMesai> fazlaMesailer;
 	private Drawing drawing = null;
@@ -195,6 +195,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		fazlaMesaiSayfa = false;
 		aksamAdetGoster = false;
 		aksamSaatGoster = false;
+		sirketGoster = Boolean.FALSE;
 		adminRoleDurum();
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals("fazlaCalismaRapor");
 		if (!ayniSayfa)
@@ -477,9 +478,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 	}
 
 	public String tarihDegisti(String tipi) {
-
 		listeTemizle();
-
 		if (basTarih.getTime() <= bitTarih.getTime()) {
 			Calendar cal = Calendar.getInstance();
 			Date sonGun = ortakIslemler.tariheGunEkleCikar(cal, basTarih, maxFazlaCalismaGun);
@@ -643,6 +642,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		aksamAdetGoster = false;
 		aksamSaatGoster = false;
 		Calendar cal = Calendar.getInstance();
+		sirketGoster = Boolean.FALSE;
 		listeTemizle();
 		if (cal.getTime().before(bitTarih)) {
 			PdksUtil.addMessageAvailableWarn("Bitiş tarihi sistem tarihinden sonra olamaz!");
@@ -756,10 +756,16 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			ekSaha4Tanim = null;
 			HashMap<Long, TreeMap<Long, PersonelDinamikAlan>> personelDinamikAllAlanMap = new HashMap<Long, TreeMap<Long, PersonelDinamikAlan>>();
 			if (!personelList.isEmpty()) {
+				HashMap<Long, Long> sirketMap = new HashMap<Long, Long>();
+				List<Long> personelIdler = new ArrayList<Long>();
+				for (Personel personel : personelList) {
+					personelIdler.add(personel.getId());
+					sirketMap.put(personel.getSirket().getId(), personel.getId());
+				}
+				sirketGoster = sirketMap.size() > 1 || sirket == null || sirket.getSirketGrup() != null;
+				sirketMap = null;
 				if (raporSecim.equals("maxGeceCalismaSaat")) {
-					List<Long> personelIdler = new ArrayList<Long>();
-					for (Personel personel : personelList)
-						personelIdler.add(personel.getId());
+
 					StringBuffer sb = new StringBuffer();
 					String fieldName = "p";
 					HashMap fields = new HashMap();
@@ -779,10 +785,6 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 					personelList = ortakIslemler.getSQLParamList(personelIdler, sb, fieldName, fields, Personel.class, session);
 
 				} else if (raporSecim.equals("minGunCalismaSaat")) {
-
-					List<Long> personelIdler = new ArrayList<Long>();
-					for (Personel personel : personelList)
-						personelIdler.add(personel.getId());
 					vardiyaGunPerList = ortakIslemler.getPersonelEksikVardiyaCalismaList(personelIdler, basTarih, bitTarih, session);
 					if (!vardiyaGunPerList.isEmpty()) {
 						TreeMap<Long, Personel> perMap = new TreeMap<Long, Personel>();
@@ -1409,7 +1411,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(parametreMap, Sirket.class);
 			if (sirket != null)
-				gorevYeriAciklama = sirket.getAciklama() + "_";
+				gorevYeriAciklama = (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) + "_";
 		}
 		return gorevYeriAciklama;
 	}
@@ -1519,6 +1521,8 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (ekSaha4Tanim != null)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha4Tanim.getAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
+		if (sirketGoster)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Görevi");
 		if (denklestirmeDinamikAlanlar != null) {
 			for (Tanim alan : denklestirmeDinamikAlanlar) {
@@ -1620,6 +1624,8 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getYoneticisi() != null ? personel.getYoneticisi().getAdSoyad() : "");
+				if (sirketGoster)
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getSirket() != null ? personel.getSirket().getAd() : "");
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getGorevTipi() != null ? personel.getGorevTipi().getAciklama() : "");
 				if (denklestirmeDinamikAlanlar != null) {
 					for (Tanim alan : denklestirmeDinamikAlanlar) {
@@ -2427,5 +2433,13 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setAksamSaatGoster(boolean aksamSaatGoster) {
 		this.aksamSaatGoster = aksamSaatGoster;
+	}
+
+	public Boolean getSirketGoster() {
+		return sirketGoster;
+	}
+
+	public void setSirketGoster(Boolean sirketGoster) {
+		this.sirketGoster = sirketGoster;
 	}
 }
