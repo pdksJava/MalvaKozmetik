@@ -231,7 +231,7 @@
 											</SPAN>
 										</ui:fragment></SPAN>
 								</rich:column>
-								 
+
 								<c:if test="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar!=null }">
 									<c:forEach items="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar}" var="vg">
 
@@ -255,20 +255,15 @@
 											<ui:fragment rendered="#{aylikPuantaj.getVardiyaGun(vg)!=null }">
 												<DIV id="vardiya#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}" align="center" style="width: 8px;">
 													<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.vardiya==null}">
-														<DIV align="center" id="istifa#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}">
-															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismayiBirakti}">-
-																<rich:toolTip for="istifa#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}">
-																	<SPAN style="color: black"> <B>İSTİFA</B>
-																	</SPAN>
-																</rich:toolTip>
+														<SPAN style="text-align: center;">-</SPAN>
+														<rich:toolTip for="vardiya#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}">
+															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismayiBirakti}">
+																<SPAN style="color: black"><B>İSTİFA</B></SPAN>
 															</ui:fragment>
-															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismayiBirakti==false}">.
-															<rich:toolTip for="istifa#{aylikPuantaj.vardiyaGun.vardiyaKeyStr}">
-																	<SPAN style="color: black"> <B>İŞ BAŞI YAPMADI</B>
-																	</SPAN>
-																</rich:toolTip>
+															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismayiBirakti==false}">
+																<SPAN style="color: black"> <B>İŞ BAŞI YAPMADI</B></SPAN>
 															</ui:fragment>
-														</DIV>
+														</rich:toolTip>
 													</ui:fragment>
 													<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.vardiya!=null}">
 														<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.durum==false and aylikPuantaj.vardiyaGun.zamanGelmedi==false}">
@@ -278,7 +273,8 @@
 														<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.durum==true or aylikPuantaj.vardiyaGun.zamanGelmedi}">
 															<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi>0}">
 																<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi gt fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
-																	<SPAN style="color: red;font-size: 9px;"><b><h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" /></b></SPAN>
+																	<SPAN style="color: red; font-size: 9px;"><b><h:outputText
+																				value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" /></b></SPAN>
 																</ui:fragment>
 																<ui:fragment rendered="#{aylikPuantaj.vardiyaGun.calismaSuresi le fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
 																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.vardiyaGun.calismaSuresi)}" />
@@ -327,7 +323,7 @@
 										<ui:fragment>
 											<h:outputText value="ÇGS" id="cgs" />
 											<rich:toolTip for="cgs">
-												<SPAN class="rich-table-subheadercell">Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat</SPAN>
+												<SPAN class="rich-table-subheadercell"><b>Çalışılması Gereken Saat : </b>Çalışanın bu listede çalışması gereken saat</SPAN>
 											</rich:toolTip>
 										</ui:fragment>
 									</f:facet>
@@ -349,12 +345,29 @@
 									</ui:fragment>
 								</rich:column>
 								<rich:column style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
+									styleClass="#{aylikPuantaj.trSonucClass}" rendered="#{fazlaMesaiOzetRaporHome.yasalFazlaCalismaAsanSaat}">
+									<f:facet name="header">
+										<ui:fragment>
+											<h:outputText value="#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}" id="yfmc" />
+											<rich:toolTip for="yfmc">
+												<SPAN class="rich-table-subheadercell"><b>Yasal Çalışmayı Aşan Mesai : </b>#{authenticatedUser.sayiFormatliGoster(fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure)}
+													saati aşan çalışma toplam miktarı</SPAN>
+											</rich:toolTip>
+										</ui:fragment>
+									</f:facet>
+									<ui:fragment rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.ucretiOdenenMesaiSure!=0}">
+										<span style="color: red;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.ucretiOdenenMesaiSure)}" /></span>
+									</ui:fragment>
+								</rich:column>
+
+
+								<rich:column style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
 									styleClass="#{aylikPuantaj.trSonucClass}">
 									<f:facet name="header">
 										<ui:fragment>
 											<h:outputText value="GM" id="gm" />
 											<rich:toolTip for="gm">
-												<SPAN class="rich-table-subheadercell">Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati</SPAN>
+												<SPAN class="rich-table-subheadercell"><b>Gerçekleşen Mesai : </b>Çalışanın bu listedeki eksi/fazla çalışma saati</SPAN>
 											</rich:toolTip>
 										</ui:fragment>
 									</f:facet>
@@ -368,7 +381,7 @@
 										<ui:fragment>
 											<h:outputText value="DM" id="dm" />
 											<rich:toolTip for="dm">
-												<SPAN class="rich-table-subheadercell">Devreden Mesai: Çalışanın önceki listelerden devreden eksi/fazla mesaisi</SPAN>
+												<SPAN class="rich-table-subheadercell"><b>Devreden Mesai : </b>Çalışanın önceki listelerden devreden eksi/fazla mesaisi</SPAN>
 											</rich:toolTip>
 										</ui:fragment>
 									</f:facet>

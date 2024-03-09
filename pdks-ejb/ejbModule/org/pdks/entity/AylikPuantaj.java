@@ -184,7 +184,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.setIzinSuresi(0.0d);
 		this.setOdenenSure(0.0d);
 		this.setOffSure(0.0d);
-		this.setOffSure(0.0d);
+		this.setOdenenSure(0.0d);
 		this.setSaatToplami(0.0d);
 		this.setUcretiOdenenMesaiSure(0.0d);
 	}

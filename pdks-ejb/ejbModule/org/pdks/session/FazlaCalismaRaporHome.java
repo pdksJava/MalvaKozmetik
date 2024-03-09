@@ -212,13 +212,12 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			raporList.clear();
 		}
 		listeTemizle();
-
+		boolean haftaTatilDurum = ortakIslemler.getParameterKey("maxHaftaCalismaSaat").equals("1");
 		if (ortakIslemler.getParameterKeyHasStringValue(("maxGunCalismaSaat")))
 			raporList.add(new SelectItem("maxGunCalismaSaat", "Günlük Çalışmayı Aşanlar"));
-		if (authenticatedUser.isAdmin() || ortakIslemler.getParameterKeyHasStringValue(("minGunCalismaSaat")))
-			raporList.add(new SelectItem("minGunCalismaSaat", "Günlük Eksik Çalışanlar"));
-
-		raporList.add(new SelectItem("maxHaftaTatilCalismaGun", "Hafta Tatil Çalışanlar"));
+		raporList.add(new SelectItem("minGunCalismaSaat", "Günlük Eksik Çalışanlar"));
+		if (haftaTatilDurum)
+			raporList.add(new SelectItem("maxHaftaTatilCalismaGun", "Hafta Tatil Çalışanlar"));
 		if (ortakIslemler.getParameterKeyHasStringValue(("maxHaftaCalismaSaat")))
 			raporList.add(new SelectItem("maxHaftaCalismaSaat", "Haftalık Çalışmayı Aşanlar"));
 		if (ortakIslemler.getParameterKeyHasStringValue(("maxGeceCalismaSaat")))

@@ -45,6 +45,7 @@ import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.CalismaModeli;
+import org.pdks.entity.CalismaModeliAy;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
@@ -116,11 +117,11 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	private DenklestirmeAy denklestirmeAy;
 
 	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
-	private Boolean sutIzniGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
+	private Boolean onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
 	private boolean adminRole, ikRole;
 
-	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
-	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE, fazlaMesaiSayfa = Boolean.TRUE;
+	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, departmanBolumAyni = Boolean.FALSE;
+	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE, fazlaMesaiSayfa = Boolean.TRUE, yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 
 	private int ay, yil, maxYil, maxFazlaMesaiRaporGun;
 
@@ -201,6 +202,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public String sayfaGirisAction() {
 		fazlaMesaiSayfa = false;
+		yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 		adminRoleDurum();
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals("fazlaMesaiRapor");
 		if (!ayniSayfa)
@@ -243,11 +245,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 		try {
 			modelGoster = Boolean.FALSE;
+			yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 			departmanBolumAyni = Boolean.FALSE;
 			bakiyeGuncelle = null;
-			stajerSirket = Boolean.FALSE;
-			sutIzniGoster = Boolean.FALSE;
-			partTimeGoster = Boolean.FALSE;
+
 			mailGonder = Boolean.FALSE;
 			setSirket(null);
 			sirketId = null;
@@ -672,7 +673,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		haftaTatilVar = Boolean.FALSE;
 		fazlaMesaiIzinKullan = Boolean.FALSE;
 		sirketIzinGirisDurum = Boolean.FALSE;
-
+		yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 		if (fmtMap == null)
 			fmtMap = new TreeMap<Long, List<FazlaMesaiTalep>>();
 		else
@@ -688,8 +689,6 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			if (sicilNo != null)
 				sicilNo = sicilNo.trim();
 			hataYok = Boolean.FALSE;
-			sutIzniGoster = Boolean.FALSE;
-			partTimeGoster = Boolean.FALSE;
 			aylikPuantajSablon.getVardiyalar();
 			kaydetDurum = Boolean.FALSE;
 			String aksamBordroBasZamani = ortakIslemler.getParameterKey("aksamBordroBasZamani"), aksamBordroBitZamani = ortakIslemler.getParameterKey("aksamBordroBitZamani");
@@ -707,8 +706,20 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			aylikPuantajDefault.setIlkGun(basTarih);
 			aylikPuantajDefault.setSonGun(bitTarih);
 			List<Personel> personelList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, null, aylikPuantajDefault, true, session);
-
+			denklestirmeAy = null;
 			if (!personelList.isEmpty()) {
+				Double yasalMaxSure = null;
+				TreeMap<String, DenklestirmeAy> denklestirmeAyMap = fazlaMesaiOrtakIslemler.getDenklestirmeAyMap(basTarih, bitTarih, session);
+
+				HashMap<String, Double> fazlaMesaiDonemMap = new HashMap<String, Double>();
+				for (String key : denklestirmeAyMap.keySet()) {
+					denklestirmeAy = denklestirmeAyMap.get(key);
+					if (denklestirmeAyMap.size() == 1)
+						yasalMaxSure = denklestirmeAy.getFazlaMesaiMaxSure();
+					fazlaMesaiDonemMap.put(key, denklestirmeAy.getFazlaMesaiMaxSure());
+
+				}
+
 				Date bugun = new Date(), sonCikisZamani = null, sonCalismaGunu = aylikPuantajSablon.getIlkGun();
 				Calendar cal = Calendar.getInstance();
 				for (VardiyaGun vardiyaGun : aylikPuantajSablon.getVardiyalar()) {
@@ -757,9 +768,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 				setInstance(denklestirmeDonemi);
 
 				TreeMap<String, Tatil> tatilGunleriMap = ortakIslemler.getTatilGunleri(null, ortakIslemler.tariheGunEkleCikar(cal, basTarih, -1), ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1), session);
-				// boolean ayBitmedi = denklestirmeDonemi.getBitisTarih().getTime() >= PdksUtil.getDate(bugun).getTime();
-
 				boolean renk = Boolean.TRUE;
+
 				aylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(0, 0, denklestirmeDonemi, session);
 				List<PersonelDenklestirmeTasiyici> list = new ArrayList<PersonelDenklestirmeTasiyici>();
 				try {
@@ -787,8 +797,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					TreeMap<String, PersonelDenklestirmeTasiyici> perMap = new TreeMap<String, PersonelDenklestirmeTasiyici>();
 
 					TreeMap<Long, Long> sirketIdMap = new TreeMap<Long, Long>(), sirketMap = new TreeMap<Long, Long>();
+					List<Long> perIdList = new ArrayList<Long>();
 					for (PersonelDenklestirmeTasiyici personelDenklestirme : list) {
 						Personel personel = personelDenklestirme.getPersonel();
+						perIdList.add(personel.getId());
 						if (personel.getPdksYonetici() != null)
 							sirketIdMap.put(personel.getPdksYonetici().getId(), personel.getId());
 						if (personel.getSirket() != null)
@@ -880,14 +892,37 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					}
 					if (aksamCalismaSaati == null)
 						aksamCalismaSaati = 4.0d;
-
+					TreeMap<Long, PersonelDenklestirme> treeMap = new TreeMap<Long, PersonelDenklestirme>();
+					List<PersonelDenklestirme> personelDenklestirmeList = denklestirmeAy != null ? fazlaMesaiOrtakIslemler.getPdksPersonelDenklestirmeler(perIdList, denklestirmeAy, session) : new ArrayList<PersonelDenklestirme>();
+					for (PersonelDenklestirme pd : personelDenklestirmeList) {
+						PersonelDenklestirme personelDenklestirme = (PersonelDenklestirme) pd.clone();
+						personelDenklestirme.setOnaylandi(true);
+						personelDenklestirme.setDenklestirme(true);
+						treeMap.put(personelDenklestirme.getPersonelId(), personelDenklestirme);
+					}
+					personelDenklestirmeList = null;
+					PersonelDenklestirme personelDenklestirme = new PersonelDenklestirme();
+					personelDenklestirme.setOnaylandi(true);
+					personelDenklestirme.setDenklestirme(true);
 					for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 						AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
+						Personel personel = puantaj.getPdksPersonel();
+						if (puantaj.getPersonelDenklestirmeAylik() == null) {
+							if (treeMap.containsKey(personel.getId()))
+								puantaj.setPersonelDenklestirmeAylik(treeMap.get(personel.getId()));
+							else {
+								PersonelDenklestirme pd = (PersonelDenklestirme) personelDenklestirme.clone();
+								pd.setCalismaModeliAy(new CalismaModeliAy(denklestirmeAy, personel.getCalismaModeli()));
+								puantaj.setPersonelDenklestirmeAylik(pd);
+							}
+
+						}
+
 						int yarimYuvarla = puantaj.getYarimYuvarla();
 						puantaj.setDonemBitti(Boolean.TRUE);
 						puantaj.setAyrikHareketVar(false);
 						puantaj.setFiiliHesapla(true);
-						Personel personel = puantaj.getPdksPersonel();
+
 						perCalismaModeli = personel.getCalismaModeli();
 						if (puantaj.getPersonelDenklestirmeAylik() != null && puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
 							perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
@@ -898,27 +933,26 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						personelFazlaMesaiStr = personelFazlaMesaiOrjStr + (personel.getPdks() ? " " : "(Fazla Mesai Yok)");
 
 						puantaj.setSablonAylikPuantaj(aylikPuantajSablon);
-						puantaj.setFazlaMesaiHesapla(Boolean.FALSE);
 
 						puantaj.setTrClass(renk ? VardiyaGun.STYLE_CLASS_ODD : VardiyaGun.STYLE_CLASS_EVEN);
 						renk = !renk;
 						Integer aksamVardiyaSayisi = 0;
 						Double aksamVardiyaSaatSayisi = 0d, offSure = null;
-						if (stajerSirket && denklestirmeAy.isDurumu()) {
-							puantaj.planSureHesapla(tatilGunleriMap);
-							offSure = 0.0D;
-						}
+
 						TreeMap<String, VardiyaGun> vardiyalar = new TreeMap<String, VardiyaGun>(), vgMap = new TreeMap<String, VardiyaGun>();
 						Boolean fazlaMesaiHesapla = Boolean.FALSE;
 						cal = Calendar.getInstance();
 						puantaj.setHareketler(null);
-						double puantajPlanlananSure = 0.0d, puantajSaatToplami = 0.0d, puantajResmiTatil = 0.0d, puantajHaftaTatil = 0.0d;
+						double puantajPlanlananSure = 0.0d, puantajSaatToplami = 0.0d, puantajResmiTatil = 0.0d, puantajHaftaTatil = 0.0d, ucretiOdenenMesaiSure = 0.0d;
 						boolean puantajFazlaMesaiHesapla = true;
 						if (puantaj.getVardiyalar() != null) {
-							fazlaMesaiHesapla = puantaj.getPdksPersonel().getPdks();
+
 							for (Iterator iterator = puantaj.getVardiyalar().iterator(); iterator.hasNext();) {
 								VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 								String key = vardiyaGun.getVardiyaDateStr();
+								if (!fazlaMesaiHesapla && vardiyaGun != null)
+									fazlaMesaiHesapla = vardiyaGun.getDurum();
+								String donem = key.substring(0, 6);
 								vgMap.put(key, vardiyaGun);
 								vardiyaGun.setAyinGunu(true);
 								if (vardiyaGun.getId() != null)
@@ -939,6 +973,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 									// hataYok = Boolean.FALSE;
 									puantaj.setDonemBitti(Boolean.FALSE);
 								}
+								if (yasalMaxSure != null)
+									vardiyaGun.setYasalMaxSure(yasalMaxSure);
+								else if (fazlaMesaiDonemMap.containsKey(donem))
+									vardiyaGun.setYasalMaxSure(fazlaMesaiDonemMap.get(donem));
 								vardiyaGun.setLinkAdresler(null);
 								vardiyaGun.setOnayli(Boolean.TRUE);
 								vardiyaGun.setHataliDurum(Boolean.FALSE);
@@ -962,18 +1000,25 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 									if (!vardiyaDurum)
 										puantajFazlaMesaiHesapla = false;
 									if (vardiyaGun.getVardiyaSaatDB() != null) {
+
 										if (puantajFazlaMesaiHesapla)
 											puantajFazlaMesaiHesapla = vardiyaDurum;
+										boolean haftaTatilDurum = false;
 										if (vardiyaDurum) {
 											VardiyaSaat vardiyaSaatDB = vardiyaGun.getVardiyaSaatDB();
+											Double sure = vardiyaSaatDB.getCalismaSuresi();
+											ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure() ? sure.doubleValue() - vardiyaGun.getYasalMaxSure() : 0.0d;
 											if (vardiyaSaatDB.getResmiTatilSure() > 0.0d)
 												puantajResmiTatil += vardiyaSaatDB.getResmiTatilSure();
 											else if (vardiyaGun.getVardiya().isHaftaTatil()) {
-												puantajHaftaTatil += vardiyaSaatDB.getCalismaSuresi();
-												vardiyaGun.setHaftaCalismaSuresi(vardiyaSaatDB.getCalismaSuresi());
+												if (puantaj.getCalismaModeli().getHaftaTatilMesaiOde()) {
+													haftaTatilDurum = true;
+													puantajHaftaTatil += vardiyaSaatDB.getCalismaSuresi();
+													vardiyaGun.setHaftaCalismaSuresi(vardiyaSaatDB.getCalismaSuresi());
+												}
 											}
 
-											if (!vardiyaGun.getVardiya().isHaftaTatil())
+											if (!haftaTatilDurum)
 												puantajSaatToplami += vardiyaSaatDB.getCalismaSuresi() - vardiyaSaatDB.getResmiTatilSure();
 											vardiyaGun.setCalismaSuresi(vardiyaSaatDB.getCalismaSuresi());
 											vardiyaGun.setResmiTatilSure(vardiyaSaatDB.getResmiTatilSure());
@@ -1000,8 +1045,9 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 							}
 
 						}
-						if (offSure != null)
-							puantaj.setOffSure(offSure);
+						puantaj.setUcretiOdenenMesaiSure(ucretiOdenenMesaiSure);
+						if (!yasalFazlaCalismaAsanSaat)
+							yasalFazlaCalismaAsanSaat = ucretiOdenenMesaiSure > 0.0d;
 						puantaj.setResmiTatilToplami(0d);
 						if (!fazlaMesaiHesapla)
 							aksamVardiyaSayisi = 0;
@@ -1014,7 +1060,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						puantaj.setAksamVardiyaSaatSayisi(aksamVardiyaSaatSayisi);
 						puantaj.setAksamVardiyaSayisi(aksamVardiyaSayisi);
 						puantaj.setFazlaMesaiHesapla(fazlaMesaiHesapla);
-						aylikPuantajSablon.setFazlaMesaiHesapla(fazlaMesaiHesapla);
+						// aylikPuantajSablon.setFazlaMesaiHesapla(fazlaMesaiHesapla);
 						double resmiTatilToplami = puantaj.getResmiTatilToplami();
 						int izinsizGun = 0;
 						for (Iterator iterator = puantaj.getVardiyalar().iterator(); iterator.hasNext();) {
@@ -1082,10 +1128,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 								puantaj.setFazlaMesaiHesapla(false);
 							}
 						}
-						puantaj.setFazlaMesaiHesapla(puantajFazlaMesaiHesapla);
 						if (PdksUtil.hasStringValue(sicilNo) || hataliPuantajGoster == false || puantaj.isFazlaMesaiHesapla() == false)
 							puantajList.add(puantaj);
 					}
+					treeMap = null;
 
 					if (puantajList.isEmpty()) {
 						if (kayitVar == false)
@@ -1278,21 +1324,34 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		Sheet sheet = ExcelUtil.createSheet(wb, "Dönemsel Çalışma", Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleTutarEvenRed = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		ExcelUtil.setFontColor(styleTutarEvenRed, Color.RED);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleTutarOddRed = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		ExcelUtil.setFontColor(styleTutarOddRed, Color.RED);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleTutarEvenDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarEvenDayRed = ExcelUtil.setAlignment(ExcelUtil.getStyleDayEven(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		ExcelUtil.setFontColor(styleTutarEvenDayRed, Color.RED);
 		CellStyle styleTutarOddDay = ExcelUtil.setAlignment(ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		CellStyle styleTutarOddDayRed = ExcelUtil.setAlignment(ExcelUtil.getStyleDayOdd(ExcelUtil.FORMAT_TUTAR, wb), CellStyle.ALIGN_CENTER);
+		ExcelUtil.setFontColor(styleTutarOddDayRed, Color.RED);
 		CellStyle styleTutarDay = null;
 		CellStyle styleGenel = ExcelUtil.getStyleData(wb);
 		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
 
 		CellStyle styleTatil = ExcelUtil.getStyleDataCenter(wb);
+		CellStyle styleTatilRed = ExcelUtil.getStyleDataCenter(wb);
+		ExcelUtil.setFontColor(styleTatilRed, Color.RED);
 
 		CellStyle styleIstek = ExcelUtil.getStyleDataCenter(wb);
 		CellStyle styleEgitim = ExcelUtil.getStyleDataCenter(wb);
+		XSSFCellStyle styleOffRed = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
+		ExcelUtil.setFontColor(styleOffRed, Color.RED);
+
 		XSSFCellStyle styleOff = (XSSFCellStyle) ExcelUtil.getStyleDataCenter(wb);
 		ExcelUtil.setFontColor(styleOff, Color.WHITE);
 		CellStyle styleIzin = ExcelUtil.getStyleDataCenter(wb);
@@ -1300,11 +1359,13 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		int row = 0, col = 0;
 
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
+		ExcelUtil.setFillForegroundColor(styleTatilRed, 255, 153, 204);
 		ExcelUtil.setFillForegroundColor(styleIstek, 255, 255, 0);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
 		ExcelUtil.setFillForegroundColor(styleCalisma, 255, 255, 255);
 		ExcelUtil.setFillForegroundColor(styleEgitim, 0, 0, 255);
 		ExcelUtil.setFillForegroundColor(styleOff, 13, 12, 89);
+		ExcelUtil.setFillForegroundColor(styleOffRed, 13, 12, 89);
 		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
 		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(basTarih, PdksUtil.getDateFormat()) + " - " + PdksUtil.convertToDateString(bitTarih, PdksUtil.getDateFormat() + " "), "_", "");
 		ExcelUtil.getCell(sheet, row, col, header).setCellValue(aciklamaExcel);
@@ -1341,6 +1402,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "TÇS", "Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati");
 		cell = ExcelUtil.getCell(sheet, row, col++, header);
 		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÇGS", "Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat");
+		if (yasalFazlaCalismaAsanSaat) {
+			cell = ExcelUtil.getCell(sheet, row, col++, header);
+			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.yasalFazlaCalismaAsanSaatKod(), "Yasal Çalışmayı Aşan Mesai : " + authenticatedUser.sayiFormatliGoster(denklestirmeAy.getFazlaMesaiMaxSure()) + " saati aşan çalışma toplam miktarı");
+		}
 		cell = ExcelUtil.getCell(sheet, row, col++, header);
 		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
 
@@ -1366,12 +1431,15 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			try {
 				boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
 				try {
+					CellStyle styleTutarRed = null;
 					if (row % 2 != 0) {
 						styleTutarDay = styleTutarOddDay;
+						styleTutarRed = styleTutarOddRed;
 						styleGenel = styleOdd;
 						styleCenter = styleOddCenter;
 					} else {
 						styleTutarDay = styleTutarEvenDay;
+						styleTutarRed = styleTutarEvenRed;
 						styleGenel = styleEven;
 						styleCenter = styleEvenCenter;
 					}
@@ -1388,7 +1456,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 					}
 					if (seciliEkSaha3Id == null)
-						ExcelUtil.getCell(sheet, row, col++, header).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
 
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
 					if (fazlaMesaiIzinKullan) {
@@ -1397,13 +1465,18 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					}
 
 					List vardiyaList = aylikPuantaj.getAyinVardiyalari();
-
 					for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
-						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+						VardiyaGun vg = (VardiyaGun) iterator.next();
+						vardiyaGun = vg;
+						Double sure = vardiyaGun.getCalismaSuresi();
 						String styleText = vardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
+						boolean maxSureGecti = sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure();
 						styleGenel = styleTutarDay;
+						if (maxSureGecti)
+							styleGenel = row % 2 != 0 ? styleTutarOddDayRed : styleTutarEvenDayRed;
+
 						if (styleText.equals(VardiyaGun.STYLE_CLASS_HAFTA_TATIL))
-							styleGenel = styleTatil;
+							styleGenel = maxSureGecti == false ? styleTatil : styleTatilRed;
 						else if (styleText.equals(VardiyaGun.STYLE_CLASS_IZIN))
 							styleGenel = styleIzin;
 						else if (styleText.equals(VardiyaGun.STYLE_CLASS_OZEL_ISTEK))
@@ -1411,7 +1484,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						else if (styleText.equals(VardiyaGun.STYLE_CLASS_EGITIM))
 							styleGenel = styleEgitim;
 						else if (styleText.equals(VardiyaGun.STYLE_CLASS_OFF))
-							styleGenel = styleOff;
+							styleGenel = maxSureGecti == false ? styleOff : styleOffRed;
 						cell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
 						String aciklama = !help || calisan(vardiyaGun) ? vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(vardiyaGun.getCalismaSuresi())) : "";
 						String title = !help || calisan(vardiyaGun) ? vardiyaGun.getTitle() : null;
@@ -1445,6 +1518,12 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 							RichTextString str1 = factory.createRichTextString(title);
 							comment1.setString(str1);
 							planlananCell.setCellComment(comment1);
+						}
+						if (yasalFazlaCalismaAsanSaat) {
+							if (aylikPuantaj.getUcretiOdenenMesaiSure() > 0)
+								setCell(sheet, row, col++, styleTutarRed, aylikPuantaj.getUcretiOdenenMesaiSure());
+							else
+								ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 						}
 						setCell(sheet, row, col++, styleGenel, aylikPuantaj.getAylikNetFazlaMesai());
 
@@ -1592,7 +1671,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	public String bolumDoldur() {
 		fazlaMesaiVardiyaGun = null;
 		linkAdres = null;
-		stajerSirket = Boolean.FALSE;
+
 		if (pdksSirketList == null || pdksSirketList.isEmpty())
 			setGorevYeriList(new ArrayList<SelectItem>());
 		else {
@@ -1622,16 +1701,16 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					if (gorevYeriList.size() == 1)
-						seciliEkSaha3Id = (Long) gorevYeriList.get(0).getValue();
+
 				} else {
 					// Long depId = departman != null ? departman.getId() : null;
 					// bolumDepartmanlari = fazlaMesaiOrtakIslemler.getBolumDepartmanSelectItems(depId, sirketId, yil, ay, Boolean.TRUE, session);
-					bolumDepartmanlari = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, null, new AylikPuantaj(basTarih, bitTarih), Boolean.TRUE, session);
-					if (bolumDepartmanlari.size() == 1)
-						seciliEkSaha3Id = (Long) bolumDepartmanlari.get(0).getValue();
-				}
+					List<SelectItem> list = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, null, new AylikPuantaj(basTarih, bitTarih), Boolean.TRUE, session);
+					setGorevYeriList(list);
 
+				}
+				if (gorevYeriList.size() == 1)
+					seciliEkSaha3Id = (Long) gorevYeriList.get(0).getValue();
 			}
 		}
 
@@ -1861,14 +1940,6 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		this.sirketId = sirketId;
 	}
 
-	public Boolean getSutIzniGoster() {
-		return sutIzniGoster;
-	}
-
-	public void setSutIzniGoster(Boolean sutIzniGoster) {
-		this.sutIzniGoster = sutIzniGoster;
-	}
-
 	public byte[] getExcelData() {
 		return excelData;
 	}
@@ -2075,22 +2146,6 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 	public void setVardiyaPlaniStr(String vardiyaPlaniStr) {
 		this.vardiyaPlaniStr = vardiyaPlaniStr;
-	}
-
-	public Boolean getPartTimeGoster() {
-		return partTimeGoster;
-	}
-
-	public void setPartTimeGoster(Boolean partTimeGoster) {
-		this.partTimeGoster = partTimeGoster;
-	}
-
-	public Boolean getStajerSirket() {
-		return stajerSirket;
-	}
-
-	public void setStajerSirket(Boolean stajerSirket) {
-		this.stajerSirket = stajerSirket;
 	}
 
 	public Boolean getBakiyeGuncelle() {
@@ -2370,6 +2425,14 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 	 */
 	public void setYoneticiERP1Kontrol(Boolean yoneticiERP1Kontrol) {
 		this.yoneticiERP1Kontrol = yoneticiERP1Kontrol;
+	}
+
+	public Boolean getYasalFazlaCalismaAsanSaat() {
+		return yasalFazlaCalismaAsanSaat;
+	}
+
+	public void setYasalFazlaCalismaAsanSaat(Boolean yasalFazlaCalismaAsanSaat) {
+		this.yasalFazlaCalismaAsanSaat = yasalFazlaCalismaAsanSaat;
 	}
 
 }

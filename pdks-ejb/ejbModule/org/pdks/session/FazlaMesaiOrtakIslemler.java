@@ -113,6 +113,42 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param basTarih
+	 * @param bitTarih
+	 * @param session
+	 * @return
+	 */
+	public TreeMap<String, DenklestirmeAy> getDenklestirmeAyMap(Date basTarih, Date bitTarih, Session session) {
+		TreeMap<String, DenklestirmeAy> map = new TreeMap<String, DenklestirmeAy>();
+		HashMap fields = new HashMap();
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT D.* from " + DenklestirmeAy.TABLE_NAME + " D WITH(nolock) ");
+		String str = "WHERE";
+		if (basTarih != null) {
+			sb.append(str + " (D." + DenklestirmeAy.COLUMN_NAME_YIL + " * 100 + D." + DenklestirmeAy.COLUMN_NAME_AY + ">=:b1)");
+			int b1 = Integer.parseInt(PdksUtil.convertToDateString(basTarih, "yyyyMM"));
+			fields.put("b1", b1);
+			str = " AND ";
+		}
+		if (bitTarih != null) {
+			sb.append(str + " (D." + DenklestirmeAy.COLUMN_NAME_YIL + " * 100 + D." + DenklestirmeAy.COLUMN_NAME_AY + "<=:b2)");
+			int b2 = Integer.parseInt(PdksUtil.convertToDateString(bitTarih, "yyyyMM"));
+			fields.put("b2", b2);
+			str = " AND ";
+		}
+		sb.append(" ORDER BY D." + DenklestirmeAy.COLUMN_NAME_AY);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<DenklestirmeAy> list = pdksEntityController.getObjectBySQLList(sb, fields, DenklestirmeAy.class);
+		for (DenklestirmeAy denklestirmeAy : list) {
+			String key = String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy());
+			map.put(key, denklestirmeAy);
+		}
+
+		return map;
+	}
+
+	/**
 	 * @param dm
 	 * @param aramaSecenekleri
 	 * @param hataliVeriGetir
@@ -2316,6 +2352,26 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		tanimlar = null;
 		return gorevTipiList;
 
+	}
+
+	/**
+	 * @param perIdList
+	 * @return
+	 */
+	public List<PersonelDenklestirme> getPdksPersonelDenklestirmeler(List<Long> perIdList, DenklestirmeAy denklestirmeAy, Session session) {
+		String fieldName = "p";
+		HashMap fields = new HashMap();
+		StringBuffer sb = new StringBuffer();
+		sb.append("SELECT S.* from " + PersonelDenklestirme.TABLE_NAME + " S WITH(nolock) ");
+		sb.append(" WHERE S." + PersonelDenklestirme.COLUMN_NAME_DONEM + " = " + denklestirmeAy.getId() + " AND S." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " :" + fieldName);
+		fields.put(fieldName, perIdList);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<PersonelDenklestirme> list = ortakIslemler.getSQLParamList(perIdList, sb, fieldName, fields, PersonelDenklestirme.class, session);
+
+		fields = null;
+		sb = null;
+		return list;
 	}
 
 	/**

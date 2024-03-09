@@ -74,7 +74,8 @@ public class VardiyaGun extends BaseObject {
 	private Boolean izinHaftaTatilDurum;
 	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE, fazlaMesaiTalepDurum = Boolean.FALSE, ayarlamaBitti = false;
-	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamKatSayisi = 0d, aksamVardiyaSaatSayisi = 0d, calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d;
+	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamKatSayisi = 0d, aksamVardiyaSaatSayisi = 0d;
+	private double calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d, yasalMaxSure = 11.0d;
 	private Integer basSaat, basDakika, bitSaat, bitDakika;
 	private String tdClass = "", style = "", manuelGirisHTML = "", vardiyaKisaAciklama, personelNo, vardiyaDateStr, donemStr;
 	private Tatil tatil;
@@ -2301,6 +2302,15 @@ public class VardiyaGun extends BaseObject {
 		if (value != 0.0d)
 			logger.debug(value);
 		this.aksamKatSayisi = value;
+	}
+
+	@Transient
+	public double getYasalMaxSure() {
+		return yasalMaxSure;
+	}
+
+	public void setYasalMaxSure(double yasalMaxSure) {
+		this.yasalMaxSure = yasalMaxSure;
 	}
 
 }

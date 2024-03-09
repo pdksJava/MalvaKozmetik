@@ -86,6 +86,15 @@
 								<SPAN style="font-size: 12px; font-weight: normal;"> <B>Çalışılması Gereken Saat: </B>Çalışanın bu listede çalışması gereken saat
 								</SPAN>
 							</rich:toolTip></th>
+						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.yasalFazlaCalismaAsanSaat}">
+							<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+								id="baslik#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}"><h:outputText value="#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}" /> <rich:toolTip
+									for="baslik#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}">
+									<SPAN style="font-size: 12px; font-weight: normal;"> <b>Yasal Çalışmayı Aşan Mesai : </b>#{authenticatedUser.sayiFormatliGoster(fazlaMesaiHesaplaHome.denklestirmeAy.fazlaMesaiMaxSure)}
+										saati aşan çalışma toplam miktarı
+									</SPAN>
+								</rich:toolTip></th>
+						</ui:fragment>
 						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.gerceklesenMesaiKod}">
 							<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
 								id="baslik#{ortakIslemler.gerceklesenMesaiKod()}"><h:outputText value="#{ortakIslemler.gerceklesenMesaiKod()}" /> <rich:toolTip
@@ -461,6 +470,12 @@
 									</rich:toolTip>
 								</ui:fragment>
 							</td>
+							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.yasalFazlaCalismaAsanSaat}">
+								<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+										rendered="#{aylikPuantaj.fazlaMesaiHesapla and aylikPuantaj.ucretiOdenenMesaiSure!=0}">
+										<span style="color: red;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.ucretiOdenenMesaiSure)}" /></span>
+									</ui:fragment></td>
+							</ui:fragment>
 							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.gerceklesenMesaiKod}">
 
 								<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center" id="aylikNetFazlaMesa#{aylikPuantaj.personelDenklestirmeAylik.id}"><ui:fragment

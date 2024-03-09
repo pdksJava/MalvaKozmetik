@@ -6060,6 +6060,14 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @return
 	 */
+	public String yasalFazlaCalismaAsanSaatKod() {
+		String kod = getBaslikAciklama("yasalFazlaCalismaAsanSaatKod", "FCA");
+		return kod;
+	}
+
+	/**
+	 * @return
+	 */
 	public String normalCalismaSaatKod() {
 		String kod = getBaslikAciklama("normalCalismaSaatKod", "NMC");
 		return kod;
