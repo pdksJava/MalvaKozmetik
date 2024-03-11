@@ -15084,6 +15084,7 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param filliHesapla
 	 * @param normalCalismaVardiya
 	 * @param yemekHesapla
 	 * @param puantajData
@@ -15092,8 +15093,11 @@ public class OrtakIslemler implements Serializable {
 	 * @param session
 	 * @return
 	 */
-	public PersonelDenklestirme aylikPlanSureHesapla(Vardiya normalCalismaVardiya, boolean yemekHesapla, AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
+	public PersonelDenklestirme aylikPlanSureHesapla(boolean filliHesapla, Vardiya normalCalismaVardiya, boolean yemekHesapla, AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
 		User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
+		if (filliHesapla == false)
+			filliHesapla = puantajData.getDenklestirmeAy() == null || !puantajData.getDenklestirmeAy().getDurum();
+
 		List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
 		String izinTarihKontrolTarihiStr = getParameterKey("izinTarihKontrolTarihi");
 
@@ -15653,7 +15657,7 @@ public class OrtakIslemler implements Serializable {
 							puantajData.setPlanlananSure(0.0d);
 						}
 					}
-					if (puantajData.isFazlaMesaiHesapla()) {
+					if (puantajData.isFazlaMesaiHesapla() || filliHesapla == false) {
 						double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(loginUser);
 						boolean fazlaMesaiOde = puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde();
 						if (!fazlaMesaiOde) {

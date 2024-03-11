@@ -978,6 +978,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				if (aksamCalismaSaati == null)
 					aksamCalismaSaati = 4.0d;
 				double fazlaMesaiMaxSure = ortakIslemler.getFazlaMesaiMaxSure(denklestirmeAy);
+				Date toDay = PdksUtil.getDate(new Date());
 				for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 					AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
 					int yarimYuvarla = puantaj.getYarimYuvarla();
@@ -1020,15 +1021,21 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					if (puantaj.getVardiyalar() != null) {
 						String donemStr = String.valueOf(yil * 100 + ay);
 						VardiyaGun vardiyaGunSon = null;
+						List<VardiyaGun> vardiyaGunList = new ArrayList<VardiyaGun>();
 						for (Iterator iterator = puantaj.getVardiyalar().iterator(); iterator.hasNext();) {
-							VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+							VardiyaGun vg = (VardiyaGun) iterator.next();
+							VardiyaGun vardiyaGun = (VardiyaGun) vg.clone();
+							vardiyaGunList.add(vardiyaGun);
+							if (vardiyaGun.getDurum() == false && vardiyaGun.getVardiya() != null) {
+								if (vardiyaGun.getVardiyaDate().after(toDay))
+									vardiyaGun.setDurum(vardiyaGun.getVardiyaDate().after(toDay));
+							}
 							String key = vardiyaGun.getVardiyaDateStr();
 							vardiyaGun.setAyinGunu(key.startsWith(donemStr));
 							if (!vardiyaGun.isAyinGunu()) {
 								iterator.remove();
 								continue;
 							}
-
 							if (vardiyaGun.getId() != null) {
 								++sayac;
 								Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
@@ -1039,9 +1046,11 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 								vgMap.put(vardiyaGun.getVardiyaDateStr(), vardiyaGun);
 								if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate())) {
 									try {
-										boolean zamanGelmedi = vardiyaGun.getSonrakiVardiyaGun() != null && !bugun.after(islemVardiya.getVardiyaTelorans2BitZaman());
+										boolean zamanGelmedi = !bugun.after(islemVardiya.getVardiyaTelorans2BitZaman());
 										if (!zamanGelmedi)
-											zamanGelmedi = islemVardiya.isCalisma() == false || islemVardiya.isIzin();
+											zamanGelmedi = islemVardiya.isCalisma() == false || vardiyaGun.isIzinli();
+										else if (islemVardiya.isCalisma())
+											vardiyaGun.setCalismaSuresi(islemVardiya.getNetCalismaSuresi());
 
 										vardiyaGun.setZamanGelmedi(zamanGelmedi);
 									} catch (Exception e) {
@@ -1118,6 +1127,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 								}
 							}
 						}
+						puantaj.setVardiyalar(vardiyaGunList);
 						if (vardiyaGunSon != null)
 							ayBitti = bugun.after(vardiyaGunSon.getIslemVardiya().getVardiyaTelorans1BitZaman());
 
@@ -1147,11 +1157,23 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					personelDenklestirme.setGuncellendi(Boolean.FALSE);
 					PersonelDenklestirme hesaplananDenklestirmeHesaplanan = null;
 					double ucretiOdenenMesaiSure = 0.0d;
+					vgMap = puantaj.getVgMap();
 					for (Iterator iterator = puantaj.getVardiyalar().iterator(); iterator.hasNext();) {
 						VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 						if (!vardiyaGun.isAyinGunu()) {
 							iterator.remove();
 						} else {
+							if (vardiyaGun.getVardiyaDateStr().endsWith("31"))
+								logger.debug("");
+							if (vardiyaGun.getDurum() == false && vardiyaGun.getVardiya() != null) {
+								if (vardiyaGun.getVardiyaDate().after(toDay)) {
+									VardiyaGun vg = (VardiyaGun) vardiyaGun.clone();
+									vg.setDurum(vg.getVardiyaDate().after(toDay));
+									vgMap.put(vg.getVardiyaDateStr(), vg);
+								}
+
+							}
+
 							if (!calisiyor)
 								calisiyor = vardiyaGun.getVardiya() != null;
 							if (!gebemi && vardiyaGun.getVardiya() != null)

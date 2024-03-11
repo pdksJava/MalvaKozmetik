@@ -184,7 +184,6 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.setIzinSuresi(0.0d);
 		this.setOdenenSure(0.0d);
 		this.setOffSure(0.0d);
-		this.setOdenenSure(0.0d);
 		this.setSaatToplami(0.0d);
 		this.setUcretiOdenenMesaiSure(0.0d);
 	}
@@ -771,8 +770,10 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	}
 
-	public void setFazlaMesaiSure(Double fazlaMesaiSure) {
-		this.fazlaMesaiSure = fazlaMesaiSure;
+	public void setFazlaMesaiSure(Double value) {
+		if (value != null && value.doubleValue() != 0.0d)
+			logger.debug(value);
+		this.fazlaMesaiSure = value;
 	}
 
 	public void setPlanlananSure(Double value) {
@@ -1047,8 +1048,10 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		return calismaModeliAy;
 	}
 
-	public void setCalismaModeliAy(CalismaModeliAy calismaModeliAy) {
-		this.calismaModeliAy = calismaModeliAy;
+	public void setCalismaModeliAy(CalismaModeliAy value) {
+		if (value != null && denklestirmeAy == null)
+			this.denklestirmeAy = value.getDenklestirmeAy();
+		this.calismaModeliAy = value;
 	}
 
 	public Double getSaatlikIzinSuresi() {
