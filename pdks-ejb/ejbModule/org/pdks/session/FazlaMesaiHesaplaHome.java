@@ -2472,58 +2472,64 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				PdksUtil.addMessageAvailableError(gecenAy.getAyAdi() + " " + gecenAy.getYil() + " dönemi açıktır!");
 		} else if (kullaniciPersonel.equals(Boolean.FALSE) && ikRole && denklestirmeAyDurum && denklestirmeAy.getOtomatikOnayIKTarih() != null) {
 			Calendar cal = Calendar.getInstance();
+			Date otomatikOnayIKTarih = denklestirmeAy.getOtomatikOnayIKTarih();
 			cal.setTime(PdksUtil.getDate(cal.getTime()));
 			cal.set(Calendar.YEAR, denklestirmeAy.getYil());
 			cal.set(Calendar.MONTH, denklestirmeAy.getAy() - 1);
-			cal.add(Calendar.MONTH, 1);
 			cal.set(Calendar.DATE, 1);
+			cal.add(Calendar.MONTH, 1);
 			Date tarih = PdksUtil.getDate(cal.getTime());
-			Date tarihLast = ortakIslemler.tariheGunEkleCikar(cal, denklestirmeAy.getOtomatikOnayIKTarih(), 10);
+			if (authenticatedUser.isIKAdmin()) {
+				cal.add(Calendar.MONTH, 1);
+				otomatikOnayIKTarih = PdksUtil.getDate(cal.getTime());
+			}
 			cal = Calendar.getInstance();
 			Date toDay = cal.getTime();
 			boolean baslangicDurum = false;
 			if (denklestirmeAy.getOtomatikOnayIKBaslangicTarih() != null)
 				baslangicDurum = toDay.after(denklestirmeAy.getOtomatikOnayIKBaslangicTarih());
-			if (toDay.after(tarih) && (toDay.before(denklestirmeAy.getOtomatikOnayIKTarih())) || baslangicDurum || (loginUser.isTestLogin() && toDay.before(tarihLast))) {
-				onayla = Boolean.FALSE;
-				for (AylikPuantaj puantaj : puantajList) {
-					PersonelDenklestirme pd = puantaj.getPersonelDenklestirmeAylik();
-					boolean kaydet = pd.getDurum();
-					if (kaydet) {
+			boolean tarihGeldi = (toDay.after(tarih) && toDay.before(otomatikOnayIKTarih)) || baslangicDurum;
+			onayla = Boolean.FALSE;
+			for (AylikPuantaj puantaj : puantajList) {
+				PersonelDenklestirme pd = puantaj.getPersonelDenklestirmeAylik();
+				boolean kaydet = pd.getDurum();
+				if (kaydet) {
+					Personel personel = pd.getPdksPersonel();
+					if (tarihGeldi || (loginUser.isTestLogin() && toDay.after(personel.getSskCikisTarihi()))) {
 						if (baslangicDurum) {
 							puantaj.setSonGun(denklestirmeAy.getOtomatikOnayIKBaslangicTarih());
 							puantaj.setDonemBitti(true);
 							fazlaMesaiOnayDurum = true;
 						}
-
 						boolean eksikCalismaSureDegisti = PdksUtil.isDoubleDegisti(pd.getEksikCalismaSure(), puantaj.getEksikCalismaSure());
 						boolean kesilenSureDegisti = PdksUtil.isDoubleDegisti(pd.getKesilenSure(), puantaj.getKesilenSure());
 						boolean aksamVardiyaSaatSayisiDegisti = PdksUtil.isDoubleDegisti(pd.getAksamVardiyaSaatSayisi(), puantaj.getAksamVardiyaSaatSayisi());
 						boolean aksamVardiyaSayisiDegisti = PdksUtil.isDoubleDegisti(pd.getAksamVardiyaSayisi(), (double) puantaj.getAksamVardiyaSayisi());
-						boolean devredenSureDegisti = PdksUtil.isDoubleDegisti(pd.getDevredenSure(), puantaj.getDevredenSure());
 						boolean haftaCalismaSuresiDegisti = PdksUtil.isDoubleDegisti(pd.getHaftaCalismaSuresi(), puantaj.getHaftaCalismaSuresi());
 						boolean resmiTatilSureDegisti = PdksUtil.isDoubleDegisti(pd.getResmiTatilSure(), puantaj.getResmiTatilToplami());
 						boolean odenenSureDegisti = PdksUtil.isDoubleDegisti(pd.getOdenenSure(), puantaj.getFazlaMesaiSure());
+						boolean devredenSureDegisti = PdksUtil.isDoubleDegisti(pd.getDevredenSure(), puantaj.getDevredenSure());
 						kaydet = (!pd.isKapandi(loginUser) && (aksamVardiyaSaatSayisiDegisti || aksamVardiyaSayisiDegisti || devredenSureDegisti || eksikCalismaSureDegisti || haftaCalismaSuresiDegisti || resmiTatilSureDegisti || odenenSureDegisti || kesilenSureDegisti));
+						puantaj.setKaydet(kaydet);
+						if (puantaj.isKaydet())
+							onayla = hataYok;
 					}
-					puantaj.setKaydet(kaydet);
-					if (puantaj.isKaydet())
-						onayla = hataYok;
-				}
-				if (onayla) {
-					mailGonder = Boolean.FALSE;
-					try {
-						if (!loginUser.isAdmin()) {
-							fazlaMesaiOnaylaDevam(puantajList, Boolean.TRUE, Boolean.TRUE);
-						}
-
-					} catch (Exception eo) {
-						logger.error(eo);
-						eo.printStackTrace();
-					}
-
 				}
 			}
+			if (onayla) {
+				mailGonder = Boolean.FALSE;
+				try {
+					if (!loginUser.isAdmin()) {
+						fazlaMesaiOnaylaDevam(puantajList, Boolean.TRUE, Boolean.TRUE);
+					}
+
+				} catch (Exception eo) {
+					logger.error(eo);
+					eo.printStackTrace();
+				}
+
+			}
+
 		}
 
 		if (denklestirmeAyDurum && puantajList != null && !puantajList.isEmpty()) {
@@ -4809,7 +4815,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 		ExcelUtil.setFillForegroundColor(styleOff, 13, 12, 89);
 		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
-		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  "), "_", "");
+		String aciklamaExcel = PdksUtil.replaceAll(gorevYeriAciklama + " " + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyy MMMMMM  "), "_", " ");
 		ExcelUtil.getCell(sheet, row, col, header).setCellValue(aciklamaExcel);
 		for (int i = 0; i < 3; i++)
 			ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");

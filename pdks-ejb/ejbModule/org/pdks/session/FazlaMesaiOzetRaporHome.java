@@ -1397,8 +1397,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			}
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(aylikPuantajList);
 			if (baosDosya != null) {
-				String dosyaAdi = "FazlaMesai" + (sirket != null ? "_" + (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) : "") + (tesis != null ? "_" + tesis.getAciklama() : "") + "_" + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM")
-						+ ".xlsx";
+				String dosyaAdi = "FazlaMesai" + (sirket != null ? "_" + (sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama()) : "");
+				dosyaAdi += (tesisId != null ? "_" + ortakIslemler.getSelectItemText(tesisId, tesisList) : "") + (seciliEkSaha3Id != null ? "_" + ortakIslemler.getSelectItemText(seciliEkSaha3Id, gorevYeriList) : "");
+				dosyaAdi += "_" + PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "yyyyMM") + ".xlsx";
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
@@ -1444,6 +1445,17 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " Fazla Mesai", Boolean.TRUE);
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleTutarHata = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		ExcelUtil.setFillForegroundColor(styleTutarHata, 209, 9, 22);
+		ExcelUtil.setFontColor(styleTutarHata, Color.WHITE);
+		CellStyle styleHata = ExcelUtil.getStyleData(wb);
+		ExcelUtil.setFillForegroundColor(styleHata, 209, 9, 22);
+		ExcelUtil.setFontColor(styleHata, Color.WHITE);
+
+		CellStyle styleHataCenter = ExcelUtil.getStyleDataCenter(wb);
+		ExcelUtil.setFillForegroundColor(styleHataCenter, 209, 9, 22);
+		ExcelUtil.setFontColor(styleHataCenter, Color.WHITE);
+
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarEvenRed = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		ExcelUtil.setFontColor(styleTutarEvenRed, Color.RED);
@@ -1488,7 +1500,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ExcelUtil.setFillForegroundColor(styleOffRed, 13, 12, 89);
 		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
 		if (sirket != null) {
-			ExcelUtil.getCell(sheet, row, col, header).setCellValue(sirket.getAd() + (tesis != null ? " " + tesis.getAciklama() : ""));
+			String baslik = sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama();
+			baslik += (tesisId != null ? " " + ortakIslemler.getSelectItemText(tesisId, tesisList) : "") + (seciliEkSaha3Id != null ? " " + ortakIslemler.getSelectItemText(seciliEkSaha3Id, gorevYeriList) : "");
+
+			ExcelUtil.getCell(sheet, row, col, header).setCellValue(baslik);
 			for (int i = 0; i < 3; i++)
 				ExcelUtil.getCell(sheet, row, col + i + 1, header).setCellValue("");
 
@@ -1579,12 +1594,13 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 		int sira = 0;
 		double maxSure = denklestirmeAy.getFazlaMesaiMaxSure() != null ? denklestirmeAy.getFazlaMesaiMaxSure() : 11.0d;
+		Date bugun = PdksUtil.getDate(new Date());
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
-
 			Personel personel = aylikPuantaj.getPdksPersonel();
-			if (!aylikPuantaj.isFazlaMesaiHesapla() || !aylikPuantaj.isSecili() || personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false)
+			if (!aylikPuantaj.isSecili() || personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false)
 				continue;
+			boolean hataVar = aylikPuantaj.isFazlaMesaiHesapla() == false;
 			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
 			PersonelDenklestirme personelDenklestirmeGecenAy = personelDenklestirme != null ? personelDenklestirme.getPersonelDenklestirmeGecenAy() : null;
 			row++;
@@ -1605,6 +1621,11 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						styleGenel = styleEven;
 						styleTutar = styleTutarEven;
 						styleTutarRed = styleTutarEvenRed;
+					}
+					if (hataVar) {
+						styleTutar = styleTutarHata;
+						styleCenter = styleHataCenter;
+						styleGenel = styleHata;
 					}
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(++sira);
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
@@ -1655,17 +1676,26 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							styleDay = maxSureGecti == false ? styleOff : styleOffRed;
 
 						}
+						boolean onayHata = false;
+						String aciklama = "X";
+						if (vardiya != null && vardiyaGun.getDurum() == false && vardiyaGun.getVardiyaDate().before(bugun)) {
+							styleDay = styleHataCenter;
+							onayHata = true;
+						}
+
 						cell = ExcelUtil.getCell(sheet, row, col++, styleDay);
+						if (!onayHata) {
+							aciklama = !help || calisan(vardiyaGun) ? vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(sure)) : "";
+							if (vardiya != null) {
+								if (aciklama.equals("0")) {
+									if (vardiya.isCalisma() == false || vardiyaGun.getTatil() != null || vardiyaGun.isIzinli())
+										aciklama = ".";
 
-						String aciklama = !help || calisan(vardiyaGun) ? vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(sure)) : "";
-						if (vardiya != null) {
-							if (aciklama.equals("0")) {
-								if (vardiya.isCalisma() == false || vardiyaGun.getTatil() != null || vardiyaGun.isIzinli())
-									aciklama = ".";
-
+								}
+							} else {
+								aciklama = vardiyaGun.isCalismayiBirakti() ? "İSTİFA" : "ÇALIŞMIYOR";
 							}
-						} else {
-							aciklama = vardiyaGun.isCalismayiBirakti() ? "İSTİFA" : "ÇALIŞMIYOR";
+
 						}
 
 						cell.setCellValue(aciklama);

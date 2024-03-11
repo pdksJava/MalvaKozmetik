@@ -5590,7 +5590,7 @@ public class OrtakIslemler implements Serializable {
 			}
 			Sirket sirket = null;
 			Tanim tesis = null, bolum = null, altBolum = null, sirketGrup = null;
-			String ayrac = "";
+			String ayrac = " ";
 			if (!sirketMap.isEmpty()) {
 				List<Sirket> tempList = new ArrayList<Sirket>(sirketMap.values());
 				for (Sirket sirket2 : tempList) {
@@ -5626,6 +5626,9 @@ public class OrtakIslemler implements Serializable {
 				tempList = null;
 			}
 			if (!map.isEmpty()) {
+				if (PdksUtil.hasStringValue(veriAyrac))
+					veriAyrac = " ";
+				ayrac = " ";
 				StringBuffer sb = new StringBuffer();
 				if (sirket != null) {
 					sb.append(sirket.getAd());
