@@ -1,6 +1,8 @@
 package org.pdks.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -43,10 +45,12 @@ public class PersonelView implements Serializable {
 	private String adi, soyadi;
 	private User kullanici;
 	private String pdksPersonelAciklama, kgsSicilNo, ccAdres, bccAdres, hareketAdres;
+	private List<PersonelView> altPersoneller;
 	private Long pdksPersonelId, kullaniciId;
 	private Boolean durum;
 
 	private Personel yonetici1, yonetici2;
+	private PersonelView ustPersonelView;
 
 	@Id
 	@Column(name = COLUMN_NAME_ID)
@@ -258,6 +262,35 @@ public class PersonelView implements Serializable {
 
 	public void setHareketAdres(String hareketAdres) {
 		this.hareketAdres = hareketAdres;
+	}
+
+	@Transient
+	public PersonelView getUstPersonelView() {
+		return ustPersonelView;
+	}
+
+	public void setUstPersonelView(PersonelView ustPersonelView) {
+		this.ustPersonelView = ustPersonelView;
+	}
+
+	@Transient
+	public List<PersonelView> getAltPersoneller() {
+		if (altPersoneller == null)
+			altPersoneller = new ArrayList<PersonelView>();
+		return altPersoneller;
+	}
+
+	public void setAltPersoneller(List<PersonelView> altPersoneller) {
+		this.altPersoneller = altPersoneller;
+	}
+
+	@Transient
+	public void addAltPersonel(PersonelView value) {
+		if (value != null) {
+			logger.debug(this.getSicilNo() + " " + this.getAdSoyad() + " <-- " + value.getSicilNo() + " " + value.getAdSoyad());
+			getAltPersoneller().add(value);
+		}
+
 	}
 
 }

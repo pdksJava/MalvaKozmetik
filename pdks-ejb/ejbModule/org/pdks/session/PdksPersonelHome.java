@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.faces.FacesException;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.mail.internet.InternetAddress;
@@ -67,7 +68,10 @@ import org.pdks.security.entity.User;
 import org.pdks.security.entity.UserMenuItemTime;
 import org.pdks.security.entity.UserRoles;
 import org.pdks.security.entity.UserTesis;
+import org.richfaces.component.UITree;
 import org.richfaces.event.UploadEvent;
+import org.richfaces.model.TreeNode;
+import org.richfaces.model.TreeNodeImpl;
 import org.richfaces.model.UploadItem;
 
 import com.google.gson.Gson;
@@ -110,6 +114,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	public static final String MAIL_CC = MailGrubu.TIPI_CC;
 	public static final String MAIL_BCC = MailGrubu.TIPI_BCC;
 	public static final String MAIL_HAREKET = MailGrubu.TIPI_HAREKET;
+	private String iconLeaf = "/img/plus.gif";
+	private TreeNode<PersonelView> rootNodeForAllPersonelView;
 	private Dosya personelDosya = new Dosya();
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private HashMap<Long, List<Tanim>> dinamikPersonelAciklamaMap;
@@ -164,6 +170,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, kartNoGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
 	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable, transferAciklamaCiftKontrol, bakiyeIzinGoster = Boolean.FALSE, gebeSecim = Boolean.FALSE, personelTipiGoster = Boolean.FALSE;
+	public boolean disableAdviseNodeOpened;
 	private PersonelExtra personelExtra;
 	private TreeMap<Long, PersonelKGS> personelKGSMap;
 	private int COL_SICIL_NO, COL_ADI, COL_SOYADI, COL_SIRKET_KODU, COL_SIRKET_ADI, COL_TESIS_KODU, COL_TESIS_ADI, COL_GOREV_KODU, COL_GOREVI, COL_BOLUM_KODU, COL_BOLUM_ADI;
@@ -2099,6 +2106,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		}
 
 		TreeMap<String, Boolean> map = mantiksalAlanlariDoldur(list);
+
 		for (String key : map.keySet())
 			personelDurumMap.put(key, map.get(key));
 		if (authenticatedUser.isAdmin())
@@ -2148,6 +2156,189 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 			}
 		setPersonelList(list);
+		rootNodeForAllPersonelView = null;
+	}
+
+	public void fillPersonelViewTree() {
+		try {
+			rootNodeForAllPersonelView = new TreeNodeImpl<PersonelView>();
+			disableAdviseNodeOpened = personelList.isEmpty();
+			List<PersonelView> list = PdksUtil.sortObjectStringAlanList(personelList, "getAdSoyad", null);
+			HashMap<String, LinkedHashMap<Long, PersonelView>> sirketMap = new HashMap<String, LinkedHashMap<Long, PersonelView>>();
+			HashMap<Long, PersonelView> personelDataMap = new HashMap<Long, PersonelView>();
+			for (PersonelView personelView : list) {
+				personelView.setAltPersoneller(null);
+				personelView.setUstPersonelView(null);
+				if (personelView.getPdksPersonel() != null)
+					personelDataMap.put(personelView.getPdksPersonelId(), personelView);
+
+			}
+			HashMap<String, String> aciklamaMap = new HashMap<String, String>();
+			String yoneticiSirketBazli = ortakIslemler.getParameterKey("yoneticiSirketBazli");
+			for (PersonelView personelView : list) {
+				if (personelView.getPdksPersonel() != null) {
+					Personel personel = personelView.getPdksPersonel();
+					Sirket sirket = personel.getSirket();
+					if (sirket.getPdks().booleanValue() == false || sirket.getDepartman().isAdminMi() == false)
+						continue;
+					String key = null;
+					if (yoneticiSirketBazli.equals("") && sirket.getSirketGrup() == null) {
+						key = "S" + sirket.getId();
+						if (!aciklamaMap.containsKey(key))
+							aciklamaMap.put(key, sirket.getAd());
+					} else {
+						key = sirket.getSirketGrup() != null ? "G" + sirket.getSirketGrup().getId() : "Y";
+						if (!aciklamaMap.containsKey(key))
+							aciklamaMap.put(key, sirket.getSirketGrup() != null ? sirket.getSirketGrup().getAciklama() : yoneticiSirketBazli);
+					}
+					LinkedHashMap<Long, PersonelView> perMap = sirketMap.containsKey(key) ? sirketMap.get(key) : new LinkedHashMap<Long, PersonelView>();
+					Personel yonetici = personel.getYoneticisi();
+					if (personelView.getSicilNo().equals("1154") || personelView.getSicilNo().equals("1097"))
+						logger.debug("");
+					Long yoneticiId = yonetici != null ? personel.getYoneticisi().getId() : personel.getId();
+					if (yonetici != null && yonetici.getYoneticisi() != null && personel.getId().equals(yonetici.getYoneticisi().getId()))
+						yoneticiId = personel.getId();
+					if (personelDataMap.containsKey(yoneticiId) && personel.isCalisiyor()) {
+						PersonelView personelYonetici = personelDataMap.get(yoneticiId);
+						if (!personel.getId().equals(yoneticiId)) {
+							personelView.setUstPersonelView(personelYonetici);
+							personelYonetici.addAltPersonel(personelView);
+						}
+
+						if (perMap.isEmpty())
+							sirketMap.put(key, perMap);
+						perMap.put(yoneticiId, personelYonetici);
+					}
+
+				}
+			}
+			list = null;
+			if (!sirketMap.isEmpty()) {
+				for (String key : sirketMap.keySet()) {
+					LinkedHashMap<Long, PersonelView> perMap = sirketMap.get(key);
+					LinkedHashMap<Long, PersonelView> perDataMap = new LinkedHashMap<Long, PersonelView>();
+					PersonelView yoneticiSirketView = new PersonelView();
+					Personel yoneticiPer = new Personel();
+					yoneticiPer.setPdksSicilNo("Yönetici Tanımsız");
+					yoneticiSirketView.setPdksPersonel(yoneticiPer);
+
+					PersonelView personelSirketView = new PersonelView();
+					Personel sirketPer = new Personel();
+					sirketPer.setPdksSicilNo(aciklamaMap.get(key));
+					personelSirketView.setPdksPersonel(sirketPer);
+
+					TreeNodeImpl<PersonelView> sirketImpl = new TreeNodeImpl<PersonelView>();
+					TreeNodeImpl<PersonelView> yoneticiYokNode = new TreeNodeImpl<PersonelView>();
+					yoneticiYokNode.setData(yoneticiSirketView);
+					rootNodeForAllPersonelView.addChild(key, sirketImpl);
+					sirketImpl.setData(personelSirketView);
+					List<Long> yoneticiList = new ArrayList<Long>(perMap.keySet());
+					HashMap<Long, TreeNode<PersonelView>> nodeMap = new HashMap<Long, TreeNode<PersonelView>>();
+					for (Iterator iterator = yoneticiList.iterator(); iterator.hasNext();) {
+						Long yoneticiId = (Long) iterator.next();
+						PersonelView personelYonetici = personelDataMap.get(yoneticiId);
+						perMap.remove(yoneticiId);
+						TreeNode<PersonelView> nodeImpl = new TreeNodeImpl<PersonelView>();
+						nodeImpl.setData(personelYonetici);
+						List list2 = personelYonetici.getAltPersoneller();
+						if (!list2.isEmpty())
+							loadTree(nodeImpl, personelYonetici, nodeMap, perDataMap);
+						perDataMap.put(yoneticiId, personelYonetici);
+						if (personelYonetici.getUstPersonelView() == null) {
+							nodeMap.put(yoneticiId, nodeImpl);
+						}
+
+					}
+					int sayac = 0;
+					while (!yoneticiList.isEmpty() && sayac < 200) {
+						sayac++;
+						for (Iterator iterator = yoneticiList.iterator(); iterator.hasNext();) {
+							Long id = (Long) iterator.next();
+							PersonelView personelYonetici = personelDataMap.get(id);
+							if (personelYonetici.getSicilNo().equals("2262") || personelYonetici.getSicilNo().equals("2221"))
+								logger.debug("");
+							TreeNode<PersonelView> nodeYonetici = nodeMap.get(personelYonetici.getPdksPersonelId());
+							if (nodeYonetici.getParent() == null) {
+								if (personelYonetici.getUstPersonelView() != null) {
+									Long ustYoneticiId = personelYonetici.getUstPersonelView().getPdksPersonelId();
+									TreeNode<PersonelView> nodeUstYonetici = nodeMap.get(ustYoneticiId);
+									if (nodeUstYonetici != null)
+										nodeUstYonetici.addChild(id, nodeYonetici);
+
+								} else {
+									if (personelYonetici.getPdksPersonel().getYoneticisi() == null) {
+										if (yoneticiYokNode.getParent() == null)
+											sirketImpl.addChild(-1, yoneticiYokNode);
+
+										yoneticiYokNode.addChild(id, nodeYonetici);
+									} else if (sayac > 3)
+										sirketImpl.addChild(id, nodeYonetici);
+
+								}
+
+							}
+							if (nodeYonetici != null && nodeYonetici.getParent() != null) {
+								iterator.remove();
+								continue;
+							}
+						}
+					}
+				}
+			}
+			personelDataMap = null;
+			sirketMap = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * @param rootNode
+	 * @param yonetici
+	 * @param nodeMap
+	 */
+	private void loadTree(TreeNode<PersonelView> parentNode, PersonelView yonetici, HashMap<Long, TreeNode<PersonelView>> nodeMap, LinkedHashMap<Long, PersonelView> perDataMap) {
+		try {
+			if (!perDataMap.containsKey(yonetici.getPdksPersonelId())) {
+
+				perDataMap.put(yonetici.getPdksPersonelId(), yonetici);
+				logger.debug(yonetici.getSicilNo() + " " + yonetici.getAdSoyad() + " yönetici ");
+				List<PersonelView> altPersoneller = yonetici.getAltPersoneller();
+				nodeMap.put(yonetici.getPdksPersonelId(), parentNode);
+				if (parentNode.getParent() == null && yonetici.getUstPersonelView() != null) {
+					Long id = yonetici.getUstPersonelView().getPdksPersonelId();
+					if (nodeMap.containsKey(id))
+						parentNode.setParent(nodeMap.get(id));
+				}
+				for (Iterator iterator = altPersoneller.iterator(); iterator.hasNext();) {
+					PersonelView personelView = (PersonelView) iterator.next();
+					if (!personelView.getPdksPersonelId().equals(yonetici.getPdksPersonelId())) {
+						List<PersonelView> list = personelView.getAltPersoneller();
+						if (!list.isEmpty() || personelView.getPdksPersonel().isCalisiyor()) {
+							if (yonetici.getSicilNo().equals("1097"))
+								logger.debug(personelView.getSicilNo() + " " + personelView.getAdSoyad());
+							TreeNode<PersonelView> nodeImpl = new TreeNodeImpl<PersonelView>();// yeni bir top menu node tanimlanir
+							parentNode.addChild(personelView.getPdksPersonelId(), nodeImpl);// yeni node root a eklenir
+							nodeImpl.setData(personelView);// yeni node a menu bileseni eklenir.
+
+							if (!list.isEmpty())
+								loadTree(nodeImpl, personelView, nodeMap, perDataMap);
+						} else
+							iterator.remove();
+
+					} else
+						iterator.remove();
+
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error("PDKS hata in : \n");
+			e.printStackTrace();
+			logger.error("PDKS hata out : " + e.getMessage());
+			throw new FacesException(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -3523,7 +3714,21 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		} catch (Exception e) {
 
 		}
+
 		return "";
+	}
+
+	public Boolean adviseNodeOpened(UITree tree) {
+		if (disableAdviseNodeOpened)
+			return Boolean.FALSE;
+		Object rowKey = tree.getRowKey();
+		TreeNode<PersonelView> selectedNode = tree.getModelTreeNode(rowKey);
+		PersonelView personelView = (PersonelView) selectedNode.getData();
+		boolean currentlyNodeSelected = personelView.getId() == null || personelView.getId() > 0L;
+		if (currentlyNodeSelected) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
 	}
 
 	/**
@@ -5202,5 +5407,35 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setYoneticisi(Personel seciliYonetici) {
 
+	}
+
+	public String getIconLeaf() {
+		return iconLeaf;
+	}
+
+	public void setIconLeaf(String iconLeaf) {
+		this.iconLeaf = iconLeaf;
+	}
+
+	public boolean isDisableAdviseNodeOpened() {
+		return disableAdviseNodeOpened;
+	}
+
+	public void setDisableAdviseNodeOpened(boolean disableAdviseNodeOpened) {
+		this.disableAdviseNodeOpened = disableAdviseNodeOpened;
+	}
+
+	public void setDisableAdviseNodeOpened(org.richfaces.event.NodeExpandedEvent event) {
+		this.disableAdviseNodeOpened = true;
+	}
+
+	public TreeNode<PersonelView> getRootNodeForAllPersonelView() {
+		if (rootNodeForAllPersonelView == null)
+			fillPersonelViewTree();
+		return rootNodeForAllPersonelView;
+	}
+
+	public void setRootNodeForAllPersonelView(TreeNode<PersonelView> rootNodeForAllPersonelView) {
+		this.rootNodeForAllPersonelView = rootNodeForAllPersonelView;
 	}
 }

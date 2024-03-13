@@ -123,6 +123,7 @@ public class MenuItemConstant implements Serializable {
 	public static String aylikIzinRapor = "/rapor/aylikIzinRapor.xhtml";
 	public static String fazlaMesaiIzin = "/rapor/fazlaMesaiIzin.xhtml";
 	public static String personelListesi = "/rapor/personelListesi.xhtml";
+	public static String organizasyonSemasi = "/rapor/organizasyonSemasi.xhtml";
 	public static String kullanilanIzinler = "/rapor/kullanilanIzinler.xhtml";
 	public static String sskIstirahatIzinleri = "/rapor/sskIstirahatIzinleri.xhtml";
 	public static String hekimIzinRaporu = "/rapor/hekimIzinRaporu.xhtml";
@@ -1014,6 +1015,14 @@ public class MenuItemConstant implements Serializable {
 
 	public static void setFazlaCalismaRapor(String fazlaCalismaRapor) {
 		MenuItemConstant.fazlaCalismaRapor = fazlaCalismaRapor;
+	}
+
+	public static String getOrganizasyonSemasi() {
+		return organizasyonSemasi;
+	}
+
+	public static void setOrganizasyonSemasi(String organizasyonSemasi) {
+		MenuItemConstant.organizasyonSemasi = organizasyonSemasi;
 	}
 
 }

@@ -412,8 +412,11 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 
 			List<YemekIzin> yemekGenelList = ortakIslemler.getYemekList(tarih1, tarih2, session);
 			ortakIslemler.setVardiyaYemekList(vardiyaList, yemekGenelList);
+			// List<VardiyaGun> gunList = new ArrayList<VardiyaGun>();
 			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+				// VardiyaGun vardiyaGun = vg.getDurum() == false ? (VardiyaGun) vg.clone() : vg;
+				// gunList.add(vardiyaGun);
 				List<YemekIzin> yemekList = vardiyaGun.getYemekList();
 				Long personelId = vardiyaGun.getPersonel().getId();
 				vardiyaGun.setHareketler(null);
@@ -440,7 +443,8 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 					resmiMesaiSure = vs.getResmiTatilSure();
 					hesapla = calismaSuresi == 0.0d;
 
-				}
+				} else
+					vardiyaGun.setVardiyaSaatDB(new VardiyaSaat());
 
 				if (!vardiyaGun.isHareketHatali() && giris > 0 && cikis == giris) {
 					List<String> hIdList = new ArrayList<String>();
@@ -530,12 +534,15 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 
 		int row = 0;
 		int col = 0;
-		boolean tesisDurum = ortakIslemler.getListTesisDurum(vardiyaGunList), izinDurum = false, hareketDurum = false, fazlaMesaiDurum = false;
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(vardiyaGunList), izinDurum = false, hareketDurum = false, fazlaMesaiDurum = false, eksikCalismaDurum = false;
 		for (VardiyaGun calismaPlani : vardiyaGunList) {
-			if (calismaPlani.getVardiya() == null || calismaPlani.getVardiya().getId() == null)
+			Vardiya vardiya = calismaPlani.getVardiya();
+			if (vardiya == null || vardiya.getId() == null)
 				continue;
 			if (fazlaMesaiDurum == false)
 				fazlaMesaiDurum = calismaPlani.getFazlaMesaiSure() > 0.0d || (calismaPlani.getDurum() == false && calismaPlani.getHareketler() != null);
+			if (eksikCalismaDurum == false && vardiya.isCalisma() && calismaPlani.getCalismaSuresi() > 0.0d)
+				eksikCalismaDurum = calismaPlani.getCalismaSuresi() - calismaPlani.getFazlaMesaiSure() < calismaPlani.getVardiya().getNetCalismaSuresi();
 			if (izinDurum == false)
 				izinDurum = calismaPlani.getVardiya().isCalisma() == false || calismaPlani.isIzinli();
 			if (hareketDurum == false)
@@ -554,6 +561,11 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Süresi");
 		if (fazlaMesaiDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Fazla Çalışma");
+		if (eksikCalismaDurum) {
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Eksik Çalışma");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Eksik Çalışma Süre");
+		}
+
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İlk Giriş");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Son Çıkış");
@@ -563,17 +575,6 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Hareketler");
 
 		col = 0;
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Personel");
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		// if (tesisDurum)
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue(bolumAciklama);
-		//
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Vardiya");
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Kapı");
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("Zaman");
 
 		boolean manuelGiris = false;
 		for (VardiyaGun calismaPlani : vardiyaGunList) {
@@ -588,11 +589,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 					break;
 			}
 		}
-		// if (manuelGiris) {
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("İşlem Yapan");
-		// ExcelUtil.getCell(sheetHareket, row, col++, header).setCellValue("İşlem Zamanı");
-		// }
-		// int rowHareket = 0, colHareket = 0;
+
 		boolean renk = true;
 		for (VardiyaGun calismaPlani : vardiyaGunList) {
 			row++;
@@ -611,7 +608,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 			Personel personel = calismaPlani.getPersonel();
 			List<HareketKGS> hareketler = calismaPlani.getHareketler();
 			Sirket sirket = personel.getSirket();
-			Vardiya vardiya = calismaPlani.getVardiya();
+			Vardiya vardiya = calismaPlani.getIslemVardiya();
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getYoneticisi() != null && personel.getYoneticisi().isCalisiyorGun(date) ? personel.getYoneticisi().getAdSoyad() : "");
@@ -628,6 +625,32 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 					str = calismaPlani.getCalismaSuresi() > 0.0d ? "Onaysız" : "Hatalı Kart";
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(str);
 
+			}
+			if (eksikCalismaDurum) {
+				boolean eksikCalisma = false;
+				if (vardiya.isCalisma() && calismaPlani.getCalismaSuresi() > 0.0d) {
+					double sure = calismaPlani.getVardiya().getNetCalismaSuresi() - (calismaPlani.getCalismaSuresi() - calismaPlani.getFazlaMesaiSure());
+					if (sure > 0) {
+						List<HareketKGS> perHareketler = calismaPlani.getHareketler();
+						String strGecGelme = "", strErkenCikma = "";
+						Date girisZaman = perHareketler.get(0).getOrjinalZaman(), cikisZaman = perHareketler.get(perHareketler.size() - 1).getOrjinalZaman();
+						if (vardiya.getVardiyaTelorans2BasZaman().before(girisZaman))
+							strGecGelme = "Geç Giriş";
+						else if (vardiya.getVardiyaTelorans1BasZaman().after(girisZaman))
+							strGecGelme = "Erken Giriş";
+						if (vardiya.getVardiyaTelorans1BitZaman().after(cikisZaman))
+							strErkenCikma = (strGecGelme.equals("") ? "" : " + ") + "Erken Çıkış";
+						else if (vardiya.getVardiyaTelorans2BitZaman().before(cikisZaman))
+							strErkenCikma = (strGecGelme.equals("") ? "" : " + ") + "Geç Çıkış";
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(strGecGelme + strErkenCikma);
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(authenticatedUser.sayiFormatliGoster(sure) + " saat");
+						eksikCalisma = true;
+					}
+				}
+				if (eksikCalisma == false) {
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+				}
 			}
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(vardiya.isCalisma() ? authenticatedUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : "");
 			if (calismaPlani.getGirisHareket() != null)
@@ -661,33 +684,7 @@ public class CalismaSaatleriHome extends EntityHome<VardiyaGun> implements Seria
 						KapiKGS kapiKGS = hareketKGS.getKapiKGS();
 						String kapiAciklama = kapiKGS.getKapi() != null ? kapiKGS.getKapi().getAciklama() : kapiKGS.getAciklamaKGS();
 						sb.append(kapiAciklama + " --> " + authenticatedUser.dateTimeFormatla(hareketKGS.getOrjinalZaman()) + (iterator.hasNext() ? "\n" : ""));
-						// rowHareket++;
-						// colHareket = 0;
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, styleCenter).setCellValue(personel.getPdksSicilNo());
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getAdSoyad());
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getYoneticisi() != null && personel.getYoneticisi().isCalisiyorGun(date) ? personel.getYoneticisi().getAdSoyad() : "");
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(sirket.getAd());
-						// if (tesisDurum)
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, styleCenter).setCellValue(vardiya.isCalisma() ? authenticatedUser.dateFormatla(calismaPlani.getVardiyaDate()) + " " + vardiya.getAciklama() : vardiya.getAdi());
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(kapiAciklama);
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, cellStyleDateTime).setCellValue(hareketKGS.getOrjinalZaman());
-						// if (manuelGiris) {
-						// PersonelHareketIslem islem = hareketKGS.getIslem();
-						// if (islem != null) {
-						// manuelGiris = true;
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue(islem.getOnaylayanUser() != null ? islem.getOnaylayanUser().getAdSoyad() : "");
-						// if (islem.getOlusturmaTarihi() != null)
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, cellStyleDateTime).setCellValue(islem.getOlusturmaTarihi());
-						// else
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue("");
-						// } else {
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue("");
-						// ExcelUtil.getCell(sheetHareket, rowHareket, colHareket++, style).setCellValue("");
-						//
-						// }
-						// }
+
 					}
 				}
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sb.toString());

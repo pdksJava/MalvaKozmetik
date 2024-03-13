@@ -1,0 +1,83 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jstl/core" template="/layout/template.xhtml">
+	<ui:define name="title">
+		<h:outputText value="#{ortakIslemler.getMenuAdi('organizasyonSemasi')}" />
+	</ui:define>
+	<ui:define name="body">
+
+		<h:form id="formExcel">
+			<a4j:region>
+
+				<rich:panel style="vardiyaGun" header="#{ortakIslemler.getMenuUserAdi(pdksPersonelHome.session,'organizasyonSemasi')}">
+					<h:panelGrid columns="1" id="sirketDegisti">
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Organizasyon Kapalı</ui:define>
+							<h:selectBooleanCheckbox value="#{pdksPersonelHome.disableAdviseNodeOpened}">
+								<a4j:support event="onclick" action="#{ortakIslemler.emtpyAjaxFunction()}" reRender="sirketDegisti" status="ajaxStatus" ajaxSingle="true" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<rich:tree style="width:300px" id="orgTree" treeNodeVar="rootNode" switchType="client" value="#{pdksPersonelHome.rootNodeForAllPersonelView}"
+							var="item" adviseNodeOpened="#{pdksPersonelHome.adviseNodeOpened}" iconCollapsed="#{pdksPersonelHome.iconLeaf}"
+							iconExpanded="#{pdksPersonelHome.iconLeaf}">
+							<rich:treeNode id="menuItemTreeNode" changeExpandListener="#{pdksPersonelHome.setDisableAdviseNodeOpened}">
+								<f:facet name="icon">
+									<ui:fragment>
+										<a4j:commandLink status="ajaxStatus" id="editIconLink">
+											<h:graphicImage value="/img/down.gif" style="border:0" />
+
+										</a4j:commandLink>
+
+									</ui:fragment>
+
+								</f:facet>
+								<f:facet name="iconLeaf">
+
+
+								</f:facet>
+								<DIV id="per#{item.id}">
+									<ui:fragment rendered="#{item.pdksPersonel.yoneticisi==null and item.id>0}">
+										<SPAN style="color: red;"> <h:outputText value="#{item.pdksPersonel.sicilNo} #{item.pdksPersonel.adSoyad}" /> <ui:fragment
+												rendered="#{item.pdksPersonel.ekSaha3!=null}">
+									[ <h:outputText value="#{item.pdksPersonel.ekSaha3.aciklama}" /> ]
+									
+									</ui:fragment>
+										</SPAN>
+									</ui:fragment>
+									<ui:fragment rendered="#{(item.pdksPersonel.yoneticisi==null and item.id>0 )==false}">
+
+										<ui:fragment rendered="#{empty item.altPersoneller and item.id!=null}">
+
+											<h:outputText value="#{item.pdksPersonel.sicilNo} #{item.pdksPersonel.adSoyad}" />
+											[ <h:outputText value="#{item.pdksPersonel.ekSaha3.aciklama}" /> ]
+
+										</ui:fragment>
+										<ui:fragment rendered="#{not empty item.altPersoneller or  item.id==null}">
+
+											<b><h:outputText value="#{item.pdksPersonel.sicilNo} #{item.pdksPersonel.adSoyad}" /></b>
+											<ui:fragment rendered="#{item.pdksPersonel.ekSaha3!=null}">
+									[ <h:outputText value="#{item.pdksPersonel.ekSaha3.aciklama}" /> ]
+									
+									</ui:fragment>
+
+										</ui:fragment>
+									</ui:fragment>
+
+								</DIV>
+								<ui:fragment rendered="#{item.pdksPersonel.id!=null and item.pdksPersonel.yoneticisi!=null}">
+									<rich:toolTip for="per#{item.id}">
+										<SPAN style="color: green; font-size: 12px;"> <B><h:outputText value="#{item.pdksPersonel.sirket.ad}" /></B> <BR></BR> <BR></BR> <B>Görevi
+												: </B> <h:outputText value="#{item.pdksPersonel.gorevTipi.aciklama}" />
+										</SPAN>
+									</rich:toolTip>
+								</ui:fragment>
+							</rich:treeNode>
+						</rich:tree>
+					</h:panelGrid>
+				</rich:panel>
+			</a4j:region>
+		</h:form>
+	</ui:define>
+</ui:composition>

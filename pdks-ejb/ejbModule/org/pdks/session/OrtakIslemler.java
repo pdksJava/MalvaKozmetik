@@ -1024,19 +1024,18 @@ public class OrtakIslemler implements Serializable {
 							if (kapi.isGirisKapi()) {
 								if (ilkGiris) {
 									if (islemVardiya.getVardiyaTelorans1BasZaman().after(zaman))
-										sb.append("Erken giriş");
+										sb.append("Erken Giriş");
 									else if (islemVardiya.getVardiyaTelorans2BasZaman().before(zaman) && islemVardiya.getVardiyaTelorans1BitZaman().after(zaman))
-										sb.append("Geç giriş");
+										sb.append("Geç Giriş");
 								}
 
 							} else if (kapi.isCikisKapi()) {
 								if (iterator.hasNext() == false) {
-									if (islemVardiya.getVardiyaTelorans2BasZaman().after(zaman) && islemVardiya.getVardiyaTelorans1BitZaman().after(zaman))
-										sb.append("Erken çıkış");
+									if (islemVardiya.getVardiyaTelorans1BitZaman().after(zaman))
+										sb.append("Erken Çıkış");
 									else if (islemVardiya.getVardiyaTelorans2BitZaman().before(zaman))
-										sb.append("Geç çıkış");
-								}
-
+										sb.append("Geç Çıkış");
+ 								}
 							}
 						}
 						ilkGiris = false;

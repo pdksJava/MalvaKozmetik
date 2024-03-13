@@ -52,6 +52,8 @@ import org.pdks.entity.PersonelKGS;
 import org.pdks.entity.PersonelView;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
+import org.pdks.entity.Vardiya;
+import org.pdks.entity.VardiyaGun;
 import org.pdks.security.entity.User;
 
 import com.pdks.webservice.MailFile;
@@ -91,7 +93,8 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 	private Date basTarih, bitTarih;
 	private Kapi kapi;
 	private boolean pdksKapi = Boolean.TRUE, pdksHaricKapi = Boolean.FALSE, yemekKapi = Boolean.FALSE, guncellenmis = Boolean.FALSE, kgsUpdateGoster = Boolean.FALSE;
-	private boolean ikRole = false;
+	private boolean ikRole = false, vardiyaOku = false;
+	private Boolean vardiyaOkuDurum = null;
 	private String sicilNo = "", adi = "", soyadi = "", bolumAciklama;
 	private byte[] zipVeri;
 	private List<SelectItem> departmanList;
@@ -137,6 +140,11 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
+		vardiyaOku = false;
+		if (vardiyaOkuDurum == null) {
+			if (authenticatedUser.isAdmin() || ortakIslemler.getParameterKeyHasStringValue("hareketVardiyaOku"))
+				vardiyaOkuDurum = ortakIslemler.getParameterKey("hareketVardiyaOku").equals("1");
+		}
 		boolean ayniSayfa = authenticatedUser.getCalistigiSayfa() != null && authenticatedUser.getCalistigiSayfa().equals("tumHareketler");
 		if (!ayniSayfa)
 			authenticatedUser.setCalistigiSayfa("tumHareketler");
@@ -309,12 +317,16 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 		if (authenticatedUser.isYoneticiKontratli() && tumPersoneller != null)
 			ortakIslemler.digerPersoneller(tumPersoneller, yetkiTumPersonelNoList, basTarih, bitTarih, session);
+
 		sicilNo = ortakIslemler.getSicilNo(sicilNo);
+		vardiyaOku = false;
+
 		if (authenticatedUser.isYoneticiKontratli()) {
 			if (!(ikRole || authenticatedUser.isAdmin()))
 				sirketId = null;
 		}
 		boolean admin = ikRole || authenticatedUser.isAdmin() || authenticatedUser.isGenelMudur();
+		HashMap<Long, Personel> personelMap = new HashMap<Long, Personel>();
 		if (PdksUtil.hasStringValue(sicilNo) || PdksUtil.hasStringValue(adi) || PdksUtil.hasStringValue(soyadi)) {
 
 			// if (authenticatedUser.isAdmin() || (authenticatedUser.isIK() && authenticatedUser.getDepartman().isAdminMi()) || yetkiTumPersonelNoList.contains(sicilNo)) {
@@ -356,18 +368,26 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			if (session != null)
 				map.put(PdksEntityController.MAP_KEY_SESSION, session);
 			List<PersonelView> personeller = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectByInnerObjectListInLogic(map, PersonelView.class));
+
 			if (!admin) {
+
 				for (Iterator iterator = personeller.iterator(); iterator.hasNext();) {
 					PersonelView personelView = (PersonelView) iterator.next();
 					if (!yetkiTumPersonelNoList.contains(personelView.getSicilNo()))
 						iterator.remove();
+					else if (personelView.getPdksPersonel() != null)
+						personelMap.put(personelView.getId(), personelView.getPdksPersonel());
+
 				}
 			}
 			devam = !personeller.isEmpty();
+
 			if (devam) {
 				perMap.clear();
 				for (PersonelView personelView : personeller) {
 					perMap.put(personelView.getId(), personelView);
+					if (personelView.getPdksPersonel() != null)
+						personelMap.put(personelView.getId(), personelView.getPdksPersonel());
 					personelId.add(personelView.getId());
 				}
 			}
@@ -401,6 +421,8 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			devam = Boolean.FALSE;
 
 		parametreMap.clear();
+		TreeMap<String, VardiyaGun> vardiyalar = null;
+
 		if (devam) {
 			Calendar cal = Calendar.getInstance();
 			StringBuffer sb = null;
@@ -426,15 +448,19 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 						parametreMap.put("departmanId", departmanId);
 					}
 				}
+
 				perMap.clear();
 				personelId.clear();
 				List<PdksPersonelView> list = pdksEntityController.getObjectBySQLList(sb, parametreMap, PdksPersonelView.class);
 				for (PdksPersonelView pdksPersonelView : list) {
+					if (pdksPersonelView.getPdksPersonel() != null)
+						personelMap.put(pdksPersonelView.getId(), pdksPersonelView.getPdksPersonel());
 					Long long1 = pdksPersonelView.getPersonelKGSId();
 					if (long1 != null)
 						perMap.put(long1, pdksPersonelView.getPersonelView());
 				}
 				personelId.addAll(new ArrayList(perMap.keySet()));
+
 			}
 
 			parametreMap.clear();
@@ -548,6 +574,8 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				List<Long> islemIdler = new ArrayList<Long>();
 				List<String> idList = new ArrayList<String>();
 				kgsUpdateGoster = false;
+
+				HashMap<Long, List<HareketKGS>> hareketMap = new HashMap<Long, List<HareketKGS>>();
 				for (BasitHareket hareket : kgsList) {
 					if (hareket.getDurum() == 1 && perMap.containsKey(hareket.getPersonelId()) && kapiMap.containsKey(hareket.getKapiId())) {
 						if (idList.contains(hareket.getId()))
@@ -563,10 +591,48 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 							islemIdler.add(kgsHareket.getIslemId());
 						if (!kgsUpdateGoster)
 							kgsUpdateGoster = kgsHareket.getIslemId() != null && kgsHareket.getKgsZaman() != null;
+						if (kgsHareket.getPersonel() != null && kgsHareket.getPersonel().getPdksPersonel() != null) {
+							Personel personel = kgsHareket.getPersonel().getPdksPersonel();
+							personelMap.put(personel.getId(), personel);
+							Long key = kgsHareket.getPersonel().getPdksPersonel().getId();
+							List<HareketKGS> list2 = hareketMap.containsKey(key) ? hareketMap.get(key) : new ArrayList<HareketKGS>();
+							if (list2.isEmpty())
+								hareketMap.put(key, list2);
+							list2.add(kgsHareket);
+						}
 						list.add(kgsHareket);
-
 					}
 				}
+
+				if (vardiyaOkuDurum != null && vardiyaOkuDurum)
+					try {
+						vardiyalar = ortakIslemler.getIslemVardiyalar(new ArrayList<Personel>(personelMap.values()), PdksUtil.tariheGunEkleCikar(basTarih, -1), PdksUtil.tariheGunEkleCikar(bitTarih, 1), Boolean.FALSE, session, Boolean.TRUE);
+					} catch (Exception e) {
+						logger.error(e);
+						e.printStackTrace();
+					}
+				vardiyaOku = false;
+				if (vardiyalar != null) {
+					for (String string : vardiyalar.keySet()) {
+						VardiyaGun vg = vardiyalar.get(string);
+						vg.setHareketler(null);
+						vg.setGirisHareketleri(null);
+						vg.setCikisHareketleri(null);
+						Long key = vg.getPdksPersonel().getId();
+						if (hareketMap.containsKey(key)) {
+							List<HareketKGS> list2 = hareketMap.get(key);
+							for (Iterator iterator = list2.iterator(); iterator.hasNext();) {
+								HareketKGS hareketKGS = (HareketKGS) iterator.next();
+								if (vg.addHareket(hareketKGS, false)) {
+									hareketKGS.setVardiyaGun(vg);
+									vardiyaOku = true;
+								}
+
+							}
+						}
+					}
+				}
+
 				idList = null;
 				if (!islemIdler.isEmpty()) {
 					logger.debug(authenticatedUser.getAdSoyad() + " Hareket islem bilgileri okunuyor.");
@@ -908,9 +974,13 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		CellStyle header = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDate = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleOddTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TIME, wb);
 		CellStyle styleOddTimeStamp = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDate = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATE, wb);
+		CellStyle styleEvenTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TIME, wb);
 		CellStyle styleEvenTimeStamp = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 		int row = 0;
 		int col = 0;
@@ -918,11 +988,19 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		boolean yonetici = admin || ikRole;
 		if (admin)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Id");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Zaman");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Tarih");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Saat");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kapi");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Kapi Tipi");
+		if (vardiyaOku) {
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya Tarihi");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya Adı");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya Başlama Zamanı");
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya Bitiş Zamanı");
+		}
 		if (yonetici)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("KGS Şirket");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
@@ -936,16 +1014,19 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		boolean renk = true;
 		for (Iterator iter = hareketList.iterator(); iter.hasNext();) {
 			HareketKGS hareket = (HareketKGS) iter.next();
-
-			CellStyle styleCenter = null, style = null, styleTimeStamp = null;
+			CellStyle styleCenter = null, style = null, styleTimeStamp = null, styleTime = null, styleDate = null;
 			if (renk) {
 				style = styleOdd;
 				styleCenter = styleOddCenter;
 				styleTimeStamp = styleOddTimeStamp;
+				styleTime = styleOddTime;
+				styleDate = styleOddDate;
 			} else {
 				style = styleEven;
 				styleCenter = styleEvenCenter;
 				styleTimeStamp = styleEvenTimeStamp;
+				styleTime = styleEvenTime;
+				styleDate = styleEvenDate;
 			}
 			renk = !renk;
 			row++;
@@ -961,7 +1042,8 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 			if (admin)
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(hareket.getId());
 			try {
-				ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(hareket.getZaman());
+				ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(hareket.getZaman());
+				ExcelUtil.getCell(sheet, row, col++, styleTime).setCellValue(hareket.getZaman());
 				String sirket = "";
 				try {
 					sirket = personel.getSirket().getAd();
@@ -972,6 +1054,30 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(hareket.getSicilNo());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getAdSoyad());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getKapiView().getAciklama());
+				if (hareket.getKapiView().getKapi() != null)
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getKapiView().getKapi().getTipi().getAciklama());
+				else
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+				if (vardiyaOku) {
+					VardiyaGun vg = hareket.getVardiyaGun();
+					if (vg != null && vg.getIslemVardiya() != null) {
+						Vardiya vardiya = vg.getIslemVardiya();
+						ExcelUtil.getCell(sheet, row, col++, styleDate).setCellValue(vg.getVardiyaDate());
+						ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(vardiya.getKisaAdi());
+						if (vardiya.isCalisma()) {
+							ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(vardiya.getVardiyaBasZaman());
+							ExcelUtil.getCell(sheet, row, col++, styleTimeStamp).setCellValue(vardiya.getVardiyaBitZaman());
+						} else {
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+							ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+						}
+					} else {
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+						ExcelUtil.getCell(sheet, row, col++, style).setCellValue("");
+					}
+				}
 				if (yonetici)
 					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(hareket.getKapiSirket() != null ? hareket.getKapiSirket().getAciklama() : "");
 
@@ -1249,5 +1355,21 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 	public void setIkRole(boolean ikRole) {
 		this.ikRole = ikRole;
+	}
+
+	public boolean isVardiyaOku() {
+		return vardiyaOku;
+	}
+
+	public void setVardiyaOku(boolean vardiyaOku) {
+		this.vardiyaOku = vardiyaOku;
+	}
+
+	public Boolean getVardiyaOkuDurum() {
+		return vardiyaOkuDurum;
+	}
+
+	public void setVardiyaOkuDurum(Boolean vardiyaOkuDurum) {
+		this.vardiyaOkuDurum = vardiyaOkuDurum;
 	}
 }
