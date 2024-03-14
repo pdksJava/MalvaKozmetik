@@ -2067,6 +2067,45 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	}
 
 	/**
+	 * @return
+	 */
+	public String fillOrganizasyonAgaciList() {
+		if (personelList == null || personelList.isEmpty())
+			fillPersonelList();
+		rootNodeForAllPersonelView = null;
+		return "";
+
+	}
+
+	@Transactional
+	public String deletePersonelData() {
+		Personel personel = getInstance();
+		List<Object[]> list = null;
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		map.put("personelNo", personel.getPdksSicilNo());
+		if (session != null)
+			map.put(PdksEntityController.MAP_KEY_SESSION, session);
+		StringBuffer sp = new StringBuffer("SP_PERSONEL_NO_DELETE");
+		try {
+			list = pdksEntityController.execSPList(map, sp, null);
+		} catch (Exception e) {
+		}
+		if (list == null)
+			list = new ArrayList();
+		else if (!list.isEmpty()) {
+			Object[] objects = list.get(0);
+			Object perId = objects[0];
+			if (perId != null) {
+				PdksUtil.addMessageInfo(personel.getPdksSicilNo() + " " + personel.getAdSoyad() + " personel bilgileri silinmiştir.");
+				session.clear();
+				fillPersonelKGSList();
+			} else
+				PdksUtil.addMessageWarn(personel.getPdksSicilNo() + " " + personel.getAdSoyad() + " personel bilgileri silinemez!");
+		}
+		return "";
+	}
+
+	/**
 	 * 
 	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
@@ -2076,6 +2115,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
+		rootNodeForAllPersonelView = null;
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
 		yoneticiRolVarmi = ortakIslemler.yoneticiRolKontrol(session);
 		fillEkSahaTanim();

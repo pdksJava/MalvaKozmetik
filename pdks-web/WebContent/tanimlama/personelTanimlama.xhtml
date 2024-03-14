@@ -57,9 +57,21 @@
 											value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Yeni Personel Güncelle" />
 									</ui:fragment>
 								</ui:fragment>
+
 							</h:panelGrid>
 						</s:decorate>
 					</h:panelGrid>
+					<ui:fragment rendered="#{userHome.hasPermission('organizasyonSemasi','view')}">
+						<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="organizasyonAragiLink" action="#{pdksPersonelHome.fillOrganizasyonAgaciList()}"
+							reRender="organizasyonPanel" oncomplete="#{rich:component('organizasyonPanel')}.show()">
+							<h:graphicImage value="/img/onetomany.gif" style="border:0" reRender="organizasyonDegisti" />
+						</a4j:commandLink>
+						<rich:toolTip for="organizasyonAragiLink">
+							<SPAN style="color: blue; font-size: 12px;"> <B>Organizasyon Ağacı Göster</B>
+							</SPAN>
+						</rich:toolTip>
+
+					</ui:fragment>
 				</a4j:outputPanel>
 			</rich:panel>
 			<a4j:outputPanel id="pdksPersonelList">
@@ -696,6 +708,67 @@
 			</h:form>
 		</rich:modalPanel>
 
+		<rich:modalPanel id="deletePersonelPanel" autosized="true" width="740">
+			<f:facet name="header">
+				<h:outputText value="Personel Bilgisi Silme" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<rich:panel header="#{pdksPersonelHome.instance.pdksSicilNo} #{pdksPersonelHome.instance.adSoyad}">
+						<table width="40%" align="center">
+							<tbody>
+								<tr>
+									<td align="center" width="50%"><a4j:commandLink status="ajaxStatus" ajaxSingle="true" action="#{pdksPersonelHome.deletePersonelData()}"
+											oncomplete="#{rich:component('deletePersonelPanel')}.hide();#{rich:component('editPanel')}.hide();" reRender="pdksPersonelList,aramaSonuc">
+											<h:graphicImage value="/img/delete.png" id="deletePersonel" height="24px" />
+											<rich:toolTip for="deletePersonel">
+												<SPAN style="color: green; font-size: 14px;"><B>Personel Bilgisi Silme</B></SPAN>
+											</rich:toolTip>
+										</a4j:commandLink></td>
+									<td align="center" width="50%"><a4j:commandLink status="ajaxStatus" oncomplete="#{rich:component('deletePersonelPanel')}.hide();">
+											<h:graphicImage value="/img/close.png" id="closeDeletePersonel" height="24px" />
+											<rich:toolTip for="closeDeletePersonel">
+												<SPAN style="color: red; font-size: 14px;"><B>Personel Bilgisi Silinmesin</B></SPAN>
+											</rich:toolTip>
+										</a4j:commandLink></td>
+								</tr>
+							</tbody>
+						</table>
+					</rich:panel>
+				</a4j:outputPanel>
+			</h:form>
+		</rich:modalPanel>
+
+		<rich:modalPanel id="organizasyonPanel" autosized="true" width="740">
+			<f:facet name="header">
+				<h:outputText value="#{ortakIslemler.getMenuAdi('organizasyonSemasi')}" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" styleClass="hidelink">
+							<a4j:support event="onclick" oncomplete="#{rich:component('organizasyonPanel')}.hide();" ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<rich:panel>
+					<ui:include src="/rapor/includes/organizasyonAgaci.xhtml" />
+				</rich:panel>
+
+			</h:form>
+		</rich:modalPanel>
 
 		<rich:modalPanel id="editPanel" autosized="true" width="740">
 			<f:facet name="header">
@@ -1218,6 +1291,7 @@
 									</h:selectBooleanCheckbox>
 								</s:decorate>
 
+
 								<a4j:commandButton value="#{pdksPersonelHome.eskiKullanici.username} Güncelle" action="#{pdksPersonelHome.saveKullanici()}"
 									rendered="#{pdksPersonelHome.eskiKullanici!=null}" reRender="pdksPersonelList"
 									oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
@@ -1383,13 +1457,24 @@
 					<!--  -->
 					<a4j:outputPanel id="butonlar">
 						<ui:fragment rendered="#{authenticatedUser.admin or pdksPersonelHome.instance.kullanici.admin==false}">
-							<ui:fragment
-								rendered="#{ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView) or pdksPersonelHome.personelERPGuncelleme=='1'}">
-								<a4j:commandButton status="ajaxStatus" ajaxSingle="true" value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle"
-									action="#{pdksPersonelHome.erpVeriGuncelle()}" reRender="personelBilgi" rendered="#{pdksPersonelHome.instance.sirket.erp}" />
-							</ui:fragment>
-							<a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelHome.save}" reRender="pdksPersonelList,roller"
-								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+							<table width="50%">
+								<tr>
+									<ui:fragment
+										rendered="#{ortakIslemler.getParameterKeyHasStringValue(ortakIslemler.parametrePersonelERPTableView) or pdksPersonelHome.personelERPGuncelleme=='1'}">
+
+										<td><a4j:commandButton status="ajaxStatus" ajaxSingle="true" value="#{ortakIslemler.getParameterKey('uygulamaBordro')} Güncelle"
+												action="#{pdksPersonelHome.erpVeriGuncelle()}" reRender="personelBilgi" rendered="#{pdksPersonelHome.instance.sirket.erp}" /></td>
+									</ui:fragment>
+									<td><a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelHome.save}" reRender="pdksPersonelList,roller"
+											oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" /></td>
+									<ui:fragment rendered="#{ortakIslemler.getParameterKey('deletePersonel')=='1' and pdksPersonelHome.instance.id!=null and authenticatedUser.admin}">
+										<td><a4j:commandButton status="ajaxStatus" value="Sil" reRender="deletePersonelPanel"
+												oncomplete="#{rich:component('deletePersonelPanel')}.show();" /></td>
+									</ui:fragment>
+								</tr>
+							</table>
+
+
 						</ui:fragment>
 					</a4j:outputPanel>
 

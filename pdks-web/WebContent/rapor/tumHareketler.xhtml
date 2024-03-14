@@ -12,62 +12,72 @@
 
 			<rich:panel header="#{ortakIslemler.getMenuUserAdi(tumHareketlerHome.session,'tumHareketler')}">
 				<a4j:outputPanel id="hareketGirisForm">
-					<h:panelGrid columns="2">
+					<h:panelGrid columns="1">
+						<h:panelGrid columns="2">
 
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Başlangıç Tarihi</ui:define>
-							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{tumHareketlerHome.basTarih}" required="true"
-								requiredMessage="Tarih giriniz" />
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Bitiş Tarihi</ui:define>
-							<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{tumHareketlerHome.bitTarih}" required="true"
-								requiredMessage="Tarih giriniz" />
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Ad</ui:define>
-							<h:inputText value="#{tumHareketlerHome.adi}" maxlength="15" />
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Soyad</ui:define>
-							<h:inputText value="#{tumHareketlerHome.soyadi}" maxlength="15" />
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
-							<h:inputText value="#{tumHareketlerHome.sicilNo}" maxlength="11" />
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and tumHareketlerHome.departmanList.size()>1}">
-							<ui:define name="label">PDKS Departman</ui:define>
-							<h:selectOneMenu value="#{tumHareketlerHome.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
-								<f:selectItem itemLabel="Lütfen seçiniz" />
-								<f:selectItems value="#{tumHareketlerHome.departmanList}" />
-								<a4j:support event="onchange" action="#{tumHareketlerHome.fillSirketList()}" ajaxSingle="true" reRender="sirketler" />
-							</h:selectOneMenu>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Başlangıç Tarihi</ui:define>
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{tumHareketlerHome.basTarih}" required="true"
+									requiredMessage="Tarih giriniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Bitiş Tarihi</ui:define>
+								<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{tumHareketlerHome.bitTarih}" required="true"
+									requiredMessage="Tarih giriniz" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Ad</ui:define>
+								<h:inputText value="#{tumHareketlerHome.adi}" maxlength="15" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Soyad</ui:define>
+								<h:inputText value="#{tumHareketlerHome.soyadi}" maxlength="15" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">#{ortakIslemler.personelNoAciklama()}</ui:define>
+								<h:inputText value="#{tumHareketlerHome.sicilNo}" maxlength="11" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml"
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and tumHareketlerHome.departmanList.size()>1}">
+								<ui:define name="label">PDKS Departman</ui:define>
+								<h:selectOneMenu value="#{tumHareketlerHome.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{tumHareketlerHome.departmanList}" />
+									<a4j:support event="onchange" action="#{tumHareketlerHome.fillSirketList()}" ajaxSingle="true" reRender="sirketler" />
+								</h:selectOneMenu>
 
 
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}" id="sirketler">
-							<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
-							<h:selectOneMenu id="sirketSec" value="#{tumHareketlerHome.sirketId}" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
-								<f:selectItem itemLabel="Lütfen seçiniz" />
-								<f:selectItems value="#{tumHareketlerHome.sirketList}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}" id="sirketler">
+								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
+								<h:selectOneMenu id="sirketSec" value="#{tumHareketlerHome.sirketId}" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
+									<f:selectItem itemLabel="Lütfen seçiniz" />
+									<f:selectItems value="#{tumHareketlerHome.sirketList}" />
 
-							</h:selectOneMenu>
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
-							<ui:define name="label">PDKS Kapilari</ui:define>
-							<h:selectBooleanCheckbox value="#{tumHareketlerHome.pdksKapi}" />
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
-							<ui:define name="label">PDKS Hariç Kapilari</ui:define>
-							<h:selectBooleanCheckbox value="#{tumHareketlerHome.pdksHaricKapi}" />
-						</s:decorate>
+								</h:selectOneMenu>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+								<ui:define name="label">PDKS Kapilari</ui:define>
+								<h:selectBooleanCheckbox value="#{tumHareketlerHome.pdksKapi}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+								<ui:define name="label">PDKS Hariç Kapilari</ui:define>
+								<h:selectBooleanCheckbox value="#{tumHareketlerHome.pdksHaricKapi}" />
+							</s:decorate>
+							<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK or authenticatedUser.sistemYoneticisi}">
+								<s:decorate template="/layout/edit.xhtml"
+									rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKeyHasStringValue('hareketVardiyaOku')}">
+									<ui:define name="label">Vardiya Bilgisi Oku</ui:define>
+									<h:selectBooleanCheckbox value="#{tumHareketlerHome.vardiyaOkuDurum}" />
+								</s:decorate>
+							</ui:fragment>
+
+
+
+						</h:panelGrid>
 						<s:decorate template="/layout/edit.xhtml">
 							<a4j:commandButton status="ajaxStatus" value="Listele" action="#{tumHareketlerHome.fillHareketList}" reRender="hareketPanel" />
 						</s:decorate>
-
-
 					</h:panelGrid>
 				</a4j:outputPanel>
 			</rich:panel>
@@ -75,24 +85,30 @@
 			<a4j:region>
 				<rich:panel id="hareketPanel">
 					<h:panelGrid columns="1" width="800">
-						<rich:dataTable rowClasses="acik,koyu" value="#{tumHareketlerHome.hareketList}" var="hareketler" rows="25" rowKeyVar="row" id="hareketTable"
+						<rich:dataTable rowClasses="acik,koyu" value="#{tumHareketlerHome.hareketList}" var="hareketler" rows="50" rowKeyVar="row" id="hareketTable"
 							rendered="#{not empty tumHareketlerHome.hareketList and tumHareketlerHome.hareketList.size() le 65000}">
 							<f:facet name="header">
 								<h:outputText value="Tum Kapı Hareketleri" />
 							</f:facet>
-							<rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
-									<h:outputText value="Zaman " />
+									<h:outputText value="Tarih " />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareketler.zaman)}" />
+								<h:outputText value="#{authenticatedUser.dateFormatla(hareketler.zaman)}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="text-align:center">
+								<f:facet name="header">
+									<h:outputText value="Saat" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.timeFormatla(hareketler.zaman)}" />
+							</rich:column>
+							<rich:column style="text-align:center">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 								</f:facet>
 								<h:outputText value="#{hareketler.personel.sicilNo}" />
 							</rich:column>
-							<rich:column filterBy="#{hareketler.personel.pdksPersonel.sirket.ad}" filterEvent="onkeyup">
+							<rich:column style="width:autostretch ;white-space: nowrap;" filterBy="#{hareketler.personel.pdksPersonel.sirket.ad}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.sirketAciklama()}" />
 								</f:facet>
@@ -100,14 +116,14 @@
 							</rich:column>
 
 
-							<rich:column filterBy="#{hareketler.personel.adSoyad}" filterEvent="onkeyup">
+							<rich:column filterBy="#{hareketler.personel.adSoyad}" style="width:autostretch ;white-space: nowrap;" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="Adı Soyadı" />
 								</f:facet>
 								<h:outputText value="#{hareketler.personel.adSoyad}" />
 							</rich:column>
 
-							<rich:column filterBy="#{hareketler.kapiView.aciklama}" filterEvent="onkeyup">
+							<rich:column filterBy="#{hareketler.kapiView.aciklama}" style="width:autostretch ;white-space: nowrap;" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="Kapi" />
 
@@ -115,20 +131,65 @@
 
 								<h:outputText value="#{hareketler.kapiView.aciklama}" />
 							</rich:column>
-							<rich:column rendered="#{authenticatedUser.IK or authenticatedUser.admin}">
+							<rich:column style="width:autostretch ;white-space: nowrap;">
+								<f:facet name="header">
+									<h:outputText value="Kapi Tipi" />
+
+								</f:facet>
+								<ui:fragment rendered="#{hareketler.kapiView.kapi!=null }">
+									<h:outputText value="#{hareketler.kapiView.kapi.tipi.aciklama}" />
+								</ui:fragment>
+							</rich:column>
+							<c:if test="#{tumHareketlerHome.vardiyaOku}">
+								<rich:column style="text-align:center">
+									<f:facet name="header">
+										<h:outputText value="Vardiya Tarihi" />
+									</f:facet>
+									<ui:fragment rendered="#{hareketler.vardiyaGun!=null }">
+ 										#{authenticatedUser.dateFormatla(hareketler.vardiyaGun.vardiyaDate )}
+ 									</ui:fragment>
+								</rich:column>
+								<rich:column style="text-align:center">
+									<f:facet name="header">
+										<h:outputText value="Vardiya Adı" />
+									</f:facet>
+									<ui:fragment rendered="#{hareketler.vardiyaGun!=null}">
+	 									#{hareketler.vardiyaGun.vardiya.kisaAdi}</ui:fragment>
+								</rich:column>
+								<rich:column style="text-align:center">
+									<f:facet name="header">
+										<h:outputText value="Vardiya Başlama Zamanı" />
+									</f:facet>
+									<ui:fragment rendered="#{hareketler.vardiyaGun!=null and hareketler.vardiyaGun.vardiya.calisma}">
+										 
+										#{authenticatedUser.timeFormatla(hareketler.vardiyaGun.islemVardiya.vardiyaBasZaman )}
+ 									</ui:fragment>
+								</rich:column>
+
+								<rich:column style="text-align:center">
+									<f:facet name="header">
+										<h:outputText value="Vardiya Bitiş Zamanı" />
+									</f:facet>
+									<ui:fragment rendered="#{hareketler.vardiyaGun!=null and hareketler.vardiyaGun.vardiya.calisma}">
+ 										#{authenticatedUser.timeFormatla(hareketler.vardiyaGun.islemVardiya.vardiyaBitZaman )}
+  									</ui:fragment>
+								</rich:column>
+							</c:if>
+
+							<rich:column rendered="#{authenticatedUser.IK or authenticatedUser.admin}" style="width:autostretch ;white-space: nowrap;">
 								<f:facet name="header">
 									<h:outputText value="KGS Şirket" />
 								</f:facet>
 								<h:outputText value="#{hareketler.kapiSirket.aciklama}" />
 							</rich:column>
-							<rich:column>
+							<rich:column style="width:autostretch ;white-space: nowrap;">
 								<f:facet name="header">
 									<h:outputText value="#{tumHareketlerHome.bolumAciklama}" />
 								</f:facet>
 								<h:outputText value="#{hareketler.personel.pdksPersonel.ekSaha3.aciklama}" />
 							</rich:column>
 							<c:if test="#{tumHareketlerHome.guncellenmis}">
-								<rich:column>
+								<rich:column style="text-align:center">
 									<f:facet name="header">
 										<h:outputText value="Orjinal Zamanı " />
 									</f:facet>
