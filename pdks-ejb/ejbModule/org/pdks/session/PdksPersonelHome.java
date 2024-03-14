@@ -2162,7 +2162,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	public void fillPersonelViewTree() {
 		try {
 			rootNodeForAllPersonelView = new TreeNodeImpl<PersonelView>();
-			disableAdviseNodeOpened = personelList.isEmpty();
+			disableAdviseNodeOpened = !personelList.isEmpty();
 			List<PersonelView> list = PdksUtil.sortObjectStringAlanList(personelList, "getAdSoyad", null);
 			HashMap<String, LinkedHashMap<Long, PersonelView>> sirketMap = new HashMap<String, LinkedHashMap<Long, PersonelView>>();
 			HashMap<Long, PersonelView> personelDataMap = new HashMap<Long, PersonelView>();
@@ -3719,16 +3719,17 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	}
 
 	public Boolean adviseNodeOpened(UITree tree) {
-		if (disableAdviseNodeOpened)
-			return Boolean.FALSE;
-		Object rowKey = tree.getRowKey();
-		TreeNode<PersonelView> selectedNode = tree.getModelTreeNode(rowKey);
-		PersonelView personelView = (PersonelView) selectedNode.getData();
-		boolean currentlyNodeSelected = personelView.getId() == null || personelView.getId() > 0L;
-		if (currentlyNodeSelected) {
-			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
+		// if (disableAdviseNodeOpened)
+		// return Boolean.FALSE;
+		// Object rowKey = tree.getRowKey();
+		// TreeNode<PersonelView> selectedNode = tree.getModelTreeNode(rowKey);
+		// PersonelView personelView = (PersonelView) selectedNode.getData();
+		// boolean currentlyNodeSelected = personelView.getId() == null || personelView.getId() > 0L;
+		// if (currentlyNodeSelected) {
+		// return Boolean.TRUE;
+		// }
+		// return Boolean.FALSE;
+		return disableAdviseNodeOpened == false;
 	}
 
 	/**
