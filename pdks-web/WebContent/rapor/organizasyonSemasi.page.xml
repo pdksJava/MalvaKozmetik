@@ -2,7 +2,7 @@
 <page view-id="#{menuItemConstant.organizasyonSemasi}" xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
 	<restrict>#{userHome.hasPermission('organizasyonSemasi','view')}</restrict>
 	<rewrite pattern="/organizasyonSemasi" />
-	<action execute="#{pdksPersonelHome.fillPersonelList}" on-postback="false" />
+	<action execute="#{pdksPersonelHome.fillOrganizasyonAgaciList}" on-postback="false" />
 	<navigation>
 
 		<rule if-outcome="organizasyonSemasi">
