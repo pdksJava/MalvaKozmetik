@@ -44,8 +44,10 @@
 						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.modelGoster}">
 							<th style="width: 30px"><h:outputText value="#{ortakIslemler.calismaModeliAciklama()}" /></th>
 						</ui:fragment>
-						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiIzinKullan}">
+						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiOde}">
 							<th style="width: 30px"><h:outputText value="FM Öde" /></th>
+						</ui:fragment>
+						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiIzinKullan}">
 							<th style="width: 30px"><h:outputText value="FM İzin Kullan" /></th>
 						</ui:fragment>
 						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.gebeGoster}">
@@ -421,7 +423,7 @@
 
 									</ui:fragment></td>
 							</ui:fragment>
-							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiIzinKullan}">
+							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiOde}">
 								<td class="#{aylikPuantaj.trClass}" style="width: 60px" align="center"><ui:fragment
 										rendered="#{aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiOde==false}">
 										<h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiOde)}" />
@@ -429,6 +431,8 @@
 										<SPAN style="font-weight: bolder;"> <h:outputText
 												value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiOde)}" /></SPAN>
 									</ui:fragment></td>
+							</ui:fragment>
+							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiIzinKullan}">
 								<td class="#{aylikPuantaj.trClass}" style="width: 60px" align="center"><ui:fragment
 										rendered="#{aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiIzinKullan==false}">
 										<h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiIzinKullan)}" />

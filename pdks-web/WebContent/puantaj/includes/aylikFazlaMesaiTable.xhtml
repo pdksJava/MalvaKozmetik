@@ -152,7 +152,7 @@
 
 				</ui:fragment>
 			</rich:column>
-			<c:if test="#{fazlaMesaiHesaplaHome.fazlaMesaiIzinKullan}">
+			<c:if test="#{fazlaMesaiHesaplaHome.fazlaMesaiOde}">
 
 				<rich:column class="#{aylikPuantaj.trSonucClass}" style="width: 30px">
 					<f:facet name="header">
@@ -166,6 +166,8 @@
 								value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiOde)}" /></SPAN>
 					</ui:fragment>
 				</rich:column>
+			</c:if>
+			<c:if test="#{fazlaMesaiHesaplaHome.fazlaMesaiIzinKullan}">
 				<rich:column class="#{aylikPuantaj.trSonucClass}" style="width: 30px">
 					<f:facet name="header">
 						<h:outputText value="FM İzin Kullan" />

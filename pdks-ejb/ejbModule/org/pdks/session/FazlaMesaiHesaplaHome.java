@@ -150,7 +150,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private DenklestirmeAy denklestirmeAy, gecenAy = null;
 
-	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepSil = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
+	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, fazlaMesaiTalepSil = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
 	private Boolean sutIzniGoster = Boolean.FALSE, gebeGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
 	private Boolean kesilenSureGoster = Boolean.FALSE, checkBoxDurum, yoneticiERP1Kontrol = Boolean.FALSE;
 	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
@@ -963,6 +963,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
 		fazlaMesaiIzinKullan = Boolean.FALSE;
+		fazlaMesaiOde = Boolean.FALSE;
 		sirketIzinGirisDurum = Boolean.FALSE;
 		yemekList = null;
 		bugun = new Date();
@@ -1832,6 +1833,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					}
 					if (!fazlaMesaiIzinKullan)
 						fazlaMesaiIzinKullan = personelDenklestirme.getFazlaMesaiIzinKullan() != null && personelDenklestirme.getFazlaMesaiIzinKullan();
+					if (!fazlaMesaiOde)
+						fazlaMesaiOde = personelDenklestirme.getFazlaMesaiOde() != null && personelDenklestirme.getFazlaMesaiOde();
+
 					double resmiTatilToplami = puantaj.getResmiTatilToplami();
 					double kesilenSure = personelDenklestirme.getKesilenSure();
 					int izinsizGun = 0;
@@ -4832,10 +4836,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (kimlikNoGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kimlikNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
-		if (fazlaMesaiIzinKullan) {
+		if (fazlaMesaiOde)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM Ödeme");
+		if (fazlaMesaiIzinKullan)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM İzin Kullansın");
-		}
+
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(aylikPuantajDefault.getIlkGun());
 		CreationHelper factory = wb.getCreationHelper();
@@ -5068,10 +5073,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(kimlikNo);
 					}
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
-					if (fazlaMesaiIzinKullan) {
+					if (fazlaMesaiOde)
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(userLogin.getYesNo(personelDenklestirme.getFazlaMesaiOde()));
+					if (fazlaMesaiIzinKullan)
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(userLogin.getYesNo(personelDenklestirme.getFazlaMesaiIzinKullan()));
-					}
 
 					List vardiyaList = aylikPuantaj.getAyinVardiyalari();
 
@@ -7032,6 +7037,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setYasalFazlaCalismaAsanSaat(Boolean yasalFazlaCalismaAsanSaat) {
 		this.yasalFazlaCalismaAsanSaat = yasalFazlaCalismaAsanSaat;
+	}
+
+	public Boolean getFazlaMesaiOde() {
+		return fazlaMesaiOde;
+	}
+
+	public void setFazlaMesaiOde(Boolean fazlaMesaiOde) {
+		this.fazlaMesaiOde = fazlaMesaiOde;
 	}
 
 }
