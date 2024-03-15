@@ -2072,9 +2072,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	public String fillOrganizasyonAgaciList() {
 		fillPersonelList();
 		fillPersonelViewTree();
-
 		return "";
-
 	}
 
 	@Transactional
@@ -2272,7 +2270,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					Personel yoneticiPer = new Personel();
 					yoneticiPer.setPdksSicilNo("Yönetici Tanımsız");
 					yoneticiSirketView.setPdksPersonel(yoneticiPer);
-
+					yoneticiSirketView.setId(-new Date().getTime());
 					PersonelView personelSirketView = new PersonelView();
 					Personel sirketPer = new Personel();
 					sirketPer.setPdksSicilNo(aciklamaMap.get(key));
@@ -2306,8 +2304,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						for (Iterator iterator = yoneticiList.iterator(); iterator.hasNext();) {
 							Long id = (Long) iterator.next();
 							PersonelView personelYonetici = personelDataMap.get(id);
-							if (personelYonetici.getSicilNo().equals("2262") || personelYonetici.getSicilNo().equals("2221"))
-								logger.debug("");
 							TreeNode<PersonelView> nodeYonetici = nodeMap.get(personelYonetici.getPdksPersonelId());
 							if (nodeYonetici.getParent() == null) {
 								if (personelYonetici.getUstPersonelView() != null) {
@@ -2319,7 +2315,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 								} else {
 									if (personelYonetici.getPdksPersonel().getYoneticisi() == null) {
 										if (yoneticiYokNode.getParent() == null)
-											sirketImpl.addChild(-1, yoneticiYokNode);
+											sirketImpl.addChild(yoneticiYokNode.getData().getId(), yoneticiYokNode);
 
 										yoneticiYokNode.addChild(id, nodeYonetici);
 									} else if (sayac > 3)
@@ -2334,14 +2330,43 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							}
 						}
 					}
+					sortTree(sirketImpl);
+
 				}
 			}
 			personelDataMap = null;
 			sirketMap = null;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 
+	}
+
+	/**
+	 * @param parentNode
+	 */
+	private void sortTree(TreeNode<PersonelView> parentNode) {
+		List<Liste> list = new ArrayList<Liste>();
+		Iterator<Map.Entry<java.lang.Object, TreeNode<PersonelView>>> iterable = parentNode.getChildren();
+		while (iterable.hasNext()) {
+			Map.Entry<Object, TreeNode<PersonelView>> map = (Map.Entry<Object, TreeNode<PersonelView>>) iterable.next();
+			TreeNode<PersonelView> child = map.getValue();
+			Object key = map.getKey();
+			Liste liste = new Liste(key, child);
+			PersonelView personelView = child.getData();
+			liste.setSelected((personelView.getPdksPersonelId() != null ? personelView.getAdSoyad() : "") + "_" + personelView.getId());
+			list.add(liste);
+			if (!personelView.getAltPersoneller().isEmpty())
+				sortTree(child);
+		}
+		if (list.size() > 1) {
+			for (Liste liste : list)
+				parentNode.removeChild(liste.getId());
+			list = PdksUtil.sortObjectStringAlanList(list, "getSelected", null);
+			for (Liste liste : list)
+				parentNode.addChild(liste.getId(), (TreeNode<PersonelView>) liste.getValue());
+		}
+		list = null;
 	}
 
 	/**
