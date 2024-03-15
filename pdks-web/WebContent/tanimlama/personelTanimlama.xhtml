@@ -61,10 +61,10 @@
 							</h:panelGrid>
 						</s:decorate>
 					</h:panelGrid>
-					<ui:fragment rendered="#{userHome.hasPermission('organizasyonSemasi','view')}">
+					<ui:fragment rendered="#{pdksPersonelHome.organizasyonSemasiGoster or userHome.hasPermission('organizasyonSemasi','view')}">
 						<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="organizasyonAragiLink" action="#{pdksPersonelHome.fillOrganizasyonAgaciList()}"
 							reRender="organizasyonPanel" oncomplete="#{rich:component('organizasyonPanel')}.show()">
-							<h:graphicImage value="/img/onetomany.gif" style="border:0" reRender="organizasyonDegisti" />
+							<h:graphicImage value="/img/onetomany.gif" height="24px" style="border:0" reRender="organizasyonDegisti" />
 						</a4j:commandLink>
 						<rich:toolTip for="organizasyonAragiLink">
 							<SPAN style="color: blue; font-size: 12px;"> <B>Organizasyon Ağacı Göster</B>
@@ -1467,9 +1467,11 @@
 									</ui:fragment>
 									<td><a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelHome.save}" reRender="pdksPersonelList,roller"
 											oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" /></td>
-									<ui:fragment rendered="#{ortakIslemler.getParameterKey('deletePersonel')=='1' and pdksPersonelHome.instance.id!=null and authenticatedUser.admin}">
-										<td><a4j:commandButton status="ajaxStatus" value="Sil" reRender="deletePersonelPanel"
-												oncomplete="#{rich:component('deletePersonelPanel')}.show();" /></td>
+									<ui:fragment rendered="#{ortakIslemler.getParameterKey('deletePersonel')=='1' and pdksPersonelHome.instance.id!=null}">
+										<ui:fragment rendered="#{ pdksPersonelHome.instance.personelKGS.id>0 and authenticatedUser.admin}">
+											<td><a4j:commandButton status="ajaxStatus" value="Sil" reRender="deletePersonelPanel"
+													oncomplete="#{rich:component('deletePersonelPanel')}.show();" /></td>
+										</ui:fragment>
 									</ui:fragment>
 								</tr>
 							</table>

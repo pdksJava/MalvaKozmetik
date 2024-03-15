@@ -12,7 +12,8 @@
 						<a4j:support event="onclick" action="#{ortakIslemler.emtpyAjaxFunction()}" reRender="organizasyonDegisti" status="ajaxStatus" ajaxSingle="true" />
 					</h:selectBooleanCheckbox>
 				</s:decorate>
-				<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="organizasyonLink" action="#{pdksPersonelHome.fillPersonelList()}" reRender="editPanel">
+				<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="organizasyonLink" action="#{pdksPersonelHome.fillOrganizasyonAgaciList()}"
+					reRender="editPanel">
 					<h:graphicImage value="/img/onetomany.gif" style="border:0" reRender="organizasyonDegisti" />
 				</a4j:commandLink>
 				<rich:toolTip for="organizasyonLink">
@@ -69,8 +70,12 @@
 					</DIV>
 					<ui:fragment rendered="#{item.pdksPersonel.id!=null and item.pdksPersonel.yoneticisi!=null}">
 						<rich:toolTip for="per#{item.id}">
-							<SPAN style="color: green; font-size: 12px;"> <B><h:outputText value="#{item.pdksPersonel.sirket.ad}" /></B> <BR></BR> <BR></BR> <B>Görevi
-									: </B> <h:outputText value="#{item.pdksPersonel.gorevTipi.aciklama}" />
+							<SPAN style="color: green; font-size: 12px;"> <B><h:outputText value="#{item.pdksPersonel.sirket.ad}" /></B> <BR></BR> <ui:fragment
+									rendered="#{not empty item.altPersoneller and  item.id>0}">
+									<BR></BR>
+									<B>#{ortakIslemler.yoneticiAciklama()} : </B>
+									<h:outputText value="#{item.pdksPersonel.yoneticisi.adSoyad}" />
+								</ui:fragment> <BR></BR> <B>Görevi : </B> <h:outputText value="#{item.pdksPersonel.gorevTipi.aciklama}" />
 							</SPAN>
 						</rich:toolTip>
 					</ui:fragment>

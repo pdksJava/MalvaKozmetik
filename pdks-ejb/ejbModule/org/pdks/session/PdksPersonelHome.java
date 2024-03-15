@@ -170,7 +170,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private Boolean emailCCDurum = Boolean.FALSE, emailBCCDurum = Boolean.FALSE, taseronKulaniciTanimla = Boolean.FALSE, manuelTanimla = Boolean.FALSE, ikinciYoneticiManuelTanimla = Boolean.FALSE;
 	private Boolean onaysizIzinKullanilir = Boolean.FALSE, departmanGoster = Boolean.FALSE, kartNoGoster = Boolean.FALSE, ikinciYoneticiIzinOnayla = Boolean.FALSE, izinGirisiVar = Boolean.FALSE, dosyaGuncellemeYetki = Boolean.FALSE;
 	private Boolean ekSaha1Disable, ekSaha2Disable, ekSaha4Disable, transferAciklamaCiftKontrol, bakiyeIzinGoster = Boolean.FALSE, gebeSecim = Boolean.FALSE, personelTipiGoster = Boolean.FALSE;
-	public boolean disableAdviseNodeOpened;
+	public Boolean disableAdviseNodeOpened, organizasyonSemasiGoster = Boolean.FALSE;
 	private PersonelExtra personelExtra;
 	private TreeMap<Long, PersonelKGS> personelKGSMap;
 	private int COL_SICIL_NO, COL_ADI, COL_SOYADI, COL_SIRKET_KODU, COL_SIRKET_ADI, COL_TESIS_KODU, COL_TESIS_ADI, COL_GOREV_KODU, COL_GOREVI, COL_BOLUM_KODU, COL_BOLUM_ADI;
@@ -2070,9 +2070,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	 * @return
 	 */
 	public String fillOrganizasyonAgaciList() {
-		if (personelList == null || personelList.isEmpty())
-			fillPersonelList();
-		rootNodeForAllPersonelView = null;
+		fillPersonelList();
+		fillPersonelViewTree();
+
 		return "";
 
 	}
@@ -2115,7 +2115,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
-		rootNodeForAllPersonelView = null;
+
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
 		yoneticiRolVarmi = ortakIslemler.yoneticiRolKontrol(session);
 		fillEkSahaTanim();
@@ -2199,10 +2199,21 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		rootNodeForAllPersonelView = null;
 	}
 
-	public void fillPersonelViewTree() {
+	/**
+	 * @param event
+	 */
+	public void setDisableAdviseNodeOpened(org.richfaces.event.NodeExpandedEvent event) {
+		this.disableAdviseNodeOpened = true;
+	}
+
+	/**
+	 * 
+	 */
+	private void fillPersonelViewTree() {
 		try {
 			rootNodeForAllPersonelView = new TreeNodeImpl<PersonelView>();
-			disableAdviseNodeOpened = !personelList.isEmpty();
+			if (disableAdviseNodeOpened == null)
+				disableAdviseNodeOpened = !personelList.isEmpty();
 			List<PersonelView> list = PdksUtil.sortObjectStringAlanList(personelList, "getAdSoyad", null);
 			HashMap<String, LinkedHashMap<Long, PersonelView>> sirketMap = new HashMap<String, LinkedHashMap<Long, PersonelView>>();
 			HashMap<Long, PersonelView> personelDataMap = new HashMap<Long, PersonelView>();
@@ -2484,6 +2495,17 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			list = ortakIslemler.getPersonelViewByPersonelKGSList(pdksEntityController.getObjectBySQLList(sb, fields, PersonelKGS.class));
+			if (bos) {
+				bugun = PdksUtil.getDate(new Date());
+				for (Iterator<PersonelView> iterator = list.iterator(); iterator.hasNext();) {
+					PersonelView personelView = iterator.next();
+					PersonelKGS personelKGS = personelView.getPersonelKGS();
+					if (personelKGS != null) {
+						if (personelKGS.getKapiSirket() == null || personelKGS.getKapiSirket().getBitTarih().before(bugun))
+							iterator.remove();
+					}
+				}
+			}
 			if (!authenticatedUser.isAdmin() && !authenticatedUser.isIKAdmin() && authenticatedUser.getDepartman() != null) {
 				for (Iterator<PersonelView> iterator = list.iterator(); iterator.hasNext();) {
 					PersonelView personelView = iterator.next();
@@ -3102,6 +3124,19 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			updateValue = (authenticatedUser.isIK() == false && PdksUtil.getTestSunucuDurum()) || ortakIslemler.getParameterKeyHasStringValue(PersonelERPGuncelleme.PARAMETER_KEY + "Update");
 		dosyaGuncelleDurum();
 		yeniPersonelOlustur();
+
+	}
+
+	/**
+	 * 
+	 */
+	private void organizasyonDurumSorgula() {
+		String organizasyonSemasiGosterStr = ortakIslemler.getParameterKey("organizasyonSemasiGoster");
+		if (PdksUtil.hasStringValue(organizasyonSemasiGosterStr))
+			organizasyonSemasiGoster = (authenticatedUser.isIK() && organizasyonSemasiGosterStr.equalsIgnoreCase("IK")) || organizasyonSemasiGosterStr.equals("1");
+		else
+			organizasyonSemasiGoster = false;
+
 	}
 
 	/**
@@ -3146,7 +3181,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			yeniPersonelGuncelle = !list.isEmpty();
 			list = null;
 		}
-
+		organizasyonDurumSorgula();
 	}
 
 	/**
@@ -3769,7 +3804,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		// return Boolean.TRUE;
 		// }
 		// return Boolean.FALSE;
-		return disableAdviseNodeOpened == false;
+		return disableAdviseNodeOpened == null || disableAdviseNodeOpened == false;
 	}
 
 	/**
@@ -5458,25 +5493,28 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		this.iconLeaf = iconLeaf;
 	}
 
-	public boolean isDisableAdviseNodeOpened() {
+	public Boolean getDisableAdviseNodeOpened() {
 		return disableAdviseNodeOpened;
 	}
 
-	public void setDisableAdviseNodeOpened(boolean disableAdviseNodeOpened) {
-		this.disableAdviseNodeOpened = disableAdviseNodeOpened;
-	}
-
-	public void setDisableAdviseNodeOpened(org.richfaces.event.NodeExpandedEvent event) {
-		this.disableAdviseNodeOpened = true;
+	public void setDisableAdviseNodeOpened(Boolean value) {
+		this.disableAdviseNodeOpened = value;
 	}
 
 	public TreeNode<PersonelView> getRootNodeForAllPersonelView() {
-		if (rootNodeForAllPersonelView == null)
-			fillPersonelViewTree();
+
 		return rootNodeForAllPersonelView;
 	}
 
 	public void setRootNodeForAllPersonelView(TreeNode<PersonelView> rootNodeForAllPersonelView) {
 		this.rootNodeForAllPersonelView = rootNodeForAllPersonelView;
+	}
+
+	public Boolean getOrganizasyonSemasiGoster() {
+		return organizasyonSemasiGoster;
+	}
+
+	public void setOrganizasyonSemasiGoster(Boolean organizasyonSemasiGoster) {
+		this.organizasyonSemasiGoster = organizasyonSemasiGoster;
 	}
 }
