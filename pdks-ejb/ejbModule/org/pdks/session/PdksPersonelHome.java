@@ -2113,7 +2113,6 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
-
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
 		yoneticiRolVarmi = ortakIslemler.yoneticiRolKontrol(session);
 		fillEkSahaTanim();
@@ -2222,8 +2221,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 					personelDataMap.put(personelView.getPdksPersonelId(), personelView);
 
 			}
-			HashMap<String, String> aciklamaMap = new HashMap<String, String>();
 			String yoneticiSirketBazli = ortakIslemler.getParameterKey("yoneticiSirketBazli");
+			HashMap<String, String> aciklamaMap = new HashMap<String, String>();
 			for (PersonelView personelView : list) {
 				if (personelView.getPdksPersonel() != null) {
 					Personel personel = personelView.getPdksPersonel();
@@ -2241,25 +2240,49 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							aciklamaMap.put(key, sirket.getSirketGrup() != null ? sirket.getSirketGrup().getAciklama() : yoneticiSirketBazli);
 					}
 					LinkedHashMap<Long, PersonelView> perMap = sirketMap.containsKey(key) ? sirketMap.get(key) : new LinkedHashMap<Long, PersonelView>();
-					Personel yonetici = personel.getYoneticisi();
-					if (personelView.getSicilNo().equals("1154") || personelView.getSicilNo().equals("1097"))
+					if (personelView.getSicilNo().equals("0214") || personelView.getSicilNo().equals("0584"))
 						logger.debug("");
+					Personel yonetici = personel.getYoneticisi();
 					Long yoneticiId = yonetici != null ? personel.getYoneticisi().getId() : personel.getId();
 					if (yonetici != null && yonetici.getYoneticisi() != null && personel.getId().equals(yonetici.getYoneticisi().getId()))
 						yoneticiId = personel.getId();
-					if (personelDataMap.containsKey(yoneticiId) && personel.isCalisiyor()) {
+					if (personelDataMap.containsKey(yoneticiId)) {
 						PersonelView personelYonetici = personelDataMap.get(yoneticiId);
 						if (!personel.getId().equals(yoneticiId)) {
 							personelView.setUstPersonelView(personelYonetici);
+							if (personelView.getYoneticiDurum())
+								personelView.getYoneticiDurumKontrol();
 							personelYonetici.addAltPersonel(personelView);
 						}
-
 						if (perMap.isEmpty())
 							sirketMap.put(key, perMap);
 						perMap.put(yoneticiId, personelYonetici);
 					}
-
 				}
+			}
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				PersonelView personelView = (PersonelView) iterator.next();
+ 				if (personelView.getYoneticiDurum()) {
+					if (personelView.getUstPersonelView() != null)
+						personelView.getYoneticiDurumKontrol();
+				} else {
+					if (personelView.getUstPersonelView() != null) {
+						if (personelView.getUstPersonelView().getId() == null || !personelView.getUstPersonelView().getId().equals(personelView.getId())) {
+							for (Iterator iterator2 = personelView.getUstPersonelView().getAltPersoneller().iterator(); iterator2.hasNext();) {
+								PersonelView personelView2 = (PersonelView) iterator2.next();
+								if (personelView2.getId().equals(personelView.getId())) {
+									iterator2.remove();
+									iterator.remove();
+									break;
+								}
+
+							}
+
+						}
+
+					}
+				}
+
 			}
 			list = null;
 			if (!sirketMap.isEmpty()) {
@@ -2287,6 +2310,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 						Long yoneticiId = (Long) iterator.next();
 						PersonelView personelYonetici = personelDataMap.get(yoneticiId);
 						perMap.remove(yoneticiId);
+						if (personelYonetici.getYoneticiDurum() == false) {
+							iterator.remove();
+							continue;
+						}
+
 						TreeNode<PersonelView> nodeImpl = new TreeNodeImpl<PersonelView>();
 						nodeImpl.setData(personelYonetici);
 						List list2 = personelYonetici.getAltPersoneller();
@@ -2305,6 +2333,10 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 							Long id = (Long) iterator.next();
 							PersonelView personelYonetici = personelDataMap.get(id);
 							TreeNode<PersonelView> nodeYonetici = nodeMap.get(personelYonetici.getPdksPersonelId());
+							if (nodeYonetici == null) {
+								iterator.remove();
+								continue;
+							}
 							if (nodeYonetici.getParent() == null) {
 								if (personelYonetici.getUstPersonelView() != null) {
 									Long ustYoneticiId = personelYonetici.getUstPersonelView().getPdksPersonelId();
@@ -2338,6 +2370,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			sirketMap = null;
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 		}
 
 	}
@@ -2363,8 +2396,11 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			for (Liste liste : list)
 				parentNode.removeChild(liste.getId());
 			list = PdksUtil.sortObjectStringAlanList(list, "getSelected", null);
-			for (Liste liste : list)
-				parentNode.addChild(liste.getId(), (TreeNode<PersonelView>) liste.getValue());
+			for (Liste liste : list) {
+				TreeNode<PersonelView> child = (TreeNode<PersonelView>) liste.getValue();
+				parentNode.addChild(liste.getId(), child);
+			}
+
 		}
 		list = null;
 	}

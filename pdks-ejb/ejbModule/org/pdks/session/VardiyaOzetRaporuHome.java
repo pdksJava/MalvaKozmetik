@@ -81,7 +81,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private Tanim ekSaha4Tanim;
 	private Font fontRed;
-	private String bolumAciklama, sicilNo, altBolumGrupGoster = "ABG";
+	private String bolumAciklama, sicilNo;
 	private boolean tesisDurum = false, digerTesisDurum = false;
 	private Session session;
 
@@ -528,7 +528,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 							Long calismaSekliId = pdksVardiyaGun.getCalismaModeli() != null ? pdksVardiyaGun.getCalismaModeli().getId() : 0L;
 							Tanim bolum = personel.getEkSaha3(), altBolum = null;
 							Long bolumId = bolum != null ? bolum.getId() : 0L, altBolumId = 0L;
-							if (ekSaha4Tanim != null && bolumId.longValue() > 0L && bolum.getKodu().equals(altBolumGrupGoster)) {
+							if (ekSaha4Tanim != null && bolumId.longValue() > 0L && bolum.getKodu().equals(Personel.altBolumGrupGoster)) {
 								altBolum = personel.getEkSaha4();
 								altBolumId = altBolum != null ? altBolum.getId() : 0L;
 								altBolumVar = true;
@@ -653,7 +653,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 									calismaSekliId = 0L;
 								}
 								Long altBolumId = 0L;
-								if (ekSaha4Tanim != null && bolumId.longValue() > 0L && bolum.getKodu().equals(altBolumGrupGoster)) {
+								if (ekSaha4Tanim != null && bolumId.longValue() > 0L && bolum.getKodu().equals(Personel.altBolumGrupGoster)) {
 									altBolum = personel.getEkSaha4();
 									altBolumId = altBolum != null ? altBolum.getId() : 0L;
 									altBolumVar = true;
@@ -988,7 +988,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				Tanim bolum = personel.getEkSaha3();
 				if (bolum != null) {
 					aciklama = bolum.getAciklama();
-					if (ekSaha4Tanim != null && bolum.getKodu().equals(altBolumGrupGoster)) {
+					if (ekSaha4Tanim != null && bolum.getKodu().equals(Personel.altBolumGrupGoster)) {
 						Tanim altBolum = personel.getEkSaha4();
 						if (altBolum != null)
 							aciklama += " " + altBolum.getAciklama();
@@ -1200,7 +1200,7 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		String bolumAciklama = "";
 		if (bolum != null) {
 			bolumAciklama = bolum.getAciklama();
-			if (ekSaha4Tanim != null && bolum.getKodu().equals(altBolumGrupGoster)) {
+			if (ekSaha4Tanim != null && bolum.getKodu().equals(Personel.altBolumGrupGoster)) {
 				Tanim altBolum = personel.getEkSaha4();
 				if (altBolum != null)
 					bolumAciklama += " " + altBolum.getAciklama();
@@ -1404,14 +1404,6 @@ public class VardiyaOzetRaporuHome extends EntityHome<VardiyaGun> implements Ser
 
 	public void setEkSaha4Tanim(Tanim ekSaha4Tanim) {
 		this.ekSaha4Tanim = ekSaha4Tanim;
-	}
-
-	public String getAltBolumGrupGoster() {
-		return altBolumGrupGoster;
-	}
-
-	public void setAltBolumGrupGoster(String altBolumGrupGoster) {
-		this.altBolumGrupGoster = altBolumGrupGoster;
 	}
 
 	public List<VardiyaGun> getCalismayanVardiyaGunList() {

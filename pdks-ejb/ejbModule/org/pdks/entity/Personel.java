@@ -79,6 +79,7 @@ public class Personel extends BaseObject {
 	private static final long serialVersionUID = -3910172727430872797L;
 
 	public static String grubaGirisTarihiAlanAdi = COLUMN_NAME_ISE_BASLAMA_TARIHI;
+	public static String altBolumGrupGoster = "ABG";
 	// seam-gen attributes (you should probably edit these)
 	private String ad = "", soyad = "", erpSicilNo = "", pdksSicilNo, sortAlanAdi = "";
 
@@ -1017,6 +1018,31 @@ public class Personel extends BaseObject {
 	}
 
 	@Transient
+	private String getBolumOzelAciklamaGetir(boolean ozel) {
+		String bolumAciklama = "";
+		if (ekSaha3 != null) {
+			bolumAciklama = ekSaha3.getAciklama();
+			if (ekSaha4 != null) {
+				if (ozel == false || (ekSaha3.getKodu() != null && ekSaha3.getKodu().endsWith(altBolumGrupGoster)))
+					bolumAciklama += " / " + ekSaha4.getAciklama();
+			}
+		}
+		return bolumAciklama;
+	}
+
+	@Transient
+	public String getBolumOzelAciklama() {
+		String bolumOzelAciklama = getBolumOzelAciklamaGetir(true);
+		return bolumOzelAciklama;
+	}
+
+	@Transient
+	public String getBolumAciklama() {
+		String bolumAciklama = getBolumOzelAciklamaGetir(false);
+		return bolumAciklama;
+	}
+
+	@Transient
 	public Personel getPdksPersonel() {
 		return this;
 	}
@@ -1033,6 +1059,15 @@ public class Personel extends BaseObject {
 
 	public static void setGrubaGirisTarihiAlanAdi(String grubaGirisTarihiAlanAdi) {
 		Personel.grubaGirisTarihiAlanAdi = grubaGirisTarihiAlanAdi;
+	}
+
+	@Transient
+	public static String getAltBolumGrupGoster() {
+		return altBolumGrupGoster;
+	}
+
+	public static void setAltBolumGrupGoster(String altBolumGrupGoster) {
+		Personel.altBolumGrupGoster = altBolumGrupGoster;
 	}
 
 }

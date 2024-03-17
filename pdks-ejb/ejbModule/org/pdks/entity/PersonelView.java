@@ -47,7 +47,7 @@ public class PersonelView implements Serializable {
 	private String pdksPersonelAciklama, kgsSicilNo, ccAdres, bccAdres, hareketAdres;
 	private List<PersonelView> altPersoneller;
 	private Long pdksPersonelId, kullaniciId;
-	private Boolean durum;
+	private Boolean durum, yoneticiDurum;
 
 	private Personel yonetici1, yonetici2;
 	private PersonelView ustPersonelView;
@@ -87,8 +87,11 @@ public class PersonelView implements Serializable {
 		return pdksPersonel;
 	}
 
-	public void setPdksPersonel(Personel pdksPersonel) {
-		this.pdksPersonel = pdksPersonel;
+	public void setPdksPersonel(Personel value) {
+		if (value != null)
+			this.yoneticiDurum = value.isCalisiyor();
+
+		this.pdksPersonel = value;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH)
@@ -159,8 +162,10 @@ public class PersonelView implements Serializable {
 		return durum;
 	}
 
-	public void setDurum(Boolean durum) {
-		this.durum = durum;
+	public void setDurum(Boolean value) {
+		if (this.yoneticiDurum == null)
+			this.yoneticiDurum = value;
+		this.durum = value;
 	}
 
 	@Transient
@@ -188,7 +193,6 @@ public class PersonelView implements Serializable {
 	@Transient
 	public String getSicilNo() {
 		String sicilNo = "";
-
 		if (pdksPersonel != null && pdksPersonel.getId() != null && pdksPersonel.getPdksSicilNo() != null)
 			sicilNo = pdksPersonel.getPdksSicilNo().trim();
 		else if (personelKGS != null)
@@ -290,6 +294,31 @@ public class PersonelView implements Serializable {
 			logger.debug(this.getSicilNo() + " " + this.getAdSoyad() + " <-- " + value.getSicilNo() + " " + value.getAdSoyad());
 			getAltPersoneller().add(value);
 		}
+
+	}
+
+	@Transient
+	public void getYoneticiDurumKontrol() {
+		if (ustPersonelView != null && id != null) {
+			try {
+				if (ustPersonelView.getId() != null && !ustPersonelView.getId().equals(id))
+					ustPersonelView.setYoneticiDurum(Boolean.TRUE);
+
+			} catch (Exception e) {
+
+			}
+		}
+	}
+
+	@Transient
+	public Boolean getYoneticiDurum() {
+		return yoneticiDurum;
+	}
+
+	public void setYoneticiDurum(Boolean value) {
+		this.yoneticiDurum = value;
+		if (value)
+			ustPersonelView.getYoneticiDurumKontrol();
 
 	}
 

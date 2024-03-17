@@ -43,7 +43,7 @@
 						<ui:fragment rendered="#{item.pdksPersonel.yoneticisi==null and item.id>0}">
 							<SPAN style="color: red;"> <h:outputText value="#{item.pdksPersonel.sicilNo} #{item.pdksPersonel.adSoyad}" /> <ui:fragment
 									rendered="#{item.pdksPersonel.ekSaha3!=null}">
-									[ <h:outputText value="#{item.pdksPersonel.ekSaha3.aciklama}" /> ]
+									[ <h:outputText value="#{item.pdksPersonel.bolumOzelAciklama}" /> ]
 									
 									</ui:fragment>
 							</SPAN>
@@ -53,25 +53,35 @@
 							<ui:fragment rendered="#{empty item.altPersoneller and item.id!=null}">
 
 								<h:outputText value="#{item.pdksPersonel.sicilNo} #{item.pdksPersonel.adSoyad}" />
-											[ <h:outputText value="#{item.pdksPersonel.ekSaha3.aciklama}" /> ]
+											[ <h:outputText value="#{item.pdksPersonel.bolumOzelAciklama}" /> ]
 
 										</ui:fragment>
 							<ui:fragment rendered="#{not empty item.altPersoneller or  item.id==null}">
 
 								<b><h:outputText value="#{item.pdksPersonel.sicilNo} #{item.pdksPersonel.adSoyad}" /></b>
 								<ui:fragment rendered="#{item.pdksPersonel.ekSaha3!=null}">
-									[ <h:outputText value="#{item.pdksPersonel.ekSaha3.aciklama}" /> ]
+									[ <h:outputText value="#{item.pdksPersonel.bolumOzelAciklama}" /> ]
 									
 									</ui:fragment>
 
 							</ui:fragment>
+							<ui:fragment rendered="#{item.pdksPersonel!=null and item.id>0  and item.pdksPersonel.calisiyor==false}">
+
+								<SPAN style="color: red; font-size: 12px;"> [İşten ayrıldı!] </SPAN>
+
+							</ui:fragment>
 						</ui:fragment>
 
+
 					</DIV>
+
 					<ui:fragment rendered="#{item.pdksPersonel.id!=null and item.pdksPersonel.yoneticisi!=null}">
 						<rich:toolTip for="per#{item.id}">
 							<SPAN style="color: green; font-size: 12px;"> <B><h:outputText value="#{item.pdksPersonel.sirket.ad}" /></B> <BR></BR> <ui:fragment
-									rendered="#{not empty item.altPersoneller and  item.id>0}">
+									rendered="#{item.pdksPersonel.sirket.tesisDurum}">
+									<B><h:outputText value="#{item.pdksPersonel.tesis.aciklama}" /></B>
+									<BR></BR>
+								</ui:fragment> <ui:fragment rendered="#{not empty item.altPersoneller and  item.id>0}">
 									<BR></BR>
 									<B>#{ortakIslemler.yoneticiAciklama()} : </B>
 									<h:outputText value="#{item.pdksPersonel.yoneticisi.adSoyad}" />
