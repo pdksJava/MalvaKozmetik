@@ -1092,19 +1092,47 @@
 												<a4j:support event="onclick" reRender="sirketDegisti" status="ajaxStatus" ajaxSingle="true" />
 											</h:selectBooleanCheckbox>
 										</s:decorate>
-										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.sirket.fazlaMesaiIzinKullan }">
-											<ui:define name="label">Fazla Mesai İzin Kullandır</ui:define>
-											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.fazlaMesaiIzinKullan}">
-												<a4j:support event="onclick" reRender="sirketDegisti,butonlar,sablonlar" status="ajaxStatus" ajaxSingle="true" />
+										<c:if test="#{pdksPersonelHome.instance.sirket.fazlaMesaiIzinKullan}">
+											<s:decorate template="/layout/edit.xhtml">
+												<ui:define name="label">Fazla Mesai İzin Kullandır</ui:define>
+												<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.fazlaMesaiIzinKullan}">
+													<a4j:support event="onclick" reRender="sirketDegisti,butonlar,sablonlar" status="ajaxStatus" ajaxSingle="true" />
 
-											</h:selectBooleanCheckbox>
-										</s:decorate>
+												</h:selectBooleanCheckbox>
+											</s:decorate>
 
-										<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.sirket.fazlaMesaiIzinKullan==false }">
-											<ui:define name="label">Fazla Mesai Öde</ui:define>
-											<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.fazlaMesaiOde}" />
-										</s:decorate>
-
+											<s:decorate template="/layout/edit.xhtml" id="fazlaMesaiOde1" rendered="#{pdksPersonelHome.instance.fazlaMesaiIzinKullan==false}">
+												<ui:define name="label">
+											 		Fazla Mesai Ödeme Durum</ui:define>
+												<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.fazlaMesaiOde}">
+													<a4j:support event="onclick" reRender="fazlaMesaiOde1" status="ajaxStatus" ajaxSingle="true" />
+												</h:selectBooleanCheckbox>
+												<rich:toolTip for="fazlaMesaiOde1">
+													<ui:fragment rendered="#{pdksPersonelHome.instance.fazlaMesaiOde}">
+														<SPAN style="color: black;">Fazla mesai ay sonunda ödenecek.</SPAN>
+													</ui:fragment>
+													<ui:fragment rendered="#{pdksPersonelHome.instance.fazlaMesaiOde==false}">
+														<SPAN style="color: red;">Fazla mesai denkleşmezse sonraki ay ödenecek.</SPAN>
+													</ui:fragment>
+												</rich:toolTip>
+											</s:decorate>
+										</c:if>
+										<c:if test="#{pdksPersonelHome.instance.sirket.fazlaMesaiIzinKullan==false}">
+											<s:decorate template="/layout/edit.xhtml" id="fazlaMesaiOde2" rendered="#{pdksPersonelHome.instance.sirket.fazlaMesaiIzinKullan==false }">
+												<ui:define name="label">Fazla Mesai  Ödeme Durum</ui:define>
+												<h:selectBooleanCheckbox value="#{pdksPersonelHome.instance.fazlaMesaiOde}">
+													<a4j:support event="onclick" reRender="fazlaMesaiOde1" status="ajaxStatus" ajaxSingle="true" />
+												</h:selectBooleanCheckbox>
+												<rich:toolTip for="fazlaMesaiOde2">
+													<ui:fragment rendered="#{pdksPersonelHome.instance.fazlaMesaiOde}">
+														<SPAN style="color: black;">Fazla mesai ay sonunda ödenecek.</SPAN>
+													</ui:fragment>
+													<ui:fragment rendered="#{pdksPersonelHome.instance.fazlaMesaiOde==false}">
+														<SPAN style="color: red;">Fazla mesai denkleşmezse sonraki ay ödenecek.</SPAN>
+													</ui:fragment>
+												</rich:toolTip>
+											</s:decorate>
+										</c:if>
 										<s:decorate template="/layout/edit.xhtml"
 											rendered="#{ortakIslemler.getParameterKey('uygulamaTipi')=='H' and pdksPersonelHome.instance.sirket.suaOlabilir}">
 											<ui:define name="label">Şua</ui:define>
