@@ -1035,7 +1035,7 @@ public class OrtakIslemler implements Serializable {
 										sb.append("Erken Çıkış");
 									else if (islemVardiya.getVardiyaTelorans2BitZaman().before(zaman))
 										sb.append("Geç Çıkış");
- 								}
+								}
 							}
 						}
 						ilkGiris = false;
@@ -5476,6 +5476,22 @@ public class OrtakIslemler implements Serializable {
 
 		}
 		return personelList;
+	}
+
+	/**
+	 * @param key
+	 * @param aciklama
+	 * @return
+	 */
+	public String getParametreAciklama(String key, String aciklama) {
+		String parameterKey = null;
+		try {
+			parameterKey = parameterMap != null && parameterMap.containsKey(key) ? parameterMap.get(key).trim() : aciklama;
+		} catch (Exception e) {
+			parameterKey = "";
+		}
+		return parameterKey;
+
 	}
 
 	/**

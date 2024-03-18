@@ -2,6 +2,7 @@ package org.pdks.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -47,7 +48,7 @@ public class PersonelView implements Serializable {
 	private String pdksPersonelAciklama, kgsSicilNo, ccAdres, bccAdres, hareketAdres;
 	private List<PersonelView> altPersoneller;
 	private Long pdksPersonelId, kullaniciId;
-	private Boolean durum, yoneticiDurum;
+	private Boolean durum, organizasyonDurum;
 
 	private Personel yonetici1, yonetici2;
 	private PersonelView ustPersonelView;
@@ -89,7 +90,7 @@ public class PersonelView implements Serializable {
 
 	public void setPdksPersonel(Personel value) {
 		if (value != null)
-			this.yoneticiDurum = value.isCalisiyor();
+			this.organizasyonDurum = value.isCalisiyor();
 
 		this.pdksPersonel = value;
 	}
@@ -163,8 +164,7 @@ public class PersonelView implements Serializable {
 	}
 
 	public void setDurum(Boolean value) {
-		if (this.yoneticiDurum == null)
-			this.yoneticiDurum = value;
+
 		this.durum = value;
 	}
 
@@ -302,7 +302,7 @@ public class PersonelView implements Serializable {
 		if (ustPersonelView != null && id != null) {
 			try {
 				if (ustPersonelView.getId() != null && !ustPersonelView.getId().equals(id))
-					ustPersonelView.setYoneticiDurum(Boolean.TRUE);
+					ustPersonelView.setOrganizasyonDurum(Boolean.TRUE);
 
 			} catch (Exception e) {
 
@@ -311,12 +311,23 @@ public class PersonelView implements Serializable {
 	}
 
 	@Transient
-	public Boolean getYoneticiDurum() {
-		return yoneticiDurum;
+	public Boolean getOrganizasyonDurum() {
+		List<PersonelView> list = getAltPersoneller();
+		if (list != null) {
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				PersonelView personelView = (PersonelView) iterator.next();
+				if (personelView.getOrganizasyonDurum() == false) {
+					iterator.remove();
+				}
+			}
+			if (!organizasyonDurum)
+				organizasyonDurum = !list.isEmpty();
+		}
+		return organizasyonDurum;
 	}
 
-	public void setYoneticiDurum(Boolean value) {
-		this.yoneticiDurum = value;
+	public void setOrganizasyonDurum(Boolean value) {
+		this.organizasyonDurum = value;
 		if (value)
 			ustPersonelView.getYoneticiDurumKontrol();
 

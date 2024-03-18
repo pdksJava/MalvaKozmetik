@@ -75,13 +75,13 @@
 
 					</DIV>
 
-					<ui:fragment rendered="#{item.pdksPersonel.id!=null and item.pdksPersonel.yoneticisi!=null}">
+					<ui:fragment rendered="#{item.pdksPersonel.id!=null }">
 						<rich:toolTip for="per#{item.id}">
 							<SPAN style="color: green; font-size: 12px;"> <B><h:outputText value="#{item.pdksPersonel.sirket.ad}" /></B> <BR></BR> <ui:fragment
 									rendered="#{item.pdksPersonel.sirket.tesisDurum}">
 									<B><h:outputText value="#{item.pdksPersonel.tesis.aciklama}" /></B>
 									<BR></BR>
-								</ui:fragment> <ui:fragment rendered="#{not empty item.altPersoneller and  item.id>0}">
+								</ui:fragment> <ui:fragment rendered="#{item.pdksPersonel.yoneticisi!=null and  item.id>0}">
 									<BR></BR>
 									<B>#{ortakIslemler.yoneticiAciklama()} : </B>
 									<h:outputText value="#{item.pdksPersonel.yoneticisi.adSoyad}" />
