@@ -2362,7 +2362,9 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			Object key = map.getKey();
 			Liste liste = new Liste(key, child);
 			PersonelView personelView = child.getData();
-			liste.setSelected((personelView.getPdksPersonelId() != null ? (personelView.getAltPersoneller().size() > 0 ? "0" : "1") + "_" + personelView.getAdSoyad() : "") + "_" + personelView.getId());
+			Personel personel = personelView != null ? personelView.getPdksPersonel() : null;
+			String alan = personel != null && personel.getId() != null ? personel.getBolumOzelAciklama() + "_" + personel.getCalismaModeli().getAciklama() + "_" + personel.getAdSoyad() + "_" + personel.getPdksSicilNo() : personelView.getAdSoyad();
+			liste.setSelected((personelView.getPdksPersonelId() != null ? (personelView.getAltPersoneller().size() > 0 ? "0" : "1") + "_" + alan : "") + "_" + personelView.getId());
 			list.add(liste);
 			if (!personelView.getAltPersoneller().isEmpty())
 				sortTree(child);
