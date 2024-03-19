@@ -64,7 +64,7 @@
 					<ui:fragment rendered="#{pdksPersonelHome.organizasyonSemasiGoster or userHome.hasPermission('organizasyonSemasi','view')}">
 						<a4j:commandLink status="ajaxStatus" ajaxSingle="true" id="organizasyonAragiLink" action="#{pdksPersonelHome.fillOrganizasyonAgaciList()}"
 							reRender="organizasyonPanel" oncomplete="#{rich:component('organizasyonPanel')}.show()">
-							<h:graphicImage value="/img/onetomany.gif" height="24px" style="border:0" reRender="organizasyonDegisti" />
+							<h:graphicImage value="/img/organization-chart.png" height="24px" style="border:0" reRender="organizasyonDegisti" />
 						</a4j:commandLink>
 						<rich:toolTip for="organizasyonAragiLink">
 							<SPAN style="color: blue; font-size: 12px;"> <B>Organizasyon Ağacı Göster</B>
