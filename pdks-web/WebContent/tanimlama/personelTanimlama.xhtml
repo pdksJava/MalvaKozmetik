@@ -603,7 +603,7 @@
 									</rich:column>
 									<rich:column style="text-align:center" rendered="#{pdksPersonelHome.COL_KIDEM_TARIHI>=0}">
 										<f:facet name="header">
-											<h:outputText value="Kıdem Tarihi" />
+											<h:outputText value="#{ortakIslemler.kidemBasTarihiAciklama()}" />
 										</f:facet>
 										<h:outputText value="#{personelERP.kidemTarihi}" />
 									</rich:column>
@@ -891,13 +891,15 @@
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">Doğum Tarihi</ui:define>
 											<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.dogumTarihi}"
-												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
+												datePattern="#{authenticatedUser.dateFormat}"
+												disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.personelERPGuncelleme!='M' and pdksPersonelHome.instance.sanalPersonel==false}"
 												required="#{pdksPersonelHome.izinGirisiVar}" requiredMessage="Doğum tarihini giriniz" />
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">#{ortakIslemler.kidemBasTarihiAciklama()}</ui:define>
 											<rich:calendar enableManualInput="#{authenticatedUser.admin}" value="#{pdksPersonelHome.instance.izinHakEdisTarihi}"
-												datePattern="#{authenticatedUser.dateFormat}" disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp}"
+												datePattern="#{authenticatedUser.dateFormat}"
+												disabled="#{pdksPersonelHome.instance.id!=null and pdksPersonelHome.instance.sirket.erp and pdksPersonelHome.personelERPGuncelleme!='1' and pdksPersonelHome.personelERPGuncelleme!='M' and pdksPersonelHome.instance.sanalPersonel==false}"
 												required="#{pdksPersonelHome.izinGirisiVar and pdksPersonelHome.instance.sanalPersonel==false}"
 												requiredMessage="#{ortakIslemler.kidemBasTarihiAciklama()}ni seçiniz" />
 										</s:decorate>
