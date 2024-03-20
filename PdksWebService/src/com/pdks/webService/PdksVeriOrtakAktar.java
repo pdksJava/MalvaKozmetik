@@ -3243,7 +3243,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (yoneticisi == null) {
 						if (yoneticiKoduVar && personelPDKSMap.containsKey(yoneticiNo)) {
 							yoneticisi = personelPDKSMap.get(yoneticiNo);
-							yoneticiKoduVar = yoneticisi != null && yoneticisi.isCalisiyor();
+							yoneticiKoduVar = yoneticisi != null && (personel.isCalisiyor() == false || yoneticisi.isCalisiyor());
 						}
 						if (yoneticiKoduVar) {
 							if (yoneticisi != null) {
