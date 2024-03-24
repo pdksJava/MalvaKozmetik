@@ -1083,10 +1083,10 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
 					PersonelDenklestirme valueBuAy = personelDenklestirmeMap.get(denklestirmeTasiyici.getPersonel().getId());
-					puantaj.setPersonelDenklestirmeAylik(valueBuAy);
+					puantaj.setPersonelDenklestirme(valueBuAy);
 					if (valueBuAy != null)
 						puantaj.setPersonelDenklestirmeGecenAy(valueBuAy.getPersonelDenklestirmeGecenAy());
-					if (puantaj.getPersonelDenklestirmeAylik() == null || !puantaj.getPersonelDenklestirmeAylik().isDenklestirmeDurum()) {
+					if (puantaj.getPersonelDenklestirme() == null || !puantaj.getPersonelDenklestirme().isDenklestirmeDurum()) {
 						iterator1.remove();
 						continue;
 					}
@@ -1132,8 +1132,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					Personel personel = puantaj.getPdksPersonel();
 
 					perCalismaModeli = personel.getCalismaModeli();
-					if (puantaj.getPersonelDenklestirmeAylik() != null && puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
-						perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
+					if (puantaj.getPersonelDenklestirme() != null && puantaj.getPersonelDenklestirme().getCalismaModeliAy() != null)
+						perCalismaModeli = puantaj.getPersonelDenklestirme().getCalismaModeli();
 					Date sonPersonelCikisZamani = null;
 
 					Boolean gebemi = Boolean.FALSE, calisiyor = Boolean.FALSE;
@@ -1262,7 +1262,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					if (!resmiTatilVar)
 						resmiTatilVar = puantaj.getResmiTatilToplami() != 0.0d;
 					ortakIslemler.puantajHaftalikPlanOlustur(Boolean.TRUE, null, vardiyalar, aylikPuantajSablon, puantaj);
-					PersonelDenklestirme personelDenklestirme = puantaj.getPersonelDenklestirmeAylik();
+					PersonelDenklestirme personelDenklestirme = puantaj.getPersonelDenklestirme();
 					if (personelDenklestirme == null)
 						continue;
 
@@ -1466,7 +1466,7 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 			if (toDay.after(tarih) && (toDay.before(denklestirmeAy.getOtomatikOnayIKTarih())) || (authenticatedUser.isTestLogin() && toDay.before(tarihLast))) {
 				onayla = Boolean.FALSE;
 				for (AylikPuantaj puantaj : puantajList) {
-					puantaj.setKaydet(puantaj.getPersonelDenklestirmeAylik().getDurum());
+					puantaj.setKaydet(puantaj.getPersonelDenklestirme().getDurum());
 					if (puantaj.isKaydet())
 						onayla = hataYok;
 				}

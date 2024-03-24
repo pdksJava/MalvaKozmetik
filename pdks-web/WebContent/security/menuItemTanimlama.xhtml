@@ -10,7 +10,7 @@
 
 		<rich:panel header="#{ortakIslemler.getMenuUserAdi(menuItemTree.session,'menuItemTanimlama')}">
 			<h:panelGrid style=" width : 897px; vertical-align:top;">
-				<h:form>
+				<h:form id="formYemekYiyenler">
 					<a4j:commandButton status="ajaxStatus" id="editBtn" value="Yeni Menü" reRender="editPanel" action="#{menuItemHome.guncelle(null)}"
 						oncomplete="#{rich:component('editPanel')}.show();" />
 				</h:form>

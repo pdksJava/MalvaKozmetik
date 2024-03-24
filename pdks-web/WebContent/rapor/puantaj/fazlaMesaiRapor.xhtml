@@ -133,10 +133,10 @@
 										<f:facet name="header">
 											<h:outputText value="Adı Soyadı" />
 										</f:facet>
-										<SPAN> <SPAN id="perBilgi#{aylikPuantaj.personelDenklestirmeAylik.id}"> <h:outputText
-													value="#{aylikPuantaj.pdksPersonel.adSoyad}" /></SPAN> <rich:toolTip for="perBilgi#{aylikPuantaj.personelDenklestirmeAylik.id}">
+										<SPAN> <SPAN id="perBilgi#{aylikPuantaj.personelDenklestirme.id}"> <h:outputText
+													value="#{aylikPuantaj.pdksPersonel.adSoyad}" /></SPAN> <rich:toolTip for="perBilgi#{aylikPuantaj.personelDenklestirme.id}">
 														#{aylikPuantaj.pdksPersonel.sirket.ad}
-										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.fazlaMesaiIzinKullan}">
+										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.fazlaMesaiIzinKullan}">
 													<br />
 													<SPAN color="red"> <b>Fazla Mesai İzin Kullanılacak!</b>
 													</SPAN>
@@ -186,9 +186,9 @@
 
 												<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.sanalPersonel==false}">#{aylikPuantaj.pdksPersonel.calismaModeli.aciklama }</ui:fragment>
 												<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.sanalPersonel}">
-													<SPAN id="calismaModeliAy#{aylikPuantaj.personelDenklestirmeAylik.id}" style="color: red; font-weight: bold;"> <U>#{fazlaMesaiRaporHome.sanalPersonelAciklama}</U>
+													<SPAN id="calismaModeliAy#{aylikPuantaj.personelDenklestirme.id}" style="color: red; font-weight: bold;"> <U>#{fazlaMesaiRaporHome.sanalPersonelAciklama}</U>
 													</SPAN>
-													<rich:toolTip for="calismaModeliAy#{aylikPuantaj.personelDenklestirmeAylik.id}">#{aylikPuantaj.pdksPersonel.calismaModeli.aciklama }
+													<rich:toolTip for="calismaModeliAy#{aylikPuantaj.personelDenklestirme.id}">#{aylikPuantaj.pdksPersonel.calismaModeli.aciklama }
 
 													</rich:toolTip>
 												</ui:fragment>
@@ -313,17 +313,17 @@
 											</ui:fragment>
 										</f:facet>
 										<ui:fragment>
-											<DIV id="planlananSureAciklama#{aylikPuantaj.personelDenklestirmeAylik.id}">
+											<DIV id="planlananSureAciklama#{aylikPuantaj.personelDenklestirme.id}">
 												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.planlananSure)}" rendered="#{aylikPuantaj.planlananSure!=0}" />
 											</DIV>
-											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy!=null and aylikPuantaj.sutIzniDurum==false }">
-												<rich:toolTip for="planlananSureAciklama#{aylikPuantaj.personelDenklestirmeAylik.id}">
-																		#{aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy.calismaModeli.aciklama} :
-												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy.calismaModeli.toplamGunGuncelle==false}">
-																			      #{authenticatedUser.sayiFormatliGoster(aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy.sure)}  
+											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.calismaModeliAy!=null and aylikPuantaj.sutIzniDurum==false }">
+												<rich:toolTip for="planlananSureAciklama#{aylikPuantaj.personelDenklestirme.id}">
+																		#{aylikPuantaj.personelDenklestirme.calismaModeliAy.calismaModeli.aciklama} :
+												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.calismaModeliAy.calismaModeli.toplamGunGuncelle==false}">
+																			      #{authenticatedUser.sayiFormatliGoster(aylikPuantaj.personelDenklestirme.calismaModeliAy.sure)}  
 												</ui:fragment>
-													<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeAylik.calismaModeliAy.calismaModeli.toplamGunGuncelle}">
-																			   #{authenticatedUser.sayiFormatliGoster(aylikPuantaj.personelDenklestirmeAylik.planlanSure)}  
+													<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.calismaModeliAy.calismaModeli.toplamGunGuncelle}">
+																			   #{authenticatedUser.sayiFormatliGoster(aylikPuantaj.personelDenklestirme.planlanSure)}  
 												</ui:fragment>
 												</rich:toolTip>
 											</ui:fragment>

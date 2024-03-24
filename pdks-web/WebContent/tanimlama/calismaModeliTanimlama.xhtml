@@ -108,6 +108,12 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="#{ortakIslemler.getMenuAdi('pdksVardiyaTanimlama')} Görüntülensin" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.genelModel)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="Vardiya Kontrol Edilmez" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.ortakVardiya)}" />
@@ -277,6 +283,12 @@
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Fazla Mesai Var</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.fazlaMesaiVar}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{ortakIslemler.getMenuAdi('pdksVardiyaTanimlama')} Görüntülensin</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.genelModel}" disabled="#{authenticatedUser.admin==false}">
 
 							</h:selectBooleanCheckbox>
 						</s:decorate>

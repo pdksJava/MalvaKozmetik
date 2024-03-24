@@ -41,6 +41,7 @@ public class PersonelDenklestirme extends BaseObject {
 	public static final String COLUMN_NAME_PART_TIME_DURUM = "PART_TIME";
 	public static final String COLUMN_NAME_SUT_IZNI_SAAT = "SUT_IZNI_SAAT";
 	public static final String COLUMN_NAME_EGITIM_SURESI_AKSAM_GUN_SAYISI = "EGITIM_SURESI_AKSAM_GUN";
+  	public static final String COLUMN_NAME_FAZLA_MESAI_ODE = "FAZLA_MESAI_ODE";
 	public static final String COLUMN_NAME_FAZLA_MESAI_IZIN_KULLAN = "FAZLA_MESAI_IZIN_KULLAN";
 	public static final String COLUMN_NAME_CALISMA_MODELI_AY = "CALISMA_MODELI_AY_ID";
 	public static final String COLUMN_NAME_DEVREDEN_SURE = "DEVREDEN_SURE";
@@ -333,7 +334,7 @@ public class PersonelDenklestirme extends BaseObject {
 		return fazlaMesaiIzinKullan != null && fazlaMesaiIzinKullan.booleanValue();
 	}
 
-	@Column(name = "FAZLA_MESAI_ODE")
+	@Column(name = COLUMN_NAME_FAZLA_MESAI_ODE)
 	public Boolean getFazlaMesaiOde() {
 		return fazlaMesaiOde;
 	}

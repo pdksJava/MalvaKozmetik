@@ -32,110 +32,107 @@ public class MenuItemConstant implements Serializable {
 	public static String role = "/Role.xhtml";
 	public static String roleList = "/RoleList.xhtml";
 
-	public static String tanim = "/general/tanim.xhtml";
-	public static String parameter = "/general/parameter.xhtml";
-	public static String uygulamaVersiyon = "/general/uygulamaVersiyon.xhtml";
 	public static String importSSL = "/general/importSSL.xhtml";
-	public static String sapSunucuTanimlama = "/general/sapSunucuTanimlama.xhtml";
 	public static String notice = "/general/notice.xhtml";
+	public static String parameter = "/general/parameter.xhtml";
+	public static String tanim = "/general/tanim.xhtml";
+	public static String sapSunucuTanimlama = "/general/sapSunucuTanimlama.xhtml";
+	public static String uygulamaVersiyon = "/general/uygulamaVersiyon.xhtml";
 
+	public static String bakiyeGuncelle = "/izin/bakiyeGuncelle.xhtml";
+	public static String excelOkuma = "/izin/excelOkuma.xhtml";
+	public static String izinERPAktarim = "/izin/izinERPAktarim.xhtml";
+	public static String izinKarti = "/izin/izinKarti.xhtml";
+	public static String izinKartiSayfa = "/izin/izin/izinKartiSayfa.xhtml";
+	public static String izinPdf = "/izin/izinPdf.xhtml";
+	public static String onayimaGelenIzinler = "/izin/onayimaGelenIzinler.xhtml";
+	public static String personelIzinGirisi = "/izin/personelIzinGirisi.xhtml";
+	public static String personelIzinKopyala = "/izin/personelIzinKopyala.xhtml";
+	public static String sskIzinGirisi = "/izin/sskIzinGirisi.xhtml";
+
+	public static String denklestirmeBordroRaporu = "/puantaj/denklestirmeBordroRaporu.xhtml";
+	public static String fazlaMesaiERPAktarim = "/puantaj/fazlaMesaiERPAktarim.xhtml";
+	public static String fazlaMesaiHesapla = "/puantaj/fazlaMesaiHesapla.xhtml";
+	public static String fazlaMesaiTalep = "/puantaj/fazlaMesaiTalep.xhtml";
+	public static String hareketGiris = "/puantaj/hareketGiris.xhtml";
+	public static String isKurVardiyaPlani = "/puantaj/isKurVardiyaPlani.xhtml";
+	public static String kgsHareket = "/puantaj/kgsHareket.xhtml";
+	public static String mesaiTalepLinkOnay = "/puantaj/mesaiTalepLinkOnay.xhtml";
+	public static String mesaiTalepListesi = "/puantaj/mesaiTalepListesi.xhtml";
+	public static String pdksVardiyaTanimlama = "/puantaj/pdksVardiyaTanimlama.xhtml";
+	public static String personelFazlaMesai = "/puantaj/personelFazlaMesai.xhtml";
+	public static String personelHareket = "/puantaj/personelHareket.xhtml";
+	public static String vardiyaPlani = "/puantaj/vardiyaPlani.xhtml";
+
+	public static String aylikIzinRapor = "/rapor/izin/aylikIzinRapor.xhtml";
+	public static String bakiyeIzin = "/rapor/izin/bakiyeIzin.xhtml";
+	public static String fazlaMesaiIzin = "/rapor/izin/fazlaMesaiIzin.xhtml";
+	public static String fazlaMesaiIzinRaporu = "/rapor/izin/fazlaMesaiIzinRaporu.xhtml";
+	public static String gunlukIzinRapor = "/rapor/izin/gunlukIzinRapor.xhtml";
+	public static String hekimCalisanRaporu = "/rapor/izin/hekimCalisanRaporu.xhtml";
+	public static String hekimIzinRaporu = "/rapor/izin/hekimIzinRaporu.xhtml";
+	public static String holdingKalanIzin = "/rapor/izin/holdingKalanIzin.xhtml";
+	public static String izinKartiPdf = "/izin/izin/izinKartiPdf.xhtml";
+	public static String izinOnay = "/rapor/izin/izinOnay.xhtml";
+	public static String kullanilanIzinler = "/rapor/izin/kullanilanIzinler.xhtml";
+	public static String personelKalanIzin = "/rapor/izin/personelKalanIzin.xhtml";
+	public static String sskIstirahatIzinleri = "/rapor/izin/sskIstirahatIzinleri.xhtml";
+
+	public static String aylikPlanRapor = "/rapor/puantaj/aylikPlanRapor.xhtml";
+	public static String binadaKalanPersoneller = "/rapor/puantaj/binadaKalanPersoneller.xhtml";
+	public static String calismaSaatleri = "/rapor/puantaj/calismaSaatleri.xhtml";
+	public static String devamsizlikRaporu = "/rapor/puantaj/devamsizlikRaporu.xhtml";
+	public static String fazlaCalismaRapor = "/rapor/puantaj/fazlaCalismaRapor.xhtml";
+	public static String fazlaMesaiDonemselPuantajRapor = "/rapor/puantaj/fazlaMesaiDonemselPuantajRapor.xhtml";
+	public static String fazlaMesaiDonemselRapor = "/rapor/puantaj/fazlaMesaiDonemselRapor.xhtml";
+	public static String fazlaMesaiKontrolRapor = "/rapor/puantaj/fazlaMesaiKontrolRapor.xhtml";
+	public static String fazlaMesaiOnayRapor = "/rapor/puantaj/fazlaMesaiOnayRapor.xhtml";
+	public static String fazlaMesaiOzetRapor = "/rapor/puantaj/fazlaMesaiOzetRapor.xhtml";
+	public static String fazlaMesaiRapor = "/rapor/puantaj/fazlaMesaiRapor.xhtml";
+	public static String girisCikisKontrol = "/rapor/puantaj/girisCikisKontrol.xhtml";
+	public static String hareketlerText = "/rapor/puantaj/hareketlerText.xhtml";
+	public static String iseGelmeyenPersonelDagilimi = "/rapor/puantaj/iseGelmeyenPersonelDagilimi.xhtml";
+	public static String vardiyaOzetRaporu = "/rapor/puantaj/vardiyaOzetRaporu.xhtml";
+
+	public static String yemekYiyenler = "/rapor/yemek/yemekYiyenler.xhtml";
+	public static String yemekYiyenSayisi = "/rapor/yemek/yemekYiyenSayisi.xhtml";
+	public static String yemekSirketTanimsiz = "/rapor/yemek/yemekSirketTanimsiz.xhtml";
+	public static String yemekCiftBasanRapor = "/rapor/yemek/yemekCiftBasanRapor.xhtml";
+
+	public static String tumHareketler = "/rapor/tumHareketler.xhtml";
+	public static String organizasyonSemasi = "/rapor/organizasyonSemasi.xhtml";
+	public static String personelListesi = "/rapor/personelListesi.xhtml";
+
+	public static String menuItemPermissionTanimlama = "/security/menuItemPermissionTanimlama.xhtml";
+	public static String menuItemTanimlama = "/security/menuItemTanimlama.xhtml";
+	public static String openSession = "/security/openSession.xhtml";
+	public static String user = "/security/user.xhtml";
+	public static String sifreDegistirme = "/security/sifreDegistirme.xhtml";
+	public static String superVisorDegistir = "/security/superVisorDegistir.xhtml";
+	public static String yoneticiDegistir = "/security/yoneticiDegistir.xhtml";
+
+	public static String calismaModeliTanimlama = "/tanimlama/calismaModeliTanimlama.xhtml";
+	public static String departmanMail = "/tanimlama/departmanMail.xhtml";
+	public static String departmanTanimlama = "/tanimlama/departmanTanimlama.xhtml";
+	public static String detaysizPersonelTanimlama = "/tanimlama/detaysizPersonelTanimlama.xhtml";
+	public static String izinHakedisHakkiTanimlama = "/tanimlama/izinHakedisHakkiTanimlama.xhtml";
+	public static String izinTipiTanimlama = "/tanimlama/izinTipiTanimlama.xhtml";
 	public static String kapiTanimlama = "/tanimlama/kapiTanimlama.xhtml";
+	public static String personelGeciciYonetici = "/tanimlama/personelGeciciYonetici.xhtml";
+	public static String personelKullaniciExcelGuncelle = "/tanimlama/personelKullaniciExcelGuncelle.xhtml";
+	public static String personelRoleTanimlama = "/tanimlama/personelRoleTanimlama.xhtml";
+	public static String personelTanimlama = "/tanimlama/personelTanimlama.xhtml";
+	public static String personelYoneticiGuncelle = "/tanimlama/personelYoneticiGuncelle.xhtml";
 	public static String sirketTanimlama = "/tanimlama/sirketTanimlama.xhtml";
+	public static String taseronPersonelKopyala = "/tanimlama/taseronPersonelKopyala.xhtml";
 	public static String tatilTanimlama = "/tanimlama/tatilTanimlama.xhtml";
 	public static String sablonTanimlama = "/tanimlama/sablonTanimlama.xhtml";
-	public static String calismaModeliTanimlama = "/tanimlama/calismaModeliTanimlama.xhtml";
-	public static String personelTanimlama = "/tanimlama/personelTanimlama.xhtml";
-	public static String personelRoleTanimlama = "/tanimlama/personelRoleTanimlama.xhtml";
-	public static String personelKullaniciExcelGuncelle = "/tanimlama/personelKullaniciExcelGuncelle.xhtml";
-	public static String taseronPersonelKopyala = "/tanimlama/taseronPersonelKopyala.xhtml";
-	public static String personelYoneticiGuncelle = "/tanimlama/personelYoneticiGuncelle.xhtml";
-	public static String izinTipiTanimlama = "/tanimlama/izinTipiTanimlama.xhtml";
-	public static String izinHakedisHakkiTanimlama = "/tanimlama/izinHakedisHakkiTanimlama.xhtml";
-	public static String personelGeciciYonetici = "/tanimlama/personelGeciciYonetici.xhtml";
-	public static String vekilTanimlama = "/tanimlama/vekilTanimlama.xhtml";
-	public static String departmanTanimlama = "/tanimlama/departmanTanimlama.xhtml";
-	public static String departmanMail = "/tanimlama/departmanMail.xhtml";
-	public static String deneme = "/tanimlama/deneme.xhtml";
-	public static String vardiyaTanimlama = "/tanimlama/vardiyaTanimlama.xhtml";
 	public static String vardiyaSablonTanimlama = "/tanimlama/vardiyaSablonTanimlama.xhtml";
+	public static String vekilTanimlama = "/tanimlama/vekilTanimlama.xhtml";
+	public static String vardiyaTanimlama = "/tanimlama/vardiyaTanimlama.xhtml";
 	public static String yemekIzinTanimlama = "/tanimlama/yemekIzinTanimlama.xhtml";
 	public static String yemekKartsizTanimlama = "/tanimlama/yemekKartsizTanimlama.xhtml";
 	public static String yemekTanimlama = "/tanimlama/yemekTanimlama.xhtml";
-	public static String detaysizPersonelTanimlama = "/tanimlama/detaysizPersonelTanimlama.xhtml";
-
-	public static String personelIzinGirisi = "/izin/personelIzinGirisi.xhtml";
-	public static String sskIzinGirisi = "/izin/sskIzinGirisi.xhtml";
-	public static String onayimaGelenIzinler = "/izin/onayimaGelenIzinler.xhtml";
-	public static String izinPdf = "/izin/izinPdf.xhtml";
-
-	public static String izinKarti = "/izin/izinKarti.xhtml";
-	public static String excelOkuma = "/izin/excelOkuma.xhtml";
-	public static String izinERPAktarim = "/izin/izinERPAktarim.xhtml";
-	public static String bakiyeGuncelle = "/izin/bakiyeGuncelle.xhtml";
-	public static String personelIzinKopyala = "/izin/personelIzinKopyala.xhtml";
-
-	public static String hareketGiris = "/puantaj/hareketGiris.xhtml";
-	public static String vardiyaPlani = "/puantaj/vardiyaPlani.xhtml";
-	public static String isKurVardiyaPlani = "/puantaj/isKurVardiyaPlani.xhtml";
-	public static String pdksVardiyaTanimlama = "/puantaj/pdksVardiyaTanimlama.xhtml";
-	public static String personelHareket = "/puantaj/personelHareket.xhtml";
-	public static String kgsHareket = "/puantaj/kgsHareket.xhtml";
-	public static String fazlaMesaiTalep = "/puantaj/fazlaMesaiTalep.xhtml";
-	public static String fazlaMesaiOzetRapor = "/puantaj/fazlaMesaiOzetRapor.xhtml";
-	public static String fazlaCalismaRapor = "/puantaj/fazlaCalismaRapor.xhtml";
-	public static String fazlaMesaiKontrolRapor = "/puantaj/fazlaMesaiKontrolRapor.xhtml";
-	public static String fazlaMesaiDonemselRapor = "/puantaj/fazlaMesaiDonemselRapor";
-	public static String fazlaMesaiOnayRapor = "/puantaj/fazlaMesaiOnayRapor.xhtml";
-	public static String fazlaMesaiRapor = "/puantaj/fazlaMesaiRapor.xhtml";
-	public static String mesaiTalepListesi = "/puantaj/mesaiTalepListesi.xhtml";
-	public static String mesaiTalepLinkOnay = "/puantaj/mesaiTalepLinkOnay.xhtml";
-	public static String personelFazlaMesai = "/puantaj/personelFazlaMesai.xhtml";
-	public static String denklestirmeDonemiTanimlama = "/puantaj/denklestirmeDonemiTanimlama.xhtml";
-	public static String aylikPuantajRaporu = "/puantaj/aylikPuantajRaporu.xhtml";
-	public static String personelDenklestirmeIslemi = "/puantaj/personelDenklestirmeIslemi.xhtml";
-	public static String denklestirmeFazlaMesaiGirisi = "/puantaj/denklestirmeFazlaMesaiGirisi.xhtml";
-	public static String fazlaMesaiERPAktarim = "/puantaj/fazlaMesaiERPAktarim.xhtml";
-	public static String fazlaMesaiHesapla = "/puantaj/fazlaMesaiHesapla.xhtml";
-	public static String denklestirmeBordroRaporu = "/puantaj/denklestirmeBordroRaporu.xhtml";
-
-	public static String vardiyaOzetRaporu = "/rapor/vardiyaOzetRaporu.xhtml";
-	public static String fazlaMesaiIzinRaporu = "/rapor/fazlaMesaiIzinRaporu.xhtml";
-	public static String aylikPlanRapor = "/rapor/aylikPlanRapor.xhtml";
-	public static String calismaSaatleri = "/rapor/calismaSaatleri.xhtml";
-	public static String binadaKalanPersoneller = "/rapor/binadaKalanPersoneller.xhtml";
-	public static String girisCikisKontrol = "/rapor/girisCikisKontrol.xhtml";
-	public static String yemekYiyenler = "/rapor/yemekYiyenler.xhtml";
-	public static String yemekYiyenSayisi = "/rapor/yemekYiyenSayisi.xhtml";
-	public static String yemekSirketTanimsiz = "/rapor/yemekSirketTanimsiz.xhtml";
-	public static String yemekCiftBasanRapor = "/rapor/yemekCiftBasanRapor.xhtml";
-
-	public static String holdingKalanIzin = "/rapor/holdingKalanIzin.xhtml";
-	public static String personelKalanIzin = "/rapor/personelKalanIzin.xhtml";
-	public static String izinKartiSayfa = "/izin/izinKartiSayfa.xhtml";
-	public static String izinKartiPdf = "/izin/izinKartiPdf.xhtml";
-	public static String izinOnay = "/rapor/izinOnay.xhtml";
-	public static String iseGelmeyenPersonelDagilimi = "/rapor/iseGelmeyenPersonelDagilimi.xhtml";
-	public static String devamsizlikRaporu = "/rapor/devamsizlikRaporu.xhtml";
-	public static String hareketlerText = "/rapor/hareketlerText.xhtml";
-	public static String tumHareketler = "/rapor/tumHareketler.xhtml";
-	public static String bakiyeIzin = "/rapor/bakiyeIzin.xhtml";
-	public static String gunlukIzinRapor = "/rapor/gunlukIzinRapor.xhtml";
-	public static String aylikIzinRapor = "/rapor/aylikIzinRapor.xhtml";
-	public static String fazlaMesaiIzin = "/rapor/fazlaMesaiIzin.xhtml";
-	public static String personelListesi = "/rapor/personelListesi.xhtml";
-	public static String organizasyonSemasi = "/rapor/organizasyonSemasi.xhtml";
-	public static String kullanilanIzinler = "/rapor/kullanilanIzinler.xhtml";
-	public static String sskIstirahatIzinleri = "/rapor/sskIstirahatIzinleri.xhtml";
-	public static String hekimIzinRaporu = "/rapor/hekimIzinRaporu.xhtml";
-	public static String hekimCalisanRaporu = "/rapor/hekimCalisanRaporu.xhtml";
-
-	public static String user = "/security/user.xhtml";
-	public static String sifreDegistirme = "/security/sifreDegistirme.xhtml";
-	public static String menuItemTanimlama = "/security/menuItemTanimlama.xhtml";
-	public static String menuItemPermissionTanimlama = "/security/menuItemPermissionTanimlama.xhtml";
-	public static String yoneticiDegistir = "/security/yoneticiDegistir.xhtml";
-	public static String superVisorDegistir = "/security/superVisorDegistir.xhtml";
-	public static String openSession = "/security/openSession.xhtml";
 
 	public String getKgsHareket() {
 		return kgsHareket;
@@ -385,14 +382,6 @@ public class MenuItemConstant implements Serializable {
 		MenuItemConstant.personelHareket = personelHareket;
 	}
 
-	public String getDenklestirmeDonemiTanimlama() {
-		return denklestirmeDonemiTanimlama;
-	}
-
-	public void setDenklestirmeDonemiTanimlama(String denklestirmeDonemiTanimlama) {
-		MenuItemConstant.denklestirmeDonemiTanimlama = denklestirmeDonemiTanimlama;
-	}
-
 	public String getGirisCikisKontrol() {
 		return girisCikisKontrol;
 	}
@@ -401,28 +390,12 @@ public class MenuItemConstant implements Serializable {
 		MenuItemConstant.girisCikisKontrol = girisCikisKontrol;
 	}
 
-	public String getPersonelDenklestirmeIslemi() {
-		return personelDenklestirmeIslemi;
-	}
-
-	public void setPersonelDenklestirmeIslemi(String personelDenklestirmeIslemi) {
-		MenuItemConstant.personelDenklestirmeIslemi = personelDenklestirmeIslemi;
-	}
-
 	public String getPersonelFazlaMesai() {
 		return personelFazlaMesai;
 	}
 
 	public void setPersonelFazlaMesai(String personelFazlaMesai) {
 		MenuItemConstant.personelFazlaMesai = personelFazlaMesai;
-	}
-
-	public String getDeneme() {
-		return deneme;
-	}
-
-	public void setDeneme(String deneme) {
-		MenuItemConstant.deneme = deneme;
 	}
 
 	public String getCalismaSaatleri() {
@@ -593,14 +566,6 @@ public class MenuItemConstant implements Serializable {
 		MenuItemConstant.yoneticiDegistir = yoneticiDegistir;
 	}
 
-	public String getDenklestirmeFazlaMesaiGirisi() {
-		return denklestirmeFazlaMesaiGirisi;
-	}
-
-	public void setDenklestirmeFazlaMesaiGirisi(String denklestirmeFazlaMesaiGirisi) {
-		MenuItemConstant.denklestirmeFazlaMesaiGirisi = denklestirmeFazlaMesaiGirisi;
-	}
-
 	public String getBakiyeIzin() {
 		return bakiyeIzin;
 	}
@@ -735,14 +700,6 @@ public class MenuItemConstant implements Serializable {
 
 	public void setHekimCalisanRaporu(String hekimCalisanRaporu) {
 		MenuItemConstant.hekimCalisanRaporu = hekimCalisanRaporu;
-	}
-
-	public String getAylikPuantajRaporu() {
-		return aylikPuantajRaporu;
-	}
-
-	public void setAylikPuantajRaporu(String aylikPuantajRaporu) {
-		MenuItemConstant.aylikPuantajRaporu = aylikPuantajRaporu;
 	}
 
 	public String getOpenSession() {
@@ -1023,6 +980,14 @@ public class MenuItemConstant implements Serializable {
 
 	public static void setOrganizasyonSemasi(String organizasyonSemasi) {
 		MenuItemConstant.organizasyonSemasi = organizasyonSemasi;
+	}
+
+	public static String getFazlaMesaiDonemselPuantajRapor() {
+		return fazlaMesaiDonemselPuantajRapor;
+	}
+
+	public static void setFazlaMesaiDonemselPuantajRapor(String fazlaMesaiDonemselPuantajRapor) {
+		MenuItemConstant.fazlaMesaiDonemselPuantajRapor = fazlaMesaiDonemselPuantajRapor;
 	}
 
 }

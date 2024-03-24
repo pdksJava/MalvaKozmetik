@@ -356,11 +356,12 @@
 										</f:facet>
 									</rich:dataTable>
 								</rich:tab>
+								
 							</rich:tabPanel>
 
-							<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiOnayRaporHome.fazlaMesaiExcel}" target="blank">
-								<a4j:support event="oncomplete" onclick="#{rich:component('wait')}.show()" oncomplete=" #{rich:component('wait')}.hide()" />
-							</h:commandLink>
+<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiOnayRaporHome.fazlaMesaiExcel}" target="blank" rendered="#{fazlaMesaiOnayRaporHome.veriDolu()}"> 
+									<a4j:support event="oncomplete" onclick="#{rich:component('wait')}.show()" oncomplete=" #{rich:component('wait')}.hide()" />
+								</h:commandLink>
 
 						</a4j:outputPanel>
 

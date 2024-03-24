@@ -407,7 +407,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 	@Transactional
 	public String saveLastParameter(AylikPuantaj aylikPuantaj) {
 		Map<String, String> map1 = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
-		PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
+		PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirme();
 		String adres = map1.containsKey("host") ? map1.get("host") : "";
 		Personel personel = aylikPuantaj.getPdksPersonel();
 		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
@@ -432,7 +432,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 			sayfa = MenuItemConstant.vardiyaPlani;
 		}
 
-		bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + aylikPuantaj.getPersonelDenklestirmeAylik().getId() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
+		bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + aylikPuantaj.getPersonelDenklestirme().getId() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
 		try {
 			ortakIslemler.saveLastParameter(lastMap, session);
 		} catch (Exception e) {
@@ -857,7 +857,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 							boolean eksikCalismaBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_EKSIK_CALISMA));
 							boolean devamlikDurumBaslik = PdksUtil.hasStringValue(getBaslikAciklama(COL_DEVAMLILIK_PRIMI));
 							for (AylikPuantaj ap : personelDenklestirmeList) {
-								PersonelDenklestirme pd = ap.getPersonelDenklestirmeAylik();
+								PersonelDenklestirme pd = ap.getPersonelDenklestirme();
 								PersonelDenklestirmeBordro personelDenklestirmeBordro = ap.getDenklestirmeBordro();
 								if (personelDenklestirmeBordro == null) {
 									personelDenklestirmeBordro = new PersonelDenklestirmeBordro();

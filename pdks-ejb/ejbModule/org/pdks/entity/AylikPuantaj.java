@@ -71,7 +71,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private CalismaModeliAy calismaModeliAy;
 
-	private PersonelDenklestirme personelDenklestirmeAylik, personelDenklestirmeGelecekAy, personelDenklestirmeGecenAy;
+	private PersonelDenklestirme personelDenklestirme, personelDenklestirmeGelecekAy, personelDenklestirmeGecenAy;
 
 	private PersonelDenklestirmeBordro denklestirmeBordro;
 
@@ -115,8 +115,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		super();
 		if (bordro != null) {
 			this.denklestirmeBordro = bordro;
-			this.setPersonelDenklestirmeAylik(bordro.getPersonelDenklestirme());
-			this.setPdksPersonel(this.getPersonelDenklestirmeAylik().getPdksPersonel());
+			this.setPersonelDenklestirme(bordro.getPersonelDenklestirme());
+			this.setPdksPersonel(this.getPersonelDenklestirme().getPdksPersonel());
 		}
 	}
 
@@ -139,8 +139,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public Boolean getSutIzniDurum() {
 		boolean sutIzniDurum = false;
-		if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getId() != null)
-			sutIzniDurum = personelDenklestirmeAylik.isSutIzniVar();
+		if (personelDenklestirme != null && personelDenklestirme.getId() != null)
+			sutIzniDurum = personelDenklestirme.isSutIzniVar();
 		return sutIzniDurum;
 	}
 
@@ -204,6 +204,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 			else
 				this.yonetici2 = null;
 			this.sirket = value.getSirket();
+			this.calismaModeli = value.getCalismaModeli();
 		}
 		this.pdksPersonel = value;
 	}
@@ -417,32 +418,16 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		this.kaydet = kaydet;
 	}
 
-	public PersonelDenklestirme getPersonelDenklestirmeAylik() {
-		return personelDenklestirmeAylik;
-	}
-
-	public void setPersonelDenklestirmeAylik(PersonelDenklestirme value) {
-		if (value != null) {
-			this.calismaModeliAy = value.getCalismaModeliAy();
-			if (calismaModeliAy != null)
-				this.calismaModeli = calismaModeliAy.getCalismaModeli();
-		}
-
-		this.personelDenklestirmeAylik = value;
-	}
-
 	public double getFazlaMesaiSure() {
 		return fazlaMesaiSure;
 	}
 
 	public PersonelDenklestirme getPersonelDenklestirmeGecenAylik() {
-		PersonelDenklestirme personelDenklestirmeGecenAylik = personelDenklestirmeAylik != null ? personelDenklestirmeAylik.getPersonelDenklestirmeGecenAy() : null;
+		PersonelDenklestirme personelDenklestirmeGecenAylik = personelDenklestirme != null ? personelDenklestirme.getPersonelDenklestirmeGecenAy() : null;
 		return personelDenklestirmeGecenAylik;
 	}
 
 	public double getAylikNetFazlaMesai() {
-		// double fazlaCalismaToplamSure = ucretiOdenenMesaiSure > 0.0d && personelDenklestirmeAylik != null && personelDenklestirmeAylik.getFazlaMesaiOde() != null && personelDenklestirmeAylik.getFazlaMesaiOde() ? 0.0d : ucretiOdenenMesaiSure;
-		// double aylikNetFazlaMesai = saatToplami - planlananSure + fazlaCalismaToplamSure;
 		double aylikNetFazlaMesai = getAylikFazlaMesai();
 		return aylikNetFazlaMesai;
 	}
@@ -458,7 +443,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public double getDenklesmisMesai() {
 		double aylikFazlaMesai = getAylikFazlaMesai();
-		double gecenAySure = personelDenklestirmeAylik != null ? personelDenklestirmeAylik.getKalanSure() : 0d;
+		double gecenAySure = personelDenklestirme != null ? personelDenklestirme.getKalanSure() : 0d;
 		double denklesmisMesai = aylikFazlaMesai + gecenAySure;
 		return denklesmisMesai;
 	}
@@ -472,20 +457,20 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		calisilanGunSayisi = 0;
 		izinSure = izinSuresi;
 		if (calismaModeliAy == null)
-			logger.debug(personelDenklestirmeAylik.getId());
-		if (calismaModeliAy != null && personelDenklestirmeAylik.getCalismaModeliAy() == null)
-			personelDenklestirmeAylik.setCalismaModeliAy(calismaModeliAy);
-		CalismaModeli calismaModeli = personelDenklestirmeAylik.getCalismaModeliAy() != null ? personelDenklestirmeAylik.getCalismaModeli() : null;
-		if (personelDenklestirmeAylik.isSuaDurumu()) {
+			logger.debug(personelDenklestirme.getId());
+		if (calismaModeliAy != null && personelDenklestirme.getCalismaModeliAy() == null)
+			personelDenklestirme.setCalismaModeliAy(calismaModeliAy);
+		CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeli() : null;
+		if (personelDenklestirme.isSuaDurumu()) {
 			for (VardiyaGun vg : vardiyalar) {
 				if (vg.isAyinGunu() && vg.getVardiya() != null && vg.getVardiya().getId() != null)
-					personelDenklestirmeAylik.setCalismaSuaSaati(vg.getCalismaSuaSaati());
+					personelDenklestirme.setCalismaSuaSaati(vg.getCalismaSuaSaati());
 			}
 		}
 		double arifeToplamSure = getArifeToplamSure(tatilGunleriMap, calismaModeli);
-		Double hesaplananSure = (personelDenklestirmeAylik != null ? personelDenklestirmeAylik.getMaksimumSure(izinSure, arifeToplamSure) : 0d);
+		Double hesaplananSure = (personelDenklestirme != null ? personelDenklestirme.getMaksimumSure(izinSure, arifeToplamSure) : 0d);
 		if (tatilGunleriMap != null && vardiyalar != null && !vardiyalar.isEmpty()) {
-			double yarimGun = personelDenklestirmeAylik.getCalismaModeli().getArife();
+			double yarimGun = personelDenklestirme.getCalismaModeli().getArife();
 			gebeDurum = false;
 			for (VardiyaGun vg : vardiyalar) {
 				if (vg.getIzin() != null || vg.getVardiya() == null || vg.getVardiya().getId() == null)
@@ -533,9 +518,9 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 			}
 		}
-		if (gebelikGuncelle && gebeDurum && personelDenklestirmeAylik.getSutIzniSaatSayisi() != null && personelDenklestirmeAylik.getSutIzniSaatSayisi().doubleValue() > 0.0d) {
+		if (gebelikGuncelle && gebeDurum && personelDenklestirme.getSutIzniSaatSayisi() != null && personelDenklestirme.getSutIzniSaatSayisi().doubleValue() > 0.0d) {
 			try {
-				double sutIzniSaatSayisi = personelDenklestirmeAylik.getSutIzniSaatSayisi();
+				double sutIzniSaatSayisi = personelDenklestirme.getSutIzniSaatSayisi();
 				if (sutIzniSaatSayisi < calismaModeliAy.getSure())
 					hesaplananSure = sutIzniSaatSayisi;
 
@@ -555,7 +540,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	 */
 	private double getArifeToplamSure(TreeMap<String, Tatil> tatilGunleriMap, CalismaModeli calismaModeli) {
 		double arifeToplamSure = 0.0d;
-		if (personelDenklestirmeAylik.isSuaDurumu() || personelDenklestirmeAylik.isPartTimeDurumu()) {
+		if (personelDenklestirme.isSuaDurumu() || personelDenklestirme.isPartTimeDurumu()) {
 			if (calismaModeli != null && tatilGunleriMap != null && vardiyalar != null && !vardiyalar.isEmpty()) {
 				OrtakIslemler ortakIslemler = new OrtakIslemler();
 				Calendar cal = Calendar.getInstance();
@@ -659,8 +644,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	private double getGecenAyDenklestirmeHesapla() {
 		Double fark = null;
 		PersonelDenklestirme pdksPersonelDenklestirmeGecenAy = null;
-		if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getPersonelDenklestirmeGecenAy() != null) {
-			pdksPersonelDenklestirmeGecenAy = personelDenklestirmeAylik.getPersonelDenklestirmeGecenAy();
+		if (personelDenklestirme != null && personelDenklestirme.getPersonelDenklestirmeGecenAy() != null) {
+			pdksPersonelDenklestirmeGecenAy = personelDenklestirme.getPersonelDenklestirmeGecenAy();
 			if (pdksPersonelDenklestirmeGecenAy != null)
 				if ((!pdksPersonelDenklestirmeGecenAy.getDenklestirmeAy().getDurum() || pdksPersonelDenklestirmeGecenAy.isErpAktarildi()) && pdksPersonelDenklestirmeGecenAy.getDevredenSure() != null)
 					fark = pdksPersonelDenklestirmeGecenAy.getKalanSure();
@@ -688,8 +673,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	private double getGecenAyDenklestirmeHesapla(User user) {
 		Double fark = null;
 		PersonelDenklestirme personelDenklestirmeGecenAy = null;
-		if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getPersonelDenklestirmeGecenAy() != null) {
-			personelDenklestirmeGecenAy = personelDenklestirmeAylik.getPersonelDenklestirmeGecenAy();
+		if (personelDenklestirme != null && personelDenklestirme.getPersonelDenklestirmeGecenAy() != null) {
+			personelDenklestirmeGecenAy = personelDenklestirme.getPersonelDenklestirmeGecenAy();
 			if (personelDenklestirmeGecenAy != null && personelDenklestirmeGecenAy.getDurum() && personelDenklestirmeGecenAy.isOnaylandi()) {
 				if ((!personelDenklestirmeGecenAy.getDenklestirmeAy().isDurum(user) || personelDenklestirmeGecenAy.isErpAktarildi()) && personelDenklestirmeGecenAy.getDevredenSure() != null)
 					fark = personelDenklestirmeGecenAy.getKalanSure();
@@ -727,7 +712,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public void setFazlaMesaiHesapla(boolean value) {
 		if (value) {
-			if (personelDenklestirmeAylik == null || personelDenklestirmeAylik.isDenklestirmeDurum() == false || personelDenklestirmeAylik.isOnaylandi() == false)
+			if (personelDenklestirme == null || personelDenklestirme.isDenklestirmeDurum() == false || personelDenklestirme.isOnaylandi() == false)
 				value = false;
 			else if (pdksPersonel != null && yonetici == null) {
 				Personel yoneticisi = pdksPersonel.getYoneticisi();
@@ -1043,8 +1028,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	}
 
 	public CalismaModeliAy getCalismaModeliAy() {
-		if (calismaModeliAy == null && personelDenklestirmeAylik != null)
-			calismaModeliAy = personelDenklestirmeAylik.getCalismaModeliAy();
+		if (calismaModeliAy == null && personelDenklestirme != null)
+			calismaModeliAy = personelDenklestirme.getCalismaModeliAy();
 		return calismaModeliAy;
 	}
 
@@ -1284,8 +1269,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public boolean isFazlaMesaiDurum() {
 		Boolean fazlaMesaiDurum = Boolean.FALSE;
-		if (personelDenklestirmeAylik != null && personelDenklestirmeAylik.getCalismaModeliAy() != null)
-			fazlaMesaiDurum = personelDenklestirmeAylik.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu();
+		if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null)
+			fazlaMesaiDurum = personelDenklestirme.getCalismaModeliAy().isHareketKaydiVardiyaBulsunmu();
 
 		if (fazlaMesaiDurum.equals(Boolean.FALSE) && vardiyalar != null) {
 			for (VardiyaGun vardiyaGun : vardiyalar) {
@@ -1357,6 +1342,37 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public void setPersonelDinamikAlan(PersonelDinamikAlan personelDinamikAlan) {
 		this.personelDinamikAlan = personelDinamikAlan;
+	}
+
+	public PersonelDenklestirme getPersonelDenklestirme() {
+		return personelDenklestirme;
+	}
+
+	public void setPersonelDenklestirmeData(PersonelDenklestirme pd) {
+		if (pd != null) {
+			this.personelDenklestirme = pd;
+			this.setFazlaMesaiHesapla(pd.getDurum());
+			this.setFazlaMesaiSure(pd.getOdenecekSure());
+			this.setResmiTatilToplami(pd.getResmiTatilSure());
+			this.setHaftaCalismaSuresi(pd.getHaftaCalismaSuresi());
+			this.setEksikCalismaSure(pd.getEksikCalismaSure());
+			this.setOdenenSure(pd.getOdenecekSure());
+			this.setSaatToplami(pd.getHesaplananSure());
+			this.setDevredenSure(pd.getDevredenSure());
+			this.setPersonelDenklestirme(pd);
+		}
+	}
+
+	public void setPersonelDenklestirme(PersonelDenklestirme pd) {
+		if (pd != null) {
+			this.denklestirmeAy = pd.getDenklestirmeAy();
+			this.calismaModeliAy = pd.getCalismaModeliAy();
+			this.setPdksPersonel(pd.getPdksPersonel());
+			if (calismaModeliAy != null)
+				this.calismaModeli = calismaModeliAy.getCalismaModeli();
+
+		}
+		this.personelDenklestirme = pd;
 	}
 
 }

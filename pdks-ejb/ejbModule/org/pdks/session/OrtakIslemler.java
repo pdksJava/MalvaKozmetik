@@ -3180,7 +3180,7 @@ public class OrtakIslemler implements Serializable {
 			for (AylikPuantaj aylikPuantaj : aylikPuantajList) {
 				Personel personel = aylikPuantaj.getPdksPersonel();
 				Sirket sirket = personel.getSirket();
-				CalismaModeli cm = aylikPuantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
+				CalismaModeli cm = aylikPuantaj.getPersonelDenklestirme().getCalismaModeli();
 				String key = (sirket.getTesisDurum() && personel.getTesis() != null ? personel.getTesis().getAciklama() + "_" : "");
 				String bolumAdi = personel.getEkSaha3() != null ? "_" + personel.getEkSaha3().getAciklama() : "";
 				if (cm != null) {
@@ -15124,10 +15124,10 @@ public class OrtakIslemler implements Serializable {
 		}
 
 		double gunduzCalismaSaat = 45.0d;
-		if (puantajData.getPersonelDenklestirmeAylik() != null) {
+		if (puantajData.getPersonelDenklestirme() != null) {
 			CalismaModeli calismaModeli = null;
-			if (puantajData.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
-				calismaModeli = puantajData.getPersonelDenklestirmeAylik().getCalismaModeli();
+			if (puantajData.getPersonelDenklestirme().getCalismaModeliAy() != null)
+				calismaModeli = puantajData.getPersonelDenklestirme().getCalismaModeli();
 			else
 				calismaModeli = puantajData.getPdksPersonel().getCalismaModeli();
 			if (calismaModeli != null)
@@ -15165,8 +15165,8 @@ public class OrtakIslemler implements Serializable {
 						haftaIciIzinGunTarih = null;
 					}
 				DenklestirmeAy denklestirmeAy = puantajData.getDenklestirmeAy();
-				if (denklestirmeAy == null && puantajData.getPersonelDenklestirmeAylik() != null)
-					denklestirmeAy = puantajData.getPersonelDenklestirmeAylik().getDenklestirmeAy();
+				if (denklestirmeAy == null && puantajData.getPersonelDenklestirme() != null)
+					denklestirmeAy = puantajData.getPersonelDenklestirme().getDenklestirmeAy();
 				double planlanSure = 0, izinSuresi = 0d, ucretiOdenenMesaiSure = 0d, fazlaMesaiMaxSure = getFazlaMesaiMaxSure(denklestirmeAy), resmiTatilSure = 0d;
 				boolean resmiTatilVardiyaEkle = false;
 
@@ -15179,7 +15179,7 @@ public class OrtakIslemler implements Serializable {
 					if (pdksVardiyaGunSablon.isAyinGunu())
 						ayinGunleri.put(pdksVardiyaGunSablon.getVardiyaDateStr(), pdksVardiyaGunSablon);
 				}
-				personelDenklestirme = puantajData.getPersonelDenklestirmeAylik();
+				personelDenklestirme = puantajData.getPersonelDenklestirme();
 				CalismaModeli calismaModeli = null;
 				if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null) {
 					calismaModeli = personelDenklestirme.getCalismaModeli();
@@ -15674,10 +15674,10 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (puantajData.isFazlaMesaiHesapla() || filliHesapla == false) {
 						double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(loginUser);
-						boolean fazlaMesaiOde = puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirmeAylik().getFazlaMesaiOde();
+						boolean fazlaMesaiOde = puantajData.getPersonelDenklestirme().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirme().getFazlaMesaiOde();
 						if (!fazlaMesaiOde) {
 							try {
-								if (puantajData.getPersonelDenklestirmeAylik() != null && puantajData.getPersonelDenklestirmeAylik().getDenklestirmeAy() != null) {
+								if (puantajData.getPersonelDenklestirme() != null && puantajData.getPersonelDenklestirme().getDenklestirmeAy() != null) {
 									fazlaMesaiOde = PdksUtil.tarihKarsilastirNumeric(tariheGunEkleCikar(cal, puantajData.getSonGun(), 1), personel.getIstenAyrilisTarihi()) != -1;
 								}
 							} catch (Exception e) {
@@ -15691,7 +15691,7 @@ public class OrtakIslemler implements Serializable {
 						if (loginUser.isAdmin()) {
 							try {
 								if (denklestirmeAy == null)
-									denklestirmeAy = puantajData.getPersonelDenklestirmeAylik().getDenklestirmeAy();
+									denklestirmeAy = puantajData.getPersonelDenklestirme().getDenklestirmeAy();
 							} catch (Exception e) {
 
 							}
@@ -15744,10 +15744,10 @@ public class OrtakIslemler implements Serializable {
 					if (((loginUser.isIK() || loginUser.isAdmin()) && personelDenklestirme.getDevredenSure() == null) || (kaydet && !personelDenklestirme.isKapandi(loginUser))) {
 						if (session == null)
 							session = PdksUtil.getSessionUser(entityManager, loginUser);
-						if (puantajData.getPersonelDenklestirmeAylik().getId() != null) {
+						if (puantajData.getPersonelDenklestirme().getId() != null) {
 							HashMap fields = new HashMap();
 							fields = new HashMap();
-							fields.put("id", puantajData.getPersonelDenklestirmeAylik().getId());
+							fields.put("id", puantajData.getPersonelDenklestirme().getId());
 							try {
 								fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 								personelDenklestirme = (PersonelDenklestirme) pdksEntityController.getObjectByInnerObject(fields, PersonelDenklestirme.class);
@@ -15762,7 +15762,7 @@ public class OrtakIslemler implements Serializable {
 								// personelDenklestirme.setDevredenSure(puantajData.getDevredenSure());
 								if (personelDenklestirme.isGuncellendi())
 									pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
-								puantajData.setPersonelDenklestirmeAylik(personelDenklestirme);
+								puantajData.setPersonelDenklestirme(personelDenklestirme);
 							}
 						}
 

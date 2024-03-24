@@ -913,13 +913,13 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 						AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
 						Personel personel = puantaj.getPdksPersonel();
-						if (puantaj.getPersonelDenklestirmeAylik() == null) {
+						if (puantaj.getPersonelDenklestirme() == null) {
 							if (treeMap.containsKey(personel.getId()))
-								puantaj.setPersonelDenklestirmeAylik(treeMap.get(personel.getId()));
+								puantaj.setPersonelDenklestirme(treeMap.get(personel.getId()));
 							else {
 								PersonelDenklestirme pd = (PersonelDenklestirme) personelDenklestirme.clone();
 								pd.setCalismaModeliAy(new CalismaModeliAy(denklestirmeAy, personel.getCalismaModeli()));
-								puantaj.setPersonelDenklestirmeAylik(pd);
+								puantaj.setPersonelDenklestirme(pd);
 							}
 
 						}
@@ -930,8 +930,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						puantaj.setFiiliHesapla(true);
 
 						perCalismaModeli = personel.getCalismaModeli();
-						if (puantaj.getPersonelDenklestirmeAylik() != null && puantaj.getPersonelDenklestirmeAylik().getCalismaModeliAy() != null)
-							perCalismaModeli = puantaj.getPersonelDenklestirmeAylik().getCalismaModeli();
+						if (puantaj.getPersonelDenklestirme() != null && puantaj.getPersonelDenklestirme().getCalismaModeliAy() != null)
+							perCalismaModeli = puantaj.getPersonelDenklestirme().getCalismaModeli();
 						Date sonPersonelCikisZamani = null;
 
 						Boolean gebemi = Boolean.FALSE, calisiyor = Boolean.FALSE;
@@ -1205,7 +1205,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 	public String kaydetSec() {
 		for (AylikPuantaj puantaj : aylikPuantajList) {
-			PersonelDenklestirme personelDenklestirmeAylik = puantaj.getPersonelDenklestirmeAylik();
+			PersonelDenklestirme personelDenklestirmeAylik = puantaj.getPersonelDenklestirme();
 			if (puantaj.isDonemBitti() && personelDenklestirmeAylik.isOnaylandi() && personelDenklestirmeAylik.getDurum() && puantaj.isFazlaMesaiHesapla() && !personelDenklestirmeAylik.isErpAktarildi())
 				puantaj.setKaydet(kaydetDurum);
 			else
@@ -1435,7 +1435,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			Personel personel = aylikPuantaj.getPdksPersonel();
 			if (!aylikPuantaj.isFazlaMesaiHesapla() || !aylikPuantaj.isSecili() || personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false)
 				continue;
-			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirmeAylik();
+			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirme();
 			row++;
 			col = 0;
 
@@ -1527,7 +1527,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 							if (aylikPuantaj.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getCalismaModeliAy().getSure());
 							else
-								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirmeAylik().getPlanlanSure());
+								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirme().getPlanlanSure());
 							RichTextString str1 = factory.createRichTextString(title);
 							comment1.setString(str1);
 							planlananCell.setCellComment(comment1);

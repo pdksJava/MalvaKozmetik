@@ -142,16 +142,16 @@
 										<a4j:commandLink ajaxSingle="true" action="#{denklestirmeBordroRaporuHome.saveLastParameter(puantaj) }"
 											onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide(); ">
 
-											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum}">
+											<ui:fragment rendered="#{puantaj.personelDenklestirme.durum}">
 												<h:graphicImage value="/img/msginfo.png" style="border:0" height="16" width="16" />
 												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
 											 #{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi} Göster
 											</rich:toolTip>
 											</ui:fragment>
-											<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.durum==false}">
+											<ui:fragment rendered="#{puantaj.personelDenklestirme.durum==false}">
 												<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20" />
 												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
-													<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi}">
+													<ui:fragment rendered="#{puantaj.personelDenklestirme.onaylandi}">
 														<span style="color: red; font-size: 14px;">#{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi} Hatalı Göster</span>
 														<ui:fragment rendered="#{not empty puantaj.vardiyalar}">
 															<p style="height: 10px;"></p>
@@ -186,7 +186,7 @@
 
 
 													</ui:fragment>
-													<ui:fragment rendered="#{puantaj.personelDenklestirmeAylik.onaylandi==false}">
+													<ui:fragment rendered="#{puantaj.personelDenklestirme.onaylandi==false}">
 
 														<span style="color: blue; font-size: 14px;">Çalışma planı onaylanmamıştır!</span>
 													</ui:fragment>
@@ -217,10 +217,10 @@
 
 												<DIV style="color: black;">
 													<P>
-														<B>TÇS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.hesaplananSure)}
+														<B>TÇS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirme.hesaplananSure)}
 													</P>
 													<P>
-														<B>ÇGS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirmeAylik.planlanSure)}
+														<B>ÇGS</B> <B> : </B>#{authenticatedUser.sayiFormatliGoster(puantaj.personelDenklestirme.planlanSure)}
 													</P>
 												</DIV>
 

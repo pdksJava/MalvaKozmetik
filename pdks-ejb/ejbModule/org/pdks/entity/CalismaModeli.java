@@ -49,6 +49,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_GUN_MAX_CALISMA_SURESI_ODENIR = "GUN_MAX_CALISMA_SURESI_ODENIR";
 	public static final String COLUMN_NAME_PERSONEL_TIPI = "PERSONEL_TIPI_ID";
 	public static final String COLUMN_NAME_HAFTA_TATIL_PAZAR = "HAFTA_TATIL_PAZAR";
+	public static final String COLUMN_NAME_GENEL_MODEL = "GENEL_MODEL";
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
@@ -56,7 +57,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
 	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
-	private Boolean haftaTatilPazar = Boolean.FALSE;
+	private Boolean haftaTatilPazar = Boolean.FALSE, genelModel = Boolean.TRUE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
 	private Tanim personelTipi;
@@ -263,6 +264,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.haftaTatilPazar = haftaTatilPazar;
 	}
 
+	@Column(name = COLUMN_NAME_GENEL_MODEL)
+	public Boolean getGenelModel() {
+		return genelModel;
+	}
+
+	public void setGenelModel(Boolean genelModel) {
+		this.genelModel = genelModel;
+	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_BAGLI_VARDIYA_SABLON)
 	@Fetch(FetchMode.JOIN)
@@ -451,6 +461,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public boolean isHaftaTatilPazardir() {
 		return haftaTatilPazar != null && haftaTatilPazar;
+	}
+
+	@Transient
+	public boolean isGenelModelGorunsun() {
+		return genelModel != null && genelModel;
 	}
 
 }

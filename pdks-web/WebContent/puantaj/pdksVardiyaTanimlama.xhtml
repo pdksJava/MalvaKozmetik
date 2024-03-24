@@ -9,7 +9,7 @@
 		<h:outputText value="#{ortakIslemler.getMenuAdi('pdksVardiyaTanimlama')}" />
 	</ui:define>
 	<ui:define name="body">
-		<h:form id="planForm">
+		<h:form id="formPdksVardiyaTanimlama">
 			<a4j:region>
 				<rich:panel style="width:90%; margin:0 auto;" id="vardiyaPanel"
 					header="#{ortakIslemler.getMenuUserAdi(vardiyaTanimlaHome.session,'pdksVardiyaTanimlama')}">
@@ -56,7 +56,7 @@
 								</rich:column>
 								<c:if test="#{vardiyaTanimlaHome.calismaModeliList!=null}">
 									<c:forEach items="#{vardiyaTanimlaHome.calismaModeliList}" var="cm">
-										<c:if test="#{cm.updateCGS==false or authenticatedUser.admin}">
+										<c:if test="#{(cm.updateCGS==false or authenticatedUser.admin ) and cm.genelModel}">
 											<rich:column style="text-align: center;width: 40px;">
 												<f:facet name="header">#{cm.aciklama} Süre</f:facet>
 											#{authenticatedUser.sayiFormatliGoster(vardiyaView.getCalismaModeliAy(cm.id).sure)}
@@ -139,7 +139,7 @@
 
 							<h:panelGrid columns="#{vardiyaTanimlaHome.girisKolonSayisi}">
 								<c:forEach items="#{vardiyaTanimlaHome.denklestirmeAy.modeller}" var="md">
-									<c:if test="#{md.calismaModeli.updateCGS==false or authenticatedUser.admin}">
+									<c:if test="#{(md.calismaModeli.updateCGS==false or authenticatedUser.admin) and md.calismaModeli.genelModel}">
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">#{md.calismaModeli.aciklama} Süre</ui:define>
 											<h:inputText value="#{md.sure}"

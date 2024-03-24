@@ -1615,7 +1615,8 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	}
 
 	public boolean veriDolu() {
-		return onaylananList.size() + onaylanmayanList.size() > 0;
+		boolean veriVar = onaylananList.size() + onaylanmayanList.size() > 0;
+		return veriVar;
 	}
 
 	public List<PersonelFazlaMesai> getOnaylananList() {
