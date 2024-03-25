@@ -215,63 +215,65 @@
 													<SPAN style="font-size: 12px; font-weight: normal;"> <B>Çalışılması Gereken Saat: </B>Çalışanın bu listede çalışması gereken saat
 													</SPAN>
 												</rich:toolTip></th>
-											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.yasalFazlaCalismaAsanSaat}">
+											<c:if test="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiVar}">
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.yasalFazlaCalismaAsanSaat}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}"><h:outputText value="#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}" />
+														<rich:toolTip for="baslik#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"> <b>Yasal Çalışmayı Aşan Mesai : </b>#{authenticatedUser.sayiFormatliGoster(fazlaMesaiHesaplaHome.denklestirmeAy.fazlaMesaiMaxSure)}
+																saati aşan çalışma toplam miktarı
+															</SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
 												<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
-													id="baslik#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}"><h:outputText value="#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}" />
-													<rich:toolTip for="baslik#{ortakIslemler.yasalFazlaCalismaAsanSaatKod()}">
-														<SPAN style="font-size: 12px; font-weight: normal;"> <b>Yasal Çalışmayı Aşan Mesai : </b>#{authenticatedUser.sayiFormatliGoster(fazlaMesaiHesaplaHome.denklestirmeAy.fazlaMesaiMaxSure)}
-															saati aşan çalışma toplam miktarı
+													id="baslik#{ortakIslemler.gerceklesenMesaiKod()}"><h:outputText value="#{ortakIslemler.gerceklesenMesaiKod()}" /> <rich:toolTip
+														for="baslik#{ortakIslemler.gerceklesenMesaiKod()}">
+														<SPAN style="font-size: 12px; font-weight: normal;"> <B>Gerçekleşen Mesai : </B>Çalışanın bu listedeki eksi/fazla çalışma saati
 														</SPAN>
 													</rich:toolTip></th>
-											</ui:fragment>
-											<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
-												id="baslik#{ortakIslemler.gerceklesenMesaiKod()}"><h:outputText value="#{ortakIslemler.gerceklesenMesaiKod()}" /> <rich:toolTip
-													for="baslik#{ortakIslemler.gerceklesenMesaiKod()}">
-													<SPAN style="font-size: 12px; font-weight: normal;"> <B>Gerçekleşen Mesai : </B>Çalışanın bu listedeki eksi/fazla çalışma saati
-													</SPAN>
-												</rich:toolTip></th>
-											<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
-												id="baslik#{ortakIslemler.devredenMesaiKod()}"><h:outputText value="#{ortakIslemler.devredenMesaiKod()}" /> <rich:toolTip
-													for="baslik#{ortakIslemler.devredenMesaiKod()}">
-													<SPAN style="font-size: 12px; font-weight: normal;"> <B>Devreden Mesai: </B>Çalışanın önceki listelerden devreden eksi/fazla
-														mesaisi
-													</SPAN>
-												</rich:toolTip></th>
-											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.kismiOdemeGoster}">
 												<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
-													id="baslik#{ortakIslemler.kismiOdemeKod()}"><h:outputText value="#{ortakIslemler.kismiOdemeKod()}" /> <rich:toolTip
-														for="baslik#{ortakIslemler.kismiOdemeKod()}">
-														<SPAN style="font-size: 12px; font-weight: normal;"><B>Kısmi Ücreti Ödenen Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
-															kısmi ödediğimiz fazla mesai saati </SPAN>
+													id="baslik#{ortakIslemler.devredenMesaiKod()}"><h:outputText value="#{ortakIslemler.devredenMesaiKod()}" /> <rich:toolTip
+														for="baslik#{ortakIslemler.devredenMesaiKod()}">
+														<SPAN style="font-size: 12px; font-weight: normal;"> <B>Devreden Mesai: </B>Çalışanın önceki listelerden devreden eksi/fazla
+															mesaisi
+														</SPAN>
 													</rich:toolTip></th>
-											</ui:fragment>
-											<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
-												id="baslik#{ortakIslemler.ucretiOdenenKod()}"><h:outputText value="ÜÖM" /> <rich:toolTip
-													for="baslik#{ortakIslemler.ucretiOdenenKod()}">
-													<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücreti Ödenen Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
-														ödediğimiz fazla mesai saati </SPAN>
-												</rich:toolTip></th>
-											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilVar}">
-												<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;" id="baslikROM"><h:outputText
-														value="RÖM" /> <rich:toolTip for="baslikROM">
-														<SPAN style="font-size: 12px; font-weight: normal;"><B>Resmi Tatil Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
-															ödediğimiz resmi tatil mesai saati </SPAN>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.kismiOdemeGoster}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.kismiOdemeKod()}"><h:outputText value="#{ortakIslemler.kismiOdemeKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.kismiOdemeKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Kısmi Ücreti Ödenen Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
+																kısmi ödediğimiz fazla mesai saati </SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
+												<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+													id="baslik#{ortakIslemler.ucretiOdenenKod()}"><h:outputText value="ÜÖM" /> <rich:toolTip
+														for="baslik#{ortakIslemler.ucretiOdenenKod()}">
+														<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücreti Ödenen Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
+															ödediğimiz fazla mesai saati </SPAN>
 													</rich:toolTip></th>
-											</ui:fragment>
-											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilVar}">
-												<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;" id="baslikHTM"><h:outputText
-														value="HTM" /> <rich:toolTip for="baslikHTM">
-														<SPAN style="font-size: 12px; font-weight: normal;"><B>Hafta Tatil Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
-															ödediğimiz hafta tatil mesai saati saati </SPAN>
-													</rich:toolTip></th>
-											</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilVar}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;" id="baslikROM"><h:outputText
+															value="RÖM" /> <rich:toolTip for="baslikROM">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Resmi Tatil Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
+																ödediğimiz resmi tatil mesai saati </SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilVar}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;" id="baslikHTM"><h:outputText
+															value="HTM" /> <rich:toolTip for="baslikHTM">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Hafta Tatil Mesai: </B>Çalışanın bu listenin sonunda ücret olarak
+																ödediğimiz hafta tatil mesai saati saati </SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
 
-											<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
-												id="baslik#{ortakIslemler.devredenBakiyeKod()}"><h:outputText value="#{ortakIslemler.devredenBakiyeKod()}" /> <rich:toolTip
-													for="baslik#{ortakIslemler.devredenBakiyeKod()}">
-													<SPAN style="font-size: 12px; font-weight: normal;"><B>Bakiye: </B>Çalışanın bu liste de dahil bugüne kadar ki devreden eksi/fazla
-														mesaisi saati saati </SPAN>
-												</rich:toolTip></th>
+												<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+													id="baslik#{ortakIslemler.devredenBakiyeKod()}"><h:outputText value="#{ortakIslemler.devredenBakiyeKod()}" /> <rich:toolTip
+														for="baslik#{ortakIslemler.devredenBakiyeKod()}">
+														<SPAN style="font-size: 12px; font-weight: normal;"><B>Bakiye: </B>Çalışanın bu liste de dahil bugüne kadar ki devreden
+															eksi/fazla mesaisi saati saati </SPAN>
+													</rich:toolTip></th>
+											</c:if>
 
 										</TR>
 									</thead>
@@ -307,22 +309,24 @@
 												</a4j:repeat>
 												<td class="#{ap.trClass}" style="width: 20px"></td>
 												<td class="#{ap.trClass}" style="width: 20px"></td>
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.yasalFazlaCalismaAsanSaat}">
+												<c:if test="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiVar}">
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.yasalFazlaCalismaAsanSaat}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
 													<td class="#{ap.trClass}" style="width: 20px"></td>
-												</ui:fragment>
-												<td class="#{ap.trClass}" style="width: 20px"></td>
-												<td class="#{ap.trClass}" style="width: 20px"></td>
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.kismiOdemeGoster}">
 													<td class="#{ap.trClass}" style="width: 20px"></td>
-												</ui:fragment>
-												<td class="#{ap.trClass}" style="width: 20px"></td>
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilVar}">
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.kismiOdemeGoster}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
 													<td class="#{ap.trClass}" style="width: 20px"></td>
-												</ui:fragment>
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilVar}">
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilVar}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilVar}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
 													<td class="#{ap.trClass}" style="width: 20px"></td>
-												</ui:fragment>
-												<td class="#{ap.trClass}" style="width: 20px"></td>
+												</c:if>
 											</tr>
 											<tr>
 												<td class="#{ap.trClass}" style="width: 50px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold;"><b>#{ap.denklestirmeAy.ayAdi}
@@ -416,6 +420,7 @@
 														</rich:toolTip>
 													</ui:fragment>
 												</td>
+												<c:if test="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiVar}">
 												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.yasalFazlaCalismaAsanSaat}">
 													<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
 															rendered="#{ap.fazlaMesaiHesapla and ap.ucretiOdenenMesaiSure!=0}">
@@ -535,7 +540,7 @@
 														</ui:fragment>
 
 													</ui:fragment></td>
-
+</c:if>
 											</tr>
 										</a4j:repeat>
 									</tbody>
