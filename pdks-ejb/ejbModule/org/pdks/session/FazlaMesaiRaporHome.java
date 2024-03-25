@@ -23,10 +23,8 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -1401,32 +1399,32 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		}
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(aylikPuantajDefault.getIlkGun());
-		CreationHelper factory = wb.getCreationHelper();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
 		for (int i = 0; i < vgList.size(); i++) {
 			Date tar = vgList.get(i).getVardiyaDate();
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(authenticatedUser.getTarihFormatla(tar, "dd/MM") + "\n" + authenticatedUser.getTarihFormatla(tar, "EEE"));
 		}
 
 		Cell cell = ExcelUtil.getCell(sheet, row, col++, header);
-		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "TÇS", "Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati");
+		ExcelUtil.baslikCell(cell, anchor, helper, drawing, "TÇS", "Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati");
 		cell = ExcelUtil.getCell(sheet, row, col++, header);
-		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÇGS", "Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat");
+		ExcelUtil.baslikCell(cell, anchor, helper, drawing, "ÇGS", "Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat");
 		if (yasalFazlaCalismaAsanSaat) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.yasalFazlaCalismaAsanSaatKod(), "Yasal Çalışmayı Aşan Mesai : " + authenticatedUser.sayiFormatliGoster(denklestirmeAy.getFazlaMesaiMaxSure()) + " saati aşan çalışma toplam miktarı");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.yasalFazlaCalismaAsanSaatKod(), "Yasal Çalışmayı Aşan Mesai : " + authenticatedUser.sayiFormatliGoster(denklestirmeAy.getFazlaMesaiMaxSure()) + " saati aşan çalışma toplam miktarı");
 		}
 		cell = ExcelUtil.getCell(sheet, row, col++, header);
-		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
+		ExcelUtil.baslikCell(cell, anchor, helper, drawing, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
 
 		if (resmiTatilVar) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
 		}
 		if (haftaTatilVar) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
 		}
 
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
@@ -1460,11 +1458,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 					if (!sirketMap.isEmpty()) {
 						Sirket personelSirket = personel.getSirket();
 						String title = personelSirket.getAd() + (personel.getTesis() != null ? " - " + personel.getTesis().getAciklama() : "");
-						Comment comment1 = drawing.createCellComment(anchor);
-						RichTextString str1 = factory.createRichTextString(title);
-						comment1.setString(str1);
-						personelCell.setCellComment(comment1);
-
+						ExcelUtil.setCellComment(personelCell, anchor, helper, drawing, title);
 					}
 					if (seciliEkSaha3Id == null)
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
@@ -1502,12 +1496,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						String aciklama = !help || calisan(vardiyaGun) ? vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(vardiyaGun.getCalismaSuresi())) : "";
 						String title = !help || calisan(vardiyaGun) ? vardiyaGun.getTitle() : null;
 						if (title != null) {
-							Comment comment1 = drawing.createCellComment(anchor);
 							if (vardiyaGun.getVardiya() != null && (vardiyaGun.getCalismaSuresi() > 0 || (vardiyaGun.getVardiya().isCalisma() && styleGenel == styleCalisma)))
 								title = vardiyaGun.getVardiya().getKisaAdi() + " --> " + title;
-							RichTextString str1 = factory.createRichTextString(title);
-							comment1.setString(str1);
-							cell.setCellComment(comment1);
+
+							ExcelUtil.setCellComment(cell, anchor, helper, drawing, title);
 
 						}
 						cell.setCellValue(aciklama);
@@ -1522,15 +1514,13 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						setCell(sheet, row, col++, styleGenel, aylikPuantaj.getSaatToplami());
 						Cell planlananCell = setCell(sheet, row, col++, styleGenel, aylikPuantaj.getPlanlananSure());
 						if (aylikPuantaj.getCalismaModeliAy() != null && planlananCell != null && aylikPuantaj.getSutIzniDurum().equals(Boolean.FALSE)) {
-							Comment comment1 = drawing.createCellComment(anchor);
 							String title = aylikPuantaj.getCalismaModeli().getAciklama() + " : ";
 							if (aylikPuantaj.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getCalismaModeliAy().getSure());
 							else
 								title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirme().getPlanlanSure());
-							RichTextString str1 = factory.createRichTextString(title);
-							comment1.setString(str1);
-							planlananCell.setCellComment(comment1);
+
+							ExcelUtil.setCellComment(planlananCell, anchor, helper, drawing, title);
 						}
 						if (yasalFazlaCalismaAsanSaat) {
 							if (aylikPuantaj.getUcretiOdenenMesaiSure() > 0)

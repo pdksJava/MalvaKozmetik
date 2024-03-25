@@ -2,6 +2,7 @@ package org.pdks.session;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -39,11 +39,15 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.AylikPuantaj;
+import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.CalismaModeli;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
+import org.pdks.entity.IzinTipi;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
+import org.pdks.entity.PersonelDenklestirmeBordro;
+import org.pdks.entity.PersonelDenklestirmeBordroDetay;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Tatil;
@@ -92,8 +96,13 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 	private HashMap<String, PersonelDenklestirme> perDenkMap;
 	private PersonelDenklestirme denklestirme;
 	private boolean tesisVar = false, fazlaMesaiOde = false, fazlaMesaiIzinKullan = false, fazlaMesaiVar = false, saatlikMesaiVar = false, aylikMesaiVar = false, resmiTatilVar = false, haftaTatilVar = false;
-	private boolean bordroPuantajEkranindaGoster = false, kismiOdemeGoster = false, yasalFazlaCalismaAsanSaat = false;
+	private boolean bordroPuantajEkranindaGoster = false, kismiOdemeGoster = false, yasalFazlaCalismaAsanSaat = false, istenAyrilanGoster = false;
+	private Boolean gerceklesenMesaiKod = Boolean.FALSE, devredenBakiyeKod = Boolean.FALSE, normalCalismaSaatKod = Boolean.FALSE, haftaTatilCalismaSaatKod = Boolean.FALSE, resmiTatilCalismaSaatKod = Boolean.FALSE, izinSureSaatKod = Boolean.FALSE;
+	private Boolean normalCalismaGunKod = Boolean.FALSE, haftaTatilCalismaGunKod = Boolean.FALSE, resmiTatilCalismaGunKod = Boolean.FALSE, izinSureGunKod = Boolean.FALSE, ucretliIzinGunKod = Boolean.FALSE, ucretsizIzinGunKod = Boolean.FALSE, hastalikIzinGunKod = Boolean.FALSE;
+	private Boolean normalGunKod = Boolean.FALSE, haftaTatilGunKod = Boolean.FALSE, resmiTatilGunKod = Boolean.FALSE, artikGunKod = Boolean.FALSE, bordroToplamGunKod = Boolean.FALSE, devredenMesaiKod = Boolean.FALSE, ucretiOdenenKod = Boolean.FALSE;
+
 	private HashMap<String, List<Tanim>> ekSahaListMap;
+	private TreeMap<String, Boolean> baslikMap;
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 	private String bolumAciklama;
 	private Date basTarih, bitTarih;
@@ -111,6 +120,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
+		if (baslikMap == null)
+			baslikMap = new TreeMap<String, Boolean>();
+		else
+			baslikMap.clear();
 		if (donemBas == null)
 			donemBas = new ArrayList<SelectItem>();
 		if (donemBit == null)
@@ -161,6 +174,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				tesisId = Long.parseLong((String) veriLastMap.get("tesisId"));
 			if (veriLastMap.containsKey("bolumId"))
 				bolumId = Long.parseLong((String) veriLastMap.get("bolumId"));
+			if (veriLastMap.containsKey("istenAyrilanGoster"))
+				istenAyrilanGoster = Boolean.getBoolean((String) veriLastMap.get("istenAyrilanGoster"));
 			veriLastMap = null;
 		}
 		fillEkSahaTanim();
@@ -187,6 +202,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			lastMap.put("tesisId", "" + tesisId);
 		if (bolumId != null)
 			lastMap.put("bolumId", "" + bolumId);
+		if (istenAyrilanGoster)
+			lastMap.put("istenAyrilanGoster", "" + istenAyrilanGoster);
 		lastMap.put("sayfaURL", sayfaURL);
 		try {
 			ortakIslemler.saveLastParameter(lastMap, session);
@@ -339,7 +356,6 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				}
 				donemSQLKontrol(sb);
 				sb.append(" AND ((D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + ")<=:s");
-
 				fields.put("s", sonDonem);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
@@ -504,21 +520,16 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 	}
 
 	public String fazlaMesaiExcel() {
+		String donemOrj = (seciliPersonel.getAdSoyad() + " " + seciliPersonel.getPdksSicilNo());
+		String donem = basYil + " " + PdksUtil.getSelectItemLabel(bitAy, donemBas) + " - " + bitYil + " " + PdksUtil.getSelectItemLabel(bitAy, donemBit);
 		try {
-
-			String donemOrj = (seciliPersonel.getAdSoyad() + " " + seciliPersonel.getPdksSicilNo());
-			String donem = basYil + " " + PdksUtil.getSelectItemLabel(bitAy, donemBas) + " - " + bitYil + " " + PdksUtil.getSelectItemLabel(bitAy, donemBit);
-
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(donem);
 			if (baosDosya != null) {
 				String dosyaAdi = "PersonelCalismaDonem " + donemOrj + " _ " + donem.trim() + ".xlsx";
 				PdksUtil.setExcelHttpServletResponse(baosDosya, dosyaAdi);
 			}
 		} catch (Exception e) {
-			logger.error("Pdks hata in : \n");
-			e.printStackTrace();
-			logger.error("Pdks hata out : " + e.getMessage());
-
+			logger.error(e);
 		}
 
 		return "";
@@ -538,7 +549,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 	private ByteArrayOutputStream fazlaMesaiExcelDevam(String donem) {
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		Sheet sheet = ExcelUtil.createSheet(wb, donem + " Çalışma", Boolean.TRUE);
+		Drawing drawing = sheet.createDrawingPatriarch();
 		CellStyle izinBaslik = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
@@ -589,9 +603,6 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 
 		Calendar cal = Calendar.getInstance();
 
-		CreationHelper factory = wb.getCreationHelper();
-		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
 		CellStyle headerVardiyaGun = ExcelUtil.getStyleHeader(9, wb);
 		ExcelUtil.setFillForegroundColor(headerVardiyaGun, 99, 182, 153);
 
@@ -603,61 +614,131 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		ExcelUtil.setFillForegroundColor(headerVardiyaTatilGun, 92, 127, 45);
 		ExcelUtil.setFontColor(headerVardiyaTatilGun, 255, 255, 0);
 		for (VardiyaGun vardiyaGun : gunAylikPuantaj.getVardiyalar()) {
-			try {
-
-				cal.setTime(vardiyaGun.getVardiyaDate());
-				CellStyle headerVardiya = headerVardiyaGun;
-				String title = null;
-
-				Cell cell = ExcelUtil.getCell(sheet, row, col++, headerVardiya);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, authenticatedUser.getTarihFormatla(cal.getTime(), "EEE"), title);
-
-			} catch (Exception e) {
-			}
+			cal.setTime(vardiyaGun.getVardiyaDate());
+			CellStyle headerVardiya = headerVardiyaGun;
+			Cell cell = ExcelUtil.getCell(sheet, row, col++, headerVardiya);
+			cell.setCellValue(authenticatedUser.getTarihFormatla(cal.getTime(), "EEE"));
 		}
-
 		Cell cell = ExcelUtil.getCell(sheet, row, col++, header);
-		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "TÇS", "Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati");
+		ExcelUtil.baslikCell(cell, anchor, helper, drawing, "TÇS", "Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati");
 		cell = ExcelUtil.getCell(sheet, row, col++, header);
-		AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÇGS", "Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat");
+		ExcelUtil.baslikCell(cell, anchor, helper, drawing, "ÇGS", "Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat");
 		if (fazlaMesaiVar) {
-
 			if (yasalFazlaCalismaAsanSaat) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.yasalFazlaCalismaAsanSaatKod(), "Yasal Çalışmayı Aşan Mesai : Saati aşan çalışma toplam miktarı");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.yasalFazlaCalismaAsanSaatKod(), "Yasal Çalışmayı Aşan Mesai : Saati aşan çalışma toplam miktarı");
 			}
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
 
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenMesaiKod(), "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenMesaiKod(), "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
 
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 
 			if (kismiOdemeGoster) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "KÖM", "Çalışanın bu listenin sonunda ücret olarak kısmi ödediğimiz fazla mesai saati ");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, "KÖM", "Çalışanın bu listenin sonunda ücret olarak kısmi ödediğimiz fazla mesai saati ");
 			}
 
 			if (resmiTatilVar) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
 			}
 			if (haftaTatilVar) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
 			}
 
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
 		}
 		CellStyle headerIzinTipi = (CellStyle) header.clone();
 		ExcelUtil.setFillForegroundColor(headerIzinTipi, 255, 153, 204);
+		if (bordroPuantajEkranindaGoster) {
+			XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
+			headerSiyah.getFont().setColor(ExcelUtil.getXSSFColor(255, 255, 255));
+			XSSFCellStyle headerSaat = (XSSFCellStyle) headerSiyah.clone();
+			XSSFCellStyle headerIzin = (XSSFCellStyle) headerSiyah.clone();
+			XSSFCellStyle headerBGun = (XSSFCellStyle) headerSiyah.clone();
+			XSSFCellStyle headerBTGun = (XSSFCellStyle) (XSSFCellStyle) headerSiyah.clone();
+			ExcelUtil.setFillForegroundColor(headerSaat, 146, 208, 62);
+			ExcelUtil.setFillForegroundColor(headerIzin, 255, 255, 255);
+			ExcelUtil.setFillForegroundColor(headerBGun, 255, 255, 0);
+			ExcelUtil.setFillForegroundColor(headerBTGun, 236, 125, 125);
+
+			if (normalCalismaSaatKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.normalCalismaSaatKod(), "N.Çalışma Saat");
+			}
+			if (haftaTatilCalismaSaatKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.haftaTatilCalismaSaatKod(), "H.Tatil Saat");
+			}
+			if (resmiTatilCalismaSaatKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.resmiTatilCalismaSaatKod(), "R.Tatil Saat");
+			}
+			if (izinSureSaatKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.izinSureSaatKod(), "İzin Saat");
+			}
+			if (normalCalismaGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, header);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.normalCalismaGunKod(), "N.Çalışma Gün");
+			}
+			if (haftaTatilCalismaGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, header);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.haftaTatilCalismaGunKod(), "H.Tatil Gün");
+			}
+			if (resmiTatilCalismaGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, header);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.resmiTatilCalismaGunKod(), "R.Tatil Gün");
+			}
+			if (izinSureGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, header);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.izinSureGunKod(), "İzin Gün");
+			}
+			if (ucretliIzinGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerIzin);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.ucretliIzinGunKod(), "Ücretli İzin Gün");
+			}
+			if (ucretsizIzinGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerIzin);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.ucretsizIzinGunKod(), "Ücretsiz İzin Gün");
+			}
+			if (hastalikIzinGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerIzin);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.hastalikIzinGunKod(), "Hastalık İzin Gün");
+			}
+			if (normalGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.normalGunKod(), "Normal Gün");
+			}
+			if (haftaTatilGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.haftaTatilGunKod(), "H.Tatil Gün");
+			}
+			if (resmiTatilGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.resmiTatilGunKod(), "R.Tatil Gün");
+			}
+			if (artikGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.artikGunKod(), "Artık Gün");
+			}
+			if (bordroToplamGunKod) {
+				cell = ExcelUtil.getCell(sheet, row, col++, headerBTGun);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.bordroToplamGunKod(), "Toplam Gün");
+			}
+		}
 		int ayAdet = 0;
 		String pattern = PdksUtil.getDateFormat() + " EEEEE";
 		for (Iterator iter = puantajList.iterator(); iter.hasNext();) {
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
+			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirme();
+			DenklestirmeAy da = personelDenklestirme != null ? aylikPuantaj.getDenklestirmeAy() : null;
 			if (ayAdet % 2 != 0) {
 				styleCenter = styleOddCenter;
 				styleStrDay = styleCenterOddDay;
@@ -670,7 +751,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				styleTutar = styleTutarEven;
 			}
 			ayAdet++;
-			List vardiyaList = aylikPuantaj.getVardiyalar();
+			List<VardiyaGun> vardiyaList = aylikPuantaj.getVardiyalar();
 			row++;
 			col = 0;
 			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
@@ -680,29 +761,28 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 			if (fazlaMesaiIzinKullan)
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
-			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
-				VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+			for (VardiyaGun vardiyaGun : vardiyaList) {
 				if (vardiyaGun.isAyinGunu()) {
-					try {
-						cal.setTime(vardiyaGun.getVardiyaDate());
-						CellStyle headerVardiya = headerVardiyaGun;
-						String title = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), pattern);
-						if (vardiyaGun.getTatil() != null) {
-							Tatil tatil = vardiyaGun.getTatil();
-							title += "\n" + tatil.getAd();
-							headerVardiya = tatil.isYarimGunMu() ? headerVardiyaTatilYarimGun : headerVardiyaTatilGun;
-						}
-						cell = ExcelUtil.getCell(sheet, row, col++, headerVardiya);
-						AylikPuantaj.baslikCell(factory, drawing, anchor, cell, String.valueOf(cal.get(Calendar.DAY_OF_MONTH)), title);
-
-					} catch (Exception e) {
+					cal.setTime(vardiyaGun.getVardiyaDate());
+					CellStyle headerVardiya = headerVardiyaGun;
+					String title = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), pattern);
+					if (vardiyaGun.getTatil() != null) {
+						Tatil tatil = vardiyaGun.getTatil();
+						title += "\n" + tatil.getAd();
+						headerVardiya = tatil.isYarimGunMu() ? headerVardiyaTatilYarimGun : headerVardiyaTatilGun;
 					}
+					cell = ExcelUtil.getCell(sheet, row, col++, headerVardiya);
+					cell.setCellValue(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
+					if (PdksUtil.hasStringValue(title))
+						ExcelUtil.setCellComment(cell, anchor, helper, drawing, title);
+
 				} else
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 
 			}
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+
 			if (fazlaMesaiVar) {
 				if (yasalFazlaCalismaAsanSaat)
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
@@ -717,30 +797,74 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 			}
-			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirme();
-			DenklestirmeAy da = aylikPuantaj.getDenklestirmeAy();
+			if (bordroPuantajEkranindaGoster) {
 
-			CalismaModeli calismaModeli = aylikPuantaj.getCalismaModeli();
-			PersonelDenklestirme personelDenklestirmeGecenAy = personelDenklestirme != null ? personelDenklestirme.getPersonelDenklestirmeGecenAy() : null;
-			row++;
-			col = 0;
-			Comment commentGuncelleyen = null;
-			if (personelDenklestirme.getGuncelleyenUser() != null && personelDenklestirme.getGuncellemeTarihi() != null)
-				commentGuncelleyen = getCommentGuncelleyen(factory, drawing, anchor, personelDenklestirme);
+				if (normalCalismaSaatKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (haftaTatilCalismaSaatKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (resmiTatilCalismaSaatKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (izinSureSaatKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (normalCalismaGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (haftaTatilCalismaGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (resmiTatilCalismaGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (izinSureGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (ucretliIzinGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (ucretsizIzinGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (hastalikIzinGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (normalGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (haftaTatilGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (resmiTatilGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (artikGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+				if (bordroToplamGunKod) {
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+				}
+			}
 
-			try {
-
+			if (personelDenklestirme != null) {
+				CalismaModeli calismaModeli = aylikPuantaj.getCalismaModeli();
+				PersonelDenklestirme personelDenklestirmeGecenAy = personelDenklestirme != null ? personelDenklestirme.getPersonelDenklestirmeGecenAy() : null;
+				row++;
+				col = 0;
+				Comment commentGuncelleyen = null;
+				if (personelDenklestirme.getGuncelleyenUser() != null && personelDenklestirme.getGuncellemeTarihi() != null)
+					commentGuncelleyen = fazlaMesaiOrtakIslemler.getCommentGuncelleyen(anchor, helper, drawing, personelDenklestirme);
 				ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(da.getAyAdi() + " " + da.getYil());
-
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(calismaModeli != null ? calismaModeli.getAciklama() : "");
 				if (fazlaMesaiOde)
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getFazlaMesaiOde()));
 				if (fazlaMesaiIzinKullan)
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getFazlaMesaiIzinKullan()));
-
-				for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
-					VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
-					if (vardiyaGun.isAyinGunu()) {
+				for (VardiyaGun vardiyaGun : vardiyaList) {
+					if (vardiyaGun.isAyinGunu() && vardiyaGun.getDurum()) {
 						String styleText = vardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
 						styleDay = styleStrDay;
 						if (styleText.equals(VardiyaGun.STYLE_CLASS_HAFTA_TATIL))
@@ -757,12 +881,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 						String aciklama = calisan(vardiyaGun) ? vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(vardiyaGun.getCalismaSuresi())) : "";
 						String title = calisan(vardiyaGun) ? vardiyaGun.getTitle() : null;
 						if (title != null) {
-							Comment comment1 = drawing.createCellComment(anchor);
 							if (vardiyaGun.getVardiya() != null && (vardiyaGun.getCalismaSuresi() > 0 || (vardiyaGun.getVardiya().isCalisma() && styleGenel == styleCalisma)))
 								title = vardiyaGun.getVardiya().getKisaAdi() + " --> " + title;
-							RichTextString str1 = factory.createRichTextString(title);
-							comment1.setString(str1);
-							cell.setCellComment(comment1);
+							if (PdksUtil.hasStringValue(title))
+								ExcelUtil.setCellComment(cell, anchor, helper, drawing, title);
 
 						}
 						cell.setCellValue(aciklama);
@@ -774,15 +896,13 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				setCell(sheet, row, col++, styleTutar, aylikPuantaj.getSaatToplami());
 				Cell planlananCell = setCell(sheet, row, col++, styleTutar, aylikPuantaj.getPlanlananSure());
 				if (aylikPuantaj.getCalismaModeliAy() != null && planlananCell != null && aylikPuantaj.getSutIzniDurum().equals(Boolean.FALSE)) {
-					Comment comment1 = drawing.createCellComment(anchor);
 					String title = aylikPuantaj.getCalismaModeli().getAciklama() + " : ";
 					if (aylikPuantaj.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 						title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getCalismaModeliAy().getSure());
 					else
 						title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirme().getPlanlanSure());
-					RichTextString str1 = factory.createRichTextString(title);
-					comment1.setString(str1);
-					planlananCell.setCellComment(comment1);
+					if (PdksUtil.hasStringValue(title))
+						ExcelUtil.setCellComment(planlananCell, anchor, helper, drawing, title);
 				}
 				if (fazlaMesaiVar) {
 					if (yasalFazlaCalismaAsanSaat) {
@@ -797,12 +917,9 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					Cell gecenAyFazlaMesaiCell = setCell(sheet, row, col++, styleTutar, gecenAyFazlaMesai);
 					if (gecenAyFazlaMesai != null && personelDenklestirmeGecenAy != null && gecenAyFazlaMesai.doubleValue() != 0.0d) {
 						if (personelDenklestirmeGecenAy.getGuncelleyenUser() != null && personelDenklestirmeGecenAy.getGuncellemeTarihi() != null) {
-							Comment gecenAyFazlaMesaiCommnet = drawing.createCellComment(anchor);
 							String title = "Onaylayan : " + personelDenklestirmeGecenAy.getGuncelleyenUser().getAdSoyad() + "\n";
 							title += "Zaman : " + authenticatedUser.dateTimeFormatla(personelDenklestirmeGecenAy.getGuncellemeTarihi());
-							RichTextString str1 = factory.createRichTextString(title);
-							gecenAyFazlaMesaiCommnet.setString(str1);
-							gecenAyFazlaMesaiCell.setCellComment(gecenAyFazlaMesaiCommnet);
+							ExcelUtil.setCellComment(gecenAyFazlaMesaiCell, anchor, helper, drawing, title);
 						}
 					}
 
@@ -830,56 +947,71 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 
 					if (aylikPuantaj.isFazlaMesaiHesapla()) {
 						Cell devredenSureCell = setCell(sheet, row, col++, styleTutar, aylikPuantaj.getDevredenSure());
-						if (aylikPuantaj.getDevredenSure() != null && aylikPuantaj.getDevredenSure().doubleValue() != 0.0d && commentGuncelleyen != null) {
+						if (aylikPuantaj.getDevredenSure() != null && aylikPuantaj.getDevredenSure().doubleValue() != 0.0d && commentGuncelleyen == null) {
 							if (olustur)
-								commentGuncelleyen = getCommentGuncelleyen(factory, drawing, anchor, personelDenklestirme);
-							devredenSureCell.setCellComment(commentGuncelleyen);
+								commentGuncelleyen = fazlaMesaiOrtakIslemler.getCommentGuncelleyen(anchor, helper, drawing, personelDenklestirme);
+							if (commentGuncelleyen != null)
+								devredenSureCell.setCellComment(commentGuncelleyen);
 						}
 					} else
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 				}
-				styleGenel = null;
-			} catch (Exception e) {
-				logger.error("Pdks hata in : \n");
-				e.printStackTrace();
-				logger.error("Pdks hata out : " + e.getMessage());
-				logger.error(row);
+				if (bordroPuantajEkranindaGoster) {
+					PersonelDenklestirmeBordro denklestirmeBordro = aylikPuantaj.getDenklestirmeBordro();
+					if (denklestirmeBordro == null) {
+						denklestirmeBordro = new PersonelDenklestirmeBordro();
+						denklestirmeBordro.setPersonelDenklestirme(aylikPuantaj.getPersonelDenklestirme());
+					}
+					boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
+					if (denklestirmeBordro.getDetayMap() == null)
+						denklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
+					if (normalCalismaSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatNormal() : 0);
+					if (haftaTatilCalismaSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatHaftaTatil() : 0);
+					if (resmiTatilCalismaSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatResmiTatil() : 0);
+					if (izinSureSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatIzin() : 0);
+					if (normalCalismaGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatNormal() : 0);
+					if (haftaTatilCalismaGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatHaftaTatil() : 0);
+					if (resmiTatilCalismaGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatResmiTatil() : 0);
+					if (izinSureGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatIzin() : 0);
+					if (ucretliIzinGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getUcretliIzin().doubleValue());
+					if (ucretsizIzinGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getUcretsizIzin().doubleValue());
+					if (hastalikIzinGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getRaporluIzin().doubleValue());
+					if (normalGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getNormalGunAdet());
+					if (haftaTatilGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getHaftaTatilAdet());
+					if (resmiTatilGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getResmiTatilAdet());
+					if (artikGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getArtikAdet());
+					if (bordroToplamGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getBordroToplamGunAdet());
 
+				}
 			}
-
+			styleGenel = null;
 		}
-
+		for (int i = 0; i <= col; i++)
+			sheet.autoSizeColumn(i);
+		baos = new ByteArrayOutputStream();
 		try {
-
-			for (int i = 0; i <= col; i++)
-				sheet.autoSizeColumn(i);
-
-			baos = new ByteArrayOutputStream();
 			wb.write(baos);
-		} catch (Exception e) {
-			logger.error("Pdks hata in : \n");
+		} catch (IOException e) {
 			e.printStackTrace();
-			logger.error("Pdks hata out : " + e.getMessage());
-			baos = null;
 		}
-		return baos;
-	}
 
-	/**
-	 * @param factory
-	 * @param drawing
-	 * @param anchor
-	 * @param personelDenklestirme
-	 * @return
-	 */
-	private Comment getCommentGuncelleyen(CreationHelper factory, Drawing drawing, ClientAnchor anchor, PersonelDenklestirme personelDenklestirme) {
-		Comment commentGuncelleyen;
-		commentGuncelleyen = drawing.createCellComment(anchor);
-		String title = "Onaylayan : " + personelDenklestirme.getGuncelleyenUser().getAdSoyad() + "\n";
-		title += "Zaman : " + authenticatedUser.dateTimeFormatla(personelDenklestirme.getGuncellemeTarihi());
-		RichTextString str1 = factory.createRichTextString(title);
-		commentGuncelleyen.setString(str1);
-		return commentGuncelleyen;
+		return baos;
 	}
 
 	/**
@@ -939,6 +1071,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		haftaTatilVar = false;
 		kismiOdemeGoster = false;
 		session.clear();
+		baslikMap.clear();
 		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
 		yasalFazlaCalismaAsanSaat = false;
 		StringBuffer sb = new StringBuffer();
@@ -1110,8 +1243,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				fazlaMesaiIzinKullan = false;
 			}
 			if (!dataList.isEmpty()) {
-				if (bordroPuantajEkranindaGoster)
+				if (bordroPuantajEkranindaGoster) {
 					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(dataList, session);
+					bordroVeriOlusturBasla(dataList, tatilMap);
+				}
 				for (AylikPuantaj dap : dataList) {
 					PersonelDenklestirme personelDenklestirme = dap.getPersonelDenklestirme();
 					dap.setPlanlananSure(personelDenklestirme.getPlanlanSure());
@@ -1138,6 +1273,83 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		}
 
 		return "";
+	}
+
+	/**
+	 * @param puantajList
+	 * @param tatilMap
+	 */
+	private void bordroVeriOlusturBasla(List<AylikPuantaj> puantajList, TreeMap<String, Tatil> tatilMap) {
+		baslikMap.clear();
+		boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
+		for (AylikPuantaj ap : puantajList) {
+			double izinGunAdet = 0.0;
+			if (ap.getVardiyalar() != null) {
+				for (VardiyaGun vg : ap.getVardiyalar()) {
+					if (vg.isAyinGunu() && vg.getIzin() != null && vg.getTatil() == null) {
+						IzinTipi izinTipi = vg.getIzin().getIzinTipi();
+						if (izinTipi.isUcretliIzinTipi() && !tatilMap.containsKey(vg.getVardiyaDateStr()))
+							izinGunAdet += 1.0d;
+					}
+
+				}
+			}
+
+			CalismaModeli calismaModeli = ap.getCalismaModeli();
+			if (calismaModeli.isFazlaMesaiVarMi()) {
+				if (ap.getGecenAyFazlaMesai(authenticatedUser) != 0)
+					baslikMap.put(ortakIslemler.devredenMesaiKod(), Boolean.TRUE);
+				if (ap.getFazlaMesaiSure() > 0)
+					baslikMap.put(ortakIslemler.ucretiOdenenKod(), Boolean.TRUE);
+				if (ap.getDevredenSure() != 0)
+					baslikMap.put(ortakIslemler.devredenBakiyeKod(), Boolean.TRUE);
+				if (ap.getAylikNetFazlaMesai() != 0)
+					baslikMap.put(ortakIslemler.gerceklesenMesaiKod(), Boolean.TRUE);
+			}
+			PersonelDenklestirmeBordro denklestirmeBordro = ap.getDenklestirmeBordro();
+			boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
+
+			if (denklestirmeBordro != null) {
+				if (saatlikCalismaVar) {
+					String keyEk = saatlikCalisma ? "" : "G";
+					fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.normalCalismaSaatKod() + keyEk, denklestirmeBordro.getSaatNormal());
+					fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.haftaTatilCalismaSaatKod() + keyEk, denklestirmeBordro.getSaatHaftaTatil());
+					fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.resmiTatilCalismaSaatKod() + keyEk, denklestirmeBordro.getSaatResmiTatil());
+					fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.izinSureSaatKod() + keyEk, denklestirmeBordro.getSaatIzin());
+					fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.izinSureGunAdetKod(), izinGunAdet);
+				}
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.ucretliIzinGunKod(), denklestirmeBordro.getUcretliIzin().doubleValue());
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.ucretsizIzinGunKod(), denklestirmeBordro.getUcretsizIzin().doubleValue());
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.hastalikIzinGunKod(), denklestirmeBordro.getRaporluIzin().doubleValue());
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.normalGunKod(), denklestirmeBordro.getNormalGunAdet());
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.haftaTatilGunKod(), denklestirmeBordro.getHaftaTatilAdet());
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.artikGunKod(), denklestirmeBordro.getArtikAdet());
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.resmiTatilGunKod(), denklestirmeBordro.getResmiTatilAdet());
+				fazlaMesaiOrtakIslemler.baslikGuncelle(baslikMap, ortakIslemler.bordroToplamGunKod(), denklestirmeBordro.getBordroToplamGunAdet());
+			}
+
+		}
+
+		gerceklesenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod());
+		devredenBakiyeKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenBakiyeKod());
+		devredenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenMesaiKod());
+		ucretiOdenenKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.ucretiOdenenKod());
+		normalCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || baslikMap.containsKey(ortakIslemler.normalCalismaSaatKod());
+		haftaTatilCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.haftaTatilCalismaSaatKod()));
+		resmiTatilCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.resmiTatilCalismaSaatKod()));
+		izinSureSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.izinSureSaatKod()));
+		normalCalismaGunKod = bordroPuantajEkranindaGoster && baslikMap.containsKey(ortakIslemler.normalCalismaGunKod());
+		haftaTatilCalismaGunKod = bordroPuantajEkranindaGoster && baslikMap.containsKey(ortakIslemler.haftaTatilCalismaGunKod());
+		resmiTatilCalismaGunKod = bordroPuantajEkranindaGoster && baslikMap.containsKey(ortakIslemler.resmiTatilCalismaGunKod());
+		izinSureGunKod = bordroPuantajEkranindaGoster && baslikMap.containsKey(ortakIslemler.izinSureGunKod());
+		ucretliIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.ucretliIzinGunKod());
+		ucretsizIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.ucretsizIzinGunKod());
+		hastalikIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.hastalikIzinGunKod());
+		normalGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.normalGunKod());
+		haftaTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.haftaTatilGunKod());
+		resmiTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilGunKod());
+		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
+		bordroToplamGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
 	}
 
 	/**
@@ -1196,6 +1408,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			sb.append(" AND P." + Personel.COLUMN_NAME_ISE_BASLAMA_TARIHI + " <= :b2  AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= :b1 ");
 			fields.put("b1", basTarih);
 			fields.put("b2", bitTarih);
+		}
+		if (istenAyrilanGoster == false) {
+			sb.append(" AND P." + Personel.COLUMN_NAME_SSK_CIKIS_TARIHI + " >= :a");
+			fields.put("a", bitTarih);
 		}
 		if (authenticatedUser.getYetkiliTesisler() != null && !authenticatedUser.getYetkiliTesisler().isEmpty()) {
 			List<Long> idList = new ArrayList<Long>();
@@ -1532,6 +1748,190 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 
 	public void setBordroPuantajEkranindaGoster(boolean bordroPuantajEkranindaGoster) {
 		this.bordroPuantajEkranindaGoster = bordroPuantajEkranindaGoster;
+	}
+
+	public Integer getSonDonem() {
+		return sonDonem;
+	}
+
+	public void setSonDonem(Integer sonDonem) {
+		this.sonDonem = sonDonem;
+	}
+
+	public Boolean getGerceklesenMesaiKod() {
+		return gerceklesenMesaiKod;
+	}
+
+	public void setGerceklesenMesaiKod(Boolean gerceklesenMesaiKod) {
+		this.gerceklesenMesaiKod = gerceklesenMesaiKod;
+	}
+
+	public Boolean getDevredenBakiyeKod() {
+		return devredenBakiyeKod;
+	}
+
+	public void setDevredenBakiyeKod(Boolean devredenBakiyeKod) {
+		this.devredenBakiyeKod = devredenBakiyeKod;
+	}
+
+	public Boolean getNormalCalismaSaatKod() {
+		return normalCalismaSaatKod;
+	}
+
+	public void setNormalCalismaSaatKod(Boolean normalCalismaSaatKod) {
+		this.normalCalismaSaatKod = normalCalismaSaatKod;
+	}
+
+	public Boolean getHaftaTatilCalismaSaatKod() {
+		return haftaTatilCalismaSaatKod;
+	}
+
+	public void setHaftaTatilCalismaSaatKod(Boolean haftaTatilCalismaSaatKod) {
+		this.haftaTatilCalismaSaatKod = haftaTatilCalismaSaatKod;
+	}
+
+	public Boolean getResmiTatilCalismaSaatKod() {
+		return resmiTatilCalismaSaatKod;
+	}
+
+	public void setResmiTatilCalismaSaatKod(Boolean resmiTatilCalismaSaatKod) {
+		this.resmiTatilCalismaSaatKod = resmiTatilCalismaSaatKod;
+	}
+
+	public Boolean getIzinSureSaatKod() {
+		return izinSureSaatKod;
+	}
+
+	public void setIzinSureSaatKod(Boolean izinSureSaatKod) {
+		this.izinSureSaatKod = izinSureSaatKod;
+	}
+
+	public Boolean getNormalCalismaGunKod() {
+		return normalCalismaGunKod;
+	}
+
+	public void setNormalCalismaGunKod(Boolean normalCalismaGunKod) {
+		this.normalCalismaGunKod = normalCalismaGunKod;
+	}
+
+	public Boolean getHaftaTatilCalismaGunKod() {
+		return haftaTatilCalismaGunKod;
+	}
+
+	public void setHaftaTatilCalismaGunKod(Boolean haftaTatilCalismaGunKod) {
+		this.haftaTatilCalismaGunKod = haftaTatilCalismaGunKod;
+	}
+
+	public Boolean getResmiTatilCalismaGunKod() {
+		return resmiTatilCalismaGunKod;
+	}
+
+	public void setResmiTatilCalismaGunKod(Boolean resmiTatilCalismaGunKod) {
+		this.resmiTatilCalismaGunKod = resmiTatilCalismaGunKod;
+	}
+
+	public Boolean getIzinSureGunKod() {
+		return izinSureGunKod;
+	}
+
+	public void setIzinSureGunKod(Boolean izinSureGunKod) {
+		this.izinSureGunKod = izinSureGunKod;
+	}
+
+	public Boolean getUcretliIzinGunKod() {
+		return ucretliIzinGunKod;
+	}
+
+	public void setUcretliIzinGunKod(Boolean ucretliIzinGunKod) {
+		this.ucretliIzinGunKod = ucretliIzinGunKod;
+	}
+
+	public Boolean getUcretsizIzinGunKod() {
+		return ucretsizIzinGunKod;
+	}
+
+	public void setUcretsizIzinGunKod(Boolean ucretsizIzinGunKod) {
+		this.ucretsizIzinGunKod = ucretsizIzinGunKod;
+	}
+
+	public Boolean getHastalikIzinGunKod() {
+		return hastalikIzinGunKod;
+	}
+
+	public void setHastalikIzinGunKod(Boolean hastalikIzinGunKod) {
+		this.hastalikIzinGunKod = hastalikIzinGunKod;
+	}
+
+	public Boolean getNormalGunKod() {
+		return normalGunKod;
+	}
+
+	public void setNormalGunKod(Boolean normalGunKod) {
+		this.normalGunKod = normalGunKod;
+	}
+
+	public Boolean getHaftaTatilGunKod() {
+		return haftaTatilGunKod;
+	}
+
+	public void setHaftaTatilGunKod(Boolean haftaTatilGunKod) {
+		this.haftaTatilGunKod = haftaTatilGunKod;
+	}
+
+	public Boolean getResmiTatilGunKod() {
+		return resmiTatilGunKod;
+	}
+
+	public void setResmiTatilGunKod(Boolean resmiTatilGunKod) {
+		this.resmiTatilGunKod = resmiTatilGunKod;
+	}
+
+	public Boolean getArtikGunKod() {
+		return artikGunKod;
+	}
+
+	public void setArtikGunKod(Boolean artikGunKod) {
+		this.artikGunKod = artikGunKod;
+	}
+
+	public Boolean getBordroToplamGunKod() {
+		return bordroToplamGunKod;
+	}
+
+	public void setBordroToplamGunKod(Boolean bordroToplamGunKod) {
+		this.bordroToplamGunKod = bordroToplamGunKod;
+	}
+
+	public Boolean getDevredenMesaiKod() {
+		return devredenMesaiKod;
+	}
+
+	public void setDevredenMesaiKod(Boolean devredenMesaiKod) {
+		this.devredenMesaiKod = devredenMesaiKod;
+	}
+
+	public Boolean getUcretiOdenenKod() {
+		return ucretiOdenenKod;
+	}
+
+	public void setUcretiOdenenKod(Boolean ucretiOdenenKod) {
+		this.ucretiOdenenKod = ucretiOdenenKod;
+	}
+
+	public TreeMap<String, Boolean> getBaslikMap() {
+		return baslikMap;
+	}
+
+	public void setBaslikMap(TreeMap<String, Boolean> baslikMap) {
+		this.baslikMap = baslikMap;
+	}
+
+	public boolean isIstenAyrilanGoster() {
+		return istenAyrilanGoster;
+	}
+
+	public void setIstenAyrilanGoster(boolean istenAyrilanGoster) {
+		this.istenAyrilanGoster = istenAyrilanGoster;
 	}
 
 }

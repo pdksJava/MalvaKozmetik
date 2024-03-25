@@ -86,6 +86,14 @@
 									action="#{fazlaMesaiDonemselPuantajRaporHome.personelList.clear()}" />
 							</h:selectOneMenu>
 						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İşten Ayrılan Göster</ui:define>
+							<h:selectBooleanCheckbox value="#{fazlaMesaiDonemselPuantajRaporHome.istenAyrilanGoster}">
+								<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" action="#{fazlaMesaiDonemselPuantajRaporHome.personelList.clear()}"
+									reRender="denklestirmeDonemiTable" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+
 					</h:panelGrid>
 
 				</h:panelGrid>
@@ -183,13 +191,17 @@
 						<ui:fragment
 							rendered="#{not empty fazlaMesaiDonemselPuantajRaporHome.personelList and not empty fazlaMesaiDonemselPuantajRaporHome.puantajList}">
 							<DIV class="#{authenticatedUser.scroolClass}" id="#{authenticatedUser.scroolDiv}">
-								<DIV style="text-align: center; font-weight: bold; color: blue; font-size: 16px;">#{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.pdksSicilNo}
-									#{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.adSoyad}</DIV>
 								<br></br>
+								<DIV style="font-weight: bold; color: blue; font-size: 16px;">
 
+									<p style="text-align: center;">#{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.pdksSicilNo}
+										#{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.adSoyad}</p>
+								</DIV>
+								<br></br>
 								<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiExcel}" target="blank">
 									<a4j:support event="oncomplete" onclick="#{rich:component('wait')}.show()" oncomplete=" #{rich:component('wait')}.hide()" />
 								</h:commandLink>
+								<br></br><br></br>
 								<table class="mars">
 									<thead>
 										<TR>
@@ -274,6 +286,123 @@
 															eksi/fazla mesaisi saati saati </SPAN>
 													</rich:toolTip></th>
 											</c:if>
+											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.bordroPuantajEkranindaGoster}">
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalCalismaSaatKod}">
+													<td class="izinAylik" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.normalCalismaSaatKod()}"><h:outputText value="#{ortakIslemler.normalCalismaSaatKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.normalCalismaSaatKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>N.Çalışma Saat</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilCalismaSaatKod}">
+													<td class="izinAylik" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.haftaTatilCalismaSaatKod()}"><h:outputText value="#{ortakIslemler.haftaTatilCalismaSaatKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.haftaTatilCalismaSaatKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>H.Tatil Saat</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilCalismaSaatKod}">
+													<td class="izinAylik" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.resmiTatilCalismaSaatKod()}"><h:outputText value="#{ortakIslemler.resmiTatilCalismaSaatKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.resmiTatilCalismaSaatKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>R.Tatil Saat</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.izinSureSaatKod}">
+													<td class="izinAylik" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.izinSureSaatKod()}"><h:outputText value="#{ortakIslemler.izinSureSaatKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.izinSureSaatKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>İzin Saat</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalCalismaGunKod}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.normalCalismaGunKod()}"><h:outputText value="#{ortakIslemler.normalCalismaGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.normalCalismaGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>N.Çalışma Gün</B></SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilCalismaGunKod}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.haftaTatilCalismaGunKod()}"><h:outputText value="#{ortakIslemler.haftaTatilCalismaGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.haftaTatilCalismaGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>H.Tatil Gün</B></SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
+
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilCalismaGunKod}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.resmiTatilCalismaGunKod()}"><h:outputText value="#{ortakIslemler.resmiTatilCalismaGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.resmiTatilCalismaGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>R.Tatil Gün</B></SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.izinSureGunKod}">
+													<th style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.izinSureGunKod()}"><h:outputText value="#{ortakIslemler.izinSureGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.izinSureGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>İzin Gün</B></SPAN>
+														</rich:toolTip></th>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.ucretliIzinGunKod}">
+													<td class="izinGrup" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.ucretliIzinGunKod()}"><h:outputText value="#{ortakIslemler.ucretliIzinGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.ucretliIzinGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretli İzin Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.ucretsizIzinGunKod}">
+													<td class="izinGrup" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.ucretsizIzinGunKod()}"><h:outputText value="#{ortakIslemler.ucretsizIzinGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.ucretsizIzinGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Ücretsiz İzin Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.hastalikIzinGunKod}">
+													<td class="izinGrup" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;"
+														id="baslik#{ortakIslemler.hastalikIzinGunKod()}"><h:outputText value="#{ortakIslemler.hastalikIzinGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.hastalikIzinGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Hastalık İzin Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalGunKod}">
+													<td style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background: yellow"
+														id="baslik#{ortakIslemler.normalGunKod()}"><h:outputText value="#{ortakIslemler.normalGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.normalGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Normal Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilGunKod}">
+													<td style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background: yellow"
+														id="baslik#{ortakIslemler.haftaTatilGunKod()}"><h:outputText value="#{ortakIslemler.haftaTatilGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.haftaTatilGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>H.Tatil Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilGunKod}">
+													<td style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background: yellow"
+														id="baslik#{ortakIslemler.resmiTatilGunKod()}"><h:outputText value="#{ortakIslemler.resmiTatilGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.resmiTatilGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>R.Tatil Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.artikGunKod}">
+													<td style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background: yellow"
+														id="baslik#{ortakIslemler.artikGunKod()}"><h:outputText value="#{ortakIslemler.artikGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.artikGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Artık Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.bordroToplamGunKod}">
+													<td style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center; background-color: #EC7D7D;"
+														id="baslik#{ortakIslemler.bordroToplamGunKod()}"><h:outputText value="#{ortakIslemler.bordroToplamGunKod()}" /> <rich:toolTip
+															for="baslik#{ortakIslemler.bordroToplamGunKod()}">
+															<SPAN style="font-size: 12px; font-weight: normal;"><B>Toplam Gün</B></SPAN>
+														</rich:toolTip></td>
+												</ui:fragment>
+
+											</ui:fragment>
 
 										</TR>
 									</thead>
@@ -327,6 +456,60 @@
 													</ui:fragment>
 													<td class="#{ap.trClass}" style="width: 20px"></td>
 												</c:if>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.bordroPuantajEkranindaGoster}">
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalCalismaSaatKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilCalismaSaatKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilCalismaSaatKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.izinSureSaatKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalCalismaGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilCalismaGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilCalismaGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.izinSureGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.ucretliIzinGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.ucretsizIzinGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.hastalikIzinGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.artikGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.bordroToplamGunKod}">
+														<td class="#{ap.trClass}" style="width: 20px"></td>
+													</ui:fragment>
+
+												</ui:fragment>
+
 											</tr>
 											<tr>
 												<td class="#{ap.trClass}" style="width: 50px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold;"><b>#{ap.denklestirmeAy.ayAdi}
@@ -421,126 +604,227 @@
 													</ui:fragment>
 												</td>
 												<c:if test="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiVar}">
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.yasalFazlaCalismaAsanSaat}">
-													<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
-															rendered="#{ap.fazlaMesaiHesapla and ap.ucretiOdenenMesaiSure!=0}">
-															<span style="color: red;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.ucretiOdenenMesaiSure)}" /></span>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.yasalFazlaCalismaAsanSaat}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.fazlaMesaiHesapla and ap.ucretiOdenenMesaiSure!=0}">
+																<span style="color: red;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.ucretiOdenenMesaiSure)}" /></span>
+															</ui:fragment></td>
+													</ui:fragment>
+													<td class="#{ap.trSonucClass}" style="width: 20px" align="center" id="aylikNetFazlaMesa#{ap.personelDenklestirme.id}"><ui:fragment
+															rendered="#{ap.fazlaMesaiHesapla and ap.aylikNetFazlaMesai!=0 and ap.calismaModeli.fazlaMesaiVar}">
+															<ui:fragment rendered="#{ap.eksikCalismaVar}">
+																<SPAN style="color: red; font-size: 13px;"> <h:outputText
+																		value="#{authenticatedUser.sayiFormatliGoster(ap.aylikNetFazlaMesai)}" />
+																</SPAN>
+
+																<rich:toolTip for="aylikNetFazlaMesa#{ap.personelDenklestirme.id}">
+																	<span style="color: black; font-size: 13px;">İzin veya kart girişlerinden kaynaklı eksik çalışma var!</span>
+																</rich:toolTip>
+															</ui:fragment>
+															<ui:fragment rendered="#{ap.eksikCalismaVar==false}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.aylikNetFazlaMesai)}" />
+
+															</ui:fragment>
 														</ui:fragment></td>
-												</ui:fragment>
-												<td class="#{ap.trSonucClass}" style="width: 20px" align="center" id="aylikNetFazlaMesa#{ap.personelDenklestirme.id}"><ui:fragment
-														rendered="#{ap.fazlaMesaiHesapla and ap.aylikNetFazlaMesai!=0 and ap.calismaModeli.fazlaMesaiVar}">
-														<ui:fragment rendered="#{ap.eksikCalismaVar}">
-															<SPAN style="color: red; font-size: 13px;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.aylikNetFazlaMesai)}" />
-															</SPAN>
-
-															<rich:toolTip for="aylikNetFazlaMesa#{ap.personelDenklestirme.id}">
-																<span style="color: black; font-size: 13px;">İzin veya kart girişlerinden kaynaklı eksik çalışma var!</span>
-															</rich:toolTip>
-														</ui:fragment>
-														<ui:fragment rendered="#{ap.eksikCalismaVar==false}">
-															<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.aylikNetFazlaMesai)}" />
-
-														</ui:fragment>
-													</ui:fragment></td>
-												<td class="#{ap.trSonucClass}" style="width: 20px" align="center" id=""><ui:fragment
-														rendered="#{ap.getGecenAyFazlaMesai(authenticatedUser)!=0}">
-
-														<SPAN id="gecenAyFazlaMesai#{ap.personelDenklestirme.id}"><U><h:outputText
-																	value="#{authenticatedUser.sayiFormatliGoster(ap.getGecenAyFazlaMesai(authenticatedUser))}" /></U> </SPAN>
-														<ui:fragment rendered="#{ap.personelDenklestirme.personelDenklestirmeGecenAy.guncelleyenUser!=null}">
-
-															<rich:toolTip for="gecenAyFazlaMesai#{ap.personelDenklestirme.id}">
-																<DIV class="#{ap.trSonucClass}" style="text-align: left;">
-																	<B>Onaylayan : </B>#{ap.personelDenklestirme.personelDenklestirmeGecenAy.guncelleyenUser.adSoyad}<br /> <B>Zaman : </B>#{authenticatedUser.dateTimeFormatla(ap.personelDenklestirme.personelDenklestirmeGecenAy.guncellemeTarihi)}<br />
-																</DIV>
-															</rich:toolTip>
-														</ui:fragment>
-													</ui:fragment></td>
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.kismiOdemeGoster}">
 													<td class="#{ap.trSonucClass}" style="width: 20px" align="center" id=""><ui:fragment
-															rendered="#{ap.personelDenklestirme.kismiOdemeSure>0}">
-															<ui:fragment rendered="#{ap.fazlaMesaiSure>0}">
-																<SPAN>#{authenticatedUser.sayiFormatliGoster(ap.personelDenklestirme.kismiOdemeSure)}</SPAN>
-															</ui:fragment>
-															<ui:fragment rendered="#{ap.fazlaMesaiSure==0}">
-																<SPAN style="color: red;">#{authenticatedUser.sayiFormatliGoster(ap.personelDenklestirme.kismiOdemeSure)}</SPAN>
+															rendered="#{ap.getGecenAyFazlaMesai(authenticatedUser)!=0}">
+
+															<SPAN id="gecenAyFazlaMesai#{ap.personelDenklestirme.id}"><U><h:outputText
+																		value="#{authenticatedUser.sayiFormatliGoster(ap.getGecenAyFazlaMesai(authenticatedUser))}" /></U> </SPAN>
+															<ui:fragment rendered="#{ap.personelDenklestirme.personelDenklestirmeGecenAy.guncelleyenUser!=null}">
+
+																<rich:toolTip for="gecenAyFazlaMesai#{ap.personelDenklestirme.id}">
+																	<DIV class="#{ap.trSonucClass}" style="text-align: left;">
+																		<B>Onaylayan : </B>#{ap.personelDenklestirme.personelDenklestirmeGecenAy.guncelleyenUser.adSoyad}<br /> <B>Zaman : </B>#{authenticatedUser.dateTimeFormatla(ap.personelDenklestirme.personelDenklestirmeGecenAy.guncellemeTarihi)}<br />
+																	</DIV>
+																</rich:toolTip>
 															</ui:fragment>
 														</ui:fragment></td>
-												</ui:fragment>
-												<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
-														rendered="#{ap.fazlaMesaiHesapla and ap.fazlaMesaiSure!=0}">
-														<SPAN id="fazlaMesaiSure#{ap.personelDenklestirme.id}"><U> <ui:fragment
-																	rendered="#{ap.personelDenklestirme.erpAktarildi==false}">
-																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.fazlaMesaiSure)}" />
-																</ui:fragment> <ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi==true}">
-																	<B><h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.fazlaMesaiSure)}" /></B>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.kismiOdemeGoster}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center" id=""><ui:fragment
+																rendered="#{ap.personelDenklestirme.kismiOdemeSure>0}">
+																<ui:fragment rendered="#{ap.fazlaMesaiSure>0}">
+																	<SPAN>#{authenticatedUser.sayiFormatliGoster(ap.personelDenklestirme.kismiOdemeSure)}</SPAN>
 																</ui:fragment>
-														</U></SPAN>
-														<ui:fragment rendered="#{ap.personelDenklestirme.guncelleyenUser!=null}">
-															<rich:toolTip for="fazlaMesaiSure#{ap.personelDenklestirme.id}">
-																<DIV class="#{ap.trSonucClass}" style="text-align: left;">
-																	<B>Onaylayan : </B>#{ap.personelDenklestirme.guncelleyenUser.adSoyad}<br /> <B>Zaman : </B>#{authenticatedUser.dateTimeFormatla(
-																	ap.personelDenklestirme.guncellemeTarihi)}<br />
-
-																</DIV>
-
-															</rich:toolTip>
-														</ui:fragment>
-													</ui:fragment></td>
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilVar}">
-													<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.resmiTatilToplami!=0}">
-															<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi==false}">
-																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.resmiTatilToplami)}" />
-															</ui:fragment>
-															<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi}">
-																<B><h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.resmiTatilToplami)}" /></B>
-															</ui:fragment>
-														</ui:fragment></td>
-
-												</ui:fragment>
-												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilVar}">
-													<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.haftaCalismaSuresi!=0}">
-															<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi==false}">
-																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.haftaCalismaSuresi)}" />
-															</ui:fragment>
-															<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi}">
-																<B><h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.haftaCalismaSuresi)}" /></B>
-															</ui:fragment>
-														</ui:fragment></td>
-
-												</ui:fragment>
-												<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
-														rendered="#{(ap.fazlaMesaiHesapla or ap.denklestirilmeyenDevredenVar) and ap.devredenSure!=0}">
-														<ui:fragment rendered="#{ap.personelDenklestirme.guncelleyenUser==null }">
-															<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}" />
-														</ui:fragment>
-														<ui:fragment rendered="#{ap.personelDenklestirme.guncelleyenUser!=null}">
-															<ui:fragment rendered="#{ap.denklestirilmeyenDevredenVar==false}">
-																<SPAN id="devredenSure#{ap.personelDenklestirme.id}"><U> <h:outputText
-																			value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}" />
-																</U></SPAN>
-																<rich:toolTip for="devredenSure#{ap.personelDenklestirme.id}">
+																<ui:fragment rendered="#{ap.fazlaMesaiSure==0}">
+																	<SPAN style="color: red;">#{authenticatedUser.sayiFormatliGoster(ap.personelDenklestirme.kismiOdemeSure)}</SPAN>
+																</ui:fragment>
+															</ui:fragment></td>
+													</ui:fragment>
+													<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+															rendered="#{ap.fazlaMesaiHesapla and ap.fazlaMesaiSure!=0}">
+															<SPAN id="fazlaMesaiSure#{ap.personelDenklestirme.id}"><U> <ui:fragment
+																		rendered="#{ap.personelDenklestirme.erpAktarildi==false}">
+																		<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.fazlaMesaiSure)}" />
+																	</ui:fragment> <ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi==true}">
+																		<B><h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.fazlaMesaiSure)}" /></B>
+																	</ui:fragment>
+															</U></SPAN>
+															<ui:fragment rendered="#{ap.personelDenklestirme.guncelleyenUser!=null}">
+																<rich:toolTip for="fazlaMesaiSure#{ap.personelDenklestirme.id}">
 																	<DIV class="#{ap.trSonucClass}" style="text-align: left;">
 																		<B>Onaylayan : </B>#{ap.personelDenklestirme.guncelleyenUser.adSoyad}<br /> <B>Zaman : </B>#{authenticatedUser.dateTimeFormatla(
 																		ap.personelDenklestirme.guncellemeTarihi)}<br />
-																	</DIV>
-																</rich:toolTip>
-															</ui:fragment>
-															<ui:fragment rendered="#{ap.denklestirilmeyenDevredenVar}">
-																<SPAN id="devredenSure#{ap.personelDenklestirme.id}" style="color: red; font-size: 13px;"><U> <h:outputText
-																			value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}" /></U></SPAN>
-																<rich:toolTip for="devredenSure#{ap.personelDenklestirme.id}">
-																	<DIV style="text-align: left; color: black;">
-																		<span style="color: red; font-size: 13px;"><B>Geçen aydan devreden negatif bakiye denkleştirilemedi!</B> </span> <br /> <B>Onaylayan
-																			: </B>#{ap.personelDenklestirme.guncelleyenUser.adSoyad}<br /> <B>Zaman : </B>#{authenticatedUser.dateTimeFormatla(
-																		ap.personelDenklestirme.guncellemeTarihi)}<br />
-																	</DIV>
-																</rich:toolTip>
-															</ui:fragment>
-														</ui:fragment>
 
-													</ui:fragment></td>
-</c:if>
+																	</DIV>
+
+																</rich:toolTip>
+															</ui:fragment>
+														</ui:fragment></td>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilVar}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.resmiTatilToplami!=0}">
+																<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi==false}">
+																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.resmiTatilToplami)}" />
+																</ui:fragment>
+																<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi}">
+																	<B><h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.resmiTatilToplami)}" /></B>
+																</ui:fragment>
+															</ui:fragment></td>
+
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilVar}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.haftaCalismaSuresi!=0}">
+																<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi==false}">
+																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.haftaCalismaSuresi)}" />
+																</ui:fragment>
+																<ui:fragment rendered="#{ap.personelDenklestirme.erpAktarildi}">
+																	<B><h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.haftaCalismaSuresi)}" /></B>
+																</ui:fragment>
+															</ui:fragment></td>
+
+													</ui:fragment>
+													<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+															rendered="#{(ap.fazlaMesaiHesapla or ap.denklestirilmeyenDevredenVar) and ap.devredenSure!=0}">
+															<ui:fragment rendered="#{ap.personelDenklestirme.guncelleyenUser==null }">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}" />
+															</ui:fragment>
+															<ui:fragment rendered="#{ap.personelDenklestirme.guncelleyenUser!=null}">
+																<ui:fragment rendered="#{ap.denklestirilmeyenDevredenVar==false}">
+																	<SPAN id="devredenSure#{ap.personelDenklestirme.id}"><U> <h:outputText
+																				value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}" />
+																	</U></SPAN>
+																	<rich:toolTip for="devredenSure#{ap.personelDenklestirme.id}">
+																		<DIV class="#{ap.trSonucClass}" style="text-align: left;">
+																			<B>Onaylayan : </B>#{ap.personelDenklestirme.guncelleyenUser.adSoyad}<br /> <B>Zaman : </B>#{authenticatedUser.dateTimeFormatla(
+																			ap.personelDenklestirme.guncellemeTarihi)}<br />
+																		</DIV>
+																	</rich:toolTip>
+																</ui:fragment>
+																<ui:fragment rendered="#{ap.denklestirilmeyenDevredenVar}">
+																	<SPAN id="devredenSure#{ap.personelDenklestirme.id}" style="color: red; font-size: 13px;"><U> <h:outputText
+																				value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}" /></U></SPAN>
+																	<rich:toolTip for="devredenSure#{ap.personelDenklestirme.id}">
+																		<DIV style="text-align: left; color: black;">
+																			<span style="color: red; font-size: 13px;"><B>Geçen aydan devreden negatif bakiye denkleştirilemedi!</B> </span> <br /> <B>Onaylayan
+																				: </B>#{ap.personelDenklestirme.guncelleyenUser.adSoyad}<br /> <B>Zaman : </B>#{authenticatedUser.dateTimeFormatla(
+																			ap.personelDenklestirme.guncellemeTarihi)}<br />
+																		</DIV>
+																	</rich:toolTip>
+																</ui:fragment>
+															</ui:fragment>
+
+														</ui:fragment></td>
+												</c:if>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.bordroPuantajEkranindaGoster}">
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalCalismaSaatKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.denklestirmeBordro.saatNormal!=0}">
+
+																<B><ui:fragment rendered="#{ap.saatToplami ge ap.planlananSure}">
+																		<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatNormal)}" />
+																	</ui:fragment> <ui:fragment rendered="#{ap.saatToplami lt ap.planlananSure}">
+																		<SPAN style="color: red;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatNormal)}" /></SPAN>
+																	</ui:fragment> </B>
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilCalismaSaatKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.calismaModeli.saatlikOdeme and ap.denklestirmeBordro.saatHaftaTatil!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatHaftaTatil)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilCalismaSaatKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.calismaModeli.saatlikOdeme and ap.denklestirmeBordro.saatResmiTatil!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatResmiTatil)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.izinSureSaatKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.calismaModeli.saatlikOdeme and ap.denklestirmeBordro.saatIzin!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatIzin)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalCalismaGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.calismaModeli.aylikOdeme and ap.denklestirmeBordro.saatNormal!=0}">
+																<B><ui:fragment rendered="#{ap.denklestirmeBordro.saatNormal gt 0}">
+																		<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatNormal)}" />
+																	</ui:fragment> <ui:fragment rendered="#{ap.denklestirmeBordro.saatNormal lt 0}">
+																		<SPAN style="color: red;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatNormal)}" /></SPAN>
+																	</ui:fragment> </B>
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilCalismaGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.calismaModeli.aylikOdeme and ap.denklestirmeBordro.saatHaftaTatil!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatHaftaTatil)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilCalismaGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.calismaModeli.aylikOdeme and ap.denklestirmeBordro.saatResmiTatil!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatResmiTatil)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.ucretliIzinGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.denklestirmeBordro.ucretliIzin!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.ucretliIzin)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.ucretsizIzinGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.denklestirmeBordro.ucretsizIzin!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.ucretsizIzin)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.hastalikIzinGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.denklestirmeBordro.raporluIzin!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.raporluIzin)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.normalGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.denklestirmeBordro.normalGunAdet!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.normalGunAdet)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.haftaTatilGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.denklestirmeBordro.haftaTatilAdet!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.haftaTatilAdet)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.resmiTatilGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.denklestirmeBordro.resmiTatilAdet!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.resmiTatilAdet)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.artikGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{ap.denklestirmeBordro.artikAdet!=0}">
+																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.artikAdet)}" />
+															</ui:fragment></td>
+													</ui:fragment>
+													<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.bordroToplamGunKod}">
+														<td class="#{ap.trSonucClass}" style="width: 20px" align="center"><ui:fragment
+																rendered="#{ap.denklestirmeBordro.bordroToplamGunAdet!=0}">
+																<B><h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.bordroToplamGunAdet)}" /></B>
+															</ui:fragment></td>
+													</ui:fragment>
+
+												</ui:fragment>
+
 											</tr>
 										</a4j:repeat>
 									</tbody>

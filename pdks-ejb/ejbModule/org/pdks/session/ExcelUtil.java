@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
@@ -62,6 +63,26 @@ public class ExcelUtil implements Serializable {
 	private static HashMap<String, HashMap<String, Integer[]>> colorMap = new HashMap<String, HashMap<String, Integer[]>>();
 
 	static Logger logger = Logger.getLogger(ExcelUtil.class);
+
+	/**
+	 * @param anchor
+	 * @param helper
+	 * @param drawing
+	 * @param aciklama
+	 * @return
+	 */
+	public static Comment getComment(ClientAnchor anchor, CreationHelper helper, Drawing drawing, String aciklama) {
+		Comment comment = null;
+		if (PdksUtil.hasStringValue(aciklama)) {
+			comment = drawing.createCellComment(anchor);
+			aciklama = aciklama.trim();
+			if (aciklama.length() > 128)
+				aciklama = aciklama.substring(0, 128);
+			RichTextString rts = helper.createRichTextString(aciklama);
+			comment.setString(rts);
+		}
+		return comment;
+	}
 
 	/**
 	 * @param rgb1
@@ -150,17 +171,31 @@ public class ExcelUtil implements Serializable {
 	}
 
 	/**
-	 * @param drawing
-	 * @param anchor
 	 * @param cell
+	 * @param anchor
+	 * @param helper
+	 * @param drawing
+	 * @param value
+	 * @param title
+	 */
+	public static void baslikCell(Cell cell, ClientAnchor anchor, CreationHelper helper, Drawing drawing, String value, String title) {
+		cell.setCellValue(value != null ? value.trim() : "");
+		if (PdksUtil.hasStringValue(title))
+			setCellComment(cell, anchor, helper, drawing, title);
+
+	}
+
+	/**
+	 * @param cell
+	 * @param anchor
+	 * @param helper
+	 * @param drawing
 	 * @param str1
 	 */
-	public static void setCellComment(Drawing drawing, ClientAnchor anchor, Cell cell, RichTextString str1) {
-		if (str1 != null && cell != null) {
-			Comment comment1 = drawing.createCellComment(anchor);
-			comment1.setString(str1);
-			cell.setCellComment(comment1);
-		}
+	public static void setCellComment(Cell cell, ClientAnchor anchor, CreationHelper helper, Drawing drawing, String str1) {
+		if (cell != null)
+			cell.setCellComment(getComment(anchor, helper, drawing, str1));
+
 	}
 
 	/**

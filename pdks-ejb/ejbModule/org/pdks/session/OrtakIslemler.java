@@ -53,7 +53,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -776,9 +775,9 @@ public class OrtakIslemler implements Serializable {
 		CellStyle styleEvenTutar = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleEvenNumber = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_NUMBER, wb);
 		int col = 0, row = 0;
-		CreationHelper factory = wb.getCreationHelper();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
 		try {
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(personelNoAciklama);
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
@@ -837,8 +836,7 @@ public class OrtakIslemler implements Serializable {
 				Double sure = Double.valueOf(vardiyaSaat.getCalismaSuresi());
 				Double normalSure = Double.valueOf(vardiyaSaat.getNormalSure());
 				if ((normalSure != null) && (normalSure.doubleValue() > 0.0D)) {
-					RichTextString str1 = factory.createRichTextString("Net Süre : " + PdksUtil.numericValueFormatStr(normalSure, null));
-					ExcelUtil.setCellComment(drawing, anchor, cell, str1);
+					ExcelUtil.setCellComment(cell, anchor, helper, drawing, "Net Süre : " + PdksUtil.numericValueFormatStr(normalSure, null));
 				}
 
 				cell.setCellValue(gun.getVardiyaZamanAdi());

@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.framework.EntityHome;
-import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
 import org.pdks.entity.Liste;
@@ -394,17 +393,17 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşe Giriş Tarihi");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşten Ayrılma Tarihi");
 
-		CreationHelper factory = wb.getCreationHelper();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
 		for (Iterator iterator = denklestirmeAyList.iterator(); iterator.hasNext();) {
 			DenklestirmeAy dm = (DenklestirmeAy) iterator.next();
 
 			Cell cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, dm.getAyAdi() + "\nÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, dm.getAyAdi() + "\nÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, dm.getAyAdi() + "\nB", "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, dm.getAyAdi() + "\nB", "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
 		}
 
 		for (Iterator iter = personelList.iterator(); iter.hasNext();) {
@@ -548,8 +547,8 @@ public class FazlaMesaiDonemselRaporHome extends EntityHome<DepartmanDenklestirm
 		List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
 
 		if (!list.isEmpty()) {
-			basTarih = PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + basAy) + "01", "yyyyMMdd");
-			bitTarih = PdksUtil.tariheGunEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + bitAy) + "01", "yyyyMMdd"), 1);
+			basTarih = PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + (basAy != null ? basAy : 1)) + "01", "yyyyMMdd");
+			bitTarih = PdksUtil.tariheGunEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + (bitAy != null ? bitAy : 12)) + "01", "yyyyMMdd"), 1);
 
 			fillEkSahaTanim();
 			TreeMap<Long, DenklestirmeAy> denkMap = new TreeMap<Long, DenklestirmeAy>();

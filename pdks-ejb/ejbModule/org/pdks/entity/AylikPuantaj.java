@@ -12,12 +12,6 @@ import java.util.TreeMap;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Comment;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.pdks.security.entity.User;
 import org.pdks.session.OrtakIslemler;
 import org.pdks.session.PdksUtil;
@@ -808,30 +802,14 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	}
 
+	/**
+	 * @param personel
+	 * @param gorevliPersonelMap
+	 * @return
+	 */
 	public static boolean helpPersonel(Personel personel, HashMap<String, Personel> gorevliPersonelMap) {
 		return personel != null && gorevliPersonelMap != null && gorevliPersonelMap.containsKey(personel.getPdksSicilNo());
 
-	}
-
-	public static void baslikCell(CreationHelper factory, Drawing drawing, ClientAnchor anchor, Cell cell, String value, String title) {
-		cell.setCellValue(value != null ? value.trim() : "");
-		cellComment(factory, drawing, anchor, cell, title);
-	}
-
-	/**
-	 * @param factory
-	 * @param drawing
-	 * @param anchor
-	 * @param cell
-	 * @param title
-	 */
-	public static void cellComment(CreationHelper factory, Drawing drawing, ClientAnchor anchor, Cell cell, String title) {
-		if (PdksUtil.hasStringValue(title)) {
-			Comment comment1 = drawing.createCellComment(anchor);
-			RichTextString str1 = factory.createRichTextString(title.trim());
-			comment1.setString(str1);
-			cell.setCellComment(comment1);
-		}
 	}
 
 	public Double getOdenenSure() {

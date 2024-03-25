@@ -919,13 +919,13 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	 */
 	private void sayfaOlustur(boolean onayDurum, List<PersonelFazlaMesai> list, Workbook wb) {
 		Sheet sheet = ExcelUtil.createSheet(wb, onayDurum ? "Dönemsel Fazla Çalışma" : "Fazla Çalışma İptal", Boolean.TRUE);
-		CreationHelper factory = null;
+		CreationHelper helper = null;
 		// Drawing drawing = null;
 		// ClientAnchor anchor = null;
 		if (onayDurum && talepGoster) {
 			// drawing = sheet.createDrawingPatriarch();
-			factory = wb.getCreationHelper();
-			// anchor = factory.createClientAnchor();
+			helper = wb.getCreationHelper();
+			// anchor = helper.createClientAnchor();
 		}
 
 		TreeMap<String, String> sirketMap = new TreeMap<String, String>();
@@ -954,13 +954,13 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(onayDurum ? "Onay" : "Red" + " Nedeni");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşlem Yapan");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("İşlem Zamanı");
-		if (factory != null)
+		if (helper != null)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Talep Bilgi");
 		boolean renk = true;
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			PersonelFazlaMesai personelFazlaMesai = (PersonelFazlaMesai) iter.next();
 			FazlaMesaiTalep fmt = null;
-			if (factory != null)
+			if (helper != null)
 				fmt = personelFazlaMesai.getFazlaMesaiTalep();
 
 			VardiyaGun vardiyaGun = personelFazlaMesai.getVardiyaGun();
@@ -1020,7 +1020,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					ExcelUtil.getCell(sheet, row, col++, styleZaman).setCellValue(personelFazlaMesai.getOlusturmaTarihi());
 				else
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
-				if (factory != null) {
+				if (helper != null) {
 					if (fmt != null) {
 						List<String> sb = new ArrayList<String>();
 						sb.add("Mesai Başlangıç Zamanı : " + authenticatedUser.dateTimeFormatla(fmt.getBaslangicZamani()));
@@ -1033,8 +1033,8 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						sb.add("Onaylayan : " + fmt.getGuncelleyenUser().getAdSoyad());
 						sb.add("Onaylama Zamanı : " + authenticatedUser.dateTimeFormatla(fmt.getGuncellemeTarihi()));
 						Cell fmtCell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
-						talepCell(wb, factory, fmtCell, sb);
-						// RichTextString rt = talepCell(wb, factory, null, sb);
+						talepCell(wb, helper, fmtCell, sb);
+						// RichTextString rt = talepCell(wb, helper, null, sb);
 						// if (rt != null)
 						// setCellComment(drawing, anchor, cellFazlaMesaiOnayDurum, rt);
 						sb = null;
@@ -1057,13 +1057,13 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	/**
 	 * @param wb
-	 * @param factory
+	 * @param helper
 	 * @param drawing
 	 * @param anchor
 	 * @param cell
 	 * @param titles
 	 */
-	private RichTextString talepCell(Workbook wb, CreationHelper factory, Cell cell, List<String> titles) {
+	private RichTextString talepCell(Workbook wb, CreationHelper helper, Cell cell, List<String> titles) {
 		RichTextString rt = null;
 		if (titles != null && !titles.isEmpty()) {
 			for (Iterator iterator = titles.iterator(); iterator.hasNext();) {
@@ -1089,7 +1089,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			}
 
 			String title = sb.toString();
-			rt = factory.createRichTextString(title);
+			rt = helper.createRichTextString(title);
 			rt.applyFont(font);
 			b1 = 0;
 			for (int j = 0; j < uz.length; j++) {

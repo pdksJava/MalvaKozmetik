@@ -497,7 +497,29 @@ table.mars th.sorted a,th.sortable a {
 	width: autostretch;
 }
 
- 
+.bordroGun {
+	background: yellow;
+	color: black;
+	font-size: 10px;
+	white-space: nowrap;
+	width: autostretch;
+}
+
+.izinGrup {
+	background: white;
+	color: black;
+	font-size: 10px;
+	white-space: nowrap;
+	width: autostretch;
+}
+
+.bordroToplamGun {
+	background: #EC7D7D;;
+	color: black;
+	font-size: 10px;
+	white-space: nowrap;
+	width: autostretch;
+}
 
 .ozelIstekAylik {
 	background: yellow;
@@ -694,88 +716,88 @@ div#tbl-container thead th,div#tbl-container1 thead th,div#tbl-container2 thead 
 }
 
 div#tbl-container thead th {
-	top: expression(document.getElementById (       "tbl-container").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container").scrollTop-6
 		);
 	/* IE5+ only */
 }
 
 div#tbl-container1 thead th {
-	top: expression(document.getElementById (       "tbl-container1").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container1").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container2 thead th {
-	top: expression(document.getElementById (       "tbl-container2").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container2").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container3 thead th {
-	top: expression(document.getElementById (       "tbl-container3").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container3").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container4 thead th {
-	top: expression(document.getElementById (       "tbl-container4").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container4").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container5 thead th {
-	top: expression(document.getElementById (       "tbl-container5").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container5").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container6 thead th {
-	top: expression(document.getElementById (       "tbl-container6").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container6").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container7 thead th {
-	top: expression(document.getElementById (       "tbl-container7").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container7").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container8 thead th {
-	top: expression(document.getElementById (       "tbl-container8").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container8").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container9 thead th {
-	top: expression(document.getElementById (       "tbl-container9").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container9").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container10 thead th {
-	top: expression(document.getElementById (       "tbl-container10").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container10").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container11 thead th {
-	top: expression(document.getElementById (       "tbl-container11").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container11").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container12 thead th {
-	top: expression(document.getElementById (       "tbl-container12").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container12").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container13 thead th {
-	top: expression(document.getElementById (       "tbl-container13").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container13").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container14 thead th {
-	top: expression(document.getElementById (       "tbl-container14").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container14").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container15 thead th {
-	top: expression(document.getElementById (       "tbl-container15").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container15").scrollTop-6
 		); /* IE5+ only */
 }
 
 div#tbl-container16 thead th {
-	top: expression(document.getElementById (       "tbl-container16").scrollTop-6
+	top: expression(document.getElementById (                 "tbl-container16").scrollTop-6
 		); /* IE5+ only */
 }
 
@@ -814,86 +836,86 @@ div#tbl-container th {
 }
 
 div#tbl-container td.locked,div#tbl-container th.locked {
-	left: expression(document.getElementById (       "tbl-container").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container1 td.locked,div#tbl-container1 th.locked {
-	left: expression(document.getElementById (       "tbl-container1").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container1").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container2 td.locked,div#tbl-container2 th.locked {
-	left: expression(document.getElementById (       "tbl-container2").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container2").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container3 td.locked,div#tbl-container3 th.locked {
-	left: expression(document.getElementById (       "tbl-container3").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container3").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container4 td.locked,div#tbl-container4 th.locked {
-	left: expression(document.getElementById (       "tbl-container4").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container4").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container5 td.locked,div#tbl-container5 th.locked {
-	left: expression(document.getElementById (       "tbl-container5").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container5").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container6 td.locked,div#tbl-container6 th.locked {
-	left: expression(document.getElementById (       "tbl-container6").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container6").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container7 td.locked,div#tbl-container7 th.locked {
-	left: expression(document.getElementById (       "tbl-container7").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container7").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container8 td.locked,div#tbl-container8 th.locked {
-	left: expression(document.getElementById (       "tbl-container8").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container8").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container9 td.locked,div#tbl-container9 th.locked {
-	left: expression(document.getElementById (       "tbl-container9").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container9").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container10 td.locked,div#tbl-container10 th.locked {
-	left: expression(document.getElementById (       "tbl-container10").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container10").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container11 td.locked,div#tbl-container11 th.locked {
-	left: expression(document.getElementById (       "tbl-container11").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container11").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container12 td.locked,div#tbl-container12 th.locked {
-	left: expression(document.getElementById (       "tbl-container12").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container12").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container13 td.locked,div#tbl-container13 th.locked {
-	left: expression(document.getElementById (       "tbl-container13").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container13").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container14 td.locked,div#tbl-container14 th.locked {
-	left: expression(document.getElementById (       "tbl-container14").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container14").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container15 td.locked,div#tbl-container15 th.locked {
-	left: expression(document.getElementById (       "tbl-container15").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container15").scrollLeft-2
 		); /* IE5+ only */
 }
 
 div#tbl-container16 td.locked,div#tbl-container16 th.locked {
-	left: expression(document.getElementById (       "tbl-container16").scrollLeft-2
+	left: expression(document.getElementById (                 "tbl-container16").scrollLeft-2
 		); /* IE5+ only */
 }

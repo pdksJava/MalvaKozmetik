@@ -20,7 +20,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -346,9 +345,9 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 		if (suaVar)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Bu Yıl Hakkedilen ŞUA");
 		boolean renk = true;
-		CreationHelper factory = wb.getCreationHelper();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
 		for (HoldingIzin tempIzin : holdingIzinList) {
 			Personel personel = tempIzin.getPersonel();
 			row++;
@@ -394,8 +393,7 @@ public class HoldingKalanIzinHome extends EntityHome<HoldingIzin> implements Ser
 			setNumberValue(tempIzin.getGecenYilBakiye(), sheet, row, col++, styleCenter, styleNumber);
 			Cell cell = setNumberValue(tempIzin.getBuYilHakedilen(), sheet, row, col++, styleCenter, styleNumber);
 			if (cell != null) {
-				RichTextString str1 = factory.createRichTextString(authenticatedUser.dateFormatla(tempIzin.getSeciliYilIzinHakEdisTarihi()));
-				ExcelUtil.setCellComment(drawing, anchor, cell, str1);
+				ExcelUtil.setCellComment(cell, anchor, helper, drawing, authenticatedUser.dateFormatla(tempIzin.getSeciliYilIzinHakEdisTarihi()));
 			}
 			setNumberValue(tempIzin.getHarcananIzin(), sheet, row, col++, styleCenter, styleNumber);
 			setNumberValue(tempIzin.getBakiye(), sheet, row, col++, styleCenter, styleNumber);

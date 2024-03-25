@@ -1492,10 +1492,9 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
 		CellStyle styleIzin = ExcelUtil.getStyleDataCenter(wb);
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
-		CreationHelper factory = null;
+		CreationHelper helper = wb.getCreationHelper();
 		drawing = sheet.createDrawingPatriarch();
-		factory = wb.getCreationHelper();
-		anchor = factory.createClientAnchor();
+
 		TreeMap sirketMap = new TreeMap();
 		List<VardiyaGun> vardiyaGunPersonelList = new ArrayList<VardiyaGun>();
 		String tekSirketTesisAdi;
@@ -1692,7 +1691,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 								String str = gun.getFazlaMesaiTitle();
 								if (str != null)
 									sb.add(str);
-								setCommentCell(wb, factory, fmtCell, sb);
+								setCommentCell(wb, helper, fmtCell, sb);
 							}
 						} else {
 
@@ -1731,7 +1730,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 									if (str != null) {
 										List sb = new ArrayList();
 										sb.add(str);
-										setCommentCell(wb, factory, fmtCell, sb);
+										setCommentCell(wb, helper, fmtCell, sb);
 										sb = null;
 									}
 								}
@@ -1806,12 +1805,12 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	/**
 	 * @param wb
-	 * @param factory
+	 * @param helper
 	 * @param cell
 	 * @param titles
 	 * @return
 	 */
-	private RichTextString setCommentCell(Workbook wb, CreationHelper factory, Cell cell, List<String> titles) {
+	private RichTextString setCommentCell(Workbook wb, CreationHelper helper, Cell cell, List<String> titles) {
 		RichTextString rt = null;
 		if ((titles != null) && (!titles.isEmpty())) {
 			for (Iterator iterator = titles.iterator(); iterator.hasNext();) {
@@ -1840,7 +1839,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 			Font fontBold = ExcelUtil.createFont(wb, (short) 9, ExcelUtil.FONT_NAME, (short) 700);
 			Font font = ExcelUtil.createFont(wb, (short) 8, ExcelUtil.FONT_NAME, (short) 400);
 			String title = sb.toString();
-			rt = factory.createRichTextString(title);
+			rt = helper.createRichTextString(title);
 			rt.applyFont(font);
 			b1 = 0;
 			for (int j = 0; j < uz.length; j++) {

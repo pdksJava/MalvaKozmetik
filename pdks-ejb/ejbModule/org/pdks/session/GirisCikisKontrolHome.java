@@ -19,7 +19,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -251,7 +250,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 	private void fillHareketListOlustur() {
 		Calendar cal = Calendar.getInstance();
 		List<VardiyaGun> vardiyaList = new ArrayList<VardiyaGun>();
-	 	List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
+		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		Date oncekiGun = ortakIslemler.tariheGunEkleCikar(cal, date, -1);
 		HashMap map = new HashMap();
 		map.put("pdks=", Boolean.TRUE);
@@ -298,7 +297,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 
 		Date tarih1 = null;
 		Date tarih2 = null;
- 
+
 		// butun personeller icin hareket cekerken bu en kucuk tarih ile en
 		// buyuk tarih araligini kullanacaktir
 		// bu araliktaki tum hareketleri cekecektir.
@@ -369,7 +368,7 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 				}
 				HareketKGS kgsHareketGiris = vardiyaGun.getGirisHareket(), kgsHareketCikis = vardiyaGun.getCikisHareket();
 				PersonelIzin izin = vardiyaGun.getIzin();
-				 
+
 				boolean yaz = !(vardiyaGun.getHareketDurum()) && simdikiZaman.getTime() < bitZaman2;
 
 				if (vardiyaGun.getVardiya().isCalisma()) {
@@ -474,9 +473,9 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 			ExcelUtil.getCell(sheet, rowHareket, colHareket++, header).setCellValue("Giriş");
 			ExcelUtil.getCell(sheet, rowHareket, colHareket++, header).setCellValue("Çıkış");
 			boolean renk = true;
-			CreationHelper factory = wb.getCreationHelper();
+			CreationHelper helper = wb.getCreationHelper();
+			ClientAnchor anchor = helper.createClientAnchor();
 			Drawing drawing = sheet.createDrawingPatriarch();
-			ClientAnchor anchor = factory.createClientAnchor();
 			for (VardiyaGun vardiyaGun : vardiyaGunList) {
 				CellStyle style = null, styleCenter = null, cellStyleDateTime = null;
 
@@ -508,16 +507,14 @@ public class GirisCikisKontrolHome extends EntityHome<VardiyaGun> implements Ser
 					HareketKGS hareket = vardiyaGun.getGirisHareket();
 					Cell cell = ExcelUtil.getCell(sheet, rowHareket, colHareket++, cellStyleDateTime);
 					cell.setCellValue(hareket.getOrjinalZaman());
-					RichTextString str1 = factory.createRichTextString(hareket.getKapiView().getKapi().getAciklama());
-					ExcelUtil.setCellComment(drawing, anchor, cell, str1);
+					ExcelUtil.setCellComment(cell, anchor, helper, drawing, hareket.getKapiView().getKapi().getAciklama());
 				} else
 					ExcelUtil.getCell(sheet, rowHareket, colHareket++, style).setCellValue("");
 				if (vardiyaGun.getCikisHareket() != null) {
 					HareketKGS hareket = vardiyaGun.getCikisHareket();
 					Cell cell = ExcelUtil.getCell(sheet, rowHareket, colHareket++, cellStyleDateTime);
 					cell.setCellValue(hareket.getOrjinalZaman());
-					RichTextString str1 = factory.createRichTextString(hareket.getKapiView().getKapi().getAciklama());
-					ExcelUtil.setCellComment(drawing, anchor, cell, str1);
+					ExcelUtil.setCellComment(cell, anchor, helper, drawing, hareket.getKapiView().getKapi().getAciklama());
 				} else
 					ExcelUtil.getCell(sheet, rowHareket, colHareket++, style).setCellValue("");
 			}

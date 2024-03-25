@@ -16,10 +16,8 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -144,9 +142,9 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
 		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
 
-		CreationHelper factory = wb.getCreationHelper();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
 		int row = 0, col = 0;
 		boolean aciklamaGoster = (authenticatedUser.isIK() || authenticatedUser.isAdmin()) || izinliGoster || gelenGoster;
 
@@ -207,11 +205,8 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
 				Cell vardiyaCell = ExcelUtil.getCell(sheet, row, col++, styleCenter);
 				vardiyaCell.setCellValue(islemVardiya.getKisaAdi());
-				Comment commentVardiya = drawing.createCellComment(anchor);
 				String vardiyaTitle = authenticatedUser.timeFormatla(islemVardiya.getVardiyaBasZaman()) + " - " + authenticatedUser.timeFormatla(islemVardiya.getVardiyaBitZaman());
-				RichTextString strVardiya = factory.createRichTextString(vardiyaTitle);
-				commentVardiya.setString(strVardiya);
-				vardiyaCell.setCellComment(commentVardiya);
+				ExcelUtil.setCellComment(vardiyaCell, anchor, helper, drawing, vardiyaTitle);
 				if (vardiyaGun.getGirisHareketleri() != null)
 					ExcelUtil.getCell(sheet, row, col++, cellStyleDateTime).setCellValue(vardiyaGun.getGirisHareket().getOrjinalZaman());
 				else
@@ -226,11 +221,8 @@ public class DevamsizlikRaporuHome extends EntityHome<VardiyaGun> implements Ser
 					Cell createCell = ExcelUtil.getCell(sheet, row, col++, styleIzin);
 					createCell.setCellValue(aciklama);
 					if (vardiyaGun.getIzin() != null) {
-						Comment commentIzin = drawing.createCellComment(anchor);
 						String title = vardiyaGun.getIzin().getIzinTipiAciklama();
-						RichTextString str1 = factory.createRichTextString(title);
-						commentIzin.setString(str1);
-						createCell.setCellComment(commentIzin);
+						ExcelUtil.setCellComment(createCell, anchor, helper, drawing, title);
 					}
 				}
 				if (hareketleriGoster) {

@@ -1962,9 +1962,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(aylikPuantajDefault.getIlkGun());
-		CreationHelper factory = wb.getCreationHelper();
+		CreationHelper helper = wb.getCreationHelper();
 		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
+		ClientAnchor anchor = helper.createClientAnchor();
 		CellStyle headerVardiyaGun = ExcelUtil.getStyleHeader(9, wb);
 		ExcelUtil.setFillForegroundColor(headerVardiyaGun, 99, 182, 153);
 
@@ -1988,50 +1988,50 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					headerVardiya = tatil.isYarimGunMu() ? headerVardiyaTatilYarimGun : headerVardiyaTatilGun;
 				}
 				Cell cell = ExcelUtil.getCell(sheet, row, col++, headerVardiya);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, cal.get(Calendar.DAY_OF_MONTH) + "\n " + authenticatedUser.getTarihFormatla(cal.getTime(), "EEE"), title);
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, cal.get(Calendar.DAY_OF_MONTH) + "\n " + authenticatedUser.getTarihFormatla(cal.getTime(), "EEE"), title);
 
 			} catch (Exception e) {
 			}
 		}
 		if (sonucGoster) {
 			Cell cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "TÇS", "Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "TÇS", "Toplam Çalışma Saati: Çalışanın bu listedeki toplam çalışma saati");
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÇGS", "Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "ÇGS", "Çalışılması Gereken Saat: Çalışanın bu listede çalışması gereken saat");
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
-			AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
 			if (devredenMesaiKod) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenMesaiKod(), "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenMesaiKod(), "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
 
 			}
 			if (ucretiOdenenKod) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 			}
 			if (eksikMaasGoster) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "NORMC", ortakIslemler.eksikCalismaAciklama() + " : Çalışanın bu listenin sonunda ücretinden kesilecek saati");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, "NORMC", ortakIslemler.eksikCalismaAciklama() + " : Çalışanın bu listenin sonunda ücretinden kesilecek saati");
 			}
 			if (resmiTatilVar || bordroPuantajEkranindaGoster) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
 			}
 			if (haftaTatilVar) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
 			}
 			if (aksamGunVar) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_AKSAM_ADET, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz gece mesai gün");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_AKSAM_ADET, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz gece mesai gün");
 			}
 			if (aksamSaatVar) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, AylikPuantaj.MESAI_TIPI_AKSAM_SAAT, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz gece mesai saati");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_AKSAM_SAAT, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz gece mesai saati");
 			}
 			if (devredenBakiyeKod) {
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
+				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
 			}
 			if (modelGoster)
 				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
@@ -2052,73 +2052,73 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 				if (normalCalismaSaatKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.normalCalismaSaatKod(), "N.Çalışma Saat");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.normalCalismaSaatKod(), "N.Çalışma Saat");
 				}
 				if (haftaTatilCalismaSaatKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.haftaTatilCalismaSaatKod(), "H.Tatil Saat");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.haftaTatilCalismaSaatKod(), "H.Tatil Saat");
 				}
 				if (resmiTatilCalismaSaatKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.resmiTatilCalismaSaatKod(), "R.Tatil Saat");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.resmiTatilCalismaSaatKod(), "R.Tatil Saat");
 				}
 				if (izinSureSaatKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerSaat);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.izinSureSaatKod(), "İzin Saat");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.izinSureSaatKod(), "İzin Saat");
 				}
 				if (normalCalismaGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, header);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.normalCalismaGunKod(), "N.Çalışma Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.normalCalismaGunKod(), "N.Çalışma Gün");
 				}
 				if (haftaTatilCalismaGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, header);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.haftaTatilCalismaGunKod(), "H.Tatil Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.haftaTatilCalismaGunKod(), "H.Tatil Gün");
 				}
 				if (resmiTatilCalismaGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, header);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.resmiTatilCalismaGunKod(), "R.Tatil Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.resmiTatilCalismaGunKod(), "R.Tatil Gün");
 				}
 				if (izinSureGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, header);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.izinSureGunKod(), "İzin Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.izinSureGunKod(), "İzin Gün");
 				}
 				if (ucretliIzinGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerIzin);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.ucretliIzinGunKod(), "Ücretli İzin Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.ucretliIzinGunKod(), "Ücretli İzin Gün");
 				}
 				if (ucretsizIzinGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerIzin);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.ucretsizIzinGunKod(), "Ücretsiz İzin Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.ucretsizIzinGunKod(), "Ücretsiz İzin Gün");
 				}
 				if (hastalikIzinGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerIzin);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.hastalikIzinGunKod(), "Hastalık İzin Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.hastalikIzinGunKod(), "Hastalık İzin Gün");
 				}
 				if (normalGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.normalGunKod(), "Normal Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.normalGunKod(), "Normal Gün");
 				}
 				if (haftaTatilGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.haftaTatilGunKod(), "H.Tatil Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.haftaTatilGunKod(), "H.Tatil Gün");
 				}
 				if (resmiTatilGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.resmiTatilGunKod(), "R.Tatil Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.resmiTatilGunKod(), "R.Tatil Gün");
 				}
 				if (artikGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerBGun);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.artikGunKod(), "Artık Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.artikGunKod(), "Artık Gün");
 				}
 				if (bordroToplamGunKod) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerBTGun);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, ortakIslemler.bordroToplamGunKod(), "Toplam Gün");
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.bordroToplamGunKod(), "Toplam Gün");
 				}
 			}
 			if (izinTipiVardiyaList != null) {
 				for (Vardiya vardiya : izinTipiVardiyaList) {
 					cell = ExcelUtil.getCell(sheet, row, col++, headerIzinTipi);
-					AylikPuantaj.baslikCell(factory, drawing, anchor, cell, vardiya.getKisaAdi(), vardiya.getAdi());
+					ExcelUtil.baslikCell(cell, anchor, helper, drawing, vardiya.getKisaAdi(), vardiya.getAdi());
 
 				}
 			}
@@ -2176,7 +2176,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 				if (titlePersonel != null) {
 					Comment comment1 = drawing.createCellComment(anchor);
-					RichTextString str1 = factory.createRichTextString(titlePersonel);
+					RichTextString str1 = helper.createRichTextString(titlePersonel);
 					comment1.setString(str1);
 					personelCell.setCellComment(comment1);
 				}
@@ -2207,7 +2207,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					String title = !help || calisan(pdksVardiyaGun) ? pdksVardiyaGun.getTitle() : null;
 					if (title != null) {
 						Comment comment1 = drawing.createCellComment(anchor);
-						RichTextString str1 = factory.createRichTextString(title);
+						RichTextString str1 = helper.createRichTextString(title);
 						comment1.setString(str1);
 						cell.setCellComment(comment1);
 
@@ -2231,7 +2231,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getCalismaModeliAy().getSure());
 						else
 							title += authenticatedUser.sayiFormatliGoster(aylikPuantaj.getPersonelDenklestirme().getPlanlanSure());
-						RichTextString str1 = factory.createRichTextString(title);
+						RichTextString str1 = helper.createRichTextString(title);
 						comment1.setString(str1);
 						planlananCell.setCellComment(comment1);
 					}
@@ -2354,7 +2354,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				String title = vardiya.getVardiyaAciklama();
 				if (title != null) {
 					Comment comment1 = drawing.createCellComment(anchor);
-					RichTextString str1 = factory.createRichTextString(title);
+					RichTextString str1 = helper.createRichTextString(title);
 					comment1.setString(str1);
 					cellBaslik.setCellComment(comment1);
 
@@ -7687,6 +7687,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (pd == null && aylikPuantaj != null)
 				pd = aylikPuantaj.getPersonelDenklestirme();
 			boolean fmi = pd != null && fazlaMesaiIzinRaporuDurum && (pd.getFazlaMesaiIzinKullan() == null || pd.getFazlaMesaiIzinKullan());
+			if (!fmi && pd.getFazlaMesaiOde().booleanValue() == false)
+				fmi = pd.getPdksPersonel() != null && pd.getPdksPersonel().getSirket().getFazlaMesaiIzinKullan();
+
 			boolean calismaOlmayanVardiyalar = false;
 			List<AylikPuantaj> aylikPuantajAllList = new ArrayList<AylikPuantaj>();
 			Personel personel = null;

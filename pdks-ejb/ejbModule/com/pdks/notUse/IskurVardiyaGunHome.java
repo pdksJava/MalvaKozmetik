@@ -24,10 +24,8 @@ import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -984,9 +982,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(aylikPuantajDefault.getIlkGun());
-		CreationHelper factory = wb.getCreationHelper();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		Drawing drawing = sheet.createDrawingPatriarch();
-		ClientAnchor anchor = factory.createClientAnchor();
 
 		for (int i = 0; i < aylikPuantajDefault.getGunSayisi(); i++) {
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(cal.get(Calendar.DAY_OF_MONTH) + "\n " + authenticatedUser.getTarihFormatla(cal.getTime(), "EEE"));
@@ -1024,10 +1022,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				String titlePersonel = "";
 
 				if (titlePersonel != null) {
-					Comment comment1 = drawing.createCellComment(anchor);
-					RichTextString str1 = factory.createRichTextString(titlePersonel);
-					comment1.setString(str1);
-					personelCell.setCellComment(comment1);
+					ExcelUtil.setCellComment(personelCell, anchor, helper, drawing, titlePersonel);
 				}
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
 				if (aramaSecenekleri.getSirketId() == null)
@@ -1056,13 +1051,9 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 					}
 
 					String title = !help || calisan(pdksVardiyaGun) ? pdksVardiyaGun.getTitle() : null;
-					if (title != null) {
-						Comment comment1 = drawing.createCellComment(anchor);
-						RichTextString str1 = factory.createRichTextString(title);
-						comment1.setString(str1);
-						cell.setCellComment(comment1);
+					if (title != null)
+						ExcelUtil.setCellComment(cell, anchor, helper, drawing, title);
 
-					}
 					cell.setCellValue(aciklama);
 
 				}
@@ -2020,7 +2011,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 			sb.append(" INNER  JOIN " + IsKurVardiyaGun.TABLE_NAME + " V ON YEAR(V." + IsKurVardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ")= D." + DenklestirmeAy.COLUMN_NAME_YIL);
 			sb.append(" AND  MONTH(V." + IsKurVardiyaGun.COLUMN_NAME_VARDIYA_TARIHI + ")= D." + DenklestirmeAy.COLUMN_NAME_AY);
 		}
- 		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + " = :y  AND D." + DenklestirmeAy.COLUMN_NAME_AY + ">0 ");
+		sb.append(" WHERE D." + DenklestirmeAy.COLUMN_NAME_YIL + " = :y  AND D." + DenklestirmeAy.COLUMN_NAME_AY + ">0 ");
 		if (yil == maxYil) {
 			sb.append(" AND ((D." + DenklestirmeAy.COLUMN_NAME_YIL + "*100)+" + DenklestirmeAy.COLUMN_NAME_AY + ")<=:s");
 			fields.put("s", sonDonem);
@@ -2949,7 +2940,6 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				}
 				TreeMap<String, VardiyaGun> vardiyaGunMap = new TreeMap<String, VardiyaGun>();
 				for (VardiyaGun pdksVardiyaGun : vardiyaGunler) {
-				 
 
 					vardiyaGunMap.put(String.valueOf(pdksVardiyaGun.getVardiyaDateStr()), pdksVardiyaGun);
 				}
@@ -4575,7 +4565,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 										if (!calisiyor) {
 											if (!personel.isCalisiyorGun(vardiyaDate)) {
 												pdksVardiyaGun.setYeniVardiya(null);
-	 											pdksVardiyaGun.setGuncellendi(Boolean.TRUE);
+												pdksVardiyaGun.setGuncellendi(Boolean.TRUE);
 
 											}
 										}

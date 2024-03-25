@@ -25,7 +25,6 @@ import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -541,8 +540,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			Workbook wb = new XSSFWorkbook();
 			CellStyle tutarStyle = ExcelUtil.getCellStyleTutar(wb);
 			CellStyle numberStyle = ExcelUtil.getCellStyleTutar(wb);
-			CreationHelper factory = wb.getCreationHelper();
-			ClientAnchor anchor = factory.createClientAnchor();
+			CreationHelper helper = wb.getCreationHelper();
+			ClientAnchor anchor = helper.createClientAnchor();
 			boolean kimlikNoGoster = false;
 			Boolean kartNoAciklamaGoster = null;
 			String kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
@@ -748,7 +747,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 							perNoCell.setCellValue(personel.getPdksSicilNo());
 							if (sb != null) {
 								String title = sb.toString();
-								AylikPuantaj.cellComment(factory, drawing, anchor, perNoCell, title);
+								ExcelUtil.setCellComment(perNoCell, anchor, helper, drawing, title);
 								sb = null;
 							}
 
@@ -1343,7 +1342,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param key
 	 * @param deger
 	 */
-	private void baslikGuncelle(TreeMap<String, Boolean> baslikMap, String key, Double deger) {
+	public void baslikGuncelle(TreeMap<String, Boolean> baslikMap, String key, Double deger) {
 		if (!baslikMap.containsKey(key) && deger != null && deger.doubleValue() != 0)
 			baslikMap.put(key, Boolean.TRUE);
 	}
@@ -2610,20 +2609,17 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param factory
-	 * @param drawing
 	 * @param anchor
+	 * @param helper
+	 * @param drawing
 	 * @param personelDenklestirme
 	 * @return
 	 */
-	public Comment getCommentGuncelleyen(CreationHelper factory, Drawing drawing, ClientAnchor anchor, PersonelDenklestirme personelDenklestirme) {
+	public Comment getCommentGuncelleyen(ClientAnchor anchor, CreationHelper helper, Drawing drawing, PersonelDenklestirme personelDenklestirme) {
 		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
-		Comment commentGuncelleyen;
-		commentGuncelleyen = drawing.createCellComment(anchor);
 		String title = "Onaylayan : " + personelDenklestirme.getGuncelleyenUser().getAdSoyad() + "\n";
 		title += "Zaman : " + loginUser.dateTimeFormatla(personelDenklestirme.getGuncellemeTarihi());
-		RichTextString str1 = factory.createRichTextString(title);
-		commentGuncelleyen.setString(str1);
+		Comment commentGuncelleyen = ExcelUtil.getComment(anchor, helper, drawing, title);
 		return commentGuncelleyen;
 	}
 
