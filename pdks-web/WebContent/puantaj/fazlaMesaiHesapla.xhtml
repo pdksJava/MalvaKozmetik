@@ -198,13 +198,80 @@
 
 								</TABLE>
 							</c:if>
-							<c:if test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
+							<c:if
+								test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and (not empty fazlaMesaiHesaplaHome.aylikPuantajList or fazlaMesaiHesaplaHome.tumBolumPersonelleri!=null)}">
 								<c:choose>
 									<c:when test="#{ortakIslemler.getParameterKey('puantajPageSize')!=''}">
 										<ui:include src="/puantaj/includes/aylikFazlaMesaiTable.xhtml" />
 									</c:when>
 									<c:otherwise>
-										<ui:include src="/puantaj/includes/aylikFazlaMesai.xhtml" />
+										<ui:fragment rendered="#{fazlaMesaiHesaplaHome.tumBolumPersonelleri==null}">
+											<ui:include src="/puantaj/includes/aylikFazlaMesai.xhtml" />
+										</ui:fragment>
+										<ui:fragment rendered="#{fazlaMesaiHesaplaHome.tumBolumPersonelleri!=null}">
+											<rich:tabPanel width="100%" headerAlignment="left" activeItem="#{fazlaMesaiHesaplaHome.getTabAdi()}">
+
+												<rich:tab label="Tüm Personel " name="tab2">
+													<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiHesaplaHome.tumBolumPersonelleri}" var="personel" style="width: 80%;" rows="50"
+														rowKeyVar="row">
+
+														<f:facet name="header">
+															<h:outputText value="Personel Listesi" />
+														</f:facet>
+														<rich:column style="text-align: center;width: 30px;">
+															<f:facet name="header">
+
+															</f:facet>
+
+															<a4j:commandLink title="Fazla Mesai Getir" status="ajaxStatus" reRender="denklestirmeDonemiTable,anaForm"
+																action="#{fazlaMesaiHesaplaHome.fillBolumPersonelDenklestirmeList(personel)}">
+																<h:graphicImage value="/img/rightArrow.gif" style="border:0" />
+															</a4j:commandLink>
+														</rich:column>
+														<rich:column style="text-align: center;width: 30px;">
+															<f:facet name="header">
+																<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+															</f:facet>
+
+															<h:outputText value="#{personel.sicilNo}" />
+														</rich:column>
+														<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" filterBy="#{personel.adSoyad}" filterEvent="onkeyup">
+															<f:facet name="header">
+																<h:outputText value="Adı Soyadı" />
+															</f:facet>
+															<h:outputText value="#{personel.adSoyad}" />
+														</rich:column>
+														<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+															<f:facet name="header">
+																<h:outputText value="#{fazlaMesaiHesaplaHome.bolumAciklama}" />
+															</f:facet>
+															<h:outputText value="#{personel.ekSaha3.aciklama}" />
+														</rich:column>
+														<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+															<f:facet name="header">
+																<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+															</f:facet>
+															<ui:fragment rendered="#{personel.yoneticisi!=null}">
+																<h:outputText value="#{personel.yoneticisi.adSoyad}" />
+
+															</ui:fragment>
+														</rich:column>
+
+														<f:facet name="footer">
+															<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+														</f:facet>
+													</rich:dataTable>
+												</rich:tab>
+												<rich:tab label="Fazla Mesai Listesi" name="tab1">
+													<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
+														<ui:include src="/puantaj/includes/aylikFazlaMesai.xhtml" />
+													</ui:fragment>
+
+												</rich:tab>
+											</rich:tabPanel>
+
+										</ui:fragment>
+
 
 									</c:otherwise>
 								</c:choose>
@@ -260,7 +327,8 @@
 						rowKeyVar="row">
 						<f:facet name="header">
 							<ui:fragment>
-								<h:outputText value="Giriş Çıkış Hareketleri [ #{fazlaMesaiHesaplaHome.seciliBolum.aciklama} #{fazlaMesaiHesaplaHome.seciliAltBolum.aciklama}  ]" />
+								<h:outputText
+									value="Giriş Çıkış Hareketleri [ #{fazlaMesaiHesaplaHome.seciliBolum.aciklama} #{fazlaMesaiHesaplaHome.seciliAltBolum.aciklama}  ]" />
 
 							</ui:fragment>
 						</f:facet>

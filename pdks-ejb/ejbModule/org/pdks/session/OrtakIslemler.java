@@ -3178,7 +3178,7 @@ public class OrtakIslemler implements Serializable {
 			for (AylikPuantaj aylikPuantaj : aylikPuantajList) {
 				Personel personel = aylikPuantaj.getPdksPersonel();
 				Sirket sirket = personel.getSirket();
-				CalismaModeli cm = aylikPuantaj.getPersonelDenklestirme().getCalismaModeli();
+				CalismaModeli cm = aylikPuantaj.getCalismaModeli();
 				String key = (sirket.getTesisDurum() && personel.getTesis() != null ? personel.getTesis().getAciklama() + "_" : "");
 				String bolumAdi = personel.getEkSaha3() != null ? "_" + personel.getEkSaha3().getAciklama() : "";
 				if (cm != null) {
