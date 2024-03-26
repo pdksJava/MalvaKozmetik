@@ -119,7 +119,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	@RequestParameter
 	Long pdksVardiyaGunId;
-
+	@In(required = false, create = true)
+	ComponentState componentState;
 	@In(required = false, create = true)
 	EntityManager entityManager;
 	@In(required = false, create = true)
@@ -154,6 +155,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	private List<PersonelDenklestirmeDinamikAlan> personelDenklestirmeDinamikAlanList;
 
 	private List<SelectItem> fazlaMesaiTalepDurumList;
+
+	private List<Personel> tumBolumPersonelleri;
 
 	private TreeMap<String, Boolean> baslikMap;
 
@@ -4141,6 +4144,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 * @throws Exception
 	 */
 	public void fillSirketList() throws Exception {
+		tumBolumPersonelleri = null;
 		fazlaMesaiTalepler.clear();
 		ekSaha4Tanim = null;
 		if (adminRole)
@@ -5558,13 +5562,28 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	}
 
 	/**
+	 * @param personel
+	 * @return
+	 */
+	@Transactional
+	public String fillBolumPersonelDenklestirmeList(Personel secPersonel) {
+		if (secPersonel != null && secPersonel.getEkSaha3() != null) {
+			sicilNo = secPersonel.getPdksSicilNo();
+			// aramaSecenekleri.setSicilNo(secPersonel.getPdksSicilNo());
+			aramaSecenekleri.setEkSaha3Id(secPersonel.getEkSaha3().getId());
+			aylikPuantajOlusturuluyor();
+		}
+		return "";
+	}
+
+	/**
 	 * 
 	 */
 	@Transactional
 	public Boolean aylikPuantajOlusturuluyor() {
 		if (loginUser == null)
 			loginUser = authenticatedUser;
-
+		componentState.setSeciliTab("tab1");
 		seciliBolum = null;
 		seciliAltBolum = null;
 		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
@@ -8980,6 +8999,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public void sayfaGirisAction() throws Exception {
+		componentState.setSeciliTab("");
+		tumBolumPersonelleri = null;
 		bordroPuantajEkranindaGoster = false;
 		linkBordroAdres = null;
 		aylikVardiyaPlanGiris("vardiyaPlani", true);
@@ -8993,7 +9014,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	public void tesisDoldur(boolean bolumDoldurDurum) throws Exception {
 		Sirket sirket = null;
 		listeleriTemizle();
-
+		tumBolumPersonelleri = null;
 		if (aramaSecenekleri.getSirketId() != null) {
 			HashMap fields = new HashMap();
 			fields.put("id", aramaSecenekleri.getSirketId());
@@ -9039,6 +9060,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	public void bolumDoldur() throws Exception {
 		stajerSirket = Boolean.FALSE;
 		aramaSecenekleri.setGorevYeriList(null);
+		tumBolumPersonelleri = null;
 		if (!PdksUtil.hasStringValue(donusAdres)) {
 			listeleriTemizle();
 		}
@@ -9078,6 +9100,17 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (st.getValue().equals(onceki))
 						aramaSecenekleri.setEkSaha3Id(onceki);
 
+				}
+			}
+			if (list.size() > 1) {
+				if (ortakIslemler.getParameterKey("tumBolumPersonelGetir").equals("1") && !(ikRole || adminRole)) {
+					tumBolumPersonelleri = fazlaMesaiOrtakIslemler.getTumBolumPersonelListesi(sirket, denklestirmeAy, aramaSecenekleri.getTesisId(), getDenklestirmeDurum(), session);
+					if (tumBolumPersonelleri != null) {
+						if (!tumBolumPersonelleri.isEmpty())
+							componentState.setSeciliTab("tab2");
+						else
+							tumBolumPersonelleri = null;
+					}
 				}
 			}
 		} else
@@ -11772,6 +11805,14 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	public void setPersonelSutIzniDurum(PersonelDonemselDurum personelSutIzniDurum) {
 		this.personelSutIzniDurum = personelSutIzniDurum;
+	}
+
+	public List<Personel> getTumBolumPersonelleri() {
+		return tumBolumPersonelleri;
+	}
+
+	public void setTumBolumPersonelleri(List<Personel> tumBolumPersonelleri) {
+		this.tumBolumPersonelleri = tumBolumPersonelleri;
 	}
 
 }

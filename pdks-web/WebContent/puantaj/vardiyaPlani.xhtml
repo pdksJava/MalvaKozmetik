@@ -138,7 +138,90 @@
 
 				<rich:panel styleClass="vardiyaGun">
 
-					<ui:include src="/puantaj/includes/aylikPlani.xhtml" />
+					<ui:fragment rendered="#{vardiyaGunHome.tumBolumPersonelleri==null}">
+						<ui:include src="/puantaj/includes/aylikPlani.xhtml" />
+					</ui:fragment>
+					<ui:fragment rendered="#{vardiyaGunHome.tumBolumPersonelleri!=null}">
+						<a4j:region>
+							<rich:tabPanel binding="#{componentState.someTabPanel}" width="100%" headerAlignment="left" switchType="ajax">
+
+								<rich:tab label="Tüm Personeller" name="tab2">
+									<rich:dataTable rowClasses="acik,koyu" value="#{vardiyaGunHome.tumBolumPersonelleri}" var="personel" style="width: 80%;" rows="50"
+										rowKeyVar="row">
+
+										<f:facet name="header">
+											<h:outputText value="Personel Listesi" />
+										</f:facet>
+										<rich:column style="text-align: center;width: 30px;">
+											<f:facet name="header">
+
+											</f:facet>
+
+											<a4j:commandLink title="Fazla Mesai Getir" status="ajaxStatus" reRender="vardiyaPanel,girisler" ajaxSingle="true"
+												action="#{vardiyaGunHome.fillBolumPersonelDenklestirmeList(personel)}">
+												<h:graphicImage value="/img/rightArrow.gif" style="border:0" />
+											</a4j:commandLink>
+										</rich:column>
+										<rich:column style="text-align: center;width: 30px;">
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+											</f:facet>
+
+											<h:outputText value="#{personel.sicilNo}" />
+										</rich:column>
+										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" filterBy="#{personel.adSoyad}" filterEvent="onkeyup">
+											<f:facet name="header">
+												<h:outputText value="Adı Soyadı" />
+											</f:facet>
+											<h:outputText value="#{personel.adSoyad}" />
+										</rich:column>
+										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+											<f:facet name="header">
+												<h:outputText value="#{vardiyaGunHome.bolumAciklama}" />
+											</f:facet>
+											<h:outputText value="#{personel.ekSaha3.aciklama}" />
+										</rich:column>
+										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+											<f:facet name="header">
+												<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+											</f:facet>
+											<ui:fragment rendered="#{personel.yoneticisi!=null}">
+												<h:outputText value="#{personel.yoneticisi.adSoyad}" />
+
+											</ui:fragment>
+										</rich:column>
+										<rich:column style="text-align:center">
+											<f:facet name="header">
+												<h:outputText value="İşe Giriş Tarihi" />
+											</f:facet>
+											<ui:fragment rendered="#{pdksPersonel.iseBaslamaTarihi.time ge vardiyaGunHome.denklestirmeAy.basTarih.time}">
+												<h:outputText value="#{authenticatedUser.dateFormatla( personel.iseBaslamaTarihi)}" />
+											</ui:fragment>
+										</rich:column>
+										<rich:column style="text-align:center">
+											<f:facet name="header">
+												<h:outputText value="İşten Ayrılma Tarihi" />
+											</f:facet>
+											<ui:fragment rendered="#{pdksPersonel.istenAyrilisTarihi.time le vardiyaGunHome.denklestirmeAy.bitTarih.time}">
+												<h:outputText value="#{authenticatedUser.dateFormatla(pdksPersonel.istenAyrilisTarihi)}" />
+											</ui:fragment>
+										</rich:column>
+
+										<f:facet name="footer">
+											<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+										</f:facet>
+									</rich:dataTable>
+								</rich:tab>
+								<rich:tab label="Vardiya Planı Listesi" name="tab1">
+									<ui:fragment rendered="#{not empty vardiyaGunHome.aylikPuantajList}">
+										<ui:include src="/puantaj/includes/aylikPlani.xhtml" />
+									</ui:fragment>
+
+								</rich:tab>
+							</rich:tabPanel>
+						</a4j:region>
+					</ui:fragment>
+
 
 				</rich:panel>
 			</a4j:outputPanel>
@@ -477,144 +560,143 @@
 					</table>
 
 					<h:panelGrid id="digerIslemler" columns="5" rendered="#{vardiyaGunHome.personelAylikPuantaj.kaydet and vardiyaGunHome.ikRole}">
-					 
-							<s:decorate template="/layout/edit.xhtml">
-								<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()}</ui:define>
-								<h:selectOneMenu value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
-									styleClass="size10" required="true" style="width:85px" requiredMessage="Çalışma Şekli Seciniz">
-									<s:selectItems var="comp" value="#{vardiyaGunHome.modelList}" label="#{comp.calismaModeli.aciklama}" noSelectionLabel="Lutfen Seciniz" />
-									<s:convertEntity />
-									<a4j:support event="onchange" action="#{vardiyaGunHome.modelDegisti()}" reRender="digerIslemler,secimler" />
-								</h:selectOneMenu>
 
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()}</ui:define>
+							<h:selectOneMenu value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
+								styleClass="size10" required="true" style="width:85px" requiredMessage="Çalışma Şekli Seciniz">
+								<s:selectItems var="comp" value="#{vardiyaGunHome.modelList}" label="#{comp.calismaModeli.aciklama}" noSelectionLabel="Lutfen Seciniz" />
+								<s:convertEntity />
+								<a4j:support event="onchange" action="#{vardiyaGunHome.modelDegisti()}" reRender="digerIslemler,secimler" />
+							</h:selectOneMenu>
+
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy!=null and vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.updateCGS}">
+							<ui:define name="label">Planlan Süre</ui:define>
+							<h:inputText value="#{vardiyaGunHome.personelDenklestirme.sutIzniSaatSayisi}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
+								validatorMessage="Hatalı giriş">
+								<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+							</h:inputText>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">Denk.Var</ui:define>
+							<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.denklestirme}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
+								<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<c:if
+							test="#{authenticatedUser.IK and (vardiyaGunHome.personelDenklestirme.fazlaMesaiIzinKullan or  vardiyaGunHome.personelDenklestirme.personel.fazlaMesaiIzinKullan)}">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Fazla Mesai İzin Kullandır</ui:define>
+								<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.fazlaMesaiIzinKullan}"
+									disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
+									<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" ajaxSingle="true" reRender="secimler" />
+								</h:selectBooleanCheckbox>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy!=null and vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.updateCGS}">
-								<ui:define name="label">Planlan Süre</ui:define>
-								<h:inputText value="#{vardiyaGunHome.personelDenklestirme.sutIzniSaatSayisi}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
+								rendered="#{vardiyaGunHome.personelDenklestirme.kismiOdemeSure>0 or ortakIslemler.getParameterKey('kismiOdemeSureGuncelle')=='1'}">
+								<ui:define name="label">Kısmi Ödenecek Süre</ui:define>
+								<h:inputText value="#{vardiyaGunHome.personelDenklestirme.kismiOdemeSure}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
 									validatorMessage="Hatalı giriş">
+									<f:validateDoubleRange minimum="0" maximum="744" />
 									<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
 								</h:inputText>
 							</s:decorate>
+						</c:if>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.IK and vardiyaGunHome.personelDenklestirme.fazlaMesaiIzinKullan==false}">
+							<ui:define name="label">Fazla Mesai Öde</ui:define>
+							<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.fazlaMesaiOde}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
+								<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<c:forEach items="#{vardiyaGunHome.personelDenklestirmeDinamikAlanList}" var="pdda">
 							<s:decorate template="/layout/edit.xhtml">
-								<ui:define name="label">Denk.Var</ui:define>
-								<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.denklestirme}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
-									<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+								<ui:define name="label">#{pdda.alan.aciklama}</ui:define>
+								<h:selectBooleanCheckbox value="#{pdda.durum}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
+									<a4j:support event="onclick" />
 								</h:selectBooleanCheckbox>
 							</s:decorate>
-							<c:if
-								test="#{authenticatedUser.IK and (vardiyaGunHome.personelDenklestirme.fazlaMesaiIzinKullan or  vardiyaGunHome.personelDenklestirme.personel.fazlaMesaiIzinKullan)}">
-								<s:decorate template="/layout/edit.xhtml">
-									<ui:define name="label">Fazla Mesai İzin Kullandır</ui:define>
-									<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.fazlaMesaiIzinKullan}"
-										disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
-										<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" ajaxSingle="true" reRender="secimler" />
-									</h:selectBooleanCheckbox>
-								</s:decorate>
-								<s:decorate template="/layout/edit.xhtml"
-									rendered="#{vardiyaGunHome.personelDenklestirme.kismiOdemeSure>0 or ortakIslemler.getParameterKey('kismiOdemeSureGuncelle')=='1'}">
-									<ui:define name="label">Kısmi Ödenecek Süre</ui:define>
-									<h:inputText value="#{vardiyaGunHome.personelDenklestirme.kismiOdemeSure}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
-										validatorMessage="Hatalı giriş">
-										<f:validateDoubleRange minimum="0" maximum="744" />
-										<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
-									</h:inputText>
-								</s:decorate>
-							</c:if>
-							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{authenticatedUser.IK and vardiyaGunHome.personelDenklestirme.fazlaMesaiIzinKullan==false}">
-								<ui:define name="label">Fazla Mesai Öde</ui:define>
-								<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.fazlaMesaiOde}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
-									<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
-								</h:selectBooleanCheckbox>
-							</s:decorate>
-							<c:forEach items="#{vardiyaGunHome.personelDenklestirmeDinamikAlanList}" var="pdda">
-								<s:decorate template="/layout/edit.xhtml">
-									<ui:define name="label">#{pdda.alan.aciklama}</ui:define>
-									<h:selectBooleanCheckbox value="#{pdda.durum}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
-										<a4j:support event="onclick" />
-									</h:selectBooleanCheckbox>
-								</s:decorate>
 
-							</c:forEach>
-							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{ vardiyaGunHome.personelDenklestirme.egitimSuresiAksamGunSayisi>0 or  vardiyaGunHome.personelDenklestirme.personel.egitimDonemi}">
-								<ui:define name="label">
-									<SPAN title="Eğitim Ödeneği Akşam Çalışması Maksimum Gün Sayısı">Eğitim Akşam Gün</SPAN>
-								</ui:define>
-								<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="-1" maxValue="22" inputSize="1"
-									value="#{vardiyaGunHome.personelDenklestirme.egitimSuresiAksamGunSayisi}">
-									<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
-								</rich:inputNumberSpinner>
+						</c:forEach>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{ vardiyaGunHome.personelDenklestirme.egitimSuresiAksamGunSayisi>0 or  vardiyaGunHome.personelDenklestirme.personel.egitimDonemi}">
+							<ui:define name="label">
+								<SPAN title="Eğitim Ödeneği Akşam Çalışması Maksimum Gün Sayısı">Eğitim Akşam Gün</SPAN>
+							</ui:define>
+							<rich:inputNumberSpinner styleClass="size10" inputStyle="width:20px" minValue="-1" maxValue="22" inputSize="1"
+								value="#{vardiyaGunHome.personelDenklestirme.egitimSuresiAksamGunSayisi}">
+								<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+							</rich:inputNumberSpinner>
 
-							</s:decorate>
+						</s:decorate>
 
-							<ui:fragment rendered="#{vardiyaGunHome.gebeSutIzniGuncelle}">
-								<c:choose>
-									<c:when test="#{ vardiyaGunHome.personelDenklestirme.sutIzniDurum or  vardiyaGunHome.personelDenklestirme.personel.sutIzniKullan}">
-										<s:decorate template="/layout/edit.xhtml">
-											<ui:define name="label">Süt İzni Kullanıyor</ui:define>
-											<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.sutIzniDurum}">
-												<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
-											</h:selectBooleanCheckbox>
-										</s:decorate>
-										<s:decorate template="/layout/edit.xhtml" id="sutIzniGuncelle">
-											<ui:define name="label">
-												<ui:fragment>
+						<ui:fragment rendered="#{vardiyaGunHome.gebeSutIzniGuncelle}">
+							<c:choose>
+								<c:when test="#{ vardiyaGunHome.personelDenklestirme.sutIzniDurum or  vardiyaGunHome.personelDenklestirme.personel.sutIzniKullan}">
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Süt İzni Kullanıyor</ui:define>
+										<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.sutIzniDurum}">
+											<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+										</h:selectBooleanCheckbox>
+									</s:decorate>
+									<s:decorate template="/layout/edit.xhtml" id="sutIzniGuncelle">
+										<ui:define name="label">
+											<ui:fragment>
 										Süt İzni ÇGS (#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.denklestirmeAy.toplamIzinSure)}-#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.denklestirmeAy.sure)})
 										<ui:fragment rendered="#{vardiyaGunHome.personelSutIzniDurum.id!=null and vardiyaGunHome.denklestirmeAyDurum}">
-														<a4j:commandLink status="ajaxStatus" id="editSutIzni" action="#{vardiyaGunHome.seciliPuantajSutIzniGuncelle()}"
-															reRender="sutIzniGuncelle" ajaxSingle="true">
-															<h:graphicImage value="/img/calculator.png" style="border:0" height="14px" />
+													<a4j:commandLink status="ajaxStatus" id="editSutIzni" action="#{vardiyaGunHome.seciliPuantajSutIzniGuncelle()}"
+														reRender="sutIzniGuncelle" ajaxSingle="true">
+														<h:graphicImage value="/img/calculator.png" style="border:0" height="14px" />
 
-														</a4j:commandLink>
-														<rich:toolTip for="editSutIzni">
-															<SPAN style="font-size: 12px"><b>#{vardiyaGunHome.personelSutIzniDurum.personelDurumTipiAciklama} : </b>
-																#{authenticatedUser.dateFormatla(vardiyaGunHome.personelSutIzniDurum.basTarih)} -
-																#{authenticatedUser.dateFormatla(vardiyaGunHome.personelSutIzniDurum.bitTarih)}</SPAN>
-															<br></br>Süt İzni ÇGS Hesapla
+													</a4j:commandLink>
+													<rich:toolTip for="editSutIzni">
+														<SPAN style="font-size: 12px"><b>#{vardiyaGunHome.personelSutIzniDurum.personelDurumTipiAciklama} : </b>
+															#{authenticatedUser.dateFormatla(vardiyaGunHome.personelSutIzniDurum.basTarih)} -
+															#{authenticatedUser.dateFormatla(vardiyaGunHome.personelSutIzniDurum.bitTarih)}</SPAN>
+														<br></br>Süt İzni ÇGS Hesapla
 											
 											
 											</rich:toolTip>
-													</ui:fragment>
 												</ui:fragment>
+											</ui:fragment>
 
-											</ui:define>
-											<h:inputText value="#{vardiyaGunHome.personelDenklestirme.sutIzniSaatSayisi}" validatorMessage="Hatalı giriş">
-												<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
-											</h:inputText>
+										</ui:define>
+										<h:inputText value="#{vardiyaGunHome.personelDenklestirme.sutIzniSaatSayisi}" validatorMessage="Hatalı giriş">
+											<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+										</h:inputText>
 
 
-										</s:decorate>
-									</c:when>
-									<c:otherwise>
-										<s:decorate template="/layout/edit.xhtml">
-											<ui:define name="label">Gebe ÇGS</ui:define>
-											<h:inputText value="#{vardiyaGunHome.personelDenklestirme.sutIzniSaatSayisi}" validatorMessage="Hatalı giriş">
-												<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
-											</h:inputText>
-										</s:decorate>
-									</c:otherwise>
-								</c:choose>
+									</s:decorate>
+								</c:when>
+								<c:otherwise>
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Gebe ÇGS</ui:define>
+										<h:inputText value="#{vardiyaGunHome.personelDenklestirme.sutIzniSaatSayisi}" validatorMessage="Hatalı giriş">
+											<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+										</h:inputText>
+									</s:decorate>
+								</c:otherwise>
+							</c:choose>
 
-							</ui:fragment>
-							<ui:fragment rendered="#{ vardiyaGunHome.personelDenklestirme.partTime or  vardiyaGunHome.personelDenklestirme.personel.partTimeCalisan}">
-								<s:decorate template="/layout/edit.xhtml">
-									<ui:define name="label">Part Time</ui:define>
-									<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.partTime}">
-										<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
-									</h:selectBooleanCheckbox>
-								</s:decorate>
-
-							</ui:fragment>
-							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{vardiyaGunHome.personelAylikPuantaj.gorevYeriSec==false and (vardiyaGunHome.personelAylikPuantaj.vardiyaSua or vardiyaGunHome.personelDenklestirme.suaDurum!=null)}">
-								<ui:define name="label">Şu Var</ui:define>
-								<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.suaDurum}">
+						</ui:fragment>
+						<ui:fragment rendered="#{ vardiyaGunHome.personelDenklestirme.partTime or  vardiyaGunHome.personelDenklestirme.personel.partTimeCalisan}">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Part Time</ui:define>
+								<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.partTime}">
 									<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
 								</h:selectBooleanCheckbox>
 							</s:decorate>
-						
+
+						</ui:fragment>
+						<s:decorate template="/layout/edit.xhtml"
+							rendered="#{vardiyaGunHome.personelAylikPuantaj.gorevYeriSec==false and (vardiyaGunHome.personelAylikPuantaj.vardiyaSua or vardiyaGunHome.personelDenklestirme.suaDurum!=null)}">
+							<ui:define name="label">Şu Var</ui:define>
+							<h:selectBooleanCheckbox value="#{vardiyaGunHome.personelDenklestirme.suaDurum}">
+								<a4j:support event="onclick" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+
 					</h:panelGrid>
 
 				</a4j:outputPanel>

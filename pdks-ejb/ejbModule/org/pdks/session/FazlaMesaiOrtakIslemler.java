@@ -112,6 +112,41 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param sirket
+	 * @param denklestirmeAy
+	 * @param tesisId
+	 * @param durum
+	 * @param session
+	 * @return
+	 */
+	public List<Personel> getTumBolumPersonelListesi(Sirket sirket, DenklestirmeAy denklestirmeAy, Long tesisId, boolean durum, Session session) {
+		DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
+		AylikPuantaj aylikPuantaj = getAylikPuantaj(denklestirmeAy.getAy(), denklestirmeAy.getYil(), denklestirmeDonemi, session);
+		aylikPuantaj.setLoginUser(authenticatedUser);
+		denklestirmeDonemi.setLoginUser(authenticatedUser);
+		denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
+		List<Personel> tumBolumPersonelleri = getFazlaMesaiPersonelList(sirket, (tesisId != null ? String.valueOf(tesisId) : null), null, null, denklestirmeAy != null ? aylikPuantaj : null, durum, session);
+		if (!tumBolumPersonelleri.isEmpty()) {
+			List<AylikPuantaj> list = new ArrayList<AylikPuantaj>();
+			for (Personel value : tumBolumPersonelleri) {
+				AylikPuantaj puantaj = new AylikPuantaj();
+				puantaj.setCalismaModeli(value.getCalismaModeli());
+				puantaj.setPdksPersonel(value);
+				list.add(puantaj);
+			}
+			tumBolumPersonelleri.clear();
+			try {
+				ortakIslemler.sortAylikPuantajList(list, true);
+			} catch (Exception e) {
+			}
+			for (AylikPuantaj puantaj : list)
+				tumBolumPersonelleri.add(puantaj.getPdksPersonel());
+			list = null;
+		}
+		return tumBolumPersonelleri;
+	}
+
+	/**
 	 * @param basTarih
 	 * @param bitTarih
 	 * @param session

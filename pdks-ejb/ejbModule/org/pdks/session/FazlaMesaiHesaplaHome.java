@@ -869,6 +869,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 * @param personel
 	 * @return
 	 */
+	@Transactional
 	public String fillBolumPersonelDenklestirmeList(Personel secPersonel) {
 		if (secPersonel != null && secPersonel.getEkSaha3() != null) {
 			sicilNo = secPersonel.getPdksSicilNo();
@@ -5506,29 +5507,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 				else {
 					if (ortakIslemler.getParameterKey("tumBolumPersonelGetir").equals("1") && !(ikRole || adminRole)) {
-						DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
-						AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
-						aylikPuantaj.setLoginUser(authenticatedUser);
-						denklestirmeDonemi.setLoginUser(authenticatedUser);
-						denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
-						tumBolumPersonelleri = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, (tesisId != null ? String.valueOf(tesisId) : null), null, null, denklestirmeAy != null ? aylikPuantaj : null, sadeceFazlaMesai, session);
-						if (!tumBolumPersonelleri.isEmpty()) {
-							List<AylikPuantaj> list = new ArrayList<AylikPuantaj>();
-							for (Personel value : tumBolumPersonelleri) {
-								AylikPuantaj puantaj = new AylikPuantaj();
-								puantaj.setCalismaModeli(value.getCalismaModeli());
-								puantaj.setPdksPersonel(value);
-								list.add(puantaj);
-							}
-							componentState.setSeciliTab("tab2");
-							tumBolumPersonelleri.clear();
-							try {
-								ortakIslemler.sortAylikPuantajList(list, true);
-							} catch (Exception e) {
-							}
-							for (AylikPuantaj puantaj : list)
-								tumBolumPersonelleri.add(puantaj.getPdksPersonel());
-							list = null;
+						tumBolumPersonelleri = fazlaMesaiOrtakIslemler.getTumBolumPersonelListesi(sirket, denklestirmeAy, tesisId, sadeceFazlaMesai, session);
+						if (tumBolumPersonelleri != null) {
+							if (!tumBolumPersonelleri.isEmpty())
+								componentState.setSeciliTab("tab1");
+							else
+								tumBolumPersonelleri = null;
 						}
 					}
 					if (seciliEkSaha3Id != null) {
