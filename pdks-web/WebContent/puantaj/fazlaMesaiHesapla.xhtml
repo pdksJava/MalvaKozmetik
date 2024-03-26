@@ -261,14 +261,15 @@
 																<f:facet name="header">
 																	<h:outputText value="İşe Giriş Tarihi" />
 																</f:facet>
-																<ui:fragment rendered="#{pdksPersonel.iseBaslamaTarihi.time ge fazlaMesaiHesaplaHome.denklestirmeAy.basTarih.time}">
-																<h:outputText value="#{authenticatedUser.dateFormatla( personel.iseBaslamaTarihi)}" /></ui:fragment>
+																<ui:fragment rendered="#{personel.iseBaslamaTarihi.before(fazlaMesaiHesaplaHome.denklestirmeAy.basTarih)==false}">
+																	<h:outputText value="#{authenticatedUser.dateFormatla(personel.iseBaslamaTarihi)}" />
+																</ui:fragment>
 															</rich:column>
-															<rich:column style="text-align:center" >
+															<rich:column style="text-align:center">
 																<f:facet name="header">
 																	<h:outputText value="İşten Ayrılma Tarihi" />
 																</f:facet>
-																<ui:fragment rendered="#{pdksPersonel.istenAyrilisTarihi.time le fazlaMesaiHesaplaHome.denklestirmeAy.bitTarih.time}">
+																<ui:fragment rendered="#{personel.istenAyrilisTarihi.after(fazlaMesaiHesaplaHome.denklestirmeAy.bitTarih)==false}">
 																	<h:outputText value="#{authenticatedUser.dateFormatla(pdksPersonel.istenAyrilisTarihi)}" />
 																</ui:fragment>
 															</rich:column>

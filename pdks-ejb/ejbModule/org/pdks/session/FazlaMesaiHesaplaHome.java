@@ -5510,7 +5510,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						tumBolumPersonelleri = fazlaMesaiOrtakIslemler.getTumBolumPersonelListesi(sirket, denklestirmeAy, tesisId, sadeceFazlaMesai, session);
 						if (tumBolumPersonelleri != null) {
 							if (!tumBolumPersonelleri.isEmpty())
-								componentState.setSeciliTab("tab1");
+								componentState.setSeciliTab("tab2");
 							else
 								tumBolumPersonelleri = null;
 						}

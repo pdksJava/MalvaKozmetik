@@ -59,9 +59,9 @@ public class DenklestirmeAy extends BaseObject {
 	}
 
 	public void setAy(int value) {
-		if (ay > 0 && ay < 13)
-			donemGuncelle();
 		this.ay = value;
+		if (value > 0 && value < 13)
+			donemGuncelle();
 	}
 
 	@Column(name = COLUMN_NAME_YIL, nullable = false)
@@ -70,9 +70,9 @@ public class DenklestirmeAy extends BaseObject {
 	}
 
 	public void setYil(int value) {
+		this.yil = value;
 		if (value >= PdksUtil.getSistemBaslangicYili())
 			donemGuncelle();
-		this.yil = value;
 	}
 
 	@Temporal(TemporalType.DATE)
