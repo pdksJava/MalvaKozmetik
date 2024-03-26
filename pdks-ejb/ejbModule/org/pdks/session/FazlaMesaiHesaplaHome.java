@@ -112,7 +112,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemler;
 	@In(required = false, create = true)
 	StartupAction startupAction;
-
+	@In(required = false, create = true)
+	ComponentState componentState;
 	@Out(scope = ScopeType.SESSION, required = false)
 	String linkAdres;
 	@In(scope = ScopeType.SESSION, required = false)
@@ -174,7 +175,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 
-	private String msgError, msgFazlaMesaiError, msgFazlaMesaiInfo, sanalPersonelAciklama, bolumAciklama, tmpAlan, linkBordroAdres, tabAdi;
+	private String msgError, msgFazlaMesaiError, msgFazlaMesaiInfo, sanalPersonelAciklama, bolumAciklama, tmpAlan, linkBordroAdres;
 	private Double eksikSaatYuzde = null;
 	private String sicilNo = "", sicilYeniNo = "", excelDosyaAdi, mailKonu, mailIcerik, msgwarnImg = "";
 	private List<YemekIzin> yemekAraliklari;
@@ -295,7 +296,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	@Begin(join = true, flushMode = FlushModeType.MANUAL)
 	public String sayfaGirisAction() {
-		tabAdi = "tab1";
+		componentState.setSeciliTab("tab1");
 		userLogin = authenticatedUser;
 		tumBolumPersonelleri = null;
 		bordroPuantajEkranindaGoster = false;
@@ -883,7 +884,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	@Transactional
 	public String fillPersonelDenklestirmeList() {
-		tabAdi = "tab1";
+		componentState.setSeciliTab("tab1");
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
@@ -5519,7 +5520,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								puantaj.setPdksPersonel(value);
 								list.add(puantaj);
 							}
-							tabAdi = "tab2";
+							componentState.setSeciliTab("tab2");
 							tumBolumPersonelleri.clear();
 							try {
 								ortakIslemler.sortAylikPuantajList(list, true);
@@ -7065,14 +7066,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setTumBolumPersonelleri(List<Personel> tumBolumPersonelleri) {
 		this.tumBolumPersonelleri = tumBolumPersonelleri;
-	}
-
-	public String getTabAdi() {
-		return tabAdi;
-	}
-
-	public void setTabAdi(String tabAdi) {
-		this.tabAdi = tabAdi;
 	}
 
 }

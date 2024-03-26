@@ -39,7 +39,7 @@ public class DenklestirmeAy extends BaseObject {
 	private double sure = 0, toplamIzinSure = 0;
 	private Double yemekMolasiYuzdesi, fazlaMesaiMaxSure;
 
-	private Date otomatikOnayIKTarih, otomatikOnayIKBaslangicTarih;
+	private Date otomatikOnayIKTarih, otomatikOnayIKBaslangicTarih, basTarih, bitTarih;
 	private String ayAdi = "", trClass;
 	private List<CalismaModeliAy> modeller;
 	private TreeMap<Long, CalismaModeliAy> modelMap;
@@ -58,8 +58,10 @@ public class DenklestirmeAy extends BaseObject {
 		return ay;
 	}
 
-	public void setAy(int ay) {
-		this.ay = ay;
+	public void setAy(int value) {
+		if (ay > 0 && ay < 13)
+			donemGuncelle();
+		this.ay = value;
 	}
 
 	@Column(name = COLUMN_NAME_YIL, nullable = false)
@@ -67,8 +69,10 @@ public class DenklestirmeAy extends BaseObject {
 		return yil;
 	}
 
-	public void setYil(int yil) {
-		this.yil = yil;
+	public void setYil(int value) {
+		if (value >= PdksUtil.getSistemBaslangicYili())
+			donemGuncelle();
+		this.yil = value;
 	}
 
 	@Temporal(TemporalType.DATE)
@@ -283,6 +287,35 @@ public class DenklestirmeAy extends BaseObject {
 		}
 
 		return cma;
+	}
+
+	private void donemGuncelle() {
+		if (ay > 0 && ay < 13 && yil >= PdksUtil.getSistemBaslangicYili() && basTarih == null && bitTarih == null) {
+			basTarih = PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + ay) + "01", "yyyyMMdd");
+			bitTarih = PdksUtil.tariheGunEkleCikar(PdksUtil.tariheAyEkleCikar(basTarih, 1), -1);
+		}
+	}
+
+	@Transient
+	public Date getBasTarih() {
+		if (basTarih == null)
+			donemGuncelle();
+		return basTarih;
+	}
+
+	public void setBasTarih(Date basTarih) {
+		this.basTarih = basTarih;
+	}
+
+	@Transient
+	public Date getBitTarih() {
+		if (bitTarih == null)
+			donemGuncelle();
+		return bitTarih;
+	}
+
+	public void setBitTarih(Date bitTarih) {
+		this.bitTarih = bitTarih;
 	}
 
 }

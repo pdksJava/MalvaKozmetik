@@ -209,67 +209,68 @@
 											<ui:include src="/puantaj/includes/aylikFazlaMesai.xhtml" />
 										</ui:fragment>
 										<ui:fragment rendered="#{fazlaMesaiHesaplaHome.tumBolumPersonelleri!=null}">
-											<rich:tabPanel width="100%" headerAlignment="left" activeItem="#{fazlaMesaiHesaplaHome.getTabAdi()}">
+											<a4j:region>
+												<rich:tabPanel binding="#{componentState.someTabPanel}" width="100%" headerAlignment="left" switchType="ajax">
 
-												<rich:tab label="Tüm Personel " name="tab2">
-													<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiHesaplaHome.tumBolumPersonelleri}" var="personel" style="width: 80%;" rows="50"
-														rowKeyVar="row">
+													<rich:tab label="Tüm Personeller" name="tab2">
+														<rich:dataTable rowClasses="acik,koyu" value="#{fazlaMesaiHesaplaHome.tumBolumPersonelleri}" var="personel" style="width: 80%;"
+															rows="50" rowKeyVar="row">
 
-														<f:facet name="header">
-															<h:outputText value="Personel Listesi" />
-														</f:facet>
-														<rich:column style="text-align: center;width: 30px;">
 															<f:facet name="header">
-
+																<h:outputText value="Personel Listesi" />
 															</f:facet>
+															<rich:column style="text-align: center;width: 30px;">
+																<f:facet name="header">
 
-															<a4j:commandLink title="Fazla Mesai Getir" status="ajaxStatus" reRender="denklestirmeDonemiTable,anaForm"
-																action="#{fazlaMesaiHesaplaHome.fillBolumPersonelDenklestirmeList(personel)}">
-																<h:graphicImage value="/img/rightArrow.gif" style="border:0" />
-															</a4j:commandLink>
-														</rich:column>
-														<rich:column style="text-align: center;width: 30px;">
-															<f:facet name="header">
-																<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+																</f:facet>
+
+																<a4j:commandLink title="Fazla Mesai Getir" status="ajaxStatus" reRender="denklestirmeDonemiTable,anaForm" ajaxSingle="true"
+																	action="#{fazlaMesaiHesaplaHome.fillBolumPersonelDenklestirmeList(personel)}">
+																	<h:graphicImage value="/img/rightArrow.gif" style="border:0" />
+																</a4j:commandLink>
+															</rich:column>
+															<rich:column style="text-align: center;width: 30px;">
+																<f:facet name="header">
+																	<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
+																</f:facet>
+
+																<h:outputText value="#{personel.sicilNo}" />
+															</rich:column>
+															<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" filterBy="#{personel.adSoyad}" filterEvent="onkeyup">
+																<f:facet name="header">
+																	<h:outputText value="Adı Soyadı" />
+																</f:facet>
+																<h:outputText value="#{personel.adSoyad}" />
+															</rich:column>
+															<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+																<f:facet name="header">
+																	<h:outputText value="#{fazlaMesaiHesaplaHome.bolumAciklama}" />
+																</f:facet>
+																<h:outputText value="#{personel.ekSaha3.aciklama}" />
+															</rich:column>
+															<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+																<f:facet name="header">
+																	<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
+																</f:facet>
+																<ui:fragment rendered="#{personel.yoneticisi!=null}">
+																	<h:outputText value="#{personel.yoneticisi.adSoyad}" />
+
+																</ui:fragment>
+															</rich:column>
+
+															<f:facet name="footer">
+																<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 															</f:facet>
+														</rich:dataTable>
+													</rich:tab>
+													<rich:tab label="Fazla Mesai Listesi" name="tab1">
+														<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
+															<ui:include src="/puantaj/includes/aylikFazlaMesai.xhtml" />
+														</ui:fragment>
 
-															<h:outputText value="#{personel.sicilNo}" />
-														</rich:column>
-														<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" filterBy="#{personel.adSoyad}" filterEvent="onkeyup">
-															<f:facet name="header">
-																<h:outputText value="Adı Soyadı" />
-															</f:facet>
-															<h:outputText value="#{personel.adSoyad}" />
-														</rich:column>
-														<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
-															<f:facet name="header">
-																<h:outputText value="#{fazlaMesaiHesaplaHome.bolumAciklama}" />
-															</f:facet>
-															<h:outputText value="#{personel.ekSaha3.aciklama}" />
-														</rich:column>
-														<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
-															<f:facet name="header">
-																<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
-															</f:facet>
-															<ui:fragment rendered="#{personel.yoneticisi!=null}">
-																<h:outputText value="#{personel.yoneticisi.adSoyad}" />
-
-															</ui:fragment>
-														</rich:column>
-
-														<f:facet name="footer">
-															<rich:datascroller renderIfSinglePage="false" maxPages="5" />
-														</f:facet>
-													</rich:dataTable>
-												</rich:tab>
-												<rich:tab label="Fazla Mesai Listesi" name="tab1">
-													<ui:fragment rendered="#{not empty fazlaMesaiHesaplaHome.aylikPuantajList}">
-														<ui:include src="/puantaj/includes/aylikFazlaMesai.xhtml" />
-													</ui:fragment>
-
-												</rich:tab>
-											</rich:tabPanel>
-
+													</rich:tab>
+												</rich:tabPanel>
+											</a4j:region>
 										</ui:fragment>
 
 

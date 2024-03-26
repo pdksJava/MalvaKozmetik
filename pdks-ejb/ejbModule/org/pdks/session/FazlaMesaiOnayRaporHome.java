@@ -80,7 +80,8 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	UserHome userHome;
 	@In(required = false, create = true)
 	FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemler;
-
+	@In(required = false, create = true)
+	ComponentState componentState;
 	@Out(scope = ScopeType.SESSION, required = false)
 	String linkAdres;
 	@Out(scope = ScopeType.SESSION, required = false)
@@ -121,7 +122,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	private TreeMap<String, Tanim> ekSahaTanimMap;
 
 	private String sanalPersonelAciklama, bolumAciklama;
-	private String sicilNo = "", excelDosyaAdi, tabAdi;
+	private String sicilNo = "", excelDosyaAdi;
 
 	private Long seciliEkSaha3Id, sirketId = null, departmanId, gorevTipiId, tesisId;
 	private Tanim gorevYeri, seciliBolum;
@@ -725,7 +726,7 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				personelIdler = null;
 				talepGoster = false;
 				vardiyaAciklamaMap = null;
-				tabAdi = "";
+				componentState.setSeciliTab("");
 				if (!listeMap.isEmpty()) {
 					List<Liste> list = PdksUtil.sortObjectStringAlanList(new ArrayList(listeMap.values()), "getId", null);
 					for (Liste liste : list) {
@@ -750,9 +751,9 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						fazlaMesaiMap.clear();
 				}
 				if (!onaylananList.isEmpty())
-					tabAdi = "onay1";
+					componentState.setSeciliTab("onay1");
 				else if (!onaylanmayanList.isEmpty())
-					tabAdi = "onay0";
+					componentState.setSeciliTab("onay0");
 
 			}
 
@@ -1604,14 +1605,6 @@ public class FazlaMesaiOnayRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public void setMaxFazlaMesaiOnayGun(int maxFazlaMesaiOnayGun) {
 		this.maxFazlaMesaiOnayGun = maxFazlaMesaiOnayGun;
-	}
-
-	public String getTabAdi() {
-		return tabAdi;
-	}
-
-	public void setTabAdi(String tabAdi) {
-		this.tabAdi = tabAdi;
 	}
 
 	public boolean veriDolu() {
