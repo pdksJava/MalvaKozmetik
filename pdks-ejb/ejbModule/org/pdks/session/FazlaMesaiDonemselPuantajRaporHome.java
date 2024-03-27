@@ -949,50 +949,51 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 						}
 					} else
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
-					if (bordroPuantajEkranindaGoster) {
-						PersonelDenklestirmeBordro denklestirmeBordro = aylikPuantaj.getDenklestirmeBordro();
-						if (denklestirmeBordro == null) {
-							denklestirmeBordro = new PersonelDenklestirmeBordro();
-							denklestirmeBordro.setPersonelDenklestirme(aylikPuantaj.getPersonelDenklestirme());
-						}
-						boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
-						if (denklestirmeBordro.getDetayMap() == null)
-							denklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
-						if (normalCalismaSaatKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatNormal() : 0);
-						if (haftaTatilCalismaSaatKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatHaftaTatil() : 0);
-						if (resmiTatilCalismaSaatKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatResmiTatil() : 0);
-						if (izinSureSaatKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatIzin() : 0);
-						if (normalCalismaGunKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatNormal() : 0);
-						if (haftaTatilCalismaGunKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatHaftaTatil() : 0);
-						if (resmiTatilCalismaGunKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatResmiTatil() : 0);
-						if (izinSureGunKod)
-							setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatIzin() : 0);
-						if (ucretliIzinGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getUcretliIzin().doubleValue());
-						if (ucretsizIzinGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getUcretsizIzin().doubleValue());
-						if (hastalikIzinGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getRaporluIzin().doubleValue());
-						if (normalGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getNormalGunAdet());
-						if (haftaTatilGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getHaftaTatilAdet());
-						if (resmiTatilGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getResmiTatilAdet());
-						if (artikGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getArtikAdet());
-						if (bordroToplamGunKod)
-							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getBordroToplamGunAdet());
-
-					}
 				}
+				if (bordroPuantajEkranindaGoster) {
+					PersonelDenklestirmeBordro denklestirmeBordro = aylikPuantaj.getDenklestirmeBordro();
+					if (denklestirmeBordro == null) {
+						denklestirmeBordro = new PersonelDenklestirmeBordro();
+						denklestirmeBordro.setPersonelDenklestirme(aylikPuantaj.getPersonelDenklestirme());
+					}
+					boolean saatlikCalisma = calismaModeli.isSaatlikOdeme();
+					if (denklestirmeBordro.getDetayMap() == null)
+						denklestirmeBordro.setDetayMap(new HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay>());
+					if (normalCalismaSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatNormal() : 0);
+					if (haftaTatilCalismaSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatHaftaTatil() : 0);
+					if (resmiTatilCalismaSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatResmiTatil() : 0);
+					if (izinSureSaatKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma ? denklestirmeBordro.getSaatIzin() : 0);
+					if (normalCalismaGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatNormal() : 0);
+					if (haftaTatilCalismaGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatHaftaTatil() : 0);
+					if (resmiTatilCalismaGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatResmiTatil() : 0);
+					if (izinSureGunKod)
+						setCell(sheet, row, col++, styleGenel, saatlikCalisma == false ? denklestirmeBordro.getSaatIzin() : 0);
+					if (ucretliIzinGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getUcretliIzin().doubleValue());
+					if (ucretsizIzinGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getUcretsizIzin().doubleValue());
+					if (hastalikIzinGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getRaporluIzin().doubleValue());
+					if (normalGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getNormalGunAdet());
+					if (haftaTatilGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getHaftaTatilAdet());
+					if (resmiTatilGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getResmiTatilAdet());
+					if (artikGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getArtikAdet());
+					if (bordroToplamGunKod)
+						setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getBordroToplamGunAdet());
+
+				}
+
 			}
 			styleGenel = null;
 		}
