@@ -665,9 +665,9 @@
 													<SPAN style="font-size: 12px; font-weight: normal;"><B>Toplam Gün</B></SPAN>
 												</rich:toolTip>
 											</ui:fragment>
-										</f:facet>
-										<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.artikAdet!=0}">
-											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.artikAdet)}" />
+										</f:facet> 
+										<ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.bordroToplamGunAdet!=0}">
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.bordroToplamGunAdet)}" />
 										</ui:fragment>
 									</rich:column>
 

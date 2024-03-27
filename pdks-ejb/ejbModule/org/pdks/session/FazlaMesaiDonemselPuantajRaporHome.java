@@ -549,10 +549,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 	private ByteArrayOutputStream fazlaMesaiExcelDevam(String donem) {
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
-		CreationHelper helper = wb.getCreationHelper();
-		ClientAnchor anchor = helper.createClientAnchor();
 		Sheet sheet = ExcelUtil.createSheet(wb, donem + " Çalışma", Boolean.TRUE);
 		Drawing drawing = sheet.createDrawingPatriarch();
+		CreationHelper helper = wb.getCreationHelper();
+		ClientAnchor anchor = helper.createClientAnchor();
 		CellStyle izinBaslik = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
@@ -578,7 +578,6 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
 
 		CellStyle styleCalisma = ExcelUtil.getStyleDataCenter(wb);
-		int row = 0, col = 0;
 		XSSFCellStyle header = (XSSFCellStyle) ExcelUtil.getStyleHeader(9, wb);
 
 		ExcelUtil.setFillForegroundColor(styleTatil, 255, 153, 204);
@@ -592,7 +591,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		ExcelUtil.setFillForegroundColor(styleOff, 13, 12, 89);
 		ExcelUtil.setFontColor(styleOff, 256, 256, 256);
 
-		col = 0;
+		int row = 0, col = 0;
+		;
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Dönem");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
