@@ -56,6 +56,7 @@ import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeBordro;
 import org.pdks.entity.PersonelDenklestirmeBordroDetay;
+import org.pdks.entity.PersonelDenklestirmeDinamikAlan;
 import org.pdks.entity.PersonelDenklestirmeTasiyici;
 import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.Sirket;
@@ -112,6 +113,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	private List<PersonelDenklestirme> baslikDenklestirmeDonemiList;
 
 	private HashMap<String, List<Tanim>> ekSahaListMap;
+
+	private List<Tanim> denklestirmeDinamikAlanlar;
 
 	private VardiyaGun vardiyaGun;
 
@@ -1397,6 +1400,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		} finally {
 
 		}
+		denklestirmeDinamikAlanlar = ortakIslemler.setDenklestirmeDinamikDurum(puantajList, session);
 		ortakIslemler.sortAylikPuantajList(puantajList, true);
 		setAylikPuantajList(puantajList);
 		if (gecenAy != null && gecenAy.getDurum().equals(Boolean.TRUE) && (authenticatedUser.isAdmin() || authenticatedUser.isIK())) {
@@ -1501,6 +1505,14 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		resmiTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilGunKod());
 		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
 		bordroToplamGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
+		if (!devredenMesaiKod) {
+			for (AylikPuantaj ap : puantajList) {
+				double sure = ap.getGecenAyFazlaMesai(authenticatedUser);
+				if (!devredenMesaiKod)
+					devredenMesaiKod = sure != 0.0d;
+
+			}
+		}
 	}
 
 	/**
@@ -1705,10 +1717,12 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			}
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
-
+		}
+		if (devredenMesaiKod) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenMesaiKod(), "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
-
+		}
+		if (fazlaMesaiVar) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 
@@ -1729,7 +1743,12 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
 		}
+		if (denklestirmeDinamikAlanlar != null && !denklestirmeDinamikAlanlar.isEmpty()) {
+			for (Tanim alan : denklestirmeDinamikAlanlar) {
+				ExcelUtil.getCell(sheet, row, col++, header).setCellValue(alan.getAciklama());
 
+			}
+		}
 		if (bordroPuantajEkranindaGoster) {
 			XSSFCellStyle headerSiyah = (XSSFCellStyle) ExcelUtil.getStyleHeader(wb);
 			headerSiyah.getFont().setColor(ExcelUtil.getXSSFColor(255, 255, 255));
@@ -1945,7 +1964,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 								ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue("");
 						}
 						setCell(sheet, row, col++, styleTutar, aylikPuantaj.getAylikNetFazlaMesai());
-
+					}
+					if (devredenMesaiKod) {
 						Double gecenAyFazlaMesai = aylikPuantaj.getGecenAyFazlaMesai(authenticatedUser);
 						Cell gecenAyFazlaMesaiCell = setCell(sheet, row, col++, styleTutar, gecenAyFazlaMesai);
 						if (gecenAyFazlaMesai != null && personelDenklestirmeGecenAy != null && gecenAyFazlaMesai.doubleValue() != 0.0d) {
@@ -1955,6 +1975,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 								ExcelUtil.setCellComment(gecenAyFazlaMesaiCell, anchor, helper, drawing, title);
 							}
 						}
+					}
+					if (fazlaMesaiVar) {
 						boolean olustur = false;
 						Comment commentGuncelleyen = null;
 						if (aylikPuantaj.isFazlaMesaiHesapla()) {
@@ -1987,6 +2009,29 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							}
 						} else
 							ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+					}
+					if (denklestirmeDinamikAlanlar != null && !denklestirmeDinamikAlanlar.isEmpty()) {
+						for (Tanim alan : denklestirmeDinamikAlanlar) {
+							PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan = aylikPuantaj.getDinamikAlan(alan.getId());
+							if (denklestirmeDinamikAlan == null)
+								ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+							else {
+								if (denklestirmeDinamikAlan.isDevamlilikPrimi())
+									ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(denklestirmeDinamikAlan.getIslemDurum() ? "+" : "-");
+								else {
+									String str = authenticatedUser.getYesNo(denklestirmeDinamikAlan.getIslemDurum());
+									if (denklestirmeDinamikAlan.getSayisalDeger() != null && denklestirmeDinamikAlan.getSayisalDeger().doubleValue() > 0.0d) {
+										String deger = authenticatedUser.sayiFormatliGoster(denklestirmeDinamikAlan.getSayisalDeger());
+										if (denklestirmeDinamikAlan.isIzinDurum())
+											str += "\nSüre : " + deger;
+										else
+											str += "\n " + deger;
+										ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(str);
+									}
+								}
+							}
+
+						}
 					}
 					if (bordroPuantajEkranindaGoster) {
 						PersonelDenklestirmeBordro denklestirmeBordro = aylikPuantaj.getDenklestirmeBordro();
@@ -3189,6 +3234,14 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public void setBaslikMap(TreeMap<String, Boolean> baslikMap) {
 		this.baslikMap = baslikMap;
+	}
+
+	public List<Tanim> getDenklestirmeDinamikAlanlar() {
+		return denklestirmeDinamikAlanlar;
+	}
+
+	public void setDenklestirmeDinamikAlanlar(List<Tanim> denklestirmeDinamikAlanlar) {
+		this.denklestirmeDinamikAlanlar = denklestirmeDinamikAlanlar;
 	}
 
 }

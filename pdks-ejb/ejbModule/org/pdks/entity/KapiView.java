@@ -22,7 +22,7 @@ public class KapiView implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 3434010518290512625L;
-	protected static final String VIEW_NAME = "VIEW_KAPI";
+	protected static final String VIEW_NAME = "Z_NOT_USED_TABLE_KAPI";
 	public static int KAPI_TANIMLI = 1;
 	public static int KAPI_TANIMSIZ = 2;
 	private Long id, terminalNo;

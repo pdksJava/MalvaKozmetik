@@ -312,8 +312,7 @@
 							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.denklestirmeAyDurum and  fazlaMesaiHesaplaHome.hataYok }">
 								<td class="#{aylikPuantaj.trClass}" style="width: 10px" align="center"><ui:fragment
 										rendered="#{fazlaMesaiHesaplaHome.hataYok  and aylikPuantaj.personelDenklestirme.erpAktarildi==false and (aylikPuantaj.fazlaMesaiHesapla || aylikPuantaj.personelDenklestirme.denklestirme==false)}">
-										<ui:fragment
-											rendered="#{aylikPuantaj.personelDenklestirme.denklestirme==false or aylikPuantaj.personelDenklestirme.onaylandi==false}">
+										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.denklestirme==false or aylikPuantaj.personelDenklestirme.onaylandi==false}">
 											<a4j:commandButton id="onaylandi" image="/img/msgerror.png" />
 											<rich:toolTip for="onaylandi">
 												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.denklestirme==false}">
@@ -354,8 +353,7 @@
 							</ui:fragment>
 							<td class="#{aylikPuantaj.trClass}" style="width: 20px" align="center">
 								<DIV id="bolumBordroAltBirimSicil#{aylikPuantaj.pdksPersonel.sicilNo}">
-									<ui:fragment
-										rendered="#{aylikPuantaj.personelDenklestirme.onaylandi==false or aylikPuantaj.personelDenklestirme.denklestirme==false}">
+									<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi==false or aylikPuantaj.personelDenklestirme.denklestirme==false}">
 										<SPAN style="color: red"><h:outputText value="#{aylikPuantaj.pdksPersonel.sicilNo}" /></SPAN>
 									</ui:fragment>
 									<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi  and aylikPuantaj.personelDenklestirme.denklestirme }">
@@ -659,22 +657,34 @@
 								</ui:fragment>
 								<c:forEach items="#{fazlaMesaiHesaplaHome.denklestirmeDinamikAlanlar}" var="da">
 									<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center" id="ap#{aylikPuantaj.pdksPersonel.id}#{da.id}"><ui:fragment
-											rendered="#{aylikPuantaj.getDinamikAlan(da.id)!=null}">
+										rendered="#{aylikPuantaj.getDinamikAlan(da.id)!=null}">
+										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.devamlilikPrimi}">
 											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.islemDurum}">
 												<SPAN style="font-weight: bold; font-size: 14;">+</SPAN>
 											</ui:fragment>
 											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.islemDurum==false}">
 												<SPAN style="font-weight: bold; font-size: 14; color: red">-</SPAN>
 											</ui:fragment>
-
-										</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.durum}">
+										</ui:fragment>
+										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.devamlilikPrimi==false}">
+												#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeDinamikAlan.islemDurum)}
+												<ui:fragment
+												rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.izinDurum and aylikPuantaj.personelDenklestirmeDinamikAlan.islemDurum}">
+												<br></br><SPAN style="color: blue;">Süre : #{
+													authenticatedUser.sayiFormatliGoster(aylikPuantaj.personelDenklestirmeDinamikAlan.sayisalDeger)} </SPAN>
+											</ui:fragment>
+										</ui:fragment>
+									</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.durum}">
+										<ui:fragment rendered="#{aylikPuantaj.personelDenklestirmeDinamikAlan.devamlilikPrimi}">
 											<rich:toolTip for="ap#{aylikPuantaj.pdksPersonel.id}#{da.id}">
 
 												<SPAN style="color: blue;"> #{da.aciklama} :
-													[#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeDinamikAlan.islemDurum)}]</SPAN>
+
+													[#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirmeDinamikAlan.islemDurum)}] </SPAN>
 
 											</rich:toolTip>
-										</ui:fragment></td>
+										</ui:fragment>
+									</ui:fragment></td>
 								</c:forEach>
 
 								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.bordroPuantajEkranindaGoster}">

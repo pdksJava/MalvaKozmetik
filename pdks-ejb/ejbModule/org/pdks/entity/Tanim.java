@@ -79,6 +79,8 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 	public static final String TIPI_PERSONEL_DINAMIK_TANIM = "PERSONEL_DINAMIK_TANIM";
 	public static final String TIPI_PERSONEL_DINAMIK_ACIKLAMA = "PERSONEL_DINAMIK_ACIKLAMA";
 	public static final String TIPI_PERSONEL_DENKLESTIRME_DINAMIK_DURUM = "DENKLESTIRME_DINAMIK_DURUM";
+	public static final String TIPI_DENKLESTIRME_DINAMIK_SAYISAL = "DENKLESTIRME_DINAMIK_SAYISAL";
+	public static final String TIPI_DENKLESTIRME_DINAMIK_TANIM = "DENKLESTIRME_DINAMIK_TANIM";
 	public static final String TIPI_ISTIRAHAT_KAYNAK = "ISTIRAHAT_KAYNAK";
 	public static final String TIPI_BOLUM_DEPARTMAN = "BOLUM_DEPARTMAN";
 	public static final String TIPI_GOREV_DEPARTMAN = "GOREV_DEPARTMAN";

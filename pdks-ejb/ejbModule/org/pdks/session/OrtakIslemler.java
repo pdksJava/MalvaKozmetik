@@ -106,6 +106,7 @@ import org.pdks.entity.PdksLog;
 import org.pdks.entity.PdksPersonelView;
 import org.pdks.entity.Personel;
 import org.pdks.entity.PersonelDenklestirme;
+import org.pdks.entity.PersonelDenklestirmeDinamikAlan;
 import org.pdks.entity.PersonelDenklestirmeTasiyici;
 import org.pdks.entity.PersonelDinamikAlan;
 import org.pdks.entity.PersonelExtra;
@@ -7035,6 +7036,105 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param list
+	 * @param session
+	 * @return
+	 */
+	public List<Tanim> setDenklestirmeDinamikDurum(List<AylikPuantaj> list, Session session) {
+		List<Tanim> tanimList = null;
+		if (list != null) {
+			HashMap<Long, AylikPuantaj> map = new HashMap<Long, AylikPuantaj>();
+			for (AylikPuantaj ap : list) {
+				if (ap.getPersonelDenklestirme() == null)
+					continue;
+				ap.setDinamikAlanMap(new TreeMap<Long, PersonelDenklestirmeDinamikAlan>());
+				map.put(ap.getPersonelDenklestirme().getId(), ap);
+			}
+			if (!map.isEmpty()) {
+				TreeMap<String, PersonelDenklestirmeDinamikAlan> dinamikMap = new TreeMap<String, PersonelDenklestirmeDinamikAlan>();
+				tanimList = setDenklestirmeDinamikDurum(new ArrayList<Long>(map.keySet()), dinamikMap, session);
+				for (String str : dinamikMap.keySet()) {
+					PersonelDenklestirmeDinamikAlan pda = dinamikMap.get(str);
+					Long key = pda.getPersonelDenklestirme().getId();
+					AylikPuantaj ap = map.get(key);
+					ap.getDinamikAlanMap().put(pda.getAlan().getId(), pda);
+				}
+				dinamikMap = null;
+			}
+			map = null;
+		}
+
+		return tanimList;
+	}
+
+	/**
+	 * @param list
+	 * @param dinamikMap
+	 * @return
+	 */
+	public List<Tanim> setDenklestirmeDinamikDurum(List<Long> list, TreeMap<String, PersonelDenklestirmeDinamikAlan> dinamikMap, Session session) {
+		HashMap fields = new HashMap();
+		if (dinamikMap == null)
+			dinamikMap = new TreeMap<String, PersonelDenklestirmeDinamikAlan>();
+		List<Tanim> denklestirmeDinamikAlanlar = new ArrayList<Tanim>();
+		if (list != null && !list.isEmpty()) {
+			String fieldName = "s";
+			fields.clear();
+			StringBuffer sb = new StringBuffer();
+			sb.append("SELECT S.* from " + PersonelDenklestirmeDinamikAlan.TABLE_NAME + " S WITH(nolock) ");
+			sb.append(" WHERE S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_PERSONEL_DENKLESTIRME + " :" + fieldName);
+			sb.append(" AND S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_DENKLESTIRME_ALAN_DURUM + " = 1 ");
+			sb.append(" ORDER BY S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_ALAN);
+			fields.put(fieldName, list);
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			// List<PersonelDenklestirmeDinamikAlan> alanList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeDinamikAlan.class);
+			List<PersonelDenklestirmeDinamikAlan> alanList = getSQLParamList(list, sb, fieldName, fields, PersonelDenklestirmeDinamikAlan.class, session);
+			if (!alanList.isEmpty()) {
+				Tanim tanim = null;
+				List<Long> idList = new ArrayList<Long>();
+				List<Tanim> tanimList = new ArrayList<Tanim>();
+				for (PersonelDenklestirmeDinamikAlan personelDenklestirmeDinamikAlan : alanList) {
+					dinamikMap.put(personelDenklestirmeDinamikAlan.getKey(), personelDenklestirmeDinamikAlan);
+					tanim = personelDenklestirmeDinamikAlan.getAlan();
+					if (!idList.contains(tanim.getId())) {
+						tanimList.add(tanim);
+						idList.add(tanim.getId());
+					}
+				}
+				if (!tanimList.isEmpty()) {
+					if (tanimList.size() > 1)
+						denklestirmeDinamikAlanlar.addAll(PdksUtil.sortTanimList(null, tanimList));
+					else
+						denklestirmeDinamikAlanlar.addAll(tanimList);
+				}
+
+				tanimList = null;
+			}
+		}
+		return denklestirmeDinamikAlanlar;
+
+	}
+
+	/**
+	 * @param pdIdMap
+	 * @param session
+	 * @return
+	 */
+	public List<Tanim> dinamikAlanlariDoldur(HashMap<Long, AylikPuantaj> pdIdMap, Session session) {
+		TreeMap<String, PersonelDenklestirmeDinamikAlan> dinamikMap = new TreeMap<String, PersonelDenklestirmeDinamikAlan>();
+		List<Tanim> dinamikAlanlar = setDenklestirmeDinamikDurum(new ArrayList<Long>(pdIdMap.keySet()), dinamikMap, session);
+		if (!pdIdMap.isEmpty()) {
+			for (String key : dinamikMap.keySet()) {
+				PersonelDenklestirmeDinamikAlan pda = dinamikMap.get(key);
+				AylikPuantaj ap = pdIdMap.get(pda.getPersonelDenklestirme().getId());
+				ap.getDinamikAlanMap().put(pda.getAlan().getId(), pda);
+			}
+		}
+		return dinamikAlanlar;
+	}
+
+	/**
 	 * @param denklestirmeDonemi
 	 * @param tatilGunleriMap
 	 * @param searchKey
@@ -7181,7 +7281,7 @@ public class OrtakIslemler implements Serializable {
 
 					}
 					List<VardiyaGun> vardiyaGunModelGuncelleList = new ArrayList<VardiyaGun>();
-
+					List<Long> pdIdList = new ArrayList<Long>();
 					for (Personel personel : perList) {
 
 						PersonelDenklestirmeTasiyici personelDenklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
@@ -7190,6 +7290,7 @@ public class OrtakIslemler implements Serializable {
 						DenklestirmeAy denklestirmeAy = null;
 						if (personelDenklestirmeDonemMap.containsKey(personel.getId())) {
 							PersonelDenklestirme personelDenklestirme = personelDenklestirmeDonemMap.get(personel.getId());
+							pdIdList.add(personelDenklestirme.getId());
 							cm = personelDenklestirme.getCalismaModeli();
 							denklestirmeAy = personelDenklestirme.getDenklestirmeAy();
 							donem = String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy());
@@ -7296,6 +7397,7 @@ public class OrtakIslemler implements Serializable {
 						}
 						personelDenklestirmeMap.put(personel.getId(), personelDenklestirmeTasiyici);
 					}
+
 					if (!vardiyaGunModelGuncelleList.isEmpty())
 						sonrakiGunVardiyalariAyikla(null, vardiyaGunModelGuncelleList, session);
 

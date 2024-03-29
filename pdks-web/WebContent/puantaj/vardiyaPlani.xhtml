@@ -181,6 +181,12 @@
 											</f:facet>
 											<h:outputText value="#{personel.ekSaha3.aciklama}" />
 										</rich:column>
+										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{vardiyaGunHome.ekSaha4Tanim!=null}">
+											<f:facet name="header">
+												<h:outputText value="#{vardiyaGunHome.ekSaha4Tanim.aciklama}" />
+											</f:facet>
+											<h:outputText value="#{personel.ekSaha4.aciklama}" />
+										</rich:column>
 										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
 											<f:facet name="header">
 												<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
@@ -190,7 +196,7 @@
 
 											</ui:fragment>
 										</rich:column>
- 										<rich:column style="text-align:center">
+										<rich:column style="text-align:center">
 											<f:facet name="header">
 												<h:outputText value="İşe Giriş Tarihi" />
 											</f:facet>
@@ -613,12 +619,20 @@
 							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<c:forEach items="#{vardiyaGunHome.personelDenklestirmeDinamikAlanList}" var="pdda">
-							<s:decorate template="/layout/edit.xhtml">
-								<ui:define name="label">#{pdda.alan.aciklama}</ui:define>
-								<h:selectBooleanCheckbox value="#{pdda.durum}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
-									<a4j:support event="onclick" />
-								</h:selectBooleanCheckbox>
-							</s:decorate>
+							<c:if test="#{pdda.checkBox}">
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">#{pdda.alan.aciklama}</ui:define>
+									<h:selectBooleanCheckbox value="#{pdda.islemDurum}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
+										<a4j:support event="onclick" reRender="digerIslemler" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}"/>
+									</h:selectBooleanCheckbox>
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" rendered="#{pdda.islemDurum and pdda.izinDurum}">
+									<ui:define name="label">#{pdda.alan.aciklama} (Süre)</ui:define>
+									<h:inputText value="#{pdda.sayisalDeger}">
+										<a4j:support event="onchange" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
+									</h:inputText>
+								</s:decorate>
+							</c:if>
 
 						</c:forEach>
 						<s:decorate template="/layout/edit.xhtml"

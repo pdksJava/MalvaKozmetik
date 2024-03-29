@@ -447,6 +447,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	 * @param session
 	 */
 	private void planlananSureHesapla(TreeMap<String, Tatil> tatilGunleriMap) {
+
 		double izinSure = 0.0d;
 		calisilanGunSayisi = 0;
 		izinSure = izinSuresi;
@@ -459,6 +460,15 @@ public class AylikPuantaj implements Serializable, Cloneable {
 			for (VardiyaGun vg : vardiyalar) {
 				if (vg.isAyinGunu() && vg.getVardiya() != null && vg.getVardiya().getId() != null)
 					personelDenklestirme.setCalismaSuaSaati(vg.getCalismaSuaSaati());
+			}
+		}
+		if (dinamikAlanMap != null) {
+			for (Long key : dinamikAlanMap.keySet()) {
+				PersonelDenklestirmeDinamikAlan pda = dinamikAlanMap.get(key);
+				if (pda.isIzinDurum() && pda.getIslemDurum() && pda.getSayisalDeger() != null) {
+					if (pda.getSayisalDeger().doubleValue() > 0.0d)
+						izinSure += pda.getSayisalDeger();
+				}
 			}
 		}
 		double arifeToplamSure = getArifeToplamSure(tatilGunleriMap, calismaModeli);
@@ -670,7 +680,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		if (personelDenklestirme != null && personelDenklestirme.getPersonelDenklestirmeGecenAy() != null) {
 			personelDenklestirmeGecenAy = personelDenklestirme.getPersonelDenklestirmeGecenAy();
 			if (personelDenklestirmeGecenAy != null && personelDenklestirmeGecenAy.getDurum() && personelDenklestirmeGecenAy.isOnaylandi()) {
-				if ((!personelDenklestirmeGecenAy.getDenklestirmeAy().isDurum(user) || personelDenklestirmeGecenAy.isErpAktarildi()) && personelDenklestirmeGecenAy.getDevredenSure() != null)
+				// if ((!personelDenklestirmeGecenAy.getDenklestirmeAy().isDurum(user) || personelDenklestirmeGecenAy.isErpAktarildi()) && personelDenklestirmeGecenAy.getDevredenSure() != null)
+				if (personelDenklestirmeGecenAy.getDevredenSure() != null)
 					fark = personelDenklestirmeGecenAy.getKalanSure();
 			}
 		}

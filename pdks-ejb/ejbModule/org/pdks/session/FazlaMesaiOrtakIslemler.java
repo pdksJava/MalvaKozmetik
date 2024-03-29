@@ -111,6 +111,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	@In(required = false)
 	FacesMessages facesMessages;
 
+	
+
 	/**
 	 * @param sirket
 	 * @param denklestirmeAy

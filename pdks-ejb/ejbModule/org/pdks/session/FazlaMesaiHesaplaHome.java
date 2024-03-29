@@ -874,6 +874,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (secPersonel != null && secPersonel.getEkSaha3() != null) {
 			sicilNo = secPersonel.getPdksSicilNo();
 			seciliEkSaha3Id = secPersonel.getEkSaha3().getId();
+			if (ekSaha4Tanim != null && secPersonel.getEkSaha4() != null) {
+				seciliEkSaha4Id = secPersonel.getEkSaha4().getId();
+				altBolumDoldur();
+			}
 			fillPersonelDenklestirmeList();
 		}
 
@@ -1371,10 +1375,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 				bosCalismaList = null;
 				haftaSonuList = null;
-				TreeMap<String, PersonelDenklestirmeDinamikAlan> devamlilikPrimiMap = new TreeMap<String, PersonelDenklestirmeDinamikAlan>();
-				devamlilikPrimi = denklestirmeMantiksalBilgiBul(PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI);
-				if (devamlilikPrimi != null)
-					setDenklestirmeDinamikDurum(denklestirmeIdList, devamlilikPrimiMap);
+
 				Date izinCalismayanMailSonGun = ortakIslemler.tariheGunEkleCikar(cal, aylikPuantajSablon.getSonGun(), -5);
 				izinCalismayanMailGonder = bugun.after(izinCalismayanMailSonGun) || loginUser.isAdmin();
 				List<AylikPuantaj> puantajDenklestirmeList = new ArrayList<AylikPuantaj>();
@@ -1391,6 +1392,18 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					puantaj.setPdksPersonel(denklestirmeTasiyici.getPersonel());
 					puantajDenklestirmeList.add(puantaj);
 				}
+				denklestirmeDinamikAlanlar = ortakIslemler.setDenklestirmeDinamikDurum(puantajDenklestirmeList, session);
+				if (!denklestirmeDinamikAlanlar.isEmpty()) {
+					for (Iterator iterator = denklestirmeDinamikAlanlar.iterator(); iterator.hasNext();) {
+						Tanim tanim = (Tanim) iterator.next();
+						if (tanim.getKodu().equals(PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI))
+							devamlilikPrimi = tanim;
+
+					}
+				}
+				if (devamlilikPrimi == null)
+					devamlilikPrimi = denklestirmeMantiksalBilgiBul(PersonelDenklestirmeDinamikAlan.TIPI_DEVAMLILIK_PRIMI);
+
 				String yoneticiPuantajKontrolStr = ortakIslemler.getParameterKey("yoneticiPuantajKontrol");
 				boolean yoneticiKontrolEtme = loginUser.isAdmin() || loginUser.isSistemYoneticisi() || PdksUtil.hasStringValue(yoneticiPuantajKontrolStr) == false;
 				if (!yoneticiKontrolEtme)
@@ -1457,12 +1470,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 						AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
 						if (puantaj.getPersonelDenklestirme() != null) {
-							if (puantaj.getPersonelDenklestirme() != null) {
+							if (puantaj.getDinamikAlanMap() != null && puantaj.getDinamikAlanMap().containsKey(devamlilikPrimi.getId())) {
 								PersonelDenklestirme personelDenklestirme = puantaj.getPersonelDenklestirme();
-								String key = PersonelDenklestirmeDinamikAlan.getKey(devamlilikPrimi, personelDenklestirme);
-								if (devamlilikPrimiMap.containsKey(key)) {
-									idList.add(personelDenklestirme.getPersonelId());
-								}
+
+								idList.add(personelDenklestirme.getPersonelId());
+
 							}
 						}
 					}
@@ -1480,6 +1492,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 				}
 				double fazlaMesaiMaxSure = ortakIslemler.getFazlaMesaiMaxSure(denklestirmeAy);
+
 				for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 					AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
 					double negatifBakiyeDenkSaat = 0.0;
@@ -1491,7 +1504,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					puantaj.setFiiliHesapla(true);
 					saveList.clear();
 					Personel personel = puantaj.getPdksPersonel();
-
 					perCalismaModeli = personel.getCalismaModeli();
 					if (puantaj.getPersonelDenklestirme() != null && puantaj.getPersonelDenklestirme().getCalismaModeliAy() != null)
 						perCalismaModeli = puantaj.getPersonelDenklestirme().getCalismaModeli();
@@ -2190,18 +2202,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					puantaj.setAksamVardiyaSaatSayisi(aksamVardiyaSaatSayisi);
 					puantaj.setAksamVardiyaSayisi(aksamVardiyaSayisi);
 					puantaj.setHaftaCalismaSuresi(haftaCalismaSuresi);
-					if (!denklestirmeDinamikAlanlar.isEmpty()) {
-						if (puantaj.getDinamikAlanMap() == null)
-							puantaj.setDinamikAlanMap(new TreeMap<Long, PersonelDenklestirmeDinamikAlan>());
-						else
-							puantaj.getDinamikAlanMap().clear();
-					}
 					if (devamlilikPrimi != null) {
-						String key = PersonelDenklestirmeDinamikAlan.getKey(devamlilikPrimi, personelDenklestirme);
-						if (devamlilikPrimiMap.containsKey(key)) {
-							PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan = devamlilikPrimiMap.get(key);
-							puantaj.getDinamikAlanMap().put(devamlilikPrimi.getId(), denklestirmeDinamikAlan);
-							if (devamlilikPrimi.getDurum() && denklestirmeAyDurum) {
+
+						if (puantaj.getDinamikAlanMap() != null) {
+							PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan = puantaj.getDinamikAlanMap().get(devamlilikPrimi.getId());
+							if (devamlilikPrimi.getDurum() && denklestirmeAyDurum && denklestirmeDinamikAlan != null) {
 								try {
 									if (devamsizList.contains(personel.getId()) || !personelDenklestirme.getDurum()) {
 										if (denklestirmeDinamikAlan.getIslemDurum() == null || denklestirmeDinamikAlan.getIslemDurum().equals(Boolean.TRUE) || !personelDenklestirme.getDurum()) {
@@ -2337,19 +2342,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (uyariHaftaTatilMesai) {
 					if (userLogin.getLogin())
 						PdksUtil.addMessageWarn("Hafta tatil günleri güncellendi, 'Fazla Mesai Getir' tekrar çalıştırın.");
-				}
-
-				if (!devamlilikPrimiMap.isEmpty()) {
-					TreeMap<Long, Tanim> dinamikTanimMap = new TreeMap<Long, Tanim>();
-					for (String key : devamlilikPrimiMap.keySet()) {
-						PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan = devamlilikPrimiMap.get(key);
-						if (denklestirmeDinamikAlan.getDurum())
-							dinamikTanimMap.put(denklestirmeDinamikAlan.getAlan().getId(), denklestirmeDinamikAlan.getAlan());
-					}
-					denklestirmeDinamikAlanlar.clear();
-					if (!dinamikTanimMap.isEmpty())
-						denklestirmeDinamikAlanlar.addAll(PdksUtil.sortTanimList(null, new ArrayList(dinamikTanimMap.values())));
-					dinamikTanimMap = null;
 				}
 
 				if (denklestirilmeyenDevredenVar && userLogin.getLogin()) {
@@ -2655,7 +2647,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
 		gerceklesenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.gerceklesenMesaiKod());
 		devredenBakiyeKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenBakiyeKod());
-		devredenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenMesaiKod());
 		ucretiOdenenKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.ucretiOdenenKod());
 		normalCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || baslikMap.containsKey(ortakIslemler.normalCalismaSaatKod());
 		haftaTatilCalismaSaatKod = (saatlikCalismaVar && bordroPuantajEkranindaGoster) || (baslikMap.containsKey(ortakIslemler.haftaTatilCalismaSaatKod()));
@@ -2673,6 +2664,15 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		resmiTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilGunKod());
 		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
 		bordroToplamGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
+		devredenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenMesaiKod());
+		if (!devredenMesaiKod) {
+			for (AylikPuantaj ap : puantajList) {
+				double sure = ap.getGecenAyFazlaMesai(authenticatedUser);
+				if (!devredenMesaiKod)
+					devredenMesaiKod = sure != 0.0d;
+
+			}
+		}
 	}
 
 	/**
@@ -3130,45 +3130,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		Tanim tanim = (Tanim) pdksEntityController.getObjectByInnerObject(fields, Tanim.class);
 
 		return tanim;
-	}
-
-	/**
-	 * @param list
-	 * @param dinamikMap
-	 * @return
-	 */
-	private void setDenklestirmeDinamikDurum(List<Long> list, TreeMap<String, PersonelDenklestirmeDinamikAlan> dinamikMap) {
-		HashMap fields = new HashMap();
-
-		if (list != null && !list.isEmpty()) {
-			String fieldName = "s";
-			fields.clear();
-			StringBuffer sb = new StringBuffer();
-			sb.append("SELECT S.* from " + PersonelDenklestirmeDinamikAlan.TABLE_NAME + " S WITH(nolock) ");
-			sb.append(" WHERE S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_PERSONEL_DENKLESTIRME + " :" + fieldName);
-			sb.append(" AND S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_DENKLESTIRME_ALAN_DURUM + " = 1 ");
-			sb.append(" ORDER BY S." + PersonelDenklestirmeDinamikAlan.COLUMN_NAME_ALAN);
-			fields.put(fieldName, list);
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			// List<PersonelDenklestirmeDinamikAlan> alanList = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirmeDinamikAlan.class);
-			List<PersonelDenklestirmeDinamikAlan> alanList = ortakIslemler.getSQLParamList(list, sb, fieldName, fields, PersonelDenklestirmeDinamikAlan.class, session);
-
-			if (!alanList.isEmpty()) {
-				Tanim tanim = null;
-				List<Long> idList = new ArrayList<Long>();
-				for (PersonelDenklestirmeDinamikAlan personelDenklestirmeDinamikAlan : alanList) {
-					dinamikMap.put(personelDenklestirmeDinamikAlan.getKey(), personelDenklestirmeDinamikAlan);
-					tanim = personelDenklestirmeDinamikAlan.getAlan();
-					if (!idList.contains(tanim.getId())) {
-						denklestirmeDinamikAlanlar.add(tanim);
-						idList.add(tanim.getId());
-					}
-				}
-
-			}
-		}
-
 	}
 
 	/**
@@ -5214,8 +5175,21 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan = aylikPuantaj.getDinamikAlan(alan.getId());
 								if (denklestirmeDinamikAlan == null)
 									ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
-								else
-									ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(denklestirmeDinamikAlan.getIslemDurum() ? "+" : "-");
+								else {
+									if (denklestirmeDinamikAlan.isDevamlilikPrimi())
+										ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(denklestirmeDinamikAlan.getIslemDurum() ? "+" : "-");
+									else {
+										String str = authenticatedUser.getYesNo(denklestirmeDinamikAlan.getIslemDurum());
+										if (denklestirmeDinamikAlan.getSayisalDeger() != null && denklestirmeDinamikAlan.getSayisalDeger().doubleValue() > 0.0d) {
+											String deger = authenticatedUser.sayiFormatliGoster(denklestirmeDinamikAlan.getSayisalDeger());
+											if (denklestirmeDinamikAlan.isIzinDurum())
+												str += "\nSüre : " + deger;
+											else
+												str += "\n " + deger;
+											ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(str);
+										}
+									}
+								}
 
 							}
 						}
@@ -5506,7 +5480,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				}
 
 				else {
-					if (ortakIslemler.getParameterKey("tumBolumPersonelGetir").equals("1") && !(ikRole || adminRole)) {
+					if (ortakIslemler.getParameterKey("tumBolumPersonelGetir").equals("1") == false && !(ikRole || adminRole)) {
 						tumBolumPersonelleri = fazlaMesaiOrtakIslemler.getTumBolumPersonelListesi(sirket, denklestirmeAy, tesisId, sadeceFazlaMesai, session);
 						if (tumBolumPersonelleri != null) {
 							if (!tumBolumPersonelleri.isEmpty())

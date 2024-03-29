@@ -29,8 +29,10 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	public static final String TABLE_NAME = "PERS_DENK_DINAMIK_ALAN";
 	public static final String COLUMN_NAME_PERSONEL_DENKLESTIRME = "PERS_DENK_ID";
 	public static final String COLUMN_NAME_ALAN = "ALAN_ID";
+	public static final String COLUMN_NAME_TANIM_DEGER = "TANIM_DEGER_ID";
 	public static final String COLUMN_NAME_DENKLESTIRME_ALAN_DURUM = "ALAN_DURUM";
 	public static final String COLUMN_NAME_DENKLESTIRME_ISLEM_DURUM = "ISLEM_DURUM";
+	public static final String COLUMN_NAME_SAYISAL_DEGER = "SAYISAL_DEGER";
 	public static final String TIPI_DEVAMLILIK_PRIMI = "devamlikDurum";
 
 	private Integer version = 0;
@@ -40,6 +42,8 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	private Tanim alan, tipi;
 
 	private Boolean durum = Boolean.FALSE, guncellendi = Boolean.FALSE, islemDurum = Boolean.FALSE;
+
+	private Double sayisalDeger;
 
 	public PersonelDenklestirmeDinamikAlan() {
 		super();
@@ -87,6 +91,15 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 		this.alan = value;
 	}
 
+	@Transient
+	public Tanim getTipi() {
+		return tipi;
+	}
+
+	public void setTipi(Tanim tipi) {
+		this.tipi = tipi;
+	}
+
 	@Column(name = COLUMN_NAME_DENKLESTIRME_ALAN_DURUM)
 	public Boolean getDurum() {
 		return durum;
@@ -98,6 +111,15 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 			this.setGuncellendi(!oldId.equals(newId));
 
 		this.durum = value;
+	}
+
+	@Column(name = COLUMN_NAME_SAYISAL_DEGER)
+	public Double getSayisalDeger() {
+		return sayisalDeger;
+	}
+
+	public void setSayisalDeger(Double sayisalDeger) {
+		this.sayisalDeger = sayisalDeger;
 	}
 
 	@Column(name = COLUMN_NAME_DENKLESTIRME_ISLEM_DURUM)
@@ -136,10 +158,22 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	}
 
 	@Transient
+	public boolean isDevamlilikPrimi() {
+		boolean devamlilikPrimi = alan != null && alan.getKodu().equals(TIPI_DEVAMLILIK_PRIMI);
+		return devamlilikPrimi;
+	}
+
+	@Transient
+	public boolean isIzinDurum() {
+		boolean izinDurum = alan != null && alan.getKodu().startsWith("IZIN");
+		return izinDurum;
+	}
+
+	@Transient
 	public boolean isAciklama() {
 		boolean tip = false;
-		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL);
+		if (alan != null && alan.getKodu() != null) {
+			tip = alan.getTipi().equals(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL);
 		}
 		return tip;
 	}
@@ -147,8 +181,8 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	@Transient
 	public boolean isCheckBox() {
 		boolean tip = false;
-		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
+		if (alan != null && alan.getKodu() != null) {
+			tip = alan.getTipi().equals(Tanim.TIPI_PERSONEL_DENKLESTIRME_DINAMIK_DURUM);
 		}
 		return tip;
 	}
@@ -156,8 +190,8 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	@Transient
 	public boolean isSayisal() {
 		boolean tip = false;
-		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_SAYISAL);
+		if (alan != null && alan.getKodu() != null) {
+			tip = alan.getTipi().equals(Tanim.TIPI_DENKLESTIRME_DINAMIK_SAYISAL);
 		}
 		return tip;
 	}
@@ -165,8 +199,8 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	@Transient
 	public boolean isTanim() {
 		boolean tip = false;
-		if (tipi != null && tipi.getKodu() != null) {
-			tip = tipi.getKodu().equals(Tanim.TIPI_PERSONEL_DINAMIK_TANIM);
+		if (alan != null && alan.getKodu() != null) {
+			tip = alan.getTipi().equals(Tanim.TIPI_DENKLESTIRME_DINAMIK_TANIM);
 		}
 		return tip;
 	}
