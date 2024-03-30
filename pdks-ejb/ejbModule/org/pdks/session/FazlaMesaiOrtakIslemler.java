@@ -111,8 +111,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	@In(required = false)
 	FacesMessages facesMessages;
 
-	
-
 	/**
 	 * @param sirket
 	 * @param denklestirmeAy
@@ -1206,6 +1204,9 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				double toplamAdet = normalGunAdet + haftaTatilAdet + resmiTatilAdet + izinGunAdet;
 				double toplamSaatAdet = saatlikCalisma ? normalSaat + haftaTatilSaat + resmiTatilSaat + izinGunSaat : 0;
 				double normalCalisma = ap.getSaatToplami() > ap.getPlanlananSure() ? ap.getPlanlananSure() : ap.getSaatToplami();
+				if (calismaModeli != null && calismaModeli.isSaatlikOdeme())
+					normalCalisma += ap.getGecenAyFazlaMesai(authenticatedUser);
+
 				if (!detayMap.isEmpty() || (saatlikCalisma == false && toplamAdet > 0) || (saatlikCalisma && toplamSaatAdet > 0)) {
 					if (toplamAdet > 0) {
 						if (ayGunSayisi == toplamAdet)

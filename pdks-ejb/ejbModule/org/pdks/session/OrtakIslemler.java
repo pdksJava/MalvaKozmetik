@@ -15762,6 +15762,15 @@ public class OrtakIslemler implements Serializable {
 					if (!puantajData.isFazlaMesaiHesapla() && puantajData.getResmiTatilToplami() > 0)
 						resmiTatilSure = puantajData.getResmiTatilToplami();
 					double saatToplami = planlanSure + haftaTatilDigerSure - puantajData.getHaftaCalismaSuresi() + (resmiTatilEkle || resmiTatilVardiyaEkle ? resmiTatilSure - gecenAyResmiTatilSure : 0.0d);
+//					if (calismaModeli.isSaatlikOdeme() && puantajData.getPersonelDenklestirme() != null) {
+//						if (puantajData.getPersonelDenklestirme().getPersonelDenklestirmeGecenAy() != null) {
+//							PersonelDenklestirme personelDenklestirmeGecenAy = puantajData.getPersonelDenklestirme().getPersonelDenklestirmeGecenAy();
+//							if (personelDenklestirmeGecenAy.getDurum())
+//								saatToplami += personelDenklestirmeGecenAy.getDevredenSure();
+//						}
+//
+//					}
+
 					puantajData.setSaatToplami(saatToplami);
 					puantajData.setUcretiOdenenMesaiSure(ucretiOdenenMesaiSure);
 					puantajData.planSureHesapla(tatilGunleriMap);

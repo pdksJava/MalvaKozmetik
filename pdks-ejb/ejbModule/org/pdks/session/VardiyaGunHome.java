@@ -7328,12 +7328,16 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		resmiTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilGunKod());
 		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
 		bordroToplamGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
-		if (!devredenMesaiKod) {
+		if (!devredenMesaiKod || !devredenBakiyeKod) {
 			for (AylikPuantaj ap : puantajList) {
-				double sure = ap.getGecenAyFazlaMesai(authenticatedUser);
-				if (!devredenMesaiKod)
-					devredenMesaiKod = sure != 0.0d;
-
+				if (ap.getCalismaModeli().isSaatlikOdeme()) {
+					double gecenAyFazlaMesai = ap.getGecenAyFazlaMesai(authenticatedUser);
+					double devredenSure = ap.getDevredenSure();
+					if (!devredenMesaiKod)
+						devredenMesaiKod = gecenAyFazlaMesai != 0.0d;
+					if (!!devredenBakiyeKod)
+						devredenBakiyeKod = devredenSure != 0.0d;
+				}
 			}
 		}
 	}

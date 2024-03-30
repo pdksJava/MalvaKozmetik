@@ -2665,12 +2665,16 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
 		bordroToplamGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
 		devredenMesaiKod = saatlikCalismaVar == false || bordroPuantajEkranindaGoster == false || baslikMap.containsKey(ortakIslemler.devredenMesaiKod());
-		if (!devredenMesaiKod) {
+		if (!devredenMesaiKod || !devredenBakiyeKod) {
 			for (AylikPuantaj ap : puantajList) {
-				double sure = ap.getGecenAyFazlaMesai(authenticatedUser);
-				if (!devredenMesaiKod)
-					devredenMesaiKod = sure != 0.0d;
-
+				if (ap.getCalismaModeli().isSaatlikOdeme()) {
+					double gecenAyFazlaMesai = ap.getGecenAyFazlaMesai(authenticatedUser);
+					double devredenSure = ap.getDevredenSure();
+					if (!devredenMesaiKod)
+						devredenMesaiKod = gecenAyFazlaMesai != 0.0d;
+					if (!!devredenBakiyeKod)
+						devredenBakiyeKod = devredenSure != 0.0d;
+				}
 			}
 		}
 	}
@@ -4862,8 +4866,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.yasalFazlaCalismaAsanSaatKod(), "Yasal Çalışmayı Aşan Mesai : " + authenticatedUser.sayiFormatliGoster(denklestirmeAy.getFazlaMesaiMaxSure()) + " saati aşan çalışma toplam miktarı");
 		}
-		cell = ExcelUtil.getCell(sheet, row, col++, header);
-		ExcelUtil.baslikCell(cell, anchor, helper, drawing, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
+		if (gerceklesenMesaiKod) {
+			cell = ExcelUtil.getCell(sheet, row, col++, header);
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
+		}
+
 		if (devredenMesaiKod) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenMesaiKod(), "Devreden Mesai: Çalisanin önceki listelerden devreden eksi/fazla mesaisi");
@@ -5098,7 +5105,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							else
 								ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue("");
 						}
-						setCell(sheet, row, col++, styleTutar, aylikPuantaj.getAylikNetFazlaMesai());
+						if (gerceklesenMesaiKod)
+							setCell(sheet, row, col++, styleTutar, aylikPuantaj.getAylikNetFazlaMesai());
 						if (devredenMesaiKod) {
 							Double gecenAyFazlaMesai = aylikPuantaj.getGecenAyFazlaMesai(userLogin);
 							Cell gecenAyFazlaMesaiCell = setCell(sheet, row, col++, styleTutar, gecenAyFazlaMesai);

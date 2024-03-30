@@ -72,6 +72,11 @@
 									<f:facet name="header">Otomatik Son Onay Tarihi</f:facet>
 									#{authenticatedUser.dateFormatla(vardiyaView.otomatikOnayIKTarih)}
 								</rich:column>
+								<rich:column style="text-align: center;width: 60px;" >
+									<f:facet name="header">Otomatik Onay Başlangıç Tarihi</f:facet>
+									#{authenticatedUser.dateFormatla(vardiyaView.otomatikOnayIKBaslangicTarih)}
+								</rich:column>
+								
 								<c:if test="#{authenticatedUser.admin or (userHome.hasPermission('pdksVardiyaTanimlama','guncelIK'))}">
 									<rich:column style="text-align: center;width: 50px;">
 										<f:facet name="header">İşlem Açık</f:facet>
@@ -180,6 +185,11 @@
 								<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin}">
 									<ui:define name="label">Otomatik Son Onay Tarihi</ui:define>
 									<rich:calendar value="#{vardiyaTanimlaHome.denklestirmeAy.otomatikOnayIKTarih}" datePattern="#{authenticatedUser.dateFormat}" required="true"
+										requiredMessage="Otomatik Son Onay Tarihi Giriniz" />
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" >
+									<ui:define name="label">Otomatik Onay Başlangıç Tarihi</ui:define>
+									<rich:calendar value="#{vardiyaTanimlaHome.denklestirmeAy.otomatikOnayIKBaslangicTarih}" datePattern="#{authenticatedUser.dateFormat}" required="true"
 										requiredMessage="Otomatik Son Onay Tarihi Giriniz" />
 								</s:decorate>
 								<c:if test="#{authenticatedUser.admin}">

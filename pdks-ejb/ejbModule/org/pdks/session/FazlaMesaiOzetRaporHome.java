@@ -993,13 +993,6 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					fazlaMesaiOde = false;
 					fazlaMesaiIzinKullan = false;
 				}
-				if (bordroPuantajEkranindaGoster) {
-					Date basTarih = PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + ay) + "01", "yyyyMMdd");
-					Date bitTarih = PdksUtil.tariheAyEkleCikar(basTarih, 1);
-					TreeMap<String, Tatil> tatilMap = ortakIslemler.getTatilGunleri(null, PdksUtil.tariheGunEkleCikar(basTarih, -1), bitTarih, session);
-					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(puantajDenklestirmeList, session);
-					bordroVeriOlusturBasla(puantajDenklestirmeList, tatilMap);
-				}
 
 				ortakIslemler.yoneticiPuantajKontrol(authenticatedUser, puantajDenklestirmeList, Boolean.TRUE, session);
 
@@ -1376,6 +1369,13 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					} else
 						puantaj.setAyrikHareketVar(false);
 				}
+				if (bordroPuantajEkranindaGoster) {
+					Date basTarih = PdksUtil.convertToJavaDate(String.valueOf(yil * 100 + ay) + "01", "yyyyMMdd");
+					Date bitTarih = PdksUtil.tariheAyEkleCikar(basTarih, 1);
+					TreeMap<String, Tatil> tatilMap = ortakIslemler.getTatilGunleri(null, PdksUtil.tariheGunEkleCikar(basTarih, -1), bitTarih, session);
+					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(puantajDenklestirmeList, session);
+					bordroVeriOlusturBasla(puantajDenklestirmeList, tatilMap);
+				}
 				if (!(authenticatedUser.isAdmin() || authenticatedUser.isSistemYoneticisi()) && yasalFazlaCalismaAsanSaat)
 					yasalFazlaCalismaAsanSaat = ortakIslemler.getParameterKey("yasalFazlaCalismaAsanSaat").equals("1");
 
@@ -1438,6 +1438,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		baslikMap.clear();
 		boolean saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
 		for (AylikPuantaj ap : puantajList) {
+			PersonelDenklestirme personelDenklestirme = ap.getPersonelDenklestirme();
+			ap.setPlanlananSure(personelDenklestirme.getPlanlanSure());
 			double izinGunAdet = 0.0;
 			if (ap.getVardiyalar() != null) {
 				for (VardiyaGun vg : ap.getVardiyalar()) {
@@ -1505,12 +1507,16 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		resmiTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilGunKod());
 		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
 		bordroToplamGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
-		if (!devredenMesaiKod) {
+		if (!devredenMesaiKod || !devredenBakiyeKod) {
 			for (AylikPuantaj ap : puantajList) {
-				double sure = ap.getGecenAyFazlaMesai(authenticatedUser);
-				if (!devredenMesaiKod)
-					devredenMesaiKod = sure != 0.0d;
-
+				if (ap.getCalismaModeli().isSaatlikOdeme()) {
+					double gecenAyFazlaMesai = ap.getGecenAyFazlaMesai(authenticatedUser);
+					double devredenSure = ap.getDevredenSure();
+					if (!devredenMesaiKod)
+						devredenMesaiKod = gecenAyFazlaMesai != 0.0d;
+					if (!!devredenBakiyeKod)
+						devredenBakiyeKod = devredenSure != 0.0d;
+				}
 			}
 		}
 	}
@@ -1715,6 +1721,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				cell = ExcelUtil.getCell(sheet, row, col++, header);
 				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.yasalFazlaCalismaAsanSaatKod(), "Yasal Çalışmayı Aşan Mesai : Saati aşan çalışma toplam miktarı");
 			}
+		}
+		if (gerceklesenMesaiKod) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "GM", "Gerçekleşen Mesai : Çalışanın bu listedeki eksi/fazla çalışma saati");
 		}
@@ -1740,6 +1748,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
 			}
 
+		}
+		if (devredenBakiyeKod) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.devredenBakiyeKod(), "Bakiye: Çalışanın bu liste de dahil bugüne kadarki devreden eksi/fazla mesaisi");
 		}
@@ -1963,8 +1973,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							else
 								ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue("");
 						}
-						setCell(sheet, row, col++, styleTutar, aylikPuantaj.getAylikNetFazlaMesai());
+
 					}
+					if (gerceklesenMesaiKod)
+						setCell(sheet, row, col++, styleTutar, aylikPuantaj.getAylikNetFazlaMesai());
 					if (devredenMesaiKod) {
 						Double gecenAyFazlaMesai = aylikPuantaj.getGecenAyFazlaMesai(authenticatedUser);
 						Cell gecenAyFazlaMesaiCell = setCell(sheet, row, col++, styleTutar, gecenAyFazlaMesai);
@@ -1976,9 +1988,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							}
 						}
 					}
+					boolean olustur = false;
+					Comment commentGuncelleyen = null;
 					if (fazlaMesaiVar) {
-						boolean olustur = false;
-						Comment commentGuncelleyen = null;
 						if (aylikPuantaj.isFazlaMesaiHesapla()) {
 							Cell fazlaMesaiSureCell = setCell(sheet, row, col++, styleTutar, aylikPuantaj.getFazlaMesaiSure());
 							if (aylikPuantaj.getFazlaMesaiSure() != 0.0d) {
@@ -1999,6 +2011,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							setCell(sheet, row, col++, styleTutar, aylikPuantaj.getResmiTatilToplami());
 						if (haftaTatilVar)
 							setCell(sheet, row, col++, styleTutar, aylikPuantaj.getHaftaCalismaSuresi());
+
+					}
+					if (devredenBakiyeKod) {
 						if (aylikPuantaj.isFazlaMesaiHesapla()) {
 							Cell devredenSureCell = setCell(sheet, row, col++, styleTutar, aylikPuantaj.getDevredenSure());
 							if (aylikPuantaj.getDevredenSure() != null && aylikPuantaj.getDevredenSure().doubleValue() != 0.0d && commentGuncelleyen == null) {

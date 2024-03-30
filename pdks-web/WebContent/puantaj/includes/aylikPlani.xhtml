@@ -560,9 +560,9 @@
 									<td class="#{aylikPuantaj.trClass}" style="width: 20px" align="center"><ui:fragment
 											rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal!=0}">
 
-											<B><ui:fragment rendered="#{aylikPuantaj.saatToplami ge aylikPuantaj.planlananSure}">
+											<B><ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal ge aylikPuantaj.planlananSure}">
 													<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" />
-												</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.saatToplami lt aylikPuantaj.planlananSure}">
+												</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.denklestirmeBordro.saatNormal lt aylikPuantaj.planlananSure}">
 													<SPAN style="color: red;"> <h:outputText
 															value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.denklestirmeBordro.saatNormal)}" /></SPAN>
 												</ui:fragment> </B>
