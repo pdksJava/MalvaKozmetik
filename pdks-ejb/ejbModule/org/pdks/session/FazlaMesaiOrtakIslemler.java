@@ -1150,7 +1150,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 								}
 								if (artiGun > 0.0d) {
 									String str = izinBordroDetayTipi != null ? izinBordroDetayTipi.value() : "";
-									calismaGun = 0;
+									if (PdksUtil.hasStringValue(str))
+										calismaGun = 0;
 									if (resmiTatil == false || str.equals(BordroDetayTipi.RAPORLU_IZIN.value()))
 										calismaGun = izinDetayYaz(detayMap, calismaGun, izinKodu, artiGun);
 									else if (resmiTatil && str.equals(BordroDetayTipi.UCRETLI_IZIN.value()))
