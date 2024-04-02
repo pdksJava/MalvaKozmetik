@@ -28,8 +28,12 @@
 								<s:convertEntity />
 							</h:selectOneMenu>
 						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml" rendered="#{kapiHome.eskiKayitDurum!=null}">
+							<ui:define name="label">Eski Kapı Bilgileri Göster</ui:define>
+							<h:selectBooleanCheckbox value="#{kapiHome.eskiKayitDurum}" />
+						</s:decorate>
 
-						<a4j:commandButton status="ajaxStatus" action="#{kapiHome.fillkapiList}" value="Ara" reRender="kapiTable" />
+						<a4j:commandButton status="ajaxStatus" action="#{kapiHome.fillKapiList}" value="Ara" reRender="kapiTable" />
 					</h:panelGrid>
 					<DIV class="#{authenticatedUser.scroolClass}" id="#{authenticatedUser.scroolDiv}">
 						<rich:dataTable rowClasses="acik,koyu" value="#{kapiHome.kapiList}" var="kapi" rows="50" rowKeyVar="row" id="kapiTable">
@@ -54,10 +58,12 @@
 									<h:outputText value="KGS Kapı Adı" />
 								</f:facet>
 								<SPAN id="#{kapi.kapiView.kapiKGS.id}"> <h:outputText value="#{kapi.kapiView.kapiKGSAciklama}" /> <ui:fragment
-										rendered="#{kapiHome.birdenFazlaKGSSirketSQL!=''}">
+										rendered="#{kapiHome.eskiKayitDurum}">
+										<h:outputText value=" - #{kapi.kapiKGS.kapiSirket.aciklama}" />
+									</ui:fragment> <ui:fragment rendered="#{kapiHome.birdenFazlaKGSSirketSQL!=''}">
 										<rich:toolTip for="#{kapi.kapiView.kapiKGS.id}">
 											<B>KGS Uygulama Adı : </B>
-											<h:outputText value="#{kapi.kapiView.kapiKGS.kapiSirket.aciklama}" />
+											<h:outputText value="#{kapi.kapiView.kapiKGS.kapiSirket.aciklama} [#{kapi.kapiView.kapiKGS.kgsId}]" />
 										</rich:toolTip>
 									</ui:fragment>
 
