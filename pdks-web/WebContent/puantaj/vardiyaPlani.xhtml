@@ -623,7 +623,7 @@
 								<s:decorate template="/layout/edit.xhtml">
 									<ui:define name="label">#{pdda.alan.aciklama}</ui:define>
 									<h:selectBooleanCheckbox value="#{pdda.islemDurum}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}">
-										<a4j:support event="onclick" reRender="digerIslemler" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}"/>
+										<a4j:support event="onclick" reRender="digerIslemler" action="#{vardiyaGunHome.personelDenklestirme.setGuncellendi(true)}" />
 									</h:selectBooleanCheckbox>
 								</s:decorate>
 								<s:decorate template="/layout/edit.xhtml" rendered="#{pdda.islemDurum and pdda.izinDurum}">
@@ -1473,6 +1473,39 @@
 		</rich:modalPanel>
 
 
+
+		<rich:modalPanel id="vardiyaKilitPanel" autosized="true" width="900">
+			<f:facet name="header">
+				<h:outputText value="Vardiya Plan Açılma Talebi" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:form>
+						<h:graphicImage value="/img/close.png" id="hideTalepLink" styleClass="hidelink">
+							<a4j:support event="onclick" onclick="#{rich:component('wait')}.show()"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) { #{rich:component('vardiyaKilitPanel')}.hide();#{rich:component('wait')}.hide();}"
+								ajaxSingle="true" />
+						</h:graphicImage>
+					</h:form>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+
+				<a4j:outputPanel ajaxRendered="true">
+					<h:messages id="messages" styleClass="message" errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg" />
+				</a4j:outputPanel>
+				<h:panelGrid columns="1" style="width:90%;">
+					<s:decorate template="/layout/edit.xhtml" style="vertical-align: top;">
+						<ui:define name="label">Talep Açıklaması</ui:define>
+						<h:inputTextarea required="true" requiredMessage="Açıklama giriniz!" value="#{vardiyaGunHome.calismaPlanKilit.talep.aciklama}" cols="80"
+							rows="3" />
+					</s:decorate>
+					<a4j:commandButton value="Talep Oluştur" action="#{vardiyaGunHome.planKilitTalep(vardiyaGunHome.calismaPlanKilit)}"
+						onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide();#{rich:component('vardiyaKilitPanel')}.hide()"
+						reRender="vardiyaPanel" />
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
 
 	</ui:define>
 

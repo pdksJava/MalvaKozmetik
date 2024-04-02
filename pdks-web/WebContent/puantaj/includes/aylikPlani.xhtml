@@ -766,16 +766,65 @@
 				</tbody>
 			</table>
 			<ui:fragment rendered="#{vardiyaGunHome.denklestirmeAyDurum and vardiyaGunHome.planGirisi }">
-				<ui:fragment rendered="#{vardiyaGunHome.kullaniciPersonel==false}">
-					<a4j:commandButton status="ajaxStatus" value="Onayla" action="#{vardiyaGunHome.planOnayla()}" reRender="vardiyaPanel" />
-				</ui:fragment>
-				<ui:fragment rendered="#{vardiyaGunHome.kullaniciPersonel}">
-					<ui:fragment rendered="#{vardiyaGunHome.calismaPlanKilit.kilitDurum and vardiyaGunHome.ikRole}">
-						<a4j:commandButton status="ajaxStatus" value="Kilit Aç" action="#{vardiyaGunHome.planKilitAc()}" reRender="vardiyaPanel"
-							rendered="#{vardiyaGunHome.calismaPlanKilit.talepKontrol==false or vardiyaGunHome.calismaPlanKilit.talep!=null}" />
-					</ui:fragment>
-				</ui:fragment>
 
+				<table align="center">
+					<tr>
+						<ui:fragment rendered="#{vardiyaGunHome.kullaniciPersonel==false}">
+							<td valign="top"><a4j:commandButton status="ajaxStatus" value="Onayla" action="#{vardiyaGunHome.planOnayla()}" reRender="vardiyaPanel" /></td>
+						</ui:fragment>
+						
+						<ui:fragment rendered="#{vardiyaGunHome.calismaPlanKilit.kilitDurum and vardiyaGunHome.calismaPlanKilit.talepKontrol}">
+									
+							<ui:fragment rendered="#{vardiyaGunHome.calismaPlanKilit.talep.id==null or vardiyaGunHome.calismaPlanKilit.talep.onayDurum==null}">
+								<td>
+									<DIV id="planKilit#{kilit.id}">
+										<a4j:commandLink status="ajaxStatus" reRender="vardiyaKilitPanel" onclick="#{rich:component('wait')}.show()"
+											oncomplete="#{rich:component('wait')}.hide();if (#{vardiyaGunHome.calismaPlanKilit.talep.id==null}) #{rich:component('vardiyaKilitPanel')}.show(); ">
+											<h:graphicImage value="/img/lock-94.png" height="48" style="border:0" />
+											<a4j:support event="onclick" status="ajaxStatus" action="#{vardiyaGunHome.planKilitTalepKontrol(vardiyaGunHome.calismaPlanKilit)}" />
+										</a4j:commandLink>
+									</DIV> <rich:toolTip for="planKilit#{kilit.id}">
+														#{vardiyaGunHome.calismaPlanKilit.olusturanUser.adSoyad} ait çalışma planı kilit  açılma talebi.
+													</rich:toolTip>
+								</td>
+							</ui:fragment>
+						</ui:fragment>
+						<ui:fragment rendered="#{not empty vardiyaGunHome.kilitliPlanList and vardiyaGunHome.ikRole}">
+							<td valign="top">
+								<TABLE class="mars">
+									<thead>
+										<tr>
+											<c:forEach items="#{vardiyaGunHome.kilitliPlanList}" var="kilit">
+												<th style="width: 50px" nowrap="nowrap"><h:outputText value="#{kilit.olusturanUser.adSoyad}" /></th>
+											</c:forEach>
+										</tr>
+
+									</thead>
+									<tbody>
+										<tr class="odd">
+											<c:forEach items="#{vardiyaGunHome.kilitliPlanList}" var="kilit">
+												<td align="center" style="width: 50px">
+													<DIV id="planKilit#{kilit.id}">
+														<a4j:commandLink status="ajaxStatus" action="#{vardiyaGunHome.planKilitAc(kilit)}" reRender="vardiyaPanel">
+															<h:graphicImage value="/img/lock-94.png" height="24" style="border:0" />
+														</a4j:commandLink>
+													</DIV> <rich:toolTip for="planKilit#{kilit.id}">
+														#{kilit.olusturanUser.adSoyad} ait çalışma planı kilitini açılır.
+													</rich:toolTip>
+												</td>
+
+											</c:forEach>
+										</tr>
+									</tbody>
+
+								</TABLE>
+							</td>
+
+
+						</ui:fragment>
+
+					</tr>
+				</table>
 			</ui:fragment>
 			<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{vardiyaGunHome.aylikVardiyaExcel}" target="blank">
 				<a4j:support event="oncomplete" status="ajaxStatus" />

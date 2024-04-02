@@ -43,7 +43,7 @@ public class CalismaPlanKilitTalep extends BaseObject {
 
 	private String aciklama;
 
-	private Boolean onayDurum = Boolean.FALSE;
+	private Boolean onayDurum;
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {
