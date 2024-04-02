@@ -109,7 +109,6 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 		List<Kapi> kapiList = new ArrayList<Kapi>();
 		HashMap parametreMap = new HashMap();
 		try {
-
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT P.*   FROM  VIEW_KAPI_SIRKET_KGS_LIST  P ");
 			String str = " INNER  JOIN " + Kapi.TABLE_NAME + " K ON K." + Kapi.COLUMN_NAME_KGS_ID + " = P." + KapiKGS.COLUMN_NAME_ID;
@@ -195,6 +194,25 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 					kapiList.addAll(tanimliPkdsList);
 				if (!tanimliList.isEmpty())
 					kapiList.addAll(tanimliList);
+				if (eskiKayitDurum != null && eskiKayitDurum.booleanValue()) {
+					Date bugun = new Date();
+					List<Kapi> eskiPkdsList = new ArrayList<Kapi>();
+					for (Iterator iterator = kapiList.iterator(); iterator.hasNext();) {
+						Kapi kapi = (Kapi) iterator.next();
+						KapiKGS kapiKGS = kapi.getKapiKGS();
+						if (kapiKGS == null)
+							continue;
+						KapiSirket kapiSirket = kapiKGS.getKapiSirket();
+						if (kapiSirket == null || kapiSirket.getBitTarih().before(bugun)) {
+							eskiPkdsList.add(kapi);
+							iterator.remove();
+						}
+					}
+					if (!eskiPkdsList.isEmpty())
+						kapiList.addAll(eskiPkdsList);
+					eskiPkdsList = null;
+
+				}
 				tanimliList = null;
 				tanimliPkdsList = null;
 			}
@@ -209,32 +227,6 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 		fillKapiTipleri();
 		setkapiList(kapiList);
 		return "";
-	}
-
-	public void fillkapiKGSList() {
-
-		List list = null;
-		HashMap parametreMap = new HashMap();
-		parametreMap.put("kapi=", null);
-		parametreMap.put("durum=", Boolean.TRUE);
-		if (session != null)
-			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-		try {
-			List<KapiKGS> kapiKGSList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, KapiKGS.class);
-
-			if (!kapiKGSList.isEmpty()) {
-				list = new ArrayList();
-				list.addAll(kapiKGSList);
-
-			}
-		} catch (Exception e) {
-			logger.error("PDKS hata in : \n");
-			e.printStackTrace();
-			logger.error("PDKS hata out : " + e.getMessage());
-
-		}
-
-		setTanimsizKapiList(list);
 	}
 
 	public void fillKapiTipleri() {
@@ -295,14 +287,6 @@ public class KapiHome extends EntityHome<Kapi> implements Serializable {
 			}
 		}
 		setInstance(kapi);
-		return "";
-	}
-
-	public String kapiEkle() {
-		kgsGuncelle = Boolean.TRUE;
-		this.clearInstance();
-		if (getInstance().getId() == null)
-			fillkapiKGSList();
 		return "";
 	}
 
