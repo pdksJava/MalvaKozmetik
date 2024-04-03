@@ -1494,7 +1494,7 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 		ExcelUtil.setFillForegroundColor(styleIzin, 146, 208, 80);
 		CreationHelper helper = wb.getCreationHelper();
 		drawing = sheet.createDrawingPatriarch();
-
+		anchor = helper.createClientAnchor();
 		TreeMap sirketMap = new TreeMap();
 		List<VardiyaGun> vardiyaGunPersonelList = new ArrayList<VardiyaGun>();
 		String tekSirketTesisAdi;
@@ -1856,10 +1856,15 @@ public class FazlaCalismaRaporHome extends EntityHome<DepartmanDenklestirmeDonem
 					gs = null;
 				}
 			}
+			try {
 
-			Comment comment = drawing.createCellComment(anchor);
-			comment.setString(rt);
-			cell.setCellComment(comment);
+				Comment comment = drawing.createCellComment(anchor);
+				comment.setString(rt);
+				cell.setCellComment(comment);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		}
 		return rt;
 	}
