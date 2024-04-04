@@ -94,6 +94,7 @@ public class MenuItemConstant implements Serializable {
 	public static String hareketlerText = "/rapor/puantaj/hareketlerText.xhtml";
 	public static String iseGelmeyenPersonelDagilimi = "/rapor/puantaj/iseGelmeyenPersonelDagilimi.xhtml";
 	public static String vardiyaOzetRaporu = "/rapor/puantaj/vardiyaOzetRaporu.xhtml";
+	public static String vardiyaPlaniTopluRapor = "/rapor/puantaj/vardiyaPlaniTopluRapor.xhtml";
 
 	public static String yemekYiyenler = "/rapor/yemek/yemekYiyenler.xhtml";
 	public static String yemekYiyenSayisi = "/rapor/yemek/yemekYiyenSayisi.xhtml";
@@ -997,6 +998,14 @@ public class MenuItemConstant implements Serializable {
 
 	public static void setPlanGuncellemeTalepLinkOnay(String planGuncellemeTalepLinkOnay) {
 		MenuItemConstant.planGuncellemeTalepLinkOnay = planGuncellemeTalepLinkOnay;
+	}
+
+	public static String getVardiyaPlaniTopluRapor() {
+		return vardiyaPlaniTopluRapor;
+	}
+
+	public static void setVardiyaPlaniTopluRapor(String vardiyaPlaniTopluRapor) {
+		MenuItemConstant.vardiyaPlaniTopluRapor = vardiyaPlaniTopluRapor;
 	}
 
 }

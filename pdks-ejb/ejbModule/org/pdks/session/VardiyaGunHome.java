@@ -6943,6 +6943,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							}
 							aylikPuantaj.setCalismaModeliAy(personelDenklestirme.getCalismaModeliAy());
 							CalismaModeli calismaModeli = personelDenklestirme.getCalismaModeli();
+							if (aylikPuantaj.getPersonelDenklestirme() == null)
+								aylikPuantaj.setPersonelDenklestirme(personelDenklestirme);
 							aylikPuantaj.setLoginUser(loginUser);
 							if (!helpPersonel(personel)) {
 								ortakIslemler.aylikPlanSureHesapla(false, getNormalCalismaVardiya(), true, aylikPuantaj, denklestirmeAyDurum, tatilGunleriMap, session);

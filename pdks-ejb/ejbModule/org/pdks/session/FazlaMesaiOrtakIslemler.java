@@ -2655,10 +2655,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @return
 	 */
 	public Comment getCommentGuncelleyen(ClientAnchor anchor, CreationHelper helper, Drawing drawing, PersonelDenklestirme personelDenklestirme) {
-		User loginUser = authenticatedUser != null ? authenticatedUser : new User();
-		String title = "Onaylayan : " + personelDenklestirme.getGuncelleyenUser().getAdSoyad() + "\n";
-		title += "Zaman : " + loginUser.dateTimeFormatla(personelDenklestirme.getGuncellemeTarihi());
-		Comment commentGuncelleyen = ExcelUtil.getComment(anchor, helper, drawing, title);
+		Comment commentGuncelleyen = null;
+		if (personelDenklestirme.isOnaylandi() && personelDenklestirme.getGuncelleyenUser() != null) {
+			User loginUser = authenticatedUser != null ? authenticatedUser : new User();
+			String title = "Onaylayan : " + personelDenklestirme.getGuncelleyenUser().getAdSoyad() + "\n";
+			title += "Zaman : " + loginUser.dateTimeFormatla(personelDenklestirme.getGuncellemeTarihi());
+			commentGuncelleyen = ExcelUtil.getComment(anchor, helper, drawing, title);
+		}
+
 		return commentGuncelleyen;
 	}
 
