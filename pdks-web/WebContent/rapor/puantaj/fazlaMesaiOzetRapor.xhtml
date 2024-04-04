@@ -136,10 +136,10 @@
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 									</f:facet>
-									<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi==false or aylikPuantaj.pdksPersonel.pdks==false}">
+									<ui:fragment rendered="#{aylikPuantaj.fazlaMesaiHesapla==false}">
 										<SPAN style="color: red"><h:outputText value="#{aylikPuantaj.pdksPersonel.sicilNo}" /> </SPAN>
 									</ui:fragment>
-									<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi  and aylikPuantaj.pdksPersonel.pdks }">
+									<ui:fragment rendered="#{aylikPuantaj.fazlaMesaiHesapla }">
 										<h:outputText value="#{aylikPuantaj.pdksPersonel.sicilNo}" />
 
 									</ui:fragment>
@@ -673,6 +673,23 @@
 									</rich:column>
 
 								</c:if>
+								<rich:column rendered="#{fazlaMesaiOzetRaporHome.hataliPuantajVar}" styleClass="#{aylikPuantaj.trSonucClass}"
+									style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center">
+									<f:facet name="header">
+										<ui:fragment>
+											<h:outputText value="Hata Açıklama" id="baslikHata" />
+											<rich:toolTip for="baslikHata">
+												<SPAN style="font-size: 12px; font-weight: normal;"><B>Plan onaylanmamış veya hatalı günleri olan puantaj</B></SPAN>
+											</rich:toolTip>
+										</ui:fragment>
+									</f:facet>
+									<ui:fragment rendered="#{aylikPuantaj.fazlaMesaiHesapla==false}">
+										<SPAN style="font-size: 12px; font-weight: normal; color: white;"> <ui:fragment
+												rendered="#{aylikPuantaj.personelDenklestirme.onaylandi}">Günler hatalı</ui:fragment> <ui:fragment
+												rendered="#{aylikPuantaj.personelDenklestirme.onaylandi==false}">Plan onaysız</ui:fragment></SPAN>
+
+									</ui:fragment>
+								</rich:column>
 								<f:facet name="footer">
 									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 								</f:facet>

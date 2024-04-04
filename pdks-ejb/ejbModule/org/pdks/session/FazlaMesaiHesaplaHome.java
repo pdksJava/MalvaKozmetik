@@ -5008,7 +5008,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			AylikPuantaj aylikPuantaj = (AylikPuantaj) iter.next();
 
 			Personel personel = aylikPuantaj.getPdksPersonel();
-			if (personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false)
+			if (personel == null || PdksUtil.hasStringValue(personel.getSicilNo()) == false )
 				continue;
 			PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirme();
 			boolean denklestirmeVar = personelDenklestirme.isDenklestirmeDurum();

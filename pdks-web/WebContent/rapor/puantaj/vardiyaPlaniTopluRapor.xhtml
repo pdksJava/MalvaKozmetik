@@ -249,17 +249,16 @@
 									</rich:column>
 								</c:if>
 								<rich:column rendered="#{vardiyaPlaniTopluRaporHome.onayDurumGoster}" style="text-align: center;width: 60px;">
-										<f:facet name="header">
-											<h:outputText value="Çalışma Plan Onay" />
-										</f:facet>
-										<SPAN> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi}">
-												<h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.onaylandi)}" />
-											</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi==false}">
-												<SPAN style="font-weight: bolder;"> <h:outputText
-														value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.onaylandi)}" />
-												</SPAN>
-											</ui:fragment></SPAN>
-									</rich:column>
+									<f:facet name="header">
+										<h:outputText value="Çalışma Plan Onay" />
+									</f:facet>
+									<SPAN> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi}">
+											<h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.onaylandi)}" />
+										</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi==false}">
+											<SPAN style="font-weight: bolder;"> <h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.onaylandi)}" />
+											</SPAN>
+										</ui:fragment></SPAN>
+								</rich:column>
 								<c:if test="#{vardiyaPlaniTopluRaporHome.aylikPuantajDefault.vardiyalar!=null }">
 									<c:forEach items="#{vardiyaPlaniTopluRaporHome.aylikPuantajDefault.vardiyalar}" var="vg">
 
@@ -677,6 +676,21 @@
 									</rich:column>
 
 								</c:if>
+								<rich:column rendered="#{vardiyaPlaniTopluRaporHome.hataliPuantajVar}" styleClass="#{aylikPuantaj.trSonucClass}"
+									style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center">
+									<f:facet name="header">
+										<ui:fragment>
+											<h:outputText value="Hata Açıklama" id="baslikHata" />
+											<rich:toolTip for="baslikHata">
+												<SPAN style="font-size: 12px; font-weight: normal;"><B>Plan onaylanmamış</B></SPAN>
+											</rich:toolTip>
+										</ui:fragment>
+									</f:facet>
+									<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.onaylandi==false}">
+										<SPAN style="font-size: 12px; font-weight: normal; color: white;"> Plan onaysız </SPAN>
+
+									</ui:fragment>
+								</rich:column>
 								<f:facet name="footer">
 									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 								</f:facet>

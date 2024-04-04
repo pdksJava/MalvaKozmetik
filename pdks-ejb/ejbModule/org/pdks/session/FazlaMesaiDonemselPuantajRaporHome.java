@@ -1298,10 +1298,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			}
 			if (!dataList.isEmpty()) {
 				denklestirmeDinamikAlanlar = ortakIslemler.setDenklestirmeDinamikDurum(dataList, session);
-				if (bordroPuantajEkranindaGoster) {
+				if (bordroPuantajEkranindaGoster)
 					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(dataList, session);
-					bordroVeriOlusturBasla(dataList, tatilMap);
-				}
+
+				bordroVeriOlusturBasla(dataList, tatilMap);
 				for (AylikPuantaj dap : dataList) {
 					PersonelDenklestirme personelDenklestirme = dap.getPersonelDenklestirme();
 					dap.setPlanlananSure(personelDenklestirme.getPlanlanSure());

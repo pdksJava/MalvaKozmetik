@@ -126,7 +126,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 	private TreeMap<String, Tatil> tatilGunleriMap;
 
 	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
-	private Boolean sutIzniGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
+	private Boolean sutIzniGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE, hataliPuantajVar = Boolean.FALSE;
 	private Boolean kimlikGoster = Boolean.FALSE, aksamGun = Boolean.FALSE, maasKesintiGoster = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, sirketGoster = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE, yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 	private boolean adminRole, ikRole, bordroPuantajEkranindaGoster = false, onayDurumGoster = Boolean.FALSE, fazlaMesaiVar = false, saatlikMesaiVar = false, aylikMesaiVar = false;
@@ -252,6 +252,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 			yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 			fazlaMesaiOde = Boolean.FALSE;
 			fazlaMesaiIzinKullan = Boolean.FALSE;
+			hataliPuantajVar = Boolean.FALSE;
 			setSirket(null);
 			sirketId = null;
 			setTesisId(null);
@@ -727,6 +728,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		haftaTatilVar = Boolean.FALSE;
 		maasKesintiGoster = Boolean.FALSE;
 		fazlaMesaiIzinKullan = Boolean.FALSE;
+		hataliPuantajVar = Boolean.FALSE;
 		onayDurumGoster = Boolean.FALSE;
 		kimlikGoster = Boolean.FALSE;
 		yasalFazlaCalismaAsanSaat = Boolean.FALSE;
@@ -1050,7 +1052,6 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 					TreeMap<String, VardiyaGun> vardiyalar = new TreeMap<String, VardiyaGun>();
 					cal = Calendar.getInstance();
 					puantaj.setHareketler(null);
-					 
 
 					boolean puantajFazlaMesaiHesapla = true;
 					int sayac = 0;
@@ -1205,11 +1206,14 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+
+					if (!hataliPuantajVar)
+						hataliPuantajVar = personelDenklestirme.isOnaylandi() == false;
 					if (!fazlaMesaiIzinKullan)
 						fazlaMesaiIzinKullan = personelDenklestirme.getFazlaMesaiIzinKullan() != null && personelDenklestirme.getFazlaMesaiIzinKullan();
 					if (!fazlaMesaiOde)
 						fazlaMesaiOde = personelDenklestirme.getFazlaMesaiOde() != null && personelDenklestirme.getFazlaMesaiOde();
- 				if (!kimlikGoster)
+					if (!kimlikGoster)
 						kimlikGoster = PdksUtil.hasStringValue(personel.getPersonelKGS().getKimlikNo());
 					if (!yasalFazlaCalismaAsanSaat)
 						yasalFazlaCalismaAsanSaat = perCalismaModeli.isFazlaMesaiVarMi() && ucretiOdenenMesaiSure > 0.0d;
@@ -1516,17 +1520,33 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		ClientAnchor anchor = helper.createClientAnchor();
 		CellStyle izinBaslik = ExcelUtil.getStyleHeader(wb);
 		CellStyle styleTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleRedTutarEven = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
+		ExcelUtil.setFontColor(styleRedTutarEven, Color.RED);
 		CellStyle styleTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		CellStyle styleRedTutarOdd = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
+		ExcelUtil.setFontColor(styleRedTutarOdd, Color.RED);
 		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleRedOdd = ExcelUtil.getStyleOdd(null, wb);
+		ExcelUtil.setFontColor(styleRedOdd, Color.RED);
 		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleRedEven = ExcelUtil.getStyleEven(null, wb);
+		ExcelUtil.setFontColor(styleRedEven, Color.RED);
 		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleRedOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		ExcelUtil.setFontColor(styleRedOddCenter, Color.RED);
 		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleRedEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		ExcelUtil.setFontColor(styleRedEvenCenter, Color.RED);
 		CellStyle styleTutarOddRed = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_TUTAR, wb);
 		ExcelUtil.setFontColor(styleTutarOddRed, Color.RED);
 		CellStyle styleTutarEvenRed = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_TUTAR, wb);
 		ExcelUtil.setFontColor(styleTutarEvenRed, Color.RED);
 		CellStyle styleCenterEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleRedCenterEvenDay = ExcelUtil.getStyleDayEven(ExcelUtil.ALIGN_CENTER, wb);
+		ExcelUtil.setFontColor(styleRedCenterEvenDay, Color.RED);
 		CellStyle styleCenterOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleRedCenterOddDay = ExcelUtil.getStyleDayOdd(ExcelUtil.ALIGN_CENTER, wb);
+		ExcelUtil.setFontColor(styleRedCenterOddDay, Color.RED);
 
 		CellStyle styleDay = null, styleGenel = null, styleTutar = null, styleStrDay = null;
 		CellStyle styleCenter = ExcelUtil.getStyleData(wb);
@@ -1606,7 +1626,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM Ödeme");
 		if (fazlaMesaiIzinKullan)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM İzin Kullansın");
-	
+
 		if (onayDurumGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Plan Onay");
 		if (modelGoster)
@@ -1642,20 +1662,18 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "ÜÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz fazla mesai saati");
 
-			if (kismiOdemeGoster) {
-				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				ExcelUtil.baslikCell(cell, anchor, helper, drawing, "KÖM", "Çalışanın bu listenin sonunda ücret olarak kısmi ödediğimiz fazla mesai saati ");
-			}
-
-			if (resmiTatilVar) {
-				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				ExcelUtil.baslikCell(cell, anchor, helper, drawing, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
-			}
-			if (haftaTatilVar) {
-				cell = ExcelUtil.getCell(sheet, row, col++, header);
-				ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
-			}
-
+		}
+		if (kismiOdemeGoster) {
+			cell = ExcelUtil.getCell(sheet, row, col++, header);
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "KÖM", "Çalışanın bu listenin sonunda ücret olarak kısmi ödediğimiz fazla mesai saati ");
+		}
+		if (resmiTatilVar) {
+			cell = ExcelUtil.getCell(sheet, row, col++, header);
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "RÖM", "Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati");
+		}
+		if (haftaTatilVar) {
+			cell = ExcelUtil.getCell(sheet, row, col++, header);
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, AylikPuantaj.MESAI_TIPI_HAFTA_TATIL, "Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati");
 		}
 		if (devredenBakiyeKod) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
@@ -1744,7 +1762,10 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.bordroToplamGunKod(), "Toplam Gün");
 			}
 		}
-
+		if (hataliPuantajVar) {
+			cell = ExcelUtil.getCell(sheet, row, col++, header);
+			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "Hata Açıklama", "Plan onaylanmamış");
+		}
 		int sira = 0;
 		double maxSure = denklestirmeAy.getFazlaMesaiMaxSure() != null ? denklestirmeAy.getFazlaMesaiMaxSure() : 11.0d;
 		Date bugun = PdksUtil.getDate(new Date());
@@ -1760,7 +1781,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 			PersonelDenklestirme personelDenklestirmeGecenAy = personelDenklestirme != null ? personelDenklestirme.getPersonelDenklestirmeGecenAy() : null;
 			row++;
 			col = 0;
-			CellStyle styleTutarHata = null, styleHataCenter = null, styleHata = null;
+			CellStyle styleHataCenter = null;
 			try {
 				boolean help = helpPersonel(aylikPuantaj.getPdksPersonel());
 				try {
@@ -1769,19 +1790,25 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 						styleStrDay = styleCenterOddDay;
 						styleGenel = styleOdd;
 						styleTutar = styleTutarOdd;
-
+						if (hataVar) {
+							styleCenter = styleRedOddCenter;
+							styleGenel = styleRedOdd;
+							styleTutar = styleRedTutarOdd;
+							styleHataCenter = styleRedCenterOddDay;
+						}
 					} else {
 						styleCenter = styleEvenCenter;
 						styleStrDay = styleCenterEvenDay;
 						styleGenel = styleEven;
 						styleTutar = styleTutarEven;
+						if (hataVar) {
+							styleCenter = styleRedEvenCenter;
+							styleGenel = styleRedEven;
+							styleTutar = styleRedTutarEven;
+							styleHataCenter = styleRedCenterEvenDay;
+						}
+					}
 
-					}
-					if (hataVar) {
-						styleTutar = styleTutarHata;
-						styleCenter = styleHataCenter;
-						styleGenel = styleHata;
-					}
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(++sira);
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
 					if (kimlikGoster) {
@@ -2012,7 +2039,12 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 							setCell(sheet, row, col++, styleGenel, denklestirmeBordro.getBordroToplamGunAdet());
 
 					}
-
+					if (hataliPuantajVar) {
+						String hataAciklama = "";
+						if (personelDenklestirme.isOnaylandi() == false)
+							hataAciklama = "Plan onaysız";
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(hataAciklama);
+					}
 					styleGenel = null;
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");
@@ -3282,6 +3314,18 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 
 	public void setOnayDurumGoster(boolean onayDurumGoster) {
 		this.onayDurumGoster = onayDurumGoster;
+	}
+
+	public Boolean getHataliPuantajVar() {
+		return hataliPuantajVar;
+	}
+
+	public void setHataliPuantajVar(Boolean hataliPuantajVar) {
+		this.hataliPuantajVar = hataliPuantajVar;
+	}
+
+	public void setNormalCalismaVardiya(Vardiya normalCalismaVardiya) {
+		this.normalCalismaVardiya = normalCalismaVardiya;
 	}
 
 }
