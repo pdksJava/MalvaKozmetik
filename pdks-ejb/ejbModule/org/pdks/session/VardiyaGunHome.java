@@ -6463,13 +6463,16 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							personelList = ortakIslemler.getKontratliSiraliPersonel(kontratliPerIdList, session);
 						else
 							personelList = (ArrayList<Personel>) PdksUtil.sortObjectStringAlanList(personelList, "getKontratliSortKey", null);
-						if (sirketIdMap.size() > 0 && sirketIdMap.size() < personelList.size()) {
-							List<Personel> perDigerList = new ArrayList<Personel>();
-							for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
-								Personel personel = (Personel) iterator.next();
-								if (!sirketIdMap.containsKey(personel.getId())) {
-									perDigerList.add(personel);
-									iterator.remove();
+
+						List<Personel> perDigerList = new ArrayList<Personel>();
+						if (ikRole == false && adminRole == false) {
+							if (sirketIdMap.size() > 0 && sirketIdMap.size() < personelList.size()) {
+								for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
+									Personel personel = (Personel) iterator.next();
+									if (!sirketIdMap.containsKey(personel.getId())) {
+										perDigerList.add(personel);
+										iterator.remove();
+									}
 								}
 							}
 							if (!perDigerList.isEmpty())
@@ -7043,7 +7046,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					veriGuncellendi = Boolean.TRUE;
 				}
 				if (tekrarOku) {
-					tekrarOku = denklestirmeAyDurum && !aylikPuantajList.isEmpty();
+					tekrarOku = (ikRole == false && adminRole == false) && denklestirmeAyDurum && !aylikPuantajList.isEmpty();
 					if (tekrarOku) {
 						aylikPuantajList.clear();
 						talepGunList.clear();
@@ -7265,6 +7268,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				modelGoster = ortakIslemler.getModelGoster(denklestirmeAy, session);
 			}
 		} catch (Exception es) {
+			logger.error(es);
 			ortakIslemler.setExceptionLog(null, es);
 		}
 		calismaPlanKilit = null;
@@ -9856,7 +9860,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							sicilNo = (String) veriLastMap.get("sicilNo");
 						if (yil > 0 && ay > 0 && aramaSecenekleri.getEkSaha3Id() != null) {
 							dateStr = String.valueOf(yil * 100 + ay) + "01";
-							perIdStr = "0";
+							if (doldurStr == null || !doldurStr.equalsIgnoreCase("F"))
+								perIdStr = "0";
+							else
+								donusAdres = planGirisiDurum ? linkAdres : "";
 							saveAramaSecenekleri = (AramaSecenekleri) aramaSecenekleri.clone();
 						}
 
