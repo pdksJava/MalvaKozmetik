@@ -197,6 +197,21 @@
 									</ui:fragment>
 
 								</TABLE>
+								<h:panelGrid columns="2" rendered="#{fazlaMesaiHesaplaHome.planTanimsizBolumList!=null}">
+
+									<s:decorate template="/layout/edit.xhtml">
+										<ui:define name="label">Plansız #{fazlaMesaiHesaplaHome.bolumAciklama}</ui:define>
+										<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.planTanimsizBolumId}">
+											<f:selectItem itemLabel="Lütfen seçiniz" />
+											<f:selectItems value="#{fazlaMesaiHesaplaHome.planTanimsizBolumList}" />
+											<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="denklestirmeDonemiTable,girisler" />
+										</h:selectOneMenu>
+									</s:decorate>
+									<a4j:commandButton value=" #{fazlaMesaiHesaplaHome.bolumAciklama} Plan Oluştur" action="#{fazlaMesaiHesaplaHome.bolumCalismaPlaniOlustur()}"
+										onclick="#{rich:component('wait')}.show()" reRender="onayPanel" rendered="#{fazlaMesaiHesaplaHome.planTanimsizBolumId!=null}"
+										oncomplete="#{rich:component('wait')}.hide(); " />
+								</h:panelGrid>
+
 							</c:if>
 							<c:if
 								test="#{fazlaMesaiHesaplaHome.denklestirmeAy!=null and (not empty fazlaMesaiHesaplaHome.aylikPuantajList or fazlaMesaiHesaplaHome.tumBolumPersonelleri!=null)}">

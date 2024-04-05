@@ -9847,6 +9847,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							tesisId = Long.parseLong((String) veriLastMap.get("tesisId"));
 							aramaSecenekleri.setTesisId(tesisId);
 						}
+						if (veriLastMap.containsKey("veriDoldur")) {
+							doldurStr = (String) veriLastMap.get("veriDoldur");
+
+						}
 
 						if ((ikRole) && veriLastMap.containsKey("sicilNo"))
 							sicilNo = (String) veriLastMap.get("sicilNo");
