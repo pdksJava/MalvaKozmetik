@@ -855,6 +855,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		String str = "";
 		if (seciliEkSaha4Id == null) {
 			if (planTanimsizBolumId != null) {
+
 				String sayfa = VardiyaGunHome.sayfaURL;
 				LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
 				lastMap.put("yil", "" + yil);
@@ -873,18 +874,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					ortakIslemler.saveLastParameter(lastMap, session);
 					Map<String, String> requestHeaderMap = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
 					adres = requestHeaderMap.containsKey("host") ? requestHeaderMap.get("host") : "";
-//					String strGizli = "yil=" + yil + "&ay=" + ay;
-//					if (!sadeceFazlaMesai)
-//						strGizli += "&sadeceFazlaMesai=" + sadeceFazlaMesai;
-//					strGizli += (hataliPuantajGoster != null && hataliPuantajGoster ? "&hataliPuantajGoster=" + hataliPuantajGoster : "");
-//					strGizli += (seciliEkSaha3Id != null ? "&gorevYeriId=" + seciliEkSaha3Id : "");
-//					strGizli += (seciliEkSaha4Id != null ? "&altBolumId=" + seciliEkSaha4Id : "");
-//					strGizli += (tesisId != null ? "&tesisId=" + tesisId : "");
-//					strGizli += (gorevTipiId != null ? "&gorevTipiId=" + gorevTipiId : "");
-//					strGizli += (sirket != null ? "&sirketId=" + sirket.getId() : "");
-//					strGizli += (PdksUtil.hasStringValue(sicilNo) ? "&sicilNo=" + sicilNo.trim() : "");
 					linkAdres = "<a href='http://" + adres + "/" + sayfaURL + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
-
+					seciliEkSaha3Id = planTanimsizBolumId;
+					saveLastParameter();
 				} catch (Exception e) {
 
 				}
