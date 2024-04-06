@@ -893,13 +893,13 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 						denklestirmeTasiyici.setDenklestirmeAy(denklestirmeAy);
 						list.add(denklestirmeTasiyici);
 					}
+					tatilGunleriMap = ortakIslemler.getTatilGunleri(perList, ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBaslangicTarih(), -1), ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBitisTarih(), 1), session);
 					ortakIslemler.personelDenklestirmeDuzenle(list, aylikPuantajDefault, tatilGunleriMap, session);
 				} catch (Exception ex) {
 					list = new ArrayList<PersonelDenklestirmeTasiyici>();
 					logger.equals(ex);
 					ex.printStackTrace();
 				}
-				tatilGunleriMap = ortakIslemler.getTatilGunleri(perList, ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBaslangicTarih(), -1), ortakIslemler.tariheGunEkleCikar(cal, denklestirmeDonemi.getBitisTarih(), 1), session);
 
 				HashMap<Long, Long> sirketMap = new HashMap<Long, Long>();
 				if (list.size() > 1) {
