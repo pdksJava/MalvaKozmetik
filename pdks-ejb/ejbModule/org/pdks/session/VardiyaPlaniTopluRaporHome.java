@@ -1215,7 +1215,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 						fazlaMesaiOde = personelDenklestirme.getFazlaMesaiOde() != null && personelDenklestirme.getFazlaMesaiOde();
 					if (!kimlikGoster)
 						kimlikGoster = PdksUtil.hasStringValue(personel.getPersonelKGS().getKimlikNo());
-					if (!yasalFazlaCalismaAsanSaat)
+					if (!yasalFazlaCalismaAsanSaat && personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir())
 						yasalFazlaCalismaAsanSaat = perCalismaModeli.isFazlaMesaiVarMi() && ucretiOdenenMesaiSure > 0.0d;
 
 					if (!sutIzniGoster)

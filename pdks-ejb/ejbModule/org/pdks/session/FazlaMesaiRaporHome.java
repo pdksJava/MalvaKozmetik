@@ -1050,8 +1050,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 						}
 						puantaj.setUcretiOdenenMesaiSure(ucretiOdenenMesaiSure);
-						if (!yasalFazlaCalismaAsanSaat)
-							yasalFazlaCalismaAsanSaat = ucretiOdenenMesaiSure > 0.0d;
+						if (!yasalFazlaCalismaAsanSaat && personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir())
+							yasalFazlaCalismaAsanSaat = puantaj.getCalismaModeli().isFazlaMesaiVarMi() && ucretiOdenenMesaiSure > 0.0d;
 						puantaj.setResmiTatilToplami(0d);
 						if (!fazlaMesaiHesapla)
 							aksamVardiyaSayisi = 0;
