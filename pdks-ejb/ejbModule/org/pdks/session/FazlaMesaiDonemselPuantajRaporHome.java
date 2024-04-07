@@ -1301,7 +1301,6 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				if (bordroPuantajEkranindaGoster)
 					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(dataList, session);
 
-				bordroVeriOlusturBasla(dataList, tatilMap);
 				for (AylikPuantaj dap : dataList) {
 					PersonelDenklestirme personelDenklestirme = dap.getPersonelDenklestirme();
 					dap.setPlanlananSure(personelDenklestirme.getPlanlanSure());
@@ -1323,6 +1322,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					gunAylikPuantaj = dap;
 
 				}
+				bordroVeriOlusturBasla(dataList, tatilMap);
 			}
 			setPuantajList(dataList);
 		}
@@ -1402,9 +1402,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		ucretliIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.ucretliIzinGunKod());
 		ucretsizIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.ucretsizIzinGunKod());
 		hastalikIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.hastalikIzinGunKod());
-		normalGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.normalGunKod());
+		bordroToplamGunKod  = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
 		haftaTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.haftaTatilGunKod());
 		resmiTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilGunKod());
+		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
 		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());
 		if (!devredenMesaiKod || !devredenBakiyeKod) {
 			for (AylikPuantaj ap : puantajList) {
