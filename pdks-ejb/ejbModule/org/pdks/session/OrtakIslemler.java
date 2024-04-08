@@ -15799,7 +15799,7 @@ public class OrtakIslemler implements Serializable {
 						if (!fazlaMesaiOde) {
 							try {
 								if (puantajData.getPersonelDenklestirme() != null && puantajData.getPersonelDenklestirme().getDenklestirmeAy() != null) {
-									fazlaMesaiOde = PdksUtil.tarihKarsilastirNumeric(tariheGunEkleCikar(cal, puantajData.getSonGun(), 1), personel.getIstenAyrilisTarihi()) != -1;
+									fazlaMesaiOde = PdksUtil.tarihKarsilastirNumeric(puantajData.getSonGun(), personel.getSskCikisTarihi()) != -1;
 								}
 							} catch (Exception e) {
 

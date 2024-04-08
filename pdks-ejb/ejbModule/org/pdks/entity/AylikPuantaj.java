@@ -885,8 +885,10 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		return ucretiOdenenMesaiSure;
 	}
 
-	public void setUcretiOdenenMesaiSure(Double ucretiOdenenMesaiSure) {
-		this.ucretiOdenenMesaiSure = ucretiOdenenMesaiSure;
+	public void setUcretiOdenenMesaiSure(Double value) {
+		if (value != null && value.doubleValue() != 0.0d)
+			logger.debug(value);
+		this.ucretiOdenenMesaiSure = value;
 	}
 
 	public boolean isVardiyaOlustu() {
