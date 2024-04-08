@@ -341,7 +341,7 @@ public class HareketGirisHome extends EntityHome<HareketKGS> implements Serializ
 			VardiyaGun vg = (VardiyaGun) iterator1.next();
 			Date zaman = vg.getVardiyaDate();
 			String zamanStr = PdksUtil.convertToDateString(zaman, formatStr);
-			if (!(hareketTarihKontrol && bugun.after(tarih)))
+			if (PdksUtil.getCanliSunucuDurum() && !(hareketTarihKontrol && bugun.after(tarih)))
 				continue;
 			PersonelKGS personel = vg.getPersonel().getPersonelKGS();
 			Boolean yaz = bugun.after(zaman) || authenticatedUser.isIK();

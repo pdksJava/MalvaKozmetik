@@ -1144,8 +1144,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 							logger.debug(puantaj.getPdksPersonel().getPdksSicilNo());
 					}
 
-					if (!resmiTatilVar)
-						resmiTatilVar = puantaj.getResmiTatilToplami() != 0.0d;
+
 					if (!vardiyalar.isEmpty())
 						ortakIslemler.puantajHaftalikPlanOlustur(Boolean.FALSE, null, vardiyalar, aylikPuantajSablon, puantaj);
 					if (personelDenklestirme == null)
@@ -1955,12 +1954,12 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 							else
 								ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 						}
-						if (resmiTatilVar)
-							setCell(sheet, row, col++, styleTutar, aylikPuantaj.getResmiTatilToplami());
-						if (haftaTatilVar)
-							setCell(sheet, row, col++, styleTutar, aylikPuantaj.getHaftaCalismaSuresi());
 
 					}
+					if (resmiTatilVar)
+						setCell(sheet, row, col++, styleTutar, aylikPuantaj.getResmiTatilToplami());
+					if (haftaTatilVar)
+						setCell(sheet, row, col++, styleTutar, aylikPuantaj.getHaftaCalismaSuresi());
 					if (devredenBakiyeKod) {
 						if (aylikPuantaj.isFazlaMesaiHesapla()) {
 							Cell devredenSureCell = setCell(sheet, row, col++, styleTutar, aylikPuantaj.getDevredenSure());

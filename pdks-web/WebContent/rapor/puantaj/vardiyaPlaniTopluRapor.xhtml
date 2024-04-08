@@ -437,53 +437,54 @@
 
 									</rich:column>
 
-									<c:if test="#{vardiyaPlaniTopluRaporHome.stajerSirket==false}">
-										<rich:column rendered="#{vardiyaPlaniTopluRaporHome.resmiTatilVar}"
-											style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
-											styleClass="#{aylikPuantaj.trSonucClass}">
-											<f:facet name="header">
-												<ui:fragment>
-													<h:outputText value="RÖM" id="rom" />
-													<rich:toolTip for="rom">
-														<SPAN class="rich-table-subheadercell">Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati</SPAN>
-													</rich:toolTip>
-												</ui:fragment>
-											</f:facet>
-											<ui:fragment rendered="#{aylikPuantaj.resmiTatilToplami!=0}">
-												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi==false}">
-													<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.resmiTatilToplami)}" />
-												</ui:fragment>
-												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi}">
-													<b> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.resmiTatilToplami)}" />
-													</b>
-												</ui:fragment>
+
+
+								</c:if>
+								<c:if test="#{vardiyaPlaniTopluRaporHome.stajerSirket==false}">
+									<rich:column rendered="#{vardiyaPlaniTopluRaporHome.resmiTatilVar}"
+										style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
+										styleClass="#{aylikPuantaj.trSonucClass}">
+										<f:facet name="header">
+											<ui:fragment>
+												<h:outputText value="RÖM" id="rom" />
+												<rich:toolTip for="rom">
+													<SPAN class="rich-table-subheadercell">Çalışanın bu listenin sonunda ücret olarak ödediğimiz resmi tatil mesai saati</SPAN>
+												</rich:toolTip>
 											</ui:fragment>
-
-										</rich:column>
-										<rich:column rendered="#{vardiyaPlaniTopluRaporHome.haftaTatilVar}"
-											style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
-											styleClass="#{aylikPuantaj.trSonucClass}">
-											<f:facet name="header">
-												<ui:fragment>
-													<h:outputText value="HTM" id="htm" />
-													<rich:toolTip for="htm">
-														<SPAN class="rich-table-subheadercell">Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati</SPAN>
-													</rich:toolTip>
-												</ui:fragment>
-											</f:facet>
-											<ui:fragment rendered="#{aylikPuantaj.haftaCalismaSuresi!=0}">
-												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi==false}">
-													<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.haftaCalismaSuresi)}" />
-												</ui:fragment>
-												<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi}">
-													<b> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.haftaCalismaSuresi)}" />
-													</b>
-												</ui:fragment>
+										</f:facet>
+										<ui:fragment rendered="#{aylikPuantaj.resmiTatilToplami!=0}">
+											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi==false}">
+												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.resmiTatilToplami)}" />
 											</ui:fragment>
+											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi}">
+												<b> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.resmiTatilToplami)}" />
+												</b>
+											</ui:fragment>
+										</ui:fragment>
 
-										</rich:column>
-									</c:if>
+									</rich:column>
+									<rich:column rendered="#{vardiyaPlaniTopluRaporHome.haftaTatilVar}"
+										style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
+										styleClass="#{aylikPuantaj.trSonucClass}">
+										<f:facet name="header">
+											<ui:fragment>
+												<h:outputText value="HTM" id="htm" />
+												<rich:toolTip for="htm">
+													<SPAN class="rich-table-subheadercell">Çalışanın bu listenin sonunda ücret olarak ödediğimiz hafta tatil mesai saati</SPAN>
+												</rich:toolTip>
+											</ui:fragment>
+										</f:facet>
+										<ui:fragment rendered="#{aylikPuantaj.haftaCalismaSuresi!=0}">
+											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi==false}">
+												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.haftaCalismaSuresi)}" />
+											</ui:fragment>
+											<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.erpAktarildi}">
+												<b> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(aylikPuantaj.haftaCalismaSuresi)}" />
+												</b>
+											</ui:fragment>
+										</ui:fragment>
 
+									</rich:column>
 								</c:if>
 								<rich:column rendered="#{vardiyaPlaniTopluRaporHome.devredenBakiyeKod}"
 									style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; font-weight: bold; text-align: center;color:black;"
