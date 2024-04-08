@@ -853,37 +853,46 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	 */
 	public String bolumCalismaPlaniOlustur() {
 		String str = "";
-		if (seciliEkSaha4Id == null) {
-			if (planTanimsizBolumId != null) {
 
-				String sayfa = VardiyaGunHome.sayfaURL;
-				LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
-				lastMap.put("yil", "" + yil);
-				lastMap.put("ay", "" + ay);
-				if (departmanId != null)
-					lastMap.put("departmanId", "" + departmanId);
-				if (sirketId != null)
-					lastMap.put("sirketId", "" + sirketId);
-				if (tesisId != null)
-					lastMap.put("tesisId", "" + tesisId);
-				if (planTanimsizBolumId != null)
-					lastMap.put("bolumId", "" + planTanimsizBolumId);
-				lastMap.put("veriDoldur", "F");
-				lastMap.put("sayfaURL", sayfa);
-				try {
-					ortakIslemler.saveLastParameter(lastMap, session);
-					Map<String, String> requestHeaderMap = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
-					adres = requestHeaderMap.containsKey("host") ? requestHeaderMap.get("host") : "";
-					linkAdres = "<a href='http://" + adres + "/" + sayfaURL + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
-					seciliEkSaha3Id = planTanimsizBolumId;
-					saveLastParameter();
-				} catch (Exception e) {
-
+		if (planTanimsizBolumId != null) {
+			String sayfa = VardiyaGunHome.sayfaURL;
+			LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
+			lastMap.put("yil", "" + yil);
+			lastMap.put("ay", "" + ay);
+			if (departmanId != null)
+				lastMap.put("departmanId", "" + departmanId);
+			if (sirketId != null)
+				lastMap.put("sirketId", "" + sirketId);
+			if (tesisId != null)
+				lastMap.put("tesisId", "" + tesisId);
+			if (ekSaha4Tanim != null) {
+				if (seciliEkSaha3Id != null) {
+					lastMap.put("bolumId", "" + seciliEkSaha3Id);
+					lastMap.put("altBolumId", "" + planTanimsizBolumId);
 				}
-				str = MenuItemConstant.vardiyaPlani;
-			} else
-				PdksUtil.addMessageWarn("Plansız " + bolumAciklama + " seçiniz!");
+			} else if (planTanimsizBolumId != null)
+				lastMap.put("bolumId", "" + planTanimsizBolumId);
+			lastMap.put("veriDoldur", "F");
+			lastMap.put("sayfaURL", sayfa);
+			try {
+				ortakIslemler.saveLastParameter(lastMap, session);
+				Map<String, String> requestHeaderMap = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
+				adres = requestHeaderMap.containsKey("host") ? requestHeaderMap.get("host") : "";
+				linkAdres = "<a href='http://" + adres + "/" + sayfaURL + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
+				if (ekSaha4Tanim == null)
+					seciliEkSaha3Id = planTanimsizBolumId;
+				else
+					seciliEkSaha4Id = planTanimsizBolumId;
+				saveLastParameter();
+			} catch (Exception e) {
 
+			}
+			str = MenuItemConstant.vardiyaPlani;
+		} else {
+			if (ekSaha4Tanim == null)
+				PdksUtil.addMessageWarn("Plansız " + bolumAciklama + " seçiniz!");
+			else
+				PdksUtil.addMessageWarn("Plansız " + ekSaha4Tanim.getAciklama() + " seçiniz!");
 		}
 
 		return str;
@@ -5578,7 +5587,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
 				}
 				if (planTanimsizBolumList != null) {
-					boolean bolumVar = false;
 					for (Iterator iterator = planTanimsizBolumList.iterator(); iterator.hasNext();) {
 						SelectItem pl = (SelectItem) iterator.next();
 						boolean sil = false;
@@ -5590,12 +5598,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						}
 						if (sil)
 							iterator.remove();
-						else if (planTanimsizBolumId != null && pl.getValue().equals(planTanimsizBolumId))
-							bolumVar = true;
+
 					}
-					if (!bolumVar) {
+					if (planTanimsizBolumList.size() == 1)
+						planTanimsizBolumId = (Long) planTanimsizBolumList.get(0).getValue();
+					else
 						planTanimsizBolumId = null;
-					}
 					if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
 						planTanimsizBolumList = null;
 				}
@@ -5626,8 +5634,39 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 			if (!eski)
 				seciliEkSaha4Id = -1L;
-		} else
+
+			if ((ikRole || adminRole) & denklestirmeAyDurum && altBolumList != null) {
+				planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiAltBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
+				if (planTanimsizBolumList != null) {
+					for (Iterator iterator = planTanimsizBolumList.iterator(); iterator.hasNext();) {
+						SelectItem pl = (SelectItem) iterator.next();
+						boolean sil = false;
+						for (SelectItem st : altBolumList) {
+							if (st.getValue().equals(pl.getValue())) {
+								sil = true;
+								break;
+							}
+						}
+						if (sil)
+							iterator.remove();
+
+					}
+					if (planTanimsizBolumList.size() == 1)
+						planTanimsizBolumId = (Long) planTanimsizBolumList.get(0).getValue();
+					else
+						planTanimsizBolumId = null;
+					if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
+						planTanimsizBolumList = null;
+				}
+			}
+
+			aylikPuantajList.clear();
+
+		} else {
+			altBolumList = null;
 			seciliEkSaha4Id = null;
+		}
+
 		return "";
 	}
 
