@@ -1144,7 +1144,8 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 							logger.debug(puantaj.getPdksPersonel().getPdksSicilNo());
 					}
 
-
+					if (!resmiTatilVar)
+						resmiTatilVar = puantaj.getResmiTatilToplami() != 0.0d;
 					if (!vardiyalar.isEmpty())
 						ortakIslemler.puantajHaftalikPlanOlustur(Boolean.FALSE, null, vardiyalar, aylikPuantajSablon, puantaj);
 					if (personelDenklestirme == null)
