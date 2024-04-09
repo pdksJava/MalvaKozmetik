@@ -104,7 +104,8 @@ public class Personel extends BaseObject {
 
 	public Personel() {
 		super();
-		this.setDegisti(true);
+		this.setPdks(true);
+		this.setDegisti(false);
 	}
 
 	@Column(name = "VERSION")

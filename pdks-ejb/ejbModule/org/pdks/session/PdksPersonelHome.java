@@ -1458,13 +1458,16 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ePosta = "";
 		eskiKullanici = null;
 		kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
-		Departman pdksDepartman = null;
+ 		String tumPersonelDenklestirme = ortakIslemler.getParameterKey("tumPersonelDenklestirme");
+ 		Departman pdksDepartman = null;
 		ikinciYoneticiManuelTanimla = Boolean.FALSE;
 		bosDepartman = null;
 		bosDepartmanKodu = ortakIslemler.getParameterKey("bosDepartmanKodu");
 		Personel pdksPersonel = personelView.getPdksPersonel();
 		if (pdksPersonel == null) {
 			pdksPersonel = new Personel();
+			if (!tumPersonelDenklestirme.equals(""))
+				pdksPersonel.setPdks(tumPersonelDenklestirme.equals("1"));
 			personelView.setPdksPersonel(pdksPersonel);
 		}
 

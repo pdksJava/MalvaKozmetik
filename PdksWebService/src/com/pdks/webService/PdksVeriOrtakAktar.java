@@ -2718,10 +2718,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 		}
 		Date lastDate = getTarih(LAST_DATE, FORMAT_DATE);
 		Personel personelTest = new Personel();
+
 		String personelERPGuncelleme = mailMap.containsKey("personelERPOku") ? (String) mailMap.get("personelERPOku") : "";
 		boolean personelERPGuncellemeDurum = personelERPGuncelleme != null && personelERPGuncelleme.equalsIgnoreCase("M");
 		List<CalismaModeli> modelList = new ArrayList<CalismaModeli>();
 		List<VardiyaSablonu> sablonList = new ArrayList<VardiyaSablonu>();
+		String tumPersonelDenklestirme = mailMap.containsKey("tumPersonelDenklestirme") ? (String) mailMap.get("tumPersonelDenklestirme") : "";
 		for (String personelNo : personelList) {
 			kidemHataList.clear();
 			boolean calisiyor = false;
@@ -3011,6 +3013,8 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 					if (personel == null) {
 						personel = new Personel();
+						if (!tumPersonelDenklestirme.equals(""))
+							personel.setPdks(tumPersonelDenklestirme.equals("1"));
 						personel.setDegisti(Boolean.TRUE);
 						personel.setDurum(Boolean.TRUE);
 						if (!yoneticiPersonel || yoneticiMailKontrol.equals("1"))

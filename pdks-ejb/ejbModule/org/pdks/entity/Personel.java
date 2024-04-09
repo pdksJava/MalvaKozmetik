@@ -111,6 +111,7 @@ public class Personel extends BaseObject {
 
 	public Personel() {
 		super();
+		this.setPdks(true);
 	}
 
 	@Column(name = "VERSION")
