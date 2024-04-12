@@ -152,32 +152,40 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 		}
 		ortakIslemler.fazlaMesaiSaatiAyarla(vardiyaGunMap);
+		boolean haftaTatilDurum = ortakIslemler.getParameterKey("haftaTatilDurum").equals("1");
 		vardiyaGunMap = null;
 		for (AylikPuantaj ap : puantajList) {
 			VardiyaGun sonVardiyaGun = null;
 			for (VardiyaGun vg : ap.getVardiyalar()) {
-				if (vg.getVardiya() != null)
+				vg.setFiiliHesapla(Boolean.FALSE);
+				if (vg.getVardiya() != null) {
 					sonVardiyaGun = vg;
+				}
+
 			}
 			for (VardiyaGun vg : ap.getVardiyalar()) {
 				Vardiya vardiya = vg.getVardiya();
 				if (vardiya == null)
 					continue;
-
-				if (vg.getIzin() != null || vardiya.isCalisma() == false)
+ 				if (vg.getIzin() != null || vardiya.isCalisma() == false)
 					continue;
 				if (!vardiyaNetCalismaSuresiMap.containsKey(vardiya.getId()))
 					vardiyaNetCalismaSuresiMap.put(vardiya.getId(), vardiya.getNetCalismaSuresi());
 				Vardiya islemVardiya = vg.getIslemVardiya();
-				PersonelView personelView = vg.getPdksPersonel().getPersonelView();
-				ortakIslemler.manuelHareketEkle(vg, new HareketKGS(personelView, manuelGiris, islemVardiya.getVardiyaBasZaman()), new HareketKGS(personelView, manuelCikis, islemVardiya.getVardiyaBitZaman()));
+				vg.setFiiliHesapla(vg.getTatil() != null);
 				if (islemVardiya.getBasSaat() > islemVardiya.getBitSaat() && vg.getSonrakiVardiyaGun() != null && vg.getTatil() == null) {
-					if (tatilGunleriMap.containsKey(vg.getSonrakiVardiyaGun().getVardiyaDateStr()))
-						vg.setTatil(tatilGunleriMap.get(vg.getSonrakiVardiyaGun().getVardiyaDateStr()));
+					VardiyaGun sonrakiVardiyaGun = vg.getSonrakiVardiyaGun();
+					if (tatilGunleriMap.containsKey(sonrakiVardiyaGun.getVardiyaDateStr())) {
+						vg.setTatil(tatilGunleriMap.get(sonrakiVardiyaGun.getVardiyaDateStr()));
+						vg.setFiiliHesapla(vg.getTatil() != null);
+					} else if (haftaTatilDurum)
+						vg.setFiiliHesapla(sonrakiVardiyaGun.getVardiya().isHaftaTatil());
 
 				}
-
-				vg.setFiiliHesapla(true);
+				if (vg.isFiiliHesapla()) {
+					PersonelView personelView = vg.getPdksPersonel().getPersonelView();
+					ortakIslemler.manuelHareketEkle(vg, new HareketKGS(personelView, manuelGiris, islemVardiya.getVardiyaBasZaman()), new HareketKGS(personelView, manuelCikis, islemVardiya.getVardiyaBitZaman()));
+				}
 			}
 			try {
 				PersonelDenklestirmeTasiyici denklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
@@ -191,7 +199,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					dataDenkMap.put("personelDenklestirme", dt);
 					dt.setToplamCalisilacakZaman(0);
 					dt.setToplamCalisilanZaman(0);
-
 					ortakIslemler.personelVardiyaDenklestir(dataDenkMap, session);
 					resmiTatilSure += dt.getResmiTatilMesai();
 

@@ -16389,10 +16389,26 @@ public class OrtakIslemler implements Serializable {
 					vardiyaGun.setGecenAyResmiTatilSure(0);
 					if (vardiyaGun.getVardiya() == null)
 						continue;
+
 					VardiyaGun vardiyaHaftaTatil = null;
 					boolean fazlaMesaiOnayla = calismaModeli.isFazlaMesaiVarMi() == false && vardiyaGun.getVardiya().isCalisma() == false;
 					try {
 						Vardiya vardiya = vardiyaGun.getIslemVardiya();
+						if (vardiyaGun.isFiiliHesapla() == false) {
+							if (vardiya.isCalisma() && vardiyaGun.getIzin() == null) {
+								if (vardiyaNetCalismaSuresiMap == null)
+									vardiyaNetCalismaSuresiMap = new HashMap<Long, Double>();
+								if (vardiyaNetCalismaSuresiMap.containsKey(vardiya.getId())) {
+									vardiyaGun.setCalismaSuresi(vardiyaNetCalismaSuresiMap.get(vardiya.getId()));
+								} else {
+									Double value = vardiya.getNetCalismaSuresi();
+									vardiyaGun.setCalismaSuresi(value);
+									vardiyaNetCalismaSuresiMap.put(vardiya.getId(), value);
+								}
+							}
+
+							continue;
+						}
 						String key = vGun;
 						if (gunMap != null)
 							vardiyaGun.setAyinGunu(gunMap.get(key));
@@ -17851,7 +17867,7 @@ public class OrtakIslemler implements Serializable {
 			String donem = denklestirmeAy != null ? String.valueOf(denklestirmeAy.getYil() * 100 + denklestirmeAy.getAy()) : null;
 			for (Iterator<VardiyaGun> iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 				VardiyaGun vardiyaGun = iterator.next();
-
+				vardiyaGun.setFiiliHesapla(Boolean.TRUE);
 				vardiyaGun.setZamanGelmedi(Boolean.FALSE);
 				// Fazla mesailer vardiya gününe ekleniyor
 				vardiyaGun.setFazlaMesailer(null);
