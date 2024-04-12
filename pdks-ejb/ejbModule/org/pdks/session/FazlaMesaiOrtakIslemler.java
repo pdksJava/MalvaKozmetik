@@ -2590,6 +2590,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 */
 	public AylikPuantaj getAylikPuantaj(int ay, int yil, DepartmanDenklestirmeDonemi denklestirmeDonemi, Session session) {
 		AylikPuantaj aylikPuantaj = new AylikPuantaj();
+		if (denklestirmeDonemi == null)
+			denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 		if (yil > 0) {
 
 			aylikPuantaj.setAy(ay);
