@@ -72,7 +72,7 @@ public class VardiyaGun extends BaseObject {
 	private int beklemeSuresi = 6;
 	private Double calismaSuaSaati = PersonelDenklestirme.getCalismaSaatiSua();
 	private Boolean izinHaftaTatilDurum;
-	private boolean hareketHatali = Boolean.FALSE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
+	private boolean hareketHatali = Boolean.FALSE, planHareketEkle = Boolean.TRUE, kullaniciYetkili = Boolean.TRUE, zamanGuncelle = Boolean.TRUE, zamanGelmedi = Boolean.FALSE;
 	private boolean fazlaMesaiTalepOnayliDurum = Boolean.FALSE, fazlaMesaiTalepDurum = Boolean.FALSE, ayarlamaBitti = false;
 	private double calismaSuresi = 0, normalSure = 0, resmiTatilSure = 0, haftaTatilDigerSure = 0, gecenAyResmiTatilSure = 0, aksamKatSayisi = 0d, aksamVardiyaSaatSayisi = 0d;
 	private double calisilmayanAksamSure = 0, fazlaMesaiSure = 0, bayramCalismaSuresi = 0, haftaCalismaSuresi = 0d, yasalMaxSure = 11.0d;
@@ -2311,6 +2311,15 @@ public class VardiyaGun extends BaseObject {
 
 	public void setYasalMaxSure(double yasalMaxSure) {
 		this.yasalMaxSure = yasalMaxSure;
+	}
+
+	@Transient
+	public boolean isPlanHareketEkle() {
+		return planHareketEkle;
+	}
+
+	public void setPlanHareketEkle(boolean planHareketEkle) {
+		this.planHareketEkle = planHareketEkle;
 	}
 
 }

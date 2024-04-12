@@ -81,6 +81,25 @@ public class HareketKGS implements Serializable, Cloneable {
 	protected boolean checkBoxDurum;
 	protected String style = VardiyaGun.STYLE_CLASS_ODD, islemYapan = "";
 
+	public HareketKGS() {
+		super();
+
+	}
+
+	/**
+	 * @param personelView
+	 * @param kapiView
+	 * @param zaman
+	 */
+	public HareketKGS(PersonelView personelView, KapiView kapiView, Date zaman) {
+		super();
+		this.personel = personelView;
+		this.setKapiView(kapiView);
+
+		this.setZaman(zaman);
+		this.setId(SANAL_HAREKET + "_" + personel.getSicilNo() + "_" + kapiView.getId() + "_" + zaman.getTime());
+	}
+
 	@Id
 	@Column(name = COLUMN_NAME_ID)
 	public String getId() {

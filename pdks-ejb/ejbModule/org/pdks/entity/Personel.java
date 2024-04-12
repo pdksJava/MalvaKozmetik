@@ -96,6 +96,7 @@ public class Personel extends BaseObject {
 	private VardiyaSablonu workSablon;
 	private PersonelIzin personelIzin;
 	private PersonelExtra personelExtra;
+	private PersonelView personelView;
 	private MailGrubu mailGrubuCC, mailGrubuBCC, hareketMailGrubu;
 	private String emailCC = "", emailBCC = "", hareketMail = "";
 	private List<PersonelIzin> personelIzinList;
@@ -1046,6 +1047,20 @@ public class Personel extends BaseObject {
 	@Transient
 	public Personel getPdksPersonel() {
 		return this;
+	}
+
+	@Transient
+	public PersonelView getPersonelView() {
+		if (personelView == null) {
+			personelView = new PersonelView();
+			personelView.setPdksPersonel(this);
+			personelView.setPersonelKGS(personelKGS);
+			personelView.setId(personelKGS.getId());
+			personelView.setAdi(this.getAd());
+			personelView.setSoyadi(this.getSoyad());
+			personelView.setKgsSicilNo(this.getPdksSicilNo());
+		}
+		return personelView;
 	}
 
 	public static String getIseGirisTarihiColumn() {

@@ -45,7 +45,10 @@ import org.pdks.entity.CalismaModeliAy;
 import org.pdks.entity.DenklestirmeAy;
 import org.pdks.entity.Departman;
 import org.pdks.entity.DepartmanDenklestirmeDonemi;
+import org.pdks.entity.HareketKGS;
 import org.pdks.entity.IzinTipi;
+import org.pdks.entity.Kapi;
+import org.pdks.entity.KapiView;
 import org.pdks.entity.Liste;
 import org.pdks.entity.MenuItem;
 import org.pdks.entity.Personel;
@@ -53,8 +56,10 @@ import org.pdks.entity.PersonelDenklestirme;
 import org.pdks.entity.PersonelDenklestirmeBordro;
 import org.pdks.entity.PersonelDenklestirmeBordroDetay;
 import org.pdks.entity.PersonelDenklestirmeDinamikAlan;
+import org.pdks.entity.PersonelDenklestirmeTasiyici;
 import org.pdks.entity.PersonelIzin;
 import org.pdks.entity.PersonelKGS;
+import org.pdks.entity.PersonelView;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
 import org.pdks.entity.Tatil;
@@ -63,6 +68,7 @@ import org.pdks.entity.VardiyaGun;
 import org.pdks.entity.VardiyaHafta;
 import org.pdks.entity.VardiyaPlan;
 import org.pdks.entity.VardiyaSaat;
+import org.pdks.entity.YemekIzin;
 import org.pdks.erp.action.PdksNoSapController;
 import org.pdks.erp.action.PdksSap3Controller;
 import org.pdks.erp.action.PdksSapController;
@@ -110,6 +116,102 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	HashMap<String, MenuItem> menuItemMap = new HashMap<String, MenuItem>();
 	@In(required = false)
 	FacesMessages facesMessages;
+
+	/**
+	 * @param dataMap
+	 * @param session
+	 */
+	public void calismaPlaniDenklestir(LinkedHashMap<String, Object> dataMap, Session session) {
+		List<AylikPuantaj> puantajList = dataMap.containsKey("aylikPuantajList") ? (List<AylikPuantaj>) dataMap.get("aylikPuantajList") : new ArrayList<AylikPuantaj>();
+		KapiView manuelGiris = dataMap.containsKey("manuelGirisKapi") ? (KapiView) dataMap.get("manuelGirisKapi") : null;
+		KapiView manuelCikis = dataMap.containsKey("manuelCikisKapi") ? (KapiView) dataMap.get("manuelCikisKapi") : null;
+		if (manuelGiris == null && manuelCikis == null) {
+			HashMap<String, KapiView> manuelKapiMap = ortakIslemler.getManuelKapiMap(null, session);
+			manuelGiris = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
+			manuelCikis = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
+			manuelKapiMap = null;
+		}
+		Date basTarih = dataMap.containsKey("basTarih") ? (Date) dataMap.get("basTarih") : null;
+		Date bitTarih = dataMap.containsKey("bitTarih") ? (Date) dataMap.get("bitTarih") : null;
+		Vardiya normalCalismaVardiya = dataMap.containsKey("normalCalismaVardiya") ? (Vardiya) dataMap.get("normalCalismaVardiya") : null;
+		Boolean denklestirmeAyDurum = dataMap.containsKey("denklestirmeAyDurum") ? (Boolean) dataMap.get("denklestirmeAyDurum") : false;
+		TreeMap<String, Tatil> tatilGunleriMap = dataMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) dataMap.get("tatilGunleriMap") : null;
+		List<YemekIzin> yemekList = ortakIslemler.getYemekList(basTarih, bitTarih, session);
+		LinkedHashMap<String, Object> dataDenkMap = new LinkedHashMap<String, Object>();
+		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = new HashMap<Long, Double>();
+		dataDenkMap.put("yemekList", yemekList);
+		dataDenkMap.put("tatilGunleriMap", tatilGunleriMap);
+		dataDenkMap.put("girisView", manuelGiris);
+		dataDenkMap.put("loginUser", authenticatedUser);
+		dataDenkMap.put("sistemUser", ortakIslemler.getSistemAdminUser(session));
+		dataDenkMap.put("vardiyaNetCalismaSuresiMap", vardiyaNetCalismaSuresiMap);
+		TreeMap<String, VardiyaGun> vardiyaGunMap = new TreeMap<String, VardiyaGun>();
+		for (AylikPuantaj ap : puantajList) {
+			for (VardiyaGun vg : ap.getVardiyalar()) {
+				vardiyaGunMap.put(vg.getVardiyaKeyStr(), vg);
+			}
+		}
+		ortakIslemler.fazlaMesaiSaatiAyarla(vardiyaGunMap);
+		vardiyaGunMap = null;
+		for (AylikPuantaj ap : puantajList) {
+			VardiyaGun sonVardiyaGun = null;
+			for (VardiyaGun vg : ap.getVardiyalar()) {
+				if (vg.getVardiya() != null)
+					sonVardiyaGun = vg;
+			}
+			for (VardiyaGun vg : ap.getVardiyalar()) {
+				Vardiya vardiya = vg.getVardiya();
+				if (vardiya == null)
+					continue;
+
+				if (vg.getIzin() != null || vardiya.isCalisma() == false)
+					continue;
+				if (!vardiyaNetCalismaSuresiMap.containsKey(vardiya.getId()))
+					vardiyaNetCalismaSuresiMap.put(vardiya.getId(), vardiya.getNetCalismaSuresi());
+				Vardiya islemVardiya = vg.getIslemVardiya();
+				PersonelView personelView = vg.getPdksPersonel().getPersonelView();
+				ortakIslemler.manuelHareketEkle(vg, new HareketKGS(personelView, manuelGiris, islemVardiya.getVardiyaBasZaman()), new HareketKGS(personelView, manuelCikis, islemVardiya.getVardiyaBitZaman()));
+				if (islemVardiya.getBasSaat() > islemVardiya.getBitSaat() && vg.getSonrakiVardiyaGun() != null && vg.getTatil() == null) {
+					if (tatilGunleriMap.containsKey(vg.getSonrakiVardiyaGun().getVardiyaDateStr()))
+						vg.setTatil(tatilGunleriMap.get(vg.getSonrakiVardiyaGun().getVardiyaDateStr()));
+
+				}
+
+				vg.setFiiliHesapla(true);
+			}
+			try {
+				PersonelDenklestirmeTasiyici denklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
+				denklestirmeTasiyici.setToplamCalisilacakZaman(0);
+				denklestirmeTasiyici.setToplamCalisilanZaman(0);
+				double resmiTatilSure = 0.0d;
+				for (VardiyaHafta vh : ap.getVardiyaHaftaList()) {
+					PersonelDenklestirmeTasiyici dt = new PersonelDenklestirmeTasiyici(ap);
+					dt.setSonVardiyaGun(sonVardiyaGun);
+					dt.setVardiyalar(vh.getVardiyaGunler());
+					dataDenkMap.put("personelDenklestirme", dt);
+					dt.setToplamCalisilacakZaman(0);
+					dt.setToplamCalisilanZaman(0);
+
+					ortakIslemler.personelVardiyaDenklestir(dataDenkMap, session);
+					resmiTatilSure += dt.getResmiTatilMesai();
+
+					denklestirmeTasiyici.addToplamCalisilacakZaman(dt.getToplamCalisilacakZaman());
+					if (dt.getToplamCalisilanZaman() > 0.0d)
+						denklestirmeTasiyici.addToplamCalisilanZaman(null, dt.getToplamCalisilanZaman());
+
+				}
+				ap.setFazlaMesaiHesapla(false);
+				ortakIslemler.aylikPlanSureHesapla(true, normalCalismaVardiya, true, ap, denklestirmeAyDurum, tatilGunleriMap, session);
+				denklestirmeTasiyici.setResmiTatilMesai(resmiTatilSure);
+
+			} catch (Exception exy) {
+				logger.error(exy);
+				exy.printStackTrace();
+			}
+
+		}
+
+	}
 
 	/**
 	 * @param sirket

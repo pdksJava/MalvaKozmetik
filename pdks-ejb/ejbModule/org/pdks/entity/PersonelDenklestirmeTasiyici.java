@@ -57,6 +57,17 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 	private CalismaModeliAy calismaModeliAy;
 	private Integer version = 0;
 
+	public PersonelDenklestirmeTasiyici(AylikPuantaj ap) {
+		super();
+		PersonelDenklestirme pd = ap.getPersonelDenklestirme();
+		if (pd != null) {
+			this.setCalismaModeliAy(pd.getCalismaModeliAy());
+			this.setDenklestirmeAy(pd.getDenklestirmeAy());
+		}
+		this.setCalismaModeli(ap.getCalismaModeli());
+		this.setPersonel(ap.getPdksPersonel());
+	}
+
 	public PersonelDenklestirmeTasiyici() {
 		super();
 	}

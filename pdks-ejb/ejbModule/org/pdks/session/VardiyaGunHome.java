@@ -5980,7 +5980,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 			denklestirmeAy.setModeller(modelList);
 			fields.clear();
-
 			Calendar cal = Calendar.getInstance();
 			cal.set(Calendar.DATE, 1);
 			cal.set(Calendar.MONTH, ay - 1);
@@ -7114,6 +7113,70 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			List<AylikPuantaj> aylikPuantajAllList = new ArrayList<AylikPuantaj>();
 			Long userId = loginUser.getPdksPersonel().getId();
 			boolean kullaniciYonetici = loginUser.isYonetici() || loginUser.isSuperVisor() || loginUser.isProjeMuduru() || loginUser.isDirektorSuperVisor();
+			calismaPlaniDenklestir(denklestirmeDonemi);
+
+			// String bayramEkle = ortakIslemler.getParameterKey("bayramEkle");
+			// boolean ekleDurum = bayramEkle != null && bayramEkle.equals("+");
+			// List<YemekIzin> yemekList = ortakIslemler.getYemekList(denklestirmeDonemi.getBaslangicTarih(), denklestirmeDonemi.getBitisTarih(), session);
+			// LinkedHashMap<String, Object> dataDenkMap = new LinkedHashMap<String, Object>();
+			// HashMap<Long, Double> vardiyaNetCalismaSuresiMap = new HashMap<Long, Double>();
+			// dataDenkMap.put("yemekList", yemekList);
+			// dataDenkMap.put("tatilGunleriMap", tatilGunleriMap);
+			// dataDenkMap.put("girisView", manuelGiris);
+			// dataDenkMap.put("loginUser", authenticatedUser);
+			// dataDenkMap.put("sistemUser", ortakIslemler.getSistemAdminUser(session));
+			// dataDenkMap.put("vardiyaNetCalismaSuresiMap", vardiyaNetCalismaSuresiMap);
+			// for (AylikPuantaj ap : aylikPuantajList) {
+			// VardiyaGun sonVardiyaGun = null;
+			// for (VardiyaGun vg : ap.getVardiyalar()) {
+			// Vardiya vardiya = vg.getVardiya();
+			// if (vardiya == null)
+			// continue;
+			// if (sonVardiyaGun == null || vg.isAyinGunu() == false)
+			// sonVardiyaGun = vg;
+			// if (vg.isAyinGunu() == false || vg.getIzin() != null || vardiya.isCalisma() == false)
+			// continue;
+			// if (!vardiyaNetCalismaSuresiMap.containsKey(vardiya.getId()))
+			// vardiyaNetCalismaSuresiMap.put(vardiya.getId(), vardiya.getNetCalismaSuresi());
+			// ortakIslemler.manuelHareketEkle(vg, manuelGirisHareket, manuelCikisHareket);
+			// if (vg.getTatil() != null)
+			// ortakIslemler.bayramSanalHareketiEkle(vg, yemekList, ekleDurum);
+			// vg.setFiiliHesapla(true);
+			// }
+			// try {
+			// PersonelDenklestirmeTasiyici denklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
+			// denklestirmeTasiyici.setToplamCalisilacakZaman(0);
+			// denklestirmeTasiyici.setToplamCalisilanZaman(0);
+			// double resmiTatilSure = 0.0d;
+			// for (VardiyaHafta vh : ap.getVardiyaHaftaList()) {
+			// PersonelDenklestirmeTasiyici dt = new PersonelDenklestirmeTasiyici(ap);
+			// dt.setSonVardiyaGun(sonVardiyaGun);
+			// dt.setVardiyalar(vh.getVardiyaGunler());
+			// dataDenkMap.put("personelDenklestirme", dt);
+			// dt.setToplamCalisilacakZaman(0);
+			// dt.setToplamCalisilanZaman(0);
+			//
+			// ortakIslemler.personelVardiyaDenklestir(dataDenkMap, session);
+			// resmiTatilSure += dt.getResmiTatilMesai();
+			//
+			// denklestirmeTasiyici.addToplamCalisilacakZaman(dt.getToplamCalisilacakZaman());
+			// if (dt.getToplamCalisilanZaman() > 0.0d)
+			// denklestirmeTasiyici.addToplamCalisilanZaman(null, dt.getToplamCalisilanZaman());
+			//
+			// }
+			// ap.setFazlaMesaiHesapla(false);
+			// ortakIslemler.aylikPlanSureHesapla(true, getNormalCalismaVardiya(), true, ap, denklestirmeAyDurum, tatilGunleriMap, session);
+			//
+			// denklestirmeTasiyici.setResmiTatilMesai(resmiTatilSure);
+			// if (denklestirmeTasiyici.getDenklestirmeAy() != null) {
+			//
+			// }
+			// } catch (Exception exy) {
+			// logger.error(exy);
+			// exy.printStackTrace();
+			// }
+			//
+			// }
 			for (Iterator iterator = aylikPuantajList.iterator(); iterator.hasNext();) {
 				AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 				if (!kullaniciYonetici || !aylikPuantaj.getPdksPersonel().getId().equals(userId)) {
@@ -7287,6 +7350,22 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 		}
 		return kontrolDurum;
+	}
+
+	/**
+	 * @param denklestirmeDonemi
+	 */
+	private void calismaPlaniDenklestir(DepartmanDenklestirmeDonemi denklestirmeDonemi) {
+		LinkedHashMap<String, Object> dataMap = new LinkedHashMap<String, Object>();
+		dataMap.put("aylikPuantajList", aylikPuantajList);
+		dataMap.put("manuelGirisKapi", manuelGiris);
+		dataMap.put("manuelCikisKapi", manuelCikis);
+		dataMap.put("basTarih", denklestirmeDonemi.getBaslangicTarih());
+		dataMap.put("bitTarih", denklestirmeDonemi.getBitisTarih());
+		dataMap.put("normalCalismaVardiya", getNormalCalismaVardiya());
+		dataMap.put("denklestirmeAyDurum", denklestirmeAyDurum);
+		dataMap.put("tatilGunleriMap", tatilGunleriMap);
+		fazlaMesaiOrtakIslemler.calismaPlaniDenklestir(dataMap, session);
 	}
 
 	/**
@@ -9528,8 +9607,19 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		tumBolumPersonelleri = null;
 		bordroPuantajEkranindaGoster = false;
 		linkBordroAdres = null;
+
 		aylikVardiyaPlanGiris("vardiyaPlani", true);
 
+	}
+
+	/**
+	 * @return
+	 */
+	private void setManuelKapi() {
+		HashMap<String, KapiView> manuelKapiMap = ortakIslemler.getManuelKapiMap(null, session);
+		manuelGiris = manuelKapiMap.get(Kapi.TIPI_KODU_GIRIS);
+		manuelCikis = manuelKapiMap.get(Kapi.TIPI_KODU_CIKIS);
+		manuelKapiMap = null;
 	}
 
 	/**
@@ -9712,6 +9802,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
+		setManuelKapi();
 		bordroAlanKapat();
 		seciliBolum = null;
 		seciliAltBolum = null;
