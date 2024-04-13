@@ -16276,6 +16276,7 @@ public class OrtakIslemler implements Serializable {
 		TreeMap<String, Tatil> tatilGunleriMap = dataDenkMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) dataDenkMap.get("tatilGunleriMap") : null;
 		List<YemekIzin> yemekGenelList = dataDenkMap.containsKey("yemekList") ? (List<YemekIzin>) dataDenkMap.get("yemekList") : null;
 		PersonelDenklestirmeTasiyici denklestirmeTasiyici = dataDenkMap.containsKey("personelDenklestirme") ? (PersonelDenklestirmeTasiyici) dataDenkMap.get("personelDenklestirme") : null;
+		Boolean updateSatus = dataDenkMap.containsKey("updateSatus") ? (Boolean) dataDenkMap.get("updateSatus") : Boolean.FALSE;
 		double resmiTatilMesai = 0;
 		VardiyaGun sonVardiyaGun = denklestirmeTasiyici.getSonVardiyaGun();
 		Double yemekMolasiYuzdesi = getYemekMolasiYuzdesi(denklestirmeTasiyici.getDenklestirmeAy(), session);
@@ -16700,8 +16701,11 @@ public class OrtakIslemler implements Serializable {
 												tatilMesaiMap.put(personelFazlaMesai.getHareketId(), personelFazlaMesai.getFazlaMesaiSaati());
 											if (personelFazlaMesai.getHareketId() != null && bitZaman.after(basZaman)) {
 												vardiyaGun.addPersonelFazlaMesai(personelFazlaMesai);
-												pdksEntityController.saveOrUpdate(session, entityManager, personelFazlaMesai);
-												flush = true;
+												if (updateSatus) {
+													pdksEntityController.saveOrUpdate(session, entityManager, personelFazlaMesai);
+													flush = true;
+												}
+
 											}
 
 										}
@@ -16933,8 +16937,10 @@ public class OrtakIslemler implements Serializable {
 								try {
 									if (personelFazlaMesai.getFazlaMesaiSaati() == null && personelFazlaMesai.getOnayDurum() == PersonelFazlaMesai.DURUM_ONAYLANDI) {
 										try {
-											pdksEntityController.deleteObject(session, entityManager, personelFazlaMesai);
-											flush = Boolean.TRUE;
+											if (updateSatus) {
+												pdksEntityController.deleteObject(session, entityManager, personelFazlaMesai);
+												flush = Boolean.TRUE;
+											}
 										} catch (Exception e) {
 										}
 
@@ -18162,7 +18168,7 @@ public class OrtakIslemler implements Serializable {
 				dataMap.put("yemekList", yemekList);
 				dataMap.put("tatilGunleriMap", tatilGunleriMap);
 				dataMap.put("manuelKapiMap", manuelKapiMap);
-
+				dataMap.put("updateSatus", Boolean.TRUE);
 				sonVardiyaGun = personelVardiyaDenklestir(mapBosVeriSil(dataMap, "personelVardiyaDenklestir"), session);
 				oncekiVardiyaGun = denklestirme.getOncekiVardiyaGun();
 				normalFazlaMesai += denklestirme.getNormalFazlaMesai();

@@ -134,13 +134,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		Date basTarih = dataMap.containsKey("basTarih") ? (Date) dataMap.get("basTarih") : null;
 		Date bitTarih = dataMap.containsKey("bitTarih") ? (Date) dataMap.get("bitTarih") : null;
 		Vardiya normalCalismaVardiya = dataMap.containsKey("normalCalismaVardiya") ? (Vardiya) dataMap.get("normalCalismaVardiya") : null;
-		Boolean denklestirmeAyDurum = dataMap.containsKey("denklestirmeAyDurum") ? (Boolean) dataMap.get("denklestirmeAyDurum") : false;
+//		Boolean denklestirmeAyDurum = dataMap.containsKey("denklestirmeAyDurum") ? (Boolean) dataMap.get("denklestirmeAyDurum") : false;
 		TreeMap<String, Tatil> tatilGunleriMap = dataMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) dataMap.get("tatilGunleriMap") : null;
 		boolean tatilVar = tatilGunleriMap != null && !tatilGunleriMap.isEmpty();
 		List<YemekIzin> yemekList = ortakIslemler.getYemekList(basTarih, bitTarih, session);
 		LinkedHashMap<String, Object> dataDenkMap = new LinkedHashMap<String, Object>();
 		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = new HashMap<Long, Double>();
 		Calendar cal = Calendar.getInstance();
+		dataDenkMap.put("updateSatus", Boolean.FALSE);
 		dataDenkMap.put("yemekList", yemekList);
 		dataDenkMap.put("tatilGunleriMap", tatilGunleriMap);
 		dataDenkMap.put("girisView", manuelGiris);
@@ -204,28 +205,29 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				}
 			}
 			try {
-				PersonelDenklestirmeTasiyici denklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
-				denklestirmeTasiyici.setToplamCalisilacakZaman(0);
-				denklestirmeTasiyici.setToplamCalisilanZaman(0);
-				double resmiTatilSure = 0.0d;
+				// PersonelDenklestirmeTasiyici denklestirmeTasiyici = new PersonelDenklestirmeTasiyici();
+				// denklestirmeTasiyici.setToplamCalisilacakZaman(0);
+				// denklestirmeTasiyici.setToplamCalisilanZaman(0);
+				// double resmiTatilSure = 0.0d;
 				for (VardiyaHafta vh : ap.getVardiyaHaftaList()) {
 					PersonelDenklestirmeTasiyici dt = new PersonelDenklestirmeTasiyici(ap);
 					dt.setSonVardiyaGun(sonVardiyaGun);
 					dt.setVardiyalar(vh.getVardiyaGunler());
 					dataDenkMap.put("personelDenklestirme", dt);
-					dt.setToplamCalisilacakZaman(0);
-					dt.setToplamCalisilanZaman(0);
+					// dt.setToplamCalisilacakZaman(0);
+					// dt.setToplamCalisilanZaman(0);
 					ortakIslemler.personelVardiyaDenklestir(dataDenkMap, session);
-					resmiTatilSure += dt.getResmiTatilMesai();
-
-					denklestirmeTasiyici.addToplamCalisilacakZaman(dt.getToplamCalisilacakZaman());
-					if (dt.getToplamCalisilanZaman() > 0.0d)
-						denklestirmeTasiyici.addToplamCalisilanZaman(null, dt.getToplamCalisilanZaman());
+					dt = null;
+					// resmiTatilSure += dt.getResmiTatilMesai();
+					//
+					// denklestirmeTasiyici.addToplamCalisilacakZaman(dt.getToplamCalisilacakZaman());
+					// if (dt.getToplamCalisilanZaman() > 0.0d)
+					// denklestirmeTasiyici.addToplamCalisilanZaman(null, dt.getToplamCalisilanZaman());
 
 				}
 				ap.setFazlaMesaiHesapla(false);
-				ortakIslemler.aylikPlanSureHesapla(true, normalCalismaVardiya, true, ap, denklestirmeAyDurum, tatilGunleriMap, session);
-				denklestirmeTasiyici.setResmiTatilMesai(resmiTatilSure);
+				ortakIslemler.aylikPlanSureHesapla(true, normalCalismaVardiya, true, ap, false, tatilGunleriMap, session);
+				// denklestirmeTasiyici.setResmiTatilMesai(resmiTatilSure);
 
 			} catch (Exception exy) {
 				logger.error(exy);
