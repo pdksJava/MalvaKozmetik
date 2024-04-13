@@ -136,9 +136,11 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		Vardiya normalCalismaVardiya = dataMap.containsKey("normalCalismaVardiya") ? (Vardiya) dataMap.get("normalCalismaVardiya") : null;
 		Boolean denklestirmeAyDurum = dataMap.containsKey("denklestirmeAyDurum") ? (Boolean) dataMap.get("denklestirmeAyDurum") : false;
 		TreeMap<String, Tatil> tatilGunleriMap = dataMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) dataMap.get("tatilGunleriMap") : null;
+		boolean tatilVar = tatilGunleriMap != null && !tatilGunleriMap.isEmpty();
 		List<YemekIzin> yemekList = ortakIslemler.getYemekList(basTarih, bitTarih, session);
 		LinkedHashMap<String, Object> dataDenkMap = new LinkedHashMap<String, Object>();
 		HashMap<Long, Double> vardiyaNetCalismaSuresiMap = new HashMap<Long, Double>();
+		Calendar cal = Calendar.getInstance();
 		dataDenkMap.put("yemekList", yemekList);
 		dataDenkMap.put("tatilGunleriMap", tatilGunleriMap);
 		dataDenkMap.put("girisView", manuelGiris);
@@ -155,6 +157,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		boolean haftaTatilDurum = ortakIslemler.getParameterKey("haftaTatilDurum").equals("1");
 		vardiyaGunMap = null;
 		for (AylikPuantaj ap : puantajList) {
+			PersonelView personelView = null;
 			VardiyaGun sonVardiyaGun = null;
 			for (VardiyaGun vg : ap.getVardiyalar()) {
 				vg.setFiiliHesapla(Boolean.FALSE);
@@ -167,23 +170,36 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				Vardiya vardiya = vg.getVardiya();
 				if (vardiya == null)
 					continue;
- 				if (vg.getIzin() != null || vardiya.isCalisma() == false)
+				if (vg.getIzin() != null || vardiya.isCalisma() == false)
 					continue;
 				if (!vardiyaNetCalismaSuresiMap.containsKey(vardiya.getId()))
 					vardiyaNetCalismaSuresiMap.put(vardiya.getId(), vardiya.getNetCalismaSuresi());
 				Vardiya islemVardiya = vg.getIslemVardiya();
-				vg.setFiiliHesapla(vg.getTatil() != null);
-				if (islemVardiya.getBasSaat() > islemVardiya.getBitSaat() && vg.getSonrakiVardiyaGun() != null && vg.getTatil() == null) {
-					VardiyaGun sonrakiVardiyaGun = vg.getSonrakiVardiyaGun();
-					if (tatilGunleriMap.containsKey(sonrakiVardiyaGun.getVardiyaDateStr())) {
-						vg.setTatil(tatilGunleriMap.get(sonrakiVardiyaGun.getVardiyaDateStr()));
-						vg.setFiiliHesapla(vg.getTatil() != null);
-					} else if (haftaTatilDurum)
-						vg.setFiiliHesapla(sonrakiVardiyaGun.getVardiya().isHaftaTatil());
+				if (tatilVar)
+					vg.setFiiliHesapla(vg.getTatil() != null);
+				if (islemVardiya.getBasSaat() > islemVardiya.getBitSaat() && vg.getTatil() == null) {
+					cal.setTime(vg.getVardiyaDate());
+					int day = cal.get(Calendar.DATE), sonGun = cal.getActualMaximum(Calendar.DATE);
+					if (day == sonGun)
+						vg.setFiiliHesapla(true);
+					else {
+						if (vg.getSonrakiVardiyaGun() != null) {
+							VardiyaGun sonrakiVardiyaGun = vg.getSonrakiVardiyaGun();
+							if (tatilVar) {
+								if (tatilGunleriMap.containsKey(sonrakiVardiyaGun.getVardiyaDateStr())) {
+									vg.setTatil(tatilGunleriMap.get(sonrakiVardiyaGun.getVardiyaDateStr()));
+									vg.setFiiliHesapla(vg.getTatil() != null);
+								}
+							}
+							if (haftaTatilDurum && vg.isFiiliHesapla() == false)
+								vg.setFiiliHesapla(sonrakiVardiyaGun.getVardiya().isHaftaTatil());
+						}
+					}
 
 				}
 				if (vg.isFiiliHesapla()) {
-					PersonelView personelView = vg.getPdksPersonel().getPersonelView();
+					if (personelView == null)
+						personelView = ap.getPdksPersonel().getPersonelView();
 					ortakIslemler.manuelHareketEkle(vg, new HareketKGS(personelView, manuelGiris, islemVardiya.getVardiyaBasZaman()), new HareketKGS(personelView, manuelCikis, islemVardiya.getVardiyaBitZaman()));
 				}
 			}
