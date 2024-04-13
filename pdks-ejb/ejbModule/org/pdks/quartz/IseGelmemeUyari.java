@@ -369,17 +369,26 @@ public class IseGelmemeUyari implements Serializable {
 							vardiyaBitTar = (Date) pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans2BitZaman().clone();
 						// Long yoneticisiId = pdksVardiyaGun.getPersonel().getYoneticisi().getId();
 						Tatil arifeGun = null;
+						Vardiya islemVardiya = pdksVardiyaGun.getIslemVardiya(), arifeVardiya = null;
 						try {
 							if ((!pdksVardiyaGun.getVardiya().isIcapVardiyasi() && pdksVardiyaGun.getVardiya().isCalisma())) {
-								Vardiya islemVardiya = pdksVardiyaGun.getIslemVardiya();
-								String vardiyaGun = PdksUtil.convertToDateString(pdksVardiyaGun.getVardiyaDate(), "yyyyMMdd");
-								if (resmiTatilGunleri.containsKey(vardiyaGun)) {
-									if (resmiTatilGunleri.get(vardiyaGun).isYarimGunMu()) {
+
+								String vardiyaGunStr = PdksUtil.convertToDateString(pdksVardiyaGun.getVardiyaDate(), "yyyyMMdd");
+								if (resmiTatilGunleri.containsKey(vardiyaGunStr)) {
+									Tatil tatil = resmiTatilGunleri.get(vardiyaGunStr);
+									if (tatil.isYarimGunMu()) {
+										arifeGun = tatil;
+										Date arifeBaslangicTarihi = arifeGun.getBasTarih();
+										if (tatil.getVardiyaMap() != null && tatil.getVardiyaMap().containsKey(islemVardiya.getId())) {
+											arifeVardiya = tatil.getVardiyaMap().get(islemVardiya.getId());
+											if (arifeVardiya != null && arifeVardiya.getArifeBaslangicTarihi() != null)
+												arifeBaslangicTarihi = arifeVardiya.getArifeBaslangicTarihi();
+										}
 										if (arifeCikis == null) {
 											arifeCikis = new HareketKGS();
-											arifeGun = resmiTatilGunleri.get(vardiyaGun);
-											arifeCikis.setZaman(arifeGun.getBasTarih());
-											cal.setTime(arifeGun.getBasTarih());
+											arifeGun = resmiTatilGunleri.get(vardiyaGunStr);
+											arifeCikis.setZaman(arifeBaslangicTarihi);
+											cal.setTime(arifeBaslangicTarihi);
 										}
 										if (!islemVardiya.isFarkliGun()) {
 											if (islemVardiya.getVardiyaBitZaman().getTime() > arifeCikis.getZaman().getTime()) {
@@ -406,21 +415,21 @@ public class IseGelmemeUyari implements Serializable {
 										continue;
 
 									} else {
-										Tatil tatil = resmiTatilGunleri.get(vardiyaGun).getOrjTatil();
+										tatil = resmiTatilGunleri.get(vardiyaGunStr).getOrjTatil();
 										if (tatil.getBitTarih().getTime() > islemVardiya.getVardiyaBitZaman().getTime()) {
 											iterator.remove();
 											continue;
 										}
 									}
 								}
-								if (pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans1BasZaman().getTime() > bugun.getTime()) {
+								if (islemVardiya.getVardiyaTelorans1BasZaman().getTime() > bugun.getTime()) {
 									iterator.remove();
 								} else {
-									if (vardiyaBas == null || pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans1BasZaman().getTime() < vardiyaBas.getTime())
-										vardiyaBas = pdksVardiyaGun.getIslemVardiya().getVardiyaTelorans1BasZaman();
+									if (vardiyaBas == null || islemVardiya.getVardiyaTelorans1BasZaman().getTime() < vardiyaBas.getTime())
+										vardiyaBas = islemVardiya.getVardiyaTelorans1BasZaman();
 
 								}
-							} else if (pdksVardiyaGun.getIslemVardiya().isCalisma())
+							} else if (islemVardiya.isCalisma())
 								iterator.remove();
 						} catch (Exception e) {
 							logger.error("Pdks hata in : \n");
@@ -491,6 +500,7 @@ public class IseGelmemeUyari implements Serializable {
 								pdksVardiyaGun.setHareketler(null);
 								pdksVardiyaGun.setHareketHatali(Boolean.FALSE);
 								Personel pdksPersonel = pdksVardiyaGun.getPersonel();
+								Vardiya islemVardiya = pdksVardiyaGun.getIslemVardiya();
 								Long perNoId = pdksPersonel.getPersonelKGS().getId(), personelNoId = pdksPersonel.getId();
 								Long depId = pdksPersonel.getSirket().getDepartman().getId();
 								boolean hareketVar = personelHareketMap.containsKey(perNoId) && !personelHareketMap.get(perNoId).isEmpty();
@@ -502,7 +512,7 @@ public class IseGelmemeUyari implements Serializable {
 								}
 								if (!kayitVar)
 									kayitVar = hareketVar;
-								boolean calisma = pdksVardiyaGun.getIslemVardiya().isCalisma();
+								boolean calisma = islemVardiya.isCalisma();
 								boolean ekle = calisma;
 
 								Personel yoneticisi = pdksPersonel.getYoneticisi() != null ? (Personel) pdksPersonel.getYoneticisi().clone() : yoneticiYok;
@@ -547,7 +557,7 @@ public class IseGelmemeUyari implements Serializable {
 									else
 										yoneticisi.setPersonelVardiyalari(new ArrayList<VardiyaGun>());
 									try {
-										if (pdksVardiyaGun.getIslemVardiya() != null && pdksVardiyaGun.getIslemVardiya().getVardiyaBitZaman().getTime() >= bugun.getTime())
+										if (islemVardiya != null && islemVardiya.getVardiyaBitZaman().getTime() >= bugun.getTime())
 											pdksVardiyaGun.setSonCikis(null);
 									} catch (Exception e) {
 										logger.error(e);
