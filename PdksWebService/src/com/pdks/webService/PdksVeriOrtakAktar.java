@@ -37,6 +37,7 @@ import org.pdks.entity.Role;
 import org.pdks.entity.ServiceData;
 import org.pdks.entity.Sirket;
 import org.pdks.entity.Tanim;
+import org.pdks.entity.Tatil;
 import org.pdks.entity.User;
 import org.pdks.entity.UserRoles;
 import org.pdks.entity.Vardiya;
@@ -118,6 +119,264 @@ public class PdksVeriOrtakAktar implements Serializable {
 			serviceData = null;
 		}
 
+	}
+
+	/**
+	 * @param basTarih
+	 * @param bitTarih
+	 * @return
+	 */
+	public TreeMap<String, Tatil> getTatilGunleri(Date basTarih, Date bitTarih) {
+		TreeMap<String, Tatil> tatilMap = new TreeMap<String, Tatil>();
+		String pattern = PdksUtil.getDateTimeFormat();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(basTarih);
+		int basYil = cal.get(Calendar.YEAR);
+		cal.setTime(bitTarih);
+		int bitYil = cal.get(Calendar.YEAR);
+		List<Tatil> pdksTatilList = new ArrayList<Tatil>(), tatilList = new ArrayList<Tatil>();
+
+		String formatStr = "yyyy-MM-dd";
+
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		map.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_TATIL");
+		map.put("basTarih", basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null);
+		map.put("bitTarih", basTarih != null ? PdksUtil.convertToDateString(bitTarih, formatStr) : null);
+		map.put("df", null);
+
+		boolean ayir = false;
+		try {
+			List<Object[]> list = pdksDAO.execSPList(map, null);
+			if (!list.isEmpty()) {
+				List<Long> idList = new ArrayList<Long>();
+				TreeMap<Long, Integer> tatilVersionMap = new TreeMap<Long, Integer>();
+				for (Object[] objects : list) {
+					Long id = ((BigDecimal) objects[0]).longValue();
+					if (!idList.contains(id))
+						idList.add(id);
+					tatilVersionMap.put(id, 0);
+					Tatil tatil = new Tatil();
+					tatil.setId(id);
+					tatil.setBasTarih((Date) objects[1]);
+					tatil.setBitTarih((Date) objects[2]);
+					tatilList.add(tatil);
+				}
+				map.clear();
+				// map.put(PdksEntityController.MAP_KEY_MAP, "getId");
+				String fieldName = "id";
+				map.put(fieldName, idList);
+
+				// TreeMap<Long, Tatil> tatilDataMap = pdksEntityController.getObjectByInnerObjectMap(map, Tatil.class, false);
+				TreeMap<Long, Tatil> tatilDataMap = pdksDAO.getObjectByInnerObjectMap("getId", fieldName, idList, Tatil.class, Boolean.TRUE);
+
+				for (Tatil tatil : tatilList) {
+					Tatil orjTatil = (Tatil) tatilDataMap.get(tatil.getId()).clone();
+					orjTatil.setVersion(tatilVersionMap.get(tatil.getId()));
+					orjTatil.setBasTarih(tatil.getBasTarih());
+					orjTatil.setBitTarih(tatil.getBitTarih());
+					Integer ver = orjTatil.getVersion() + 1;
+					tatilVersionMap.put(tatil.getId(), ver);
+					pdksTatilList.add(orjTatil);
+				}
+				tatilDataMap = null;
+				idList = null;
+				tatilList.clear();
+			}
+			list = null;
+		} catch (Exception e) {
+			ayir = true;
+			map.clear();
+			map.put("basTarih<=", bitTarih);
+			map.put("bitisTarih>=", basTarih);
+
+			tatilList = pdksDAO.getObjectByInnerObjectListInLogic(map, Tatil.class);
+			if (!tatilList.isEmpty())
+				tatilList = PdksUtil.sortListByAlanAdi(tatilList, "basTarih", false);
+		}
+
+		if (ayir) {
+			if (tatilList.size() > 1) {
+				for (Iterator iterator = tatilList.iterator(); iterator.hasNext();) {
+					Tatil pdksTatil = (Tatil) iterator.next();
+					if (!pdksTatil.isTekSefer()) {
+						pdksTatilList.add(pdksTatil);
+						iterator.remove();
+					}
+				}
+				if (!pdksTatilList.isEmpty()) {
+					tatilList.addAll(pdksTatilList);
+					pdksTatilList.clear();
+				}
+			}
+			for (Iterator<Tatil> iterator = tatilList.iterator(); iterator.hasNext();) {
+				Tatil pdksTatilOrj = iterator.next();
+				Tatil pdksTatil = (Tatil) pdksTatilOrj.clone();
+				if (pdksTatil.isTekSefer()) {
+					if (getObjeTarihiAraliktaMi(basTarih, bitTarih, pdksTatil.getBasTarih(), pdksTatil.getBitTarih()))
+						pdksTatilList.add(pdksTatil);
+				} else
+					for (int i = basYil; i <= bitYil; i++) {
+						Tatil pdksTatilP = (Tatil) pdksTatil.clone();
+						cal.setTime(pdksTatilP.getBasTarih());
+						cal.set(Calendar.YEAR, i);
+						pdksTatilP.setYarimGun(pdksTatil.isYarimGunMu());
+						pdksTatilP.setBasTarih(cal.getTime());
+						cal.setTime(pdksTatilP.getBitTarih());
+						cal.set(Calendar.YEAR, i);
+						Date bitisTarih = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(cal.getTime(), "yyyyMMdd") + " 23:59:59", "yyyyMMdd HH:mm:ss");
+						pdksTatilP.setBitTarih(bitisTarih);
+						if (getObjeTarihiAraliktaMi(basTarih, bitTarih, pdksTatilP.getBasTarih(), pdksTatilP.getBitTarih()))
+							pdksTatilList.add(pdksTatilP);
+					}
+
+			}
+		}
+		String arifeTatilBasZaman = getParameterKey("arifeTatilBasZaman");
+		if (!pdksTatilList.isEmpty()) {
+			String yarimGunStr = (mailMap != null && mailMap.containsKey("yarimGunSaati") ? (String) mailMap.get("yarimGunSaati") : "");
+			if (PdksUtil.hasStringValue(arifeTatilBasZaman))
+				yarimGunStr = arifeTatilBasZaman;
+			int saat = 13, dakika = 0;
+			if (yarimGunStr.indexOf(":") > 0) {
+				StringTokenizer st = new StringTokenizer(yarimGunStr, ":");
+				if (st.countTokens() >= 2) {
+					try {
+						saat = Integer.parseInt(st.nextToken().trim());
+					} catch (Exception e) {
+						logger.error("Pdks hata in : \n");
+						e.printStackTrace();
+						logger.error("Pdks hata out : " + e.getMessage());
+						saat = 13;
+					}
+					try {
+						dakika = Integer.parseInt(st.nextToken().trim());
+					} catch (Exception e) {
+						logger.error("Pdks hata in : \n");
+						e.printStackTrace();
+						logger.error("Pdks hata out : " + e.getMessage());
+						saat = 13;
+						dakika = 0;
+					}
+				}
+			}
+
+			for (Tatil pdksTatil : pdksTatilList) {
+				Date tarih = pdksTatil.getBasTarih();
+				Boolean ilkGun = Boolean.TRUE;
+				Tatil orjTatil = (Tatil) pdksTatil.clone();
+				orjTatil.setBasTarih(PdksUtil.getDate(orjTatil.getBasTarih()));
+				orjTatil.setBitGun(tariheGunEkleCikar(cal, PdksUtil.getDate(orjTatil.getBitTarih()), 1));
+				if (pdksTatil.isYarimGunMu()) {
+					orjTatil.setBasTarih(PdksUtil.setTarih(orjTatil.getBasTarih(), Calendar.HOUR_OF_DAY, saat));
+					orjTatil.setBasTarih(PdksUtil.setTarih(orjTatil.getBasTarih(), Calendar.MINUTE, dakika));
+				}
+				while (PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBitTarih(), tarih) != -1) {
+					String tarihStr = PdksUtil.convertToDateString(tarih, "yyyyMMdd");
+					boolean yarimGun = ilkGun && pdksTatil.isYarimGunMu();
+					if (pdksTatil.isPeriyodik() || !ilkGun || !tatilMap.containsKey(tarihStr)) {
+						if (tatilMap.containsKey(tarihStr)) {
+							Tatil tatil = tatilMap.get(tarihStr);
+							if (yarimGun && !tatil.isYarimGunMu()) {
+								tarih = tariheGunEkleCikar(cal, tarih, 1);
+								ilkGun = Boolean.FALSE;
+								continue;
+							}
+
+						}
+						Tatil tatil = new Tatil();
+						tatil.setOrjTatil((Tatil) orjTatil.clone());
+						tatil.setBasTarih(tarih);
+						tatil.setAciklama(pdksTatil.getAciklama());
+						tatil.setAd(pdksTatil.getAd());
+						tatil.setYarimGun(yarimGun);
+						if (yarimGun)
+							tatil.setArifeVardiyaYarimHesapla(pdksTatil.getArifeVardiyaYarimHesapla());
+						tatil.setBasTarih(PdksUtil.getDate(tatil.getBasTarih()));
+						if (tatil.isYarimGunMu()) {
+							tatil.setBasTarih(PdksUtil.setTarih(tatil.getBasTarih(), Calendar.HOUR_OF_DAY, saat));
+							tatil.setBasTarih(PdksUtil.setTarih(tatil.getBasTarih(), Calendar.MINUTE, dakika));
+						}
+						tatil.setBitGun(PdksUtil.getDate(tariheGunEkleCikar(cal, tarih, 1)));
+						tatil.setBitTarih((Date) orjTatil.getBitGun());
+						tatil.setBasGun(orjTatil.getBasTarih());
+						tatilMap.put(tarihStr, tatil);
+					}
+					tarih = tariheGunEkleCikar(cal, tarih, 1);
+					ilkGun = Boolean.FALSE;
+				}
+
+			}
+		}
+
+		if (!tatilMap.isEmpty()) {
+			pattern = "yyyyMMdd";
+			for (String dateStr : tatilMap.keySet()) {
+				String afterDateStr = PdksUtil.convertToDateString(tariheGunEkleCikar(cal, PdksUtil.convertToJavaDate(dateStr, pattern), 1), pattern);
+				if (tatilMap.containsKey(afterDateStr)) {
+					Tatil tatil = tatilMap.get(dateStr), sonrakiTatil = tatilMap.get(afterDateStr);
+					if (!sonrakiTatil.isYarimGunMu() && !tatil.getAd().equals(sonrakiTatil.getAd())) {
+						tatil.setBitTarih(sonrakiTatil.getBitTarih());
+					}
+				}
+			}
+		}
+		return tatilMap;
+	}
+
+	/**
+	 * @param basTarih
+	 * @param bitTarih
+	 * @param basTarihObje
+	 * @param bitTarihObje
+	 * @return
+	 */
+	public Boolean getObjeTarihiAraliktaMi(Date basTarih, Date bitTarih, Date basTarihObje, Date bitTarihObje) {
+		String patern = "yyyyMMdd";
+		long basTarihLong = Long.parseLong(PdksUtil.convertToDateString(basTarih, patern));
+		long bitTarihLong = Long.parseLong(PdksUtil.convertToDateString(bitTarih, patern));
+		long basTarihObjeLong = Long.parseLong(PdksUtil.convertToDateString(basTarihObje, patern));
+		long bitTarihObjeLong = Long.parseLong(PdksUtil.convertToDateString(bitTarihObje, patern));
+		boolean durum = (bitTarihLong >= basTarihObjeLong) && (basTarihLong <= bitTarihObjeLong);
+		return durum;
+	}
+
+	/**
+	 * @param cal
+	 * @param date
+	 * @param gunSayisi
+	 * @return
+	 */
+	public Date tariheGunEkleCikar(Calendar cal, Date date, int gunSayisi) {
+		Date tarih = null;
+		if (date != null)
+			tarih = addTarih(cal, date, Calendar.DATE, gunSayisi);
+
+		return tarih;
+	}
+
+	/**
+	 * @param cal
+	 * @param tarih
+	 * @param field
+	 * @param value
+	 * @return
+	 */
+	public Date addTarih(Calendar cal, Date tarih, int field, int value) {
+		if (tarih != null) {
+			if (cal == null)
+				cal = Calendar.getInstance();
+			cal.setTime((Date) tarih.clone());
+			try {
+				cal.add(field, value);
+				tarih = cal.getTime();
+			} catch (Exception e) {
+				logger.error("PDKS hata in : \n");
+				e.printStackTrace();
+				logger.error("PDKS hata out : " + e.getMessage());
+
+			}
+		}
+		return tarih;
 	}
 
 	/**
@@ -407,7 +666,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			}
 			kapiGiris = mailMap.containsKey("kapiGirisUygulama") ? (String) mailMap.get("kapiGirisUygulama") : "kapı giriş";
 			kapiSirket = null;
-			Date bugun = PdksUtil.getDate(new Date());
+			bugun = PdksUtil.getDate(new Date());
 			String birdenFazlaKGSSirketSQL = mailMap.containsKey("birdenFazlaKGSSirketSQL") ? (String) mailMap.get("birdenFazlaKGSSirketSQL") : "";
 			if (PdksUtil.hasStringValue(birdenFazlaKGSSirketSQL)) {
 				HashMap map = new HashMap();
@@ -492,7 +751,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	private void setHelpDeskParametre(HashMap<String, Parameter> pmMap, PdksDAO dao) {
 		Parameter helpDeskStatus = pmMap != null && pmMap.containsKey(HELP_DESK_STATUS) ? pmMap.get(HELP_DESK_STATUS) : new Parameter();
-		Date bugun = new Date();
+		bugun = new Date();
 		if (helpDeskStatus.getId() == null) {
 			Date changeDate = null;
 			try {
@@ -1066,6 +1325,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	public void saveHakedisIzinler(List<IzinHakedis> izinHakedisList) throws Exception {
 		mesaj = "";
 		if (izinHakedisList != null && !izinHakedisList.isEmpty()) {
+			bugun = PdksUtil.getDate(new Date());
 			if (izinHakedisList.size() == 1)
 				mesaj = izinHakedisList.get(0).getPersonelNo();
 			sistemVerileriniYukle(pdksDAO);
@@ -1317,6 +1577,13 @@ public class PdksVeriOrtakAktar implements Serializable {
 
 			saveFonksiyonVeri(null, izinHakedisList);
 			mesajInfoYaz("saveHakedisIzinler --> " + mesaj + " out " + PdksUtil.getCurrentTimeStampStr());
+			bugun = PdksUtil.getDate(new Date());
+
+			if (!izinHakedisHataList.isEmpty() && izinHakedisList != null && izinHakedisList.size() > 1) {
+				TreeMap<String, Tatil> tatilMap = getTatilGunleri(PdksUtil.tariheGunEkleCikar(bugun, -5), bugun);
+				if (tatilMap.containsKey(PdksUtil.convertToDateString(bugun, "yyyyMMdd")))
+					izinHakedisHataList.clear();
+			}
 			if (!izinHakedisHataList.isEmpty()) {
 				Gson gson = new Gson();
 				String jsonStr = PdksUtil.toPrettyFormat(gson.toJson(izinHakedisHataList));
@@ -1433,6 +1700,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	private void izinBilgileriniGuncelle(List<IzinERP> izinList) throws Exception {
 		IzinERP erp = null;
+		bugun = PdksUtil.getDate(new Date());
 		Boolean izinCok = izinList.size() > 1;
 		MailStatu mailStatu = null;
 		Boolean mailBosGonder = izinCok;
@@ -2159,6 +2427,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 				IzinERP izinERP = (IzinERP) iterator.next();
 				if (izinERP == null || izinERP.getDurum() == null)
 					iterator.remove();
+			}
+			if (!hataList.isEmpty() && izinCok) {
+				TreeMap<String, Tatil> tatilMap = getTatilGunleri(PdksUtil.tariheGunEkleCikar(bugun, -5), bugun);
+				if (tatilMap.containsKey(PdksUtil.convertToDateString(bugun, "yyyyMMdd")))
+					hataList.clear();
+
 			}
 			if (!hataList.isEmpty() && (izinCok == false || PdksUtil.isPazar() == false)) {
 				try {
@@ -3714,7 +3988,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 */
 	private void personelBilgileriniGuncelle(List<PersonelERP> personelList) throws Exception {
 		kapiSirket = null;
-		Date bugun = PdksUtil.getDate(new Date());
+		bugun = PdksUtil.getDate(new Date());
 		String birdenFazlaKGSSirketSQL = mailMap.containsKey("birdenFazlaKGSSirketSQL") ? (String) mailMap.get("birdenFazlaKGSSirketSQL") : "";
 		if (PdksUtil.hasStringValue(birdenFazlaKGSSirketSQL)) {
 			HashMap map = new HashMap();
@@ -4085,6 +4359,11 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 				}
 			}
+		}
+		if (!hataList.isEmpty() && personelList != null && personelList.size() > 1) {
+			TreeMap<String, Tatil> tatilMap = getTatilGunleri(PdksUtil.tariheGunEkleCikar(bugun, -5), bugun);
+			if (tatilMap.containsKey(PdksUtil.convertToDateString(bugun, "yyyyMMdd")))
+				hataList.clear();
 		}
 		if (!hataList.isEmpty() && (mailBosGonder == false || PdksUtil.isPazar() == false)) {
 			try {

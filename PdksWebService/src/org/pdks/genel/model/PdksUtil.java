@@ -103,7 +103,15 @@ public class PdksUtil implements Serializable {
 
 	private static boolean sistemDestekVar = false;
 
-	private static String sqlDateFormat = "yyyy-MM-dd", dateFormat = "dd/MM/yyyy", saatFormat = "H:mm";
+	private static String sqlDateFormat = "yyyy-MM-dd", dateFormat = "dd/MM/yyyy", saatFormat = "H:mm", dateTimeFormat;
+
+	/**
+	 * @return
+	 */
+	public static String getDateTimeFormat() {
+		String str = dateTimeFormat != null ? dateTimeFormat : getDateFormat() + " " + saatFormat;
+		return str;
+	}
 
 	/**
 	 * @return
@@ -2450,8 +2458,12 @@ public class PdksUtil implements Serializable {
 		return str;
 	}
 
-	public static void setDateFormat(String dateFormat) {
-		PdksUtil.dateFormat = dateFormat;
+	public static void setDateFormat(String value) {
+		if (value == null || value.trim().length() < 2) {
+			value = "dd/MM/yyyy";
+		}
+		dateTimeFormat = value + " H:mm";
+		PdksUtil.dateFormat = value;
 	}
 
 	public static String getCanliSunucu() {
@@ -2468,6 +2480,26 @@ public class PdksUtil implements Serializable {
 
 	public static void setTestSunucu(String testSunucu) {
 		PdksUtil.testSunucu = testSunucu;
+	}
+
+	public static String getSqlDateFormat() {
+		return sqlDateFormat;
+	}
+
+	public static void setSqlDateFormat(String sqlDateFormat) {
+		PdksUtil.sqlDateFormat = sqlDateFormat;
+	}
+
+	public static String getSaatFormat() {
+		return saatFormat;
+	}
+
+	public static void setSaatFormat(String saatFormat) {
+		PdksUtil.saatFormat = saatFormat;
+	}
+
+	public static void setDateTimeFormat(String dateTimeFormat) {
+		PdksUtil.dateTimeFormat = dateTimeFormat;
 	}
 
 }

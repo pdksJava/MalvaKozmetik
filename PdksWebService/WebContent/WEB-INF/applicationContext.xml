@@ -71,6 +71,7 @@
 				<value>org.pdks.entity.Sirket</value>
 				<value>org.pdks.entity.ServiceData</value>
 				<value>org.pdks.entity.Tanim</value>
+				<value>org.pdks.entity.Tatil</value>
 				<value>org.pdks.entity.User</value>
 				<value>org.pdks.entity.UserRoles</value>
 				<value>org.pdks.entity.Vardiya</value>
