@@ -18492,6 +18492,7 @@ public class OrtakIslemler implements Serializable {
 	public List<User> bccAdminAdres(Session session, String tipi) {
 		List<User> userList = null;
 		HashMap map = new HashMap();
+		Date bugun = PdksUtil.getDate(new Date());
 		if (tipi == null) {
 			String bccAdresStr = getParameterKey("bccAdres");
 			if (bccAdresStr != null && bccAdresStr.indexOf("@") > 1) {
@@ -18503,13 +18504,36 @@ public class OrtakIslemler implements Serializable {
 						user.setEmail(email);
 						userList.add(user);
 					}
+					map.clear();
+					map.put("email", bccAdresler);
+					map.put("durum=", Boolean.TRUE);
+					map.put("pdksPersonel.durum=", Boolean.TRUE);
+					map.put("pdksPersonel.iseBaslamaTarihi<=", bugun);
+					map.put("pdksPersonel.sskCikisTarihi>=", bugun);
+					if (session != null)
+						map.put(PdksEntityController.MAP_KEY_SESSION, session);
+					List<User> list = pdksEntityController.getObjectByInnerObjectListInLogic(map, User.class);
+					if (!list.isEmpty() && userList.size() >= list.size()) {
+						for (int i = 0; i < userList.size(); i++) {
+							User user = userList.get(i);
+							for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+								User userDb = (User) iterator.next();
+								if (userDb.getEmail().equals(user.getEmail())) {
+									userList.set(i, userDb);
+									iterator.remove();
+									break;
+								}
+
+							}
+						}
+					}
+					list = null;
 				}
 				bccAdresler = null;
 			}
 		}
 
 		if (userList == null) {
-			Date bugun = PdksUtil.getDate(new Date());
 			map.clear();
 			map.put(PdksEntityController.MAP_KEY_SELECT, "user");
 			// map.put("role.rolename ", Arrays.asList(Role.TIPI_ADMIN, Role.TIPI_SISTEM_YONETICI));

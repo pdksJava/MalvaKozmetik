@@ -127,6 +127,10 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @return
 	 */
 	public TreeMap<String, Tatil> getTatilGunleri(Date basTarih, Date bitTarih) {
+		if (bitTarih == null)
+			bitTarih = PdksUtil.getDate(bugun != null ? bugun : new Date());
+		if (basTarih == null)
+			basTarih = PdksUtil.tariheGunEkleCikar(bitTarih, -7);
 		TreeMap<String, Tatil> tatilMap = new TreeMap<String, Tatil>();
 		String pattern = PdksUtil.getDateTimeFormat();
 		Calendar cal = Calendar.getInstance();
@@ -135,9 +139,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 		cal.setTime(bitTarih);
 		int bitYil = cal.get(Calendar.YEAR);
 		List<Tatil> pdksTatilList = new ArrayList<Tatil>(), tatilList = new ArrayList<Tatil>();
-
 		String formatStr = "yyyy-MM-dd";
-
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put(BaseDAOHibernate.MAP_KEY_SELECT, "SP_GET_TATIL");
 		map.put("basTarih", basTarih != null ? PdksUtil.convertToDateString(basTarih, formatStr) : null);
@@ -1701,6 +1703,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	private void izinBilgileriniGuncelle(List<IzinERP> izinList) throws Exception {
 		IzinERP erp = null;
 		bugun = PdksUtil.getDate(new Date());
+
 		Boolean izinCok = izinList.size() > 1;
 		MailStatu mailStatu = null;
 		Boolean mailBosGonder = izinCok;
