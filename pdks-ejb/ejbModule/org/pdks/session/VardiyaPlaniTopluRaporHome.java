@@ -2240,7 +2240,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		if (modelGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Görev Tipi");
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Açıklama");
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Vardiya");
 
 		drawing = sheet.createDrawingPatriarch();
 		vardiyaList = aylikPuantajDefault.getVardiyalar();
@@ -2290,11 +2290,8 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 			if (modelGoster) {
 				String modelAciklama = "";
-				if (aylikPuantaj.getPersonelDenklestirme() != null && aylikPuantaj.getPersonelDenklestirme().getCalismaModeliAy() != null) {
-					CalismaModeliAy calismaModeliAy = aylikPuantaj.getPersonelDenklestirme().getCalismaModeliAy();
-					if (calismaModeliAy.getCalismaModeli() != null)
-						modelAciklama = calismaModeliAy.getCalismaModeli().getAciklama();
-				}
+				if (aylikPuantaj.getCalismaModeli() != null)
+					modelAciklama = aylikPuantaj.getCalismaModeli().getAciklama();
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(modelAciklama);
 			}
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getGorevTipi() != null ? personel.getGorevTipi().getAciklama() : "");
