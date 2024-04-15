@@ -756,11 +756,16 @@
 
 												</ui:fragment></SPAN>
 										</rich:column>
-
+										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
+											<f:facet name="header">
+												<h:outputText value="Görevi" />
+											</f:facet>
+											<h:outputText value="#{aylikPuantaj.pdksPersonel.gorevTipi.aciklama}" style="width:autostretch ;white-space: nowrap;" />
+										</rich:column>
 
 										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
 											<f:facet name="header">
-												<h:outputText value="Açıklama" />
+												<h:outputText value="Vardiya" />
 											</f:facet>
 											<ui:fragment rendered="#{aylikPuantaj.calismaModeli!=null}">
 												<SPAN style="width: autostretch; white-space: nowrap;"> <h:outputText value="#{aylikPuantaj.pdksPersonel.adSoyad}" /></SPAN>
