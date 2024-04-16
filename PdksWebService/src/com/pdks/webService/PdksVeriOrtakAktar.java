@@ -3335,7 +3335,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 					personelSecili = personel;
 					Sirket sirket = sirketMap.get(personelERP.getSirketKodu());
 					if (sirket != null) {
-						if (!sirket.getGuncellendi().booleanValue()) {
+						if (!sirket.isGuncellendi().booleanValue()) {
 							if (PdksUtil.isStrDegisti(sirket.getAd(), personelERP.getSirketAdi())) {
 								sirket.setAd(personelERP.getSirketAdi());
 								sirket.setGuncellemeTarihi(new Date());

@@ -3100,7 +3100,7 @@ public class OrtakIslemler implements Serializable {
 			MailGrubu mailGrubuCC = personel.getMailGrubuCC(), mailGrubuBCC = personel.getMailGrubuBCC(), hareketMailGrubu = personel.getHareketMailGrubu();
 			List<MailGrubu> deleteList = new ArrayList<MailGrubu>();
 			if (mailGrubuCC != null) {
-				if (mailGrubuCC.getGuncellendi())
+				if (mailGrubuCC.isGuncellendi())
 					pdksEntityController.saveOrUpdate(session, entityManager, mailGrubuCC);
 				else {
 					deleteList.add(mailGrubuCC);
@@ -3108,7 +3108,7 @@ public class OrtakIslemler implements Serializable {
 				}
 			}
 			if (mailGrubuBCC != null) {
-				if (mailGrubuBCC.getGuncellendi())
+				if (mailGrubuBCC.isGuncellendi())
 					pdksEntityController.saveOrUpdate(session, entityManager, mailGrubuBCC);
 				else {
 					deleteList.add(mailGrubuBCC);
@@ -3117,7 +3117,7 @@ public class OrtakIslemler implements Serializable {
 
 			}
 			if (hareketMailGrubu != null) {
-				if (hareketMailGrubu.getGuncellendi())
+				if (hareketMailGrubu.isGuncellendi())
 					pdksEntityController.saveOrUpdate(session, entityManager, hareketMailGrubu);
 				else {
 					deleteList.add(hareketMailGrubu);

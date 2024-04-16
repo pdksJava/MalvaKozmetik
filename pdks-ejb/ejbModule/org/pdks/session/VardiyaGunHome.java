@@ -2552,7 +2552,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (sablonGuncelle) {
 						for (VardiyaHafta pdksVardiyaHafta : personelAylikPuantaj.getVardiyaHaftaList()) {
 							try {
-								if (pdksVardiyaHafta == null || pdksVardiyaHafta.getId() == null || !pdksVardiyaHafta.getGuncellendi())
+								if (pdksVardiyaHafta == null || pdksVardiyaHafta.getId() == null || !pdksVardiyaHafta.isGuncellendi())
 									continue;
 								session.refresh(pdksVardiyaHafta);
 							} catch (Exception e) {
