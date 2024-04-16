@@ -3553,7 +3553,7 @@ public class PersonelIzinGirisiHome extends EntityHome<PersonelIzin> implements 
 			map.put("izinTipi.bakiyeIzinTipi.id =", izinTipi.getId());
 			cal.set(yil, 0, 1);
 			Date baslangicZamani = PdksUtil.getDate((Date) cal.getTime().clone());
-			boolean ilkKayit = false;
+			boolean ilkKayit = izinTipi.isSenelikIzin();
 			if (izinTipi.getBakiyeDevirTipi().equals(IzinTipi.BAKIYE_DEVIR_SENELIK)) {
 				ilkKayit = true;
 				if (!izinTipi.isSuaIzin() || !authenticatedUser.isIK())
