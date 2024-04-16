@@ -92,6 +92,42 @@
 					</h:panelGrid>
 					<rich:panel id="denklestirmeDonemiTable" style="overflow: auto;">
 						<a4j:outputPanel id="butonlar">
+							<ui:fragment rendered="#{not empty fazlaMesaiOzetRaporHome.pdksSirketList and fazlaMesaiOzetRaporHome.denklestirmeAy.durum}">
+
+								<table width="60%">
+									<tr>
+										<TD valign="top" width="50%"><b>Hataları Ayıkla :</b> <h:selectBooleanCheckbox value="#{fazlaMesaiOzetRaporHome.hatalariDuzelt}">
+												<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiOzetRaporHome.aylikPuantajList.clear()}" ajaxSingle="true" reRender="denklestirmeDonemiTable" />
+											</h:selectBooleanCheckbox></TD>
+										<ui:fragment rendered="#{fazlaMesaiOzetRaporHome.hatalariDuzelt}">
+											<TD valign="top" width="50%" align="left"><b>Hata Ayıklama Tipi :</b> <br></br> <h:selectOneRadio
+													value="#{fazlaMesaiOzetRaporHome.duzeltTipi}">
+													<f:selectItems value="#{fazlaMesaiOzetRaporHome.duzeltTipleri}" />
+													<a4j:support event="onclick" action="#{fazlaMesaiOzetRaporHome.aylikPuantajList.clear()}" reRender="denklestirmeDonemiTable"
+														status="ajaxStatus" limitToList="true" ajaxSingle="true" />
+												</h:selectOneRadio></TD>
+										</ui:fragment>
+									</tr>
+
+								</table>
+							</ui:fragment>
+							<h:panelGrid columns="2" rendered="false">
+								<s:decorate template="/layout/edit.xhtml">
+									<ui:define name="label">Hataları Ayıkla</ui:define>
+									<h:selectBooleanCheckbox value="#{fazlaMesaiOzetRaporHome.hatalariDuzelt}">
+										<a4j:support event="onchange" status="ajaxStatus" action="#{ortakIslemler.emtpyAjaxFunction()}" ajaxSingle="true" reRender="butonlar" />
+									</h:selectBooleanCheckbox>
+								</s:decorate>
+								<s:decorate template="/layout/edit.xhtml" rendered="#{fazlaMesaiOzetRaporHome.hatalariDuzelt}">
+									<ui:define name="label">Hata Ayıklama Tipi</ui:define>
+									<h:selectOneRadio value="#{fazlaMesaiOzetRaporHome.duzeltTipi}" layout="pageDirection">
+										<f:selectItems value="#{fazlaMesaiOzetRaporHome.duzeltTipleri}" />
+										<a4j:support event="onclick" action="#{fazlaMesaiOzetRaporHome.aylikPuantajList.clear()}" reRender="denklestirmeDonemiTable"
+											status="ajaxStatus" limitToList="true" ajaxSingle="true" />
+									</h:selectOneRadio>
+								</s:decorate>
+							</h:panelGrid>
+
 							<TABLE width="45%">
 								<TR>
 									<TD width="35%" valign="top"><a4j:commandButton action="#{fazlaMesaiOzetRaporHome.fillFazlaMesaiOzetRaporList()}"
