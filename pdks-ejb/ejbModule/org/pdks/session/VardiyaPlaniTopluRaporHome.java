@@ -654,6 +654,8 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 
 	@Transactional
 	public String fillVardiyaPlaniTopluRaporList() {
+		vardiyaOzetPuantajList.clear();
+		aylikPuantajList.clear();
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
@@ -1312,7 +1314,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		}
 		denklestirmeDinamikAlanlar = ortakIslemler.setDenklestirmeDinamikDurum(puantajList, session);
 		ortakIslemler.sortAylikPuantajList(puantajList, true);
-		ozetListeOlustur(puantajList);
+		// ozetListeOlustur(puantajList);
 		setAylikPuantajList(puantajList);
 		if (gecenAy != null && gecenAy.getDurum().equals(Boolean.TRUE) && (authenticatedUser.isAdmin() || authenticatedUser.isIK())) {
 			hataYok = false;
@@ -3548,6 +3550,9 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 	}
 
 	public List<AylikPuantaj> getVardiyaOzetPuantajList() {
+		if (vardiyaOzetPuantajList == null | vardiyaOzetPuantajList.isEmpty())
+			if (!aylikPuantajList.isEmpty())
+				ozetListeOlustur(aylikPuantajList);
 		return vardiyaOzetPuantajList;
 	}
 

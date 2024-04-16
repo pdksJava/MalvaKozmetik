@@ -131,11 +131,10 @@
 							</TABLE>
 						</a4j:outputPanel>
 
-						<a4j:outputPanel id="hareketTables" rendered="#{not empty vardiyaPlaniTopluRaporHome.aylikPuantajList}">
-							<ui:fragment rendered="#{vardiyaPlaniTopluRaporHome.seciliBolum!=null and vardiyaPlaniTopluRaporHome.ikRole}">
-								<DIV style="text-align: center; font-weight: bold; color: blue; font-size: 16px;">#{vardiyaPlaniTopluRaporHome.seciliBolum.aciklama}</DIV>
-							</ui:fragment>
-							<rich:tabPanel binding="#{componentState.someTabPanel}" width="100%" headerAlignment="left" switchType="ajax">
+						<a4j:outputPanel id="hareketTables">
+
+							<rich:tabPanel binding="#{componentState.someTabPanel}" width="100%" headerAlignment="left" switchType="ajax"
+								rendered="#{not empty vardiyaPlaniTopluRaporHome.aylikPuantajList}">
 
 								<rich:tab label="Tüm Personeller" name="tab1">
 
@@ -144,7 +143,7 @@
 										rows="50" rowKeyVar="row">
 
 										<f:facet name="header">
-											<h:outputText value="Fazla Mesai Toplu Raporu" />
+											<h:outputText value="Çalışma Planı Toplu Raporu" />
 										</f:facet>
 										<rich:column style="text-align: center;width: 30px;">
 											<f:facet name="header">
@@ -725,7 +724,7 @@
 										rows="50" rowKeyVar="row">
 
 										<f:facet name="header">
-											<h:outputText value="Çalışma Planı Toplu Raporu" />
+											<h:outputText value="Çalışma Planı Toplu Özet Raporu" />
 										</f:facet>
 										<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{vardiyaPlaniTopluRaporHome.sirket.tesisDurum}">
 											<f:facet name="header">
