@@ -6595,10 +6595,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 										VardiyaSablonu bagliVardiyaSablonu = calismaModeli.getBagliVardiyaSablonu();
 										Personel personelDenk = personelDenklestirme.getPersonel();
 										if (!bagliVardiyaSablonu.getId().equals(personelDenk.getSablon().getId())) {
-											personelDenk.setSablon(bagliVardiyaSablonu);
-											pdksEntityController.saveOrUpdate(session, entityManager, personelDenk);
-											flush = true;
-											kaydet = true;
+//											personelDenk.setSablon(bagliVardiyaSablonu);
+//											pdksEntityController.saveOrUpdate(session, entityManager, personelDenk);
+//											flush = true;
+//											kaydet = true;
 										}
 									}
 
