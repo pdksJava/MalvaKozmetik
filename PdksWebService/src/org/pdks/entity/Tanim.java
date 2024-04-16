@@ -92,7 +92,7 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 	private String aciklamatr;
 	private String aciklamaen;
 	private Boolean durum = Boolean.TRUE;
-	private boolean guncelle = Boolean.FALSE, guncellendi = Boolean.FALSE;
+	private boolean guncelle = Boolean.FALSE;
 	private Tanim childGenelTanim;
 	private User islemYapan;
 	private Date islemTarihi = Calendar.getInstance().getTime();
@@ -274,14 +274,7 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 		return super.clone();
 	}
 
-	@Transient
-	public boolean isGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(boolean guncellendi) {
-		this.guncellendi = guncellendi;
-	}
+ 
 
 	public boolean equals(Tanim obj) {
 		boolean eq = Boolean.FALSE;

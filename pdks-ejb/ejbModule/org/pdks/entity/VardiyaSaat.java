@@ -32,8 +32,6 @@ public class VardiyaSaat extends BasePDKSObject implements Serializable, Cloneab
 
 	private Date guncellemeTarihi;
 
-	private boolean guncellendi = false;
-
 	public VardiyaSaat() {
 		super();
 		this.guncellendi = false;
@@ -91,15 +89,6 @@ public class VardiyaSaat extends BasePDKSObject implements Serializable, Cloneab
 
 	public void setGuncellemeTarihi(Date guncellemeTarihi) {
 		this.guncellemeTarihi = guncellemeTarihi;
-	}
-
-	@Transient
-	public boolean isGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(boolean guncellendi) {
-		this.guncellendi = guncellendi;
 	}
 
 	@Transient

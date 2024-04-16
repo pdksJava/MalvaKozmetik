@@ -24,6 +24,8 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 
 	protected User loginUser;
 
+	protected Boolean guncellendi;
+
 	@Id
 	@GeneratedValue
 	@Column(name = COLUMN_NAME_ID)
@@ -48,6 +50,21 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 	public long getIdLong() {
 		long value = id != null ? id.longValue() : 0;
 		return value;
+	}
+
+	@Transient
+	public Boolean getGuncellendi() {
+		return guncellendi;
+	}
+
+	public void setGuncellendi(Boolean value) {
+
+		this.guncellendi = value;
+	}
+
+	@Transient
+	public Boolean isGuncellendi() {
+		return guncellendi != null && guncellendi.booleanValue();
 	}
 
 	@Transient

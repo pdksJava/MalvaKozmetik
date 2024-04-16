@@ -38,8 +38,6 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 
 	private Double normalGunAdet = 0.0d, haftaTatilAdet = 0.0d, resmiTatilAdet = 0.0d, artikAdet = 0.0d;
 
-	private boolean guncellendi = false;
-
 	private HashMap<BordroDetayTipi, PersonelDenklestirmeBordroDetay> detayMap;
 
 	public PersonelDenklestirmeBordro() {
@@ -73,7 +71,7 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	public void setNormalGunAdet(Double value) {
-		if (guncellendi == false)
+		if (this.isGuncellendi() == false)
 			this.setGuncellendi(this.normalGunAdet == null || this.normalGunAdet.doubleValue() != value.doubleValue());
 
 		this.normalGunAdet = value;
@@ -85,7 +83,7 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	public void setHaftaTatilAdet(Double value) {
-		if (guncellendi == false)
+		if (this.isGuncellendi() == false)
 			this.setGuncellendi(this.haftaTatilAdet == null || this.haftaTatilAdet.doubleValue() != value.doubleValue());
 
 		this.haftaTatilAdet = value;
@@ -97,7 +95,7 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	public void setResmiTatilAdet(Double value) {
-		if (guncellendi == false)
+		if (this.isGuncellendi() == false)
 			this.setGuncellendi(this.resmiTatilAdet == null || this.resmiTatilAdet.doubleValue() != value.doubleValue());
 		this.resmiTatilAdet = value;
 	}
@@ -108,18 +106,9 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 	}
 
 	public void setArtikAdet(Double value) {
-		if (guncellendi == false)
+		if (this.isGuncellendi() == false)
 			this.setGuncellendi(this.artikAdet == null || this.artikAdet.doubleValue() != value.doubleValue());
 		this.artikAdet = value;
-	}
-
-	@Transient
-	public boolean isGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(boolean guncellendi) {
-		this.guncellendi = guncellendi;
 	}
 
 	@Transient

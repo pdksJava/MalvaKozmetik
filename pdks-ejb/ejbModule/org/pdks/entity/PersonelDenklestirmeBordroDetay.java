@@ -39,8 +39,6 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 
 	private Double miktar = 0.0d;
 
-	private boolean guncellendi = false;
-
 	public PersonelDenklestirmeBordroDetay() {
 		super();
 
@@ -80,18 +78,9 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 	}
 
 	public void setMiktar(Double value) {
-		if (guncellendi == false)
+		if (this.isGuncellendi() == false)
 			this.setGuncellendi(this.miktar == null || this.miktar.doubleValue() != value.doubleValue());
 		this.miktar = value;
-	}
-
-	@Transient
-	public boolean isGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(boolean guncellendi) {
-		this.guncellendi = guncellendi;
 	}
 
 	@Transient

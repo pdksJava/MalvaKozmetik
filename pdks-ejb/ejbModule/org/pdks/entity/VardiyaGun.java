@@ -85,7 +85,7 @@ public class VardiyaGun extends BaseObject {
 	private boolean bitmemisGun = Boolean.TRUE, islendi = Boolean.FALSE, ayrikHareketVar = Boolean.FALSE;
 	private int yarimYuvarla = PdksUtil.getYarimYuvarlaLast();
 	private HareketKGS ilkGiris, sonCikis;
-	private boolean ayinGunu = Boolean.TRUE, onayli = Boolean.TRUE, guncellendi = Boolean.FALSE, fiiliHesapla = Boolean.FALSE, hataliDurum = Boolean.FALSE, donemAcik = Boolean.TRUE;
+	private boolean ayinGunu = Boolean.TRUE, onayli = Boolean.TRUE, fiiliHesapla = Boolean.FALSE, hataliDurum = Boolean.FALSE, donemAcik = Boolean.TRUE;
 	private List<String> linkAdresler;
 	private HashMap<String, Personel> gorevliPersonelMap;
 	private CalismaModeli calismaModeli = null;
@@ -1219,17 +1219,6 @@ public class VardiyaGun extends BaseObject {
 
 	public void setFazlaMesaiSure(double fazlaMesaiSure) {
 		this.fazlaMesaiSure = fazlaMesaiSure;
-	}
-
-	@Transient
-	public boolean isGuncellendi() {
-		if (guncellendi && version < 0)
-			this.version = 0;
-		return guncellendi;
-	}
-
-	public void setGuncellendi(boolean guncellendi) {
-		this.guncellendi = guncellendi;
 	}
 
 	@Transient

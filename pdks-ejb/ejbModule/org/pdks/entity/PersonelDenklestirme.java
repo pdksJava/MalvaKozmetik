@@ -41,7 +41,7 @@ public class PersonelDenklestirme extends BaseObject {
 	public static final String COLUMN_NAME_PART_TIME_DURUM = "PART_TIME";
 	public static final String COLUMN_NAME_SUT_IZNI_SAAT = "SUT_IZNI_SAAT";
 	public static final String COLUMN_NAME_EGITIM_SURESI_AKSAM_GUN_SAYISI = "EGITIM_SURESI_AKSAM_GUN";
-  	public static final String COLUMN_NAME_FAZLA_MESAI_ODE = "FAZLA_MESAI_ODE";
+	public static final String COLUMN_NAME_FAZLA_MESAI_ODE = "FAZLA_MESAI_ODE";
 	public static final String COLUMN_NAME_FAZLA_MESAI_IZIN_KULLAN = "FAZLA_MESAI_IZIN_KULLAN";
 	public static final String COLUMN_NAME_CALISMA_MODELI_AY = "CALISMA_MODELI_AY_ID";
 	public static final String COLUMN_NAME_DEVREDEN_SURE = "DEVREDEN_SURE";
@@ -72,8 +72,6 @@ public class PersonelDenklestirme extends BaseObject {
 	private Boolean suaDurum, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiOde, sutIzniDurum, partTime;
 
 	private boolean erpAktarildi = Boolean.FALSE, onaylandi = Boolean.FALSE, denklestirme;
-
-	private Boolean guncellendi;
 
 	private String mesaj;
 
@@ -466,22 +464,6 @@ public class PersonelDenklestirme extends BaseObject {
 	}
 
 	@Transient
-	public Boolean getGuncellendi() {
-		return guncellendi;
-	}
-
-	@Transient
-	public Boolean isGuncellendi() {
-		return guncellendi != null && guncellendi.booleanValue();
-	}
-
-	public void setGuncellendi(Boolean value) {
-		if (value != null && value)
-			logger.debug(value);
-		this.guncellendi = value;
-	}
-
-	@Transient
 	public double getKalanSure() {
 		double kalanSure = devredenSure != null ? devredenSure.doubleValue() : 0d;
 		return kalanSure;
@@ -505,7 +487,7 @@ public class PersonelDenklestirme extends BaseObject {
 			aylikSure = aylikSureHesapla(aylikSure - arifeToplamSure, calismaSuaSaati, gunlukCalismaSuresi) + arifeToplamSure;
 		} else if (isPartTimeDurumu())
 			aylikSure = aylikSureHesapla(aylikSure - arifeToplamSure, calismaSaatiPartTime, gunlukCalismaSuresi) + arifeToplamSure;
-		double sutIzniSure = sutIzniSaatSayisi != null && sutIzniSaatSayisi.doubleValue() > 0.0d && sutIzniSaatSayisi.doubleValue() != denklestirmeAy.getToplamIzinSure()  ? sutIzniSaatSayisi.doubleValue() : denklestirmeAy.getToplamIzinSure();
+		double sutIzniSure = sutIzniSaatSayisi != null && sutIzniSaatSayisi.doubleValue() > 0.0d && sutIzniSaatSayisi.doubleValue() != denklestirmeAy.getToplamIzinSure() ? sutIzniSaatSayisi.doubleValue() : denklestirmeAy.getToplamIzinSure();
 		double maxSure = sutIzniDurum == null || sutIzniDurum.equals(Boolean.FALSE) || planlanSure == 0 ? aylikSure : sutIzniSure;
 
 		return maxSure;

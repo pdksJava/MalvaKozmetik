@@ -134,7 +134,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		Date basTarih = dataMap.containsKey("basTarih") ? (Date) dataMap.get("basTarih") : null;
 		Date bitTarih = dataMap.containsKey("bitTarih") ? (Date) dataMap.get("bitTarih") : null;
 		Vardiya normalCalismaVardiya = dataMap.containsKey("normalCalismaVardiya") ? (Vardiya) dataMap.get("normalCalismaVardiya") : null;
-//		Boolean denklestirmeAyDurum = dataMap.containsKey("denklestirmeAyDurum") ? (Boolean) dataMap.get("denklestirmeAyDurum") : false;
+		// Boolean denklestirmeAyDurum = dataMap.containsKey("denklestirmeAyDurum") ? (Boolean) dataMap.get("denklestirmeAyDurum") : false;
 		TreeMap<String, Tatil> tatilGunleriMap = dataMap.containsKey("tatilGunleriMap") ? (TreeMap<String, Tatil>) dataMap.get("tatilGunleriMap") : null;
 		boolean tatilVar = tatilGunleriMap != null && !tatilGunleriMap.isEmpty();
 		List<YemekIzin> yemekList = ortakIslemler.getYemekList(basTarih, bitTarih, session);
@@ -538,6 +538,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				for (VardiyaGun vardiyaGun : vardiyaGunList) {
 					String vardiyaDateStr = vardiyaGun.getVardiyaDateStr();
+					if (vardiyaGun.getVardiyaSaatDB() == null && vardiyaGun.getVardiya().isCalisma() == false)
+						continue;
 					if (vardiyaDateStr.startsWith(donem)) {
 						Personel personel = vardiyaGun.getPdksPersonel();
 						Long id = personel.getId();

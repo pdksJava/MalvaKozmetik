@@ -41,7 +41,7 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 
 	private Tanim alan, tipi;
 
-	private Boolean durum = Boolean.FALSE, guncellendi = Boolean.FALSE, islemDurum = Boolean.FALSE;
+	private Boolean durum = Boolean.FALSE, islemDurum = Boolean.FALSE;
 
 	private Double sayisalDeger;
 
@@ -141,20 +141,6 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 	public static String getKey(Tanim alan, PersonelDenklestirme personelDenklestirme) {
 		String key = (alan != null ? alan.getId() : 0) + "_" + (personelDenklestirme != null ? personelDenklestirme.getId() : 0);
 		return key;
-	}
-
-	@Transient
-	public Boolean getGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(Boolean guncellendi) {
-		this.guncellendi = guncellendi;
-	}
-
-	@Transient
-	public boolean isGuncellendi() {
-		return guncellendi && guncellendi.booleanValue();
 	}
 
 	@Transient

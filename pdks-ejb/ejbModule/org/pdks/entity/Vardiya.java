@@ -1189,8 +1189,13 @@ public class Vardiya extends BaseObject {
 			}
 
 		} else if (vardiyaTarih != null) {
-			Vardiya oncekiIslemVardiya = pdksVardiyaGun.getOncekiVardiyaGun() != null && pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() != null ? pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() : null;
-			Vardiya sonrakiIslemVardiya = pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().isCalisma() ? pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() : null;
+			Vardiya oncekiIslemVardiya = null, sonrakiIslemVardiya = null;
+			try {
+				oncekiIslemVardiya = pdksVardiyaGun.getOncekiVardiyaGun() != null && pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() != null ? pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() : null;
+				sonrakiIslemVardiya = pdksVardiyaGun.getSonrakiVardiyaGun() != null &&  pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().isCalisma() ? pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() : null;
+			} catch (Exception e) {
+				logger.error(e);
+			}
 			vardiyaBasZaman = PdksUtil.convertToJavaDate(PdksUtil.convertToDateString(vardiyaTarih, "yyyyMMdd") + " 13:00", "yyyyMMdd HH:mm");
 			cal = Calendar.getInstance();
 			cal.setTime(vardiyaTarih);

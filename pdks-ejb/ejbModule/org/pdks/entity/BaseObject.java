@@ -33,7 +33,7 @@ public abstract class BaseObject extends BasePDKSObject implements Serializable,
 
 	private static final long serialVersionUID = 4940573223065841991L;
 
-	protected Boolean durum = Boolean.TRUE;
+	protected Boolean durum = Boolean.TRUE, guncellendi;
 	protected User guncelleyenUser, olusturanUser;
 	protected Date olusturmaTarihi = new Date(), guncellemeTarihi;
 	protected boolean checkBoxDurum = Boolean.FALSE;
@@ -44,8 +44,11 @@ public abstract class BaseObject extends BasePDKSObject implements Serializable,
 		return durum;
 	}
 
-	public void setDurum(Boolean durum) {
-		this.durum = durum;
+	public void setDurum(Boolean value) {
+		if (guncellendi != null && !guncellendi && value != null) {
+			this.setGuncellendi(this.durum == null || this.durum.booleanValue() != value.booleanValue());
+		}
+		this.durum = value;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -142,6 +145,21 @@ public abstract class BaseObject extends BasePDKSObject implements Serializable,
 
 	public void setTitleStr(String titleStr) {
 		this.titleStr = titleStr;
+	}
+
+	@Transient
+	public Boolean getGuncellendi() {
+		return guncellendi;
+	}
+
+	public void setGuncellendi(Boolean value) {
+
+		this.guncellendi = value;
+	}
+
+	@Transient
+	public Boolean isGuncellendi() {
+		return guncellendi != null && guncellendi.booleanValue();
 	}
 
 	@Transient

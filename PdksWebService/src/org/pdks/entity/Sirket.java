@@ -38,7 +38,7 @@ public class Sirket extends BaseObject {
 	private String ad, aciklama, erpKodu = "", lpdapOnEk = "";
 	private Boolean erpDurum = Boolean.FALSE, ldapDurum = Boolean.FALSE, pdks = Boolean.FALSE, suaOlabilir = Boolean.FALSE, tesisDurum = Boolean.FALSE;
 	private Boolean fazlaMesaiOde = Boolean.FALSE, fazlaMesai = Boolean.FALSE, istenAyrilmaTarihindeCalisiyor = Boolean.FALSE;
-	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE, guncellendi = Boolean.FALSE;
+	private Boolean fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE;
 	private Tanim sirketGrup;
 	private Departman departman;
 	private Integer version = 0;
@@ -247,13 +247,6 @@ public class Sirket extends BaseObject {
 		return fazlaMesaiTalepGirilebilir != null && fazlaMesaiTalepGirilebilir.booleanValue();
 	}
 
-	@Transient
-	public Boolean getGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(Boolean guncellendi) {
-		this.guncellendi = guncellendi;
-	}
+	 
 
 }

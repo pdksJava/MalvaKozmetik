@@ -105,9 +105,6 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 
 	public static final String DEFAULT_DOVIZ_KODU = "TL";
 	public static final String IKINCI_YONETICI_ONAYLAMAZ = "ikinciYoneticiOlmaz";
-	 
-	
-	
 
 	private String tipi;
 	private Tanim parentTanim;
@@ -115,7 +112,7 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 	private String aciklamatr;
 	private String aciklamaen;
 	private Boolean durum = Boolean.TRUE;
-	private boolean guncelle = Boolean.FALSE, guncellendi = Boolean.FALSE;
+	private boolean guncelle = Boolean.FALSE;
 	private Tanim childGenelTanim;
 	private User islemYapan;
 	private Date islemTarihi = Calendar.getInstance().getTime();
@@ -292,15 +289,6 @@ public class Tanim extends BasePDKSObject implements Serializable, Cloneable {
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	@Transient
-	public boolean isGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(boolean guncellendi) {
-		this.guncellendi = guncellendi;
 	}
 
 	public boolean equals(Tanim obj) {

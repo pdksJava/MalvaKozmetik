@@ -64,7 +64,7 @@ public class VardiyaGun extends BaseObject {
 	private PersonelIzin izin;
 	private VardiyaSablonu vardiyaSablonu;
 	private boolean bitmemisGun = Boolean.TRUE, islendi = Boolean.FALSE;
-	private boolean ayinGunu = Boolean.TRUE, onayli = Boolean.TRUE, guncellendi = Boolean.FALSE, fiiliHesapla = Boolean.FALSE, hataliDurum = Boolean.FALSE, donemAcik = Boolean.TRUE;
+	private boolean ayinGunu = Boolean.TRUE, onayli = Boolean.TRUE,  fiiliHesapla = Boolean.FALSE, hataliDurum = Boolean.FALSE, donemAcik = Boolean.TRUE;
 	private List<String> linkAdresler;
 	private HashMap<String, Personel> gorevliPersonelMap;
 	private Integer version = 0;
@@ -509,14 +509,7 @@ public class VardiyaGun extends BaseObject {
 		this.fazlaMesaiSure = fazlaMesaiSure;
 	}
 
-	@Transient
-	public boolean isGuncellendi() {
-		return guncellendi;
-	}
-
-	public void setGuncellendi(boolean guncellendi) {
-		this.guncellendi = guncellendi;
-	}
+ 
 
 	@Transient
 	public boolean isCalismayaBaslamadi() {

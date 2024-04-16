@@ -61,8 +61,6 @@ public class PersonelDenklestirme extends BaseObject {
 
 	private boolean erpAktarildi = Boolean.FALSE, onaylandi = Boolean.FALSE, denklestirme;
 
-	private Boolean guncellendi;
-
 	private String mesaj;
 
 	public PersonelDenklestirme() {
@@ -374,20 +372,6 @@ public class PersonelDenklestirme extends BaseObject {
 	@Transient
 	public Long getPersonelId() {
 		return personel != null ? personel.getId() : 0L;
-	}
-
-	@Transient
-	public Boolean getGuncellendi() {
-		return guncellendi;
-	}
-
-	@Transient
-	public Boolean isGuncellendi() {
-		return guncellendi != null && guncellendi.booleanValue();
-	}
-
-	public void setGuncellendi(Boolean guncellendi) {
-		this.guncellendi = guncellendi;
 	}
 
 	@Transient

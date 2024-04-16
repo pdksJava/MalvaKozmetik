@@ -25,6 +25,8 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 	protected Long id;
 
 	protected boolean degisti = Boolean.FALSE;
+	
+	protected Boolean guncellendi;
 
 	@Id
 	@GeneratedValue
@@ -57,6 +59,22 @@ public abstract class BasePDKSObject implements Serializable, Cloneable {
 	public long getIdLong() {
 		long value = id != null ? id.longValue() : 0;
 		return value;
+	}
+	
+
+	@Transient
+	public Boolean getGuncellendi() {
+		return guncellendi;
+	}
+
+	public void setGuncellendi(Boolean value) {
+
+		this.guncellendi = value;
+	}
+
+	@Transient
+	public Boolean isGuncellendi() {
+		return guncellendi != null && guncellendi.booleanValue();
 	}
 
 	@Transient
