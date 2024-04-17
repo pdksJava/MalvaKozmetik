@@ -143,13 +143,18 @@
 											onclick="#{rich:component('wait')}.show()" oncomplete="#{rich:component('wait')}.hide(); ">
 
 											<ui:fragment rendered="#{puantaj.personelDenklestirme.durum}">
-												<h:graphicImage value="/img/msginfo.png" style="border:0" height="16" width="16" />
+												<h:graphicImage value="/img/msginfo.png" style="border:0" height="20" width="20" />
 												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
 											 #{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi} Göster
 											</rich:toolTip>
 											</ui:fragment>
 											<ui:fragment rendered="#{puantaj.personelDenklestirme.durum==false}">
-												<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20" />
+												<ui:fragment rendered="#{puantaj.personelDenklestirme.onaylandi}">
+													<h:graphicImage value="/img/msgerror.png" style="border:0" height="20" width="20" />
+												</ui:fragment>
+												<ui:fragment rendered="#{puantaj.personelDenklestirme.onaylandi==false}">
+													<h:graphicImage value="/img/msgerror.png" style="border:0;background-color: blue;" height="20" width="20" />
+												</ui:fragment>
 												<rich:toolTip for="denk#{puantaj.pdksPersonel.id}">
 													<ui:fragment rendered="#{puantaj.personelDenklestirme.onaylandi}">
 														<span style="color: red; font-size: 14px;">#{denklestirmeBordroRaporuHome.fazlaMesaiHesaplaMenuAdi} Hatalı Göster</span>
@@ -480,7 +485,9 @@
 		<rich:modalPanel id="onayFazlaMesaiHesapPanel" autosized="true" width="750">
 			<f:facet name="header">
 				<ui:fragment>
-					<DIV>#{ortakIslemler.getSelectItemText(denklestirmeBordroRaporuHome.sirketId,denklestirmeBordroRaporuHome.sirketler)} #{ortakIslemler.getSelectItemText(denklestirmeBordroRaporuHome.tesisId,denklestirmeBordroRaporuHome.tesisList)} #{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla</DIV>
+					<DIV>#{ortakIslemler.getSelectItemText(denklestirmeBordroRaporuHome.sirketId,denklestirmeBordroRaporuHome.sirketler)}
+						#{ortakIslemler.getSelectItemText(denklestirmeBordroRaporuHome.tesisId,denklestirmeBordroRaporuHome.tesisList)}
+						#{denklestirmeBordroRaporuHome.fazlaMesaiGuncellemeAciklama} Fazla Mesai Hesapla</DIV>
 
 				</ui:fragment>
 			</f:facet>
