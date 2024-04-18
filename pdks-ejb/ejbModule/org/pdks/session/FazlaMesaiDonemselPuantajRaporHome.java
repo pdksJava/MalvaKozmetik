@@ -12,10 +12,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,10 +33,12 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.FlushModeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.Renderer;
@@ -56,6 +61,7 @@ import org.pdks.entity.Vardiya;
 import org.pdks.entity.VardiyaGun;
 import org.pdks.entity.VardiyaSaat;
 import org.pdks.security.action.UserHome;
+import org.pdks.security.entity.MenuItemConstant;
 import org.pdks.security.entity.User;
 
 @Name("fazlaMesaiDonemselPuantajRaporHome")
@@ -84,6 +90,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 	UserHome userHome;
 	@In(required = false, create = true)
 	FazlaMesaiOrtakIslemler fazlaMesaiOrtakIslemler;
+	@Out(scope = ScopeType.SESSION, required = false)
+	String bordroAdres;
 
 	@In(required = true, create = true)
 	Renderer renderer;
@@ -160,6 +168,9 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		bitAy = calendar.get(Calendar.MONTH) + 1;
 		sonDonem = (bitYil * 100) + bitAy;
 		LinkedHashMap<String, Object> veriLastMap = ortakIslemler.getLastParameter(sayfaURL, session);
+		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+
+		String linkAdresKey = (String) req.getParameter("linkAdresKey");
 		if (veriLastMap != null) {
 			if (veriLastMap.containsKey("basYil"))
 				basYil = Integer.parseInt((String) veriLastMap.get("basYil"));
@@ -182,6 +193,16 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		fillEkSahaTanim();
 		ayDoldur(basYil, donemBas, false);
 		ayDoldur(bitYil, donemBit, true);
+		if (linkAdresKey != null) {
+			personelDoldur();
+			HashMap fields = new HashMap();
+			fields.put("id", Long.parseLong(linkAdresKey));
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			PersonelDenklestirme pd = (PersonelDenklestirme) pdksEntityController.getObjectByInnerObject(fields, PersonelDenklestirme.class);
+			if (pd != null)
+				fillBilgileriDoldur(pd.getPdksPersonel());
+		}
 
 	}
 
@@ -211,6 +232,53 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		} catch (Exception e) {
 
 		}
+	}
+
+	/**
+	 * @param aylikPuantaj
+	 * @return
+	 */
+	@Transactional
+	public String saveFazlaMesaiLastParameter(AylikPuantaj aylikPuantaj) {
+		Map<String, String> map1 = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap();
+		PersonelDenklestirme personelDenklestirme = aylikPuantaj.getPersonelDenklestirme();
+		DenklestirmeAy denklestirmeAy = personelDenklestirme.getDenklestirmeAy();
+		String adres = map1.containsKey("host") ? map1.get("host") : "";
+
+		LinkedHashMap<String, Object> lastMap = new LinkedHashMap<String, Object>();
+		lastMap.put("yil", "" + denklestirmeAy.getYil());
+		lastMap.put("ay", "" + denklestirmeAy.getAy());
+		Sirket sirket = seciliPersonel.getSirket();
+		if (sirket.getDepartman() != null)
+			lastMap.put("departmanId", "" + sirket.getDepartman().getId());
+		if (sirket != null)
+			lastMap.put("sirketId", "" + sirket.getId());
+		if (sirket.getTesisDurum() && seciliPersonel.getTesis() != null)
+			lastMap.put("tesisId", "" + seciliPersonel.getTesis().getId());
+		if (seciliPersonel.getEkSaha3() != null)
+			lastMap.put("bolumId", "" + seciliPersonel.getEkSaha3().getId());
+		if (seciliPersonel.getEkSaha4() != null) {
+			Tanim ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
+			if (ekSaha4Tanim != null)
+				lastMap.put("altBolumId", "" + seciliPersonel.getEkSaha4().getId());
+		}
+
+		lastMap.put("sicilNo", seciliPersonel.getPdksSicilNo());
+		String sayfa = MenuItemConstant.fazlaMesaiHesapla;
+		if (personelDenklestirme.getDurum().equals(Boolean.TRUE) || personelDenklestirme.isOnaylandi())
+			lastMap.put("sayfaURL", FazlaMesaiHesaplaHome.sayfaURL);
+		else {
+			lastMap.put("sayfaURL", VardiyaGunHome.sayfaURL);
+			sayfa = MenuItemConstant.vardiyaPlani;
+		}
+
+		bordroAdres = "<a href='http://" + adres + "/" + sayfaURL + "?linkAdresKey=" + aylikPuantaj.getPersonelDenklestirme().getId() + "'>" + ortakIslemler.getCalistiMenuAdi(sayfaURL) + " Ekranına Geri Dön</a>";
+		try {
+			ortakIslemler.saveLastParameter(lastMap, session);
+		} catch (Exception e) {
+
+		}
+		return sayfa;
 	}
 
 	/**
@@ -1402,7 +1470,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		ucretliIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.ucretliIzinGunKod());
 		ucretsizIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.ucretsizIzinGunKod());
 		hastalikIzinGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.hastalikIzinGunKod());
-		bordroToplamGunKod  = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
+		bordroToplamGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.bordroToplamGunKod());
 		haftaTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.haftaTatilGunKod());
 		resmiTatilGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.resmiTatilGunKod());
 		artikGunKod = bordroPuantajEkranindaGoster || baslikMap.containsKey(ortakIslemler.artikGunKod());

@@ -767,7 +767,18 @@
 												<h:outputText value="Vardiya" />
 											</f:facet>
 											<ui:fragment rendered="#{aylikPuantaj.calismaModeli!=null}">
-												<SPAN style="width: autostretch; white-space: nowrap;"> <h:outputText value="#{aylikPuantaj.pdksPersonel.adSoyad}" /></SPAN>
+												<SPAN style="width: autostretch; white-space: nowrap;" id="vardiyaOzet#{aylikPuantaj.gunSayisi}"> <h:outputText
+														value="#{aylikPuantaj.pdksPersonel.adSoyad}" /></SPAN>
+												<rich:toolTip for="vardiyaOzet#{aylikPuantaj.gunSayisi}">
+
+													<SPAN style="color: green; font-size: 12px;"> <B><s:formattedText
+																value="#{vardiyaPlaniTopluRaporHome.vardiyaTitle(aylikPuantaj.vardiyaGun,'P')}" /> </B>
+
+													</SPAN>
+
+												</rich:toolTip>
+
+
 											</ui:fragment>
 											<ui:fragment rendered="#{aylikPuantaj.calismaModeli==null}">
 												<SPAN style="width: autostretch; white-space: nowrap; font-weight: bold;"> <h:outputText

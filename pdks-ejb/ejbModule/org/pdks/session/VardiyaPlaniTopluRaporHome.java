@@ -1349,7 +1349,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 	public String ozetListeAciklamaDegistir() {
 		if (vardiyaOzetPuantajList != null) {
 			for (AylikPuantaj ap : vardiyaOzetPuantajList) {
-				if (ap.getVardiyaGun() != null) {
+				if (ap.getVardiyaGun() != null && ap.getCalismaModeli() != null) {
 					Personel personelPuantaj = ap.getPdksPersonel();
 					personelPuantaj.setAd(vardiyaAciklama(ap.getVardiyaGun()));
 				}
@@ -1455,7 +1455,9 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 				if (vardiyaGun.isAyinGunu() == false)
 					iterator.remove();
 			}
+			int gunSayisi = 0;
 			for (AylikPuantaj ap : vardiyaOzetPuantajList) {
+				ap.setGunSayisi(++gunSayisi);
 				Vardiya vardiya = ap.getVardiyaGun() != null ? ap.getVardiyaGun().getVardiya() : null;
 				for (VardiyaGun vg : vardiyaList) {
 					String key = vg.getVardiyaDateStr();
@@ -2297,7 +2299,12 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(modelAciklama);
 			}
 			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getGorevTipi() != null ? personel.getGorevTipi().getAciklama() : "");
-			ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getAdSoyad());
+			cell = ExcelUtil.getCell(sheet, row, col++, aylikPuantaj.getCalismaModeli() != null ? styleGenel : header);
+			cell.setCellValue(personel.getAdSoyad());
+			if (aylikPuantaj.getCalismaModeli() != null) {
+				String titleVardiya = vardiyaTitle(aylikPuantaj.getVardiyaGun(), "E");
+				ExcelUtil.setCellComment(cell, anchor, helper, drawing, titleVardiya);
+			}
 
 			for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 				VardiyaGun vg = (VardiyaGun) iterator.next();
