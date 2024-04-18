@@ -195,9 +195,8 @@
 								<DIV style="font-weight: bold; color: blue; font-size: 16px;">
 
 									<p style="text-align: center;">
-									#{ortakIslemler.getSelectItemText(fazlaMesaiDonemselPuantajRaporHome.bolumId,fazlaMesaiDonemselPuantajRaporHome.bolumler)} - 
-									#{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.pdksSicilNo}
-										#{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.adSoyad}</p>
+										#{ortakIslemler.getSelectItemText(fazlaMesaiDonemselPuantajRaporHome.bolumId,fazlaMesaiDonemselPuantajRaporHome.bolumler)} -
+										#{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.pdksSicilNo} #{fazlaMesaiDonemselPuantajRaporHome.seciliPersonel.adSoyad}</p>
 								</DIV>
 								<br></br>
 								<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiExcel}" target="blank">
@@ -555,7 +554,7 @@
 													</ui:fragment>
 													<ui:fragment rendered="#{vardiyaGun.ayinGunu}">
 														<td class="#{ap.getVardiya(vardiyaGun).getAylikClassAdi(ap.trClass)}">
-															<DIV id="vardiya#{vardiyaGun.vardiyaKeyStr}" align="center" style="width: 8px;">
+															<DIV id="vardiya#{vardiyaGun.vardiyaKeyStr}" align="center">
 																<ui:fragment rendered="#{vardiyaGun.vardiya==null}">
 																	<SPAN style="text-align: center;">-</SPAN>
 																	<rich:toolTip for="vardiya#{vardiyaGun.vardiyaKeyStr}">
