@@ -5588,11 +5588,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					// planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
 					planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiTanimsizBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, session);
 				}
-				if (planTanimsizBolumList != null) {
-			 
-					if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
-						planTanimsizBolumList = null;
-				}
+
+				if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
+					planTanimsizBolumList = null;
+
 			}
 			altBolumList = null;
 			seciliEkSaha4Id = null;
@@ -5623,27 +5622,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 			if ((ikRole || adminRole || authenticatedUser.isDirektorSuperVisor()) & denklestirmeAyDurum && altBolumList != null) {
 				planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiTanimsizAltBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, session);
-				if (planTanimsizBolumList != null) {
-					// for (Iterator iterator = planTanimsizBolumList.iterator(); iterator.hasNext();) {
-					// SelectItem pl = (SelectItem) iterator.next();
-					// boolean sil = false;
-					// for (SelectItem st : altBolumList) {
-					// if (st.getValue().equals(pl.getValue())) {
-					// sil = true;
-					// break;
-					// }
-					// }
-					// if (sil)
-					// iterator.remove();
-					//
-					// }
-					// if (planTanimsizBolumList.size() == 1)
-					// planTanimsizBolumId = (Long) planTanimsizBolumList.get(0).getValue();
-					// else
-					// planTanimsizBolumId = null;
-					if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
-						planTanimsizBolumList = null;
-				}
+
+				if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
+					planTanimsizBolumList = null;
+
 			}
 
 			aylikPuantajList.clear();
