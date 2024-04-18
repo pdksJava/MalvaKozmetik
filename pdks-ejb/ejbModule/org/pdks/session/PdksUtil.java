@@ -2594,7 +2594,7 @@ public class PdksUtil implements Serializable {
 					else if (role.getRolename().equals(Role.TIPI_SUPER_VISOR)) {
 						user.setSuperVisor(Boolean.TRUE);
 						user.setYonetici(Boolean.TRUE);
-					} else if (role.getRolename().equals(Role.TIPI_DEPARTMAN_SUPER_VISOR)) {
+					} else if (role.getRolename().equals(Role.TIPI_DIREKTOR_SUPER_VISOR)) {
 						user.setDirektorSuperVisor(pdksPersonel != null && pdksPersonel.getEkSaha1() != null && pdksPersonel.getEkSaha1().getDurum());
 						user.setYonetici(Boolean.TRUE);
 					} else if (role.getRolename().equals(Role.TIPI_PROJE_MUDURU))

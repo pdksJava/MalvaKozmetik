@@ -3773,10 +3773,10 @@ public class OrtakIslemler implements Serializable {
 				} else if (tipi.equalsIgnoreCase("B")) {
 					class1 = Tanim.class;
 					order = Tanim.COLUMN_NAME_ACIKLAMATR;
-				} else if (tipi.equalsIgnoreCase("AB")) {
+				} else if (tipi.startsWith("AB")) {
 					class1 = Tanim.class;
 					order = Tanim.COLUMN_NAME_ACIKLAMATR;
-				} else if (tipi.equalsIgnoreCase("T")) {
+				} else if (tipi.startsWith("T")) {
 					if (sirket == null || sirket.isTesisDurumu()) {
 						class1 = Tanim.class;
 						order = Tanim.COLUMN_NAME_ACIKLAMATR;
@@ -3813,7 +3813,8 @@ public class OrtakIslemler implements Serializable {
 							}
 						}
 					}
-					String spAdi = "SP_GET_FAZLA_MESAI_DATA_ALT";
+					// String spAdi = "SP_GET_FAZLA_MESAI_DATA_ALT";
+					String spAdi = "SP_GET_FAZLA_MESAI_DATA";
 					StringBuffer sp = new StringBuffer(spAdi);
 					LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 					Long denklestirmeDeger = 0L;
@@ -3859,7 +3860,7 @@ public class OrtakIslemler implements Serializable {
 					map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					try {
 						list = pdksEntityController.execSPList(map, sp, class1);
-						if (tipi.equalsIgnoreCase("P") && loginUser.isAdmin())
+						if (tipi.endsWith("+") && loginUser.isAdmin())
 							logger.debug(spAdi + " " + tipi + " " + list.size() + "\n" + gson.toJson(map));
 					} catch (Exception e) {
 						logger.error(e + "\n" + spAdi + "\n" + gson.toJson(map));

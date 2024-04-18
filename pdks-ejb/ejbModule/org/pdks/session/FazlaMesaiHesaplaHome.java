@@ -5580,30 +5580,16 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 		} else {
 
-			if ((ikRole || adminRole) & denklestirmeAyDurum && gorevYeriList != null) {
+			if ((ikRole || adminRole || authenticatedUser.isDirektorSuperVisor()) & denklestirmeAyDurum && gorevYeriList != null) {
 				if (departman.isAdminMi() && sirket.isTesisDurumu()) {
-					planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
+					planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiTanimsizBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, session);
+					// planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
 				} else {
-					planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
+					// planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
+					planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiTanimsizBolumList(sirket, null, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, session);
 				}
 				if (planTanimsizBolumList != null) {
-					for (Iterator iterator = planTanimsizBolumList.iterator(); iterator.hasNext();) {
-						SelectItem pl = (SelectItem) iterator.next();
-						boolean sil = false;
-						for (SelectItem st : gorevYeriList) {
-							if (st.getValue().equals(pl.getValue())) {
-								sil = true;
-								break;
-							}
-						}
-						if (sil)
-							iterator.remove();
-
-					}
-					if (planTanimsizBolumList.size() == 1)
-						planTanimsizBolumId = (Long) planTanimsizBolumList.get(0).getValue();
-					else
-						planTanimsizBolumId = null;
+			 
 					if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
 						planTanimsizBolumList = null;
 				}
@@ -5635,26 +5621,26 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (!eski)
 				seciliEkSaha4Id = -1L;
 
-			if ((ikRole || adminRole) & denklestirmeAyDurum && altBolumList != null) {
-				planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiAltBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, false, session);
+			if ((ikRole || adminRole || authenticatedUser.isDirektorSuperVisor()) & denklestirmeAyDurum && altBolumList != null) {
+				planTanimsizBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiTanimsizAltBolumList(sirket, tesisId != null ? String.valueOf(tesisId) : null, seciliEkSaha3Id, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, session);
 				if (planTanimsizBolumList != null) {
-					for (Iterator iterator = planTanimsizBolumList.iterator(); iterator.hasNext();) {
-						SelectItem pl = (SelectItem) iterator.next();
-						boolean sil = false;
-						for (SelectItem st : altBolumList) {
-							if (st.getValue().equals(pl.getValue())) {
-								sil = true;
-								break;
-							}
-						}
-						if (sil)
-							iterator.remove();
-
-					}
-					if (planTanimsizBolumList.size() == 1)
-						planTanimsizBolumId = (Long) planTanimsizBolumList.get(0).getValue();
-					else
-						planTanimsizBolumId = null;
+					// for (Iterator iterator = planTanimsizBolumList.iterator(); iterator.hasNext();) {
+					// SelectItem pl = (SelectItem) iterator.next();
+					// boolean sil = false;
+					// for (SelectItem st : altBolumList) {
+					// if (st.getValue().equals(pl.getValue())) {
+					// sil = true;
+					// break;
+					// }
+					// }
+					// if (sil)
+					// iterator.remove();
+					//
+					// }
+					// if (planTanimsizBolumList.size() == 1)
+					// planTanimsizBolumId = (Long) planTanimsizBolumList.get(0).getValue();
+					// else
+					// planTanimsizBolumId = null;
 					if (planTanimsizBolumList != null && planTanimsizBolumList.isEmpty())
 						planTanimsizBolumList = null;
 				}

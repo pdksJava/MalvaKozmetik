@@ -3985,7 +3985,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (personel.getEkSaha1() == null || personel.getEkSaha1().getKodu().equals(bosDepartmanKodu)) {
 				for (Iterator iterator = allRoles.iterator(); iterator.hasNext();) {
 					Role role = (Role) iterator.next();
-					if (role.getRolename().equals(Role.TIPI_DEPARTMAN_SUPER_VISOR)) {
+					if (role.getRolename().equals(Role.TIPI_DIREKTOR_SUPER_VISOR)) {
 						iterator.remove();
 					}
 				}

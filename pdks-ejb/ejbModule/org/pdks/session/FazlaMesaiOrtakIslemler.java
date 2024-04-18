@@ -650,7 +650,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		if (!personelDenklestirmeList.isEmpty()) {
 			List<AylikPuantaj> puantajList = new ArrayList<AylikPuantaj>(ortakIslemler.sortAylikPuantajList(personelDenklestirmeList, false));
 			personelDenklestirmeList.clear();
-			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>();
+			List<AylikPuantaj> aktifList = new ArrayList<AylikPuantaj>(), aktifEksikList = new ArrayList<AylikPuantaj>(), hataliGunList = new ArrayList<AylikPuantaj>();
 			for (AylikPuantaj aylikPuantaj : puantajList) {
 				PersonelDenklestirme pd = aylikPuantaj.getPersonelDenklestirme();
 				boolean hataYok = pd.getDurum().equals(Boolean.TRUE);
@@ -658,14 +658,22 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					aktifEksikList.add(aylikPuantaj);
 				else if (hataYok)
 					aktifList.add(aylikPuantaj);
-				else
-					personelDenklestirmeList.add(aylikPuantaj);
+				else {
+					if (pd.isOnaylandi() == false)
+						personelDenklestirmeList.add(aylikPuantaj);
+					else
+						hataliGunList.add(aylikPuantaj);
+				}
+
 			}
+			if (!hataliGunList.isEmpty())
+				personelDenklestirmeList.addAll(hataliGunList);
 			if (!aktifEksikList.isEmpty())
 				personelDenklestirmeList.addAll(aktifEksikList);
 			if (!aktifList.isEmpty())
 				personelDenklestirmeList.addAll(aktifList);
 			puantajList = null;
+			hataliGunList = null;
 			aktifEksikList = null;
 			aktifList = null;
 		}
@@ -1960,6 +1968,28 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param sirket
 	 * @param tesisId
 	 * @param aylikPuantaj
+ 	 * @param session
+	 * @return
+	 */
+	public List<SelectItem> getFazlaMesaiTanimsizBolumList(Sirket sirket, String tesisId, AylikPuantaj aylikPuantaj,  Session session) {
+		User loginUser = aylikPuantaj != null && aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : null;
+		if (loginUser == null)
+			loginUser = authenticatedUser;
+		List<Tanim> list = ortakIslemler.getFazlaMesaiList(loginUser, null, sirket, tesisId, null, null, aylikPuantaj, "B+", true, session);
+		List<SelectItem> selectList = new ArrayList<SelectItem>();
+		if (!list.isEmpty()) {
+			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Tanim veri = (Tanim) iterator.next();
+				selectList.add(new SelectItem(veri.getId(), veri.getAciklama()));
+			}
+		}
+		return selectList;
+	}
+	/**
+	 * @param sirket
+	 * @param tesisId
+	 * @param aylikPuantaj
 	 * @param denklestirme
 	 * @param session
 	 * @return
@@ -1978,6 +2008,31 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 		}
 		return selectList;
+	}
+
+	/**
+	 * @param sirket
+	 * @param tesisId
+	 * @param bolumId
+	 * @param aylikPuantaj
+ 	 * @param session
+	 * @return
+	 */
+	public List<SelectItem> getFazlaMesaiTanimsizAltBolumList(Sirket sirket, String tesisId, Long bolumId, AylikPuantaj aylikPuantaj, Session session) {
+		User loginUser = aylikPuantaj != null && aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : null;
+		if (loginUser == null)
+			loginUser = authenticatedUser;
+		List<Tanim> list = ortakIslemler.getFazlaMesaiList(loginUser, null, sirket, tesisId, bolumId, null, aylikPuantaj, "AB+", true, session);
+		List<SelectItem> selectList = new ArrayList<SelectItem>();
+		if (!list.isEmpty()) {
+			list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
+			for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+				Tanim veri = (Tanim) iterator.next();
+				selectList.add(new SelectItem(veri.getId(), veri.getAciklama()));
+			}
+		}
+		return selectList;
+
 	}
 
 	/**
