@@ -189,8 +189,8 @@
 								</s:decorate>
 								<s:decorate template="/layout/edit.xhtml" >
 									<ui:define name="label">Otomatik Onay Başlangıç Tarihi</ui:define>
-									<rich:calendar value="#{vardiyaTanimlaHome.denklestirmeAy.otomatikOnayIKBaslangicTarih}" datePattern="#{authenticatedUser.dateFormat}" required="true"
-										requiredMessage="Otomatik Son Onay Tarihi Giriniz" />
+									<rich:calendar value="#{vardiyaTanimlaHome.denklestirmeAy.otomatikOnayIKBaslangicTarih}" datePattern="#{authenticatedUser.dateFormat}" required="false"
+										requiredMessage="Otomatik İlk Onay Tarihi Giriniz" />
 								</s:decorate>
 								<c:if test="#{authenticatedUser.admin}">
 									<s:decorate template="/layout/edit.xhtml">
