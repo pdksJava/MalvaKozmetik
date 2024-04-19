@@ -32,7 +32,7 @@ public class Tatil extends BaseObject {
 	private Integer version = 0;
 	private Object basAy, basGun, bitAy, bitGun;
 	private Tatil orjTatil;
-	private Boolean arifeVardiyaYarimHesapla;
+	private Boolean arifeVardiyaYarimHesapla, arifeCalismaSaatYokCGSDus;
 	private HashMap<Long, Vardiya> vardiyaMap;
 
 	public Tatil() {
@@ -226,6 +226,18 @@ public class Tatil extends BaseObject {
 		this.arifeSonraVardiyaDenklestirmeVar = arifeSonraVardiyaDenklestirmeVar;
 	}
 
+	@Transient
+	public Boolean getArifeCalismaSaatYokCGSDus() {
+		return arifeCalismaSaatYokCGSDus;
+	}
 
+	public void setArifeCalismaSaatYokCGSDus(Boolean arifeCalismaSaatYokCGSDus) {
+		this.arifeCalismaSaatYokCGSDus = arifeCalismaSaatYokCGSDus;
+	}
+
+	@Transient
+	public boolean isArifeCalismaSaatYokCGSDussun() {
+		return arifeCalismaSaatYokCGSDus != null && arifeCalismaSaatYokCGSDus;
+	}
 
 }

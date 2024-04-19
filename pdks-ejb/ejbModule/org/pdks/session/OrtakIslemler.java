@@ -10279,6 +10279,7 @@ public class OrtakIslemler implements Serializable {
 								tatilStr = arifeVardiyaDonem.getTatilBasZaman();
 								arifeVardiyaHesapla = arifeVardiyaDonem.getArifeVardiyaHesapla();
 								tatilIslem.setArifeSonraVardiyaDenklestirmeVar(arifeVardiyaDonem.getArifeSonraVardiyaDenklestirmeVar());
+								tatilIslem.setArifeCalismaSaatYokCGSDus(arifeVardiyaDonem.getArifeCalismaSaatYokCGSDus());
 								arifeVardiyaDonemDB = arifeVardiyaDonem;
 								if (arifeVardiyaDonem.getVardiya() != null)
 									break;

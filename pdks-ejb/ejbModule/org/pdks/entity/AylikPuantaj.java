@@ -498,15 +498,24 @@ public class AylikPuantaj implements Serializable, Cloneable {
 										vardiya.setArifeBaslangicTarihi(vardiyaTatil.getArifeBaslangicTarihi());
 										if (vardiya.getArifeBaslangicTarihi() != null && vardiyaTatil.getArifeCalismaSure() != null) {
 											if (vardiya.getArifeBaslangicTarihi().getTime() <= vardiya.getVardiyaBasZaman().getTime()) {
-												if (vg.getResmiTatilSure() <= 0.0d)
-													arifeSure = 0.0d;
-												else {
+												if (vg.getResmiTatilSure() > 0.0d) {
+													saatToplami -= vg.getCalismaSuresi() - vg.getResmiTatilSure();
 													vg.setResmiTatilSure(vg.getCalismaSuresi());
 												}
+												if (tatil.isArifeCalismaSaatYokCGSDussun())
+													arifeSure = 0.0d;
 												// yarimGun = 0.0d;
 											} else if (vardiya.getArifeBaslangicTarihi().getTime() >= vardiya.getVardiyaBitZaman().getTime()) {
 												// arifeSure = 0.0d;
-												yarimGun = 0.0d;
+												if (vg.getCalismaSuresi() > 0.0d) {
+													yarimGun = 0.0d;
+												} else if (tatil.isArifeCalismaSaatYokCGSDussun())
+													arifeSure = 0.0d;
+
+											} else if (vg.getCalismaSuresi() <= 0.0d) {
+												// TODO Arife çalışmıyorsa ÇGS sayma
+												if (tatil.isArifeCalismaSaatYokCGSDussun())
+													arifeSure = 0.0d;
 											}
 										}
 									}
