@@ -61,8 +61,8 @@
 							<s:decorate template="/layout/edit.xhtml"
 								rendered="#{ortakIslemler.tesisDurumu and fazlaMesaiOzetRaporHome.tesisList!=null and fazlaMesaiOzetRaporHome.tesisList.size()>0}">
 								<ui:define name="label">#{ortakIslemler.tesisAciklama()}</ui:define>
-								<h:selectOneMenu value="#{fazlaMesaiOzetRaporHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!" required="true"
-									disabled="#{fazlaMesaiOzetRaporHome.tesisList.size()==1}">
+								<h:selectOneMenu value="#{fazlaMesaiOzetRaporHome.tesisId}" requiredMessage="#{ortakIslemler.tesisAciklama()} seçiniz!"
+									required="#{fazlaMesaiOzetRaporHome.denklestirmeAyDurum}" disabled="#{fazlaMesaiOzetRaporHome.tesisList.size()==1}">
 									<f:selectItem itemLabel="Lütfen seçiniz" />
 									<f:selectItems value="#{fazlaMesaiOzetRaporHome.tesisList}" />
 									<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiOzetRaporHome.bolumDoldur()}" ajaxSingle="true"
@@ -97,7 +97,8 @@
 								<table width="60%">
 									<tr>
 										<TD valign="top" width="50%"><b>Hataları Ayıkla :</b> <h:selectBooleanCheckbox value="#{fazlaMesaiOzetRaporHome.hatalariDuzelt}">
-												<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiOzetRaporHome.aylikPuantajList.clear()}" ajaxSingle="true" reRender="denklestirmeDonemiTable" />
+												<a4j:support event="onchange" status="ajaxStatus" action="#{fazlaMesaiOzetRaporHome.aylikPuantajList.clear()}" ajaxSingle="true"
+													reRender="denklestirmeDonemiTable" />
 											</h:selectBooleanCheckbox></TD>
 										<ui:fragment rendered="#{fazlaMesaiOzetRaporHome.hatalariDuzelt}">
 											<TD valign="top" width="50%" align="left"><b>Hata Ayıklama Tipi :</b> <br></br> <h:selectOneRadio
@@ -202,6 +203,13 @@
 									</f:facet>
 									<h:outputText value="#{aylikPuantaj.pdksPersonel.ekSaha3.aciklama}" style="width:autostretch ;white-space: nowrap;" />
 								</rich:column>
+								<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;" rendered="#{fazlaMesaiOzetRaporHome.ekSaha4Tanim!=null}">
+									<f:facet name="header">
+										<h:outputText value="#{fazlaMesaiOzetRaporHome.ekSaha4Tanim.aciklama}" />
+									</f:facet>
+									<h:outputText value="#{aylikPuantaj.pdksPersonel.ekSaha4.aciklama}" style="width:autostretch ;white-space: nowrap;" />
+								</rich:column>
+
 								<rich:column style="width: 60px;width:autostretch ;white-space: nowrap;">
 									<f:facet name="header">
 										<h:outputText value="#{ortakIslemler.yoneticiAciklama()}" />
@@ -334,7 +342,7 @@
 
 															</ui:fragment>
 															<ui:fragment
-																rendered="#{fazlaMesaiOzetRaporHome.ikRole and aylikPuantaj.vardiyaGun.izin!=null and aylikPuantaj.vardiyaGun.vardiya!=null}">
+																rendered="#{aylikPuantaj.vardiyaGun.izin!=null and aylikPuantaj.vardiyaGun.vardiya!=null}">
 																<br />[#{aylikPuantaj.vardiyaGun.vardiya.kisaAdi}]</ui:fragment>
 														</ui:fragment>
 

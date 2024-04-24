@@ -153,7 +153,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 	private List<YemekIzin> yemekAraliklari;
 	private CalismaModeli perCalismaModeli;
 	private Long seciliEkSaha3Id, sirketId = null, departmanId, gorevTipiId, tesisId;
-	private Tanim gorevYeri, seciliBolum, tesis;
+	private Tanim gorevYeri, seciliBolum, tesis, ekSaha4Tanim;
 
 	private Double toplamFazlamMesai = 0D;
 	private Double aksamCalismaSaati = null, aksamCalismaSaatiYuzde = null;
@@ -579,7 +579,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			fillDepartmanList();
 		List<SelectItem> sirketler = null;
 		bolumleriTemizle();
-
+		ekSaha4Tanim = null;
 		try {
 			if (denklestirmeAy == null)
 				setSeciliDenklestirmeAy();
@@ -621,6 +621,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					if (session != null)
 						map.put(PdksEntityController.MAP_KEY_SESSION, session);
 					sirket = (Sirket) pdksEntityController.getObjectByInnerObject(map, Sirket.class);
+					ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
 				}
 			}
 			setPdksSirketList(sirketler);
@@ -1272,7 +1273,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 								}
 
-							} else if (!tipi.equals("") && vardiyaGun.isZamanGelmedi() == false && islemVardiya.isCalisma()) {
+							} else if (!tipi.equals("") && vardiyaGun.isZamanGelmedi() == false && islemVardiya != null && islemVardiya.isCalisma()) {
 								if (tipi.equals("S")) {
 									vardiyaGun.setCalismaSuresi(0.0d);
 									vardiyaGun.setResmiTatilSure(0.0d);
@@ -1548,6 +1549,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 			}
 
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			ortakIslemler.loggerErrorYaz(sayfaURL, ex);
 			throw new Exception(ex);
 
@@ -1864,6 +1866,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		if (seciliEkSaha3Id == null)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
+		if (ekSaha4Tanim != null)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha4Tanim.getAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
 		if (sirketGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
@@ -2097,7 +2101,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 					if (seciliEkSaha3Id == null)
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
-
+					if (ekSaha4Tanim != null)
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
 					if (sirketGoster)
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getSirket() != null ? personel.getSirket().getAd() : "");
@@ -3520,6 +3525,14 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 
 	public void setDuzeltTipleri(List<SelectItem> duzeltTipleri) {
 		this.duzeltTipleri = duzeltTipleri;
+	}
+
+	public Tanim getEkSaha4Tanim() {
+		return ekSaha4Tanim;
+	}
+
+	public void setEkSaha4Tanim(Tanim ekSaha4Tanim) {
+		this.ekSaha4Tanim = ekSaha4Tanim;
 	}
 
 }
