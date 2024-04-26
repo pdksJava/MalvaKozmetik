@@ -6325,6 +6325,14 @@ public class OrtakIslemler implements Serializable {
 	/**
 	 * @return
 	 */
+	public String bolumAciklama() {
+		String bolumAciklama = getBaslikAciklama("bolumAciklama", "Bölüm");
+		return bolumAciklama;
+	}
+
+	/**
+	 * @return
+	 */
 	public Boolean getTesisDurumu() {
 		String tesisDurumuStr = getParameterKey("tesisDurumu");
 		boolean tesisDurumu = tesisDurumuStr.equals("1");

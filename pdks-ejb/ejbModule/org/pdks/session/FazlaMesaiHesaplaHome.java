@@ -3250,6 +3250,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 			}
 			if (!strList.isEmpty()) {
+				if (bolumAciklama == null) {
+					fillEkSahaTanim();
+					if (bolumAciklama == null)
+						bolumAciklama = ortakIslemler.bolumAciklama();
+				}
 				MailObject mail = new MailObject();
 				String konu = (strList.size() > 1 ? "" : izinSahibiTEK.getPdksSicilNo() + " " + ortakIslemler.personelNoAciklama() + " " + izinSahibiTEK.getAdSoyad() + " ait ");
 				mail.setSubject(konu + (denklestirmeAy != null ? denklestirmeAy.getYil() + " - " + denklestirmeAy.getAyAdi() + " dönemi " : "") + "İzin gününde hatalı girişler");
