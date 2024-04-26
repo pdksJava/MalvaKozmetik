@@ -4869,9 +4869,12 @@ public class OrtakIslemler implements Serializable {
 		String departmanAciklama = tanimMap != null && tanimMap.containsKey("ekSaha1") ? tanimMap.get("ekSaha1").getAciklama() : "Departman";
 		String bolumAciklama = tanimMap != null && tanimMap.containsKey("ekSaha3") ? tanimMap.get("ekSaha3").getAciklama() : "Bölüm";
 		String altBolumAciklama = tanimMap != null && tanimMap.containsKey("ekSaha4") ? tanimMap.get("ekSaha4").getAciklama() : "Alt Bölüm";
+		if (bolumAciklama == null)
+			bolumAciklama = bolumAciklama();
 		sonucMap.put("sirketAciklama", sirketAciklama());
 		sonucMap.put("tesisAciklama", tesisAciklama());
 		sonucMap.put("bolumAciklama", bolumAciklama);
+
 		sonucMap.put("departmanAciklama", departmanAciklama);
 		sonucMap.put("altBolumAciklama", altBolumAciklama);
 		return sonucMap;
