@@ -3222,7 +3222,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								continue;
 							}
 							devam = true;
-							izinStr += virgul + PdksUtil.convertToDateString(vGun.getVardiyaDate(), "d MMM EEEEE");
+							izinStr += virgul + PdksUtil.convertToDateString(vGun.getVardiyaDate(), "d MMMMM EEEEE");
 							virgul = ", ";
 						}
 						if (!izin.getCalisilanGunler().isEmpty()) {
