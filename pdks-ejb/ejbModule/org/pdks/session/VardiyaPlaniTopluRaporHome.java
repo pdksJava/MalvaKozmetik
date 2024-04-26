@@ -1763,11 +1763,11 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		col = 0;
 		ExcelUtil.getCell(sheet, ++row, col, styleGenel).setCellValue("");
 		col = 0;
-		ExcelUtil.getCell(sheet, ++row, col++, header).setCellValue("Sıra");
+
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		if (kimlikGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kimlikNoAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adı Soyadı");
 		if (sirket.getTesisDurum())
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
 		if (seciliEkSaha3Id == null)
@@ -1930,7 +1930,6 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "Hata Açıklama", "Plan onaylanmamış");
 		}
-		int sira = 0;
 		double maxSure = denklestirmeAy.getFazlaMesaiMaxSure() != null ? denklestirmeAy.getFazlaMesaiMaxSure() : 11.0d;
 		Date bugun = PdksUtil.getDate(new Date());
 
@@ -1973,16 +1972,15 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 						}
 					}
 
-					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(++sira);
 					ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getSicilNo());
+					Cell personelCell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
+					personelCell.setCellValue(personel.getAdSoyad());
 					if (kimlikGoster) {
 						if (PdksUtil.hasStringValue(personel.getPersonelKGS().getKimlikNo()))
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPersonelKGS().getKimlikNo());
 						else
 							ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue("");
 					}
-					Cell personelCell = ExcelUtil.getCell(sheet, row, col++, styleGenel);
-					personelCell.setCellValue(personel.getAdSoyad());
 					if (sirket.getTesisDurum())
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
 
@@ -2229,7 +2227,9 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		for (int i = 0; i <= col; i++)
 			sheet.autoSizeColumn(i);
 		sheet = ExcelUtil.createSheet(wb, PdksUtil.convertToDateString(aylikPuantajDefault.getIlkGun(), "MMMMM yyyy") + " Özet Planı", Boolean.TRUE);
-
+		if (vardiyaOzetPuantajList == null || vardiyaOzetPuantajList.isEmpty())
+			if (!aylikPuantajList.isEmpty())
+				ozetListeOlustur(aylikPuantajList);
 		col = 0;
 		row = 0;
 		if (sirketGoster)

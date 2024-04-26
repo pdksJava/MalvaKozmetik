@@ -6595,10 +6595,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 										VardiyaSablonu bagliVardiyaSablonu = calismaModeli.getBagliVardiyaSablonu();
 										Personel personelDenk = personelDenklestirme.getPersonel();
 										if (!bagliVardiyaSablonu.getId().equals(personelDenk.getSablon().getId())) {
-//											personelDenk.setSablon(bagliVardiyaSablonu);
-//											pdksEntityController.saveOrUpdate(session, entityManager, personelDenk);
-//											flush = true;
-//											kaydet = true;
+											// personelDenk.setSablon(bagliVardiyaSablonu);
+											// pdksEntityController.saveOrUpdate(session, entityManager, personelDenk);
+											// flush = true;
+											// kaydet = true;
 										}
 									}
 
@@ -10520,6 +10520,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				}
 				int baslangic = 0;
 				String str = null;
+				Integer baslangicYer = null;
+
 				while (devam) {
 					try {
 						str = ExcelUtil.getSheetStringValue(sheet, baslangic, gunSayisi++);
@@ -10528,6 +10530,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							maxGun = Integer.parseInt(gunler[0]);
 						else
 							maxGun = Integer.parseInt(str);
+						if (baslangicYer == null)
+							baslangicYer = gunSayisi - 1;
+
 					} catch (Exception e) {
 						if (baslangic == 0) {
 							if (gunSayisi < 28) {
@@ -10538,11 +10543,14 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						} else {
 							if (str != null)
 								logger.debug(str + " " + maxGun);
-							devam = false;
+							if (baslangicYer != null)
+								devam = false;
 						}
 
 					}
 				}
+				if (baslangicYer == null)
+					baslangicYer = COL_ADI_SOYADI + 2;
 				if (aylikPuantajSablon.getGunSayisi() == maxGun) {
 					List<String> perList = new ArrayList<String>();
 					String vardiyaAdi = "";
@@ -10560,7 +10568,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							perMap.put(perSicilNo, adiSoyadi);
 							List<String> list = new ArrayList<String>();
 							for (int i = 0; i < maxGun; i++) {
-								vardiyaAdi = ExcelUtil.getSheetStringValueTry(sheet, row, COL_ADI_SOYADI + i + 2);
+								vardiyaAdi = ExcelUtil.getSheetStringValueTry(sheet, row, baslangicYer + i);
 								String key = null;
 								if (PdksUtil.hasStringValue(vardiyaAdi)) {
 									key = PdksUtil.setTurkishStr(vardiyaAdi).toLowerCase(Locale.ENGLISH);
