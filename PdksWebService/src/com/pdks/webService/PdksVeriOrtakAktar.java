@@ -2035,12 +2035,26 @@ public class PdksVeriOrtakAktar implements Serializable {
 					addHatalist(izinERP.getHataList(), "İzin bitiş zamanı işten ayrılma tarihi " + PdksUtil.convertToDateString(sonCalismaTarihi, FORMAT_DATE) + " den sonra olamaz! [ " + izinSahibi.getAdSoyad() + " ]");
 				IzinTipi izinTipi = izinTipiMap.get(izinERP.getIzinTipi());
 				List<PersonelDenklestirme> kapaliDenklestirmeler = null;
-				if (!izinERP.getHataList().isEmpty())
-					kapaliDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, false);
 				boolean donemKapali = false;
+				Boolean izinDegisti = personelIzin.getId() == null;
+				if (izinERP.getHataList().isEmpty()) {
+					if (!mailEkle && personelIzin.getId() != null) {
+						boolean izinDurum = personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI;
+						izinDegisti = !izinSahibi.getId().equals(personelIzin.getIzinSahibi().getId()) || !izinTipi.getId().equals(personelIzin.getIzinTipi().getId()) || izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime()
+								|| bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
+						mailEkle = izinDegisti && doktor;
+					}
+					if (izinDegisti) {
+						long gecerliDonem = Long.parseLong(PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar(new Date(), -10), "yyyyMM"));
+						long basDonem = Long.parseLong(PdksUtil.convertToDateString(baslangicZamani, "yyyyMM"));
+						if (gecerliDonem > basDonem)
+							kapaliDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, false);
+					}
+				}
+
 				if (kapaliDenklestirmeler != null && !kapaliDenklestirmeler.isEmpty()) {
 					StringBuffer donemStr = new StringBuffer();
-					donemKapali = true;
+					// donemKapali = true;
 					for (Iterator iterator2 = kapaliDenklestirmeler.iterator(); iterator2.hasNext();) {
 						PersonelDenklestirme personelDenklestirme = (PersonelDenklestirme) iterator2.next();
 						DenklestirmeAy denklestirmeAy = personelDenklestirme.getDenklestirmeAy();
@@ -2062,14 +2076,6 @@ public class PdksVeriOrtakAktar implements Serializable {
 				}
 
 				if (izinTipi != null && (donemKapali || izinERP.getHataList().isEmpty())) {
-
-					Boolean izinDegisti = false;
-					if (!mailEkle && personelIzin.getId() != null) {
-						boolean izinDurum = personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI;
-						izinDegisti = !izinSahibi.getId().equals(personelIzin.getIzinSahibi().getId()) || !izinTipi.getId().equals(personelIzin.getIzinTipi().getId()) || izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime()
-								|| bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
-						mailEkle = izinDegisti && doktor;
-					}
 
 					if ((izinERP.getSureBirimi() == null && izinTipi.getHesapTipi() != null && izinTipi.getHesapTipi().equals(PersonelIzin.HESAP_TIPI_GUN)) || izinERP.getSureBirimi().value().equals(SureBirimi.GUN.value())) {
 						if (izinServisGun != null) {
@@ -2219,15 +2225,15 @@ public class PdksVeriOrtakAktar implements Serializable {
 								izinERP.setYazildi(Boolean.TRUE);
 								izinERP.setId(personelIzin.getId());
 							}
-							List<PersonelDenklestirme> acikDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, true);
-							if (acikDenklestirmeler != null && !acikDenklestirmeler.isEmpty()) {
-								for (PersonelDenklestirme personelDenklestirme : acikDenklestirmeler) {
-									if (personelDenklestirme.getDurum().equals(Boolean.FALSE))
-										continue;
-									personelDenklestirme.setDurum(Boolean.FALSE);
-									saveList.add(personelDenklestirme);
-								}
-							}
+							// List<PersonelDenklestirme> acikDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, true);
+							// if (acikDenklestirmeler != null && !acikDenklestirmeler.isEmpty()) {
+							// for (PersonelDenklestirme personelDenklestirme : acikDenklestirmeler) {
+							// if (personelDenklestirme.getDurum().equals(Boolean.FALSE))
+							// continue;
+							// personelDenklestirme.setDurum(Boolean.FALSE);
+							// saveList.add(personelDenklestirme);
+							// }
+							// }
 							try {
 
 								if (listeKaydet(referansNoERP, saveList, deleteList)) {
@@ -2625,7 +2631,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 	 * @param donemDurum
 	 * @return
 	 */
-	protected List<PersonelDenklestirme> getDenklestirmeList(String perNo, Date basTarih, Date bitTarih, boolean donemDurum) {
+	private List<PersonelDenklestirme> getDenklestirmeList(String perNo, Date basTarih, Date bitTarih, boolean donemDurum) {
 		List<PersonelDenklestirme> list = null;
 		if (basTarih != null && bitTarih != null && PdksUtil.hasStringValue(perNo)) {
 			String d1 = PdksUtil.convertToDateString(basTarih, "yyyyMM"), d2 = PdksUtil.convertToDateString(bitTarih, "yyyyMM");
@@ -2640,7 +2646,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 			sb.append(" INNER JOIN " + PersonelDenklestirme.TABLE_NAME + " PD ON P." + Personel.COLUMN_NAME_ID + " = PD." + PersonelDenklestirme.COLUMN_NAME_PERSONEL + " AND PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + " = D." + DenklestirmeAy.COLUMN_NAME_ID);
 			sb.append(" AND PD." + PersonelDenklestirme.COLUMN_NAME_DURUM + " = 1 ");
 			sb.append(" WHERE D.DONEM>=:d1 AND  D.DONEM<=:d2 ");
-			sb.append(" ORDER BY D.DONEM");
+			sb.append(" ORDER BY D.DONEM DESC");
 			fields.put("d1", Long.parseLong(d1));
 			fields.put("d2", Long.parseLong(d2));
 			fields.put("p", perNo);
