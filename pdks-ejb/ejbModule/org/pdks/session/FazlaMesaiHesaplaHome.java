@@ -3260,15 +3260,15 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				sb.append("<p align=\"left\" style=\"width: 90%\">");
 				sb.append("<TABLE style=\"width: 80%\">");
 				if (sirketId != null)
-					sb.append("<TR><TD><B>" + ortakIslemler.sirketAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(sirketId, pdksSirketList) + "</TD>");
+					sb.append("<TR><TD  nowrap><B>" + ortakIslemler.sirketAciklama() + "</B></TD><TD  nowrap><B> : </B>" + PdksUtil.getSelectItemLabel(sirketId, pdksSirketList) + "</TD>");
 				if (sirket != null && sirket.isTesisDurumu() && tesisId != null)
-					sb.append("<TR><TD><B>" + ortakIslemler.tesisAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(tesisId, tesisList) + "</TD>");
+					sb.append("<TR><TD  nowrap><B>" + ortakIslemler.tesisAciklama() + "</B></TD><TD  nowrap><B> : </B>" + PdksUtil.getSelectItemLabel(tesisId, tesisList) + "</TD>");
 				if (seciliEkSaha3Id != null)
-					sb.append("<TR><TD><B>" + bolumAciklama + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha3Id, gorevYeriList) + "</TD>");
+					sb.append("<TR><TD  nowrap><B>" + bolumAciklama + "</B></TD><TD  nowrap><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha3Id, gorevYeriList) + "</TD>");
 				if (ekSaha4Tanim != null && seciliEkSaha4Id != null && seciliEkSaha4Id.longValue() > 0L)
-					sb.append("<TR><TD><B>" + ekSaha4Tanim.getAciklama() + "</B></TD><TD><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha4Id, altBolumList) + "</TD>");
+					sb.append("<TR><TD  nowrap><B>" + ekSaha4Tanim.getAciklama() + "</B></TD><TD  nowrap><B> : </B>" + PdksUtil.getSelectItemLabel(seciliEkSaha4Id, altBolumList) + "</TD>");
 				if (PdksUtil.hasStringValue(sicilNo))
-					sb.append("<TR><TD><B>" + ortakIslemler.personelNoAciklama() + "</B></TD><TD><B> : </B>" + sicilNo.trim() + "</TD>");
+					sb.append("<TR><TD  nowrap><B>" + ortakIslemler.personelNoAciklama() + "</B></TD><TD  nowrap><B> : </B>" + sicilNo.trim() + "</TD>");
 				sb.append("</TABLE>");
 				sb.append("<" + uolStr + ">");
 				boolean renkUyari = true;

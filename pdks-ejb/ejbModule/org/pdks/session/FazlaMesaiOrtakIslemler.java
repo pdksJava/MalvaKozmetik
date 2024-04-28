@@ -1459,7 +1459,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					session.flush();
 				if (saatlikCalismaVar) {
 					String keyEk = saatlikCalisma ? "" : "G";
-					baslikGuncelle(baslikMap, ortakIslemler.normalCalismaSaatKod() + keyEk, normalSaat);
+					baslikGuncelle(baslikMap, ortakIslemler.normalCalismaSaatKod() + keyEk, saatlikCalisma ? normalCalisma : normalSaat);
 					baslikGuncelle(baslikMap, ortakIslemler.haftaTatilCalismaSaatKod() + keyEk, haftaTatilSaat);
 					baslikGuncelle(baslikMap, ortakIslemler.resmiTatilCalismaSaatKod() + keyEk, resmiTatilSaat);
 					baslikGuncelle(baslikMap, ortakIslemler.izinSureSaatKod() + keyEk, izinGunSaat);
@@ -1968,10 +1968,10 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param sirket
 	 * @param tesisId
 	 * @param aylikPuantaj
- 	 * @param session
+	 * @param session
 	 * @return
 	 */
-	public List<SelectItem> getFazlaMesaiTanimsizBolumList(Sirket sirket, String tesisId, AylikPuantaj aylikPuantaj,  Session session) {
+	public List<SelectItem> getFazlaMesaiTanimsizBolumList(Sirket sirket, String tesisId, AylikPuantaj aylikPuantaj, Session session) {
 		User loginUser = aylikPuantaj != null && aylikPuantaj.getLoginUser() != null ? aylikPuantaj.getLoginUser() : null;
 		if (loginUser == null)
 			loginUser = authenticatedUser;
@@ -1986,6 +1986,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		}
 		return selectList;
 	}
+
 	/**
 	 * @param sirket
 	 * @param tesisId
@@ -2015,7 +2016,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	 * @param tesisId
 	 * @param bolumId
 	 * @param aylikPuantaj
- 	 * @param session
+	 * @param session
 	 * @return
 	 */
 	public List<SelectItem> getFazlaMesaiTanimsizAltBolumList(Sirket sirket, String tesisId, Long bolumId, AylikPuantaj aylikPuantaj, Session session) {
