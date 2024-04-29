@@ -2037,9 +2037,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 				List<PersonelDenklestirme> kapaliDenklestirmeler = null;
 				boolean donemKapali = false;
 				Boolean izinDegisti = personelIzin.getId() == null;
+				boolean izinDurum = personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI;
 				if (izinERP.getHataList().isEmpty()) {
 					if (!mailEkle && personelIzin.getId() != null) {
-						boolean izinDurum = personelIzin.getIzinDurumu() == PersonelIzin.IZIN_DURUMU_ONAYLANDI;
 						izinDegisti = !izinSahibi.getId().equals(personelIzin.getIzinSahibi().getId()) || !izinTipi.getId().equals(personelIzin.getIzinTipi().getId()) || izinDurum != izinERP.getDurum().booleanValue() || baslangicZamani.getTime() != personelIzin.getBaslangicZamani().getTime()
 								|| bitisZamani.getTime() != personelIzin.getBitisZamani().getTime();
 						mailEkle = izinDegisti && doktor;
@@ -2047,12 +2047,19 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (izinDegisti) {
 						long gecerliDonem = Long.parseLong(PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar(new Date(), -10), "yyyyMM"));
 						long basDonem = Long.parseLong(PdksUtil.convertToDateString(baslangicZamani, "yyyyMM"));
-						if (gecerliDonem > basDonem)
-							kapaliDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, false);
+						if (personelIzin.getId() == null || izinDurum) {
+							if (gecerliDonem > basDonem)
+								kapaliDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, false);
+						} else {
+							iterator.remove();
+							continue;
+						}
+
 					}
 				}
 
 				if (kapaliDenklestirmeler != null && !kapaliDenklestirmeler.isEmpty()) {
+
 					StringBuffer donemStr = new StringBuffer();
 					// donemKapali = true;
 					for (Iterator iterator2 = kapaliDenklestirmeler.iterator(); iterator2.hasNext();) {
@@ -2072,7 +2079,12 @@ public class PdksVeriOrtakAktar implements Serializable {
 					else
 						izinERP.setDurum(null);
 					String str = donemStr.toString();
+					if (personelIzin.getId() == null && izinDurum == false) {
+						iterator.remove();
+						continue;
+					}
 					addHatalist(izinERP.getHataList(), str + " " + (kapaliDenklestirmeler.size() > 1 ? " dönemleri" : " dönemi") + " kapalıdır");
+
 				}
 
 				if (izinTipi != null && (donemKapali || izinERP.getHataList().isEmpty())) {
