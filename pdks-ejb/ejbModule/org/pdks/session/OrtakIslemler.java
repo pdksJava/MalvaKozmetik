@@ -15736,7 +15736,8 @@ public class OrtakIslemler implements Serializable {
 									if (pdksVardiyaGun.getCalismaSuresi() > bugunResmiTatilSure)
 										toplamSure += pdksVardiyaGun.getCalismaSuresi() - bugunResmiTatilSure;
 								}
-								double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getBayramCalismaSuresi(), pdksVardiyaGun.getYarimYuvarla());
+//								double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getBayramCalismaSuresi(), pdksVardiyaGun.getYarimYuvarla());
+								double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure(), pdksVardiyaGun.getYarimYuvarla());
 								toplamSure += bayramFark;
 								calisilanSure += pdksVardiyaGun.getCalismaSuresi();
 								// bazSure += pdksVardiyaGun.getCalismaSuresi();
@@ -15904,7 +15905,7 @@ public class OrtakIslemler implements Serializable {
 							} catch (Exception ex) {
 								logger.error(ex);
 							}
-							if (personelDenklestirme != null) {
+							if (personelDenklestirme != null && kaydet) {
 								personelDenklestirme.setGuncellendi(Boolean.FALSE);
 								if (personelDenklestirme.getCalismaModeliAy() == null || personelDenklestirme.getCalismaModeli().getToplamGunGuncelle().equals(Boolean.FALSE))
 									personelDenklestirme.setPlanlanSure(planlanSure);

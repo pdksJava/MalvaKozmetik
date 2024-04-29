@@ -1270,8 +1270,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 								if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate())) {
 									try {
 										boolean zamanGelmedi = !bugun.after(islemVardiya.getVardiyaTelorans2BitZaman());
-										if (!zamanGelmedi)
-											zamanGelmedi = islemVardiya.isCalisma() == false || vardiyaGun.isIzinli();
+										// if (!zamanGelmedi)
+										// zamanGelmedi = islemVardiya.isCalisma() == false || vardiyaGun.isIzinli();
 
 										vardiyaGun.setZamanGelmedi(zamanGelmedi);
 									} catch (Exception e) {
@@ -1306,8 +1306,11 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							vardiyaGun.setFiiliHesapla(fazlaMesaiHesapla);
 
 							double toplamSure = 0.0d;
-							if (key.endsWith("08"))
+							if (key.endsWith("12"))
 								logger.debug(key);
+							if (vardiyaGun.getResmiTatilSure() != 0.0)
+								logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + puantajResmiTatil + " " + vardiyaGun.getResmiTatilSure());
+
 							if (vardiyaGun.getVardiyaSaatDB() != null && vardiyaGun.getDurum()) {
 								vardiyaGun.setPlanHareketEkle(false);
 								vardiyaGun.setHareketler(null);
@@ -1354,6 +1357,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							if (toplamSure > fazlaMesaiMaxSure)
 								puantajUcretiOdenenSure += toplamSure - fazlaMesaiMaxSure;
 							puantajSaatToplami += toplamSure;
+							puantajResmiTatil += vardiyaGun.getResmiTatilSure();
+							if (toplamSure > 0.0d)
+								logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + puantajSaatToplami + " " + toplamSure);
 							vardiyalar.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
 
 							Vardiya vardiya = vardiyaGun.getIslemVardiya();
@@ -1393,7 +1399,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					ortakIslemler.puantajHaftalikPlanOlustur(Boolean.TRUE, null, vardiyalar, aylikPuantajSablon, puantaj);
 
 					// puantaj.setSaatToplami(personelDenklestirme.getHesaplananSure());
-					puantaj.setPlanlananSure(personelDenklestirme.getPlanlanSure());
+					if (personelDenklestirme.getDurum() && denklestirmeAyDurum == false)
+						puantaj.setPlanlananSure(personelDenklestirme.getPlanlanSure());
 					personelDenklestirme.setGuncellendi(Boolean.FALSE);
 					PersonelDenklestirme hesaplananDenklestirmeHesaplanan = null;
 					double ucretiOdenenMesaiSure = 0.0d;
@@ -1430,7 +1437,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							if (vardiyaGun.getResmiTatilSure() > 0) {
 								if (!resmiTatilVar)
 									resmiTatilVar = Boolean.TRUE;
-								puantajResmiTatil += vardiyaGun.getResmiTatilSure();
+								// puantajResmiTatil += vardiyaGun.getResmiTatilSure();
 								// logger.info(vardiyaGun.getVardiyaKeyStr() + " " + resmiTatilToplami + " " + vardiyaGun.getResmiTatilSure());
 							}
 							if (vardiyaGun.getCalisilmayanAksamSure() > 0)
@@ -1479,17 +1486,17 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						puantaj.setHaftaCalismaSuresi(personelDenklestirme.getHaftaCalismaSuresi());
 						puantaj.setDevredenSure(personelDenklestirme.getDevredenSure());
 						puantaj.setEksikCalismaSure(personelDenklestirme.getEksikCalismaSure());
-						puantaj.setOdenenSure(personelDenklestirme.getOdenecekSure());
+						puantaj.setFazlaMesaiSure(personelDenklestirme.getOdenecekSure());
 						puantaj.setSaatToplami(personelDenklestirme.getHesaplananSure());
 						puantajFazlaMesaiHesapla = personelDenklestirme.getDurum();
 					} else if (hesaplananDenklestirmeHesaplanan != null) {
 						puantaj.setSaatToplami(puantajSaatToplami);
 						puantaj.setDevredenSure(hesaplananDenklestirmeHesaplanan.getDevredenSure());
-						if (!puantaj.isFazlaMesaiHesapla()) {
+						if (!puantajFazlaMesaiHesapla) {
 							puantajHaftaTatil = 0.0d;
 							puantajResmiTatil = 0.0d;
 						} else
-							puantaj.setOdenenSure(hesaplananDenklestirmeHesaplanan.getOdenecekSure());
+							puantaj.setFazlaMesaiSure(hesaplananDenklestirmeHesaplanan.getOdenecekSure());
 						puantaj.setEksikCalismaSure(hesaplananDenklestirmeHesaplanan.getEksikCalismaSure());
 						puantaj.setHaftaCalismaSuresi(puantajHaftaTatil);
 						puantaj.setResmiTatilToplami(PdksUtil.setSureDoubleTypeRounded(puantajResmiTatil, yarimYuvarla));
