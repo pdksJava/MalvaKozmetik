@@ -82,14 +82,14 @@
 								<h:outputText value="İlk Giriş" />
 							</f:facet>
 							<h:outputText title="#{calismaPlani.girisHareket.kapiView.kapi.aciklama}"
-								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.girisHareket.zaman)}" />
+								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.girisHareket.orjinalZaman)}" />
 						</rich:column>
 						<rich:column width="60">
 							<f:facet name="header">
 								<h:outputText value="Son Çıkış" />
 							</f:facet>
 							<h:outputText title="#{calismaPlani.cikisHareket.kapiView.kapi.aciklama}"
-								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.cikisHareket.zaman)}" />
+								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.cikisHareket.orjinalZaman)}" />
 						</rich:column>
 
 						<rich:column width="60">
@@ -97,7 +97,7 @@
 								<h:outputText value="Son Giriş" />
 							</f:facet>
 							<h:outputText title="#{calismaPlani.sonGirisHareket.kapiView.kapi.aciklama}"
-								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.sonGirisHareket.zaman)}" />
+								value="#{authenticatedUser.dateTimeFormatla(calismaPlani.sonGirisHareket.orjinalZaman)}" />
 						</rich:column>
 
 
@@ -118,9 +118,10 @@
 							<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 						</f:facet>
 					</rich:dataTable>
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
-						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:hareketTable')}"
-						rendered="#{not empty binadaKalanPersonellerHome.vardiyaGunList}" />
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{binadaKalanPersonellerHome.excelListe()}"
+						rendered="#{not empty binadaKalanPersonellerHome.vardiyaGunList}" target="blank">
+						<a4j:support event="oncomplete" status="ajaxStatus" />
+					</h:commandLink>
 				</rich:panel>
 
 
@@ -158,7 +159,7 @@
 								<f:facet name="header">
 									<h:outputText value="Zamanı" />
 								</f:facet>
-								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.zaman)}" />
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(hareket.orjinalZaman)}" />
 							</rich:column>
 							<f:facet name="footer">
 								<rich:datascroller renderIfSinglePage="false" maxPages="5" />
