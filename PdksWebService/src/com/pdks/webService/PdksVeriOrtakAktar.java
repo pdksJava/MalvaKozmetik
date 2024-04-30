@@ -2047,12 +2047,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 					if (izinDegisti) {
 						long gecerliDonem = Long.parseLong(PdksUtil.convertToDateString(PdksUtil.tariheGunEkleCikar(new Date(), -10), "yyyyMM"));
 						long basDonem = Long.parseLong(PdksUtil.convertToDateString(baslangicZamani, "yyyyMM"));
-						if (personelIzin.getId() == null || izinDurum) {
+						if (personelIzin.getId() != null || izinDurum) {
 							if (gecerliDonem > basDonem)
 								kapaliDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, false);
-						} else {
-							iterator.remove();
-							continue;
 						}
 
 					}
