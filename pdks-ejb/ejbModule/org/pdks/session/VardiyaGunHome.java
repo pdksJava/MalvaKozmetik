@@ -1582,7 +1582,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				Vardiya vardiya = vardiyaGun.getVardiya();
 				if (vardiya.isCalisma() == false && vardiyaGun.isAyinGunu() && oncekiVardiyaGun != null && oncekiVardiyaGun.getIzin() != null) {
 					IzinTipi izinTipi = oncekiVardiyaGun.getIzin().getIzinTipi();
-					if (izinTipi.isBaslamaZamaniCalismadir()) {
+					if (izinTipi.isBaslamaZamaniCalismadir() && (vardiyaGun.getTatil() == null || vardiyaGun.getTatil().isYarimGunMu())) {
 						cal.setTime(vardiyaGun.getVardiyaDate());
 						if (vardiya.isHaftaTatil() == false && (izinTipi.isCumaCumartesiTekIzinSaysin() == false || cal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY)) {
 							yaz = false;
