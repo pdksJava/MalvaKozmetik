@@ -10274,23 +10274,23 @@ public class OrtakIslemler implements Serializable {
 					User sistemUser = null;
 					List saveList = new ArrayList();
 
-					for (Vardiya vardiya : vardiyalar) {
-						VardiyaGun tmp = new VardiyaGun(p, vardiya, tarihi);
+					for (Vardiya vardiyaTatil : vardiyalar) {
+						VardiyaGun tmp = new VardiyaGun(p, vardiyaTatil, tarihi);
 						tmp.setVardiyaZamani();
 						Vardiya islemVardiya = tmp.getIslemVardiya();
 						Date arifeBaslangicTarihi = tatilIslem.getBasTarih();
-						CalismaSekli calismaSekli = vardiya.getCalismaSekli();
+						CalismaSekli calismaSekli = vardiyaTatil.getCalismaSekli();
 						Double arifeCalismaSure = null;
-						if (vardiya.isCalisma()) {
+						if (vardiyaTatil.isCalisma()) {
 							String tatilStr = !PdksUtil.hasStringValue(arifeTatilBasZaman) ? null : arifeTatilBasZaman;
 							ArifeVardiyaDonem arifeVardiyaDonemDB = null;
 							for (ArifeVardiyaDonem arifeVardiyaDonem : arifeTatilList) {
-								if (arifeVardiyaDonem.getVardiya() != null && !vardiya.getId().equals(arifeVardiyaDonem.getVardiya().getId()))
+								if (arifeVardiyaDonem.getVardiya() != null && !vardiyaTatil.getId().equals(arifeVardiyaDonem.getVardiya().getId()))
 									continue;
 								tatilStr = arifeVardiyaDonem.getTatilBasZaman();
 								arifeVardiyaHesapla = arifeVardiyaDonem.getArifeVardiyaHesapla();
 								tatilIslem.setArifeSonraVardiyaDenklestirmeVar(arifeVardiyaDonem.getArifeSonraVardiyaDenklestirmeVar());
-								tatilIslem.setArifeCalismaSaatYokCGSDus(arifeVardiyaDonem.getArifeCalismaSaatYokCGSDus());
+								islemVardiya.setArifeCalismaSaatYokCGSDus(arifeVardiyaDonem.getArifeCalismaSaatYokCGSDus());
 								arifeVardiyaDonemDB = arifeVardiyaDonem;
 								if (arifeVardiyaDonem.getVardiya() != null)
 									break;
@@ -10300,26 +10300,26 @@ public class OrtakIslemler implements Serializable {
 								String dateStr = PdksUtil.convertToDateString(arifeBaslangicTarihi, "yyyyMMdd") + " " + tatilStr;
 								Date yeniZaman = PdksUtil.convertToJavaDate(dateStr, "yyyyMMdd HH:mm");
 								if (yeniZaman != null) {
-									if (idMap.containsKey(vardiya.getId())) {
-										if (idMap.get(vardiya.getId()) && yeniZaman.before(islemVardiya.getVardiyaBasZaman()))
+									if (idMap.containsKey(vardiyaTatil.getId())) {
+										if (idMap.get(vardiyaTatil.getId()) && yeniZaman.before(islemVardiya.getVardiyaBasZaman()))
 											yeniZaman = tariheGunEkleCikar(cal, yeniZaman, 1);
 									}
 									arifeBaslangicTarihi = yeniZaman;
 								}
 
-							} else if ((calismaSekli != null || (vardiya.getArifeNormalCalismaDakika() != null && vardiya.getArifeNormalCalismaDakika() != 0.0d))) {
+							} else if ((calismaSekli != null || (vardiyaTatil.getArifeNormalCalismaDakika() != null && vardiyaTatil.getArifeNormalCalismaDakika() != 0.0d))) {
 								arifeNormalCalismaDakika = calismaSekli != null ? calismaSekli.getArifeNormalCalismaDakika() : null;
 								boolean sureTanimli = false;
-								Double netSure = vardiya.getNetCalismaSuresi();
-								if (vardiya.getArifeNormalCalismaDakika() != null && vardiya.getArifeNormalCalismaDakika() != 0.0d) {
+								Double netSure = vardiyaTatil.getNetCalismaSuresi();
+								if (vardiyaTatil.getArifeNormalCalismaDakika() != null && vardiyaTatil.getArifeNormalCalismaDakika() != 0.0d) {
 									sureTanimli = true;
-									arifeNormalCalismaDakika = vardiya.getArifeNormalCalismaDakika();
+									arifeNormalCalismaDakika = vardiyaTatil.getArifeNormalCalismaDakika();
 								}
 
 								else if (arifeNormalCalismaDakika == null || arifeNormalCalismaDakika.doubleValue() == 0.0d)
 									arifeNormalCalismaDakika = null;
 								if (arifeNormalCalismaDakika == null)
-									arifeNormalCalismaDakika = (netSure * 60.0d + vardiya.getYemekSuresi()) * 0.5d;
+									arifeNormalCalismaDakika = (netSure * 60.0d + vardiyaTatil.getYemekSuresi()) * 0.5d;
 								if (arifeNormalCalismaDakika != null) {
 									double yarimGunSureDakika = netSure * 30;
 									if (sureTanimli) {
@@ -10364,10 +10364,10 @@ public class OrtakIslemler implements Serializable {
 									}
 
 									list = null;
-									if (arifeVardiyaDonemDB == null && !idMap.containsKey(vardiya.getId())) {
+									if (arifeVardiyaDonemDB == null && !idMap.containsKey(vardiyaTatil.getId())) {
 										basArifeTarih = PdksUtil.getDate(tarihi);
 										arifeVardiyaDonemDB = new ArifeVardiyaDonem();
-										arifeVardiyaDonemDB.setVardiya(vardiya);
+										arifeVardiyaDonemDB.setVardiya(vardiyaTatil);
 										arifeVardiyaDonemDB.setBasTarih(basArifeTarih);
 										arifeVardiyaDonemDB.setBitTarih(bitArifeTarih);
 										arifeVardiyaDonemDB.setTatilBasZaman(PdksUtil.convertToDateString(arifeBaslangicTarihi, "HH:mm:ss"));

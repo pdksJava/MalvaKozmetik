@@ -68,7 +68,8 @@ public class Vardiya extends BaseObject {
 	private Date vardiyaTelorans1BasZaman, vardiyaTelorans2BasZaman, vardiyaTelorans1BitZaman, vardiyaTelorans2BitZaman;
 	private Date vardiyaFazlaMesaiBasZaman, vardiyaFazlaMesaiBitZaman;
 	private boolean farkliGun = Boolean.FALSE, ayinSonGunDurum = Boolean.FALSE;
-	private Boolean mesaiOde, sua = Boolean.FALSE;
+
+	private Boolean mesaiOde, sua = Boolean.FALSE, arifeCalismaSaatYokCGSDus;
 	private Vardiya sonrakiVardiya, oncekiVardiya;
 	private CalismaSekli calismaSekli;
 	private List<YemekIzin> yemekIzinList;
@@ -1192,7 +1193,7 @@ public class Vardiya extends BaseObject {
 			Vardiya oncekiIslemVardiya = null, sonrakiIslemVardiya = null;
 			try {
 				oncekiIslemVardiya = pdksVardiyaGun.getOncekiVardiyaGun() != null && pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() != null ? pdksVardiyaGun.getOncekiVardiyaGun().getIslemVardiya() : null;
-				sonrakiIslemVardiya = pdksVardiyaGun.getSonrakiVardiyaGun() != null &&  pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().isCalisma() ? pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() : null;
+				sonrakiIslemVardiya = pdksVardiyaGun.getSonrakiVardiyaGun() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getVardiya() != null && pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya().isCalisma() ? pdksVardiyaGun.getSonrakiVardiyaGun().getIslemVardiya() : null;
 			} catch (Exception e) {
 				logger.error(e);
 			}
@@ -1835,4 +1836,17 @@ public class Vardiya extends BaseObject {
 		this.kopya = kopya;
 	}
 
+	@Transient
+	public Boolean getArifeCalismaSaatYokCGSDus() {
+		return arifeCalismaSaatYokCGSDus;
+	}
+
+	public void setArifeCalismaSaatYokCGSDus(Boolean arifeCalismaSaatYokCGSDus) {
+		this.arifeCalismaSaatYokCGSDus = arifeCalismaSaatYokCGSDus;
+	}
+
+	@Transient
+	public boolean isArifeCalismaSaatYokCGSDussun() {
+		return arifeCalismaSaatYokCGSDus != null && arifeCalismaSaatYokCGSDus;
+	}
 }
