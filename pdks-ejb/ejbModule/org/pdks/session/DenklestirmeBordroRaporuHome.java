@@ -815,7 +815,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 						boolean denkDurum = denklestirmeAy != null && denklestirmeAy.getDurum();
 						if (denkDurum == false)
 							denkDurum = authenticatedUser.isAdmin() == false;
-						personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, denkDurum == false || hataliVeriGetir, denkDurum == false || eksikCalisanVeriGetir, session);
+						personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, denkDurum == false || (hataliVeriGetir != null && hataliVeriGetir), denkDurum == false || (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir), session);
 						if (personelDenklestirmeList != null && !personelDenklestirmeList.isEmpty()) {
 							List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 							if (bordroAlanlari.isEmpty()) {

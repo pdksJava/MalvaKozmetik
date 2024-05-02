@@ -76,7 +76,7 @@
 						</s:decorate>
 					</h:panelGrid>
 					<h:panelGrid columns="2" style="width: 80%;"
-						rendered="#{denklestirmeBordroRaporuHome.denklestirmeAy.durum and ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.sicilNo)==false}">
+						rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin or denklestirmeBordroRaporuHome.denklestirmeAy.durum) and ortakIslemler.hasStringValue(denklestirmeBordroRaporuHome.sicilNo)==false}">
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Hatalı Personel Göster</ui:define>
 							<h:selectBooleanCheckbox value="#{denklestirmeBordroRaporuHome.hataliVeriGetir}">
