@@ -1837,6 +1837,11 @@ public class Vardiya extends BaseObject {
 	}
 
 	@Transient
+	public boolean isSuaMi() {
+		return sua != null && sua;
+	}
+
+	@Transient
 	public Boolean getArifeCalismaSaatYokCGSDus() {
 		return arifeCalismaSaatYokCGSDus;
 	}

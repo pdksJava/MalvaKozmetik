@@ -15378,7 +15378,7 @@ public class OrtakIslemler implements Serializable {
 							Vardiya vardiyaIzin = pdksVardiyaGun.getVardiya();
 							if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null) {
 								CalismaModeli calismaModeliAy = personelDenklestirme.getCalismaModeli();
-								if (key.equals("20240203"))
+								if (key.equals("20240409"))
 									logger.debug("");
 								izinSaat = pdksVardiyaGun.isIzinli() ? calismaModeliAy.getIzinSaat(pdksVardiyaGun) : 0.0d;
 								if (pdksVardiyaGun.getIzin() != null && pdksVardiyaGun.getIzin().getIzinTipi().isIslemYokCGS()) {
@@ -15638,8 +15638,12 @@ public class OrtakIslemler implements Serializable {
 												}
 												double sure = izinSaat != null ? izinSaat : 9.0d;
 												double kontrolSure = 0;
+												if (key.equals("20240409"))
+													logger.debug("");
 												if (sure > 0 || pdksVardiyaGun.getIzin() != null) {
 													kontrolSure = getVardiyaIzinSuresi(izinTarihKontrolTarihi == null ? sure : 0.0d, pdksVardiyaGun, personelDenklestirme, izinTarihKontrolTarihi);
+													if (pdksVardiyaGun.isIzinli() && izinSaat != null && kontrolSure > izinSaat)
+														kontrolSure = izinSaat;
 													izinSuresi += kontrolSure;
 
 												}
@@ -15736,7 +15740,7 @@ public class OrtakIslemler implements Serializable {
 									if (pdksVardiyaGun.getCalismaSuresi() > bugunResmiTatilSure)
 										toplamSure += pdksVardiyaGun.getCalismaSuresi() - bugunResmiTatilSure;
 								}
-//								double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getBayramCalismaSuresi(), pdksVardiyaGun.getYarimYuvarla());
+								// double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getBayramCalismaSuresi(), pdksVardiyaGun.getYarimYuvarla());
 								double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure(), pdksVardiyaGun.getYarimYuvarla());
 								toplamSure += bayramFark;
 								calisilanSure += pdksVardiyaGun.getCalismaSuresi();
