@@ -93,7 +93,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	private Boolean secimDurum = Boolean.FALSE, sureDurum, fazlaMesaiDurum, haftaTatilDurum, artikGunDurum, resmiTatilGunDurum, resmiTatilDurum, durumERP, onaylanmayanDurum, personelERP, modelGoster = Boolean.FALSE;
 	private Boolean normalGunSaatDurum = Boolean.FALSE, haftaTatilSaatDurum = Boolean.FALSE, resmiTatilSaatDurum = Boolean.FALSE, izinSaatDurum = Boolean.FALSE;
-
+	private Boolean denklestirmeAyDurum;
 	private int ay, yil, maxYil, minYil;
 
 	private List<SelectItem> aylar;
@@ -648,6 +648,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 					DenklestirmeAy denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+					denklestirmeAyDurum = fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy);
 					selectItems = fazlaMesaiOrtakIslemler.getFazlaMesaiTesisList(sirket, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, authenticatedUser.isAdmin() == false, session);
 					if (!selectItems.isEmpty()) {
 						if (selectItems.size() == 1)
@@ -701,6 +702,7 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
+		denklestirmeAyDurum = fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy);
 		List<SelectItem> sirketList = fazlaMesaiOrtakIslemler.getFazlaMesaiSirketList(departmanId, denklestirmeAy != null ? new AylikPuantaj(denklestirmeAy) : null, authenticatedUser.isAdmin() == false, session);
 		Long onceki = null;
 		sirket = null;
@@ -782,7 +784,8 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 		ekSaha4Tanim = ortakIslemler.getEkSaha4(sirket, sirketId, session);
 		personelDenklestirmeList.clear();
 		denklestirmeAy = (DenklestirmeAy) pdksEntityController.getObjectByInnerObject(fields, DenklestirmeAy.class);
-		if (denklestirmeAy.getDurum().equals(Boolean.FALSE)) {
+		denklestirmeAyDurum = fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy);
+		if (denklestirmeAyDurum.equals(Boolean.FALSE)) {
 			eksikCalisanVeriGetir = null;
 			hataliVeriGetir = null;
 		}
@@ -812,10 +815,9 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 					as.setTesisId(tesisId);
 					as.setLoginUser(authenticatedUser);
 					try {
-						boolean denkDurum = denklestirmeAy != null && denklestirmeAy.getDurum();
-						if (denkDurum == false)
-							denkDurum = authenticatedUser.isAdmin() == false;
-						personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, denkDurum == false || (hataliVeriGetir != null && hataliVeriGetir), denkDurum == false || (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir), session);
+						if (denklestirmeAyDurum == false)
+							denklestirmeAyDurum = authenticatedUser.isAdmin() == false && authenticatedUser.isIK() == false;
+						personelDenklestirmeList = fazlaMesaiOrtakIslemler.getBordoDenklestirmeList(denklestirmeAy, as, denklestirmeAyDurum == false || (hataliVeriGetir != null && hataliVeriGetir), denklestirmeAyDurum == false || (eksikCalisanVeriGetir != null && eksikCalisanVeriGetir), session);
 						if (personelDenklestirmeList != null && !personelDenklestirmeList.isEmpty()) {
 							List<Tanim> bordroAlanlari = ortakIslemler.getTanimList(Tanim.TIPI_BORDRDO_ALANLARI, session);
 							if (bordroAlanlari.isEmpty()) {
@@ -1906,5 +1908,13 @@ public class DenklestirmeBordroRaporuHome extends EntityHome<DenklestirmeAy> imp
 
 	public void setDevamlikPrimGoster(Boolean devamlikPrimGoster) {
 		this.devamlikPrimGoster = devamlikPrimGoster;
+	}
+
+	public Boolean getDenklestirmeAyDurum() {
+		return denklestirmeAyDurum;
+	}
+
+	public void setDenklestirmeAyDurum(Boolean denklestirmeAyDurum) {
+		this.denklestirmeAyDurum = denklestirmeAyDurum;
 	}
 }
