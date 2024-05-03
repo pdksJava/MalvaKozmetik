@@ -1881,8 +1881,11 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 			if (flush)
 				session.flush();
-		} else
+		} else {
 			yaz = false;
+			PdksUtil.addMessageAvailableWarn(mesaj + sb.toString());
+		}
+			
 		vardiyaGunMap = null;
 		sb = null;
 		sbCalismaModeliUyumsuz = null;
