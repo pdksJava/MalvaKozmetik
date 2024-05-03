@@ -2592,7 +2592,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			if (onayla) {
 				mailGonder = Boolean.FALSE;
 				try {
-					if (!loginUser.isAdmin()) {
+					if (!loginUser.isAdmin() || loginUser.getLogin().booleanValue() == false) {
 						fazlaMesaiOnaylaDevam(puantajList, Boolean.TRUE, Boolean.TRUE);
 					}
 
