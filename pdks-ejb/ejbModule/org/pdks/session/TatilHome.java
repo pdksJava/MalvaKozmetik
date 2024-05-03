@@ -222,7 +222,6 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 				else if (authenticatedUser.isAdmin() == false && pdksTatil.getDurum() && PdksUtil.tarihKarsilastirNumeric(pdksTatil.getBasTarih(), Calendar.getInstance().getTime()) != 1)
 					buffer.add("Geçmişe ait tatil giremezsiniz");
 				else {
-
 					cal1 = Calendar.getInstance();
 					basTarih = PdksUtil.getDate((Date) pdksTatil.getBasTarih().clone());
 					bitTarih = PdksUtil.getGunSonu((Date) pdksTatil.getBitTarih().clone());
@@ -230,9 +229,10 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 						int yil = cal1.get(Calendar.YEAR);
 						basTarih = PdksUtil.setTarih(basTarih, Calendar.YEAR, yil);
 						bitTarih = PdksUtil.setTarih(bitTarih, Calendar.YEAR, yil);
-
 					}
 					if (pdksTatil.isYarimGunMu()) {
+						if (pdksTatil.getId() == null && pdksTatil.getOrjTatil() == null)
+							pdksTatil.setArifeSonraVardiyaDenklestirmeVar(pdksTatil.isYarimGunMu());
 						int saat = 13, dakika = 0;
 						String yarimGunStr = (parameterMap.containsKey("yarimGunSaati") ? (String) parameterMap.get("yarimGunSaati") : "");
 						if (yarimGunStr.indexOf(":") > 0) {
@@ -555,10 +555,10 @@ public class TatilHome extends EntityHome<Tatil> implements Serializable {
 				pdksEntityController.saveOrUpdate(session, entityManager, pdksTatil);
 			}
 		}
-
-		if (!kopyala)
+		if (!kopyala) {
+			pdksTatil.setOrjTatil(getInstance());
 			kayitGuncelle(pdksTatil);
-		else {
+		} else {
 			if (flush)
 				session.flush();
 			fillPdksTatilList();
