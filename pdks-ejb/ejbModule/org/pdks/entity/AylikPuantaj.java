@@ -668,7 +668,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 		if (personelDenklestirme != null && personelDenklestirme.getPersonelDenklestirmeGecenAy() != null) {
 			pdksPersonelDenklestirmeGecenAy = personelDenklestirme.getPersonelDenklestirmeGecenAy();
 			if (pdksPersonelDenklestirmeGecenAy != null)
-				if ((!pdksPersonelDenklestirmeGecenAy.getDenklestirmeAy().getDurum() || pdksPersonelDenklestirmeGecenAy.isErpAktarildi()) && pdksPersonelDenklestirmeGecenAy.getDevredenSure() != null)
+				if ((pdksPersonelDenklestirmeGecenAy.getDurum() || pdksPersonelDenklestirmeGecenAy.isErpAktarildi()) && pdksPersonelDenklestirmeGecenAy.getDevredenSure() != null)
 					fark = pdksPersonelDenklestirmeGecenAy.getKalanSure();
 		}
 
