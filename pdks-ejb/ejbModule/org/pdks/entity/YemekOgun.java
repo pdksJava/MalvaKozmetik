@@ -96,4 +96,9 @@ public class YemekOgun extends BaseObject {
 		this.bitTarih = bitTarih;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -107,4 +107,9 @@ public class PersonelDenklestirmeBordroDetay extends BasePDKSObject implements S
 	public void setBordroDetayTipi(BordroDetayTipi bordroDetayTipi) {
 		this.bordroDetayTipi = bordroDetayTipi;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

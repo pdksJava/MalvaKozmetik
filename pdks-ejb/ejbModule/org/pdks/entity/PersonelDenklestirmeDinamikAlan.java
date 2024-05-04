@@ -191,4 +191,9 @@ public class PersonelDenklestirmeDinamikAlan extends BasePDKSObject implements S
 		return tip;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -979,7 +979,7 @@ public class PdksSapController implements ERPController, Serializable {
 	}
 
 	public List<PersonelERP> topluHaldePersonelBilgisiNoSapDBGetir(Session session, List<String> personelList, Date baslangicZamani, Date bitisZamani) throws Exception {
-		// TODO Auto-generated method stub
+		// TODO entityRefresh
 		return null;
 	}
 }

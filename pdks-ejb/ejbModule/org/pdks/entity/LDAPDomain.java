@@ -121,4 +121,9 @@ public class LDAPDomain extends BasePDKSObject implements Serializable {
 		this.sira = sira;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

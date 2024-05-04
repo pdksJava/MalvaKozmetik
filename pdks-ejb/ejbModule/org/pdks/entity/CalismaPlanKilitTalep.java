@@ -92,4 +92,9 @@ public class CalismaPlanKilitTalep extends BaseObject {
 		this.aciklama = aciklama;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

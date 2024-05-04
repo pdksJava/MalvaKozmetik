@@ -46,7 +46,6 @@ public class VardiyaHafta extends BaseObject {
 	private int hafta;
 	private String trClass;
 	private Integer version = 0;
-	 
 
 	@Column(name = "VERSION")
 	public Integer getVersion() {
@@ -283,10 +282,20 @@ public class VardiyaHafta extends BaseObject {
 	public void setTrClass(String trClass) {
 		this.trClass = trClass;
 	}
- 
 
 	@Transient
 	public Personel getPdksPersonel() {
 		return personel;
+	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		if (this.getBaseObject() != null) {
+			VardiyaHafta vh = (VardiyaHafta) this.getBaseObject();
+			this.basTarih = vh.getBasTarih();
+			this.bitTarih = vh.getBasTarih();
+			this.vardiyaSablonu=vh.getVardiyaSablonu();
+		}
+
 	}
 }

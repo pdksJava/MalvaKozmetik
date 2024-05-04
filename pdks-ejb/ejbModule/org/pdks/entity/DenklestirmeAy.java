@@ -318,4 +318,9 @@ public class DenklestirmeAy extends BaseObject {
 		this.bitTarih = bitTarih;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

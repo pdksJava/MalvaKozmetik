@@ -75,4 +75,9 @@ public class ServiceData extends BasePDKSObject implements Serializable {
 		this.fonksiyonAdi = fonksiyonAdi;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

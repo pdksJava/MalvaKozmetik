@@ -843,4 +843,9 @@ public class PersonelIzin extends BaseObject {
 	public void setDevirIzin(Boolean devirIzin) {
 		this.devirIzin = devirIzin;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

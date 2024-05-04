@@ -224,6 +224,24 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param keyName
+	 * @param value
+	 * @param class1
+	 * @param session
+	 * @return
+	 */
+	public Object objectRefresh(String keyName, Object value, Class class1, Session session) {
+		if (!PdksUtil.hasStringValue(keyName))
+			keyName = "id";
+		HashMap fields = new HashMap();
+		fields.put(keyName, value);
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		Object object = pdksEntityController.getObjectByInnerObject(fields, class1);
+		return object;
+	}
+
+	/**
 	 * @param vg
 	 * @param manuelGirisHareket
 	 * @param manuelCikisHareket

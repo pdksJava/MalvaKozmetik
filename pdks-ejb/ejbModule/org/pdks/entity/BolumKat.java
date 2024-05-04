@@ -76,4 +76,9 @@ public class BolumKat extends BaseObject {
 		return eq;
 
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

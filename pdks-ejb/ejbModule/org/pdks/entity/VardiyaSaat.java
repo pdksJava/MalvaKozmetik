@@ -102,4 +102,9 @@ public class VardiyaSaat extends BasePDKSObject implements Serializable, Cloneab
 		}
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

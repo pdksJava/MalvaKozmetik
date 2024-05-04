@@ -155,4 +155,9 @@ public class IzinHakedisHakki extends BaseObject {
 		return sira;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

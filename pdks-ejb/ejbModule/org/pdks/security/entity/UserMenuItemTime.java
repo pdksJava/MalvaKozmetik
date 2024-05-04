@@ -126,4 +126,9 @@ public class UserMenuItemTime extends BasePDKSObject implements Serializable {
 		this.useCount = useCount;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

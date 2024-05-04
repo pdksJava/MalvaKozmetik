@@ -483,8 +483,12 @@ public class AylikPuantaj implements Serializable, Cloneable {
 					continue;
 				String key = vg.getVardiyaDateStr();
 				if (vg.isAyinGunu()) {
-					if (!gebeDurum && vg.getVardiya() != null)
-						gebeDurum = calismaModeliAy != null && vg.getIzin() == null && vg.getVardiya().getGebelik();
+					if (!gebeDurum && vg.getVardiya() != null) {
+						this.setGebeDurum(calismaModeliAy != null && vg.getIzin() == null && vg.getVardiya().getGebelik());
+						if (gebeDurum)
+							logger.debug("");
+					}
+
 					if (vg.getVardiya().isCalisma() && !vg.getVardiya().getGebelik())
 						++calisilanGunSayisi;
 					if (tatilGunleriMap.containsKey(key)) {

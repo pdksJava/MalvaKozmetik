@@ -768,4 +768,9 @@ public class IzinTipi extends BaseObject {
 		return vardiya;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -110,4 +110,9 @@ public class Dosya extends BasePDKSObject implements Serializable {
 	public boolean isInline() {
 		return FileUpload.isInline(icerikTipi);
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

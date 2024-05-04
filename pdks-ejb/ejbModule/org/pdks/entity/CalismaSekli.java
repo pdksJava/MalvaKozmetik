@@ -143,4 +143,9 @@ public class CalismaSekli extends BasePDKSObject implements Serializable {
 		this.checkBoxDurum = checkBoxDurum;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -76,4 +76,9 @@ public class KapiSirket extends BasePDKSObject implements Serializable {
 		return PdksUtil.hasStringValue(aciklama);
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -126,5 +126,10 @@ public class ArifeVardiyaDonem extends BaseObject {
 		this.vardiyaKisaAciklama = vardiyaKisaAciklama;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 
 }

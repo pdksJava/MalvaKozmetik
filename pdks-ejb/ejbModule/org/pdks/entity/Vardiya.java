@@ -1854,4 +1854,9 @@ public class Vardiya extends BaseObject {
 	public boolean isArifeCalismaSaatYokCGSDussun() {
 		return arifeCalismaSaatYokCGSDus != null && arifeCalismaSaatYokCGSDus;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

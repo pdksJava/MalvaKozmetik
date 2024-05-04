@@ -187,4 +187,9 @@ public class PersonelFazlaMesai extends BaseObject implements Cloneable {
 		return tatilDurum != null && tatilDurum == BAYRAM;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

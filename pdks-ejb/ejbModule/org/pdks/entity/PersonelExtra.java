@@ -85,4 +85,9 @@ public class PersonelExtra extends BasePDKSObject implements Serializable {
 	public Personel getPdksPersonel() {
 		return personel;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

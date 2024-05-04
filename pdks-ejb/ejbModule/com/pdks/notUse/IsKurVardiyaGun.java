@@ -119,4 +119,9 @@ public class IsKurVardiyaGun extends BaseObject {
 		return vardiyaGun;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

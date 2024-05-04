@@ -94,4 +94,9 @@ public class YemekKartsiz extends BaseObject {
 		return hareket;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

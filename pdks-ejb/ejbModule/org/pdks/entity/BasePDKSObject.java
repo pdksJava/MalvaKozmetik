@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 import org.pdks.security.entity.User;
 
 @MappedSuperclass
-public abstract class BasePDKSObject implements Serializable, Cloneable {
+public abstract class BasePDKSObject implements Serializable, Cloneable,PdksInterface {
 
 	/**
 	 * 

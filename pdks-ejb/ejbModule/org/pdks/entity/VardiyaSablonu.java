@@ -424,4 +424,9 @@ public class VardiyaSablonu extends BaseObject {
 			isKurDurum = isKur != null && isKur;
 		return isKurDurum;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

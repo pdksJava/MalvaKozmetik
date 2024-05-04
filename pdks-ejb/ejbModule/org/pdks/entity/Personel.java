@@ -1086,4 +1086,9 @@ public class Personel extends BaseObject {
 		Personel.altBolumGrupGoster = altBolumGrupGoster;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

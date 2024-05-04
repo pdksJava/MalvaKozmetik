@@ -148,4 +148,9 @@ public class VardiyaGorev extends BasePDKSObject implements Serializable {
 		return durumu;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

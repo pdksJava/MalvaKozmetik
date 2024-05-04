@@ -142,4 +142,9 @@ public class Role extends BasePDKSObject implements Serializable {
 	public boolean isAdminRoleMu() {
 		return adminRole != null && adminRole.booleanValue();
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

@@ -468,4 +468,9 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		return genelModel != null && genelModel;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

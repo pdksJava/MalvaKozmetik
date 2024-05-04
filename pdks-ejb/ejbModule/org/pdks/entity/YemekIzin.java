@@ -200,4 +200,9 @@ public class YemekIzin extends BaseObject {
 		this.vardiyaMap = vardiyaMap;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

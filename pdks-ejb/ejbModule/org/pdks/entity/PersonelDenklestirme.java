@@ -651,4 +651,20 @@ public class PersonelDenklestirme extends BaseObject {
 		PersonelDenklestirme.calismaSaatiSua = calismaSaatiSua;
 	}
 
+	public void entityRefresh() {
+		if (this.getBaseObject() != null) {
+			PersonelDenklestirme pd = (PersonelDenklestirme) this.getBaseObject();
+			this.fazlaMesaiIzinKullan = pd.getFazlaMesaiIzinKullan();
+			this.fazlaMesaiOde = pd.getFazlaMesaiOde();
+			this.suaDurum = pd.getSuaDurum();
+			this.sutIzniDurum = pd.getSutIzniDurum();
+			this.sutIzniSaatSayisi = pd.getSutIzniSaatSayisi();
+			this.calismaModeliAy = pd.getCalismaModeliAy();
+			this.denklestirme = pd.isDenklestirme();
+			this.kismiOdemeSure = pd.getKismiOdemeSure();
+			this.egitimSuresiAksamGunSayisi = pd.getEgitimSuresiAksamGunSayisi();
+			this.partTime = pd.getPartTime();
+		}
+	}
+
 }

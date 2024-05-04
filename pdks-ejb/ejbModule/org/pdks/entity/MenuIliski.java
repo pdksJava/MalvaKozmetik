@@ -54,4 +54,9 @@ public class MenuIliski extends BasePDKSObject implements Serializable {
 	public void setChildMenuItem(MenuItem childMenuItem) {
 		this.childMenuItem = childMenuItem;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

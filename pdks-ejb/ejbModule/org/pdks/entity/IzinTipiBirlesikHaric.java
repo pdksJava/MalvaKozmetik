@@ -63,4 +63,9 @@ public class IzinTipiBirlesikHaric extends BaseObject {
 		this.izinTipiTanim = izinTipiTanim;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

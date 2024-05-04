@@ -145,10 +145,16 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	public void setVardiya(Vardiya value) {
+		Long oldId = eskiVardiya != null && eskiVardiya.getId() != null ? eskiVardiya.getId() : 0l;
 		if (value != null && value.getId() != null)
 			value.setIslemVardiyaGun(this);
 		if (isKurVardiya != null)
 			isKurVardiya.setVardiya(value);
+		if (this.isGuncellendi() == false) {
+			Long newId = value != null && value.getId() != null ? value.getId() : 0l;
+			this.guncellendi = PdksUtil.isLongDegisti(oldId, newId);
+		}
+
 		this.vardiya = value;
 	}
 
@@ -2309,6 +2315,11 @@ public class VardiyaGun extends BaseObject {
 
 	public void setPlanHareketEkle(boolean planHareketEkle) {
 		this.planHareketEkle = planHareketEkle;
+	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
 	}
 
 }

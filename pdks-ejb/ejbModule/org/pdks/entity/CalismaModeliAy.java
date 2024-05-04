@@ -158,4 +158,9 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 	public boolean isGunMaxCalismaOdenir() {
 		return gunMaxCalismaOdemeDurum != null && gunMaxCalismaOdemeDurum;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

@@ -135,4 +135,9 @@ public class AccountPermission extends BasePDKSObject implements Serializable {
 		this.check = check;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

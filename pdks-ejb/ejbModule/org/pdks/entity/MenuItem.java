@@ -206,4 +206,9 @@ public class MenuItem extends BasePDKSObject implements Serializable {
 	public void setMenuItemTimeList(List<UserMenuItemTime> menuItemTimeList) {
 		this.menuItemTimeList = menuItemTimeList;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

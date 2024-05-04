@@ -121,4 +121,9 @@ public class Notice  extends BasePDKSObject  implements Serializable, Cloneable 
 			throw new InternalError();
 		}
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

@@ -260,4 +260,9 @@ public class Sirket extends BaseObject {
 		return gebelikSutIzin != null && gebelikSutIzin;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

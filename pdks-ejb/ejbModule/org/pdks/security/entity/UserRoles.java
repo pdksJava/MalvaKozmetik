@@ -54,4 +54,9 @@ public class UserRoles  extends BasePDKSObject implements Serializable {
 	public void setRole(Role role) {
 		this.role = role;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

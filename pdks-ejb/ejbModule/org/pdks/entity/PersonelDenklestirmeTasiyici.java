@@ -453,4 +453,9 @@ public class PersonelDenklestirmeTasiyici extends BaseObject {
 
 		this.calismaModeliAy = value;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

@@ -90,4 +90,9 @@ public class KatSayi extends BasePDKSObject implements Serializable {
 		this.durum = durum;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

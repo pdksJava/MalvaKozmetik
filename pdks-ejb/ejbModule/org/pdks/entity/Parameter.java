@@ -133,4 +133,9 @@ public class Parameter extends BasePDKSObject implements Serializable {
 		return helpDesk != null && helpDesk.booleanValue();
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

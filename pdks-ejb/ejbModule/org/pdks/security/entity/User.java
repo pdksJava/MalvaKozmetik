@@ -1081,4 +1081,9 @@ public class User extends BasePDKSObject implements Serializable, Cloneable {
 		this.parametreJSON = parametreJSON;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

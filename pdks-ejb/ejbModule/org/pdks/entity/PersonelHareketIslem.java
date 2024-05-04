@@ -150,4 +150,9 @@ public class PersonelHareketIslem extends BasePDKSObject implements Serializable
 		this.puantajOnayDurum = puantajOnayDurum;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -38,6 +38,7 @@ public abstract class BaseObject extends BasePDKSObject implements Serializable,
 	protected Date olusturmaTarihi = new Date(), guncellemeTarihi;
 	protected boolean checkBoxDurum = Boolean.FALSE;
 	protected String style = VardiyaGun.STYLE_CLASS_ODD, titleStr = "";
+	protected BaseObject baseObject;
 
 	@Column(name = COLUMN_NAME_DURUM)
 	public Boolean getDurum() {
@@ -163,8 +164,18 @@ public abstract class BaseObject extends BasePDKSObject implements Serializable,
 	}
 
 	@Transient
+	public BaseObject getBaseObject() {
+		return baseObject;
+	}
+
+	public void setBaseObject(BaseObject baseObject) {
+		this.baseObject = baseObject;
+	}
+
+	@Transient
 	public Object clone() {
 		try {
+			this.baseObject = (BaseObject) super.clone();
 			this.setGuncelleyenUser(null);
 			this.setGuncellemeTarihi(null);
 			return super.clone();
@@ -178,6 +189,7 @@ public abstract class BaseObject extends BasePDKSObject implements Serializable,
 	public Object kopyala() {
 		try {
 			Object object = super.clone();
+			this.baseObject = (BaseObject) object;
 			return object;
 		} catch (CloneNotSupportedException e) {
 			// bu class cloneable oldugu icin buraya girilmemeli...

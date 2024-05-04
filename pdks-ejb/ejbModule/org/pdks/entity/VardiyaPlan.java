@@ -193,4 +193,9 @@ public class VardiyaPlan extends BaseObject {
 	public Personel getPdksPersonel() {
 		return personel;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

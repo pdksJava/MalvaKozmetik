@@ -73,4 +73,9 @@ public class CalismaModeliVardiya extends BasePDKSObject implements Serializable
 		return key;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

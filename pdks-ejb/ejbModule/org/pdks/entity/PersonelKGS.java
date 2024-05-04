@@ -200,4 +200,9 @@ public class PersonelKGS extends BasePDKSObject implements Serializable {
 		return personelView;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

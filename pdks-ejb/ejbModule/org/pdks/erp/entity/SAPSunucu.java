@@ -154,4 +154,9 @@ public class SAPSunucu  extends BasePDKSObject  implements Serializable {
 	public String getSunucuTipiAciklama() {
 		return getSunucuTipiAciklama(sunucuTipi != null ? sunucuTipi : -1);
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

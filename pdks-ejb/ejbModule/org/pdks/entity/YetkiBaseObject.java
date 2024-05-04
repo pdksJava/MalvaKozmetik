@@ -100,4 +100,9 @@ public class YetkiBaseObject extends BaseObject {
 		return PdksUtil.tarihKarsilastirNumeric(this.getBasTarih(), new Date()) == 1;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

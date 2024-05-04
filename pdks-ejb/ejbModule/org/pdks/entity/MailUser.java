@@ -80,4 +80,9 @@ public class MailUser extends BasePDKSObject implements Serializable {
 		this.email = email;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

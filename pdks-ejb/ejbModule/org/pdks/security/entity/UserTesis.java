@@ -52,4 +52,9 @@ public class UserTesis extends BasePDKSObject implements Serializable {
 		this.tesis = tesis;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

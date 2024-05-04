@@ -267,4 +267,9 @@ public class FazlaMesaiTalep extends BaseObject {
 	public Personel getPdksPersonel() {
 		return vardiyaGun != null ? vardiyaGun.getPersonel() : null;
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
 }

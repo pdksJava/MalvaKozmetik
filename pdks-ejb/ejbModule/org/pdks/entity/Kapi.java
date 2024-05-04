@@ -131,4 +131,9 @@ public class Kapi extends BaseObject {
 
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

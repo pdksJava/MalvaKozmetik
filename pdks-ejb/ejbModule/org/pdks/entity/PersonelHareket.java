@@ -135,4 +135,9 @@ public class PersonelHareket extends BasePDKSObject implements Serializable {
 		this.kapiView = kapiView;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

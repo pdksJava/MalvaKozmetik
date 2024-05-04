@@ -187,4 +187,9 @@ public class DepartmanDenklestirmeDonemi extends BaseObject {
 		this.denklestirmeAyDurum = denklestirmeAyDurum;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -39,4 +39,9 @@ public class DepartmanMailGrubu extends BaseObject {
 		this.mailAdress = mailAdress;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

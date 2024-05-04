@@ -145,4 +145,9 @@ public class PdksLog extends BasePDKSObject implements Serializable, Cloneable {
 		return kgsSirketId != null ? kgsSirketId.longValue() : 0L;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

@@ -59,4 +59,9 @@ public class MailGrubu extends BasePDKSObject implements Serializable, Cloneable
 		this.email = email;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }

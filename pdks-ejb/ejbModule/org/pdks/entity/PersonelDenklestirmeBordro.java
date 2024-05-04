@@ -262,4 +262,9 @@ public class PersonelDenklestirmeBordro extends BasePDKSObject implements Serial
 		this.detayMap = detayMap;
 	}
 
+	public void entityRefresh() {
+		// TODO entityRefresh
+		
+	}
+
 }
