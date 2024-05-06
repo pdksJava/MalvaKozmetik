@@ -3304,6 +3304,9 @@ public class PdksVeriOrtakAktar implements Serializable {
 					}
 
 					if (personel == null) {
+						if (personelKGS.getDurum().booleanValue() == false) {
+							continue;
+						}
 						personel = new Personel();
 						if (!tumPersonelDenklestirme.equals(""))
 							personel.setPdks(tumPersonelDenklestirme.equals("1"));

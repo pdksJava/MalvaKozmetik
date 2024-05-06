@@ -909,10 +909,81 @@
 											<h:selectOneMenu id="toComp" value="#{pdksPersonelHome.instance.sablon}" required="true" requiredMessage="Şablon seçiniz"
 												disabled="#{pdksPersonelHome.sablonlar.size()==1 and pdksPersonelHome.instance.sablon!=null}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.sablonlar}" label="#{comp.adi}" noSelectionLabel="Lütfen seçiniz" />
-												<a4j:support event="onchange" action="#{pdksPersonelHome.sablonDegisti()}" reRender="sirketDegisti" status="ajaxStatus" ajaxSingle="true" />
+												<a4j:support event="onchange" action="#{pdksPersonelHome.sablonDegisti()}" reRender="sirketDegisti,sablonlar" status="ajaxStatus"
+													ajaxSingle="true" />
 
 												<s:convertEntity />
 											</h:selectOneMenu>
+											<ui:fragment rendered="#{pdksPersonelHome.instance.sablon!=null}">
+												<rich:toolTip for="sablonlar">
+													<h:panelGrid columns="1">
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="Şablon Adı" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.adi}" id="vardiyaAdi" />
+														</s:decorate>
+
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="Gün Sayisi" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.calismaGunSayisi}" id="calismaGunSayisi" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="Toplam Saat" />
+															</ui:define>
+															<h:outputText value="#{authenticatedUser.sayiFormatliGoster(pdksPersonelHome.instance.sablon.toplamSaat)}" id="toplamSaat" />
+														</s:decorate>
+
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="#{ortakIslemler.getGunAdi(1,null)}" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.vardiya1.ozelAdi}" id="vardiya1" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="#{ortakIslemler.getGunAdi(2,null)}" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.vardiya2.ozelAdi}" id="vardiya2" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="#{ortakIslemler.getGunAdi(3,null)}" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.vardiya3.ozelAdi}" id="vardiya3" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="#{ortakIslemler.getGunAdi(4,null)}" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.vardiya4.ozelAdi}" id="vardiya4" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="#{ortakIslemler.getGunAdi(5,null)}" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.vardiya5.ozelAdi}" id="vardiya5" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="#{ortakIslemler.getGunAdi(6,null)}" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.vardiya6.ozelAdi}" id="vardiya6" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml">
+															<ui:define name="label">
+																<h:outputText value="#{ortakIslemler.getGunAdi(7,null)}" />
+															</ui:define>
+															<h:outputText value="#{pdksPersonelHome.instance.sablon.vardiya7.ozelAdi}" id="vardiya7" />
+														</s:decorate>
+
+													</h:panelGrid>
+
+												</rich:toolTip>
+											</ui:fragment>
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml" id="tipler" rendered="#{not empty pdksPersonelHome.personelTipleri}">
 											<ui:define name="label">#{ortakIslemler.personelTipiAciklama()}</ui:define>

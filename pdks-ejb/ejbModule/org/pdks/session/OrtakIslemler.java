@@ -224,6 +224,16 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param gunSira
+	 * @param pattern
+	 * @return
+	 */
+	public String getGunAdi(int gunSira, String pattern) {
+		String str = PdksUtil.getGunAdi(gunSira, pattern);
+		return str;
+ 	}
+
+	/**
 	 * @param keyName
 	 * @param value
 	 * @param class1

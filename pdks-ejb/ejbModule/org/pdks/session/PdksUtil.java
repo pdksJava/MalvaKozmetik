@@ -134,6 +134,57 @@ public class PdksUtil implements Serializable {
 	private static boolean sistemDestekVar = false, puantajSorguAltBolumGir = false;
 
 	/**
+	 * @param gunSira
+	 * @param pattern
+	 * @return
+	 */
+	public static String getGunAdi(int gunSira, String pattern) {
+		Calendar cal = Calendar.getInstance();
+		if (!PdksUtil.hasStringValue(pattern))
+			pattern = "EEEEE";
+		String str = "";
+		int dayOfWeek = -1;
+		switch (gunSira) {
+		case 1:
+			dayOfWeek = Calendar.MONDAY;
+			break;
+		case 2:
+			dayOfWeek = Calendar.TUESDAY;
+			break;
+		case 3:
+			dayOfWeek = Calendar.WEDNESDAY;
+			break;
+		case 4:
+			dayOfWeek = Calendar.THURSDAY;
+			break;
+		case 5:
+			dayOfWeek = Calendar.FRIDAY;
+			break;
+		case 6:
+			dayOfWeek = Calendar.SATURDAY;
+			break;
+		case 7:
+			dayOfWeek = Calendar.SUNDAY;
+			break;
+		default:
+			dayOfWeek = -1;
+			break;
+		}
+		try {
+			if (dayOfWeek >= 0) {
+				cal.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+				str = convertToDateString(cal.getTime(), pattern);
+				if (hasStringValue(str) && pattern.length() < 4)
+					str += ".";
+			}
+
+		} catch (Exception e) {
+		}
+		return str;
+
+	}
+
+	/**
 	 * @param value
 	 * @param list
 	 * @return
@@ -3795,7 +3846,7 @@ public class PdksUtil implements Serializable {
 
 	public static Locale getLocale() {
 		Locale locale = Constants.TR_LOCALE;
- 
+
 		return locale;
 	}
 

@@ -61,43 +61,43 @@
 						</rich:column>
 						<rich:column rendered="#{not empty vardiyaSablonuHome.vardiyaSablonList}">
 							<f:facet name="header">
-								<h:outputText value="1.Gun" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(1,'EEE')}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.vardiya1.ozelAdi}" id="vardiya1" />
 						</rich:column>
 						<rich:column rendered="#{not empty vardiyaSablonuHome.vardiyaSablonList}">
 							<f:facet name="header">
-								<h:outputText value="2.Gun" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(2,'EEE')}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.vardiya2.ozelAdi}" id="vardiya2" />
 						</rich:column>
 						<rich:column rendered="#{not empty vardiyaSablonuHome.vardiyaSablonList}">
 							<f:facet name="header">
-								<h:outputText value="3.Gun" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(3,'EEE')}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.vardiya3.ozelAdi}" id="vardiya3" />
 						</rich:column>
 						<rich:column rendered="#{not empty vardiyaSablonuHome.vardiyaSablonList}">
 							<f:facet name="header">
-								<h:outputText value="4.Gun" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(4,'EEE')}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.vardiya4.ozelAdi}" id="vardiya4" />
 						</rich:column>
 						<rich:column rendered="#{not empty vardiyaSablonuHome.vardiyaSablonList}">
 							<f:facet name="header">
-								<h:outputText value="5.Gun" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(5,'EEE')}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.vardiya5.ozelAdi}" id="vardiya5" />
 						</rich:column>
 						<rich:column rendered="#{not empty vardiyaSablonuHome.vardiyaSablonList}">
 							<f:facet name="header">
-								<h:outputText value="6.Gun" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(6,'EEE')}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.vardiya6.ozelAdi}" id="vardiya6" />
 						</rich:column>
 						<rich:column rendered="#{not empty vardiyaSablonuHome.vardiyaSablonList}">
 							<f:facet name="header">
-								<h:outputText value="7.Gun" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(7,'EEE')}" />
 							</f:facet>
 							<h:outputText value="#{vardiyaSablon.vardiya7.ozelAdi}" id="vardiya7" />
 						</rich:column>
@@ -227,7 +227,7 @@
 
 						<h:panelGrid columns="1" rendered="#{vardiyaSablonuHome.instance.toplamSaat>0 and vardiyaSablonuHome.instance.calismaGunSayisi>0}">
 							<s:decorate template="/layout/edit.xhtml" cellpadding="0" cellspacing="0" style="text-align : left">
-								<ui:define name="label">Pazartesi</ui:define>
+								<ui:define name="label"><h:outputText value="#{ortakIslemler.getGunAdi(1,null)}" /></ui:define>
 								<h:selectOneMenu value="#{vardiyaSablonuHome.instance.vardiya1}" required="true" style="text-align : left"
 									disabled="#{authenticatedUser.admin==false}" requiredMessage="Pazartesi vardiyasını seçiniz">
 									<s:selectItems var="vardiya" value="#{vardiyaSablonuHome.vardiyaList}" label="#{vardiya.ozelAdi}" noSelectionLabel="Lütfen seçiniz" />
@@ -236,7 +236,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" cellpadding="0" cellspacing="0" style="text-align : left">
-								<ui:define name="label">Salı</ui:define>
+								<ui:define name="label"><h:outputText value="#{ortakIslemler.getGunAdi(2,null)}" /></ui:define>
 								<h:selectOneMenu value="#{vardiyaSablonuHome.instance.vardiya2}" required="true" style="text-align : left"
 									disabled="#{authenticatedUser.admin==false}" requiredMessage="Salı vardiyasını seçiniz">
 									<s:selectItems var="vardiya" value="#{vardiyaSablonuHome.vardiyaList}" label="#{vardiya.ozelAdi}" noSelectionLabel="Lütfen seçiniz" />
@@ -245,7 +245,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" cellpadding="0" cellspacing="0" style="text-align : left">
-								<ui:define name="label">Çarşamba</ui:define>
+								<ui:define name="label"><h:outputText value="#{ortakIslemler.getGunAdi(3,null)}" /></ui:define>
 								<h:selectOneMenu value="#{vardiyaSablonuHome.instance.vardiya3}" required="true" style="text-align : left"
 									disabled="#{authenticatedUser.admin==false}" requiredMessage="Çarşamba vardiyasını seçiniz">
 									<s:selectItems var="vardiya" value="#{vardiyaSablonuHome.vardiyaList}" label="#{vardiya.ozelAdi}" noSelectionLabel="Lütfen seçiniz" />
@@ -254,7 +254,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" cellpadding="0" cellspacing="0" style="text-align : left">
-								<ui:define name="label">Perşembe</ui:define>
+								<ui:define name="label"><h:outputText value="#{ortakIslemler.getGunAdi(4,null)}" /></ui:define>
 								<h:selectOneMenu value="#{vardiyaSablonuHome.instance.vardiya4}" required="true" style="text-align : left"
 									disabled="#{authenticatedUser.admin==false}" requiredMessage="Perşembe vardiyasını seçiniz">
 									<s:selectItems var="vardiya" value="#{vardiyaSablonuHome.vardiyaList}" label="#{vardiya.ozelAdi}" noSelectionLabel="Lütfen seçiniz" />
@@ -263,7 +263,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" cellpadding="0" cellspacing="0" style="text-align : left" requiredMessage="Cuma vardiyasını seçiniz">
-								<ui:define name="label">Cuma</ui:define>
+								<ui:define name="label"><h:outputText value="#{ortakIslemler.getGunAdi(5,null)}" /></ui:define>
 								<h:selectOneMenu value="#{vardiyaSablonuHome.instance.vardiya5}" required="true" style="text-align : left"
 									disabled="#{authenticatedUser.admin==false}">
 									<s:selectItems var="vardiya" value="#{vardiyaSablonuHome.vardiyaList}" label="#{vardiya.ozelAdi}" noSelectionLabel="Lütfen seçiniz" />
@@ -272,7 +272,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" cellpadding="0" cellspacing="0" style="text-align : left">
-								<ui:define name="label">Cumartesi</ui:define>
+								<ui:define name="label"><h:outputText value="#{ortakIslemler.getGunAdi(6,null)}" /></ui:define>
 								<h:selectOneMenu value="#{vardiyaSablonuHome.instance.vardiya6}" required="true" style="text-align : left"
 									disabled="#{authenticatedUser.admin==false}" requiredMessage="Cumartesi vardiyasını seçiniz">
 									<s:selectItems var="vardiya" value="#{vardiyaSablonuHome.vardiyaList}" label="#{vardiya.ozelAdi}" noSelectionLabel="Lütfen seçiniz" />
@@ -281,7 +281,7 @@
 								</h:selectOneMenu>
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml" cellpadding="0" cellspacing="0" style="text-align : left">
-								<ui:define name="label">Pazar</ui:define>
+								<ui:define name="label"><h:outputText value="#{ortakIslemler.getGunAdi(7,null)}" /></ui:define>
 								<h:selectOneMenu value="#{vardiyaSablonuHome.instance.vardiya7}" required="true" style="text-align : left"
 									disabled="#{authenticatedUser.admin==false}" requiredMessage="Pazar vardiyasını seçiniz">
 									<s:selectItems var="vardiya" value="#{vardiyaSablonuHome.vardiyaList}" label="#{vardiya.ozelAdi}" noSelectionLabel="Lütfen seçiniz" />
