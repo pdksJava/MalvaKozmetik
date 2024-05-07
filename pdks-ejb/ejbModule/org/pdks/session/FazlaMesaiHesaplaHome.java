@@ -1551,6 +1551,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 				for (Iterator iterator1 = puantajDenklestirmeList.iterator(); iterator1.hasNext();) {
 					AylikPuantaj puantaj = (AylikPuantaj) iterator1.next();
+					puantaj.setFazlaMesaiHesapla(true);
 					double negatifBakiyeDenkSaat = 0.0;
 					offIzinliGunler.clear();
 					puantaj.setEksikGunVar(false);
@@ -1915,8 +1916,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							if (personelDurumMap.containsKey(personelDenklestirme.getId()))
 								puantaj.setFazlaMesaiIzinKontrol(Boolean.FALSE);
 							puantaj.setLoginUser(loginUser);
+							Boolean hesapla = puantaj.isFazlaMesaiHesapla();
 							puantaj.setFazlaMesaiHesapla(true);
 							personelDenklestirme = ortakIslemler.aylikPlanSureHesapla(true, normalCalismaVardiya, true, puantaj, !personelDenklestirme.isKapandi(loginUser), tatilGunleriMap, session);
+							puantaj.setFazlaMesaiHesapla(hesapla);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
