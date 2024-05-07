@@ -198,7 +198,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 			else
 				this.yonetici2 = null;
 			this.sirket = value.getSirket();
-			this.calismaModeli = value.getCalismaModeli();
+			if (this.getCalismaModeli() == null)
+				this.setCalismaModeli(value.getCalismaModeli());
 		}
 		this.pdksPersonel = value;
 	}
@@ -1046,8 +1047,12 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	}
 
 	public void setCalismaModeliAy(CalismaModeliAy value) {
-		if (value != null && denklestirmeAy == null)
-			this.denklestirmeAy = value.getDenklestirmeAy();
+		if (value != null) {
+			this.setCalismaModeli(value.getCalismaModeli());
+			if (denklestirmeAy == null)
+				this.denklestirmeAy = value.getDenklestirmeAy();
+		}
+
 		this.calismaModeliAy = value;
 	}
 
@@ -1378,10 +1383,10 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	public void setPersonelDenklestirme(PersonelDenklestirme pd) {
 		if (pd != null) {
 			this.denklestirmeAy = pd.getDenklestirmeAy();
-			this.calismaModeliAy = pd.getCalismaModeliAy();
 			this.setPdksPersonel(pd.getPdksPersonel());
+			this.setCalismaModeliAy(pd.getCalismaModeliAy());
 			if (calismaModeliAy != null)
-				this.calismaModeli = calismaModeliAy.getCalismaModeli();
+				this.setCalismaModeli(calismaModeliAy.getCalismaModeli());
 
 		}
 		this.personelDenklestirme = pd;

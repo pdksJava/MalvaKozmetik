@@ -1515,9 +1515,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			}
 		}
 		StringBuffer sbCalismaModeliUyumsuz = new StringBuffer();
-		CalismaModeli calismaModeli = personelDenklestirme != null && personelDenklestirme.getPersonel() != null ? personelDenklestirme.getPersonel().getCalismaModeli() : null;
+		CalismaModeli cm = personelDenklestirme != null && personelDenklestirme.getPersonel() != null ? personelDenklestirme.getPersonel().getCalismaModeli() : null;
 		if (personelDenklestirme.getCalismaModeliAy() != null)
-			calismaModeli = personelDenklestirme.getCalismaModeli();
+			cm = personelDenklestirme.getCalismaModeli();
 		String donem = String.valueOf(yil * 100 + ay);
 		Double kisaDonemSaat = null;
 		try {
@@ -1646,7 +1646,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						oncekiVardiyaGunKontrol = vardiyaGun;
 
 				}
-				if (vardiya.isCalisma() && vardiya.getGenel() && calismaModeli.isOrtakVardiyadir() == false && vardiyaMap != null && !vardiyaMap.containsKey(vardiya.getId())) {
+				if (vardiya.isCalisma() && vardiya.getGenel() && cm.isOrtakVardiyadir() == false && vardiyaMap != null && !vardiyaMap.containsKey(vardiya.getId())) {
 					if (vardiyaGun.isAyinGunu()) {
 						if (sbCalismaModeliUyumsuz.length() > 0)
 							sbCalismaModeliUyumsuz.append(", ");
@@ -1859,7 +1859,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					PdksUtil.addMessageAvailableWarn(mesaj + sb.toString());
 				if (sbCalismaModeliUyumsuz.length() > 0) {
 					String str = sbCalismaModeliUyumsuz.toString();
-					PdksUtil.addMessageAvailableWarn(mesaj + str + " " + (calismaModeli != null ? calismaModeli.getAciklama() + " Vardiyalarına " : ortakIslemler.calismaModeliAciklama() + "ne") + " uymayan hatalı " + (str.indexOf(",") < 0 ? "vardiyadır!" : "vardiyalardır"));
+					PdksUtil.addMessageAvailableWarn(mesaj + str + " " + (cm != null ? cm.getAciklama() + " vardiyalarına " : ortakIslemler.calismaModeliAciklama() + "ne") + " uymayan hatalı " + (str.indexOf(",") < 0 ? "vardiyadır!" : "vardiyalardır"));
 				}
 				if (personelDenklestirme != null) {
 					if (ikMesaj)

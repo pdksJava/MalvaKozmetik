@@ -1915,6 +1915,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							if (personelDurumMap.containsKey(personelDenklestirme.getId()))
 								puantaj.setFazlaMesaiIzinKontrol(Boolean.FALSE);
 							puantaj.setLoginUser(loginUser);
+							puantaj.setFazlaMesaiHesapla(true);
 							personelDenklestirme = ortakIslemler.aylikPlanSureHesapla(true, normalCalismaVardiya, true, puantaj, !personelDenklestirme.isKapandi(loginUser), tatilGunleriMap, session);
 						}
 					} catch (Exception e) {
