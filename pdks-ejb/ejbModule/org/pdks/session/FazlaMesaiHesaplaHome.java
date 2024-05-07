@@ -2049,14 +2049,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							personelDenklestirme.setPlanlanSure(puantaj.getPlanlananSure());
 							personelDenklestirme.setHesaplananSure(puantaj.getSaatToplami());
 							personelDenklestirme.setFazlaMesaiSure(puantaj.getAylikNetFazlaMesai());
-							if (denklestirmeAyDurum && denklestirmeAy.getDurum() == false) {
-								personelDenklestirme.setDevredenSure(puantaj.getDevredenSure());
-								personelDenklestirme.setResmiTatilSure(puantaj.getResmiTatilToplami());
-								personelDenklestirme.setHaftaCalismaSuresi(puantaj.getHaftaCalismaSuresi());
-								personelDenklestirme.setKesilenSure(puantaj.getKesilenSure());
-								personelDenklestirme.setDurum(puantaj.isFazlaMesaiHesapla());
-
-							}
+							// if (denklestirmeAyDurum && denklestirmeAy.getDurum() == false) {
+							// personelDenklestirme.setDevredenSure(puantaj.getDevredenSure());
+							// personelDenklestirme.setResmiTatilSure(puantaj.getResmiTatilToplami());
+							// personelDenklestirme.setHaftaCalismaSuresi(puantaj.getHaftaCalismaSuresi());
+							// personelDenklestirme.setKesilenSure(puantaj.getKesilenSure());
+							// personelDenklestirme.setDurum(puantaj.isFazlaMesaiHesapla());
+							//
+							// }
 
 							// personelDenklestirme.setHaftaCalismaSuresi(puantaj.getHaftaCalismaSuresi());
 						} else {
@@ -2595,7 +2595,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (!loginUser.isAdmin() || loginUser.getLogin().booleanValue() == false) {
 						fazlaMesaiOnaylaDevam(puantajList, Boolean.TRUE, Boolean.TRUE);
 					}
-
 				} catch (Exception eo) {
 					logger.error(eo);
 					eo.printStackTrace();
