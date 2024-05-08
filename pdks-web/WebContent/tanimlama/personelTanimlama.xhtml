@@ -997,12 +997,32 @@
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml" id="modeller">
 											<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()}</ui:define>
-											<h:selectOneMenu value="#{pdksPersonelHome.instance.calismaModeli}" required="#{pdksPersonelHome.instance.pdks}"
+											<h:selectOneMenu value="#{pdksPersonelHome.instance.calismaModeli}" required="#{pdksPersonelHome.instance.pdks}" id="perCalismaModeli"
 												disabled="#{pdksPersonelHome.calismaModeliList.size()==1 and pdksPersonelHome.instance.calismaModeli!=null}">
 												<s:selectItems var="comp" value="#{pdksPersonelHome.calismaModeliList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
 												<a4j:support event="onchange" action="#{pdksPersonelHome.modelDegisti()}" reRender="sirketDegisti" status="ajaxStatus" ajaxSingle="true" />
 												<s:convertEntity />
 											</h:selectOneMenu>
+											<ui:fragment rendered="#{pdksPersonelHome.calismaModeliVardiyaList!=null}">
+												<rich:toolTip for="perCalismaModeli">
+
+													<rich:dataTable rowClasses="acik,koyu" value="#{pdksPersonelHome.calismaModeliVardiyaList}" var="vardiya" rows="20" rowKeyVar="row"
+														id="vardiyaTable">
+														<f:facet name="header">
+															<h:outputText value="#{pdksPersonelHome.instance.calismaModeli.aciklama} Çalışma Modeli" />
+														</f:facet>
+														<rich:column>
+															<f:facet name="header">
+																<h:outputText value="Vardiya" />
+															</f:facet>
+															<h:outputText value="#{vardiya.vardiyaAdi}" />
+														</rich:column>
+														<f:facet name="footer">
+															<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+														</f:facet>
+													</rich:dataTable>
+												</rich:toolTip>
+											</ui:fragment>
 										</s:decorate>
 										<s:decorate template="/layout/edit.xhtml"
 											rendered="#{(pdksPersonelHome.instance.sirket.tesisDurum or pdksPersonelHome.instance.tesis!=null) and pdksPersonelHome.tesisList!=null and not empty pdksPersonelHome.tesisList}">

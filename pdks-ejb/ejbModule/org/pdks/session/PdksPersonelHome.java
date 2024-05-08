@@ -128,6 +128,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 	private HashMap<String, Boolean> personelDurumMap = new HashMap<String, Boolean>();
 	private PersonelDonemselDurum donemselDurum;
 	private List<SelectItem> personelDurumTipiList;
+	private List<Vardiya> calismaModeliVardiyaList;
 	private List<PersonelDonemselDurum> donemselDurumList;
 	private TreeMap<String, PersonelDinamikAlan> personelDinamikMap;
 	private PersonelView personelView;
@@ -474,6 +475,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			VardiyaSablonu sablon = personel.getSablon();
 			if (sablon.getCalismaModeli() != null) {
 				personel.setCalismaModeli(calismaModeliList.get(0));
+				fillCalismaModeliVardiyaList();
 			}
 
 		}
@@ -490,6 +492,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (calismaModeli.getBagliVardiyaSablonu() != null)
 				personel.setSablon(calismaModeli.getBagliVardiyaSablonu());
 		}
+		fillCalismaModeliVardiyaList();
 		return "";
 	}
 
@@ -686,6 +689,17 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			if (pdksDepartman != null && cm.getDepartman() != null && !cm.getDepartman().getId().equals(pdksDepartman.getId()))
 				iterator.remove();
 		}
+	}
+
+	/**
+	 * 
+	 */
+	private void fillCalismaModeliVardiyaList() {
+		Personel pdksPersonel = getInstance();
+		if (pdksPersonel.getCalismaModeli() != null)
+			calismaModeliVardiyaList = ortakIslemler.fillCalismaModeliVardiyaList(pdksPersonel.getCalismaModeli(), session);
+		if (calismaModeliVardiyaList != null && calismaModeliVardiyaList.isEmpty())
+			calismaModeliVardiyaList = null;
 	}
 
 	/**
@@ -1458,8 +1472,8 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		ePosta = "";
 		eskiKullanici = null;
 		kartNoAciklama = ortakIslemler.getParameterKey("kartNoAciklama");
- 		String tumPersonelDenklestirme = ortakIslemler.getParameterKey("tumPersonelDenklestirme");
- 		Departman pdksDepartman = null;
+		String tumPersonelDenklestirme = ortakIslemler.getParameterKey("tumPersonelDenklestirme");
+		Departman pdksDepartman = null;
 		ikinciYoneticiManuelTanimla = Boolean.FALSE;
 		bosDepartman = null;
 		bosDepartmanKodu = ortakIslemler.getParameterKey("bosDepartmanKodu");
@@ -1748,6 +1762,7 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 			logger.error("PDKS hata out : " + e.getMessage());
 			izin = null;
 		}
+		fillCalismaModeliVardiyaList();
 		setBakiyeIzin(izin);
 		izinGirisDurum(pdksPersonel);
 		ekSahaDisable();
@@ -5557,5 +5572,13 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 	public void setOrganizasyonSemasiGoster(Boolean organizasyonSemasiGoster) {
 		this.organizasyonSemasiGoster = organizasyonSemasiGoster;
+	}
+
+	public List<Vardiya> getCalismaModeliVardiyaList() {
+		return calismaModeliVardiyaList;
+	}
+
+	public void setCalismaModeliVardiyaList(List<Vardiya> calismaModeliVardiyaList) {
+		this.calismaModeliVardiyaList = calismaModeliVardiyaList;
 	}
 }

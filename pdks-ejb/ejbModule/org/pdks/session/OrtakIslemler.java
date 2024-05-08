@@ -231,7 +231,7 @@ public class OrtakIslemler implements Serializable {
 	public String getGunAdi(int gunSira, String pattern) {
 		String str = PdksUtil.getGunAdi(gunSira, pattern);
 		return str;
- 	}
+	}
 
 	/**
 	 * @param keyName
@@ -249,6 +249,33 @@ public class OrtakIslemler implements Serializable {
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		Object object = pdksEntityController.getObjectByInnerObject(fields, class1);
 		return object;
+	}
+
+	/**
+	 * @param cm
+	 * @param session
+	 * @return
+	 */
+	public List<Vardiya> fillCalismaModeliVardiyaList(CalismaModeli cm, Session session) {
+		List<Vardiya> calismaModeliVardiyaList = null;
+		if (cm != null && cm.getId() != null) {
+			HashMap parametreMap = new HashMap();
+			parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "vardiya");
+			parametreMap.put("calismaModeli.id", cm.getId());
+			if (session != null)
+				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+			calismaModeliVardiyaList = pdksEntityController.getObjectByInnerObjectList(parametreMap, CalismaModeliVardiya.class);
+			for (Iterator iterator = calismaModeliVardiyaList.iterator(); iterator.hasNext();) {
+				Vardiya v = (Vardiya) iterator.next();
+				if (v.getDurum().booleanValue() == false)
+					iterator.remove();
+			}
+			if (calismaModeliVardiyaList.size() > 1)
+				calismaModeliVardiyaList = PdksUtil.sortListByAlanAdi(calismaModeliVardiyaList, "id", true);
+		} else if (calismaModeliVardiyaList == null)
+			calismaModeliVardiyaList = new ArrayList<Vardiya>();
+
+		return calismaModeliVardiyaList;
 	}
 
 	/**

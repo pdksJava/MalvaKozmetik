@@ -571,13 +571,33 @@
 
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">#{ortakIslemler.calismaModeliAciklama()}</ui:define>
-							<h:selectOneMenu value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy}" disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}"
-								styleClass="size10" required="true" style="width:85px" requiredMessage="Çalışma Şekli Seciniz">
+							<h:selectOneMenu value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy}" id="perCalismaModeli"
+								disabled="#{vardiyaGunHome.denklestirmeAyDurum==false}" styleClass="size10" required="true" style="width:85px"
+								requiredMessage="Çalışma Şekli Seciniz">
 								<s:selectItems var="comp" value="#{vardiyaGunHome.modelList}" label="#{comp.calismaModeli.aciklama}" noSelectionLabel="Lutfen Seciniz" />
 								<s:convertEntity />
 								<a4j:support event="onchange" action="#{vardiyaGunHome.modelDegisti()}" reRender="digerIslemler,secimler" />
 							</h:selectOneMenu>
+							<ui:fragment rendered="#{vardiyaGunHome.calismaModeliVardiyaList!=null}">
+								<rich:toolTip for="perCalismaModeli">
 
+									<rich:dataTable rowClasses="acik,koyu" value="#{vardiyaGunHome.calismaModeliVardiyaList}" var="vardiya" rows="20" rowKeyVar="row"
+										id="vardiyaTable">
+										<f:facet name="header">
+											<h:outputText value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.aciklama} Çalışma Modeli" />
+										</f:facet>
+										<rich:column>
+											<f:facet name="header">
+												<h:outputText value="Vardiya" />
+											</f:facet>
+											<h:outputText value="#{vardiya.vardiyaAdi}" />
+										</rich:column>
+										<f:facet name="footer">
+											<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+										</f:facet>
+									</rich:dataTable>
+								</rich:toolTip>
+							</ui:fragment>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
 							rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy!=null and vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.updateCGS}">
