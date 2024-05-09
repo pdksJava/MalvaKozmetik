@@ -73,6 +73,7 @@ import org.pdks.entity.AramaSecenekleri;
 import org.pdks.entity.ArifeVardiyaDonem;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BaseObject;
+import org.pdks.entity.BasePDKSObject;
 import org.pdks.entity.BasitHareket;
 import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.CalismaModeli;
@@ -252,27 +253,31 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param cm
+	 * @param bpo
 	 * @param session
 	 * @return
 	 */
-	public List<Vardiya> fillCalismaModeliVardiyaList(CalismaModeli cm, Session session) {
-		List<Vardiya> calismaModeliVardiyaList = null;
-		if (cm != null && cm.getId() != null) {
+	public List fillCalismaModeliVardiyaList(BasePDKSObject bpo, Session session) {
+		List calismaModeliVardiyaList = null;
+		if (bpo != null && bpo.getId() != null) {
 			HashMap parametreMap = new HashMap();
-			parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "vardiya");
-			parametreMap.put("calismaModeli.id", cm.getId());
+			if (bpo instanceof CalismaModeli) {
+				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "vardiya");
+				parametreMap.put("calismaModeli.id", bpo.getId());
+				parametreMap.put("calismaModeli.durum", Boolean.TRUE);
+			} else if (bpo instanceof Vardiya) {
+				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "calismaModeli");
+				parametreMap.put("vardiya.id", bpo.getId());
+				parametreMap.put("vardiya.durum", Boolean.TRUE);
+
+			}
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			calismaModeliVardiyaList = pdksEntityController.getObjectByInnerObjectList(parametreMap, CalismaModeliVardiya.class);
-			for (Iterator iterator = calismaModeliVardiyaList.iterator(); iterator.hasNext();) {
-				Vardiya v = (Vardiya) iterator.next();
-				if (v.getDurum().booleanValue() == false)
-					iterator.remove();
-			}
+
 			if (calismaModeliVardiyaList.size() > 1)
 				calismaModeliVardiyaList = PdksUtil.sortListByAlanAdi(calismaModeliVardiyaList, "id", true);
-		} else if (calismaModeliVardiyaList == null)
+		} else
 			calismaModeliVardiyaList = new ArrayList<Vardiya>();
 
 		return calismaModeliVardiyaList;
