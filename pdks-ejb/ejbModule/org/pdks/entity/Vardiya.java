@@ -1606,7 +1606,12 @@ public class Vardiya extends BaseObject {
 			if (vTemp.isCalisma()) {
 				String pattern = PdksUtil.getSaatFormat();
 				Vardiya tmpVardiya = tmp.getIslemVardiya();
-				vardiyaAdi = PdksUtil.convertToDateString(tmpVardiya.getVardiyaBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(tmpVardiya.getVardiyaBitZaman(), pattern) + " [ " + vTemp.getKisaAdi() + " ] ";
+				String ek = "";
+				if (tmpVardiya.isSuaMi())
+					ek = " - Şua";
+				else if (tmpVardiya.isGebelikMi())
+					ek = " - Gebe";
+				vardiyaAdi = PdksUtil.convertToDateString(tmpVardiya.getVardiyaBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(tmpVardiya.getVardiyaBitZaman(), pattern) + " [ " + vTemp.getKisaAdi() + ek + " ] ";
 			}
 
 			tmp = null;
@@ -1857,6 +1862,6 @@ public class Vardiya extends BaseObject {
 
 	public void entityRefresh() {
 		// TODO entityRefresh
-		
+
 	}
 }

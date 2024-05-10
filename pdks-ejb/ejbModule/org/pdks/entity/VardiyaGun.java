@@ -1333,7 +1333,12 @@ public class VardiyaGun extends BaseObject {
 				if (vTemp.isCalisma()) {
 					String pattern = PdksUtil.getSaatFormat();
 					Vardiya tmpVardiya = tmp.getIslemVardiya();
-					str = PdksUtil.convertToDateString(tmpVardiya.getVardiyaBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(tmpVardiya.getVardiyaBitZaman(), pattern) + " [ " + vTemp.getKisaAdi() + " ] ";
+					String ek = "";
+					if (tmpVardiya.isSuaMi())
+						ek = " - Şua";
+					else if (tmpVardiya.isGebelikMi())
+						ek = " - Gebe";
+					str = PdksUtil.convertToDateString(tmpVardiya.getVardiyaBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(tmpVardiya.getVardiyaBitZaman(), pattern) + " [ " + vTemp.getKisaAdi() + ek + " ] ";
 					try {
 						str += " Net Süre : " + PdksUtil.numericValueFormatStr(tmpVardiya.getNetCalismaSuresi(), null);
 					} catch (Exception e) {
@@ -2319,7 +2324,7 @@ public class VardiyaGun extends BaseObject {
 
 	public void entityRefresh() {
 		// TODO entityRefresh
-		
+
 	}
 
 }

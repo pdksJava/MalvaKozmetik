@@ -73,6 +73,7 @@ import org.pdks.entity.AramaSecenekleri;
 import org.pdks.entity.ArifeVardiyaDonem;
 import org.pdks.entity.AylikPuantaj;
 import org.pdks.entity.BaseObject;
+import org.pdks.entity.BasePDKSObject;
 import org.pdks.entity.BasitHareket;
 import org.pdks.entity.BordroDetayTipi;
 import org.pdks.entity.CalismaModeli;
@@ -252,27 +253,31 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
-	 * @param cm
+	 * @param bpo
 	 * @param session
 	 * @return
 	 */
-	public List<Vardiya> fillCalismaModeliVardiyaList(CalismaModeli cm, Session session) {
-		List<Vardiya> calismaModeliVardiyaList = null;
-		if (cm != null && cm.getId() != null) {
+	public List fillCalismaModeliVardiyaList(BasePDKSObject bpo, Session session) {
+		List calismaModeliVardiyaList = null;
+		if (bpo != null && bpo.getId() != null) {
 			HashMap parametreMap = new HashMap();
-			parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "vardiya");
-			parametreMap.put("calismaModeli.id", cm.getId());
+			if (bpo instanceof CalismaModeli) {
+				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "vardiya");
+				parametreMap.put("calismaModeli.id", bpo.getId());
+				parametreMap.put("calismaModeli.durum", Boolean.TRUE);
+			} else if (bpo instanceof Vardiya) {
+				parametreMap.put(PdksEntityController.MAP_KEY_SELECT, "calismaModeli");
+				parametreMap.put("vardiya.id", bpo.getId());
+				parametreMap.put("vardiya.durum", Boolean.TRUE);
+
+			}
 			if (session != null)
 				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 			calismaModeliVardiyaList = pdksEntityController.getObjectByInnerObjectList(parametreMap, CalismaModeliVardiya.class);
-			for (Iterator iterator = calismaModeliVardiyaList.iterator(); iterator.hasNext();) {
-				Vardiya v = (Vardiya) iterator.next();
-				if (v.getDurum().booleanValue() == false)
-					iterator.remove();
-			}
+
 			if (calismaModeliVardiyaList.size() > 1)
 				calismaModeliVardiyaList = PdksUtil.sortListByAlanAdi(calismaModeliVardiyaList, "id", true);
-		} else if (calismaModeliVardiyaList == null)
+		} else
 			calismaModeliVardiyaList = new ArrayList<Vardiya>();
 
 		return calismaModeliVardiyaList;
@@ -15618,6 +15623,8 @@ public class OrtakIslemler implements Serializable {
 									}
 								}
 								boolean izinHesapla = true;
+								if (key.equals("20240615"))
+									logger.debug("");
 								if (!normalGun) {
 									boolean offIzinli = pdksVardiyaGun.isIzinli() && !(pdksVardiyaGun.getVardiya().isOffGun() || pdksVardiyaGun.getVardiya().isHaftaTatil());
 									if (pdksVardiyaGun.getIzin() != null && haftaIciIzinGunTarih != null && pdksVardiyaGun.getVardiyaDate().getTime() >= haftaIciIzinGunTarih.getTime() && calismaModeli != null) {
@@ -15638,8 +15645,7 @@ public class OrtakIslemler implements Serializable {
 											izinHesapla = calismaModeli.getHaftaSonu() > 0;
 										}
 									}
-									if (izinHesapla)
-										logger.debug("");
+
 									if (izinHesapla) {
 
 										if (offIzinli || (!(pdksVardiyaGun.getVardiya() != null && pdksVardiyaGun.getVardiya().getId().equals(offVardiya.getId())) && !pdksVardiyaGun.isHaftaTatil() && !raporIzni)) {
@@ -15693,8 +15699,7 @@ public class OrtakIslemler implements Serializable {
 												}
 												double sure = izinSaat != null ? izinSaat : 9.0d;
 												double kontrolSure = 0;
-												if (key.equals("20240409"))
-													logger.debug("");
+
 												if (sure > 0 || pdksVardiyaGun.getIzin() != null) {
 													kontrolSure = getVardiyaIzinSuresi(izinTarihKontrolTarihi == null ? sure : 0.0d, pdksVardiyaGun, personelDenklestirme, izinTarihKontrolTarihi);
 													if (pdksVardiyaGun.isIzinli() && izinSaat != null && kontrolSure > izinSaat)
@@ -15766,9 +15771,9 @@ public class OrtakIslemler implements Serializable {
 								// TODO Arife'den sonra planlar için
 								Tatil tatilArife = pdksVardiyaGun.getTatil();
 								if (tatilArife.getArifeVardiyaYarimHesapla() != null && tatilArife.getArifeVardiyaYarimHesapla()) {
-									double yarimGun = izinSaat;
 									double calSure = pdksVardiyaGun.getVardiya().getNetCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure();
 									double arifeSure = calSure > izinSaat ? calSure : izinSaat;
+									double yarimGun = pdksVardiyaGun.isIzinli() ? izinSaat : arifeSure;
 									if (tatilArife.getArifeSonraVardiyaDenklestirmeVar() != null && tatilArife.getArifeSonraVardiyaDenklestirmeVar()) {
 										Vardiya vardiya = pdksVardiyaGun.getIslemVardiya();
 										if (tatilArife.getVardiyaMap() != null && tatilArife.getVardiyaMap().containsKey(vardiya.getId())) {
@@ -15810,6 +15815,8 @@ public class OrtakIslemler implements Serializable {
 								if (pdksVardiyaGun.getIzin() != null)
 									logger.debug(key + " " + izinSuresi);
 							}
+							if (izinSuresi != 0.0d)
+								logger.debug(key + " " + izinSuresi);
 							if (pdksVardiyaGun.getResmiTatilSure() > 0.0d && puantajData.isFazlaMesaiHesapla() == false) {
 								pdksVardiyaGun.addCalismaSuresi(pdksVardiyaGun.getResmiTatilSure());
 								toplamSure += pdksVardiyaGun.getResmiTatilSure();
