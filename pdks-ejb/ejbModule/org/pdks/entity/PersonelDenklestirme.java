@@ -480,7 +480,7 @@ public class PersonelDenklestirme extends BaseObject {
 			aylikSure = sutIzniSaatSayisi;
 		}
 
-		if (izinSure != 0.0d)
+		if (izinSure > 0.0d)
 			aylikSure -= izinSure;
 		Double gunlukCalismaSuresi = calismaModeliAy != null ? calismaModeliAy.getCalismaModeli().getHaftaIci() : null;
 		if (isSuaDurumu()) {

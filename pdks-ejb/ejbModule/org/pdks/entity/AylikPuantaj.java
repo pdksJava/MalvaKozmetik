@@ -451,6 +451,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 		double izinSure = 0.0d;
 		calisilanGunSayisi = 0;
+
 		izinSure = izinSuresi;
 		if (calismaModeliAy == null)
 			logger.debug(personelDenklestirme.getId());
@@ -499,6 +500,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 							try {
 								double calSure = vg.getCalismaSuresi() - vg.getResmiTatilSure();
 								double arifeSure = vg.getCalismaSuresi() > vg.getIslemVardiya().getNetCalismaSuresi() && calSure > yarimGun ? calSure : yarimGun;
+								if (arifeSure > yarimGun)
+									arifeSure = yarimGun;
 								if (tatil.getArifeSonraVardiyaDenklestirmeVar() != null && tatil.getArifeSonraVardiyaDenklestirmeVar()) {
 									if (tatil.getVardiyaMap() != null && tatil.getVardiyaMap().containsKey(vardiya.getId())) {
 										Vardiya vardiyaTatil = tatil.getVardiyaMap().get(vardiya.getId());
