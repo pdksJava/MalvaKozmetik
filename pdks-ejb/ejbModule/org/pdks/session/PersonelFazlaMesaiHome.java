@@ -793,7 +793,7 @@ public class PersonelFazlaMesaiHome extends EntityHome<PersonelFazlaMesai> imple
 						}
 
 						try {
-							kgsList = ortakIslemler.getHareketBilgileri(kapiIdler, perIdler, tarih1, tarih2, HareketKGS.class, session);
+ 							kgsList = ortakIslemler.getHareketBilgileri(kapiIdler, perIdler, tarih1, PdksUtil.addTarih(tarih2, Calendar.SECOND, 1), HareketKGS.class, session);
 							for (Iterator iterator = kgsList.iterator(); iterator.hasNext();) {
 								HareketKGS hareket = (HareketKGS) iterator.next();
 								if (hareket.getDurum() != HareketKGS.DURUM_AKTIF)
