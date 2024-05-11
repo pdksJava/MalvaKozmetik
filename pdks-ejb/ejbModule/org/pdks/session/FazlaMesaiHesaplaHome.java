@@ -158,7 +158,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private Boolean kesilenSureGoster = Boolean.FALSE, checkBoxDurum, yoneticiERP1Kontrol = Boolean.FALSE;
 	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE, gecenAyDurum = Boolean.FALSE, izinGoster = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
-	private boolean adminRole, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
+	private boolean adminRole, hareketIptalEt = false, ikRole, personelHareketDurum, personelFazlaMesaiDurum, vardiyaPlaniDurum, personelIzinGirisiDurum, fazlaMesaiTalepOnayliDurum = Boolean.FALSE;
 	private Boolean izinCalismayanMailGonder = Boolean.FALSE, hatalariAyikla = Boolean.FALSE, kismiOdemeGoster = Boolean.FALSE, yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 	private String manuelGirisGoster = "", kapiGirisSistemAdi = "", birdenFazlaKGSSirketSQL = "";
 	private boolean yarimYuvarla = true, sadeceFazlaMesai = true, saatlikCalismaGoster = false, izinBordoroGoster = false, bordroPuantajEkranindaGoster = false, planOnayDurum, eksikCalismaGoster, eksikMaasGoster = false;
@@ -186,7 +186,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private Double toplamFazlamMesai = 0D;
 	private Double aksamCalismaSaati = null, aksamCalismaSaatiYuzde = null;
 	private byte[] excelData;
-
+	private List<Tanim> hareketIptalNedenList;
+	private HareketKGS islemHareketKGS;
 	private boolean mailGonder, tekSirket;
 	private Boolean bakiyeGuncelle, ayrikHareketVar, fazlaMesaiOnayDurum = Boolean.FALSE;
 	private Boolean gerceklesenMesaiKod = Boolean.FALSE, devredenBakiyeKod = Boolean.FALSE, normalCalismaSaatKod = Boolean.FALSE, haftaTatilCalismaSaatKod = Boolean.FALSE, resmiTatilCalismaSaatKod = Boolean.FALSE, izinSureSaatKod = Boolean.FALSE;
@@ -5665,10 +5666,64 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		return "";
 	}
 
+	public String hareketSilme() {
+		islemHareketKGS.setIslem(null);
+		setIslemHareketKGS(null);
+		return "";
+	}
+
+	/**
+	 * @param kgsHareket
+	 * @return
+	 */
+	public String hareketSil() {
+		if (islemHareketKGS != null) {
+			PersonelHareketIslem islem = islemHareketKGS.getIslem();
+			if (islem.getNeden() != null) {
+				long kgsId = 0, pdksId = 0;
+				String str = islemHareketKGS.getId();
+				Long id = Long.parseLong(str.substring(1));
+				if (str.startsWith(HareketKGS.GIRIS_ISLEM_YAPAN_SIRKET_KGS))
+					kgsId = id;
+				else
+					pdksId = id;
+				if (kgsId > 0 || pdksId > 0) {
+					id = pdksEntityController.hareketSil(kgsId, pdksId, authenticatedUser, islem.getNeden().getId(), islem.getAciklama(), islemHareketKGS.getKgsSirketIdLong(), session);
+					if (id > 0) {
+						fillPersonelDenklestirmeList();
+						hareketIptalEt = false;
+					}
+
+				}
+			} else {
+				PdksUtil.addMessageWarn("İptal nedeni seçiniz!");
+			}
+
+		}
+		islemHareketKGS.setIslem(null);
+		setIslemHareketKGS(null);
+		return "";
+	}
+
+	/**
+	 * @param kgsHareket
+	 * @return
+	 */
+	public String guncelleSil(HareketKGS kgsHareket) {
+		setIslemHareketKGS(kgsHareket);
+		PersonelHareketIslem islem = new PersonelHareketIslem();
+		kgsHareket.setIslem(islem);
+		hareketIptalNedenList = ortakIslemler.getTanimList(Tanim.TIPI_HAREKET_NEDEN, session);
+		return "";
+	}
+
 	/**
 	 * @param vg
 	 */
 	public String vardiyaGoster(VardiyaGun vg) {
+		hareketIptalEt = false;
+		islemHareketKGS = null;
+		hareketIptalNedenList = null;
 		seciliAylikPuantaj = aylikPuantajList != null && aylikPuantajList.size() == 1 ? aylikPuantajList.get(0) : null;
 		if (seciliAylikPuantaj == null && vg != null) {
 			Long perId = vg.getPersonel().getId();
@@ -5694,6 +5749,12 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			}
 		}
 		if (vg.getOrjinalHareketler() != null) {
+			int hareketAdet = vg.getOrjinalHareketler().size();
+			if (denklestirmeAyDurum && vg.isHareketHatali() && hareketAdet > 2) {
+				if (aylikPuantajList.size() < 10 || hareketAdet == 3)
+					hareketIptalEt = userHome.hasPermission("personelHareket", "view");
+
+			}
 			for (HareketKGS hareket : vg.getOrjinalHareketler()) {
 				if (hareket.getPersonelFazlaMesai() != null && hareket.getPersonelFazlaMesai().isOnaylandi()) {
 					if (hareket.getPersonelFazlaMesai().getFazlaMesaiSaati() != null)
@@ -7138,6 +7199,30 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setPlanTanimsizBolumId(Long planTanimsizBolumId) {
 		this.planTanimsizBolumId = planTanimsizBolumId;
+	}
+
+	public boolean isHareketIptalEt() {
+		return hareketIptalEt;
+	}
+
+	public void setHareketIptalEt(boolean hareketIptalEt) {
+		this.hareketIptalEt = hareketIptalEt;
+	}
+
+	public List<Tanim> getHareketIptalNedenList() {
+		return hareketIptalNedenList;
+	}
+
+	public void setHareketIptalNedenList(List<Tanim> hareketIptalNedenList) {
+		this.hareketIptalNedenList = hareketIptalNedenList;
+	}
+
+	public HareketKGS getIslemHareketKGS() {
+		return islemHareketKGS;
+	}
+
+	public void setIslemHareketKGS(HareketKGS islemHareketKGS) {
+		this.islemHareketKGS = islemHareketKGS;
 	}
 
 }

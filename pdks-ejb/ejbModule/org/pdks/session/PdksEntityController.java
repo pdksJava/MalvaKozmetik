@@ -844,7 +844,7 @@ public class PdksEntityController implements Serializable {
 		try {
 			List<BigDecimal> list = execSPList(veriMap, sp, null);
 			if (!list.isEmpty())
-				sonuc = list.get(0).longValue();
+				sonuc = pdksId + kgsId;
 		} catch (Exception e) {
 			sonuc = 0L;
 		}
