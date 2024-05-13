@@ -14786,7 +14786,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public List<HareketKGS> getYemekHareketleri(Session session, Date basTarih, Date bitTarih, boolean durum) {
 		Calendar cal = Calendar.getInstance();
-		List<YemekOgun> yemekList = fillYemekList(session, basTarih, bitTarih);
+		List<YemekOgun> yemekOgunList = fillYemekList(session, basTarih, bitTarih);
 		List<HareketKGS> kgsList = new ArrayList<HareketKGS>();
 		HashMap parametreMap = new HashMap();
 		showSQLQuery(parametreMap);
@@ -14802,32 +14802,7 @@ public class OrtakIslemler implements Serializable {
 		}
 		if (list2 != null) {
 
-			// parametreMap.put("basTarih", PdksUtil.getDate(basTarih));
-			// parametreMap.put("bitTarih", PdksUtil.getDate(tariheGunEkleCikar(cal, bitTarih, 1)));
-			//
-			// StringBuffer qsb = new StringBuffer();
-			// qsb.append("SELECT S." + HareketKGS.COLUMN_NAME_ID + " FROM " + HareketKGS.TABLE_NAME + " S  WITH(nolock) ");
-			// if (!durum)
-			// qsb.append(" LEFT JOIN " + Personel.TABLE_NAME + " P ON P." + Personel.COLUMN_NAME_KGS_PERSONEL + " = S." + HareketKGS.COLUMN_NAME_PERSONEL);
-			// qsb.append(" where  S." + HareketKGS.COLUMN_NAME_ZAMAN + " >=:basTarih AND S." + HareketKGS.COLUMN_NAME_ZAMAN + " <:bitTarih ");
-			// if (!durum)
-			// qsb.append(" AND P." + Personel.COLUMN_NAME_SIRKET + " IS NULL ");
-			// if (!yemekKapiList.isEmpty()) {
-			// qsb.append(" AND S." + HareketKGS.COLUMN_NAME_KAPI + " :kapiId");
-			// parametreMap.put("kapiId", yemekKapiList);
-			// }
-			// if (session != null)
-			// parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			// try {
-			// List list = pdksEntityController.getObjectBySQLList(qsb, parametreMap, null);
-			// kgsList = getHareketIdBilgileri(list, null, basTarih, bitTarih, session);
-			// list = null;
-			// } catch (Exception e) {
-			// kgsList = new ArrayList<HareketKGS>();
-			// logger.error("Pdks hata in : \n");
-			// e.printStackTrace();
-			// logger.error("Pdks hata out : " + e.getMessage());
-			// }
+	
 			if (!list2.isEmpty())
 				kgsList.addAll(list2);
 		}
@@ -14865,7 +14840,7 @@ public class OrtakIslemler implements Serializable {
 					long yemekZamanikgs = Long.parseLong((PdksUtil.convertToDateString(hareketKGS.getZaman(), "yyyyMMddHHmm")));
 					YemekOgun yemekOgun = null;
 
-					for (YemekOgun yemekOgunOrj : yemekList) {
+					for (YemekOgun yemekOgunOrj : yemekOgunList) {
 						YemekOgun yemek = (YemekOgun) yemekOgunOrj.clone();
 						if (PdksUtil.tarihKarsilastirNumeric(yemekOgunOrj.getBasTarih(), hareketKGS.getZaman()) == 1 || PdksUtil.tarihKarsilastirNumeric(hareketKGS.getZaman(), yemekOgunOrj.getBitTarih()) == 1) {
 							continue;

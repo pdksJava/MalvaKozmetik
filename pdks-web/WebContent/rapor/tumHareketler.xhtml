@@ -38,7 +38,7 @@
 								<h:inputText value="#{tumHareketlerHome.sicilNo}" maxlength="11" />
 							</s:decorate>
 							<s:decorate template="/layout/edit.xhtml"
-								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin) and tumHareketlerHome.departmanList.size()>1}">
+								rendered="#{(authenticatedUser.admin or authenticatedUser.IKAdmin or authenticatedUser.raporKullanici) and tumHareketlerHome.departmanList.size()>1}">
 								<ui:define name="label">PDKS Departman</ui:define>
 								<h:selectOneMenu value="#{tumHareketlerHome.departmanId}" required="true" requiredMessage="PDKS Departman seçiniz">
 									<f:selectItem itemLabel="Lütfen seçiniz" />
@@ -48,7 +48,7 @@
 
 
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}" id="sirketler">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or tumHareketlerHome.ikRole}" id="sirketler">
 								<ui:define name="label">#{ortakIslemler.sirketAciklama()}</ui:define>
 								<h:selectOneMenu id="sirketSec" value="#{tumHareketlerHome.sirketId}" requiredMessage="#{ortakIslemler.sirketAciklama()} seçiniz">
 									<f:selectItem itemLabel="Lütfen seçiniz" />
@@ -56,15 +56,15 @@
 
 								</h:selectOneMenu>
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or tumHareketlerHome.ikRole}">
 								<ui:define name="label">PDKS Kapilari</ui:define>
 								<h:selectBooleanCheckbox value="#{tumHareketlerHome.pdksKapi}" />
 							</s:decorate>
-							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or authenticatedUser.IK}">
+							<s:decorate template="/layout/edit.xhtml" rendered="#{authenticatedUser.admin or tumHareketlerHome.ikRole}">
 								<ui:define name="label">PDKS Hariç Kapilari</ui:define>
 								<h:selectBooleanCheckbox value="#{tumHareketlerHome.pdksHaricKapi}" />
 							</s:decorate>
-							<ui:fragment rendered="#{authenticatedUser.admin or authenticatedUser.IK or authenticatedUser.sistemYoneticisi}">
+							<ui:fragment rendered="#{authenticatedUser.admin or tumHareketlerHome.ikRole or authenticatedUser.sistemYoneticisi}">
 								<s:decorate template="/layout/edit.xhtml"
 									rendered="#{authenticatedUser.admin or ortakIslemler.getParameterKeyHasStringValue('hareketVardiyaOku')}">
 									<ui:define name="label">Vardiya Bilgisi Oku</ui:define>
@@ -176,7 +176,7 @@
 								</rich:column>
 							</c:if>
 
-							<rich:column rendered="#{authenticatedUser.IK or authenticatedUser.admin}" style="width:autostretch ;white-space: nowrap;">
+							<rich:column rendered="#{tumHareketlerHome.ikRole or authenticatedUser.admin}" style="width:autostretch ;white-space: nowrap;">
 								<f:facet name="header">
 									<h:outputText value="KGS Şirket" />
 								</f:facet>

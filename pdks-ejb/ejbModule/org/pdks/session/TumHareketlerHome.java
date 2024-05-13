@@ -149,7 +149,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 		if (!ayniSayfa)
 			authenticatedUser.setCalistigiSayfa("tumHareketler");
 		sayfaGiris(session);
-		ikRole = ortakIslemler.getIKRolSayfa(authenticatedUser);
+		ikRole = ortakIslemler.getIKRolSayfa(authenticatedUser) || authenticatedUser.isRaporKullanici();
 		setHareketList(new ArrayList<HareketKGS>());
 		HareketKGS hareket = new HareketKGS();
 		hareket.setPersonel(new PersonelView());
@@ -218,7 +218,7 @@ public class TumHareketlerHome extends EntityHome<HareketKGS> implements Seriali
 
 			map.put("durum", Boolean.TRUE);
 
-			if (!authenticatedUser.isAdmin() && !authenticatedUser.isIKAdmin())
+			if (!authenticatedUser.isAdmin() && !authenticatedUser.isIKAdmin() && !authenticatedUser.isRaporKullanici())
 				map.put("sirket.departman.id", authenticatedUser.getDepartman().getId());
 			else if (departman != null)
 				map.put("sirket.departman.id", departmanId);

@@ -15,11 +15,13 @@
 
 					<s:decorate template="/layout/edit.xhtml">
 						<ui:define name="label">Başlangıç Tarihi</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenSayisiHome.basTarih}" required="true" requiredMessage="Tarih giriniz" />
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenSayisiHome.basTarih}" required="true"
+							requiredMessage="Tarih giriniz" />
 					</s:decorate>
 					<s:decorate template="/layout/edit.xhtml">
 						<ui:define name="label">Bitiş Tarihi</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenSayisiHome.bitTarih}" required="true" requiredMessage="Tarih giriniz" />
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenSayisiHome.bitTarih}" required="true"
+							requiredMessage="Tarih giriniz" />
 					</s:decorate>
 					<a4j:commandButton status="ajaxStatus" value="Listele" action="#{yemekYiyenSayisiHome.fillHareketList}" reRender="hareketPanel" />
 				</h:panelGrid>
@@ -44,7 +46,7 @@
 
 						</rich:column>
 
-						<rich:column styleClass="#{yemek.style}">
+						<rich:column styleClass="#{yemek.style}" rendered="#{yemekYiyenSayisiHome.ogunVar}">
 							<f:facet name="header">
 								<h:outputText value="Öğün Tipi" />
 							</f:facet>
@@ -87,9 +89,9 @@
 
 
 					</rich:dataTable>
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{yemekYiyenSayisiHome.excelToplamAktar}" target="blank"
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{yemekYiyenSayisiHome.excelToplamAktar(true)}" target="blank"
 						rendered="#{not empty yemekYiyenSayisiHome.toplamYemekList}">
-						<a4j:support event="oncomplete" status="ajaxStatus" process="toplamHareketTable" reRender="toplamHareketTable" />
+						 
 					</h:commandLink>
 					<rich:dataTable rowClasses="acik,koyu" value="#{yemekYiyenSayisiHome.hareketList}" var="yemek" rows="25" rowKeyVar="row" id="hareketTable">
 						<f:facet name="header">
@@ -124,7 +126,7 @@
 
 						</rich:column>
 
-						<rich:column styleClass="#{yemek.style}">
+						<rich:column styleClass="#{yemek.style}" rendered="#{yemekYiyenSayisiHome.ogunVar}">
 							<f:facet name="header">
 								<h:outputText value="Öğün Tipi" />
 							</f:facet>
@@ -161,11 +163,12 @@
 
 
 					</rich:dataTable>
-
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{yemekYiyenSayisiHome.excelGunlukAktar}" target="blank"
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{yemekYiyenSayisiHome.excelToplamAktar(false)}" target="blank"
 						rendered="#{not empty yemekYiyenSayisiHome.hareketList}">
-						<a4j:support event="oncomplete" status="ajaxStatus" process="hareketTable" reRender="hareketTable" />
+						 
 					</h:commandLink>
+
+					 
 
 				</rich:panel>
 
@@ -225,7 +228,7 @@
 
 							</rich:column>
 
-							<rich:column>
+							<rich:column rendered="#{yemekYiyenSayisiHome.ogunVar}">
 								<f:facet name="header">
 									<h:outputText value="Öğün Tipi" />
 								</f:facet>
@@ -243,8 +246,7 @@
 							</f:facet>
 						</rich:dataTable>
 					</h:panelGrid>
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
-						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:cifthareketTable1')}" />
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" action="#{yemekYiyenSayisiHome.excelMukerrerAktar()}" />
 				</rich:modalPanel>
 
 
@@ -307,7 +309,7 @@
 
 							</rich:column>
 
-							<rich:column>
+							<rich:column rendered="#{yemekYiyenSayisiHome.ogunVar}">
 								<f:facet name="header">
 									<h:outputText value="Öğün Tipi" />
 								</f:facet>
@@ -320,8 +322,8 @@
 							</f:facet>
 						</rich:dataTable>
 					</h:panelGrid>
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
-						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:hareketTable1')}" />
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" rendered="#{authenticatedUser.admin}"
+						action="#{yemekYiyenSayisiHome.excelGunlukAktar()}" />
 				</rich:modalPanel>
 
 

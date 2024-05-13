@@ -656,49 +656,44 @@
 							rendered="#{fazlaMesaiHesaplaHome.seciliVardiyaGun!=null}" /></span>
 				</rich:toolTip>
 				<a4j:outputPanel id="hareketSilPanel">
-					<h:panelGrid columns="1" style="width:90%"
-						rendered="#{fazlaMesaiHesaplaHome.hareketIptalEt and fazlaMesaiHesaplaHome.islemHareketKGS!=null}">
+					<rich:panel header="Kapı Giriş/Çıkış İptal" rendered="#{fazlaMesaiHesaplaHome.hareketIptalEt and fazlaMesaiHesaplaHome.islemHareketKGS!=null}">
+						<h:panelGrid columns="1" style="width:90%;background-color:white;">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Hareket No</ui:define>
+								<h:outputText value="#{fazlaMesaiHesaplaHome.islemHareketKGS.id}" />
+							</s:decorate>
 
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Hareket No</ui:define>
-							<h:outputText value="#{fazlaMesaiHesaplaHome.islemHareketKGS.id}" />
-						</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Kapi</ui:define>
+								<h:outputText value="#{fazlaMesaiHesaplaHome.islemHareketKGS.kapiView.aciklama}" />
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Zaman</ui:define>
+								<h:outputText value="#{authenticatedUser.dateTimeFormatla(fazlaMesaiHesaplaHome.islemHareketKGS.orjinalZaman)}" />
+							</s:decorate>
 
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Kapi</ui:define>
-							<h:outputText value="#{fazlaMesaiHesaplaHome.islemHareketKGS.kapiView.aciklama}" />
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Zaman</ui:define>
-							<h:outputText value="#{authenticatedUser.dateTimeFormatla(fazlaMesaiHesaplaHome.islemHareketKGS.orjinalZaman)}" />
-						</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Neden</ui:define>
+								<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.islemHareketKGS.islem.neden}">
+									<s:selectItems var="comp" value="#{fazlaMesaiHesaplaHome.hareketIptalNedenList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
+									<s:convertEntity />
+									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="hareketIslem" />
+								</h:selectOneMenu>
+							</s:decorate>
 
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Neden</ui:define>
-							<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.islemHareketKGS.islem.neden}">
-								<s:selectItems var="comp" value="#{fazlaMesaiHesaplaHome.hareketIptalNedenList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
-								<s:convertEntity />
-								<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="hareketIslem" />
-							</h:selectOneMenu>
-						</s:decorate>
-
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Aciklama</ui:define>
-							<h:inputText value="#{fazlaMesaiHesaplaHome.islemHareketKGS.islem.aciklama}" />
-						</s:decorate>
-
-
-
-
-
-						<h:panelGrid columns="2">
-							<a4j:commandButton status="ajaxStatus" value="Sil" action="#{fazlaMesaiHesaplaHome.hareketSil}"
-								reRender="denklestirmeDonemiTable,hareketTables"
-								oncomplete="if (#{facesContext.maximumSeverity==null or fazlaMesaiHesaplaHome.hareketIptalEt==false}) #{rich:component('hareketDetayPanel')}.hide();" />
-							<a4j:commandButton status="ajaxStatus" value="Vazgeç" action="#{fazlaMesaiHesaplaHome.hareketSilme}" reRender="hareketSilPanel" />
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">Aciklama</ui:define>
+								<h:inputText value="#{fazlaMesaiHesaplaHome.islemHareketKGS.islem.aciklama}" />
+							</s:decorate>
+							<h:panelGrid columns="2">
+								<a4j:commandButton status="ajaxStatus" value="Sil" action="#{fazlaMesaiHesaplaHome.hareketSil}"
+									reRender="denklestirmeDonemiTable,hareketTables"
+									oncomplete="if (#{facesContext.maximumSeverity==null or fazlaMesaiHesaplaHome.hareketIptalEt==false}) #{rich:component('hareketDetayPanel')}.hide();" />
+								<a4j:commandButton status="ajaxStatus" value="Vazgeç" action="#{fazlaMesaiHesaplaHome.hareketSilme()}" ajaxSingle="true"
+									reRender="hareketSilPanel" />
+							</h:panelGrid>
 						</h:panelGrid>
-					</h:panelGrid>
-
+					</rich:panel>
 				</a4j:outputPanel>
 			</h:form>
 

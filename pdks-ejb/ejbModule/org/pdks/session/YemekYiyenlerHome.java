@@ -61,18 +61,11 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 	private List<HareketKGS> hareketList = new ArrayList<HareketKGS>();
 	private List<YemekOgun> yemekList;
 	private List<Long> yemekKapiList;
+	private boolean ogunVar = false, masrafYeriVar = false;
 
 	private Date basTarih;
 	private Date bitTarih;
 	private Session session;
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
 
 	@Override
 	public Object getId() {
@@ -93,6 +86,8 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.clear();
+		ogunVar = false;
+		masrafYeriVar = false;
 		setHareketList(new ArrayList<HareketKGS>());
 		HareketKGS hareket = new HareketKGS();
 		hareket.setPersonel(new PersonelView());
@@ -108,7 +103,8 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 	}
 
 	public String fillHareketList(boolean durum) {
-
+		ogunVar = false;
+		masrafYeriVar = false;
 		List<HareketKGS> kgsList = ortakIslemler.getYemekHareketleri(session, basTarih, bitTarih, durum);
 		if (durum && kgsList.size() > 1) {
 			TreeMap<String, List<HareketKGS>> ogunMap = new TreeMap<String, List<HareketKGS>>();
@@ -116,6 +112,10 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 				kgsHareket.setCokluOgun(false);
 				if (kgsHareket.getYemekOgun() == null || kgsHareket.isCheckBoxDurum())
 					continue;
+				if (!ogunVar)
+					ogunVar = kgsHareket.getYemekOgun() != null && kgsHareket.getYemekOgun().getId() != null && kgsHareket.getYemekOgun().getId().longValue() > 0;
+				if (!masrafYeriVar)
+					masrafYeriVar = kgsHareket.getPersonel() != null && kgsHareket.getPersonel().getPdksPersonel() != null && kgsHareket.getPersonel().getPdksPersonel().getMasrafYeri() != null;
 				String key = PdksUtil.convertToDateString(kgsHareket.getZaman(), "yyyyMMdd") + "_" + kgsHareket.getPersonelId() + "_" + kgsHareket.getYemekOgun().getId();
 				List<HareketKGS> list = ogunMap.containsKey(key) ? ogunMap.get(key) : new ArrayList<HareketKGS>();
 				if (list.isEmpty())
@@ -223,10 +223,14 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 		ExcelUtil.getCell(sheet, row, 1, header).setCellValue("Adı Soyadı");
 		ExcelUtil.getCell(sheet, row, 2, header).setCellValue(ortakIslemler.personelNoAciklama());
 		ExcelUtil.getCell(sheet, row, 3, header).setCellValue(ortakIslemler.sirketAciklama());
-		int sayac = 6;
-		ExcelUtil.getCell(sheet, row, 4, header).setCellValue("Masraf Yeri Kodu");
-		ExcelUtil.getCell(sheet, row, 5, header).setCellValue("Masraf Yeri Açıklama");
-		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Öğün Tipi");
+		int sayac = 4;
+		if (masrafYeriVar) {
+			ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Masraf Yeri Kodu");
+			ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Masraf Yeri Açıklama");
+		}
+
+		if (ogunVar)
+			ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Öğün Tipi");
 		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Yemek Yeri");
 		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Yemek Durum");
 		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Mükerrer Geçerli");
@@ -261,37 +265,43 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 					sirket = "" + ortakIslemler.sirketAciklama() + " tanımsız";
 				}
 				ExcelUtil.getCell(sheet, row, 3, style).setCellValue(sirket);
-				String masrafYeriKodu = "", masrafYeriAciklama = "";
-				try {
-					if (yemek.getPersonel().getPdksPersonel().getMasrafYeri() != null) {
-						Tanim masrafYeri = yemek.getPersonel().getPdksPersonel().getMasrafYeri();
-						if (PdksUtil.hasStringValue(masrafYeri.getKodu())) {
-							masrafYeriKodu = masrafYeri.getKodu();
-							masrafYeriAciklama = masrafYeri.getAciklama();
+				sayac = 4;
+				if (masrafYeriVar) {
+					String masrafYeriKodu = "", masrafYeriAciklama = "";
+					try {
+						if (yemek.getPersonel().getPdksPersonel().getMasrafYeri() != null) {
+							Tanim masrafYeri = yemek.getPersonel().getPdksPersonel().getMasrafYeri();
+							if (PdksUtil.hasStringValue(masrafYeri.getKodu())) {
+								masrafYeriKodu = masrafYeri.getKodu();
+								masrafYeriAciklama = masrafYeri.getAciklama();
 
+							}
 						}
+
+					} catch (Exception e) {
+						logger.error("PDKS hata in : \n");
+						e.printStackTrace();
+						logger.error("PDKS hata out : " + e.getMessage());
+						masrafYeriAciklama = "";
 					}
 
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					masrafYeriAciklama = "";
+					ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(masrafYeriKodu);
+					ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(masrafYeriAciklama);
 				}
 
-				ExcelUtil.getCell(sheet, row, 4, style).setCellValue(masrafYeriKodu);
-				ExcelUtil.getCell(sheet, row, 5, style).setCellValue(masrafYeriAciklama);
+				if (ogunVar) {
 
-				try {
-					ogun = yemek.getYemekOgun().getYemekAciklama();
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					sirket = "Öğün tanımsız";
+					try {
+						ogun = yemek.getYemekOgun().getYemekAciklama();
+					} catch (Exception e) {
+						logger.error("PDKS hata in : \n");
+						e.printStackTrace();
+						logger.error("PDKS hata out : " + e.getMessage());
+						sirket = "Öğün tanımsız";
+					}
+
+					ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(ogun);
 				}
-				sayac = 6;
-				ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(ogun);
 				ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(yemek.getKapiView().getAciklama());
 				try {
 					durum = yemek.getDurumu();
@@ -332,4 +342,27 @@ public class YemekYiyenlerHome extends EntityHome<VardiyaGun> implements Seriali
 		return baos;
 	}
 
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public boolean isOgunVar() {
+		return ogunVar;
+	}
+
+	public void setOgunVar(boolean ogunVar) {
+		this.ogunVar = ogunVar;
+	}
+
+	public boolean isMasrafYeriVar() {
+		return masrafYeriVar;
+	}
+
+	public void setMasrafYeriVar(boolean masrafYeriVar) {
+		this.masrafYeriVar = masrafYeriVar;
+	}
 }

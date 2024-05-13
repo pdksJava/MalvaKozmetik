@@ -2,7 +2,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
-	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	xmlns:c="http://java.sun.com/jstl/core" xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
 	<ui:define name="title">
 		<h:outputText value="#{ortakIslemler.getMenuAdi('yemekYiyenler')}" />
 	</ui:define>
@@ -18,11 +18,13 @@
 
 					<s:decorate template="/layout/edit.xhtml">
 						<ui:define name="label">Başlangıç Tarihi</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenlerHome.basTarih}" required="true" requiredMessage="Tarih giriniz" />
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenlerHome.basTarih}" required="true"
+							requiredMessage="Tarih giriniz" />
 					</s:decorate>
 					<s:decorate template="/layout/edit.xhtml">
 						<ui:define name="label">Bitiş Tarihi</ui:define>
-						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenlerHome.bitTarih}" required="true" requiredMessage="Tarih giriniz" />
+						<rich:calendar datePattern="#{authenticatedUser.dateFormat}" value="#{yemekYiyenlerHome.bitTarih}" required="true"
+							requiredMessage="Tarih giriniz" />
 					</s:decorate>
 					<h:panelGrid columns="2">
 						<a4j:commandButton status="ajaxStatus" value="Listele" action="#{yemekYiyenlerHome.fillHareketList(true)}" reRender="hareketPanel" />
@@ -70,20 +72,21 @@
 							</f:facet>
 							<h:outputText value="#{yemek.personel.pdksPersonel.sirket.ad}" />
 						</rich:column>
-
-						<rich:column styleClass="#{yemek.style}">
-							<f:facet name="header">
-								<h:outputText value="Masraf Yeri Kodu" />
-							</f:facet>
-							<h:outputText value="#{yemek.personel.pdksPersonel.masrafYeri.kodu}" />
-						</rich:column>
-						<rich:column styleClass="#{yemek.style}">
-							<f:facet name="header">
-								<h:outputText value="Masraf Yeri Açıklaması" />
-							</f:facet>
-							<h:outputText value="#{yemek.personel.pdksPersonel.masrafYeri.aciklama}" />
-						</rich:column>
-						<rich:column styleClass="#{yemek.style}">
+						<c:if test="#{yemekYiyenlerHome.masrafYeriVar}">
+							<rich:column styleClass="#{yemek.style}">
+								<f:facet name="header">
+									<h:outputText value="Masraf Yeri Kodu" />
+								</f:facet>
+								<h:outputText value="#{yemek.personel.pdksPersonel.masrafYeri.kodu}" />
+							</rich:column>
+							<rich:column styleClass="#{yemek.style}">
+								<f:facet name="header">
+									<h:outputText value="Masraf Yeri Açıklaması" />
+								</f:facet>
+								<h:outputText value="#{yemek.personel.pdksPersonel.masrafYeri.aciklama}" />
+							</rich:column>
+						</c:if>
+						<rich:column styleClass="#{yemek.style}" rendered="#{yemekYiyenlerHome.ogunVar}">
 							<f:facet name="header">
 								<h:outputText value="Öğün Tipi" />
 							</f:facet>

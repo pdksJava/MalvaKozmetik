@@ -66,15 +66,8 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 	private Date basTarih;
 	private Date bitTarih;
 	private HareketKGS hareketKGS;
+	private boolean ogunVar = false;
 	private Session session;
-
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
 
 	@Override
 	public Object getId() {
@@ -100,6 +93,8 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.clear();
+		ogunVar = false;
+
 		setHareketList(new ArrayList<HareketKGS>());
 		setCiftYemekList(new ArrayList<HareketKGS>());
 		setToplamYemekList(new ArrayList<HareketKGS>());
@@ -130,7 +125,132 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 		setYemekKapiList(ortakIslemler.getYemekKapiIdList(session));
 	}
 
-	public ByteArrayOutputStream excelDevam(List<HareketKGS> hareketler, boolean toplam) throws Exception {
+	/**
+	 * @param hareketler
+	 * @param mükerrer
+	 * @return
+	 * @throws Exception
+	 */
+	public ByteArrayOutputStream excelDevam(List<HareketKGS> hareketler, boolean mükerrer) throws Exception {
+		ByteArrayOutputStream baos = null;
+
+		Workbook wb = new XSSFWorkbook();
+
+		Sheet sheet = ExcelUtil.createSheet(wb, (mükerrer ? "Mükerrer " : "") + "Yemek yiyenler", Boolean.TRUE);
+
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
+
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleOddDateTime = ExcelUtil.getStyleOdd(ExcelUtil.FORMAT_DATETIME, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEvenDateTime = ExcelUtil.getStyleEven(ExcelUtil.FORMAT_DATETIME, wb);
+
+		int row = 0;
+		ExcelUtil.getCell(sheet, row, 0, header).setCellValue("Yemek Zamanı");
+		ExcelUtil.getCell(sheet, row, 1, header).setCellValue("Adı Soyadı");
+		ExcelUtil.getCell(sheet, row, 2, header).setCellValue(ortakIslemler.personelNoAciklama());
+		ExcelUtil.getCell(sheet, row, 3, header).setCellValue(ortakIslemler.sirketAciklama());
+		int sayac = 4;
+
+		if (ogunVar)
+			ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Öğün Tipi");
+		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Yemek Yeri");
+		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Yemek Durum");
+		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Mükerrer Geçerli");
+		ExcelUtil.getCell(sheet, row, sayac++, header).setCellValue("Öncek Giriş Zamanı");
+		boolean renk = true;
+		for (Iterator iter = hareketList.iterator(); iter.hasNext();) {
+			HareketKGS yemek = (HareketKGS) iter.next();
+			row++;
+			String adSoyad = yemek.getAdSoyad();
+			CellStyle style = null, styleCenter = null, stylDateTime = null;
+			if (renk) {
+				stylDateTime = styleOddDateTime;
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				stylDateTime = styleEvenDateTime;
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
+			try {
+				ExcelUtil.getCell(sheet, row, 0, stylDateTime).setCellValue(yemek.getZaman());
+				ExcelUtil.getCell(sheet, row, 1, style).setCellValue(adSoyad);
+				ExcelUtil.getCell(sheet, row, 2, styleCenter).setCellValue(yemek.getSicilNo());
+				String sirket = "", ogun = "", durum = "";
+				try {
+					sirket = yemek.getPersonel().getPdksPersonel().getSirket().getAd();
+				} catch (Exception e) {
+					logger.error("PDKS hata in : \n");
+					e.printStackTrace();
+					logger.error("PDKS hata out : " + e.getMessage());
+					sirket = "" + ortakIslemler.sirketAciklama() + " tanımsız";
+				}
+				ExcelUtil.getCell(sheet, row, 3, style).setCellValue(sirket);
+
+				sayac = 4;
+				if (ogunVar) {
+					try {
+						ogun = yemek.getYemekOgun().getYemekAciklama();
+					} catch (Exception e) {
+						logger.error("PDKS hata in : \n");
+						e.printStackTrace();
+						logger.error("PDKS hata out : " + e.getMessage());
+						sirket = "Öğün tanımsız";
+					}
+
+					ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(ogun);
+				}
+				ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(yemek.getKapiView().getAciklama());
+				try {
+					durum = yemek.getDurumu();
+				} catch (Exception e) {
+					logger.error("PDKS hata in : \n");
+					e.printStackTrace();
+					logger.error("PDKS hata out : " + e.getMessage());
+					durum = "";
+				}
+				ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(durum);
+				ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue(yemek.getGecerliYemek() != null && yemek.getGecerliYemek() ? 1 : (yemek.isCokluOgun() ? 2 : 0));
+				if (yemek.getOncekiYemekZamani() != null)
+					ExcelUtil.getCell(sheet, row, sayac++, stylDateTime).setCellValue(yemek.getOncekiYemekZamani());
+				else
+					ExcelUtil.getCell(sheet, row, sayac++, style).setCellValue("");
+			} catch (Exception e) {
+				logger.error("PDKS hata in : \n");
+				e.printStackTrace();
+				logger.error("PDKS hata out : " + e.getMessage());
+				logger.debug(row);
+
+			}
+		}
+		double katsayi = 3.43;
+		int[] dizi = new int[] { 1575, 1056, 2011, 2056, 2011, 2056, 3722, 2078, 2600, 2000, 2000 };
+		for (int i = 0; i < dizi.length; i++)
+			sheet.setColumnWidth(i, (short) (dizi[i] * katsayi));
+
+		try {
+			baos = new ByteArrayOutputStream();
+			wb.write(baos);
+		} catch (Exception e) {
+			logger.error("PDKS hata in : \n");
+			e.printStackTrace();
+			logger.error("PDKS hata out : " + e.getMessage());
+			baos = null;
+		}
+		return baos;
+	}
+
+	/**
+	 * @param hareketler
+	 * @param toplam
+	 * @return
+	 * @throws Exception
+	 */
+	public ByteArrayOutputStream excelOzetDevam(List<HareketKGS> hareketler, boolean toplam) throws Exception {
 		ByteArrayOutputStream baos = null;
 		Workbook wb = new XSSFWorkbook();
 		Sheet sheet = ExcelUtil.createSheet(wb, "Yemek Rapor", Boolean.TRUE);
@@ -141,7 +261,8 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 		if (!toplam)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Yemek Zamanı");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
-		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Öğün Tipi");
+		if (ogunVar)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Öğün Tipi");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Yemek Yeri");
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Adet");
 		for (Iterator iter = hareketler.iterator(); iter.hasNext();) {
@@ -161,15 +282,19 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 					sirket = "" + ortakIslemler.sirketAciklama() + " tanımsız";
 				}
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(sirket);
-				try {
-					ogun = yemek.getYemekOgun().getYemekAciklama();
-				} catch (Exception e) {
-					logger.error("PDKS hata in : \n");
-					e.printStackTrace();
-					logger.error("PDKS hata out : " + e.getMessage());
-					sirket = "Öğün tanımsız";
+				if (ogunVar) {
+					try {
+						ogun = yemek.getYemekOgun().getYemekAciklama();
+					} catch (Exception e) {
+						logger.error("PDKS hata in : \n");
+						e.printStackTrace();
+						logger.error("PDKS hata out : " + e.getMessage());
+						sirket = "Öğün tanımsız";
+					}
+
+					ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ogun);
 				}
-				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(ogun);
+
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yemek.getKapiView().getAciklama());
 				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(yemek.getYemekYiyenSayisi());
 			} catch (Exception e) {
@@ -196,9 +321,9 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 		return baos;
 	}
 
-	public String excelToplamAktar() {
+	public String excelToplamAktar(Boolean gunVar) {
 		try {
-			ByteArrayOutputStream baosDosya = excelDevam(toplamYemekList, true);
+			ByteArrayOutputStream baosDosya = excelOzetDevam(gunVar ? toplamYemekList : hareketList, gunVar);
 			if (baosDosya != null)
 				PdksUtil.setExcelHttpServletResponse(baosDosya, "toplamYemekYiyenler.xlsx");
 		} catch (Exception e) {
@@ -215,6 +340,21 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 			ByteArrayOutputStream baosDosya = excelDevam(hareketList, Boolean.FALSE);
 			if (baosDosya != null)
 				PdksUtil.setExcelHttpServletResponse(baosDosya, "gunlukYemekYiyenler.xlsx");
+
+		} catch (Exception e) {
+			logger.error("PDKS hata in : \n");
+			e.printStackTrace();
+			logger.error("PDKS hata out : " + e.getMessage());
+		}
+
+		return "";
+	}
+
+	public String excelMukerrerAktar() {
+		try {
+			ByteArrayOutputStream baosDosya = excelDevam(ciftYemekList, Boolean.TRUE);
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "mukerrerYemekYiyenler.xlsx");
 
 		} catch (Exception e) {
 			logger.error("PDKS hata in : \n");
@@ -312,13 +452,15 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 					}
 				}
 			}
-
+			ogunVar = false;
 			for (Iterator iterator = kgsList.iterator(); iterator.hasNext();) {
 				HareketKGS kgsHareket = (HareketKGS) iterator.next();
 				PersonelView personelView = kgsHareket.getPersonel();
 				kgsHareket.setGecerliYemek(null);
 				kgsHareket.setGecerliYemekAdet(0);
 				kgsHareket.addYemekTeloreansZamani(yemekMukerrerAraligi);
+				if (!ogunVar)
+					ogunVar = kgsHareket.getYemekOgun() != null && kgsHareket.getYemekOgun().getId() != null && kgsHareket.getYemekOgun().getId().longValue() > 0L;
 				try {
 					sirket = null;
 					if (personelView.getPdksPersonel() == null || personelView.getPdksPersonel().getId() == null) {
@@ -521,4 +663,19 @@ public class YemekYiyenSayisiHome extends EntityHome<VardiyaGun> implements Seri
 		this.hareketKGS = hareketKGS;
 	}
 
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public boolean isOgunVar() {
+		return ogunVar;
+	}
+
+	public void setOgunVar(boolean ogunVar) {
+		this.ogunVar = ogunVar;
+	}
 }
