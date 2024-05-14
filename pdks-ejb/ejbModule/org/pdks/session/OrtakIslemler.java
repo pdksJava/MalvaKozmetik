@@ -14802,7 +14802,6 @@ public class OrtakIslemler implements Serializable {
 		}
 		if (list2 != null) {
 
-	
 			if (!list2.isEmpty())
 				kgsList.addAll(list2);
 		}
@@ -15291,8 +15290,11 @@ public class OrtakIslemler implements Serializable {
 		PersonelDenklestirme personelDenklestirme = null;
 		try {
 			User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
+			DenklestirmeAy dm = puantajData.getDenklestirmeAy();
 			if (filliHesapla == false)
 				filliHesapla = puantajData.getDenklestirmeAy() == null || !puantajData.getDenklestirmeAy().getDurum();
+
+			Date sonGun = PdksUtil.tariheAyEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(dm.getYil() * 100 + dm.getAy()) + "01", "yyyyMMdd"), 1);
 
 			List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
 			String izinTarihKontrolTarihiStr = getParameterKey("izinTarihKontrolTarihi");
@@ -15870,6 +15872,8 @@ public class OrtakIslemler implements Serializable {
 						}
 					}
 					if (puantajData.isFazlaMesaiHesapla() || filliHesapla == false || filliHesapla) {
+						if (puantajData.isFazlaMesaiHesapla() == false && puantajData.getResmiTatilToplami() > 0.0d)
+							puantajData.setSaatToplami(puantajData.getSaatToplami() - puantajData.getResmiTatilToplami());
 						double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(loginUser);
 						boolean fazlaMesaiOde = puantajData.getPersonelDenklestirme().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirme().getFazlaMesaiOde();
 						if (!fazlaMesaiOde) {
@@ -15897,6 +15901,7 @@ public class OrtakIslemler implements Serializable {
 						puantajData.setEksikCalismaSure(0.0d);
 						if (hesaplananDenklestirme.getDevredenSure() != 0.0d)
 							hesaplananDenklestirme.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
+
 						if (calismaModeli.isSaatlikOdeme()) {
 							if (hesaplananDenklestirme.getDevredenSure() < 0.0d) {
 
@@ -15910,6 +15915,11 @@ public class OrtakIslemler implements Serializable {
 						}
 
 						puantajData.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
+						if (puantajData.getDevredenSure() > 0.0d && !puantajData.getPdksPersonel().isCalisiyorGun(sonGun)) {
+							double devredenSure = puantajData.getDevredenSure();
+							puantajData.setFazlaMesaiSure(puantajData.getFazlaMesaiSure() + devredenSure);
+							puantajData.setDevredenSure(0.0d);
+						}
 
 					}
 					if (!calismaModeli.isFazlaMesaiVarMi()) {

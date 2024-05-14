@@ -2053,7 +2053,17 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							personelDenklestirme.setEksikCalismaSure(puantaj.getEksikCalismaSure());
 							personelDenklestirme.setPlanlanSure(puantaj.getPlanlananSure());
 							personelDenklestirme.setHesaplananSure(puantaj.getSaatToplami());
+
 							personelDenklestirme.setFazlaMesaiSure(puantaj.getAylikNetFazlaMesai());
+							if (denklestirmeAyDurum) {
+								if (puantaj.getDevredenSure() > 0 && !personelDenklestirme.getPersonel().isCalisiyorGun(sonGun)) {
+									double devredenSure = puantaj.getDevredenSure();
+									puantaj.setFazlaMesaiSure(puantaj.getFazlaMesaiSure() + devredenSure);
+									personelDenklestirme.setFazlaMesaiSure(personelDenklestirme.getFazlaMesaiSure() + devredenSure);
+									puantaj.setDevredenSure(0.0d);
+								}
+							}
+
 							// if (denklestirmeAyDurum && denklestirmeAy.getDurum() == false) {
 							// personelDenklestirme.setDevredenSure(puantaj.getDevredenSure());
 							// personelDenklestirme.setResmiTatilSure(puantaj.getResmiTatilToplami());
