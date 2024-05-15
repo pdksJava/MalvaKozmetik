@@ -226,7 +226,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 				}
 				ap.setFazlaMesaiHesapla(false);
-				ortakIslemler.aylikPlanSureHesapla(true, normalCalismaVardiya, true, ap, false, tatilGunleriMap, session);
+				ortakIslemler.aylikPlanSureHesapla(false, normalCalismaVardiya, true, ap, false, tatilGunleriMap, session);
 				// denklestirmeTasiyici.setResmiTatilMesai(resmiTatilSure);
 
 			} catch (Exception exy) {
