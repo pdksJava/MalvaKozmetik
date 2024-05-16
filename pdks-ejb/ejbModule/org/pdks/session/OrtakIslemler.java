@@ -15291,8 +15291,6 @@ public class OrtakIslemler implements Serializable {
 		try {
 			User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
 			DenklestirmeAy dm = puantajData.getDenklestirmeAy();
-			if (filliHesapla == false)
-				filliHesapla = puantajData.getDenklestirmeAy() == null || !puantajData.getDenklestirmeAy().getDurum();
 
 			Date sonGun = PdksUtil.tariheAyEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(dm.getYil() * 100 + dm.getAy()) + "01", "yyyyMMdd"), 1);
 
@@ -15794,7 +15792,7 @@ public class OrtakIslemler implements Serializable {
 							}
 							if (izinSuresi != 0.0d)
 								logger.debug(key + " " + izinSuresi);
-							if (pdksVardiyaGun.getResmiTatilSure() > 0.0d && puantajData.isFazlaMesaiHesapla() == false) {
+							if (pdksVardiyaGun.getResmiTatilSure() > 0.0d && filliHesapla == false) {
 								pdksVardiyaGun.addCalismaSuresi(pdksVardiyaGun.getResmiTatilSure());
 								toplamSure += pdksVardiyaGun.getResmiTatilSure();
 							}
@@ -15852,7 +15850,7 @@ public class OrtakIslemler implements Serializable {
 					if (haftaTatiliFark != 0)
 						izinSuresi += calismaModeli.getHaftaIci();
 					puantajData.setIzinSuresi(izinSuresi);
-					if (!puantajData.isFazlaMesaiHesapla()) {
+					if (filliHesapla == false) {
 						if (puantajData.getResmiTatilToplami() > 0)
 							resmiTatilSure = puantajData.getResmiTatilToplami();
 						else
@@ -15871,57 +15869,56 @@ public class OrtakIslemler implements Serializable {
 							puantajData.setPlanlananSure(0.0d);
 						}
 					}
-					if (puantajData.isFazlaMesaiHesapla() || filliHesapla == false || filliHesapla) {
-						if (puantajData.isFazlaMesaiHesapla() == false && puantajData.getResmiTatilToplami() > 0.0d)
-							puantajData.setSaatToplami(puantajData.getSaatToplami() - puantajData.getResmiTatilToplami());
-						double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(loginUser);
-						boolean fazlaMesaiOde = puantajData.getPersonelDenklestirme().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirme().getFazlaMesaiOde();
-						if (!fazlaMesaiOde) {
-							try {
-								if (puantajData.getPersonelDenklestirme() != null && puantajData.getPersonelDenklestirme().getDenklestirmeAy() != null) {
-									fazlaMesaiOde = PdksUtil.tarihKarsilastirNumeric(puantajData.getSonGun(), personel.getSskCikisTarihi()) != -1;
-								}
-							} catch (Exception e) {
 
+					if (filliHesapla == false && puantajData.getResmiTatilToplami() > 0.0d)
+						puantajData.setSaatToplami(puantajData.getSaatToplami() - puantajData.getResmiTatilToplami());
+					double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(loginUser);
+					boolean fazlaMesaiOde = puantajData.getPersonelDenklestirme().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirme().getFazlaMesaiOde();
+					if (!fazlaMesaiOde) {
+						try {
+							if (puantajData.getPersonelDenklestirme() != null && puantajData.getPersonelDenklestirme().getDenklestirmeAy() != null) {
+								fazlaMesaiOde = PdksUtil.tarihKarsilastirNumeric(puantajData.getSonGun(), personel.getSskCikisTarihi()) != -1;
 							}
+						} catch (Exception e) {
 
-						}
-						PersonelDenklestirme hesaplananDenklestirme = puantajData.getPersonelDenklestirme(fazlaMesaiOde, hesaplananBuAySure, gecenAydevredenSure);
-						puantajData.setFazlaMesaiSure(PdksUtil.setSureDoubleTypeRounded((hesaplananDenklestirme.getOdenenSure() > 0 ? hesaplananDenklestirme.getOdenenSure() : 0) + ucretiOdenenMesaiSure, yarimYuvarla));
-						puantajData.setHesaplananSure(hesaplananDenklestirme.getHesaplananSure());
-						if (loginUser.isAdmin()) {
-							try {
-								if (denklestirmeAy == null)
-									denklestirmeAy = puantajData.getPersonelDenklestirme().getDenklestirmeAy();
-							} catch (Exception e) {
-
-							}
-
-						}
-						puantajData.setEksikCalismaSure(0.0d);
-						if (hesaplananDenklestirme.getDevredenSure() != 0.0d)
-							hesaplananDenklestirme.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
-
-						if (calismaModeli.isSaatlikOdeme()) {
-							if (hesaplananDenklestirme.getDevredenSure() < 0.0d) {
-
-								puantajData.setEksikCalismaSure(saatToplami);
-
-							} else if (hesaplananDenklestirme.getDevredenSure() > 0.0d) {
-								Double sure = puantajData.getFazlaMesaiSure() + hesaplananDenklestirme.getDevredenSure();
-								puantajData.setFazlaMesaiSure(sure);
-							}
-							hesaplananDenklestirme.setDevredenSure(0.0d);
-						}
-
-						puantajData.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
-						if (puantajData.getDevredenSure() > 0.0d && !puantajData.getPdksPersonel().isCalisiyorGun(sonGun)) {
-							double devredenSure = puantajData.getDevredenSure();
-							puantajData.setFazlaMesaiSure(puantajData.getFazlaMesaiSure() + devredenSure);
-							puantajData.setDevredenSure(0.0d);
 						}
 
 					}
+					PersonelDenklestirme hesaplananDenklestirme = puantajData.getPersonelDenklestirme(fazlaMesaiOde, hesaplananBuAySure, gecenAydevredenSure);
+					puantajData.setFazlaMesaiSure(PdksUtil.setSureDoubleTypeRounded((hesaplananDenklestirme.getOdenenSure() > 0 ? hesaplananDenklestirme.getOdenenSure() : 0) + ucretiOdenenMesaiSure, yarimYuvarla));
+					puantajData.setHesaplananSure(hesaplananDenklestirme.getHesaplananSure());
+					if (loginUser.isAdmin()) {
+						try {
+							if (denklestirmeAy == null)
+								denklestirmeAy = puantajData.getPersonelDenklestirme().getDenklestirmeAy();
+						} catch (Exception e) {
+
+						}
+
+					}
+					puantajData.setEksikCalismaSure(0.0d);
+					if (hesaplananDenklestirme.getDevredenSure() != 0.0d)
+						hesaplananDenklestirme.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
+
+					if (calismaModeli.isSaatlikOdeme()) {
+						if (hesaplananDenklestirme.getDevredenSure() < 0.0d) {
+
+							puantajData.setEksikCalismaSure(saatToplami);
+
+						} else if (hesaplananDenklestirme.getDevredenSure() > 0.0d) {
+							Double sure = puantajData.getFazlaMesaiSure() + hesaplananDenklestirme.getDevredenSure();
+							puantajData.setFazlaMesaiSure(sure);
+						}
+						hesaplananDenklestirme.setDevredenSure(0.0d);
+					}
+
+					puantajData.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
+					if (puantajData.getDevredenSure() > 0.0d && !puantajData.getPdksPersonel().isCalisiyorGun(sonGun)) {
+						double devredenSure = puantajData.getDevredenSure();
+						puantajData.setFazlaMesaiSure(puantajData.getFazlaMesaiSure() + devredenSure);
+						puantajData.setDevredenSure(0.0d);
+					}
+
 					if (!calismaModeli.isFazlaMesaiVarMi()) {
 						puantajData.setHaftaCalismaSuresi(0.0d);
 						puantajData.setUcretiOdenenMesaiSure(0.0d);
