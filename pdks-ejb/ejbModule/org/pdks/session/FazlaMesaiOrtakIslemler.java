@@ -157,6 +157,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		ortakIslemler.fazlaMesaiSaatiAyarla(vardiyaGunMap);
 		boolean haftaTatilDurum = ortakIslemler.getParameterKey("haftaTatilDurum").equals("1");
 		vardiyaGunMap = null;
+		HashMap<Long, Double> netSureMap = new HashMap<Long, Double>();
 		for (AylikPuantaj ap : puantajList) {
 			PersonelView personelView = null;
 			VardiyaGun sonVardiyaGun = null;
@@ -169,10 +170,12 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			}
 			for (VardiyaGun vg : ap.getVardiyalar()) {
 				Vardiya vardiya = vg.getVardiya();
+				;
 				if (vardiya == null)
 					continue;
 				if (vg.getIzin() != null || vardiya.isCalisma() == false)
 					continue;
+				vg.setCalismaSuresi(0.0d);
 				if (!vardiyaNetCalismaSuresiMap.containsKey(vardiya.getId()))
 					vardiyaNetCalismaSuresiMap.put(vardiya.getId(), vardiya.getNetCalismaSuresi());
 				Vardiya islemVardiya = vg.getIslemVardiya();
@@ -202,6 +205,13 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (personelView == null)
 						personelView = ap.getPdksPersonel().getPersonelView();
 					ortakIslemler.manuelHareketEkle(vg, new HareketKGS(personelView, manuelGiris, islemVardiya.getVardiyaBasZaman()), new HareketKGS(personelView, manuelCikis, islemVardiya.getVardiyaBitZaman()));
+				} else if (islemVardiya.isCalisma()) {
+					Double netSure = netSureMap.containsKey(islemVardiya.getId()) ? netSureMap.get(islemVardiya.getId()) : null;
+					if (netSure == null) {
+						netSure = islemVardiya.getNetCalismaSuresi();
+						netSureMap.put(islemVardiya.getId(), netSure);
+					}
+					vg.addCalismaSuresi(netSure);
 				}
 			}
 			try {
