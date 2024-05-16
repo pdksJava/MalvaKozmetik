@@ -5760,7 +5760,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		}
 		if (vg.getOrjinalHareketler() != null) {
 			int hareketAdet = vg.getOrjinalHareketler().size();
-			if (denklestirmeAyDurum && vg.getHareketDurum() == false && vg.getFazlaMesaiOnayla() == null && hareketAdet > 2) {
+			if (denklestirmeAyDurum && hareketAdet > 2 && vg.getFazlaMesaiOnayla() == null && vg.getHareketDurum() == false) {
 				if (aylikPuantajList.size() < 10 || hareketAdet == 3)
 					hareketIptalEt = userHome.hasPermission("personelHareket", "view");
 
