@@ -677,7 +677,7 @@
 								<h:selectOneMenu value="#{fazlaMesaiHesaplaHome.islemHareketKGS.islem.neden}">
 									<s:selectItems var="comp" value="#{fazlaMesaiHesaplaHome.hareketIptalNedenList}" label="#{comp.aciklama}" noSelectionLabel="Lutfen Seciniz" />
 									<s:convertEntity />
-									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="hareketIslem" />
+									<a4j:support event="onchange" status="ajaxStatus" ajaxSingle="true" reRender="hareketSilPanel" />
 								</h:selectOneMenu>
 							</s:decorate>
 
