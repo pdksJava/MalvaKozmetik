@@ -119,7 +119,8 @@
 									tableScroll("#{authenticatedUser.scroolDiv}",700);
 	 							</SCRIPT>
 
-						<h:commandLink value="Excel" action="#{org.jboss.seam.excel.exporter.excelExporter.export('personelTanimlamaForm:personelViewTable')}" />
+						<h:commandLink value="Excel" rendered="#{authenticatedUser.admin}"
+							action="#{org.jboss.seam.excel.exporter.excelExporter.export('personelTanimlamaForm:personelViewTable')}" />
 
 					</ui:fragment>
 					<h:panelGrid columns="1" id="kapiEkle">

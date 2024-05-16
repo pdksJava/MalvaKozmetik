@@ -224,7 +224,7 @@
 	 							</SCRIPT>
 
 
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" rendered="#{authenticatedUser.admin}"
 						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:izinTable')}" />
 				</ui:fragment>
 

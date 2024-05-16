@@ -15398,11 +15398,9 @@ public class OrtakIslemler implements Serializable {
 									pdksVardiyaGun.getPdksPersonel().getCalismaModeli();
 							}
 
-							if (pdksVardiyaGun.isFiiliHesapla() == false) {
-								if (ilkGiris)
-									puantajData.setResmiTatilToplami(0.0d);
-								ilkGiris = false;
-							}
+							if (ilkGiris)
+								puantajData.setResmiTatilToplami(0.0d);
+							ilkGiris = false;
 
 							List<YemekIzin> yemekList = yemekHesapla ? pdksVardiyaGun.getYemekList() : yemekBosList;
 							Double izinSaat = null;
@@ -15413,7 +15411,7 @@ public class OrtakIslemler implements Serializable {
 							Vardiya vardiyaIzin = pdksVardiyaGun.getVardiya();
 							if (personelDenklestirme != null && personelDenklestirme.getCalismaModeliAy() != null) {
 								CalismaModeli calismaModeliAy = personelDenklestirme.getCalismaModeli();
-								if (key.equals("20240409"))
+								if (key.equals("20240501"))
 									logger.debug("");
 								izinSaat = pdksVardiyaGun.isIzinli() ? calismaModeliAy.getIzinSaat(pdksVardiyaGun) : 0.0d;
 								if (pdksVardiyaGun.getIzin() != null && pdksVardiyaGun.getIzin().getIzinTipi().isIslemYokCGS()) {
@@ -15598,8 +15596,7 @@ public class OrtakIslemler implements Serializable {
 									}
 								}
 								boolean izinHesapla = true;
-								if (key.equals("20240615"))
-									logger.debug("");
+
 								if (!normalGun) {
 									boolean offIzinli = pdksVardiyaGun.isIzinli() && !(pdksVardiyaGun.getVardiya().isOffGun() || pdksVardiyaGun.getVardiya().isHaftaTatil());
 									if (pdksVardiyaGun.getIzin() != null && haftaIciIzinGunTarih != null && pdksVardiyaGun.getVardiyaDate().getTime() >= haftaIciIzinGunTarih.getTime() && calismaModeli != null) {
@@ -15776,9 +15773,9 @@ public class OrtakIslemler implements Serializable {
 										toplamSure += pdksVardiyaGun.getCalismaSuresi() - bugunResmiTatilSure;
 								}
 								// double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getBayramCalismaSuresi(), pdksVardiyaGun.getYarimYuvarla());
-								double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure(), pdksVardiyaGun.getYarimYuvarla());
-								toplamSure += bayramFark;
-								calisilanSure += pdksVardiyaGun.getCalismaSuresi();
+								// double bayramFark = PdksUtil.setSureDoubleTypeRounded(pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure(), pdksVardiyaGun.getYarimYuvarla());
+								// toplamSure += bayramFark;
+								// calisilanSure += pdksVardiyaGun.getCalismaSuresi();
 								// bazSure += pdksVardiyaGun.getCalismaSuresi();
 
 							}
@@ -16345,6 +16342,8 @@ public class OrtakIslemler implements Serializable {
 		List<YemekIzin> yemekGenelList = dataDenkMap.containsKey("yemekList") ? (List<YemekIzin>) dataDenkMap.get("yemekList") : null;
 		PersonelDenklestirmeTasiyici denklestirmeTasiyici = dataDenkMap.containsKey("personelDenklestirme") ? (PersonelDenklestirmeTasiyici) dataDenkMap.get("personelDenklestirme") : null;
 		Boolean updateSatus = dataDenkMap.containsKey("updateSatus") ? (Boolean) dataDenkMap.get("updateSatus") : Boolean.FALSE;
+		Boolean fiiliHesapla = dataDenkMap.containsKey("fiiliHesapla") ? (Boolean) dataDenkMap.get("updateSatus") : Boolean.TRUE;
+
 		double resmiTatilMesai = 0;
 		VardiyaGun sonVardiyaGun = denklestirmeTasiyici.getSonVardiyaGun();
 		Double yemekMolasiYuzdesi = getYemekMolasiYuzdesi(denklestirmeTasiyici.getDenklestirmeAy(), session);
@@ -16440,6 +16439,12 @@ public class OrtakIslemler implements Serializable {
 				boolean flush = false;
 
 				for (VardiyaGun vardiyaGun : vardiyalar) {
+					if (vardiyaGun.getVardiya() == null || (fiiliHesapla == false && vardiyaGun.isIzinli() == false && vardiyaGun.isFiiliHesapla() == false)) {
+						// if (vardiyaGun.isAyinGunu() && vardiyaGun.getVardiya() != null)
+						// logger.info(vardiyaGun.getVardiyaKeyStr() + " " + vardiyaGun.getCalismaSuresi());
+						continue;
+					}
+
 					String vGun = vardiyaGun.getVardiyaDateStr();
 					String gun = vGun.substring(6);
 					List<YemekIzin> yemekList = vardiyaGun.getYemekList();
@@ -16910,7 +16915,8 @@ public class OrtakIslemler implements Serializable {
 								}
 								oncekiCikisZaman = (Date) cikisZaman.clone();
 							}
-
+							if (gun.equals("18") || gun.equals("19"))
+								logger.debug("");
 							if (sureHesapla && gunlukSaat > 0) {
 
 								boolean tatilYemekHesabiSureEkle = vardiyaGun.isYemekHesabiSureEkle();
@@ -18237,6 +18243,8 @@ public class OrtakIslemler implements Serializable {
 				dataMap.put("tatilGunleriMap", tatilGunleriMap);
 				dataMap.put("manuelKapiMap", manuelKapiMap);
 				dataMap.put("updateSatus", Boolean.TRUE);
+				dataMap.put("fiiliHesapla", Boolean.TRUE);
+
 				sonVardiyaGun = personelVardiyaDenklestir(mapBosVeriSil(dataMap, "personelVardiyaDenklestir"), session);
 				oncekiVardiyaGun = denklestirme.getOncekiVardiyaGun();
 				normalFazlaMesai += denklestirme.getNormalFazlaMesai();

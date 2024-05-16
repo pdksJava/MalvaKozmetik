@@ -84,7 +84,7 @@
 
 					</rich:dataTable>
 
-					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}" rendered="#{not empty yemekYiyenlerHome.hareketList}"
+					<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"   rendered="#{authenticatedUser.admin and not empty yemekYiyenlerHome.hareketList}"
 						action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:hareketTable')}" />
 
 				</rich:panel>

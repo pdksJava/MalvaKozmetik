@@ -177,9 +177,7 @@
 						<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 					</f:facet>
 				</rich:dataTable>
-				<h:commandLink value="#{messages['ortak.etiket.excelAktar']}"
-					action="#{org.jboss.seam.excel.exporter.excelExporter.export('formExcel:izinTable')}" rendered="#{not empty fazlaMesaiIzinHome.pdksPersonelList}" />
-
+ 
 			</rich:panel>
 		</h:form>
 		<rich:modalPanel id="izinDetayPanel" autosized="true" width="550">

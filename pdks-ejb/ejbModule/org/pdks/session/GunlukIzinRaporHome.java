@@ -1,14 +1,21 @@
 package org.pdks.session;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
 
+import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.jboss.seam.annotations.Begin;
@@ -28,10 +35,13 @@ import org.pdks.security.entity.User;
 
 @Name("gunlukIzinRaporHome")
 public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -8279777770831737897L;
+	private static final long serialVersionUID = -8892272759057775075L;
+
+	static Logger logger = Logger.getLogger(GunlukIzinRaporHome.class);
 
 	@RequestParameter
 	Long personelIzinId;
@@ -108,10 +118,10 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 		setSirket(null);
 		if (authenticatedUser.isIK() || authenticatedUser.isAdmin()) {
 			fillSirketList();
-			setpdksPersonelList(new ArrayList<Personel>());
+			setPdksPersonelList(new ArrayList<Personel>());
 		} else
 			setSirket(authenticatedUser.getPdksPersonel().getSirket());
-		setpdksPersonelList(new ArrayList<Personel>());
+		setPdksPersonelList(new ArrayList<Personel>());
 		fillIzinTanimList();
 		setIzinTipiTanim(null);
 	}
@@ -181,6 +191,88 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 		return izinlerMap.containsKey(key) ? izinlerMap.get(key) : null;
 	}
 
+	public String excelAktar() {
+		try {
+			ByteArrayOutputStream baosDosya = excelAktarDevam();
+			if (baosDosya != null)
+				PdksUtil.setExcelHttpServletResponse(baosDosya, "gunlukIzinRapor.xlsx");
+		} catch (Exception e) {
+
+		}
+		return "";
+	}
+
+	private ByteArrayOutputStream excelAktarDevam() {
+		ByteArrayOutputStream baos = null;
+		Workbook wb = new XSSFWorkbook();
+		Sheet sheet = ExcelUtil.createSheet(wb, "Izin WebService Listesi", false);
+		CellStyle header = ExcelUtil.getStyleHeader(wb);
+		CellStyle styleOdd = ExcelUtil.getStyleOdd(null, wb);
+		CellStyle styleOddCenter = ExcelUtil.getStyleOdd(ExcelUtil.ALIGN_CENTER, wb);
+		CellStyle styleEven = ExcelUtil.getStyleEven(null, wb);
+		CellStyle styleEvenCenter = ExcelUtil.getStyleEven(ExcelUtil.ALIGN_CENTER, wb);
+
+		int row = 0;
+		int col = 0;
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.sirketAciklama());
+		boolean tesisDurum = ortakIslemler.getListTesisDurum(pdksPersonelList);
+		if (tesisDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.tesisAciklama());
+		String bolumAdi = null;
+		if (ekSahaTanimMap != null && ekSahaTanimMap.containsKey("ekSaha3") && ortakIslemler.getListEkSahaDurum(pdksPersonelList, "3")) {
+			bolumAdi = ekSahaTanimMap.get("ekSaha3").getAciklama();
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAdi);
+		}
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.personelNoAciklama());
+		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Personel");
+
+		for (Date tarih : gunlerList) {
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(authenticatedUser.dateFormatla(tarih));
+		}
+
+		boolean renk = true;
+		for (Personel personel : pdksPersonelList) {
+
+			++row;
+			col = 0;
+			CellStyle style = null, styleCenter = null;
+			if (renk) {
+				style = styleOdd;
+				styleCenter = styleOddCenter;
+			} else {
+				style = styleEven;
+				styleCenter = styleEvenCenter;
+			}
+			renk = !renk;
+
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getAd());
+			if (tesisDurum)
+				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getSirket().getTesisDurum() && personel.getTesis() != null ? personel.getTesis().getAciklama() : "");
+			if (bolumAdi != null)
+				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
+			ExcelUtil.getCell(sheet, row, col++, styleCenter).setCellValue(personel.getPdksSicilNo());
+			ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personel.getAdSoyad());
+			for (Date tarih : gunlerList) {
+				PersonelIzin personelIzin = getIzin(tarih, personel);
+				ExcelUtil.getCell(sheet, row, col++, style).setCellValue(personelIzin != null ? personelIzin.getIzinTipi().getIzinTipiTanim().getAciklama() : "");
+			}
+		}
+
+		try {
+
+			for (int i = 0; i < col; i++)
+				sheet.autoSizeColumn(i);
+			baos = new ByteArrayOutputStream();
+			wb.write(baos);
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			baos = null;
+		}
+		return baos;
+	}
+
 	public void fillIzinList() {
 		Calendar cal = Calendar.getInstance();
 		izinlerMap = new HashMap<String, PersonelIzin>();
@@ -199,53 +291,92 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 			PdksUtil.addMessageWarn("" + ortakIslemler.sirketAciklama() + " seçiniz!");
 		} else {
 			ArrayList<String> sicilNoList = ortakIslemler.getPersonelSicilNo(ad, soyad, sicilNo, sirket, seciliTesis, seciliEkSaha1, seciliEkSaha2, seciliEkSaha3, seciliEkSaha4, Boolean.FALSE, session);
-			HashMap parametreMap = new HashMap();
-			parametreMap.put("pdksSicilNo", sicilNoList.clone());
-			if (session != null)
-				parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-			personelList = (ArrayList<Personel>) pdksEntityController.getObjectByInnerObjectList(parametreMap, Personel.class);
 			if (sicilNoList != null && !sicilNoList.isEmpty()) {
+				HashMap parametreMap = new HashMap();
+				parametreMap.put("pdksSicilNo", sicilNoList.clone());
+				if (session != null)
+					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
+				personelList = (ArrayList<Personel>) pdksEntityController.getObjectByInnerObjectList(parametreMap, Personel.class);
+				List<Long> idList = new ArrayList<Long>();
+				for (Iterator iterator = personelList.iterator(); iterator.hasNext();) {
+					Personel personel = (Personel) iterator.next();
+					idList.add(personel.getId());
+				}
+
 				List<PersonelIzin> izinList = new ArrayList<PersonelIzin>();
 				List<Integer> izinDurumuList = new ArrayList<Integer>();
 				izinDurumuList.add(PersonelIzin.IZIN_DURUMU_ONAYLANDI);
 				izinDurumuList.add(PersonelIzin.IZIN_DURUMU_SAP_GONDERILDI);
 				parametreMap.clear();
-				parametreMap.put("izinSahibi", ((ArrayList<Personel>) personelList).clone());
+				parametreMap.put("izinSahibi.id", idList);
 				parametreMap.put("baslangicZamani<=", ortakIslemler.tariheGunEkleCikar(cal, bitTarih, 1));
 				parametreMap.put("bitisZamani>=", ortakIslemler.tariheGunEkleCikar(cal, basTarih, -1));
 				parametreMap.put("izinDurumu", izinDurumuList);
-				if (izinTipiKodu != null)
-					parametreMap.put("izinTipi.izinTipiTanim.kodu=", izinTipiKodu);
-				else
+				if (izinTipiKodu != null) {
+					HashMap fields = new HashMap();
+					fields.put(PdksEntityController.MAP_KEY_SELECT, "id");
+					if (sirket != null)
+						fields.put("departman.id=", sirket.getDepartman().getId());
+					fields.put("bakiyeIzinTipi=", null);
+					fields.put("izinTipiTanim.kodu=", izinTipiKodu);
+					if (session != null)
+						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+					List<Long> izinTipiIdList = pdksEntityController.getObjectByInnerObjectListInLogic(fields, IzinTipi.class);
+					parametreMap.put("izinTipi.id", izinTipiIdList);
+				}
+
+				else {
+					if (sirket != null)
+						parametreMap.put("izinTipi.departman.id=", sirket.getDepartman().getId());
 					parametreMap.put("izinTipi.bakiyeIzinTipi=", null);
+				}
+
 				if (session != null)
 					parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
-				izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PersonelIzin.class);
+				// izinList = pdksEntityController.getObjectByInnerObjectListInLogic(parametreMap, PersonelIzin.class);
+				izinList = ortakIslemler.getParamList(true, idList, "izinSahibi.id", parametreMap, PersonelIzin.class, session);
+				idList = null;
 				if (!izinList.isEmpty())
 					izinList = PdksUtil.sortListByAlanAdi(izinList, "baslangicZamani", Boolean.TRUE);
 				Date tarih1 = null, tarih2 = null;
-				tarih1 = (Date) basTarih.clone();
-				tarih2 = (Date) bitTarih.clone();
+				for (PersonelIzin personelIzin : izinList) {
+					if (tarih1 == null || personelIzin.getBaslangicZamani().before(tarih1)) {
+						tarih1 = personelIzin.getBaslangicZamani();
+
+					}
+					if (tarih2 == null || personelIzin.getBitisZamani().after(tarih2)) {
+						tarih2 = personelIzin.getBitisZamani();
+					}
+
+				}
+				if (tarih1.before(basTarih))
+					tarih1 = basTarih;
+				if (tarih2.after(bitTarih))
+					tarih2 = bitTarih;
+
 				while (PdksUtil.tarihKarsilastirNumeric(tarih2, tarih1) >= 0) {
 					gunlerList.add(tarih1);
 					tarih1 = ortakIslemler.tariheGunEkleCikar(cal, tarih1, 1);
 				}
-				for (PersonelIzin personelIzin : izinList) {
-					double saat = PdksUtil.getSaatFarki(tarih1, tarih2);
+				
+				for (Iterator iterator = izinList.iterator(); iterator.hasNext();) {
+					PersonelIzin personelIzin = (PersonelIzin) iterator.next();
+ 					double saat = PdksUtil.getSaatFarki(personelIzin.getBitisZamani(), personelIzin.getBaslangicZamani());
 					if (saat < 24)
 						continue;
-					tarih1 = (Date) basTarih.clone();
-					tarih2 = (Date) bitTarih.clone();
-					while (PdksUtil.tarihKarsilastirNumeric(tarih2, tarih1) == 1) {
+					tarih1 = (Date) personelIzin.getBaslangicZamani().clone();
+					tarih2 = (Date) personelIzin.getBitisZamani().clone();
+					while (PdksUtil.tarihKarsilastirNumeric(tarih2, tarih1) != -1) {
 						String key = PdksUtil.convertToDateString(tarih1, "yyyyMMdd") + "_" + personelIzin.getIzinSahibi().getId();
 						izinlerMap.put(key, personelIzin);
+						tarih1 = PdksUtil.tariheGunEkleCikar(tarih1, 1);
 					}
 				}
 			}
 
 		}
 
-		setpdksPersonelList(personelList);
+		setPdksPersonelList(personelList);
 
 	}
 
@@ -264,11 +395,11 @@ public class GunlukIzinRaporHome extends EntityHome<PersonelIzin> {
 		this.personelizinList = personelizinList;
 	}
 
-	public List<Personel> getpdksPersonelList() {
+	public List<Personel> getPdksPersonelList() {
 		return pdksPersonelList;
 	}
 
-	public void setpdksPersonelList(List<Personel> pdksPersonelList) {
+	public void setPdksPersonelList(List<Personel> pdksPersonelList) {
 		this.pdksPersonelList = pdksPersonelList;
 	}
 

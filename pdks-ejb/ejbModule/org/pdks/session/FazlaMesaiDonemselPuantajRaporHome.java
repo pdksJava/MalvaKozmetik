@@ -1000,7 +1000,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 						else
 							ExcelUtil.getCell(sheet, row, col++, styleTutar).setCellValue("");
 					}
-					setCell(sheet, row, col++, styleTutar, aylikPuantaj.getAylikNetFazlaMesai());
+
 				}
 				if (gerceklesenMesaiKod)
 					setCell(sheet, row, col++, styleTutar, aylikPuantaj.getAylikNetFazlaMesai());
@@ -1018,7 +1018,6 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				boolean olustur = false;
 				Comment commentGuncelleyen = null;
 				if (fazlaMesaiVar) {
-
 					if (aylikPuantaj.isFazlaMesaiHesapla()) {
 						Cell fazlaMesaiSureCell = setCell(sheet, row, col++, styleTutar, aylikPuantaj.getFazlaMesaiSure());
 						if (aylikPuantaj.getFazlaMesaiSure() != 0.0d) {
