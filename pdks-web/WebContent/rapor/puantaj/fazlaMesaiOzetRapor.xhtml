@@ -344,13 +344,13 @@
 														</ui:fragment>
 
 														<ui:fragment rendered="#{ap.vardiyaGun.durum==true or ap.vardiyaGun.zamanGelmedi}">
-															<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi>0}">
+															<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi>0 and ap.vardiyaGun.izin==null}">
 																<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi gt fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
 																	<SPAN style="color: red; font-size: 9px;"><b><h:outputText
 																				value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" /></b></SPAN>
 																</ui:fragment>
 																<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi le fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
-																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" />
+																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" /> 
 																</ui:fragment>
 
 															</ui:fragment>
