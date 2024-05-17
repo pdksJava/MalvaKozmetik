@@ -215,6 +215,15 @@
 											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiIzinKullan}">
 												<th style="width: 30px"><h:outputText value="FM İzin Kullan" /></th>
 											</ui:fragment>
+											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.suaDurum}">
+												<th style="width: 30px"><h:outputText value="Şua" /></th>
+											</ui:fragment>
+											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.gebeDurum}">
+												<th style="width: 30px"><h:outputText value="Gebe" /></th>
+											</ui:fragment>
+											<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.sutIzniDurum}">
+												<th style="width: 30px"><h:outputText value="Süt İzni" /></th>
+											</ui:fragment>
 											<a4j:repeat value="#{fazlaMesaiDonemselPuantajRaporHome.gunAylikPuantaj.vardiyalar}" var="vg">
 												<TH><h:outputText value="#{authenticatedUser.getTarihFormatla(vg.vardiyaDate, 'EEE')}" /></TH>
 											</a4j:repeat>
@@ -428,6 +437,15 @@
 												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.fazlaMesaiIzinKullan}">
 													<td class="#{ap.trClass}" style="width: 30px"></td>
 												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.suaDurum}">
+													<td class="#{ap.trClass}" style="width: 30px"></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.gebeDurum}">
+													<td class="#{ap.trClass}" style="width: 30px"></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.sutIzniDurum}">
+													<td class="#{ap.trClass}" style="width: 30px"></td>
+												</ui:fragment>
 												<a4j:repeat value="#{ap.vardiyalar}" var="vardiya">
 													<ui:fragment rendered="#{vardiya.ayinGunu==false}">
 														<td class="#{ap.trClass}"
@@ -572,7 +590,27 @@
 																	value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.fazlaMesaiIzinKullan)}" /></SPAN>
 														</ui:fragment></td>
 												</ui:fragment>
-
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.suaDurum}">
+													<td class="#{ap.trClass}" style="width: 30px"><ui:fragment rendered="#{ap.suaDurum}">
+															<b><h:outputText value="#{authenticatedUser.getYesNo(ap.suaDurum)}" /></b>
+														</ui:fragment> <ui:fragment rendered="#{ap.suaDurum==false}">
+															<h:outputText value="#{authenticatedUser.getYesNo(ap.suaDurum)}" />
+														</ui:fragment></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.gebeDurum}">
+													<td class="#{ap.trClass}" style="width: 30px"><ui:fragment rendered="#{ap.gebeDurum}">
+															<b><h:outputText value="#{authenticatedUser.getYesNo(ap.gebeDurum)}" /></b>
+														</ui:fragment> <ui:fragment rendered="#{ap.gebeDurum==false}">
+															<h:outputText value="#{authenticatedUser.getYesNo(ap.gebeDurum)}" />
+														</ui:fragment></td>
+												</ui:fragment>
+												<ui:fragment rendered="#{fazlaMesaiDonemselPuantajRaporHome.sutIzniDurum}">
+													<td class="#{ap.trClass}" style="width: 30px"><ui:fragment rendered="#{ap.personelDenklestirme.sutIzniDurum}">
+															<b><h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.sutIzniDurum)}" /></b>
+														</ui:fragment> <ui:fragment rendered="#{ap.personelDenklestirme.sutIzniDurum==false}">
+															<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.sutIzniDurum)}" />
+														</ui:fragment></td>
+												</ui:fragment>
 												<a4j:repeat value="#{ap.vardiyalar}" var="vardiyaGun">
 													<ui:fragment rendered="#{vardiyaGun.ayinGunu==false}">
 														<td class="#{ap.trClass}"

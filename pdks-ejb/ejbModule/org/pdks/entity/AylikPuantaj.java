@@ -89,6 +89,8 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private boolean fazlaMesaiHesapla = Boolean.FALSE, vardiyaSua = Boolean.FALSE, eksikGunVar = Boolean.FALSE, denklestirilmeyenDevredenVar = Boolean.FALSE;
 
+	private boolean suaDurum = Boolean.FALSE;
+	
 	private CalismaModeli calismaModeli;
 
 	private ArrayList<HareketKGS> hareketler;
@@ -1393,6 +1395,14 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 		}
 		this.personelDenklestirme = pd;
+	}
+
+	public boolean isSuaDurum() {
+		return suaDurum;
+	}
+
+	public void setSuaDurum(boolean suaDurum) {
+		this.suaDurum = suaDurum;
 	}
 
 }

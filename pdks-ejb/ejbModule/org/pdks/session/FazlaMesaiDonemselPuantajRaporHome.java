@@ -109,6 +109,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 	private Boolean gerceklesenMesaiKod = Boolean.FALSE, devredenBakiyeKod = Boolean.FALSE, normalCalismaSaatKod = Boolean.FALSE, haftaTatilCalismaSaatKod = Boolean.FALSE, resmiTatilCalismaSaatKod = Boolean.FALSE, izinSureSaatKod = Boolean.FALSE;
 	private Boolean normalCalismaGunKod = Boolean.FALSE, haftaTatilCalismaGunKod = Boolean.FALSE, resmiTatilCalismaGunKod = Boolean.FALSE, izinSureGunKod = Boolean.FALSE, ucretliIzinGunKod = Boolean.FALSE, ucretsizIzinGunKod = Boolean.FALSE, hastalikIzinGunKod = Boolean.FALSE;
 	private Boolean normalGunKod = Boolean.FALSE, haftaTatilGunKod = Boolean.FALSE, resmiTatilGunKod = Boolean.FALSE, artikGunKod = Boolean.FALSE, bordroToplamGunKod = Boolean.FALSE, devredenMesaiKod = Boolean.FALSE, ucretiOdenenKod = Boolean.FALSE;
+	private Boolean suaDurum = Boolean.FALSE, sutIzniDurum = Boolean.FALSE, gebeDurum = Boolean.FALSE;
 	private List<Tanim> denklestirmeDinamikAlanlar;
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Boolean> baslikMap;
@@ -669,6 +670,12 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM Ödeme");
 		if (fazlaMesaiIzinKullan)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM İzin Kullansın");
+		if (suaDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Şua");
+		if (gebeDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Gebe");
+		if (sutIzniDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süt İzni");
 
 		Calendar cal = Calendar.getInstance();
 
@@ -841,6 +848,12 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 			if (fazlaMesaiIzinKullan)
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+			if (suaDurum)
+				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+			if (gebeDurum)
+				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+			if (sutIzniDurum)
+				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 			for (VardiyaGun vardiyaGun : vardiyaList) {
 				if (vardiyaGun.isAyinGunu()) {
 					cal.setTime(vardiyaGun.getVardiyaDate());
@@ -952,6 +965,12 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getFazlaMesaiOde()));
 				if (fazlaMesaiIzinKullan)
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getFazlaMesaiIzinKullan()));
+				if (suaDurum)
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(aylikPuantaj.isSuaDurum()));
+				if (gebeDurum)
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(aylikPuantaj.isGebeDurum()));
+				if (sutIzniDurum)
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getSutIzniDurum()));
 				for (VardiyaGun vardiyaGun : vardiyaList) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getDurum()) {
 						String styleText = vardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
@@ -1191,6 +1210,9 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		resmiTatilVar = false;
 		haftaTatilVar = false;
 		kismiOdemeGoster = false;
+		suaDurum = false;
+		sutIzniDurum = false;
+		gebeDurum = false;
 		session.clear();
 		baslikMap.clear();
 		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
@@ -1253,6 +1275,9 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			aylikMesaiVar = false;
 			for (PersonelDenklestirme pd : list) {
 				double puantajHaftaTatil = 0.0d;
+				if (!sutIzniDurum)
+					sutIzniDurum = pd.isSutIzniVar();
+				gebeDurum = false;
 				DenklestirmeAy da = pd.getDenklestirmeAy();
 				int yil = da.getYil();
 				int ay = da.getAy();
@@ -1369,7 +1394,32 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(dataList, session);
 
 				for (AylikPuantaj dap : dataList) {
+					dap.setSuaDurum(Boolean.FALSE);
+					dap.setGebeDurum(Boolean.FALSE);
+					if (!suaDurum)
+						suaDurum = dap.getPersonelDenklestirme().isSuaDurumu();
+					dap.setGebeDurum(dap.getPersonelDenklestirme().isSuaDurumu());
 					PersonelDenklestirme personelDenklestirme = dap.getPersonelDenklestirme();
+					if (dap.getVardiyalar() != null) {
+						for (Iterator iterator = dap.getVardiyalar().iterator(); iterator.hasNext();) {
+							VardiyaGun vg = (VardiyaGun) iterator.next();
+							if (vg.isAyinGunu() && vg.getVardiya() != null) {
+								Vardiya vardiya = vg.getIslemVardiya();
+								if (vardiya.isSuaMi()) {
+									dap.setSuaDurum(Boolean.TRUE);
+									if (!suaDurum)
+										suaDurum = vardiya.isSuaMi();
+								}
+								if (vardiya.isGebelikMi()) {
+									dap.setGebeDurum(Boolean.TRUE);
+									if (!gebeDurum)
+										gebeDurum = vardiya.isGebelikMi();
+								}
+
+							}
+
+						}
+					}
 					dap.setPlanlananSure(personelDenklestirme.getPlanlanSure());
 					List<VardiyaGun> gunList = dap.getVardiyalar();
 					int fark = sonGun - gunList.size();
@@ -2076,6 +2126,30 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 
 	public void setDenklestirmeDinamikAlanlar(List<Tanim> denklestirmeDinamikAlanlar) {
 		this.denklestirmeDinamikAlanlar = denklestirmeDinamikAlanlar;
+	}
+
+	public Boolean getSuaDurum() {
+		return suaDurum;
+	}
+
+	public void setSuaDurum(Boolean suaDurum) {
+		this.suaDurum = suaDurum;
+	}
+
+	public Boolean getSutIzniDurum() {
+		return sutIzniDurum;
+	}
+
+	public void setSutIzniDurum(Boolean sutIzniDurum) {
+		this.sutIzniDurum = sutIzniDurum;
+	}
+
+	public Boolean getGebeDurum() {
+		return gebeDurum;
+	}
+
+	public void setGebeDurum(Boolean gebeDurum) {
+		this.gebeDurum = gebeDurum;
 	}
 
 }
