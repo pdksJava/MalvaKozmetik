@@ -305,6 +305,39 @@
 											</ui:fragment></SPAN>
 									</rich:column>
 								</c:if>
+								<rich:column rendered="#{fazlaMesaiOzetRaporHome.suaDurum}" style="text-align: center;width: 60px;">
+									<f:facet name="header">
+										<h:outputText value="Şua" />
+									</f:facet>
+									<ui:fragment rendered="#{ap.suaDurum}">
+										<b><h:outputText value="#{authenticatedUser.getYesNo(ap.suaDurum)}" /></b>
+									</ui:fragment>
+									<ui:fragment rendered="#{ap.suaDurum==false}">
+										<h:outputText value="#{authenticatedUser.getYesNo(ap.suaDurum)}" />
+									</ui:fragment>
+								</rich:column>
+								<rich:column rendered="#{fazlaMesaiOzetRaporHome.gebeDurum}" style="text-align: center;width: 60px;">
+									<f:facet name="header">
+										<h:outputText value="Gebe" />
+									</f:facet>
+									<ui:fragment rendered="#{ap.gebeDurum}">
+										<b><h:outputText value="#{authenticatedUser.getYesNo(ap.gebeDurum)}" /></b>
+									</ui:fragment>
+									<ui:fragment rendered="#{ap.gebeDurum==false}">
+										<h:outputText value="#{authenticatedUser.getYesNo(ap.gebeDurum)}" />
+									</ui:fragment>
+								</rich:column>
+								<rich:column rendered="#{fazlaMesaiOzetRaporHome.sutIzniDurum}" style="text-align: center;width: 60px;">
+									<f:facet name="header">
+										<h:outputText value="Süt İzni" />
+									</f:facet>
+									<ui:fragment rendered="#{ap.personelDenklestirme.sutIzniDurum}">
+										<b><h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.sutIzniDurum)}" /></b>
+									</ui:fragment>
+									<ui:fragment rendered="#{ap.personelDenklestirme.sutIzniDurum==false}">
+										<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.sutIzniDurum)}" />
+									</ui:fragment>
+								</rich:column>
 								<c:if test="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar!=null }">
 									<c:forEach items="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar}" var="vg">
 
@@ -350,7 +383,7 @@
 																				value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" /></b></SPAN>
 																</ui:fragment>
 																<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi le fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
-																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" /> 
+																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" />
 																</ui:fragment>
 
 															</ui:fragment>

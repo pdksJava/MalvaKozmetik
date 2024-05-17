@@ -170,7 +170,9 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		sonDonem = (bitYil * 100) + bitAy;
 		LinkedHashMap<String, Object> veriLastMap = ortakIslemler.getLastParameter(sayfaURL, session);
 		HttpServletRequest req = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-
+		suaDurum = false;
+		sutIzniDurum = false;
+		gebeDurum = false;
 		String linkAdresKey = (String) req.getParameter("linkAdresKey");
 		if (veriLastMap != null) {
 			if (veriLastMap.containsKey("basYil"))
@@ -1394,7 +1396,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(dataList, session);
 
 				for (AylikPuantaj dap : dataList) {
-					dap.setSuaDurum(Boolean.FALSE);
+					dap.setSuaDurum(dap.getPersonelDenklestirme().isSuaDurumu());
 					dap.setGebeDurum(Boolean.FALSE);
 					if (!suaDurum)
 						suaDurum = dap.getPersonelDenklestirme().isSuaDurumu();
