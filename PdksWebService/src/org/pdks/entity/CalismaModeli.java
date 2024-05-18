@@ -45,6 +45,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_TOPLAM_GUN_GUNCELLE = "TOPLAM_GUN_GUNCELLE";
 	public static final String COLUMN_NAME_ILK_PLAN_ONAYLI = "ILK_PLAN_ONAYLI";
 	public static final String COLUMN_NAME_GUN_MAX_CALISMA_SURESI_ODENIR = "GUN_MAX_CALISMA_SURESI_ODENIR";
+	public static final String COLUMN_NAME_IDARI_MODEL = "IDARI_MODEL";
 	public static final String COLUMN_NAME_PERSONEL_TIPI = "PERSONEL_TIPI_ID";
 
 	private String aciklama = "";
@@ -52,7 +53,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
-	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
+	private Boolean ortakVardiya = Boolean.FALSE, idariModel = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
 	private Tanim personelTipi;
@@ -131,6 +132,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	public void setGenelVardiya(Boolean genelVardiya) {
 		this.genelVardiya = genelVardiya;
+	}
+
+	@Column(name = COLUMN_NAME_IDARI_MODEL)
+	public Boolean getIdariModel() {
+		return idariModel;
+	}
+
+	public void setIdariModel(Boolean idariModel) {
+		this.idariModel = idariModel;
 	}
 
 	@Column(name = COLUMN_NAME_HAFTA_TATIL_MESAI_ODE)
@@ -418,6 +428,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public boolean isGunMaxCalismaOdenir() {
 		return gunMaxCalismaOdemeDurum != null && gunMaxCalismaOdemeDurum;
+	}
+
+	@Transient
+	public Boolean isIdariModelMi() {
+		return idariModel != null && idariModel;
 	}
 
 }

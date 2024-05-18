@@ -50,6 +50,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_PERSONEL_TIPI = "PERSONEL_TIPI_ID";
 	public static final String COLUMN_NAME_HAFTA_TATIL_PAZAR = "HAFTA_TATIL_PAZAR";
 	public static final String COLUMN_NAME_GENEL_MODEL = "GENEL_MODEL";
+	public static final String COLUMN_NAME_IDARI_MODEL = "IDARI_MODEL";
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
@@ -57,7 +58,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
 	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
-	private Boolean haftaTatilPazar = Boolean.FALSE, genelModel = Boolean.TRUE;
+	private Boolean haftaTatilPazar = Boolean.FALSE, genelModel = Boolean.TRUE, idariModel = Boolean.FALSE;
 	private VardiyaSablonu bagliVardiyaSablonu;
 	private Departman departman;
 	private Tanim personelTipi;
@@ -136,6 +137,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	public void setGenelVardiya(Boolean genelVardiya) {
 		this.genelVardiya = genelVardiya;
+	}
+
+	@Column(name = COLUMN_NAME_IDARI_MODEL)
+	public Boolean getIdariModel() {
+		return idariModel;
+	}
+
+	public void setIdariModel(Boolean idariModel) {
+		this.idariModel = idariModel;
 	}
 
 	@Column(name = COLUMN_NAME_HAFTA_TATIL_MESAI_ODE)
@@ -468,9 +478,14 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		return genelModel != null && genelModel;
 	}
 
+	@Transient
+	public Boolean isIdariModelMi() {
+		return idariModel != null && idariModel;
+	}
+
 	public void entityRefresh() {
 		// TODO entityRefresh
-		
+
 	}
 
 }

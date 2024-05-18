@@ -270,11 +270,22 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		otomatikFazlaCalismaOnaylansinVar = ortakIslemler.getParameterKey("otomatikFazlaCalismaOnaylansin").equals("1");
 		calismaModeli = new CalismaModeli();
 		HashMap parametreMap = new HashMap();
-		parametreMap.put("durum", Boolean.TRUE);
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		calismaModeliList = pdksEntityController.getObjectByInnerObjectList(parametreMap, CalismaModeli.class);
 		if (!hareketKaydiVardiyaBul || !otomatikFazlaCalismaOnaylansinVar) {
+			List<CalismaModeli> pasifList = new ArrayList<CalismaModeli>();
+			for (Iterator iterator = calismaModeliList.iterator(); iterator.hasNext();) {
+				CalismaModeli cm = (CalismaModeli) iterator.next();
+				if (cm.getDurum().booleanValue() == false) {
+					pasifList.add(cm);
+					iterator.remove();
+				}
+
+			}
+			if (authenticatedUser.isAdmin() && !pasifList.isEmpty())
+				calismaModeliList.addAll(pasifList);
+			pasifList = null;
 			for (CalismaModeli cm : calismaModeliList) {
 				if (cm.getDurum()) {
 					if (!otomatikFazlaCalismaOnaylansinVar)

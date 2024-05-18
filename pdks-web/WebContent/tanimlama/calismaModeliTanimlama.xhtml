@@ -96,6 +96,12 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="İdari Model" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.idariModel)}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="Fazla Mesai Var" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.fazlaMesaiVar)}" />
@@ -279,6 +285,12 @@
 								validatorMessage="Negatif bakiye saati giriniz">
 								<f:validateDoubleRange maximum="0" />
 							</h:inputText>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İdari Model</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.idariModel}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Fazla Mesai Var</ui:define>

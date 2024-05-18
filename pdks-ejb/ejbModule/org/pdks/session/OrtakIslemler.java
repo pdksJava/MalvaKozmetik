@@ -15291,10 +15291,10 @@ public class OrtakIslemler implements Serializable {
 		try {
 			User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
 			DenklestirmeAy dm = puantajData.getDenklestirmeAy();
- 			Date sonGun = PdksUtil.tariheAyEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(dm.getYil() * 100 + dm.getAy()) + "01", "yyyyMMdd"), 1);
- 			List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
+			Date sonGun = PdksUtil.tariheAyEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(dm.getYil() * 100 + dm.getAy()) + "01", "yyyyMMdd"), 1);
+			List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
 			String izinTarihKontrolTarihiStr = getParameterKey("izinTarihKontrolTarihi");
- 			Date pdksIzinTarihKontrolTarihi = null;
+			Date pdksIzinTarihKontrolTarihi = null;
 			try {
 				if (PdksUtil.hasStringValue(izinTarihKontrolTarihiStr))
 					pdksIzinTarihKontrolTarihi = PdksUtil.getDateFromString(izinTarihKontrolTarihiStr);
@@ -15860,8 +15860,8 @@ public class OrtakIslemler implements Serializable {
 						}
 					}
 
-//					if (filliHesapla == false && puantajData.getResmiTatilToplami() > 0.0d)
-//						puantajData.setSaatToplami(puantajData.getSaatToplami() - puantajData.getResmiTatilToplami());
+					// if (filliHesapla == false && puantajData.getResmiTatilToplami() > 0.0d)
+					// puantajData.setSaatToplami(puantajData.getSaatToplami() - puantajData.getResmiTatilToplami());
 					double hesaplananBuAySure = puantajData.getAylikFazlaMesai(), gecenAydevredenSure = puantajData.getGecenAyFazlaMesai(loginUser);
 					boolean fazlaMesaiOde = puantajData.getPersonelDenklestirme().getFazlaMesaiOde() != null && puantajData.getPersonelDenklestirme().getFazlaMesaiOde();
 					if (!fazlaMesaiOde) {
@@ -17069,6 +17069,8 @@ public class OrtakIslemler implements Serializable {
 							// if (vardiyaGun.getCalismaSuresi() >= resmiTatilSure)
 							// vardiyaGun.addCalismaSuresi(-resmiTatilSure);
 							vardiyaGun.setResmiTatilSure(PdksUtil.setSureDoubleTypeRounded(resmiTatilSure, vardiyaGun.getYarimYuvarla()));
+							if (vardiyaGun.getResmiTatilSure() > vardiyaGun.getCalismaSuresi() + vardiyaGun.getGecenAyResmiTatilSure())
+								vardiyaGun.addCalismaSuresi(vardiyaGun.getResmiTatilSure() - vardiyaGun.getCalismaSuresi() - vardiyaGun.getGecenAyResmiTatilSure());
 						}
 
 						if (denklestirmeTasiyici.isCheckBoxDurum())

@@ -4169,7 +4169,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 				calismaModeli = modeller.get(0);
 			else
 				for (CalismaModeli cm : modeller) {
-					if (cm.getHaftaIci() == 9.0)
+					if (cm.isIdariModelMi())
 						calismaModeli = cm;
 				}
 		}
