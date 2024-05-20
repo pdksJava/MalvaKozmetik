@@ -134,6 +134,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 	private Boolean gerceklesenMesaiKod = Boolean.FALSE, devredenBakiyeKod = Boolean.FALSE, normalCalismaSaatKod = Boolean.FALSE, haftaTatilCalismaSaatKod = Boolean.FALSE, resmiTatilCalismaSaatKod = Boolean.FALSE, izinSureSaatKod = Boolean.FALSE;
 	private Boolean normalCalismaGunKod = Boolean.FALSE, haftaTatilCalismaGunKod = Boolean.FALSE, resmiTatilCalismaGunKod = Boolean.FALSE, izinSureGunKod = Boolean.FALSE, ucretliIzinGunKod = Boolean.FALSE, ucretsizIzinGunKod = Boolean.FALSE, hastalikIzinGunKod = Boolean.FALSE;
 	private Boolean normalGunKod = Boolean.FALSE, haftaTatilGunKod = Boolean.FALSE, resmiTatilGunKod = Boolean.FALSE, artikGunKod = Boolean.FALSE, bordroToplamGunKod = Boolean.FALSE, devredenMesaiKod = Boolean.FALSE, ucretiOdenenKod = Boolean.FALSE;
+	private Boolean suaDurum = Boolean.FALSE, sutIzniDurum = Boolean.FALSE, gebeDurum = Boolean.FALSE;
 	private TreeMap<String, Boolean> baslikMap;
 
 	private int ay, yil, maxYil;
@@ -461,6 +462,9 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		}
 		fillEkSahaTanim();
 		yilDegisti();
+		suaDurum = false;
+		sutIzniDurum = false;
+		gebeDurum = false;
 		return "";
 	}
 
@@ -663,6 +667,9 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 		haftaTatilVar = Boolean.FALSE;
 		maasKesintiGoster = Boolean.FALSE;
 		sirketGoster = Boolean.FALSE;
+		suaDurum = false;
+		sutIzniDurum = false;
+		gebeDurum = false;
 		mailGonder = !(authenticatedUser.isIK() || authenticatedUser.isAdmin());
 		linkAdres = null;
 		if (session == null)
@@ -844,6 +851,7 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 				personelDenklestirmeDonemMap.put(personelDenklestirme.getPersonelId(), personelDenklestirme);
 				personelDenklestirme.setGuncellendi(personelDenklestirme.getId() == null);
 				if (personelDenklestirme.isDenklestirmeDurum()) {
+
 					personelDenklestirmeMap.put(personelDenklestirme.getPersonelId(), personelDenklestirme);
 
 				} else
@@ -990,6 +998,12 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
 					PersonelDenklestirme valueBuAy = personelDenklestirmeMap.get(denklestirmeTasiyici.getPersonel().getId());
+					puantaj.setGebeDurum(false);
+					if (!sutIzniDurum)
+						sutIzniDurum = valueBuAy.isSutIzniVar();
+					if (!suaDurum)
+						suaDurum = valueBuAy.isSuaDurumu();
+					puantaj.setSuaDurum(valueBuAy.isSuaDurumu());
 					puantaj.setPersonelDenklestirme(valueBuAy);
 					CalismaModeli cm = puantaj.getCalismaModeli();
 					if (!fazlaMesaiVar)
@@ -1038,6 +1052,18 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 							if (vardiyaGun.getId() != null) {
 								++sayac;
 								Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
+								if (islemVardiya != null) {
+									if (islemVardiya.isSuaMi()) {
+										puantaj.setSuaDurum(Boolean.TRUE);
+										if (!suaDurum)
+											suaDurum = islemVardiya.isSuaMi();
+									}
+									if (islemVardiya.isGebelikMi()) {
+										puantaj.setGebeDurum(Boolean.TRUE);
+										if (!gebeDurum)
+											gebeDurum = islemVardiya.isGebelikMi();
+									}
+								}
 								String keyStr = String.valueOf(islemVardiya.getId());
 								Double netSure = islemVardiya.getNetCalismaSuresi();
 								boolean calisma = islemVardiya != null && islemVardiya.isCalisma();
@@ -1791,6 +1817,12 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Çalışma Plan Onay");
 		if (modelGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
+		if (suaDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Şua");
+		if (gebeDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Gebe");
+		if (sutIzniDurum)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süt İzni");
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(aylikPuantajDefault.getIlkGun());
 
@@ -2015,6 +2047,13 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 						}
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(modelAciklama);
 					}
+					if (suaDurum)
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(aylikPuantaj.isSuaDurum()));
+					if (gebeDurum)
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(aylikPuantaj.isGebeDurum()));
+					if (sutIzniDurum)
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getSutIzniDurum()));
+
 					vardiyaList = aylikPuantaj.getAyinVardiyalari();
 
 					for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
@@ -3600,6 +3639,30 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 
 	public void setToplamSutunGoster(Boolean toplamSutunGoster) {
 		this.toplamSutunGoster = toplamSutunGoster;
+	}
+
+	public Boolean getSuaDurum() {
+		return suaDurum;
+	}
+
+	public void setSuaDurum(Boolean suaDurum) {
+		this.suaDurum = suaDurum;
+	}
+
+	public Boolean getSutIzniDurum() {
+		return sutIzniDurum;
+	}
+
+	public void setSutIzniDurum(Boolean sutIzniDurum) {
+		this.sutIzniDurum = sutIzniDurum;
+	}
+
+	public Boolean getGebeDurum() {
+		return gebeDurum;
+	}
+
+	public void setGebeDurum(Boolean gebeDurum) {
+		this.gebeDurum = gebeDurum;
 	}
 
 }

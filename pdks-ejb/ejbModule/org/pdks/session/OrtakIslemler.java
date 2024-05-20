@@ -16908,8 +16908,7 @@ public class OrtakIslemler implements Serializable {
 								}
 								oncekiCikisZaman = (Date) cikisZaman.clone();
 							}
-							if (gun.equals("18") || gun.equals("19"))
-								logger.debug("");
+
 							if (sureHesapla && gunlukSaat > 0) {
 
 								boolean tatilYemekHesabiSureEkle = vardiyaGun.isYemekHesabiSureEkle();
@@ -16933,6 +16932,8 @@ public class OrtakIslemler implements Serializable {
 											calSure -= fark;
 									}
 								} else {
+									if (gun.equals("01") || gun.equals("19"))
+										logger.debug("");
 									if (toplamYemekSuresi > vardiyaYemekSuresi) {
 										calSure += fark;
 										toplamYemekSuresi = vardiyaYemekSuresi;

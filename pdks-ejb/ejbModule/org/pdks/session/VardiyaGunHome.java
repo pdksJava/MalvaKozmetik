@@ -5899,6 +5899,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 	 */
 	@Transactional
 	public Boolean aylikPuantajOlusturuluyor() {
+		if (adminRole || ikRole)
+			session.clear();
 		if (loginUser == null)
 			loginUser = authenticatedUser;
 		componentState.setSeciliTab("tab1");
@@ -6022,23 +6024,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
 			setAylikPuantajDonem(denklestirmeAy);
 			setDenklestirmeAyDurum(fazlaMesaiOrtakIslemler.getDurum(denklestirmeAy, loginUser));
-			fields.clear();
 
-			fields.put("denklestirmeAy.id", denklestirmeAy.getId());
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			modelList = pdksEntityController.getObjectByInnerObjectList(fields, CalismaModeliAy.class);
-			Departman dep = aramaSecenekleri.getSirket() != null ? aramaSecenekleri.getSirket().getDepartman() : null;
 			LinkedHashMap<Long, CalismaModeliAy> modelMap = new LinkedHashMap<Long, CalismaModeliAy>();
-			for (Iterator iterator = modelList.iterator(); iterator.hasNext();) {
-				CalismaModeliAy cm = (CalismaModeliAy) iterator.next();
-				if (dep != null && cm.getCalismaModeli().getDepartman() != null && !dep.getId().equals(cm.getCalismaModeli().getDepartman().getId()))
-					iterator.remove();
-				else
-					modelMap.put(cm.getCalismaModeli().getId(), cm);
-			}
 
-			denklestirmeAy.setModeller(modelList);
 			fields.clear();
 			Calendar cal = Calendar.getInstance();
 			cal.set(Calendar.DATE, 1);
@@ -6052,55 +6040,11 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				departmanDenklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 			defaultAylikPuantajSablon = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, departmanDenklestirmeDonemi, session);
 			tatilGunleriMap = null;
-			boolean veriGuncelle = false;
-			for (Iterator iterator = denklestirmeAy.getModeller().iterator(); iterator.hasNext();) {
-				CalismaModeliAy calismaModeliAy = (CalismaModeliAy) iterator.next();
-				CalismaModeli cm = calismaModeliAy.getCalismaModeli();
-				if (calismaModeliAy.getSure() == 0.0d || calismaModeliAy.getToplamIzinSure() == 0.0d || ((denklestirmeAy.getSure() == 0.0d || denklestirmeAy.getToplamIzinSure() == 0.0d) && cm.getHaftaIci() == 9.0d)) {
-					double sure = 0.0d, toplamIzinSure = 0.0d;
-					for (VardiyaGun vg : defaultAylikPuantajSablon.getVardiyalar()) {
-						if (vg.isAyinGunu()) {
-							cal.setTime(vg.getVardiyaDate());
-							int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-							if (dayOfWeek != Calendar.SUNDAY) {
-								if (vg.getTatil() == null) {
-									double gunSure = dayOfWeek != Calendar.SATURDAY ? cm.getHaftaIci() : cm.getHaftaSonu();
-									sure += gunSure;
-									toplamIzinSure += gunSure > 7.5d ? 7.5d : gunSure;
-								} else if (vg.getTatil().isYarimGunMu()) {
-									if (PdksUtil.tarihKarsilastirNumeric(vg.getVardiyaDate(), vg.getTatil().getBasTarih()) == 0) {
-										if (cm.getHaftaSonu() > 0 || dayOfWeek != Calendar.SATURDAY)
-											sure += cm.getArife();
-
-										toplamIzinSure += cm.getArife();
-									}
-
-								}
-							}
-						}
-					}
-					if (cm.getHaftaIci() == 9.0d && (denklestirmeAy.getSure() == 0.0d || denklestirmeAy.getToplamIzinSure() == 0.0d)) {
-						if (denklestirmeAy.getSure() == 0.0d)
-							denklestirmeAy.setSure(sure);
-						if (denklestirmeAy.getToplamIzinSure() == 0.0d)
-							denklestirmeAy.setToplamIzinSure(toplamIzinSure);
-
-						pdksEntityController.saveOrUpdate(session, entityManager, denklestirmeAy);
-					}
-
-					if (calismaModeliAy.getSure() == 0.0d || calismaModeliAy.getToplamIzinSure() == 0.0d) {
-						if (calismaModeliAy.getSure() == 0.0d)
-							calismaModeliAy.setSure(sure);
-						if (calismaModeliAy.getToplamIzinSure() == 0.0d)
-							calismaModeliAy.setToplamIzinSure(toplamIzinSure);
-						pdksEntityController.saveOrUpdate(session, entityManager, calismaModeliAy);
-					}
-
-					veriGuncelle = true;
-				}
+			fazlaMesaiOrtakIslemler.setDenklestirmeAySure(defaultAylikPuantajSablon.getVardiyalar(), aramaSecenekleri.getSirket(), denklestirmeAy, session);
+			for (CalismaModeliAy cm : denklestirmeAy.getModeller()) {
+				modelMap.put(cm.getCalismaModeli().getId(), cm);
 			}
-			if (veriGuncelle)
-				session.flush();
+
 			if (sicilNo != null)
 				sicilNo = sicilNo.trim();
 

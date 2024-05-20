@@ -51,10 +51,12 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_HAFTA_TATIL_PAZAR = "HAFTA_TATIL_PAZAR";
 	public static final String COLUMN_NAME_GENEL_MODEL = "GENEL_MODEL";
 	public static final String COLUMN_NAME_IDARI_MODEL = "IDARI_MODEL";
+	public static final String COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE = "HAFTA_ICI_SUT_IZNI_SURE";
+	public static final String COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE = "CUMARTESI_SUT_IZNI_SURE";
 
 	private String aciklama = "";
 	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
-
+	private Double haftaIciSutIzniSure = 7.5d, cumartesiSutIzniSure = 0.0d;
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
 	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
@@ -314,6 +316,24 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	public void setDepartman(Departman departman) {
 		this.departman = departman;
+	}
+
+	@Column(name = COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE)
+	public Double getHaftaIciSutIzniSure() {
+		return haftaIciSutIzniSure;
+	}
+
+	public void setHaftaIciSutIzniSure(Double haftaIciSutIzniSure) {
+		this.haftaIciSutIzniSure = haftaIciSutIzniSure;
+	}
+
+	@Column(name = COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE)
+	public Double getCumartesiSutIzniSure() {
+		return cumartesiSutIzniSure;
+	}
+
+	public void setCumartesiSutIzniSure(Double cumartesiSutIzniSure) {
+		this.cumartesiSutIzniSure = cumartesiSutIzniSure;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)

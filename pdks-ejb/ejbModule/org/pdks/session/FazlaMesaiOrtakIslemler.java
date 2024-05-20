@@ -118,6 +118,114 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param vardiyaGunList
+	 * @param sirket
+	 * @param dm
+	 * @param session
+	 * @return
+	 */
+	@Transactional
+	public void setDenklestirmeAySure(List<VardiyaGun> vardiyaGunList, Sirket sirket, DenklestirmeAy dm, Session session) {
+		HashMap fields = new HashMap();
+		fields.put("denklestirmeAy.id", dm.getId());
+		if (session != null)
+			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+		List<CalismaModeliAy> modelList = pdksEntityController.getObjectByInnerObjectList(fields, CalismaModeliAy.class);
+		if (sirket != null && sirket.getDepartman() == null && sirket.getId() != null) {
+			fields.clear();
+			fields.put("id", sirket.getId());
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
+		}
+		Departman dep = sirket != null ? sirket.getDepartman() : null;
+		LinkedHashMap<Long, CalismaModeliAy> modelMap = new LinkedHashMap<Long, CalismaModeliAy>();
+		for (Iterator iterator = modelList.iterator(); iterator.hasNext();) {
+			CalismaModeliAy cm = (CalismaModeliAy) iterator.next();
+			if (dep != null && cm.getCalismaModeli().getDepartman() != null && !dep.getId().equals(cm.getCalismaModeli().getDepartman().getId()))
+				iterator.remove();
+			else
+				modelMap.put(cm.getCalismaModeli().getId(), cm);
+		}
+
+		Departman departman = sirket.getDepartman();
+		Double sutIzniHaftaIciDepartman = departman.getHaftaIciSutIzniSure();
+		Double sutIzniCumartesiDepartman = departman.getCumartesiSutIzniSure();
+		dm.setModeller(modelList);
+
+		for (Iterator iterator = modelList.iterator(); iterator.hasNext();) {
+			CalismaModeliAy calismaModeliAy = (CalismaModeliAy) iterator.next();
+			boolean flush = false;
+			CalismaModeli cm = calismaModeliAy.getCalismaModeli();
+			Double sutIzniHaftaIci = cm.getHaftaIciSutIzniSure();
+			Double sutIzniCumartesi = sutIzniHaftaIci != null && sutIzniHaftaIci.doubleValue() > 0.0d ? cm.getCumartesiSutIzniSure() : null;
+			if (sutIzniHaftaIci == null || sutIzniHaftaIci <= 0.0d) {
+				if (departman != null)
+					sutIzniHaftaIci = sutIzniHaftaIciDepartman;
+				if (sutIzniHaftaIci == null || sutIzniHaftaIci <= 0.0d)
+					sutIzniHaftaIci = 7.5d;
+			}
+			if (sutIzniCumartesi == null || sutIzniCumartesi <= 0.0d) {
+				sutIzniCumartesi = 0.0d;
+				if (departman != null && departman.getCumartesiSutIzniSure() != null)
+					sutIzniCumartesi = sutIzniCumartesiDepartman;
+
+			}
+
+			if (calismaModeliAy.getSure() == 0.0d || calismaModeliAy.getToplamIzinSure() == 0.0d || ((dm.getSure() == 0.0d || dm.getToplamIzinSure() == 0.0d) && cm.getHaftaIci() == 9.0d)) {
+				double sure = 0.0d, toplamIzinSure = 0.0d;
+				Calendar cal = Calendar.getInstance();
+				for (VardiyaGun vg : vardiyaGunList) {
+					if (vg.isAyinGunu()) {
+						cal.setTime(vg.getVardiyaDate());
+						int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+						if (dayOfWeek != Calendar.SUNDAY) {
+							if (vg.getTatil() == null) {
+								double gunSure = dayOfWeek != Calendar.SATURDAY ? cm.getHaftaIci() : cm.getHaftaSonu();
+								sure += gunSure;
+								double izinSure = gunSure > 7.5d ? 7.5d : gunSure;
+								if (dayOfWeek != Calendar.SATURDAY) {
+									if (sutIzniHaftaIci != null && sutIzniHaftaIci.doubleValue() > 0)
+										izinSure = sutIzniHaftaIci;
+								} else if (sutIzniCumartesi != null)
+									izinSure = sutIzniCumartesi;
+								toplamIzinSure += izinSure;
+							} else if (vg.getTatil().isYarimGunMu()) {
+								if (PdksUtil.tarihKarsilastirNumeric(vg.getVardiyaDate(), vg.getTatil().getBasTarih()) == 0) {
+									if (cm.getHaftaSonu() > 0 || dayOfWeek != Calendar.SATURDAY) {
+										sure += cm.getArife();
+										toplamIzinSure += cm.getArife();
+									}
+
+								}
+
+							}
+						}
+					}
+				}
+
+				if (calismaModeliAy.getSure() == 0.0d || calismaModeliAy.getToplamIzinSure() == 0.0d) {
+					if (cm.isIdariModelMi()) {
+						dm.setSure(sure);
+						dm.setToplamIzinSure(toplamIzinSure);
+						pdksEntityController.saveOrUpdate(session, entityManager, dm);
+					}
+					if (calismaModeliAy.getSure() == 0.0d)
+						calismaModeliAy.setSure(sure);
+					if (calismaModeliAy.getToplamIzinSure() == 0.0d)
+						calismaModeliAy.setToplamIzinSure(toplamIzinSure);
+					pdksEntityController.saveOrUpdate(session, entityManager, calismaModeliAy);
+					flush = true;
+				}
+
+			}
+			if (flush)
+				session.flush();
+		}
+
+	}
+
+	/**
 	 * @param dataMap
 	 * @param session
 	 */

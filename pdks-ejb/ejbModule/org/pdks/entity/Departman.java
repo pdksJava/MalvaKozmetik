@@ -31,8 +31,8 @@ public class Departman extends BaseObject {
 	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
 	public static final String COLUMN_NAME_SIRKET_EKLENEBILIR = "SIRKET_EKLENEBILIR";
 	public static final String COLUMN_NAME_IZIN_GIRILEBILIR = "IZIN_GIRILEBILIR";
-	
-	
+	public static final String COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE = "HAFTA_ICI_SUT_IZNI_SURE";
+	public static final String COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE = "CUMARTESI_SUT_IZNI_SURE";
 
 	private Integer version = 0;
 
@@ -44,7 +44,8 @@ public class Departman extends BaseObject {
 
 	private Boolean icapciOlabilir, admin, suaOlabilir = Boolean.FALSE, sirketEklenebilir = Boolean.FALSE, izinGirilebilir = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE;
 
-	
+	private Double haftaIciSutIzniSure = 7.5d, cumartesiSutIzniSure = 0.0d;
+
 	private String mailBox;
 
 	@Column(name = "VERSION")
@@ -164,6 +165,24 @@ public class Departman extends BaseObject {
 		this.sirketEklenebilir = sirketEklenebilir;
 	}
 
+	@Column(name = COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE)
+	public Double getHaftaIciSutIzniSure() {
+		return haftaIciSutIzniSure;
+	}
+
+	public void setHaftaIciSutIzniSure(Double haftaIciSutIzniSure) {
+		this.haftaIciSutIzniSure = haftaIciSutIzniSure;
+	}
+
+	@Column(name = COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE)
+	public Double getCumartesiSutIzniSure() {
+		return cumartesiSutIzniSure;
+	}
+
+	public void setCumartesiSutIzniSure(Double cumartesiSutIzniSure) {
+		this.cumartesiSutIzniSure = cumartesiSutIzniSure;
+	}
+
 	@Transient
 	public String getAciklama() {
 		return departmanTanim != null ? departmanTanim.getAciklama() : "";
@@ -176,7 +195,7 @@ public class Departman extends BaseObject {
 
 	public void entityRefresh() {
 		// TODO entityRefresh
-		
+
 	}
 
 }

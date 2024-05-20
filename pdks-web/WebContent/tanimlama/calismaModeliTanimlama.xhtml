@@ -102,6 +102,13 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
+								<h:outputText value="İlk Plan Onaylı" />
+							</f:facet>
+							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.ilkPlanOnayliDurum)}" />
+						</rich:column>
+
+						<rich:column>
+							<f:facet name="header">
 								<h:outputText value="Fazla Mesai Var" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.getYesNo(calismaModeli.fazlaMesaiVar)}" />
@@ -289,6 +296,12 @@
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">İdari Model</ui:define>
 							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.idariModel}" disabled="#{authenticatedUser.admin==false}">
+
+							</h:selectBooleanCheckbox>
+						</s:decorate>
+						<s:decorate template="/layout/edit.xhtml">
+							<ui:define name="label">İlk Plan Onaylı</ui:define>
+							<h:selectBooleanCheckbox value="#{calismaModeliHome.calismaModeli.ilkPlanOnayliDurum}" disabled="#{authenticatedUser.admin==false}">
 
 							</h:selectBooleanCheckbox>
 						</s:decorate>

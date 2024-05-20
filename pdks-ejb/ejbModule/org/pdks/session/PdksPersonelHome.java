@@ -2212,6 +2212,22 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 				}
 
 			}
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.DATE, 1);
+		Date tarih = PdksUtil.getDate(cal.getTime());
+		List<PersonelView> list2 = new ArrayList<PersonelView>();
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+			PersonelView personelView = (PersonelView) iterator.next();
+			if (personelView.getPdksPersonel() == null || personelView.getPdksPersonel().isCalisiyorGun(tarih) == false) {
+				list2.add(personelView);
+				iterator.remove();
+
+			}
+
+		}
+		if (!list2.isEmpty())
+			list.addAll(list2);
+		list2 = null;
 		setPersonelList(list);
 		rootNodeForAllPersonelView = null;
 	}
