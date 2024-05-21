@@ -15289,9 +15289,10 @@ public class OrtakIslemler implements Serializable {
 	public PersonelDenklestirme aylikPlanSureHesapla(boolean filliHesapla, Vardiya normalCalismaVardiya, boolean yemekHesapla, AylikPuantaj puantajData, boolean kaydet, TreeMap<String, Tatil> tatilGunleriMap, Session session) {
 		PersonelDenklestirme personelDenklestirme = null;
 		try {
-			User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
 			DenklestirmeAy dm = puantajData.getDenklestirmeAy();
 			Date sonGun = PdksUtil.tariheAyEkleCikar(PdksUtil.convertToJavaDate(String.valueOf(dm.getYil() * 100 + dm.getAy()) + "01", "yyyyMMdd"), 1);
+			boolean personelCalisiyor = puantajData.getPdksPersonel().isCalisiyorGun(sonGun);
+			User loginUser = puantajData.getLoginUser() != null ? puantajData.getLoginUser() : authenticatedUser;
 			List<YemekIzin> yemekBosList = yemekHesapla ? null : new ArrayList<YemekIzin>();
 			String izinTarihKontrolTarihiStr = getParameterKey("izinTarihKontrolTarihi");
 			Date pdksIzinTarihKontrolTarihi = null;
@@ -15695,9 +15696,7 @@ public class OrtakIslemler implements Serializable {
 									}
 								}
 								if (pdksVardiyaGun.getCalismaSuresi() > 0) {
-
-									double normalSure = pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure();
-
+									double normalSure = pdksVardiyaGun.getCalismaSuresi() - (pdksVardiyaGun.getHaftaCalismaSuresi() + pdksVardiyaGun.getResmiTatilSure());
 									if (normalSure > mesaiMaxSure && pdksVardiyaGun.getVardiya().isMesaiOdenir()) {
 										ucretiOdenenMesaiSure += normalSure - mesaiMaxSure;
 										// pdksVardiyaGun.addCalismaSuresi(fazlaMesaiMaxSure
@@ -15903,12 +15902,18 @@ public class OrtakIslemler implements Serializable {
 					}
 
 					puantajData.setDevredenSure(PdksUtil.setSureDoubleTypeRounded(hesaplananDenklestirme.getDevredenSure(), yarimYuvarla));
-					if (puantajData.getDevredenSure() > 0.0d && !puantajData.getPdksPersonel().isCalisiyorGun(sonGun)) {
+
+					if (puantajData.getDevredenSure() > 0.0d && !personelCalisiyor) {
 						double devredenSure = puantajData.getDevredenSure();
 						puantajData.setFazlaMesaiSure(puantajData.getFazlaMesaiSure() + devredenSure);
 						puantajData.setDevredenSure(0.0d);
 					}
-
+					if (puantajData.getPlanlananSure() == 0.0d && puantajData.getFazlaMesaiSure() > 0.0d) {
+						if (personelCalisiyor) {
+							puantajData.setDevredenSure(puantajData.getDevredenSure() + puantajData.getFazlaMesaiSure());
+							puantajData.setFazlaMesaiSure(0.0d);
+						}
+					}
 					if (!calismaModeli.isFazlaMesaiVarMi()) {
 						puantajData.setHaftaCalismaSuresi(0.0d);
 						puantajData.setUcretiOdenenMesaiSure(0.0d);

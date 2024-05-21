@@ -1011,7 +1011,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 										if (vardiyaDurum) {
 											VardiyaSaat vardiyaSaatDB = vardiyaGun.getVardiyaSaatDB();
 											Double sure = vardiyaSaatDB.getCalismaSuresi();
-											ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure() ? sure.doubleValue() - vardiyaGun.getYasalMaxSure() : 0.0d;
+											ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure() + (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure()) ? sure.doubleValue() - vardiyaGun.getYasalMaxSure()
+													- (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure()) : 0.0d;
 											if (vardiyaSaatDB.getResmiTatilSure() > 0.0d)
 												puantajResmiTatil += vardiyaSaatDB.getResmiTatilSure();
 											else if (vardiyaGun.getVardiya().isHaftaTatil()) {

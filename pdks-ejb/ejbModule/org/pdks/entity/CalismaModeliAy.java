@@ -38,7 +38,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 
 	private double sure = 0, toplamIzinSure = 0, negatifBakiyeDenkSaat = 0.0d;
 
-	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
+	private Boolean durum = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
 
 	public CalismaModeliAy() {
 		super();
@@ -48,6 +48,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 		super();
 		this.denklestirmeAy = denklestirmeAy;
 		this.calismaModeli = calismaModeli;
+		this.setDurum(Boolean.TRUE);
 		if (calismaModeli != null) {
 			this.negatifBakiyeDenkSaat = calismaModeli.getNegatifBakiyeDenkSaat();
 			this.hareketKaydiVardiyaBul = calismaModeli.getHareketKaydiVardiyaBul();
@@ -132,6 +133,15 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 		this.gunMaxCalismaOdemeDurum = gunMaxCalismaOdemeDurum;
 	}
 
+	@Column(name = COLUMN_NAME_DURUM)
+	public Boolean getDurum() {
+		return durum;
+	}
+
+	public void setDurum(Boolean durum) {
+		this.durum = durum;
+	}
+
 	@Transient
 	public static String getKey(DenklestirmeAy xDenklestirmeAy, CalismaModeli xCalismaModeli) {
 		String key = (xDenklestirmeAy != null ? xDenklestirmeAy.getId() : 0) + "_" + (xCalismaModeli != null ? xCalismaModeli.getId() : 0);
@@ -161,6 +171,7 @@ public class CalismaModeliAy extends BasePDKSObject implements Serializable {
 
 	public void entityRefresh() {
 		// TODO entityRefresh
-		
+
 	}
+
 }

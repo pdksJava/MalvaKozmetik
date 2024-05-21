@@ -59,11 +59,11 @@
 										<c:if test="#{(cm.updateCGS==false or authenticatedUser.admin ) and cm.genelModel}">
 											<rich:column style="text-align: center;width: 40px;">
 												<f:facet name="header">#{cm.aciklama} Süre</f:facet>
-											#{authenticatedUser.sayiFormatliGoster(vardiyaView.getCalismaModeliAy(cm.id).sure)}
+											#{authenticatedUser.sayiFormatliGoster( vardiyaTanimlaHome.getCalismaModeliAy(vardiyaView,cm).sure)}
 										</rich:column>
 											<rich:column style="text-align: center;width: 40px;" rendered="#{authenticatedUser.admin and cm.updateCGS==false}">
 												<f:facet name="header">#{cm.aciklama} Süt İzni</f:facet>
-											#{authenticatedUser.sayiFormatliGoster(vardiyaView.getCalismaModeliAy(cm.id).toplamIzinSure)}
+											#{authenticatedUser.sayiFormatliGoster(vardiyaTanimlaHome.getCalismaModeliAy(vardiyaView,cm).toplamIzinSure)}
 										</rich:column>
 										</c:if>
 									</c:forEach>
@@ -144,7 +144,7 @@
 
 							<h:panelGrid columns="#{vardiyaTanimlaHome.girisKolonSayisi}">
 								<c:forEach items="#{vardiyaTanimlaHome.denklestirmeAy.modeller}" var="md">
-									<c:if test="#{(md.calismaModeli.updateCGS==false or authenticatedUser.admin) and md.calismaModeli.genelModel}">
+									<c:if test="#{(md.calismaModeli.updateCGS==false or authenticatedUser.admin) and md.durum and ( md.calismaModeli.genelModel or md.calismaModeli.fazlaMesaiGoruntulensin) }">
 										<s:decorate template="/layout/edit.xhtml">
 											<ui:define name="label">#{md.calismaModeli.aciklama} Süre</ui:define>
 											<h:inputText value="#{md.sure}"

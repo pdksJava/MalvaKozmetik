@@ -1231,8 +1231,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 							if (vardiyaGun.getIzin() == null && vardiyaGun.isZamanGelmedi()) {
 								toplamSure = vardiyaGun.getCalismaSuresi();
 							}
-							if (toplamSure > fazlaMesaiMaxSure)
-								puantajUcretiOdenenSure += toplamSure - fazlaMesaiMaxSure;
+							if (toplamSure > fazlaMesaiMaxSure + (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure()))
+								puantajUcretiOdenenSure += toplamSure - fazlaMesaiMaxSure - (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure());
 							puantajSaatToplami += toplamSure;
 							vardiyalar.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
 

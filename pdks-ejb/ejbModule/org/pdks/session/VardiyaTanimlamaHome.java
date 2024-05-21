@@ -76,6 +76,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 	private List<DenklestirmeAy> denklestirmeAylar;
 
 	private DenklestirmeAy denklestirmeAy;
+	private TreeMap<String, CalismaModeliAy> modelMap;
 	boolean guncelle = Boolean.FALSE, denklestirmeKesintiYap = Boolean.FALSE, disabled = false;
 	private TreeMap<String, PersonelDenklestirme> bakiySonrakiMap;
 	private List<CalismaModeli> calismaModeliList = new ArrayList<CalismaModeli>();
@@ -111,29 +112,55 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 		return sayi;
 	}
 
+	/**
+	 * @param dm
+	 * @param cm
+	 * @return
+	 */
+	public CalismaModeliAy getCalismaModeliAy(DenklestirmeAy dm, CalismaModeli cm) {
+		String key = CalismaModeliAy.getKey(dm, cm);
+		CalismaModeliAy calismaModeliAy = modelMap.containsKey(key) ? modelMap.get(key) : new CalismaModeliAy(dm, cm);
+		return calismaModeliAy;
+
+	}
+
 	@Transactional
 	public String fillPdksYoneticiDenklestirme(Session xSession) {
 		HashMap map = new HashMap();
-		map.put("yil", yil);
+		map.put("yil=", yil);
+		Calendar cal = Calendar.getInstance();
+		if (cal.get(Calendar.YEAR) == yil)
+			map.put("ay<=", cal.get(Calendar.MONTH) + 2);
 		if (xSession != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, xSession);
-		denklestirmeAylar = pdksEntityController.getObjectByInnerObjectList(map, DenklestirmeAy.class);
+		denklestirmeAylar = pdksEntityController.getObjectByInnerObjectListInLogic(map, DenklestirmeAy.class);
 		denklestirmeAylar = PdksUtil.sortListByAlanAdi(denklestirmeAylar, "ay", false);
+		List<Long> dmIdList = new ArrayList<Long>();
+		for (DenklestirmeAy dm : denklestirmeAylar) {
+			dmIdList.add(dm.getId());
+		}
+		map.clear();
+		map.put(PdksEntityController.MAP_KEY_MAP, "getKey");
+		map.put("denklestirmeAy.id", dmIdList);
+		if (xSession != null)
+			map.put(PdksEntityController.MAP_KEY_SESSION, xSession);
+		modelMap = pdksEntityController.getObjectByInnerObjectMap(map, CalismaModeliAy.class, false);
+		TreeMap<Long, CalismaModeli> cmMap = new TreeMap<Long, CalismaModeli>();
+		for (String key : modelMap.keySet()) {
+			CalismaModeliAy cma = modelMap.get(key);
+			CalismaModeli cm = modelMap.get(key).getCalismaModeli();
+			if (cma.getDurum() && !cmMap.containsKey(cm.getId()))
+				cmMap.put(cm.getId(), cm);
+		}
+
 		if (personelDenklestirmeler != null)
 			personelDenklestirmeler.clear();
 		if (devredenBakiyeDosya != null)
 			devredenBakiyeDosya.setDosyaIcerik(null);
 
 		if (calismaModeliList != null && !calismaModeliList.isEmpty()) {
-			map.clear();
-			map.put(PdksEntityController.MAP_KEY_MAP, "getKey");
-			map.put("denklestirmeAy.yil", yil);
-			if (xSession != null)
-				map.put(PdksEntityController.MAP_KEY_SESSION, xSession);
-			TreeMap modelMap = pdksEntityController.getObjectByInnerObjectMap(map, CalismaModeliAy.class, false);
 			boolean flush = false, renk = Boolean.FALSE;
 			try {
-				Calendar cal = Calendar.getInstance();
 				cal.setTime(PdksUtil.getDate(cal.getTime()));
 				Integer otomatikOnayIKGun = null;
 				String str = ortakIslemler.getParameterKey("otomatikOnayIKGun");
@@ -166,8 +193,12 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 						CalismaModeli cm = (CalismaModeli) iterator.next();
 						CalismaModeliAy calismaModeliAy = null;
 						String key = CalismaModeliAy.getKey(da, cm);
+						if (cm.getDurum().booleanValue() == false) {
+							continue;
+						}
 						if (!modelMap.containsKey(key)) {
 							calismaModeliAy = new CalismaModeliAy(da, cm);
+							calismaModeliAy.setDurum(Boolean.FALSE);
 							pdksEntityController.saveOrUpdate(xSession, entityManager, calismaModeliAy);
 							flush = true;
 						} else
@@ -185,7 +216,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 			}
 
 		}
-
+		calismaModeliList = cmMap.isEmpty() ? null : new ArrayList<CalismaModeli>(cmMap.values());
 		return "";
 	}
 
@@ -688,13 +719,14 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 		if (xSession == null)
 			xSession = session;
 		xSession.clear();
-		fillCalismaModeller(xSession);
+ 		fillCalismaModeller(xSession);
 		HashMap map = new HashMap();
 		map.put(PdksEntityController.MAP_KEY_MAP, "getAy");
-		map.put("yil", yil);
+		map.put("yil=", yil);
+
 		if (xSession != null)
 			map.put(PdksEntityController.MAP_KEY_SESSION, xSession);
-		TreeMap<Integer, DenklestirmeAy> ayMap = pdksEntityController.getObjectByInnerObjectMap(map, DenklestirmeAy.class, false);
+		TreeMap<Integer, DenklestirmeAy> ayMap = pdksEntityController.getObjectByInnerObjectMapInLogic(map, DenklestirmeAy.class, false);
 
 		try {
 			kesintiTuruList.clear();
@@ -929,6 +961,14 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
+	}
+
+	public TreeMap<String, CalismaModeliAy> getModelMap() {
+		return modelMap;
+	}
+
+	public void setModelMap(TreeMap<String, CalismaModeliAy> modelMap) {
+		this.modelMap = modelMap;
 	}
 
 }
