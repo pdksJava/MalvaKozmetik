@@ -2655,7 +2655,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		personelSutIzniDurum = null;
 		Personel personel = aylikPuantaj.getPdksPersonel();
 		if (tipi.equalsIgnoreCase("P")) {HashMap fields = new HashMap();
-			if (denklestirmeAyDurum) {
+			if (denklestirmeAyDurum && ikRole) {
 				int adet = 25;
 				if (!PdksUtil.hasStringValue(sicilNo))
 					adet = aylikPuantajList.size();
