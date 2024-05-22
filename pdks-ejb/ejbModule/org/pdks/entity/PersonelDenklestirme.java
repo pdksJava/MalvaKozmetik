@@ -503,7 +503,7 @@ public class PersonelDenklestirme extends BaseObject {
 		if (gunlukCalismaSuresi == null)
 			gunlukCalismaSuresi = AylikPuantaj.getGunlukCalismaSuresi();
 		int gun = new BigDecimal(sure / AylikPuantaj.getGunlukCalismaSuresi()).intValue();
-		double hesaplananSure = (katsayi * gun) + (sure - gunlukCalismaSuresi * gun);
+		double hesaplananSure = (katsayi * gun) + (sure - AylikPuantaj.getGunlukCalismaSuresi() * gun);
 		return hesaplananSure;
 	}
 
