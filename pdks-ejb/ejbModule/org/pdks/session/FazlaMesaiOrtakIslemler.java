@@ -128,6 +128,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 	public void setDenklestirmeAySure(List<VardiyaGun> vardiyaGunList, Sirket sirket, DenklestirmeAy dm, Session session) {
 		HashMap fields = new HashMap();
 		fields.put("denklestirmeAy.id", dm.getId());
+		fields.put("durum", Boolean.TRUE);
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<CalismaModeliAy> modelList = pdksEntityController.getObjectByInnerObjectList(fields, CalismaModeliAy.class);

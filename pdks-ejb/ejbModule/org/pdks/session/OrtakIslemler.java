@@ -2019,16 +2019,16 @@ public class OrtakIslemler implements Serializable {
 
 	/**
 	 * @param denklestirmeAy
-	 * @param personel
+	 * @param cm
 	 * @param session
 	 * @return
 	 */
-	public CalismaModeliAy getCalismaModeliAy(DenklestirmeAy denklestirmeAy, Personel personel, Session session) {
+	public CalismaModeliAy getCalismaModeliAy(DenklestirmeAy denklestirmeAy, CalismaModeli cm, Session session) {
 		CalismaModeliAy calismaModeliAy = null;
-		if (denklestirmeAy != null && personel != null && personel.getCalismaModeli() != null) {
+		if (denklestirmeAy != null && cm != null) {
 			HashMap fields = new HashMap();
 			fields.put("denklestirmeAy.id", denklestirmeAy.getId());
-			fields.put("calismaModeli.id", personel.getCalismaModeli().getId());
+			fields.put("calismaModeli.id", cm.getId());
 			if (session != null)
 				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 			calismaModeliAy = (CalismaModeliAy) pdksEntityController.getObjectByInnerObject(fields, CalismaModeliAy.class);

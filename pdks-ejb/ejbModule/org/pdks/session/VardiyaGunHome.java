@@ -6552,30 +6552,41 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						gecenAylikPuantaj.setPdksPersonel(personel);
 						PersonelDenklestirme personelDenklestirme = null;
 						PersonelDonemselDurum sutIzniDurum = null;
+						String cmaKey = CalismaModeliAy.getKey(denklestirmeAy, personel.getCalismaModeli());
+						CalismaModeliAy cma = null;
 						if (denklestirmeMap.containsKey(personel.getId()))
 							personelDenklestirme = denklestirmeMap.get(personel.getId());
 						else {
-							String key = CalismaModeliAy.getKey(denklestirmeAy, personel.getCalismaModeli());
-							CalismaModeliAy cma = null;
-							if (cmaMap.containsKey(key))
-								cma = cmaMap.get(key);
-							else {
-								cma = ortakIslemler.getCalismaModeliAy(denklestirmeAy, personel, session);
-								if (cma == null) {
-									cma = new CalismaModeliAy(denklestirmeAy, personel.getCalismaModeli());
-									pdksEntityController.saveOrUpdate(session, entityManager, cma);
-									flush = true;
-									gunSaatGuncelle = true;
-								}
-								cmaMap.put(key, cma);
+							if (cmaMap.containsKey(cmaKey))
+								cma = cmaMap.get(cmaKey);
+							personelDenklestirme = new PersonelDenklestirme(personel, denklestirmeAy, cma);
+							if (cma != null) {
+								pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
+								flush = true;
 							}
-							if (cma != null && cma.getDurum().booleanValue() == false) {
-								cma.setDurum(Boolean.FALSE);
+						}
+						if (personelDenklestirme.getCalismaModeliAy() == null) {
+							if (cmaMap.containsKey(cmaKey))
+								cma = cmaMap.get(cmaKey);
+							else
+								cma = ortakIslemler.getCalismaModeliAy(denklestirmeAy, personel.getCalismaModeli(), session);
+							if (cma == null) {
+								cma = new CalismaModeliAy(denklestirmeAy, personel.getCalismaModeli());
 								pdksEntityController.saveOrUpdate(session, entityManager, cma);
 								flush = true;
 								gunSaatGuncelle = true;
 							}
-							personelDenklestirme = new PersonelDenklestirme(personel, denklestirmeAy, cma);
+							personelDenklestirme.setCalismaModeliAy(cma);
+							pdksEntityController.saveOrUpdate(session, entityManager, cma);
+							flush = true;
+							cmaMap.put(cmaKey, cma);
+
+						}
+						if (cma != null && cma.getDurum().booleanValue() == false) {
+							cma.setDurum(Boolean.TRUE);
+							pdksEntityController.saveOrUpdate(session, entityManager, cma);
+							flush = true;
+							gunSaatGuncelle = true;
 						}
 
 						if (personelDenklestirme.getId() != null && hashMap.containsKey(personelDenklestirme.getId())) {
@@ -6964,10 +6975,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						vardiyaPlan = null;
 						vardiyaGunMap = null;
 						aylikPuantaj.setVardiyaHaftaList(aylikPuantaj.getVardiyaPlan().getVardiyaHaftaList());
-						if (personelDenklestirme == null) {
-							personelDenklestirme = denklestirmeMap.containsKey(personel.getId()) ? denklestirmeMap.get(personel.getId()) : new PersonelDenklestirme(personel, denklestirmeAy, ortakIslemler.getCalismaModeliAy(denklestirmeAy, personel, session));
-							aylikPuantaj.setPersonelDenklestirme(personelDenklestirme);
-						}
+						// if (personelDenklestirme == null) {
+						// personelDenklestirme = denklestirmeMap.containsKey(personel.getId()) ? denklestirmeMap.get(personel.getId()) : new PersonelDenklestirme(personel, denklestirmeAy, ortakIslemler.getCalismaModeliAy(denklestirmeAy, personel.getCalismaModeli(), session));
+						// aylikPuantaj.setPersonelDenklestirme(personelDenklestirme);
+						// }
 
 						if (personelDenklestirme != null) {
 							try {

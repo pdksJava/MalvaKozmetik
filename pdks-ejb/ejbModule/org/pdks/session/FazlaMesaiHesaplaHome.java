@@ -974,8 +974,6 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					fazlaMesaiOrtakIslemler.setFazlaMesaiMaxSure(denklestirmeAy, session);
 				DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 				AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
-				if (ikRole || adminRole)
-					fazlaMesaiOrtakIslemler.setDenklestirmeAySure(aylikPuantaj.getVardiyalar(), sirket, denklestirmeAy, session);
 
 				aylikPuantaj.setLoginUser(authenticatedUser);
 				denklestirmeDonemi.setLoginUser(authenticatedUser);
