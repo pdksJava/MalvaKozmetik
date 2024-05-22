@@ -2654,25 +2654,33 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		personelGebeDurum = null;
 		personelSutIzniDurum = null;
 		Personel personel = aylikPuantaj.getPdksPersonel();
-		if (tipi.equalsIgnoreCase("P")) {
-			HashMap fields = new HashMap();
-			StringBuffer sb = new StringBuffer();
-			sb.append(" WITH DATA AS ( ");
-			sb.append("	SELECT CMA." + CalismaModeliAy.COLUMN_NAME_ID + ", COUNT (*) AS ADET FROM " + PersonelDenklestirme.TABLE_NAME + " D WITH(nolock) ");
-			sb.append("	INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON CMA." + CalismaModeliAy.COLUMN_NAME_ID + " = D." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY);
-			sb.append("	WHERE D." + PersonelDenklestirme.COLUMN_NAME_DONEM + " = " + denklestirmeAy.getId());
-			sb.append("	GROUP BY CMA." + CalismaModeliAy.COLUMN_NAME_ID);
-			sb.append("	), ");
-			sb.append(" VERI AS ( ");
-			sb.append(" SELECT " + CalismaModeliAy.COLUMN_NAME_ID + ", CASE WHEN ADET > 25  THEN ADET ELSE 0 END ADET FROM DATA ");
-			sb.append(" ) ");
-			sb.append("	SELECT CMA.* FROM VERI V WITH(nolock) ");
-			sb.append("	INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON V." + CalismaModeliAy.COLUMN_NAME_ID + " = CMA." + CalismaModeliAy.COLUMN_NAME_ID);
-			sb.append("	INNER JOIN " + CalismaModeli.TABLE_NAME + " CM ON CM." + CalismaModeli.COLUMN_NAME_ID + " = CMA." + CalismaModeliAy.COLUMN_NAME_CALISMA_MODELI);
-			sb.append("	ORDER BY V.ADET DESC, CM." + CalismaModeli.COLUMN_NAME_ACIKLAMA);
-			if (session != null)
-				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-			modelList = pdksEntityController.getObjectBySQLList(sb, fields, CalismaModeliAy.class);
+		if (tipi.equalsIgnoreCase("P")) {HashMap fields = new HashMap();
+			if (denklestirmeAyDurum) {
+				int adet = 25;
+				if (!PdksUtil.hasStringValue(sicilNo))
+					adet = aylikPuantajList.size();
+				
+				StringBuffer sb = new StringBuffer();
+				sb.append(" WITH DATA AS ( ");
+				sb.append("	SELECT CMA." + CalismaModeliAy.COLUMN_NAME_ID + ", COUNT (*) AS ADET FROM " + PersonelDenklestirme.TABLE_NAME + " D WITH(nolock) ");
+				sb.append("	INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON CMA." + CalismaModeliAy.COLUMN_NAME_ID + " = D." + PersonelDenklestirme.COLUMN_NAME_CALISMA_MODELI_AY);
+				sb.append("	WHERE D." + PersonelDenklestirme.COLUMN_NAME_DONEM + " = " + denklestirmeAy.getId());
+				sb.append("	GROUP BY CMA." + CalismaModeliAy.COLUMN_NAME_ID);
+				sb.append("	), ");
+				sb.append(" VERI AS ( ");
+				sb.append(" SELECT CMA." + CalismaModeliAy.COLUMN_NAME_ID + ", CASE WHEN COALESCE(ADET,0) >= " + adet + "  THEN ADET ELSE 0 END ADET FROM " + CalismaModeliAy.TABLE_NAME + " CMA  WITH(nolock) ");
+				sb.append(" LEFT JOIN DATA D ON D." + CalismaModeliAy.COLUMN_NAME_ID + " = CMA." + CalismaModeliAy.COLUMN_NAME_ID);
+				sb.append("	WHERE CMA." + CalismaModeliAy.COLUMN_NAME_DONEM + " = " + denklestirmeAy.getId());
+				sb.append(" ) ");
+				sb.append("	SELECT CMA.* FROM VERI V WITH(nolock) ");
+				sb.append("	INNER JOIN " + CalismaModeliAy.TABLE_NAME + " CMA ON V." + CalismaModeliAy.COLUMN_NAME_ID + " = CMA." + CalismaModeliAy.COLUMN_NAME_ID);
+				sb.append("	INNER JOIN " + CalismaModeli.TABLE_NAME + " CM ON CM." + CalismaModeli.COLUMN_NAME_ID + " = CMA." + CalismaModeliAy.COLUMN_NAME_CALISMA_MODELI);
+				sb.append("	ORDER BY V.ADET DESC, CM." + CalismaModeli.COLUMN_NAME_ACIKLAMA);
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				modelList = pdksEntityController.getObjectBySQLList(sb, fields, CalismaModeliAy.class);
+			} else
+				modelList = new ArrayList<CalismaModeliAy>();
 			for (Iterator iterator = modelList.iterator(); iterator.hasNext();) {
 				CalismaModeliAy cma = (CalismaModeliAy) iterator.next();
 				CalismaModeli cm = cma.getCalismaModeli();
@@ -3714,6 +3722,12 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				if (personelDenklestirme.getFazlaMesaiIzinKullan())
 					personelDenklestirme.setFazlaMesaiOde(Boolean.FALSE);
 				savePersonelDenklestirme(personelDenklestirme);
+				if (personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeliAy().getDurum().booleanValue() == false) {
+					CalismaModeliAy cma = personelDenklestirme.getCalismaModeliAy();
+					cma.setDurum(Boolean.TRUE);
+					pdksEntityController.saveOrUpdate(session, entityManager, cma);
+					fazlaMesaiOrtakIslemler.setDenklestirmeAySure(defaultAylikPuantajSablon.getVardiyalar(), aramaSecenekleri.getSirket(), denklestirmeAy, session);
+				}
 				logger.debug("Denklestirme " + personelDenklestirme.getPersonel().getPdksSicilNo());
 			}
 			logger.debug("Veri tabanına kayıt ediliyor");
@@ -6559,11 +6573,20 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 						else {
 							if (cmaMap.containsKey(cmaKey))
 								cma = cmaMap.get(cmaKey);
-							personelDenklestirme = new PersonelDenklestirme(personel, denklestirmeAy, cma);
-							if (cma != null) {
-								pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
-								flush = true;
+							else {
+								cma = ortakIslemler.getCalismaModeliAy(denklestirmeAy, personel.getCalismaModeli(), session);
+								if (cma == null) {
+									cma = new CalismaModeliAy(denklestirmeAy, personel.getCalismaModeli());
+									pdksEntityController.saveOrUpdate(session, entityManager, cma);
+									flush = true;
+									gunSaatGuncelle = true;
+								}
+								cmaMap.put(cmaKey, cma);
 							}
+							personelDenklestirme = new PersonelDenklestirme(personel, denklestirmeAy, cma);
+							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
+							flush = true;
+
 						}
 						if (personelDenklestirme.getCalismaModeliAy() == null) {
 							if (cmaMap.containsKey(cmaKey))
@@ -6577,7 +6600,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 								gunSaatGuncelle = true;
 							}
 							personelDenklestirme.setCalismaModeliAy(cma);
-							pdksEntityController.saveOrUpdate(session, entityManager, cma);
+							pdksEntityController.saveOrUpdate(session, entityManager, personelDenklestirme);
 							flush = true;
 							cmaMap.put(cmaKey, cma);
 
