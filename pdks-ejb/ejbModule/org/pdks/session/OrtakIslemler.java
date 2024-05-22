@@ -15908,11 +15908,11 @@ public class OrtakIslemler implements Serializable {
 						puantajData.setFazlaMesaiSure(puantajData.getFazlaMesaiSure() + devredenSure);
 						puantajData.setDevredenSure(0.0d);
 					}
-					if (puantajData.getPlanlananSure() == 0.0d && puantajData.getFazlaMesaiSure() > 0.0d) {
-						if (personelCalisiyor) {
-							puantajData.setDevredenSure(puantajData.getDevredenSure() + puantajData.getFazlaMesaiSure());
-							puantajData.setFazlaMesaiSure(0.0d);
-						}
+					if (puantajData.getPlanlananSure() == 0.0d && puantajData.getFazlaMesaiSure() > 0.0d && personelCalisiyor) {
+
+						// puantajData.setDevredenSure(puantajData.getDevredenSure() + puantajData.getFazlaMesaiSure());
+						// puantajData.setFazlaMesaiSure(0.0d);
+
 					}
 					if (!calismaModeli.isFazlaMesaiVarMi()) {
 						puantajData.setHaftaCalismaSuresi(0.0d);

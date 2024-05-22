@@ -419,6 +419,8 @@ public class FazlaMesaiGuncelleme implements Serializable {
 			as.setEkSaha3Id(null);
 			fazlaMesaiHesaplaHome.setSession(session);
 			fazlaMesaiHesaplaHome.setSeciliEkSaha3Id(seciliEkSaha3Id);
+			fazlaMesaiHesaplaHome.setTopluGuncelle(true);
+			
 			try {
 				if (!hataVar && gelecekTarih == false && kayitVar) {
 					logger.info(str + " [ " + donemPerList.size() + " ] in " + PdksUtil.getCurrentTimeStampStr());
