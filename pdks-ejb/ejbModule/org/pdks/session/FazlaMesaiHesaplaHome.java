@@ -2560,7 +2560,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		} else if ((topluGuncelle || (kullaniciPersonel.equals(Boolean.FALSE) && ikRole)) && denklestirmeAyDurum && denklestirmeAy.getOtomatikOnayIKTarih() != null) {
 			Calendar cal = Calendar.getInstance();
 			Date otomatikOnayIKTarih = denklestirmeAy.getOtomatikOnayIKTarih();
-			if (topluGuncelle)
+			if (topluGuncelle && otomatikOnayIKTarih.before(cal.getTime()))
 				otomatikOnayIKTarih = PdksUtil.getDate(PdksUtil.tariheGunEkleCikar(cal.getTime(), 1));
 			cal.setTime(PdksUtil.getDate(cal.getTime()));
 			cal.set(Calendar.YEAR, denklestirmeAy.getYil());
