@@ -1394,7 +1394,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				denklestirmeDinamikAlanlar = ortakIslemler.setDenklestirmeDinamikDurum(dataList, session);
 				if (bordroPuantajEkranindaGoster)
 					fazlaMesaiOrtakIslemler.setAylikPuantajBordroVeri(dataList, session);
-
+				yasalFazlaCalismaAsanSaat = false;
 				for (AylikPuantaj dap : dataList) {
 					dap.setSuaDurum(dap.getPersonelDenklestirme().isSuaDurumu());
 					dap.setGebeDurum(Boolean.FALSE);
@@ -1402,11 +1402,18 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 						suaDurum = dap.getPersonelDenklestirme().isSuaDurumu();
 					dap.setGebeDurum(dap.getPersonelDenklestirme().isSuaDurumu());
 					PersonelDenklestirme personelDenklestirme = dap.getPersonelDenklestirme();
+					double fazlaMesaiMaxSure = personelDenklestirme.getDenklestirmeAy().getFazlaMesaiMaxSure();
+					double ucretiOdenenMesaiSure = 0.0d;
 					if (dap.getVardiyalar() != null) {
 						for (Iterator iterator = dap.getVardiyalar().iterator(); iterator.hasNext();) {
 							VardiyaGun vg = (VardiyaGun) iterator.next();
 							if (vg.isAyinGunu() && vg.getVardiya() != null) {
 								Vardiya vardiya = vg.getIslemVardiya();
+								double normalSure = vg.getCalismaSuresi() - (vg.getResmiTatilSure() + vg.getHaftaCalismaSuresi());
+								if (normalSure > fazlaMesaiMaxSure) {
+									ucretiOdenenMesaiSure += normalSure - fazlaMesaiMaxSure;
+									yasalFazlaCalismaAsanSaat = true;
+								}
 								if (vardiya.isSuaMi()) {
 									dap.setSuaDurum(Boolean.TRUE);
 									if (!suaDurum)
@@ -1422,6 +1429,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 
 						}
 					}
+					dap.setUcretiOdenenMesaiSure(ucretiOdenenMesaiSure);
 					dap.setPlanlananSure(personelDenklestirme.getPlanlanSure());
 					List<VardiyaGun> gunList = dap.getVardiyalar();
 					int fark = sonGun - gunList.size();
