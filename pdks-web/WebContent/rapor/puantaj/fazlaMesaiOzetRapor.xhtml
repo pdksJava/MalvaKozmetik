@@ -338,6 +338,18 @@
 										<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.sutIzniDurum)}" />
 									</ui:fragment>
 								</rich:column>
+								<rich:column rendered="#{fazlaMesaiOzetRaporHome.partTime}" style="text-align: center;width: 60px;">
+									<f:facet name="header">
+										<h:outputText value="Part Time" />
+									</f:facet>
+									<ui:fragment rendered="#{ap.personelDenklestirme.partTimeDurumu}">
+										<b><h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.partTimeDurumu)}" /></b>
+									</ui:fragment>
+									<ui:fragment rendered="#{ap.personelDenklestirme.partTimeDurumu==false}">
+										<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.partTimeDurumu)}" />
+									</ui:fragment>
+								</rich:column>
+
 								<c:if test="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar!=null }">
 									<c:forEach items="#{fazlaMesaiOzetRaporHome.aylikPuantajDefault.vardiyalar}" var="vg">
 

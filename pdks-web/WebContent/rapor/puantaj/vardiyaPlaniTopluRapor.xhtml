@@ -147,8 +147,8 @@
 								<rich:tab label="Tüm Personeller" name="tab1">
 
 
-									<rich:dataTable rowClasses="acik,koyu" value="#{vardiyaPlaniTopluRaporHome.aylikPuantajList}" var="ap" style="width: 80%;"
-										rows="50" rowKeyVar="row">
+									<rich:dataTable rowClasses="acik,koyu" value="#{vardiyaPlaniTopluRaporHome.aylikPuantajList}" var="ap" style="width: 80%;" rows="50"
+										rowKeyVar="row">
 
 										<f:facet name="header">
 											<h:outputText value="Çalışma Planı Toplu Raporu" />
@@ -255,8 +255,7 @@
 												<SPAN> <ui:fragment rendered="#{ap.personelDenklestirme.fazlaMesaiOde==false}">
 														<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.fazlaMesaiOde)}" />
 													</ui:fragment> <ui:fragment rendered="#{ap.personelDenklestirme.fazlaMesaiOde}">
-														<SPAN style="font-weight: bolder;"> <h:outputText
-																value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.fazlaMesaiOde)}" />
+														<SPAN style="font-weight: bolder;"> <h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.fazlaMesaiOde)}" />
 														</SPAN>
 													</ui:fragment></SPAN>
 											</rich:column>
@@ -280,8 +279,7 @@
 											<SPAN> <ui:fragment rendered="#{ap.personelDenklestirme.onaylandi}">
 													<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.onaylandi)}" />
 												</ui:fragment> <ui:fragment rendered="#{ap.personelDenklestirme.onaylandi==false}">
-													<SPAN style="font-weight: bolder;"> <h:outputText
-															value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.onaylandi)}" />
+													<SPAN style="font-weight: bolder;"> <h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.onaylandi)}" />
 													</SPAN>
 												</ui:fragment></SPAN>
 										</rich:column>
@@ -316,6 +314,17 @@
 											</ui:fragment>
 											<ui:fragment rendered="#{ap.personelDenklestirme.sutIzniDurum==false}">
 												<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.sutIzniDurum)}" />
+											</ui:fragment>
+										</rich:column>
+										<rich:column rendered="#{vardiyaPlaniTopluRaporHome.partTime}" style="text-align: center;width: 60px;">
+											<f:facet name="header">
+												<h:outputText value="Part Time" />
+											</f:facet>
+											<ui:fragment rendered="#{ap.personelDenklestirme.partTimeDurumu}">
+												<b><h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.partTimeDurumu)}" /></b>
+											</ui:fragment>
+											<ui:fragment rendered="#{ap.personelDenklestirme.partTimeDurumu==false}">
+												<h:outputText value="#{authenticatedUser.getYesNo(ap.personelDenklestirme.partTimeDurumu)}" />
 											</ui:fragment>
 										</rich:column>
 										<c:if test="#{vardiyaPlaniTopluRaporHome.aylikPuantajDefault.vardiyalar!=null }">
@@ -560,13 +569,12 @@
 														</rich:toolTip>
 													</ui:fragment>
 												</f:facet>
-												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}"
-													rendered="#{ap.fazlaMesaiHesapla and ap.devredenSure!=0}" />
+												<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.devredenSure)}" rendered="#{ap.fazlaMesaiHesapla and ap.devredenSure!=0}" />
 
 											</rich:column>
 											<c:if test="#{vardiyaPlaniTopluRaporHome.bordroPuantajEkranindaGoster}">
-												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.normalCalismaSaatKod}" styleClass="#{ap.trSonucClass}"
-													headerClass="izinAylik" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.normalCalismaSaatKod}" styleClass="#{ap.trSonucClass}" headerClass="izinAylik"
+													style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
 													<f:facet name="header">
 														<ui:fragment>
 															<h:outputText value="#{ortakIslemler.normalCalismaSaatKod()}" id="baslik#{ortakIslemler.normalCalismaSaatKod()}" />
@@ -579,13 +587,12 @@
 														<B><ui:fragment rendered="#{ap.denklestirmeBordro.saatNormal gt 0}">
 																<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatNormal)}" />
 															</ui:fragment> <ui:fragment rendered="#{ap.denklestirmeBordro.saatNormal lt 0}">
-																<SPAN style="color: red;"> <h:outputText
-																		value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatNormal)}" /></SPAN>
+																<SPAN style="color: red;"> <h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatNormal)}" /></SPAN>
 															</ui:fragment> </B>
 													</ui:fragment>
 												</rich:column>
-												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.haftaTatilCalismaSaatKod}" styleClass="#{ap.trSonucClass}"
-													headerClass="izinAylik" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.haftaTatilCalismaSaatKod}" styleClass="#{ap.trSonucClass}" headerClass="izinAylik"
+													style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
 													<f:facet name="header">
 														<ui:fragment>
 															<h:outputText value="#{ortakIslemler.haftaTatilCalismaSaatKod()}" id="baslik#{ortakIslemler.haftaTatilCalismaSaatKod()}" />
@@ -598,8 +605,8 @@
 														<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.saatHaftaTatil)}" />
 													</ui:fragment>
 												</rich:column>
-												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.resmiTatilCalismaSaatKod}" styleClass="#{ap.trSonucClass}"
-													headerClass="izinAylik" style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
+												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.resmiTatilCalismaSaatKod}" styleClass="#{ap.trSonucClass}" headerClass="izinAylik"
+													style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center;">
 													<f:facet name="header">
 														<ui:fragment>
 															<h:outputText value="#{ortakIslemler.resmiTatilCalismaSaatKod()}" id="baslik#{ortakIslemler.resmiTatilCalismaSaatKod()}" />
@@ -724,8 +731,7 @@
 														<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.denklestirmeBordro.artikAdet)}" />
 													</ui:fragment>
 												</rich:column>
-												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.bordroToplamGunKod}" headerClass="bordroToplamGun"
-													styleClass="#{ap.trSonucClass}"
+												<rich:column rendered="#{vardiyaPlaniTopluRaporHome.bordroToplamGunKod}" headerClass="bordroToplamGun" styleClass="#{ap.trSonucClass}"
 													style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center">
 													<f:facet name="header">
 														<ui:fragment>
@@ -825,8 +831,7 @@
 
 											</ui:fragment>
 											<ui:fragment rendered="#{ap.calismaModeli==null}">
-												<SPAN style="width: autostretch; white-space: nowrap; font-weight: bold;"> <h:outputText
-														value="#{ap.pdksPersonel.adSoyad}" /></SPAN>
+												<SPAN style="width: autostretch; white-space: nowrap; font-weight: bold;"> <h:outputText value="#{ap.pdksPersonel.adSoyad}" /></SPAN>
 
 											</ui:fragment>
 

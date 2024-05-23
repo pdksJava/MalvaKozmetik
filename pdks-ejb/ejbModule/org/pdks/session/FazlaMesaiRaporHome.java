@@ -668,6 +668,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 		sanalPersonelAciklama = ortakIslemler.sanalPersonelAciklama();
 		sabahVardiya = null;
 		departmanBolumAyni = Boolean.FALSE;
+		yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 		aksamGun = Boolean.FALSE;
 		aksamSaat = Boolean.FALSE;
 		haftaTatilVar = Boolean.FALSE;
@@ -1051,8 +1052,10 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 
 						}
 						puantaj.setUcretiOdenenMesaiSure(ucretiOdenenMesaiSure);
-						if (!yasalFazlaCalismaAsanSaat && personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir())
+
+						if (!yasalFazlaCalismaAsanSaat && personelDenklestirme.getCalismaModeliAy() != null && personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir())
 							yasalFazlaCalismaAsanSaat = puantaj.getCalismaModeli().isFazlaMesaiVarMi() && ucretiOdenenMesaiSure > 0.0d;
+
 						puantaj.setResmiTatilToplami(0d);
 						if (!fazlaMesaiHesapla)
 							aksamVardiyaSayisi = 0;
@@ -1164,7 +1167,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			}
 
 		} catch (Exception ex) {
-			ortakIslemler.loggerErrorYaz(sayfaURL, ex);
+ 			ortakIslemler.loggerErrorYaz(sayfaURL, ex);
 			throw new Exception(ex);
 
 		} finally {

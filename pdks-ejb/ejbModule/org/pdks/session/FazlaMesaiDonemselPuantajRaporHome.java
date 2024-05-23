@@ -109,7 +109,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 	private Boolean gerceklesenMesaiKod = Boolean.FALSE, devredenBakiyeKod = Boolean.FALSE, normalCalismaSaatKod = Boolean.FALSE, haftaTatilCalismaSaatKod = Boolean.FALSE, resmiTatilCalismaSaatKod = Boolean.FALSE, izinSureSaatKod = Boolean.FALSE;
 	private Boolean normalCalismaGunKod = Boolean.FALSE, haftaTatilCalismaGunKod = Boolean.FALSE, resmiTatilCalismaGunKod = Boolean.FALSE, izinSureGunKod = Boolean.FALSE, ucretliIzinGunKod = Boolean.FALSE, ucretsizIzinGunKod = Boolean.FALSE, hastalikIzinGunKod = Boolean.FALSE;
 	private Boolean normalGunKod = Boolean.FALSE, haftaTatilGunKod = Boolean.FALSE, resmiTatilGunKod = Boolean.FALSE, artikGunKod = Boolean.FALSE, bordroToplamGunKod = Boolean.FALSE, devredenMesaiKod = Boolean.FALSE, ucretiOdenenKod = Boolean.FALSE;
-	private Boolean suaDurum = Boolean.FALSE, sutIzniDurum = Boolean.FALSE, gebeDurum = Boolean.FALSE;
+	private Boolean suaDurum = Boolean.FALSE, sutIzniDurum = Boolean.FALSE, gebeDurum = Boolean.FALSE, partTime = Boolean.FALSE;
 	private List<Tanim> denklestirmeDinamikAlanlar;
 	private HashMap<String, List<Tanim>> ekSahaListMap;
 	private TreeMap<String, Boolean> baslikMap;
@@ -173,6 +173,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		suaDurum = false;
 		sutIzniDurum = false;
 		gebeDurum = false;
+		partTime = Boolean.FALSE;
 		String linkAdresKey = (String) req.getParameter("linkAdresKey");
 		if (veriLastMap != null) {
 			if (veriLastMap.containsKey("basYil"))
@@ -194,6 +195,10 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			veriLastMap = null;
 		}
 		fillEkSahaTanim();
+		suaDurum = false;
+		sutIzniDurum = Boolean.FALSE;
+		partTime = Boolean.FALSE;
+		gebeDurum = false;
 		ayDoldur(basYil, donemBas, false);
 		ayDoldur(bitYil, donemBit, true);
 		if (linkAdresKey != null) {
@@ -678,7 +683,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Gebe");
 		if (sutIzniDurum)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Süt İzni");
-
+		if (partTime)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Part Time");
 		Calendar cal = Calendar.getInstance();
 
 		CellStyle headerVardiyaGun = ExcelUtil.getStyleHeader(9, wb);
@@ -856,6 +862,9 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
 			if (sutIzniDurum)
 				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+			if (partTime)
+				ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue("");
+
 			for (VardiyaGun vardiyaGun : vardiyaList) {
 				if (vardiyaGun.isAyinGunu()) {
 					cal.setTime(vardiyaGun.getVardiyaDate());
@@ -973,6 +982,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(aylikPuantaj.isGebeDurum()));
 				if (sutIzniDurum)
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.getSutIzniDurum()));
+				if (partTime)
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(authenticatedUser.getYesNo(personelDenklestirme.isPartTimeDurumu()));
 				for (VardiyaGun vardiyaGun : vardiyaList) {
 					if (vardiyaGun.isAyinGunu() && vardiyaGun.getDurum()) {
 						String styleText = vardiyaGun.getAylikClassAdi(aylikPuantaj.getTrClass());
@@ -1213,7 +1224,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		haftaTatilVar = false;
 		kismiOdemeGoster = false;
 		suaDurum = false;
-		sutIzniDurum = false;
+		sutIzniDurum = Boolean.FALSE;
+		partTime = Boolean.FALSE;
 		gebeDurum = false;
 		session.clear();
 		baslikMap.clear();
@@ -1279,6 +1291,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				double puantajHaftaTatil = 0.0d;
 				if (!sutIzniDurum)
 					sutIzniDurum = pd.isSutIzniVar();
+				if (!partTime)
+					partTime = pd.isPartTimeDurumu();
 				gebeDurum = false;
 				DenklestirmeAy da = pd.getDenklestirmeAy();
 				int yil = da.getYil();
@@ -2160,6 +2174,14 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 
 	public void setGebeDurum(Boolean gebeDurum) {
 		this.gebeDurum = gebeDurum;
+	}
+
+	public Boolean getPartTime() {
+		return partTime;
+	}
+
+	public void setPartTime(Boolean partTime) {
+		this.partTime = partTime;
 	}
 
 }
