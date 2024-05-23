@@ -488,7 +488,7 @@ public class PersonelDenklestirme extends BaseObject {
 		} else if (isPartTimeDurumu()) {
 			aylikSure = aylikSureHesapla(aylikSure - arifeToplamSure, calismaSaatiPartTime, gunlukCalismaSuresi) + arifeToplamSure;
 		}
-			
+
 		double sutIzniSure = sutIzniSaatSayisi != null && sutIzniSaatSayisi.doubleValue() > 0.0d && sutIzniSaatSayisi.doubleValue() != denklestirmeAy.getToplamIzinSure() ? sutIzniSaatSayisi.doubleValue() : denklestirmeAy.getToplamIzinSure();
 		double maxSure = sutIzniDurum == null || sutIzniDurum.equals(Boolean.FALSE) || planlanSure == 0 ? aylikSure : sutIzniSure;
 
@@ -505,7 +505,10 @@ public class PersonelDenklestirme extends BaseObject {
 		if (gunlukCalismaSuresi == null)
 			gunlukCalismaSuresi = AylikPuantaj.getGunlukCalismaSuresi();
 		int gun = new BigDecimal(sure / AylikPuantaj.getGunlukCalismaSuresi()).intValue();
-		double hesaplananSure = (katsayi * gun) + (sure - gunlukCalismaSuresi * gun);
+		double artiSaat = (sure - gunlukCalismaSuresi * gun);
+		if (artiSaat > katsayi)
+			artiSaat = katsayi;
+		double hesaplananSure = (katsayi * gun) + artiSaat;
 		return hesaplananSure;
 	}
 
