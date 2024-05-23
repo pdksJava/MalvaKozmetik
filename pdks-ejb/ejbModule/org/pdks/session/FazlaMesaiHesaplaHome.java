@@ -154,7 +154,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private DenklestirmeAy denklestirmeAy, gecenAy = null;
 
 	private Boolean hataYok, fazlaMesaiIzinKullan = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, fazlaMesaiTalepSil = Boolean.FALSE, yetkili = Boolean.FALSE, resmiTatilVar = Boolean.FALSE, haftaTatilVar = Boolean.FALSE, kaydetDurum = Boolean.FALSE;
-	private Boolean sutIzniGoster = Boolean.FALSE, gebeGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
+	private Boolean sutIzniGoster = Boolean.FALSE, suaGoster, gebeGoster = Boolean.FALSE, partTimeGoster = Boolean.FALSE, onayla, hastaneSuperVisor = Boolean.FALSE, sirketIzinGirisDurum = Boolean.FALSE;
 	private Boolean kesilenSureGoster = Boolean.FALSE, checkBoxDurum, yoneticiERP1Kontrol = Boolean.FALSE;
 	private Boolean aksamGun = Boolean.FALSE, aksamSaat = Boolean.FALSE, hataliPuantajGoster = Boolean.FALSE, stajerSirket, departmanBolumAyni = Boolean.FALSE;
 	private Boolean modelGoster = Boolean.FALSE, kullaniciPersonel = Boolean.FALSE, denklestirmeAyDurum = Boolean.FALSE, gecenAyDurum = Boolean.FALSE, izinGoster = Boolean.FALSE, yoneticiRolVarmi = Boolean.FALSE;
@@ -331,6 +331,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			sutIzniGoster = Boolean.FALSE;
 			gebeGoster = Boolean.FALSE;
 			partTimeGoster = Boolean.FALSE;
+			suaGoster = Boolean.FALSE;
 			mailGonder = Boolean.FALSE;
 			setSirket(null);
 			sirketId = null;
@@ -1083,6 +1084,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		gebeGoster = Boolean.FALSE;
 		yasalFazlaCalismaAsanSaat = Boolean.FALSE;
 		partTimeGoster = Boolean.FALSE;
+		suaGoster = Boolean.FALSE;
 		aylikPuantajSablon.getVardiyalar();
 		setAylikPuantajDefault(aylikPuantajSablon);
 		List<AylikPuantaj> puantajList = new ArrayList();
@@ -1996,7 +1998,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 					if (!sutIzniGoster)
 						sutIzniGoster = personelDenklestirme != null && personelDenklestirme.getSutIzniDurum() != null && personelDenklestirme.getSutIzniDurum();
 					if (!partTimeGoster)
-						partTimeGoster = personelDenklestirme != null && personelDenklestirme.getPartTime() != null && personelDenklestirme.getPartTime();
+						partTimeGoster = personelDenklestirme != null && personelDenklestirme.isPartTimeDurumu();
+					if (!suaGoster)
+						suaGoster = personelDenklestirme != null && personelDenklestirme.isSuaDurumu();
 					// if (/*personelDenklestirme.isErpAktarildi() ||*/ !personelDenklestirme.getDenklestirmeAy().isDurumu()) {
 					if (personelDenklestirme.isErpAktarildi() || !denklestirmeAyDurum) {
 						boolean buAyIstenAyrildi = false;
@@ -7240,6 +7244,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 	public void setTopluGuncelle(boolean topluGuncelle) {
 		this.topluGuncelle = topluGuncelle;
+	}
+
+	public Boolean getSuaGoster() {
+		return suaGoster;
+	}
+
+	public void setSuaGoster(Boolean suaGoster) {
+		this.suaGoster = suaGoster;
 	}
 
 }

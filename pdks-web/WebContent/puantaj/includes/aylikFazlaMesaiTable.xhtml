@@ -162,8 +162,7 @@
 						<h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.fazlaMesaiOde)}" />
 					</ui:fragment>
 					<ui:fragment rendered="#{aylikPuantaj.personelDenklestirme.fazlaMesaiOde}">
-						<SPAN style="font-weight: bolder;"> <h:outputText
-								value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.fazlaMesaiOde)}" /></SPAN>
+						<SPAN style="font-weight: bolder;"> <h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.fazlaMesaiOde)}" /></SPAN>
 					</ui:fragment>
 				</rich:column>
 			</c:if>
@@ -181,7 +180,12 @@
 					</ui:fragment>
 				</rich:column>
 			</c:if>
-
+			<rich:column class="#{aylikPuantaj.trSonucClass}" rendered="#{fazlaMesaiHesaplaHome.suaGoster}" style="width: 60px">
+				<f:facet name="header">
+					<h:outputText value="Gebe" />
+				</f:facet>
+				<h:outputText value="#{authenticatedUser.getYesNo(aylikPuantaj.personelDenklestirme.suaDurumu)}" />
+			</rich:column>
 			<rich:column class="#{aylikPuantaj.trSonucClass}" rendered="#{fazlaMesaiHesaplaHome.gebeGoster}" style="width: 60px">
 				<f:facet name="header">
 					<h:outputText value="Gebe" />
