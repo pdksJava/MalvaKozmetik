@@ -15830,13 +15830,13 @@ public class OrtakIslemler implements Serializable {
 							}
 							if (izinSuresi != 0.0d)
 								logger.debug(key + " " + izinSuresi);
-							if (pdksVardiyaGun.getResmiTatilSure() > 0.0d) {
+							if (pdksVardiyaGun.getResmiTatilSure() > 0.0d && pdksVardiyaGun.getCalismaSuresi() > 0.0d) {
 
 								toplamSure += pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure();
 
 							}
 
-							if (pdksVardiyaGun.isAyinGunu() && pdksVardiyaGun.getCalismaSuresi() > 0.0d)
+							if (pdksVardiyaGun.isAyinGunu() && pdksVardiyaGun.getCalismaSuresi() > 0.0d || toplamSure > 0.0d)
 								logger.debug(key + " " + toplamSure + " " + pdksVardiyaGun.getCalismaSuresi());
 						}
 
