@@ -1768,6 +1768,31 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 		setBakiyeIzin(izin);
 		izinGirisDurum(pdksPersonel);
 		ekSahaDisable();
+		if (pdksPersonel.getId() != null) {
+			ortakIslemler.addObjectList(pdksPersonel.getSablon(), sablonlar, Boolean.FALSE);
+			ortakIslemler.addObjectList(pdksPersonel.getCalismaModeli(), calismaModeliList, Boolean.FALSE);
+			ortakIslemler.addObjectList(pdksPersonel.getCinsiyet(), cinsiyetList, Boolean.FALSE);
+			ortakIslemler.addObjectList(pdksPersonel.getTesis(), tesisList, Boolean.FALSE);
+			ortakIslemler.addObjectList(pdksPersonel.getEkSaha3(), bolumDepartmanlari, Boolean.FALSE);
+			ortakIslemler.addObjectList(pdksPersonel.getSirket(), sirketList, Boolean.FALSE);
+			ortakIslemler.addObjectList(pdksPersonel.getGorevTipi(), gorevDepartmanlari, Boolean.FALSE);
+			ortakIslemler.addObjectList(pdksPersonel.getPersonelTipi(), personelTipleri, Boolean.FALSE);
+			for (String key : ekSahaListMap.keySet()) {
+				List<Tanim> ekSahaList = ekSahaListMap.get(key);
+				Tanim ekSaha = null;
+				if (key.endsWith("1"))
+					ekSaha = pdksPersonel.getEkSaha1();
+				else if (key.endsWith("2"))
+					ekSaha = pdksPersonel.getEkSaha2();
+				else if (key.endsWith("3"))
+					ekSaha = pdksPersonel.getEkSaha3();
+				else if (key.endsWith("4"))
+					ekSaha = pdksPersonel.getEkSaha4();
+				if (ekSaha != null && ekSaha.getDurum().equals(Boolean.FALSE))
+					ortakIslemler.addObjectList(ekSaha, ekSahaList, Boolean.FALSE);
+
+			}
+		}
 	}
 
 	/**

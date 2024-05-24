@@ -578,11 +578,20 @@
 								<s:convertEntity />
 								<a4j:support event="onchange" action="#{vardiyaGunHome.modelDegisti()}" reRender="digerIslemler,secimler" />
 							</h:selectOneMenu>
-							<ui:fragment rendered="#{vardiyaGunHome.calismaModeliVardiyaList!=null}">
+							<ui:fragment rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy!=null}">
 								<rich:toolTip for="perCalismaModeli">
-
+									<h:panelGrid columns="1">
+										<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.izin!=0}">
+											<ui:define name="label">Hafta İçi İzin Saati</ui:define>
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.izin)}" />
+										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.izinhaftaSonu!=0}">
+											<ui:define name="label">#{ortakIslemler.getGunAdi(6,null)} İzin Saati </ui:define>
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.izinhaftaSonu)}" />
+										</s:decorate>
+									</h:panelGrid>
 									<rich:dataTable rowClasses="acik,koyu" value="#{vardiyaGunHome.calismaModeliVardiyaList}" var="vardiya" rows="20" rowKeyVar="row"
-										id="vardiyaTable">
+										rendered="#{vardiyaGunHome.calismaModeliVardiyaList!=null}" id="vardiyaTable">
 										<f:facet name="header">
 											<h:outputText value="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.aciklama} Çalışma Modeli" />
 										</f:facet>

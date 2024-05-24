@@ -225,6 +225,56 @@ public class OrtakIslemler implements Serializable {
 	FacesMessages facesMessages;
 
 	/**
+	 * @param obj
+	 * @param list
+	 */
+	public void addObjectList(Object obj, List list, Boolean durum) {
+		if (obj != null && list != null) {
+			if (list.isEmpty()) {
+				if (obj instanceof BaseObject) {
+					BaseObject baseObject = (BaseObject) obj;
+					if (durum != null && !baseObject.getDurum().equals(durum))
+						obj = null;
+				}
+				if (obj != null)
+					list.add(obj);
+			} else {
+				Long id = null;
+				if (obj instanceof BaseObject) {
+					BaseObject baseObject = (BaseObject) obj;
+					if (durum == null || baseObject.getDurum().equals(durum))
+						id = baseObject.getId();
+				} else if (obj instanceof BasePDKSObject) {
+					id = ((BasePDKSObject) obj).getId();
+				}
+				if (id != null) {
+					boolean ekle = true;
+					for (Object object : list) {
+						Long id2 = null;
+						if (object instanceof BaseObject) {
+							id2 = ((BaseObject) object).getId();
+						} else if (obj instanceof BasePDKSObject) {
+							id2 = ((BasePDKSObject) object).getId();
+						}
+
+						if (id2 != null) {
+							if (id2.equals(id)) {
+								ekle = false;
+								break;
+							}
+						}
+
+					}
+
+					if (ekle)
+						list.add(obj);
+				}
+			}
+		}
+
+	}
+
+	/**
 	 * @param gunSira
 	 * @param pattern
 	 * @return

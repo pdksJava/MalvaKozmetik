@@ -102,6 +102,8 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		calismaModeliYeni.setId(null);
 		if (calismaModeliYeni.getAciklama() != null)
 			calismaModeliYeni.setAciklama(xCalismaModeli.getAciklama() + " kopya");
+		if (authenticatedUser.isAdmin())
+			fillBagliOlduguDepartmanTanimList();
 		setCalismaModeli(calismaModeliYeni);
 		fillVardiyalar();
 		return "";
@@ -158,10 +160,17 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		vardiyaList = pdksEntityController.getObjectByInnerObjectList(parametreMap, Vardiya.class);
+		Long cmaDepartmanId = calismaModeli.getDepartman() != null ? calismaModeli.getDepartman().getId() : null;
 		for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 			Vardiya vardiya = (Vardiya) iterator.next();
-			if (!vardiya.isCalisma() || vardiya.getGenel().equals(Boolean.FALSE))
+			if (vardiya.getKisaAdi().equals("TA") || vardiya.getKisaAdi().equals("TG"))
+				logger.info(vardiya.getId() + " " + vardiya.getKisaAdi());
+			if (cmaDepartmanId != null && vardiya.getDepartman() != null && !vardiya.getDepartman().getId().equals(cmaDepartmanId))
 				iterator.remove();
+			else if (!vardiya.isCalisma() || vardiya.getGenel().equals(Boolean.FALSE)) {
+				iterator.remove();
+			}
+
 		}
 		if (calismaModeli.getId() != null) {
 			parametreMap.clear();

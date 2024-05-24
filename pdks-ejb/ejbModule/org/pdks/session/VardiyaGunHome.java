@@ -2654,12 +2654,13 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		personelGebeDurum = null;
 		personelSutIzniDurum = null;
 		Personel personel = aylikPuantaj.getPdksPersonel();
-		if (tipi.equalsIgnoreCase("P")) {HashMap fields = new HashMap();
+		if (tipi.equalsIgnoreCase("P")) {
+			HashMap fields = new HashMap();
 			if (denklestirmeAyDurum && ikRole) {
 				int adet = 25;
 				if (!PdksUtil.hasStringValue(sicilNo))
 					adet = aylikPuantajList.size();
-				
+
 				StringBuffer sb = new StringBuffer();
 				sb.append(" WITH DATA AS ( ");
 				sb.append("	SELECT CMA." + CalismaModeliAy.COLUMN_NAME_ID + ", COUNT (*) AS ADET FROM " + PersonelDenklestirme.TABLE_NAME + " D WITH(nolock) ");
@@ -2689,6 +2690,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				else if (cm.getDepartman() != null && !cm.getDepartman().getId().equals(aramaSecenekleri.getDepartmanId()))
 					iterator.remove();
 			}
+			if (aylikPuantaj.getPersonelDenklestirme() != null)
+				ortakIslemler.addObjectList(aylikPuantaj.getPersonelDenklestirme().getCalismaModeliAy(), modelList, null);
 			if (personel.isGebelikSutIzinVar()) {
 				fields.clear();
 				Date bitTarih = null, basTarih = null;

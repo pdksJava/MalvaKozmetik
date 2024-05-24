@@ -1003,11 +1003,21 @@
 												<a4j:support event="onchange" action="#{pdksPersonelHome.modelDegisti()}" reRender="sirketDegisti" status="ajaxStatus" ajaxSingle="true" />
 												<s:convertEntity />
 											</h:selectOneMenu>
-											<ui:fragment rendered="#{pdksPersonelHome.calismaModeliVardiyaList!=null}">
+											<ui:fragment rendered="#{pdksPersonelHome.instance.calismaModeli!=null}">
 												<rich:toolTip for="perCalismaModeli">
+													<h:panelGrid columns="1">
+														<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.calismaModeli.izin!=0}">
+															<ui:define name="label">Hafta İçi İzin Saati</ui:define>
+															<h:outputText value="#{authenticatedUser.sayiFormatliGoster(pdksPersonelHome.instance.calismaModeli.izin)}" />
+														</s:decorate>
+														<s:decorate template="/layout/edit.xhtml" rendered="#{pdksPersonelHome.instance.calismaModeli.izinhaftaSonu!=0}">
+															<ui:define name="label">#{ortakIslemler.getGunAdi(6,null)} İzin Saati </ui:define>
+															<h:outputText value="#{authenticatedUser.sayiFormatliGoster(pdksPersonelHome.instance.calismaModeli.izinhaftaSonu)}" />
+														</s:decorate>
+													</h:panelGrid>
 
 													<rich:dataTable rowClasses="acik,koyu" value="#{pdksPersonelHome.calismaModeliVardiyaList}" var="vardiya" rows="20" rowKeyVar="row"
-														id="vardiyaTable">
+														 rendered="#{pdksPersonelHome.calismaModeliVardiyaList!=null}" id="vardiyaTable">
 														<f:facet name="header">
 															<h:outputText value="#{pdksPersonelHome.instance.calismaModeli.aciklama} Çalışma Modeli" />
 														</f:facet>

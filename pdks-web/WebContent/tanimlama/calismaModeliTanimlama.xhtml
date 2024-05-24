@@ -53,7 +53,7 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="Hafta Sonu (Saat)" />
+								<h:outputText value="#{ortakIslemler.getGunAdi(6,null)} (Saat)" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.haftaSonu)}" rendered="#{calismaModeli.haftaSonu!=0}" />
 						</rich:column>
@@ -65,7 +65,7 @@
 						</rich:column>
 						<rich:column>
 							<f:facet name="header">
-								<h:outputText value="İzin Hafta Sonu(Saat)" />
+								<h:outputText value="İzin #{ortakIslemler.getGunAdi(6,null)} (Saat)" />
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.izinhaftaSonu)}" rendered="#{calismaModeli.izinhaftaSonu!=0}" />
 						</rich:column>
@@ -231,7 +231,7 @@
 							<ui:define name="label">PDKS Departman</ui:define>
 							<h:selectOneMenu value="#{calismaModeliHome.calismaModeli.departman}" disabled="#{authenticatedUser.admin==false}">
 								<s:selectItems var="comp" value="#{calismaModeliHome.departmanList}" label="#{comp.departmanTanim.aciklama}" noSelectionLabel="Lütfen seçiniz" />
-								<a4j:support event="onchange" action="#{calismaModeliHome.fillVardiyalar()}" reRender="calismaModeliGiris" status="ajaxStatus"
+								<a4j:support event="onchange" action="#{calismaModeliHome.fillVardiyalar()}" reRender="calismaModeliGiris,vardiyalar" status="ajaxStatus"
 									ajaxSingle="true" />
 								<s:convertEntity />
 							</h:selectOneMenu>
@@ -259,7 +259,7 @@
 							</h:inputText>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Hafta Sonu (Saati)</ui:define>
+							<ui:define name="label">#{ortakIslemler.getGunAdi(6,null)} (Saati)</ui:define>
 							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.haftaSonu}" disabled="#{authenticatedUser.admin==false}" size="6"
 								validatorMessage="Hafta sonu saati giriniz">
 								<f:validateDoubleRange minimum="0" maximum="9" />
@@ -273,7 +273,7 @@
 							</h:inputText>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">İzin Hafta Sonu (Saati)</ui:define>
+							<ui:define name="label">İzin #{ortakIslemler.getGunAdi(6,null)} (Saati)</ui:define>
 							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.izinhaftaSonu}" disabled="#{authenticatedUser.admin==false}" size="6"
 								validatorMessage="İzin günü saati giriniz">
 								<f:validateDoubleRange minimum="0" maximum="9" />
