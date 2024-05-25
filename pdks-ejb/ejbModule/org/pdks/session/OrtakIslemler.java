@@ -15830,10 +15830,8 @@ public class OrtakIslemler implements Serializable {
 							}
 							if (izinSuresi != 0.0d)
 								logger.debug(key + " " + izinSuresi);
-							if (pdksVardiyaGun.getResmiTatilSure() > 0.0d && pdksVardiyaGun.getCalismaSuresi() > 0.0d) {
-
-								toplamSure += pdksVardiyaGun.getCalismaSuresi() - pdksVardiyaGun.getResmiTatilSure();
-
+							if (pdksVardiyaGun.getResmiTatilSure() > 0.0d) {
+								toplamSure += pdksVardiyaGun.getCalismaSuresi() - (pdksVardiyaGun.getResmiTatilSure() - pdksVardiyaGun.getGecenAyResmiTatilSure());
 							}
 
 							if (pdksVardiyaGun.isAyinGunu() && pdksVardiyaGun.getCalismaSuresi() > 0.0d || toplamSure > 0.0d)
@@ -16929,6 +16927,18 @@ public class OrtakIslemler implements Serializable {
 														yemekFarkMap.remove(bayramKey);
 													}
 													if (!sureHesapla) {
+														try {
+															if (cikisHareket.getVardiyaGun() != null && !cikisHareket.getVardiyaGun().getId().equals(vardiyaGun.getId())) {
+																Vardiya cikisVardiya = cikisHareket.getVardiyaGun().getVardiya();
+																double yemekCikisToplamSure = cikisVardiya.getYemekSuresi() / 60.0d;
+																double yemekCikisSure = PdksUtil.getSaatFarki(cikisZaman, girisZaman) - bayramCalisma;
+																double netCikisSure = cikisVardiya.getNetCalismaSuresi() + yemekCikisToplamSure;
+																bayramCalisma -= yemekCikisSure + (PdksUtil.setSureDoubleTypeRounded((yemekCikisToplamSure * bayramCalisma) / netCikisSure, cikisHareket.getVardiyaGun().getYarimYuvarla()));
+															}
+														} catch (Exception e) {
+															// TODO: handle exception
+														}
+
 														vardiyaGun.addGecenAyResmiTatilSure(bayramCalisma);
 														bayramCalisma = 0;
 
