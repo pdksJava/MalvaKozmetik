@@ -476,6 +476,7 @@ public class PersonelDenklestirme extends BaseObject {
 	@Transient
 	public Double getMaksimumSure(double izinSure, double arifeToplamSure) {
 		double aylikSure = calismaModeliAy != null ? calismaModeliAy.getSure() : denklestirmeAy.getSure();
+		double aylikSutSure = calismaModeliAy != null ? calismaModeliAy.getToplamIzinSure() : denklestirmeAy.getToplamIzinSure();
 		if (calismaModeliAy != null && calismaModeliAy.getCalismaModeli().getToplamGunGuncelle() && sutIzniSaatSayisi > 0) {
 			aylikSure = sutIzniSaatSayisi;
 		}
@@ -489,7 +490,7 @@ public class PersonelDenklestirme extends BaseObject {
 			aylikSure = aylikSureHesapla(aylikSure - arifeToplamSure, calismaSaatiPartTime, gunlukCalismaSuresi) + arifeToplamSure;
 		}
 
-		double sutIzniSure = sutIzniSaatSayisi != null && sutIzniSaatSayisi.doubleValue() > 0.0d && sutIzniSaatSayisi.doubleValue() != denklestirmeAy.getToplamIzinSure() ? sutIzniSaatSayisi.doubleValue() : denklestirmeAy.getToplamIzinSure();
+		double sutIzniSure = sutIzniSaatSayisi != null && sutIzniSaatSayisi.doubleValue() > 0.0d && sutIzniSaatSayisi.doubleValue() != aylikSutSure ? sutIzniSaatSayisi.doubleValue() : aylikSutSure;
 		double maxSure = sutIzniDurum == null || sutIzniDurum.equals(Boolean.FALSE) || planlanSure == 0 ? aylikSure : sutIzniSure;
 
 		return maxSure;
