@@ -2234,15 +2234,7 @@ public class PdksVeriOrtakAktar implements Serializable {
 								izinERP.setYazildi(Boolean.TRUE);
 								izinERP.setId(personelIzin.getId());
 							}
-							// List<PersonelDenklestirme> acikDenklestirmeler = getDenklestirmeList(izinSahibi != null ? izinSahibi.getPdksSicilNo() : null, baslangicZamani, bitisZamani, true);
-							// if (acikDenklestirmeler != null && !acikDenklestirmeler.isEmpty()) {
-							// for (PersonelDenklestirme personelDenklestirme : acikDenklestirmeler) {
-							// if (personelDenklestirme.getDurum().equals(Boolean.FALSE))
-							// continue;
-							// personelDenklestirme.setDurum(Boolean.FALSE);
-							// saveList.add(personelDenklestirme);
-							// }
-							// }
+
 							try {
 
 								if (listeKaydet(referansNoERP, saveList, deleteList)) {
@@ -2479,9 +2471,33 @@ public class PdksVeriOrtakAktar implements Serializable {
 						gonder = true;
 						String zaman = (izinERP.getBasZaman() != null ? izinERP.getBasZaman().trim() + " - " : "") + (izinERP.getBitZaman() != null ? izinERP.getBitZaman() + " " : " ") + (izinERP.getIzinTipiAciklama() != null ? izinERP.getIzinTipiAciklama() : " ");
 						Personel izinSahibi = izinERP.getPersonelNo() != null && personelMap.containsKey(izinERP.getPersonelNo()) ? personelMap.get(izinERP.getPersonelNo()) : null;
+						String sirketBilgi = "";
+						if (izinSahibi != null) {
+							Sirket sirket = izinSahibi.getSirket();
+							sirketBilgi = sirket.getSirketGrup() == null ? sirket.getAd() : sirket.getSirketGrup().getAciklama();
+							if (izinSahibi.getTesis() != null && sirket.isTesisDurumu()) {
+								if (sirket.isTesisDurumu()) {
+									if (PdksUtil.hasStringValue(sirketBilgi))
+										sirketBilgi += " - " + izinSahibi.getTesis().getAciklama();
+									else
+										sirketBilgi = izinSahibi.getTesis().getAciklama();
+								}
+							}
+							if (izinSahibi.getEkSaha3() != null) {
+								if (izinSahibi.getEkSaha3() != null) {
+									if (!PdksUtil.hasStringValue(sirketBilgi))
+										sirketBilgi = izinSahibi.getEkSaha3().getAciklama();
+									else
+										sirketBilgi += " / " + izinSahibi.getEkSaha3().getAciklama();
+								}
+							}
+							sirketBilgi = " ( " + sirketBilgi + " ) ";
+						}
 						String personelBilgisi = izinSahibi != null ? izinERP.getPersonelNo() + " - " + izinSahibi.getAdSoyad() + " " : null;
 						if (personelBilgisi == null)
 							personelBilgisi = izinERP.getPersonelNo() != null ? izinERP.getPersonelNo() + " " : "";
+						else
+							personelBilgisi += sirketBilgi;
 						sb.append("<TR class=\"" + (renkUyari ? "odd" : "even") + "\"><TD colspan=2><b>" + personelBilgisi + zaman + "</b></TD></TR>");
 						List<String> veriHataList = izinERP.getHataList();
 						for (int i = 0; i < veriHataList.size(); i++) {
