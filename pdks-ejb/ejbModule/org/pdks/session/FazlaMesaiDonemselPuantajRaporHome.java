@@ -1244,7 +1244,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		if (session != null)
 			fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 		List<PersonelDenklestirme> list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDenklestirme.class);
-
+		boolean sirketFazlaMesaiIzinKullan = sirket.getFazlaMesaiIzinKullan() != null && sirket.getFazlaMesaiIzinKullan();
+		boolean sirketFazlaMesaiOde = sirket.getFazlaMesaiOde() != null && sirket.getFazlaMesaiOde();
 		if (!list.isEmpty()) {
 			fields.clear();
 			sb = new StringBuffer();
@@ -1263,8 +1264,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				Object[] data = list2.get(0);
 				resmiTatilVar = ((Double) data[0]).doubleValue() > 0d;
 				haftaTatilVar = ((Double) data[1]).doubleValue() > 0d;
-				fazlaMesaiIzinKullan = ((Integer) data[2]).intValue() > 0;
-				fazlaMesaiOde = ((Integer) data[3]).intValue() > 0;
+				fazlaMesaiIzinKullan = sirketFazlaMesaiIzinKullan && ((Integer) data[2]).intValue() > 0;
+				fazlaMesaiOde = sirketFazlaMesaiOde == false && ((Integer) data[3]).intValue() > 0;
 				kismiOdemeGoster = ((BigDecimal) data[4]).doubleValue() > 0d;
 			}
 			List<AylikPuantaj> dataList = new ArrayList<AylikPuantaj>();

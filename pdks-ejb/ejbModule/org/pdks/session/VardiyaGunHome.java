@@ -183,7 +183,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	private List<Vardiya> calismaModeliVardiyaList;
 
-	private boolean fileImport = Boolean.FALSE, fazlaMesaiTalepVar = Boolean.FALSE, modelGoster = Boolean.FALSE, gebeGoster = Boolean.FALSE;
+	private boolean fileImport = Boolean.FALSE, fazlaMesaiTalepVar = Boolean.FALSE, fazlaMesaiOde, fazlaMesaiIzinKullan, modelGoster = Boolean.FALSE, gebeGoster = Boolean.FALSE;
 
 	private Boolean manuelHareketEkle, vardiyaFazlaMesaiTalepGoster = Boolean.FALSE, yoneticiERP1Kontrol = Boolean.FALSE, bordroPuantajEkranindaGoster = Boolean.FALSE;
 
@@ -5936,6 +5936,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		if (loginUser == null)
 			loginUser = authenticatedUser;
 		componentState.setSeciliTab("tab1");
+		fazlaMesaiOde = false;
+		fazlaMesaiIzinKullan = false;
 		seciliBolum = null;
 		seciliAltBolum = null;
 		bordroPuantajEkranindaGoster = ortakIslemler.getParameterKey("bordroPuantajEkranindaGoster").equals("1");
@@ -7294,6 +7296,13 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			else
 				topluFazlaCalismaTalep = false;
 			HashMap<Long, AylikPuantaj> pdIdMap = new HashMap<Long, AylikPuantaj>();
+			fields.clear();
+			fields.put("id", aramaSecenekleri.getSirketId());
+			if (session != null)
+				fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+			Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
+			boolean sirketFazlaMesaiIzinKullan = sirket != null && sirket.getFazlaMesaiIzinKullan() != null && sirket.getFazlaMesaiIzinKullan();
+			boolean sirketFazlaMesaiOde = sirket != null && sirket.getFazlaMesaiOde() != null && sirket.getFazlaMesaiOde();
 			for (Iterator iterator = aylikPuantajList.iterator(); iterator.hasNext();) {
 				AylikPuantaj aylikPuantaj = (AylikPuantaj) iterator.next();
 				aylikPuantaj.setDinamikAlanMap(new TreeMap<Long, PersonelDenklestirmeDinamikAlan>());
@@ -7310,6 +7319,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 				if (!partTimeGoster)
 					partTimeGoster = pd.getPartTime() != null && pd.getPartTime();
 
+				if (sirketFazlaMesaiIzinKullan && !fazlaMesaiIzinKullan)
+					fazlaMesaiIzinKullan = pd.getFazlaMesaiIzinKullan() != null && pd.getFazlaMesaiIzinKullan();
+				if (!fazlaMesaiOde)
+					fazlaMesaiOde = pd.getFazlaMesaiOde() != null && !pd.getFazlaMesaiOde().equals(sirketFazlaMesaiOde);
 			}
 			dinamikAlanlar = ortakIslemler.dinamikAlanlariDoldur(pdIdMap, session);
 			int adet = 0;
@@ -7340,11 +7353,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (denklestirmeAyDurum)
 				aylikHareketKaydiVardiyalariBul();
 			if (adminRole || denklestirmeAyDurum) {
-				fields.clear();
-				fields.put("id", aramaSecenekleri.getSirketId());
-				if (session != null)
-					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
-				Sirket sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
+
 				if (sirket != null)
 					bordroVeriOlusturBasla(sirket, aylikPuantajList);
 			}
@@ -9845,6 +9854,8 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 		bordroAlanKapat();
 		seciliBolum = null;
 		seciliAltBolum = null;
+		fazlaMesaiOde = false;
+		fazlaMesaiIzinKullan = false;
 		adminRoleDurum(authenticatedUser);
 		loginUser = authenticatedUser;
 		loginUser.setLogin(authenticatedUser != null);
@@ -12516,6 +12527,22 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 
 	public void setCalismaModeliVardiyaList(List<Vardiya> calismaModeliVardiyaList) {
 		this.calismaModeliVardiyaList = calismaModeliVardiyaList;
+	}
+
+	public boolean isFazlaMesaiOde() {
+		return fazlaMesaiOde;
+	}
+
+	public void setFazlaMesaiOde(boolean fazlaMesaiOde) {
+		this.fazlaMesaiOde = fazlaMesaiOde;
+	}
+
+	public boolean isFazlaMesaiIzinKullan() {
+		return fazlaMesaiIzinKullan;
+	}
+
+	public void setFazlaMesaiIzinKullan(boolean fazlaMesaiIzinKullan) {
+		this.fazlaMesaiIzinKullan = fazlaMesaiIzinKullan;
 	}
 
 }
