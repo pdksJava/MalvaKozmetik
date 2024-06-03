@@ -15966,7 +15966,8 @@ public class OrtakIslemler implements Serializable {
 					}
 					if (!calismaModeli.isFazlaMesaiVarMi()) {
 						puantajData.setHaftaCalismaSuresi(0.0d);
-						puantajData.setUcretiOdenenMesaiSure(0.0d);
+						puantajData.setFazlaMesaiSure(0.0d);
+ 						puantajData.setUcretiOdenenMesaiSure(0.0d);
 						puantajData.setAksamVardiyaSaatSayisi(0.0d);
 						puantajData.setAksamVardiyaSayisi(0);
 						puantajData.setResmiTatilToplami(0.0d);
