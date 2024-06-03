@@ -11889,7 +11889,7 @@ public class OrtakIslemler implements Serializable {
 		}
 		if (testDurum)
 			logger.info("fazlaMesaiSaatiAyarla 1000 " + getCurrentTimeStampStr());
-
+		boolean haftaTatilMesaiVar = getParameterKey("haftaTatilDurum").equals("1");
 		for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 			VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 			if (vardiyaGun.getVardiya() == null)
@@ -11905,7 +11905,9 @@ public class OrtakIslemler implements Serializable {
 			vardiyaGun.setIslendi(vardiyaGun.getSonrakiVardiya() == null && vardiyaGun.getOncekiVardiyaGun() == null);
 			try {
 				islemVardiya = vardiyaGun.setVardiyaZamani();
-
+				String key = vardiyaGun.getVardiyaDateStr();
+				if (key.endsWith("0525"))
+					logger.debug(key);
 				// Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
 				if (islemVardiya.getVardiyaFazlaMesaiBasZaman() == null)
 					islemVardiya.setVardiyaFazlaMesaiBasZaman(vardiyaGun.getVardiyaDate());
@@ -11983,7 +11985,12 @@ public class OrtakIslemler implements Serializable {
 					if (sonrakiVardiyaGun != null) {
 						Vardiya vardiya = sonrakiVardiyaGun.getIslemVardiya();
 						if (vardiya != null && vardiya.isCalisma() == false) {
-							islemVardiya.setVardiyaFazlaMesaiBitZaman(addTarih(cal, vardiya.getVardiyaFazlaMesaiBasZaman(), Calendar.MILLISECOND, -40));
+							int artiDakika = Math.abs(islemVardiya.isHaftaTatil() ? Vardiya.getIntHaftaTatiliFazlaMesaiBasDakika() : Vardiya.getIntOffFazlaMesaiBasDakika());
+							if (haftaTatilMesaiVar == false)
+								artiDakika = 0;
+							Date vardiyaFazlaMesaiBasZaman = addTarih(cal, vardiya.getVardiyaTarih(), Calendar.MINUTE, -artiDakika);
+							islemVardiya.setVardiyaFazlaMesaiBitZaman(addTarih(cal, vardiyaFazlaMesaiBasZaman, Calendar.MILLISECOND, -40));
+							sonrakiVardiyaGun.getIslemVardiya().setVardiyaFazlaMesaiBasZaman(vardiyaFazlaMesaiBasZaman);
 						}
 					}
 				}
@@ -15967,7 +15974,7 @@ public class OrtakIslemler implements Serializable {
 					if (!calismaModeli.isFazlaMesaiVarMi()) {
 						puantajData.setHaftaCalismaSuresi(0.0d);
 						puantajData.setFazlaMesaiSure(0.0d);
- 						puantajData.setUcretiOdenenMesaiSure(0.0d);
+						puantajData.setUcretiOdenenMesaiSure(0.0d);
 						puantajData.setAksamVardiyaSaatSayisi(0.0d);
 						puantajData.setAksamVardiyaSayisi(0);
 						puantajData.setResmiTatilToplami(0.0d);
