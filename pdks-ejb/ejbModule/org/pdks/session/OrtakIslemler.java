@@ -11889,7 +11889,6 @@ public class OrtakIslemler implements Serializable {
 		}
 		if (testDurum)
 			logger.info("fazlaMesaiSaatiAyarla 1000 " + getCurrentTimeStampStr());
-		boolean haftaTatilMesaiVar = getParameterKey("haftaTatilDurum").equals("1");
 		for (Iterator iterator = vardiyaGunList.iterator(); iterator.hasNext();) {
 			VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
 			if (vardiyaGun.getVardiya() == null)
@@ -11986,7 +11985,7 @@ public class OrtakIslemler implements Serializable {
 						Vardiya vardiya = sonrakiVardiyaGun.getIslemVardiya();
 						if (vardiya != null && vardiya.isCalisma() == false) {
 							int artiDakika = Math.abs(islemVardiya.isHaftaTatil() ? Vardiya.getIntHaftaTatiliFazlaMesaiBasDakika() : Vardiya.getIntOffFazlaMesaiBasDakika());
-							if (haftaTatilMesaiVar == false)
+							if (vardiyaGun.getCalismaModeli().getHaftaTatilMesaiOde() == false)
 								artiDakika = 0;
 							Date vardiyaFazlaMesaiBasZaman = addTarih(cal, vardiya.getVardiyaTarih(), Calendar.MINUTE, -artiDakika);
 							islemVardiya.setVardiyaFazlaMesaiBitZaman(addTarih(cal, vardiyaFazlaMesaiBasZaman, Calendar.MILLISECOND, -40));
