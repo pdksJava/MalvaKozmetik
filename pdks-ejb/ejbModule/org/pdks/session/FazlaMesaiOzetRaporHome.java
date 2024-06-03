@@ -1429,9 +1429,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 					ortakIslemler.puantajHaftalikPlanOlustur(Boolean.TRUE, null, vardiyalar, aylikPuantajSablon, puantaj);
 
 					// puantaj.setSaatToplami(personelDenklestirme.getHesaplananSure());
-					if (personelDenklestirme.getDurum() && denklestirmeAyDurum == false)
+					if (personelDenklestirme.getDurum() && (ayBitti || denklestirmeAyDurum == false))
 						puantaj.setPlanlananSure(personelDenklestirme.getPlanlanSure());
 					personelDenklestirme.setGuncellendi(Boolean.FALSE);
+
 					PersonelDenklestirme hesaplananDenklestirmeHesaplanan = null;
 					double ucretiOdenenMesaiSure = 0.0d;
 					vgMap = puantaj.getVgMap();
