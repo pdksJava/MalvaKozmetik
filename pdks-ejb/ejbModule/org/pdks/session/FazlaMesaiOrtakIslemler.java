@@ -340,6 +340,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				}
 				ap.setFazlaMesaiHesapla(false);
 				ortakIslemler.aylikPlanSureHesapla(false, normalCalismaVardiya, true, ap, false, tatilGunleriMap, session);
+				
 
 			} catch (Exception exy) {
 				logger.error(exy);

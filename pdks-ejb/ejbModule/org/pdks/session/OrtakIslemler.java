@@ -16960,7 +16960,7 @@ public class OrtakIslemler implements Serializable {
 														} catch (Exception e) {
 															// TODO: handle exception
 														}
-
+														bayramCalisma = PdksUtil.setSureDoubleTypeRounded(bayramCalisma, cikisHareket.getVardiyaGun().getYarimYuvarla());
 														vardiyaGun.addGecenAyResmiTatilSure(bayramCalisma);
 														bayramCalisma = 0;
 

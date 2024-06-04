@@ -1440,6 +1440,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				Date izinCalismayanMailSonGun = ortakIslemler.tariheGunEkleCikar(cal, aylikPuantajSablon.getSonGun(), -5);
 				izinCalismayanMailGonder = bugun.after(izinCalismayanMailSonGun) || loginUser.isAdmin();
 				List<AylikPuantaj> puantajDenklestirmeList = new ArrayList<AylikPuantaj>();
+				aylikPuantajSablon.setGebeDurum(false);
+				aylikPuantajSablon.setSuaDurum(false);
 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
@@ -1660,6 +1662,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							if (vardiyaGun.getId() != null)
 								vgIdList.add(vardiyaGun.getId());
 							vardiyaGun.setStyle("");
+
 							boolean saatEkle = false;
 							vardiyaGun.addResmiTatilSure(vardiyaGun.getGecenAyResmiTatilSure());
 							if (vardiyaGun.getPersonel().isCalisiyorGun(vardiyaGun.getVardiyaDate())) {
@@ -1781,8 +1784,11 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 
 								}
 							}
-
+							if (vardiyaGun.getVardiyaDateStr().endsWith("0501"))
+								logger.debug(vardiyaGun.getGecenAyResmiTatilSure());
 							if (saatEkle) {
+								// vardiyaGun.addCalismaSuresi(vardiyaGun.getGecenAyResmiTatilSure());
+
 								VardiyaSaat vardiyaSaat = vardiyaGun.getVardiyaSaat();
 								if (vardiyaSaat == null)
 									vardiyaSaat = new VardiyaSaat();
@@ -1802,6 +1808,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 										vardiyaSaat.setCalismaSuresi(vardiyaGun.getCalismaSuresi());
 									} else {
 										vardiyaSaat.setCalismaSuresi(0.0d);
+									}
+									if (vardiyaGun.getGecenAyResmiTatilSure() > 0.0d) {
+										vardiyaSaat.setCalismaSuresi(vardiyaSaat.getCalismaSuresi() + vardiyaGun.getGecenAyResmiTatilSure());
 									}
 								}
 
@@ -1962,6 +1971,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 										haftaTatilVar = Boolean.TRUE;
 								}
 							}
+							if (vardiyaGun.getGecenAyResmiTatilSure() > 0)
+								vardiyaGun.addCalismaSuresi(vardiyaGun.getGecenAyResmiTatilSure());
 
 							if (vardiyaGun.getResmiTatilSure() > 0) {
 								if (!resmiTatilVar)

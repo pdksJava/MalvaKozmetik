@@ -390,11 +390,11 @@
 
 														<ui:fragment rendered="#{ap.vardiyaGun.durum==true or ap.vardiyaGun.zamanGelmedi}">
 															<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi>0 and ap.vardiyaGun.izin==null}">
-																<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi gt fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
+																<ui:fragment rendered="#{ap.vardiyaGun.calismaNetSuresi gt fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
 																	<SPAN style="color: red; font-size: 9px;"><b><h:outputText
 																				value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" /></b></SPAN>
 																</ui:fragment>
-																<ui:fragment rendered="#{ap.vardiyaGun.calismaSuresi le fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
+																<ui:fragment rendered="#{ap.vardiyaGun.calismaNetSuresi le fazlaMesaiOzetRaporHome.denklestirmeAy.fazlaMesaiMaxSure}">
 																	<h:outputText value="#{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.calismaSuresi)}" />
 																</ui:fragment>
 
@@ -406,14 +406,22 @@
 																<ui:fragment rendered="#{ap.vardiyaGun.vardiya.calisma==false}">
 																	<h:outputText value="#{ap.vardiyaGun.aciklama}" />
 																</ui:fragment>
-
+																<ui:fragment rendered="#{ap.vardiyaGun.resmiTatilSure>0}">
+																	<h:outputText value=" RT : #{authenticatedUser.sayiFormatliGoster(ap.vardiyaGun.resmiTatilSure)}" />
+																</ui:fragment>
 															</ui:fragment>
-															<ui:fragment rendered="#{ap.vardiyaGun.izin!=null and ap.vardiyaGun.vardiya!=null}">
+															<ui:fragment rendered="#{ap.vardiyaGun.izin!=null }">
 																#{ap.vardiyaGun.izin.izinTipi.kisaAciklama}
 																<rich:toolTip for="vardiya#{ap.vardiyaGun.vardiyaKeyStr}">
 																	#{ap.vardiyaGun.izin.izinTipi.izinTipiTanim.aciklama} [#{ap.vardiyaGun.vardiya.kisaAdi}]
 																</rich:toolTip>
 
+															</ui:fragment>
+															<ui:fragment rendered="#{ap.vardiyaGun.izin==null }">
+																<rich:toolTip for="vardiya#{ap.vardiyaGun.vardiyaKeyStr}">
+																	
+																			#{authenticatedUser.getTarihFormatla(ap.vardiyaGun.vardiyaDate, 'd MMM')} --> #{ap.vardiyaGun.fazlaMesaiTitle}
+																</rich:toolTip>
 															</ui:fragment>
 														</ui:fragment>
 

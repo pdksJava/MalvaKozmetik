@@ -994,7 +994,9 @@ public class VardiyaPlaniTopluRaporHome extends EntityHome<DepartmanDenklestirme
 					vardiyaZamanMap = new HashMap<String, String>();
 				else
 					vardiyaZamanMap.clear();
-				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
+				aylikPuantajSablon.setGebeDurum(false);
+				aylikPuantajSablon.setSuaDurum(false);
+ 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
 					PersonelDenklestirme valueBuAy = personelDenklestirmeMap.get(denklestirmeTasiyici.getPersonel().getId());

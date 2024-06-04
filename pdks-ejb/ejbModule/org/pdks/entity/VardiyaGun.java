@@ -429,6 +429,12 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	@Transient
+	public double getCalismaNetSuresi() {
+		double netSure = calismaSuresi - (resmiTatilSure + haftaCalismaSuresi);
+		return netSure;
+	}
+
+	@Transient
 	public double getHaftaCalismaSuresi() {
 		return haftaCalismaSuresi;
 	}
@@ -1766,6 +1772,8 @@ public class VardiyaGun extends BaseObject {
 	}
 
 	public void setGecenAyResmiTatilSure(double value) {
+		if (value > 0.0d)
+			logger.debug(value);
 		this.gecenAyResmiTatilSure = value;
 	}
 

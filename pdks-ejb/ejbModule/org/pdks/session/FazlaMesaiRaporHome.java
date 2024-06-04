@@ -1011,9 +1011,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 										boolean haftaTatilDurum = false;
 										if (vardiyaDurum) {
 											VardiyaSaat vardiyaSaatDB = vardiyaGun.getVardiyaSaatDB();
-											Double sure = vardiyaSaatDB.getCalismaSuresi();
-											ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure() + (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure()) ? sure.doubleValue() - vardiyaGun.getYasalMaxSure()
-													- (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure()) : 0.0d;
+											Double sure = vardiyaGun.getCalismaNetSuresi();
+											ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure() ? sure.doubleValue() - vardiyaGun.getYasalMaxSure() : 0.0d;
 											if (vardiyaSaatDB.getResmiTatilSure() > 0.0d)
 												puantajResmiTatil += vardiyaSaatDB.getResmiTatilSure();
 											else if (vardiyaGun.getVardiya().isHaftaTatil()) {
@@ -1167,7 +1166,7 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 			}
 
 		} catch (Exception ex) {
- 			ortakIslemler.loggerErrorYaz(sayfaURL, ex);
+			ortakIslemler.loggerErrorYaz(sayfaURL, ex);
 			throw new Exception(ex);
 
 		} finally {

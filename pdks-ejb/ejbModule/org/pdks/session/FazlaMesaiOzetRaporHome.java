@@ -1055,7 +1055,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				aylikMesaiVar = false;
 				Date toDay = PdksUtil.getDate(new Date()), sonCalismaSaat = null;
 				HashMap<String, String> vardiyaZamanMap = new HashMap<String, String>();
-
+				aylikPuantajSablon.setGebeDurum(false);
+				aylikPuantajSablon.setSuaDurum(false);
 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
@@ -1282,7 +1283,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 										suaDurum = vardiya.isSuaMi();
 								}
 								if (vardiya.isGebelikMi()) {
-									puantaj.setGebeDurum(Boolean.TRUE);
+									if (puantaj.isGebeDurum() == false)
+										puantaj.setGebeDurum(Boolean.TRUE);
 									if (!gebeDurum)
 										gebeDurum = vardiya.isGebelikMi();
 								}
@@ -1336,10 +1338,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							vardiyaGun.setFiiliHesapla(fazlaMesaiHesapla);
 
 							double toplamSure = 0.0d;
-							if (key.endsWith("12"))
-								logger.debug(key);
 							if (vardiyaGun.getResmiTatilSure() != 0.0)
 								logger.debug(vardiyaGun.getVardiyaKeyStr() + " " + puantajResmiTatil + " " + vardiyaGun.getResmiTatilSure());
+							if (key.endsWith("0501"))
+								logger.debug(key);
 
 							if (vardiyaGun.getVardiyaSaatDB() != null && vardiyaGun.getDurum()) {
 								vardiyaGun.setPlanHareketEkle(false);
@@ -1348,8 +1350,10 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 								vardiyaGun.setCikisHareketleri(null);
 								if (fazlaMesaiHesapla) {
 									VardiyaSaat vardiyaSaatDB = vardiyaGun.getVardiyaSaatDB();
-									if (vardiyaSaatDB.getResmiTatilSure() > 0.0d)
+									if (vardiyaSaatDB.getResmiTatilSure() > 0.0d) {
 										vardiyaGun.setResmiTatilSure(vardiyaSaatDB.getResmiTatilSure());
+									}
+
 									else if (personelDenklestirme.getHaftaCalismaSuresi() != null && vardiyaGun.getVardiya().isHaftaTatil() && personelDenklestirme.getHaftaCalismaSuresi() > 0.0d) {
 										puantajHaftaTatil += vardiyaSaatDB.getCalismaSuresi();
 										vardiyaGun.setHaftaCalismaSuresi(vardiyaSaatDB.getCalismaSuresi());
@@ -1357,7 +1361,6 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 									if (!vardiyaGun.getVardiya().isHaftaTatil()) {
 										toplamSure = vardiyaSaatDB.getCalismaSuresi() - vardiyaSaatDB.getResmiTatilSure();
 									}
-									vardiyaGun.setCalismaSuresi(vardiyaSaatDB.getCalismaSuresi());
 
 								}
 
@@ -1441,7 +1444,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						if (!vardiyaGun.isAyinGunu()) {
 							iterator.remove();
 						} else {
-							if (vardiyaGun.getVardiyaDateStr().endsWith("31"))
+							if (vardiyaGun.getVardiyaDateStr().endsWith("01"))
 								logger.debug("");
 							if (vardiyaGun.getDurum() == false && vardiyaGun.getVardiya() != null) {
 								if (vardiyaGun.getVardiyaDate().after(toDay)) {
@@ -1457,9 +1460,8 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							if (!gebemi && vardiyaGun.getVardiya() != null)
 								gebemi = vardiyaGun.getVardiya().isGebelikMi();
 							if (calisiyor) {
-								Double sure = vardiyaGun.getCalismaSuresi();
-								ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > fazlaMesaiMaxSure + (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure()) ? sure.doubleValue() - fazlaMesaiMaxSure - (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure())
-										: 0.0d;
+								Double sure = vardiyaGun.getCalismaNetSuresi();
+								ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > fazlaMesaiMaxSure ? sure.doubleValue() - fazlaMesaiMaxSure : 0.0d;
 								if (vardiyaGun.getHaftaCalismaSuresi() > 0) {
 									if (!haftaTatilVar)
 										haftaTatilVar = Boolean.TRUE;
@@ -2274,8 +2276,9 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 							}
 
 						}
-
-						cell.setCellValue(aciklama);
+						String title = vardiya != null ? vardiyaGun.getFazlaMesaiTitle() : null;
+						// cell.setCellValue(aciklama);
+						ExcelUtil.baslikCell(cell, anchor, helper, drawing, aciklama, title);
 
 					}
 

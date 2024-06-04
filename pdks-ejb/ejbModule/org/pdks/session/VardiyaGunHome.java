@@ -7249,7 +7249,6 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							if (pdksVardiyaGun.isFazlaMesaiTalepDurum())
 								fazlaMesaiTalepVar = Boolean.TRUE;
 							pdksVardiyaGun.setAyinGunu(list.contains(pdksVardiyaGun.getVardiyaDateStr()));
-
 						}
 
 					}

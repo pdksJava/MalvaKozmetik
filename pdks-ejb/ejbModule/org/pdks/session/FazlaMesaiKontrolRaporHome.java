@@ -1079,6 +1079,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 					}
 				}
 				List<AylikPuantaj> puantajDenklestirmeList = new ArrayList<AylikPuantaj>();
+				aylikPuantajSablon.setGebeDurum(false);
+				aylikPuantajSablon.setSuaDurum(false);
 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
@@ -1231,8 +1233,8 @@ public class FazlaMesaiKontrolRaporHome extends EntityHome<AylikPuantaj> impleme
 							if (vardiyaGun.getIzin() == null && vardiyaGun.isZamanGelmedi()) {
 								toplamSure = vardiyaGun.getCalismaSuresi();
 							}
-							if (toplamSure > fazlaMesaiMaxSure + (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure()))
-								puantajUcretiOdenenSure += toplamSure - fazlaMesaiMaxSure - (vardiyaGun.getHaftaCalismaSuresi() + vardiyaGun.getResmiTatilSure());
+							if (vardiyaGun.getCalismaNetSuresi() > fazlaMesaiMaxSure)
+								puantajUcretiOdenenSure += vardiyaGun.getCalismaNetSuresi() - fazlaMesaiMaxSure;
 							puantajSaatToplami += toplamSure;
 							vardiyalar.put(vardiyaGun.getVardiyaKeyStr(), vardiyaGun);
 

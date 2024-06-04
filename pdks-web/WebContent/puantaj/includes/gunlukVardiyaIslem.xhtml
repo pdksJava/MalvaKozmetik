@@ -108,19 +108,22 @@
 							<ui:fragment rendered="#{empty vardiyaGun.hareketler}">
 								<ui:fragment rendered="#{vardiyaGun.zamanGelmedi==false}">
 									<ui:fragment rendered="#{vardiyaGun.izin!=null or vardiyaGun.vardiya.calisma==false}">
-										<ui:fragment rendered="#{vardiyaGun.calismaSuresi==0}">
+									
+										<ui:fragment rendered="#{vardiyaGun.calismaSuresi==0 or (vardiyaGun.haftaCalismaSuresi+vardiyaGun.resmiTatilSure>0)}">
+											
 											<ui:fragment rendered="#{vardiyaGun.haftaCalismaSuresi+vardiyaGun.resmiTatilSure==0}">
 												<h:outputText value="#{vardiyaGun.aciklama}" />
 											</ui:fragment>
-											<span style="color: black; font-size: 11px; font-weight: bold;"> <ui:fragment rendered="#{vardiyaGun.haftaCalismaSuresi>0}">
+											<span style="color: black; font-size: 11px; font-weight: bold;"> 
+											<ui:fragment rendered="#{vardiyaGun.haftaCalismaSuresi>0}">
 													<h:outputText value=" #{authenticatedUser.sayiFormatliGoster(vardiyaGun.haftaCalismaSuresi)}" />
 												</ui:fragment> <ui:fragment rendered="#{vardiyaGun.resmiTatilSure>0}">
 													<h:outputText value=" RT : #{authenticatedUser.sayiFormatliGoster(vardiyaGun.resmiTatilSure)}" />
 												</ui:fragment>
 											</span>
 										</ui:fragment>
-										<ui:fragment rendered="#{vardiyaGun.calismaSuresi>0}">
-											<span style="color: black; font-size: 11px; font-weight: bold;"> <h:outputText value="#{vardiyaGun.aciklama}" />
+										<ui:fragment rendered="#{vardiyaGun.calismaSuresi>0 and (vardiyaGun.haftaCalismaSuresi+vardiyaGun.resmiTatilSure==0)}">
+											<span style="color: black; font-size: 11px; font-weight: bold;"><h:outputText value="#{vardiyaGun.aciklama}" />
 											</span>
 										</ui:fragment>
 									</ui:fragment>

@@ -650,11 +650,11 @@
 
 																	<ui:fragment rendered="#{vardiyaGun.durum==true or vardiyaGun.zamanGelmedi}">
 																		<ui:fragment rendered="#{vardiyaGun.calismaSuresi>0}">
-																			<ui:fragment rendered="#{vardiyaGun.calismaSuresi gt ap.denklestirmeAy.fazlaMesaiMaxSure}">
+																			<ui:fragment rendered="#{vardiyaGun.calismaNetSuresi gt ap.denklestirmeAy.fazlaMesaiMaxSure}">
 																				<SPAN style="color: red; font-size: 9px;"><b><h:outputText
 																							value="#{authenticatedUser.sayiFormatliGoster(vardiyaGun.calismaSuresi)}" /></b></SPAN>
 																			</ui:fragment>
-																			<ui:fragment rendered="#{vardiyaGun.calismaSuresi le ap.denklestirmeAy.fazlaMesaiMaxSure}">
+																			<ui:fragment rendered="#{vardiyaGun.calismaNetSuresi le ap.denklestirmeAy.fazlaMesaiMaxSure}">
 																				<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGun.calismaSuresi)}" />
 																			</ui:fragment>
 
