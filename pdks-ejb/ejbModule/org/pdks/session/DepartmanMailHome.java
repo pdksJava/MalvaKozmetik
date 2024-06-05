@@ -51,29 +51,13 @@ public class DepartmanMailHome extends EntityHome<DepartmanMailGrubu> implements
 	FacesMessages facesMessages;
 
 	DepartmanMailGrubu departmanMail;
-	private String mailAdresleri;
+	private String mailAdresleri, departmanAciklama;
 	private String mailString;
 	private List<Tanim> departmanTanimList = new ArrayList<Tanim>();
 	private List mailList = new ArrayList();
 	private Tanim departmanTanim;
 	boolean yeni;
 	private Session session;
-
-	public String getMailAdresleri() {
-		return mailAdresleri;
-	}
-
-	public void setMailAdresleri(String mailAdresleri) {
-		this.mailAdresleri = mailAdresleri;
-	}
-
-	public List<Tanim> getDepartmanTanimList() {
-		return departmanTanimList;
-	}
-
-	public void setDepartmanTanimList(List<Tanim> departmanTanimList) {
-		this.departmanTanimList = departmanTanimList;
-	}
 
 	@Override
 	public Object getId() {
@@ -177,7 +161,7 @@ public class DepartmanMailHome extends EntityHome<DepartmanMailGrubu> implements
 			mailList.clear();
 		departmanMail = null;
 		HashMap parametreMap = new HashMap();
-		parametreMap.put("departman", departmanTanim);
+		parametreMap.put("departman.id", departmanTanim.getId());
 		if (session != null)
 			parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		departmanMail = (DepartmanMailGrubu) pdksEntityController.getObjectByInnerObject(parametreMap, DepartmanMailGrubu.class);
@@ -198,6 +182,7 @@ public class DepartmanMailHome extends EntityHome<DepartmanMailGrubu> implements
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
 		session.clear();
+		departmanAciklama = "Departman";
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("parentTanim.tipi", Tanim.TIPI_PERSONEL_EK_SAHA);
 		parametreMap.put("parentTanim.kodu", "ekSaha1");
@@ -205,6 +190,10 @@ public class DepartmanMailHome extends EntityHome<DepartmanMailGrubu> implements
 
 		parametreMap.put(PdksEntityController.MAP_KEY_SESSION, session);
 		departmanTanimList = pdksEntityController.getObjectByInnerObjectList(parametreMap, Tanim.class);
+		if (!departmanTanimList.isEmpty()) {
+			Tanim tanim = departmanTanimList.get(0).getParentTanim();
+			departmanAciklama = tanim.getAciklama();
+		}
 
 		return "";
 	}
@@ -229,10 +218,6 @@ public class DepartmanMailHome extends EntityHome<DepartmanMailGrubu> implements
 		return mailList;
 	}
 
-	public void setMailList(List<String> mailList) {
-		this.mailList = mailList;
-	}
-
 	public String getMailString() {
 		return mailString;
 	}
@@ -247,6 +232,34 @@ public class DepartmanMailHome extends EntityHome<DepartmanMailGrubu> implements
 
 	public void setSession(Session session) {
 		this.session = session;
+	}
+
+	public String getDepartmanAciklama() {
+		return departmanAciklama;
+	}
+
+	public void setDepartmanAciklama(String departmanAciklama) {
+		this.departmanAciklama = departmanAciklama;
+	}
+
+	public void setMailList(List mailList) {
+		this.mailList = mailList;
+	}
+
+	public String getMailAdresleri() {
+		return mailAdresleri;
+	}
+
+	public void setMailAdresleri(String mailAdresleri) {
+		this.mailAdresleri = mailAdresleri;
+	}
+
+	public List<Tanim> getDepartmanTanimList() {
+		return departmanTanimList;
+	}
+
+	public void setDepartmanTanimList(List<Tanim> departmanTanimList) {
+		this.departmanTanimList = departmanTanimList;
 	}
 
 }

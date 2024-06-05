@@ -13,10 +13,10 @@
 				<rich:panel header="#{ortakIslemler.getMenuUserAdi(departmanMailHome.session,'departmanMail')}">
 					<h:panelGrid columns="1">
 						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">Departman</ui:define>
+							<ui:define name="label">#{departmanMailHome.departmanAciklama}</ui:define>
 
 							<h:selectOneMenu rendered="#{authenticatedUser.admin and departmanMailHome.departmanTanimList!=null}"
-								value="#{departmanMailHome.departmanTanim}" required="true" requiredMessage="Departman seçiniz">
+								value="#{departmanMailHome.departmanTanim}" required="true" requiredMessage="#{departmanMailHome.departmanAciklama} seçiniz">
 								<s:selectItems var="comp" value="#{departmanMailHome.departmanTanimList}" label="#{comp.aciklama}" noSelectionLabel="Lütfen seçiniz" />
 								<s:convertEntity />
 								<a4j:support event="onchange" action="#{departmanMailHome.fillMail()}" status="ajaxStatus" ajaxSingle="true" reRendered="sss" />

@@ -44,7 +44,7 @@
 							</f:facet>
 							<h:outputText value="#{vardiya.adi}" id="vardiyaAdi" />
 						</rich:column>
-						<rich:column>
+						<rich:column  filterBy="#{vardiya.kisaAdi}" filterEvent="onkeyup">
 							<f:facet name="header">
 								<h:outputText value="Vardiya Kısa Adı" />
 							</f:facet>
