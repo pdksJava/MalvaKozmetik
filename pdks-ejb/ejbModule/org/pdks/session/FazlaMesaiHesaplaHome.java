@@ -5591,8 +5591,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 								tumBolumSayisi = 0;
 							}
 							if (tumBolumSayisi > 0) {
-
-								DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
+ 								DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
 								AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
 								setDepartman(sirket.getDepartman());
 								List<Personel> tumBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, departman.isAdminMi() && sirket.isTesisDurumu() && tesisId != null ? String.valueOf(tesisId) : null, null, null, denklestirmeAy != null ? aylikPuantaj : null, sadeceFazlaMesai,
@@ -5602,13 +5601,14 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									String aciklama = "";
 									if (sirket.isTesisDurumu() && tesisId != null) {
 										aciklama = ortakIslemler.getSelectItemText(tesisId, tesisList);
-									} else {
-										if (bolumAciklama == null)
-											bolumAciklama = ortakIslemler.bolumAciklama();
-										aciklama = bolumAciklama;
 									}
-
-									bolumlist.add(new SelectItem(0L, "Tüm " + aciklama + " Hepsi"));
+									if (bolumAciklama == null)
+										bolumAciklama = ortakIslemler.bolumAciklama();
+									if (PdksUtil.hasStringValue(aciklama))
+										aciklama += " " + bolumAciklama;
+									else
+										aciklama = bolumAciklama;
+ 									bolumlist.add(new SelectItem(0L, "Tüm " + aciklama + " Hepsi"));
 									bolumlist.addAll(gorevYeriList);
 									gorevYeriList.clear();
 									gorevYeriList.addAll(bolumlist);
