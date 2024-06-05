@@ -127,6 +127,14 @@
 				</ui:fragment>
 
 			</rich:column>
+				<rich:column class="#{aylikPuantaj.trSonucClass}" style="width: 40px;width:autostretch ;white-space: nowrap;"
+				rendered="#{fazlaMesaiHesaplaHome.fazlaMesaiHesaplaHome.seciliEkSaha3Id eq 0}">
+				<f:facet name="header">
+					<h:outputText value="#{fazlaMesaiHesaplaHome.bolumAciklama}" />
+				</f:facet>
+				<ui:fragment rendered="#{aylikPuantaj.pdksPersonel.ekSaha3!=null}">#{aylikPuantaj.pdksPersonel.ekSaha3.aciklama }</ui:fragment>
+
+			</rich:column>
 			<rich:column class="#{aylikPuantaj.trSonucClass}" style="width: 40px;width:autostretch ;white-space: nowrap;"
 				rendered="#{fazlaMesaiHesaplaHome.ekSaha4Tanim!=null and fazlaMesaiHesaplaHome.seciliEkSaha4Id lt 0}">
 				<f:facet name="header">

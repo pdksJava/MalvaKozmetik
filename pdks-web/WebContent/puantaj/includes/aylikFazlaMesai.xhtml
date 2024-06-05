@@ -37,6 +37,9 @@
 						<th style="width: 20px"><h:outputText value="#{ortakIslemler.personelNoAciklama()}" /></th>
 						<th style="width: 60px"><h:outputText value="Adı Soyadı" /></th>
 						<th style="width: 60px"><h:outputText value="#{ortakIslemler.yoneticiAciklama()}" /></th>
+						<ui:fragment rendered="#{ fazlaMesaiHesaplaHome.seciliEkSaha3Id eq 0}">
+							<th style="width: 30px"><h:outputText value="#{fazlaMesaiHesaplaHome.bolumAciklama}" /></th>
+						</ui:fragment>
 						<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ekSaha4Tanim!=null and fazlaMesaiHesaplaHome.seciliEkSaha4Id lt 0}">
 							<th style="width: 30px"><h:outputText value="#{fazlaMesaiHesaplaHome.ekSaha4Tanim.aciklama}" /></th>
 						</ui:fragment>
@@ -405,6 +408,11 @@
 
 									</ui:fragment>
 								</ui:fragment></td>
+							<ui:fragment rendered="#{ fazlaMesaiHesaplaHome.seciliEkSaha3Id eq 0}">
+								<td class="#{aylikPuantaj.trClass}" style="width: 20px"><ui:fragment rendered="#{aylikPuantaj.pdksPersonel.ekSaha3!=null}">#{aylikPuantaj.pdksPersonel.ekSaha3.aciklama }</ui:fragment>
+
+								</td>
+							</ui:fragment>
 							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ekSaha4Tanim!=null and fazlaMesaiHesaplaHome.seciliEkSaha4Id lt 0}">
 								<td class="#{aylikPuantaj.trClass}" style="width: 20px"><ui:fragment rendered="#{aylikPuantaj.pdksPersonel.ekSaha4!=null}">#{aylikPuantaj.pdksPersonel.ekSaha4.aciklama }</ui:fragment>
 

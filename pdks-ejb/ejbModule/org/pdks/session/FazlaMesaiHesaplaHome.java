@@ -4906,7 +4906,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 		if (kimlikNoGoster)
 			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.kimlikNoAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.yoneticiAciklama());
-
+		if (seciliEkSaha3Id != null && seciliEkSaha3Id.equals(0L))
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(bolumAciklama);
+		if (ekSaha4Tanim != null && seciliEkSaha4Id != null && seciliEkSaha4Id.longValue() > 0L)
+			ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ekSaha4Tanim.getAciklama());
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue(ortakIslemler.calismaModeliAciklama());
 
 		ExcelUtil.getCell(sheet, row, col++, header).setCellValue("FM Ödeme");
@@ -5139,6 +5142,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 							kimlikNo = personelKGS.getKimlikNo();
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(kimlikNo);
 					}
+					if (seciliEkSaha3Id != null && seciliEkSaha3Id.equals(0L))
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha3() != null ? personel.getEkSaha3().getAciklama() : "");
+					if (ekSaha4Tanim != null && seciliEkSaha4Id != null && seciliEkSaha4Id.longValue() > 0L)
+						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(personel.getEkSaha4() != null ? personel.getEkSaha4().getAciklama() : "");
 					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.getYonetici() != null && aylikPuantaj.getYonetici().getId() != null ? aylikPuantaj.getYonetici().getAdSoyad() : "");
 
 					String modelAciklama = "";
@@ -5573,9 +5580,44 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (gorevYeriList.size() == 1) {
 					seciliEkSaha3Id = (Long) gorevYeriList.get(0).getValue();
 					oncekiEkSaha3Id = seciliEkSaha3Id;
-				}
+				} else {
+					if (ikRole == false && adminRole == false) {
+						String str = ortakIslemler.getParameterKey("fazlaMesaiTumBolumSayisi");
+						if (PdksUtil.hasStringValue(str)) {
+							long tumBolumSayisi = 0;
+							try {
+								tumBolumSayisi = Long.parseLong(str);
+							} catch (Exception e) {
+								tumBolumSayisi = 0;
+							}
+							if (tumBolumSayisi > 0) {
 
-				else {
+								DepartmanDenklestirmeDonemi denklestirmeDonemi = new DepartmanDenklestirmeDonemi();
+								AylikPuantaj aylikPuantaj = fazlaMesaiOrtakIslemler.getAylikPuantaj(ay, yil, denklestirmeDonemi, session);
+								setDepartman(sirket.getDepartman());
+								List<Personel> tumBolumList = fazlaMesaiOrtakIslemler.getFazlaMesaiPersonelList(sirket, departman.isAdminMi() && sirket.isTesisDurumu() && tesisId != null ? String.valueOf(tesisId) : null, null, null, denklestirmeAy != null ? aylikPuantaj : null, sadeceFazlaMesai,
+										session);
+								if (tumBolumList.size() < tumBolumSayisi) {
+									List<SelectItem> bolumlist = new ArrayList<SelectItem>();
+									String aciklama = "";
+									if (sirket.isTesisDurumu() && tesisId != null) {
+										aciklama = ortakIslemler.getSelectItemText(tesisId, tesisList);
+									} else {
+										if (bolumAciklama == null)
+											bolumAciklama = ortakIslemler.bolumAciklama();
+										aciklama = bolumAciklama;
+									}
+
+									bolumlist.add(new SelectItem(0L, "Tüm " + aciklama + " Hepsi"));
+									bolumlist.addAll(gorevYeriList);
+									gorevYeriList.clear();
+									gorevYeriList.addAll(bolumlist);
+									bolumlist = null;
+								}
+							}
+						}
+					}
+
 					if (ortakIslemler.getParameterKey("tumBolumPersonelGetir").equals("1") && !(ikRole || adminRole)) {
 						tumBolumPersonelleri = fazlaMesaiOrtakIslemler.getTumBolumPersonelListesi(sirket, denklestirmeAy, tesisId, sadeceFazlaMesai, session);
 						if (tumBolumPersonelleri != null) {
