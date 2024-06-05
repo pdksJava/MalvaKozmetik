@@ -7941,11 +7941,16 @@ public class OrtakIslemler implements Serializable {
 				list1.add(calismaModeliVardiya.getVardiya());
 			}
 		}
+		boolean hareketsizGunleriOffYap = getParameterKey("hareketsizGunleriOffYap").equals("1");
 		HashMap map = new HashMap();
-		map.put("vardiyaTipi", Vardiya.TIPI_OFF);
-		if (session != null)
-			map.put(PdksEntityController.MAP_KEY_SESSION, session);
-		Vardiya offVardiya = (Vardiya) pdksEntityController.getObjectByInnerObject(map, Vardiya.class);
+		Vardiya offVardiya = null;
+		if (hareketsizGunleriOffYap) {
+			map.put("vardiyaTipi", Vardiya.TIPI_OFF);
+			if (session != null)
+				map.put(PdksEntityController.MAP_KEY_SESSION, session);
+			offVardiya = (Vardiya) pdksEntityController.getObjectByInnerObject(map, Vardiya.class);
+		}
+
 		List<HareketKGS> personelHareketList = new ArrayList<HareketKGS>();
 		Date bugun = new Date();
 		List<String> hareketIdList = new ArrayList<String>();
@@ -7961,8 +7966,9 @@ public class OrtakIslemler implements Serializable {
 				String key = PdksUtil.convertToDateString(vardiyaGun.getVardiyaDate(), "yyyyMMdd");
 				vgMap.put(key, vardiyaGun);
 			}
-
+			boolean offDurum = false;
 			if (personelHareketMap.containsKey(personelKGSId)) {
+				offDurum = true;
 				List<VardiyaGun> varList = new ArrayList<VardiyaGun>(personelVardiyaBulMap.get(perId));
 				Collections.reverse(varList);
 				TreeMap<String, VardiyaGun> vardiyalarMap = new TreeMap<String, VardiyaGun>();
@@ -8069,7 +8075,7 @@ public class OrtakIslemler implements Serializable {
 
 							} else {
 								try {
-									if (tatil != null && tatil.isYarimGunMu() == false && hareketVar == false) {
+									if (tatil != null && tatil.isYarimGunMu() == false && offVardiya != null && offDurum && hareketVar == false) {
 										if (islemVardiyaGun != null && islemVardiyaGun.isCalisma() && islemVardiyaGun.getVardiyaFazlaMesaiBitZaman().before(bugun)) {
 											vardiyaGun.setVardiya(offVardiya);
 											vardiyaGun.setVersion(0);
