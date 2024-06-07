@@ -1017,7 +1017,7 @@
 													</h:panelGrid>
 
 													<rich:dataTable rowClasses="acik,koyu" value="#{pdksPersonelHome.calismaModeliVardiyaList}" var="vardiya" rows="20" rowKeyVar="row"
-														 rendered="#{pdksPersonelHome.calismaModeliVardiyaList!=null}" id="vardiyaTable">
+														rendered="#{pdksPersonelHome.calismaModeliVardiyaList!=null}" id="vardiyaTable">
 														<f:facet name="header">
 															<h:outputText value="#{pdksPersonelHome.instance.calismaModeli.aciklama} Çalışma Modeli" />
 														</f:facet>
@@ -1493,7 +1493,7 @@
 															<TR>
 																<TD><h:inputText value="#{pdksPersonelHome.instance.kullanici.username}" size="35" required="true"
 																		requiredMessage="Kullanıcı adı giriniz">
-																		<a4j:support event="onchange" action="#{pdksPersonelHome.ldapKontrol}" reRender="idEMail,idUserName" status="ajaxStatus"
+																		<a4j:support event="onchange" action="#{pdksPersonelHome.ldapKontrol}" reRender="idEMail,idUserName,roller" status="ajaxStatus"
 																			ajaxSingle="true" />
 																	</h:inputText></TD>
 																<TD><h:outputText style="color:red;" value="#{pdksPersonelHome.hataMesaj}" /></TD>
@@ -1502,7 +1502,10 @@
 													</s:decorate>
 													<s:decorate id="idEMail" template="/layout/edit.xhtml" cellpadding="0" cellspacing="0">
 														<ui:define name="label">E-Posta</ui:define>
-														<h:inputText value="#{pdksPersonelHome.instance.kullanici.email}" size="35" required="true" requiredMessage="E-Posta giriniz" />
+														<h:inputText value="#{pdksPersonelHome.instance.kullanici.email}" size="35" required="true" requiredMessage="E-Posta giriniz">
+															<a4j:support event="onchange" action="#{pdksPersonelHome.ldapKontrol}" reRender="idEMail,idUserName,roller" status="ajaxStatus"
+																ajaxSingle="true" />
+														</h:inputText>
 														<a4j:commandLink status="ajaxStatus" id="updatelink" ajaxSingle="true" title="Test mail gönder"
 															rendered="#{pdksPersonelHome.instance.sirket.ldap==false}" action="#{pdksPersonelHome.denemeMesajHazirla()}"
 															oncomplete="#{rich:component('testMailPanel')}.show()" reRender="testMailPanel">
@@ -1528,8 +1531,10 @@
 											</h:panelGrid>
 
 										</h:panelGrid>
-										<ui:fragment rendered="#{pdksPersonelHome.instance.kullanici.durum}">
-											<a4j:outputPanel id="roller">
+
+										<a4j:outputPanel id="roller">
+											<ui:fragment
+												rendered="#{pdksPersonelHome.instance.kullanici.durum and ortakIslemler.hasStringValue(pdksPersonelHome.instance.kullanici.username) and ortakIslemler.isEPosta(pdksPersonelHome.instance.kullanici.email)}">
 												<rich:simpleTogglePanel switchType="client" label="Roller" height="110" opened="true">
 													<s:decorate>
 														<rich:listShuttle id="shuttle" sourceValue="#{pdksPersonelHome.distinctRoleList}" fastOrderControlsVisible="false"
@@ -1574,8 +1579,9 @@
 														</s:decorate>
 													</rich:simpleTogglePanel>
 												</c:if>
-											</a4j:outputPanel>
-										</ui:fragment>
+											</ui:fragment>
+										</a4j:outputPanel>
+
 
 									</h:panelGrid>
 								</ui:fragment>

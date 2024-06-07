@@ -945,12 +945,14 @@ public class PdksPersonelHome extends EntityHome<Personel> implements Serializab
 
 		try {
 			boolean yeni = pdksPersonel.getId() == null;
-			boolean kullaniciYaz = PdksUtil.hasStringValue(kullanici.getUsername());
+			boolean kullaniciYaz = PdksUtil.hasStringValue(kullanici.getUsername()) && PdksUtil.hasStringValue(kullanici.getEmail());
 			if (kullaniciYaz) {
 				if (PdksUtil.isValidEMail(kullanici.getEmail()))
 					user = ortakIslemler.digerKullanici(kullanici, getOldUserName(), session);
 				else
 					mesajList.add("Geçersiz e-posta adresi --> " + kullanici.getEmail());
+			} else if (kullanici.getYetkiliRollerim() != null && kullanici.getYetkiliRollerim().isEmpty()) {
+				mesajList.add("Kullanıcı bilgilerini girmeden önce role kayıt olamaz!");
 			}
 
 			if (user == null) {

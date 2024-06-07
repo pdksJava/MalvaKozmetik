@@ -9417,6 +9417,22 @@ public class OrtakIslemler implements Serializable {
 	}
 
 	/**
+	 * @param eMail
+	 * @return
+	 */
+	public boolean isEPosta(String eMail) {
+		boolean durum = false;
+		if (eMail != null) {
+			int index1 = eMail.indexOf("@"), index2 = eMail.lastIndexOf(".");
+ 			if (index1 > 1 && index2 > index1) {
+				eMail = PdksUtil.getInternetAdres(eMail);
+				durum = PdksUtil.hasStringValue(eMail);
+			}
+		}
+		return durum;
+	}
+
+	/**
 	 * @param user
 	 * @param session
 	 */
