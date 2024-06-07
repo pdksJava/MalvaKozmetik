@@ -383,7 +383,8 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			LinkedHashMap<String, Object> veriLastMap = null;
 			if (linkAdresKey == null) {
 				veriLastMap = ortakIslemler.getLastParameter(sayfaURL, session);
-				if (veriLastMap != null) {
+				if (veriLastMap != null && !veriLastMap.isEmpty()) {
+
 					if (veriLastMap.containsKey("yil"))
 						yilStr = (String) veriLastMap.get("yil");
 					if (veriLastMap.containsKey("ay"))
@@ -506,6 +507,9 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			linkAdres = null;
 			if (denklestirmeAy == null)
 				setSeciliDenklestirmeAy();
+			if (PdksUtil.hasStringValue(yilStr) == false && PdksUtil.hasStringValue(ayStr) == false) {
+				yilAyDegisti(false);
+			}
 
 			if (hareketDoldur == false) {
 				if (!userLogin.isAdmin() && !userLogin.isIK() && !userLogin.isYoneticiKontratli()) {
@@ -5601,7 +5605,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									String aciklama = "";
 									if (sirket.isTesisDurumu() && tesisId != null)
 										aciklama = ortakIslemler.getSelectItemText(tesisId, tesisList);
- 									if (bolumAciklama == null)
+									if (bolumAciklama == null)
 										bolumAciklama = ortakIslemler.bolumAciklama();
 									if (PdksUtil.hasStringValue(aciklama))
 										aciklama += " " + bolumAciklama;
