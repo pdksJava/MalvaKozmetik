@@ -231,7 +231,7 @@ public class OrtakIslemler implements Serializable {
 	 */
 	public Boolean getMudurAltSeviyeDurum(Personel personel, Session session) {
 		Boolean durum = false;
-		if (personel == null) {
+		if (personel == null && authenticatedUser != null) {
 			if (authenticatedUser.isIK() == false && authenticatedUser.isSistemYoneticisi() == false && authenticatedUser.isGenelMudur() == false && authenticatedUser.isAdmin() == false)
 				personel = authenticatedUser.getPdksPersonel();
 		}
