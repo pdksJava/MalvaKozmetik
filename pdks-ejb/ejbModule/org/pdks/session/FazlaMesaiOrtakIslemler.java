@@ -90,6 +90,8 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 
 	static Logger logger = Logger.getLogger(FazlaMesaiOrtakIslemler.class);
 
+	public static final String PERSONEL_TANIM_SECIM_MUDUR_ALT_SEVIYE = "mudurAltSeviye";
+
 	@In
 	Identity identity;
 	@In(required = false, create = true)
@@ -340,7 +342,6 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				}
 				ap.setFazlaMesaiHesapla(false);
 				ortakIslemler.aylikPlanSureHesapla(false, normalCalismaVardiya, true, ap, false, tatilGunleriMap, session);
-				
 
 			} catch (Exception exy) {
 				logger.error(exy);

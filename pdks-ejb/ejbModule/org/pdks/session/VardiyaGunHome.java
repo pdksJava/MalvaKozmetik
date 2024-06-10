@@ -5933,6 +5933,10 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			session.clear();
 		if (loginUser == null)
 			loginUser = authenticatedUser;
+		Personel per = loginUser.getPdksPersonel();
+		Boolean mudurAltSeviye = ortakIslemler.getMudurAltSeviyeDurum(per, session);
+		if (per != null)
+			per.setMudurAltSeviye(mudurAltSeviye);
 		componentState.setSeciliTab("tab1");
 		fazlaMesaiOde = false;
 		fazlaMesaiIzinKullan = false;

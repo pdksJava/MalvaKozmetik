@@ -1025,6 +1025,10 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 			loginUser = authenticatedUser;
 		if (userLogin == null)
 			userLogin = loginUser;
+		Personel per = loginUser.getPdksPersonel();
+		Boolean mudurAltSeviye = ortakIslemler.getMudurAltSeviyeDurum(per, session);
+		if (per != null)
+			per.setMudurAltSeviye(mudurAltSeviye);
 		denklestirmeDonemi.setDenklestirmeAy(denklestirmeAy);
 		yoneticiERP1Kontrol = !ortakIslemler.getParameterKeyHasStringValue(("yoneticiERP1Kontrol"));
 		msgwarnImg = "";
