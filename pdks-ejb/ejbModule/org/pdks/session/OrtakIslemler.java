@@ -266,19 +266,21 @@ public class OrtakIslemler implements Serializable {
 				sb.append("  AND T." + Tanim.COLUMN_NAME_TIPI + " = :t AND T." + Tanim.COLUMN_NAME_KODU + " = :k ");
 				sb.append(" AND T." + Tanim.COLUMN_NAME_DURUM + " = 1 ");
 				sb.append(" WHERE D." + PersonelDinamikAlan.COLUMN_NAME_PERSONEL + " :p");
-				fields.put("p", idList);
+				String fieldName = "p";
+				fields.put(fieldName, idList);
 				fields.put("t", Tanim.TIPI_PERSONEL_DINAMIK_DURUM);
 				fields.put("k", kodu);
 				if (session != null)
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				try {
-					list = pdksEntityController.getObjectBySQLList(sb, fields, PersonelDinamikAlan.class);
-
+					list = getSQLParamList(idList, sb, fieldName, fields, PersonelDinamikAlan.class, session);
 				} catch (Exception e) {
 				}
 			}
 
 		}
+		if (list == null)
+			list = new ArrayList<PersonelDinamikAlan>();
 
 		return list;
 	}
