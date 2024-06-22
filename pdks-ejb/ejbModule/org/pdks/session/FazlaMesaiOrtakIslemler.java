@@ -1902,10 +1902,28 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			} catch (Exception e) {
 				logger.error(loginUser.getAdSoyad() + " " + loginUser.getCalistigiSayfa() + " " + vardiyaGun.getVardiyaKeyStr() + " --> " + e);
 			}
+			Tatil tatil = vardiyaGun.getTatil();
+			try {
+				if (tatil != null && tatil.isYarimGunMu() && tatil.getVardiyaMap() != null && islemVardiya != null) {
+					Vardiya vardiya = tatil.getVardiyaMap().get(islemVardiya.getId());
+					if (vardiya != null)
+						islemVardiya.setArifeBaslangicTarihi(vardiya.getArifeBaslangicTarihi());
+				}
+			} catch (Exception e) {
+
+			}
+
+			logger.debug("");
+			String arife = "";
 			if (!list.isEmpty()) {
 				sb.append("<p align=\"left\">");
-				if (islemVardiya.isCalisma() && loginUser != null && (loginUser.isAdmin() || loginUser.isIK() || loginUser.isSistemYoneticisi()))
+
+				if (islemVardiya.isCalisma() && loginUser != null && (loginUser.isAdmin() || loginUser.isIK() || loginUser.isSistemYoneticisi())) {
+					if (islemVardiya.getArifeBaslangicTarihi() != null)
+						arife = "<B>Arife Tatil : <B>" + PdksUtil.convertToDateString(islemVardiya.getArifeBaslangicTarihi(), pattern);
 					sb.append("<B>Telorans Aralık : <B>" + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans1BasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans2BitZaman(), pattern) + "</BR>");
+
+				}
 
 				sb.append("<B>Fazla Çalışma Saat : </B>");
 				if (list.size() > 1) {
@@ -1919,19 +1937,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 				sb.append("</p>");
 			}
 			if (islemVardiya.isCalisma()) {
-				Tatil tatil = vardiyaGun.getTatil();
 				if (tatil != null && (loginUser.isIK() || loginUser.isSistemYoneticisi() || loginUser.isAdmin())) {
-					if (tatil.isYarimGunMu()) {
-						Date arifeGun = tatil.getBasTarih();
-						if (PdksUtil.tarihKarsilastirNumeric(arifeGun, vardiyaGun.getVardiyaDate()) == 0) {
-							sb.append("<p align=\"left\">");
-							sb.append("<B>Arife Başlama Saati : </B>" + loginUser.getTarihFormatla(arifeGun, loginUser.getDateTimeFormat()));
-							sb.append("</p>");
-						}
-					}
-
-				}
-			}
+					if (PdksUtil.hasStringValue(arife)) {
+						sb.append("<p align=\"left\">");
+						sb.append(arife);
+						sb.append("</p>");
+ 					}
+ 				}
+ 			}
 			list = null;
 		}
 		String str = sb.toString();

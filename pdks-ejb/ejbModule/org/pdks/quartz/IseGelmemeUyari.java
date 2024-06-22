@@ -478,8 +478,8 @@ public class IseGelmemeUyari implements Serializable {
 						for (Long long1 : kgsPerMap.keySet())
 							perIdList.add(kgsPerMap.get(long1).getId());
 						// Hareket kayıtları okunuyor
-						// HashMap<Long, ArrayList<HareketKGS>> personelHareketMap = ortakIslemler.fillKaradagPersonelHareketMap(new ArrayList(karadagPerMap.keySet()), vardiyaBas, vardiyaBitTar, session);
-						HashMap<Long, ArrayList<HareketKGS>> personelHareketMap = ortakIslemler.fillPersonelKGSHareketMap(new ArrayList(kgsPerMap.keySet()), vardiyaBas, vardiyaBitTar, session);
+						Date bitTarih = bugun != null && vardiyaBitTar.after(bugun) ? bugun : vardiyaBitTar;
+						HashMap<Long, ArrayList<HareketKGS>> personelHareketMap = ortakIslemler.fillPersonelKGSHareketMap(new ArrayList(kgsPerMap.keySet()), vardiyaBas, bitTarih, session);
 						HashMap<Long, Personel> yoneticiMap = new HashMap<Long, Personel>();
 						// Hareket kayıtları vardiya günlerine işleniyor
 						boolean kayitVar = false;
