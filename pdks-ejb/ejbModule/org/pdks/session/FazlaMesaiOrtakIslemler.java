@@ -1883,6 +1883,7 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 		if (loginUser == null)
 			loginUser = authenticatedUser;
 		StringBuffer sb = new StringBuffer();
+		String brStr = "<BR></BR>";
 		if (vardiyaGun != null && vardiyaGun.getIslemVardiya() != null && vardiyaGun.getVersion() >= 0) {
 			String pattern = PdksUtil.getDateTimeFormat();
 			Vardiya islemVardiya = vardiyaGun.getIslemVardiya();
@@ -1918,11 +1919,14 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 			if (!list.isEmpty()) {
 				sb.append("<p align=\"left\">");
 
-				if (islemVardiya.isCalisma() && loginUser != null && (loginUser.isAdmin() || loginUser.isIK() || loginUser.isSistemYoneticisi())) {
-					if (islemVardiya.getArifeBaslangicTarihi() != null)
-						arife = "<B>Arife Tatil : <B>" + PdksUtil.convertToDateString(islemVardiya.getArifeBaslangicTarihi(), pattern);
-					sb.append("<B>Telorans Aralık : <B>" + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans1BasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans2BitZaman(), pattern) + "</BR>");
+				if (loginUser != null && (loginUser.isAdmin() || loginUser.isIK() || loginUser.isSistemYoneticisi())) {
+					if (islemVardiya.isCalisma()) {
+						if (islemVardiya.getArifeBaslangicTarihi() != null)
+							arife = "<B>Arife Tatil : </B>" + PdksUtil.convertToDateString(islemVardiya.getArifeBaslangicTarihi(), pattern) + brStr;
+						sb.append("<B>Telorans Aralık : </B>" + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans1BasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans2BitZaman(), pattern) + brStr);
 
+					}
+					
 				}
 
 				sb.append("<B>Fazla Çalışma Saat : </B>");
@@ -1936,15 +1940,15 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					sb.append(list.get(0));
 				sb.append("</p>");
 			}
-			if (islemVardiya.isCalisma()) {
-				if (tatil != null && (loginUser.isIK() || loginUser.isSistemYoneticisi() || loginUser.isAdmin())) {
-					if (PdksUtil.hasStringValue(arife)) {
-						sb.append("<p align=\"left\">");
-						sb.append(arife);
-						sb.append("</p>");
- 					}
- 				}
- 			}
+
+			if (tatil != null && (loginUser.isIK() || loginUser.isSistemYoneticisi() || loginUser.isAdmin())) {
+				if (PdksUtil.hasStringValue(arife)) {
+					sb.append("<p align=\"left\">");
+					sb.append(arife);
+					sb.append("</p>");
+				}
+			}
+
 			list = null;
 		}
 		String str = sb.toString();

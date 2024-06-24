@@ -1344,7 +1344,7 @@ public class VardiyaGun extends BaseObject {
 						ek = " - Şua";
 					else if (tmpVardiya.isGebelikMi())
 						ek = " - Gebe";
-					str = PdksUtil.convertToDateString(tmpVardiya.getVardiyaBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(tmpVardiya.getVardiyaBitZaman(), pattern) + " [ " + vTemp.getKisaAdi() + ek + " ] ";
+					str = PdksUtil.convertToDateString(tmpVardiya.getVardiyaBasZaman(), pattern) + " - " + PdksUtil.convertToDateString(tmpVardiya.getVardiyaBitZaman(), pattern) + " ( " + vTemp.getKisaAdi() + ek + " ) ";
 					try {
 						str += " Net Süre : " + PdksUtil.numericValueFormatStr(tmpVardiya.getNetCalismaSuresi(), null);
 					} catch (Exception e) {

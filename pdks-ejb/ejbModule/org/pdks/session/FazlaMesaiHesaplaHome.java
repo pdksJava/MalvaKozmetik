@@ -1864,7 +1864,18 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									String titleStr = fazlaMesaiOrtakIslemler.getFazlaMesaiSaatleri(vardiyaGun, loginUser);
 									if (eksikCalismaDurum)
 										titleStr += "<br/>" + getEksikCalismaHTML(vardiyaGun);
-
+									VardiyaGun oncekiVardiyaGun = vardiyaGun.getOncekiVardiyaGun();
+									if (oncekiVardiyaGun != null) {
+										Tatil tatil = vardiyaGun.getTatil();
+										if (tatil != null) {
+											if (oncekiVardiyaGun.isAyinGunu() == false && oncekiVardiyaGun.getVardiya() != null) {
+												Vardiya tmpVardiya = vardiyaGun.getOncekiVardiyaGun().getIslemVardiya();
+												if (tmpVardiya.getBasSaat() > tmpVardiya.getBitSaat()) {
+													titleStr += "<p align=\"left\"><B>Önceki Vardiya : </B>" + oncekiVardiyaGun.getVardiyaPlanAdi() + "</p>";
+												}
+											}
+										}
+									}
 									vardiyaGun.setTitleStr(titleStr);
 									vardiyaGun.addLinkAdresler(titleStr);
 								}

@@ -15942,7 +15942,7 @@ public class OrtakIslemler implements Serializable {
 									addBayramCalismaSuresi(pdksVardiyaGun);
 								}
 								if (pdksVardiyaGun.getGecenAyResmiTatilSure() > 0 && pdksVardiyaGun.getResmiTatilSure() > pdksVardiyaGun.getGecenAyResmiTatilSure()) {
-									double bugunResmiTatilSure = pdksVardiyaGun.getResmiTatilSure() - pdksVardiyaGun.getGecenAyResmiTatilSure();
+									double bugunResmiTatilSure = pdksVardiyaGun.getResmiTatilSure();
 									if (pdksVardiyaGun.getCalismaSuresi() > bugunResmiTatilSure)
 										toplamSure += pdksVardiyaGun.getCalismaSuresi() - bugunResmiTatilSure;
 								}
