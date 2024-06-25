@@ -1926,7 +1926,16 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 						sb.append("<B>Telorans Aralık : </B>" + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans1BasZaman(), pattern) + " - " + PdksUtil.convertToDateString(islemVardiya.getVardiyaTelorans2BitZaman(), pattern) + brStr);
 
 					}
-					
+					if (tatil != null) {
+						VardiyaGun oncekiVardiyaGun = vardiyaGun.getOncekiVardiyaGun();
+						if (oncekiVardiyaGun != null && oncekiVardiyaGun.isAyinGunu() == false && oncekiVardiyaGun.getVardiya() != null) {
+							Vardiya tmpVardiya = vardiyaGun.getOncekiVardiyaGun().getIslemVardiya();
+							if (tmpVardiya.getBasSaat() > tmpVardiya.getBitSaat()) {
+								sb.append("<B>" + PdksUtil.convertToDateString(oncekiVardiyaGun.getVardiyaDate(), PdksUtil.getDateFormat()) + " Vardiya : </B>" + oncekiVardiyaGun.getVardiyaPlanAdi() + brStr);
+							}
+						}
+
+					}
 				}
 
 				sb.append("<B>Fazla Çalışma Saat : </B>");

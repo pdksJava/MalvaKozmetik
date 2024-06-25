@@ -1489,7 +1489,7 @@ public class VardiyaGun extends BaseObject {
 
 					}
 					if (this.getIzin() != null && vardiya.isIzin() == false)
-						title += " ( " + this.getVardiyaPlanAdi() + " )";
+						title += " { " + this.getVardiyaPlanAdi() + " }";
 				} else
 					title = vardiya.getAciklama();
 
