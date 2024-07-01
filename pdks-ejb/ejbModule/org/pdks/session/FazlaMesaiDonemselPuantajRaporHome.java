@@ -307,6 +307,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 		tesisler.clear();
 		StringBuffer sb = new StringBuffer();
 		bolumler.clear();
+		boolean bolumVar = false;
 		try {
 			sirket = null;
 			boolean idVar = false;
@@ -317,6 +318,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 				sirket = (Sirket) pdksEntityController.getObjectByInnerObject(fields, Sirket.class);
 				fields.clear();
+				bolumVar = tesisId != null;
 				if (sirket.getTesisDurum()) {
 					sb.append("select DISTINCT TE.* from " + DenklestirmeAy.TABLE_NAME + " D WITH(nolock) ");
 					sb.append(" INNER  JOIN " + PersonelDenklestirme.TABLE_NAME + " PD ON PD." + PersonelDenklestirme.COLUMN_NAME_DONEM + " = D." + DenklestirmeAy.COLUMN_NAME_ID);
@@ -330,8 +332,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 					List<Tanim> list = pdksEntityController.getObjectBySQLList(sb, fields, Tanim.class);
-
-					if (list.isEmpty()) {
+ 					if (list.isEmpty()) {
 						tesisId = null;
 					} else {
 						list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
@@ -341,13 +342,18 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 							tesisler.add(new SelectItem(tanim.getId(), tanim.getAciklama()));
 						}
 					}
+
 				} else {
+					bolumVar = false;
 					bolumDoldur();
 				}
 
 			}
 			if (!idVar)
 				tesisId = null;
+			else if (bolumVar)
+				bolumDoldur();
+
 		} catch (Exception e) {
 		}
 		return "";
@@ -1348,7 +1354,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 							if (vardiyaGun.getVardiyaSaatDB() != null) {
 								VardiyaSaat vardiyaSaatDB = vardiyaGun.getVardiyaSaatDB();
 								if (fazlaMesaiOdenir) {
-									if (vardiyaGun.getCalismaNetSuresi() > fazlaMesaiMaxSure )
+									if (vardiyaGun.getCalismaNetSuresi() > fazlaMesaiMaxSure)
 										ucretiOdenenMesaiSure += vardiyaGun.getCalismaNetSuresi() - fazlaMesaiMaxSure;
 
 								}

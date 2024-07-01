@@ -72,17 +72,17 @@
 							<h:selectOneMenu value="#{fazlaMesaiDonemselPuantajRaporHome.tesisId}" disabled="#{fazlaMesaiDonemselPuantajRaporHome.tesisler.size() lt 2}">
 								<f:selectItem itemLabel="Lütfen seçiniz" />
 								<f:selectItems value="#{fazlaMesaiDonemselPuantajRaporHome.tesisler}" />
-								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable"
+								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable,girisler"
 									action="#{fazlaMesaiDonemselPuantajRaporHome.bolumDoldur()}" />
 							</h:selectOneMenu>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml"
-							rendered="#{fazlaMesaiDonemselPuantajRaporHome.sirket.tesisDurum==false || not empty fazlaMesaiDonemselPuantajRaporHome.tesisler}">
+							rendered="#{fazlaMesaiDonemselPuantajRaporHome.sirket.tesisDurum==false or not empty fazlaMesaiDonemselPuantajRaporHome.tesisler}">
 							<ui:define name="label">#{fazlaMesaiDonemselPuantajRaporHome.bolumAciklama}</ui:define>
 							<h:selectOneMenu value="#{fazlaMesaiDonemselPuantajRaporHome.bolumId}" disabled="#{fazlaMesaiDonemselPuantajRaporHome.bolumler.size() lt 2}">
 								<f:selectItem itemLabel="Lütfen seçiniz" />
 								<f:selectItems value="#{fazlaMesaiDonemselPuantajRaporHome.bolumler}" />
-								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable"
+								<a4j:support event="onchange" status="ajaxStatus" reRender="denklestirmeDonemiTable,girisler"
 									action="#{fazlaMesaiDonemselPuantajRaporHome.personelList.clear()}" />
 							</h:selectOneMenu>
 						</s:decorate>
@@ -127,11 +127,11 @@
 								</f:facet>
 								<h:outputText value="#{pdksPersonel.pdksSicilNo}" id="pdksname" />
 							</rich:column>
-							<rich:column>
-								<f:facet name="header" filterEvent="onkeyup">
+							<rich:column style="width:autostretch ;white-space: nowrap;" filterBy="#{pdksPersonel.adSoyad}" filterEvent="onkeyup">
+								<f:facet name="header">
 									<h:outputText value="Adı Soyadı" />
 								</f:facet>
-								<h:outputText value="#{pdksPersonel.adSoyad}" id="adSoyad" />
+								#{pdksPersonel.adSoyad} 
 							</rich:column>
 							<rich:column>
 								<f:facet name="header">
