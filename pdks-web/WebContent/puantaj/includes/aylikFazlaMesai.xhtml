@@ -308,7 +308,9 @@
 										<SPAN style="color: green; font-size: 12px;"><B>#{izin.kisaAdi}: </B>#{izin.adi}</SPAN>
 									</rich:toolTip></td>
 							</a4j:repeat>
-
+							<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole}">
+								<th style="width: 60px"><h:outputText value="Durum" /></th>
+							</ui:fragment>
 						</ui:fragment>
 					</tr>
 				</thead>
@@ -814,7 +816,13 @@
 									<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{adet!=null}">
 																#{authenticatedUser.sayiFormatliGoster(adet)}</ui:fragment></td>
 								</a4j:repeat>
-
+								<ui:fragment rendered="#{fazlaMesaiHesaplaHome.ikRole}">
+									<td class="#{aylikPuantaj.trSonucClass}" style="width: 20px" align="center"><ui:fragment rendered="#{aylikPuantaj.calisiyor}">
+											Çalışıyor
+										</ui:fragment> <ui:fragment rendered="#{aylikPuantaj.calisiyor==false}">
+											<SPAN style="color: red">Ayrılmış</SPAN>
+										</ui:fragment></td>
+								</ui:fragment>
 							</ui:fragment>
 						</tr>
 					</a4j:repeat>

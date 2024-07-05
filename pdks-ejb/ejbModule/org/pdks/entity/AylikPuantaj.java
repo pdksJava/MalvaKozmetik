@@ -79,7 +79,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	private String trClass;
 
-	private boolean kaydet, gorevYeriSec = false, secili, onayDurum, vardiyaOlustu = Boolean.FALSE, vardiyaDegisti = Boolean.FALSE, fiiliHesapla = Boolean.FALSE;
+	private boolean kaydet, calisiyor = true, gorevYeriSec = false, secili, onayDurum, vardiyaOlustu = Boolean.FALSE, vardiyaDegisti = Boolean.FALSE, fiiliHesapla = Boolean.FALSE;
 
 	private boolean donemBitti = Boolean.TRUE, ayrikHareketVar = Boolean.FALSE, fazlaMesaiIzinKontrol = Boolean.TRUE, gebeDurum = Boolean.TRUE;
 
@@ -90,7 +90,7 @@ public class AylikPuantaj implements Serializable, Cloneable {
 	private boolean fazlaMesaiHesapla = Boolean.FALSE, vardiyaSua = Boolean.FALSE, eksikGunVar = Boolean.FALSE, denklestirilmeyenDevredenVar = Boolean.FALSE;
 
 	private boolean suaDurum = Boolean.FALSE;
-	
+
 	private CalismaModeli calismaModeli;
 
 	private ArrayList<HareketKGS> hareketler;
@@ -1403,6 +1403,14 @@ public class AylikPuantaj implements Serializable, Cloneable {
 
 	public void setSuaDurum(boolean suaDurum) {
 		this.suaDurum = suaDurum;
+	}
+
+	public boolean isCalisiyor() {
+		return calisiyor;
+	}
+
+	public void setCalisiyor(boolean calisiyor) {
+		this.calisiyor = calisiyor;
 	}
 
 }

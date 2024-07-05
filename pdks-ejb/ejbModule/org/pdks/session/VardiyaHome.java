@@ -90,6 +90,7 @@ public class VardiyaHome extends EntityHome<Vardiya> implements Serializable {
 	}
 
 	public String izinVardiyalariGetir(Vardiya pdksVardiya) {
+		fillCalismaModeliList(pdksVardiya);
 		return "";
 	}
 

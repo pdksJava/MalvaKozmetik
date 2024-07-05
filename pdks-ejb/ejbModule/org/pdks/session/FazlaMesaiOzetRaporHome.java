@@ -1054,13 +1054,15 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				saatlikMesaiVar = false;
 				aylikMesaiVar = false;
 				Date toDay = PdksUtil.getDate(new Date()), sonCalismaSaat = null;
+				Date yeniDonem = PdksUtil.tariheAyEkleCikar(PdksUtil.convertToJavaDate((yil * 100 + ay) + "01", "yyyyMMdd"), 1);
 				HashMap<String, String> vardiyaZamanMap = new HashMap<String, String>();
 				aylikPuantajSablon.setGebeDurum(false);
 				aylikPuantajSablon.setSuaDurum(false);
 				for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
 					PersonelDenklestirmeTasiyici denklestirmeTasiyici = (PersonelDenklestirmeTasiyici) iterator1.next();
+					Personel personel = denklestirmeTasiyici.getPersonel();
 					AylikPuantaj puantaj = (AylikPuantaj) aylikPuantajSablon.clone();
-					PersonelDenklestirme valueBuAy = personelDenklestirmeMap.get(denklestirmeTasiyici.getPersonel().getId());
+					PersonelDenklestirme valueBuAy = personelDenklestirmeMap.get(personel.getId());
 					if (!tipi.equals("") && valueBuAy.isOnaylandi()) {
 						valueBuAy = (PersonelDenklestirme) valueBuAy.clone();
 						valueBuAy.setDurum(true);
@@ -1081,14 +1083,13 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						iterator1.remove();
 						continue;
 					}
+					puantaj.setCalisiyor(personel.isCalisiyorGun(yeniDonem));
 					puantaj.setPersonelDenklestirmeTasiyici(denklestirmeTasiyici);
-					puantaj.setPdksPersonel(denklestirmeTasiyici.getPersonel());
+					puantaj.setPdksPersonel(personel);
 					puantaj.setVardiyalar(denklestirmeTasiyici.getVardiyalar());
 					TreeMap<String, VardiyaGun> vgMap = new TreeMap<String, VardiyaGun>();
 					puantaj.setVgMap(vgMap);
 					Date sonPersonelCikisZamani = null;
-					PersonelDenklestirme personelDenklestirme = puantaj.getPersonelDenklestirme();
-					Personel personel = personelDenklestirme.getPdksPersonel();
 					if (puantaj.getVardiyalar() != null) {
 						Double offSure = null;
 						String donemStr = String.valueOf(yil * 100 + ay);
@@ -2138,7 +2139,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 				cell = ExcelUtil.getCell(sheet, row, col++, headerBTGun);
 				ExcelUtil.baslikCell(cell, anchor, helper, drawing, ortakIslemler.bordroToplamGunKod(), "Toplam Gün");
 			}
-		}
+		}	ExcelUtil.getCell(sheet, row, col++, header).setCellValue("Durum");
 		if (hataliPuantajVar) {
 			cell = ExcelUtil.getCell(sheet, row, col++, header);
 			ExcelUtil.baslikCell(cell, anchor, helper, drawing, "Hata Açıklama", "Plan onaylanmamış veya hatalı günleri olan puantaj");
@@ -2429,7 +2430,7 @@ public class FazlaMesaiOzetRaporHome extends EntityHome<DepartmanDenklestirmeDon
 						}
 						ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(hataAciklama);
 					}
-
+					ExcelUtil.getCell(sheet, row, col++, styleGenel).setCellValue(aylikPuantaj.isCalisiyor() ? "Çalışıyor" : "Ayrılmış");
 					styleGenel = null;
 				} catch (Exception e) {
 					logger.error("Pdks hata in : \n");

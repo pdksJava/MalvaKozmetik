@@ -809,6 +809,17 @@
 
 									</ui:fragment>
 								</rich:column>
+								<rich:column class="#{ap.trSonucClass}" style="width: 30px">
+									<f:facet name="header">
+							Durum
+						</f:facet>
+									<ui:fragment rendered="#{ap.calisiyor}">
+											Çalışıyor
+										</ui:fragment>
+									<ui:fragment rendered="#{ap.calisiyor==false}">
+										<SPAN style="color: red">Ayrılmış</SPAN>
+									</ui:fragment>
+								</rich:column>
 								<f:facet name="footer">
 									<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 								</f:facet>
