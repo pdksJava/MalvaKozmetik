@@ -15539,6 +15539,7 @@ public class OrtakIslemler implements Serializable {
 					calismaModeli = personelDenklestirme.getCalismaModeli();
 
 				}
+				boolean maxSureDurum = calismaModeli.isFazlaMesaiVarMi() && personelDenklestirme.getFazlaMesaiOde().equals(Boolean.FALSE);
 
 				puantajData.setIzinSuresi(0d);
 				boolean suaVar = personelDenklestirme.isSuaDurumu();
@@ -15875,12 +15876,10 @@ public class OrtakIslemler implements Serializable {
 								}
 								if (pdksVardiyaGun.getCalismaSuresi() > 0) {
 									double normalSure = pdksVardiyaGun.getCalismaSuresi() - (pdksVardiyaGun.getHaftaCalismaSuresi() + pdksVardiyaGun.getResmiTatilSure());
-									if (normalSure > mesaiMaxSure && (pdksVardiyaGun.getVardiya().isCalisma() == false || pdksVardiyaGun.getVardiya().isMesaiOdenir())) {
+									if (normalSure > mesaiMaxSure && maxSureDurum) {
 										ucretiOdenenMesaiSure += normalSure - mesaiMaxSure;
-										// pdksVardiyaGun.addCalismaSuresi(fazlaMesaiMaxSure
-										// - normalSure);
+										// pdksVardiyaGun.addCalismaSuresi(fazlaMesaiMaxSure - normalSure);
 									}
-
 								}
 
 							} else if (hafta == 1 && !isNormalGunMu(pdksVardiyaGun)) {
