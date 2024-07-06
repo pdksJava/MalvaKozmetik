@@ -15539,7 +15539,7 @@ public class OrtakIslemler implements Serializable {
 					calismaModeli = personelDenklestirme.getCalismaModeli();
 
 				}
-				boolean maxSureDurum = calismaModeli.isFazlaMesaiVarMi() && personelDenklestirme.getFazlaMesaiOde().equals(Boolean.FALSE);
+				boolean maxSureDurum = calismaModeli.isFazlaMesaiVarMi() && personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir();
 
 				puantajData.setIzinSuresi(0d);
 				boolean suaVar = personelDenklestirme.isSuaDurumu();
@@ -16101,7 +16101,7 @@ public class OrtakIslemler implements Serializable {
 					if (personelDenklestirme.getFazlaMesaiIzinKullan() && personel.isCalisiyorGun(puantajData.getSonGun())) {
 						// TODO KISMI UCRET_ODE
 						double aylikNetFazlaMesai = new BigDecimal(puantajData.getDevredenSure() + puantajData.getFazlaMesaiSure()).doubleValue();
-						boolean otomatikFazlaCalismaOnaylansin = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir() : true;
+						boolean otomatikFazlaCalismaOnaylansin = personelDenklestirme.getCalismaModeliAy() != null ? personelDenklestirme.getCalismaModeliAy().isOtomatikFazlaCalismaOnaylansinmi() : true;
 						Double ucretiOdenenMesaiSureAylik = otomatikFazlaCalismaOnaylansin ? puantajData.getUcretiOdenenMesaiSure() : 0.0d;
 						aylikNetFazlaMesai = aylikNetFazlaMesai - ucretiOdenenMesaiSureAylik;
 						if (personelDenklestirme.isFazlaMesaiIzinKullanacak() && personelDenklestirme.getKismiOdemeSure() != null && personelDenklestirme.getKismiOdemeSure() > 0 && personelDenklestirme.getKismiOdemeSure() <= aylikNetFazlaMesai) {
