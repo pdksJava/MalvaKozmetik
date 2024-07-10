@@ -1328,6 +1328,8 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 				boolean ayBasladi = false;
 				double ucretiOdenenMesaiSure = 0.0d, fazlaMesaiMaxSure = da.getFazlaMesaiMaxSure();
 				boolean fazlaMesaiOdenir = pd.getCalismaModeliAy() != null && pd.getCalismaModeliAy().isGunMaxCalismaOdenir();
+				boolean gunMaxCalismaOdenir = pd.getCalismaModeli().isFazlaMesaiVarMi() && fazlaMesaiOdenir;
+
 				while (tarih.getTime() <= b2.getTime()) {
 					VardiyaGun vg = new VardiyaGun(seciliPersonel, null, tarih);
 					String key = vg.getVardiyaDateStr();
@@ -1354,7 +1356,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 							if (vardiyaGun.getVardiyaSaatDB() != null) {
 								VardiyaSaat vardiyaSaatDB = vardiyaGun.getVardiyaSaatDB();
 								if (fazlaMesaiOdenir) {
-									if (vardiyaGun.getCalismaNetSuresi() > fazlaMesaiMaxSure)
+									if (vardiyaGun.getCalismaNetSuresi() > fazlaMesaiMaxSure && gunMaxCalismaOdenir)
 										ucretiOdenenMesaiSure += vardiyaGun.getCalismaNetSuresi() - fazlaMesaiMaxSure;
 
 								}

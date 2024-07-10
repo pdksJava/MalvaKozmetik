@@ -950,6 +950,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 						puantaj.setHareketler(null);
 						double puantajPlanlananSure = 0.0d, puantajSaatToplami = 0.0d, puantajResmiTatil = 0.0d, puantajHaftaTatil = 0.0d, ucretiOdenenMesaiSure = 0.0d;
 						boolean puantajFazlaMesaiHesapla = true;
+						boolean gunMaxCalismaOdenir = puantaj.getCalismaModeli().isFazlaMesaiVarMi() && personelDenklestirme.getCalismaModeliAy().isGunMaxCalismaOdenir();
+
 						if (puantaj.getVardiyalar() != null) {
 
 							for (Iterator iterator = puantaj.getVardiyalar().iterator(); iterator.hasNext();) {
@@ -1012,7 +1014,8 @@ public class FazlaMesaiRaporHome extends EntityHome<DepartmanDenklestirmeDonemi>
 										if (vardiyaDurum) {
 											VardiyaSaat vardiyaSaatDB = vardiyaGun.getVardiyaSaatDB();
 											Double sure = vardiyaGun.getCalismaNetSuresi();
-											ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure() ? sure.doubleValue() - vardiyaGun.getYasalMaxSure() : 0.0d;
+											if (gunMaxCalismaOdenir)
+												ucretiOdenenMesaiSure += sure != null && sure.doubleValue() > vardiyaGun.getYasalMaxSure() ? sure.doubleValue() - vardiyaGun.getYasalMaxSure() : 0.0d;
 											if (vardiyaSaatDB.getResmiTatilSure() > 0.0d)
 												puantajResmiTatil += vardiyaSaatDB.getResmiTatilSure();
 											else if (vardiyaGun.getVardiya().isHaftaTatil()) {
