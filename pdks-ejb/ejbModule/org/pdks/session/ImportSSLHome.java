@@ -64,20 +64,22 @@ public class ImportSSLHome extends EntityHome<Parameter> implements Serializable
 
 	public String importURLCertifica() throws Exception {
 		Integer responseCode = null;
+		String endPoint = null;
 		try {
-			URL url = new URL(urlSSL);
+			endPoint = (urlSSL.indexOf("https") < 0 ? "https://" : "") + urlSSL;
+			URL url = new URL(endPoint);
 			HttpsURLConnection connjava = (HttpsURLConnection) url.openConnection();
 			int timeOutSaniye = 15;
 			connjava.setReadTimeout(2 * timeOutSaniye * 1000);
 			connjava.setConnectTimeout(timeOutSaniye * 1000); // set timeout to 5 seconds
- 			responseCode = connjava.getResponseCode();
+			responseCode = connjava.getResponseCode();
 		} catch (Exception e) {
 
 		}
-		if (responseCode != null && responseCode < 400) {
+		if (responseCode == null || responseCode < 400) {
 			if (SSLImport.getServisURLList() != null)
 				SSLImport.getServisURLList().clear();
-			SSLImport.getCertificateInputStream(urlSSL);
+			SSLImport.getCertificateInputStream(endPoint);
 			certificaUpdate();
 		}
 

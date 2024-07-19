@@ -301,24 +301,26 @@ public class MailManager implements Serializable {
 				if (parameterMap.containsKey("smtpSSLDurum"))
 					smtpSSLDurum = ((String) parameterMap.get("smtpSSLDurum")).equals("1");
 				props.setProperty("mail.smtp.host", smtpHostIp);
-				props.setProperty("mail.smtp.port", String.valueOf(port));
+				props.put("mail.smtp.port", port);
 				if (username != null) {
 					props.setProperty("mail.smtp.user", username);
-
-					props.put("mail.smtp.auth", "true");
+					props.put("mail.smtp.auth", Boolean.TRUE);
 				}
-				props.put("mail.smtp.starttls.enable", String.valueOf(smtpTLSDurum));
+				props.put("mail.smtp.starttls.enable", smtpTLSDurum);
+				props.put("mail.debug", Boolean.FALSE);
 				props.setProperty("mail.transport.protocol", "smtp");
-				props.setProperty("mail.debug", "false");
 				if (!smtpTLSDurum)
-					props.setProperty("mail.smtp.socketFactory.port", String.valueOf(port));
+					props.put("mail.smtp.socketFactory.port", port);
 				else {
 					if (smtpTLSProtokol != null) {
 						props.put("mail.smtp.ssl.protocols", smtpTLSProtokol);
 
 					}
 					// props.setProperty("mail.smtp.socketFactory.port", String.valueOf(port));
-					// props.put("mail.smtp.ssl.trust", smtpHostIp);
+					if (parameterMap.containsKey("smtpSslTrust")) {
+						// props.put("mail.smtp.ssl.trust", smtpHostIp);
+						props.put("mail.smtp.ssl.trust", parameterMap.get("smtpSslTrust"));
+					}
 				}
 
 				if (port != 25 && smtpSSLDurum) {

@@ -77,13 +77,11 @@ public class SSLImport implements Serializable {
 			String adres = endPointAdres.toLowerCase(Locale.ENGLISH);
 			if (adres.indexOf("https:") >= 0) {
 				boolean sil = servisURLList == null;
-				if (sil) {
+				if (sil)  
 					servisURLList = new ArrayList<String>();
-
-				}
-				kokSertifikaImport();
+ 				kokSertifikaImport();
 				String str = endPointAdres.substring(8);
-				String endPoint = "https://" + str;
+				String endPoint = (str.indexOf("https") < 0 ? "https://" : "") + str;
 				if (!servisURLList.contains(endPoint)) {
 
 					try {

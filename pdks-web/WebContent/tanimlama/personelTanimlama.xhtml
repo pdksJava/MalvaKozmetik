@@ -1410,6 +1410,7 @@
 										<rich:datascroller renderIfSinglePage="false" maxPages="5" />
 									</f:facet>
 								</rich:dataTable>
+
 							</a4j:outputPanel>
 
 
@@ -1585,6 +1586,7 @@
 
 									</h:panelGrid>
 								</ui:fragment>
+
 							</a4j:outputPanel>
 
 
@@ -1593,6 +1595,7 @@
 					</a4j:outputPanel>
 					<!--  -->
 					<a4j:outputPanel id="butonlar">
+						 
 						<ui:fragment rendered="#{authenticatedUser.admin or pdksPersonelHome.instance.kullanici.admin==false}">
 							<table width="50%">
 								<tr>
@@ -1603,7 +1606,7 @@
 												action="#{pdksPersonelHome.erpVeriGuncelle()}" reRender="personelBilgi" rendered="#{pdksPersonelHome.instance.sirket.erp}" /></td>
 									</ui:fragment>
 									<td><a4j:commandButton status="ajaxStatus" value="Kaydet" action="#{pdksPersonelHome.save}" reRender="pdksPersonelList,roller"
-											oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" /></td>
+											oncomplete="if (#{pdksPersonelHome.hataMesaj==''}) #{rich:component('editPanel')}.hide();" /></td>
 									<ui:fragment rendered="#{ortakIslemler.getParameterKey('deletePersonel')=='1' and pdksPersonelHome.instance.id!=null}">
 										<ui:fragment rendered="#{ pdksPersonelHome.instance.personelKGS.id>0 and authenticatedUser.admin}">
 											<td><a4j:commandButton status="ajaxStatus" value="Sil" reRender="deletePersonelPanel"

@@ -323,7 +323,10 @@ public class MailManager implements Serializable {
 
 				}
 				// props.setProperty("mail.smtp.socketFactory.port", String.valueOf(port));
-				// props.put("mail.smtp.ssl.trust", smtpHostIp);
+				if (parameterMap.containsKey("smtpSslTrust")) {
+					// props.put("mail.smtp.ssl.trust", smtpHostIp);
+					props.put("mail.smtp.ssl.trust", parameterMap.get("smtpSslTrust"));
+				}
 			}
 			if (port != 25 && smtpSSLDurum) {
 				props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
