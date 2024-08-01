@@ -332,7 +332,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 					if (session != null)
 						fields.put(PdksEntityController.MAP_KEY_SESSION, session);
 					List<Tanim> list = pdksEntityController.getObjectBySQLList(sb, fields, Tanim.class);
- 					if (list.isEmpty()) {
+					if (list.isEmpty()) {
 						tesisId = null;
 					} else {
 						list = PdksUtil.sortObjectStringAlanList(list, "getAciklama", null);
@@ -604,7 +604,7 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 
 	public String fazlaMesaiExcel() {
 		String donemOrj = (seciliPersonel.getAdSoyad() + " " + seciliPersonel.getPdksSicilNo());
-		String donem = basYil + " " + PdksUtil.getSelectItemLabel(bitAy, donemBas) + " - " + bitYil + " " + PdksUtil.getSelectItemLabel(bitAy, donemBit);
+		String donem = basYil + " " + PdksUtil.getSelectItemLabel(basAy, donemBas) + " - " + bitYil + " " + PdksUtil.getSelectItemLabel(bitAy, donemBit);
 		try {
 			ByteArrayOutputStream baosDosya = fazlaMesaiExcelDevam(donem);
 			if (baosDosya != null) {
@@ -1005,9 +1005,17 @@ public class FazlaMesaiDonemselPuantajRaporHome extends EntityHome<DepartmanDenk
 						else if (styleText.equals(VardiyaGun.STYLE_CLASS_OFF))
 							styleDay = styleOff;
 						cell = ExcelUtil.getCell(sheet, row, col++, styleDay);
-						String aciklama = calisan(vardiyaGun) ? vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(vardiyaGun.getCalismaSuresi())) : "";
+						String aciklama = "", title = null;
+						if (calisan(vardiyaGun)) {
+							if (vardiyaGun.getIzin() == null)
+								aciklama = vardiyaGun.getFazlaMesaiOzelAciklama(Boolean.TRUE, authenticatedUser.sayiFormatliGoster(vardiyaGun.getCalismaSuresi()));
+							else
+								aciklama = vardiyaGun.getIzin().getIzinTipi().getKisaAciklama() + "\n[" + vardiyaGun.getVardiya().getKisaAdi() + "]";
+							title = vardiyaGun.getTitle();
+
+						}
+
 						cell.setCellValue(aciklama);
-						String title = calisan(vardiyaGun) ? vardiyaGun.getTitle() : null;
 						if (title != null) {
 							if (vardiyaGun.getVardiya() != null && (vardiyaGun.getCalismaSuresi() > 0 || (vardiyaGun.getVardiya().isCalisma() && styleGenel == styleCalisma)))
 								title = vardiyaGun.getVardiya().getKisaAdi() + " --> " + title;

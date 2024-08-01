@@ -121,7 +121,7 @@
 								<rich:toolTip for="editlink" value="Puantaj Getir" />
 							</rich:column>
 
-							<rich:column style="text-align:center">
+							<rich:column style="text-align:center" filterBy="#{pdksPersonel.pdksSicilNo}" filterEvent="onkeyup">
 								<f:facet name="header">
 									<h:outputText value="#{ortakIslemler.personelNoAciklama()}" />
 								</f:facet>
@@ -669,10 +669,14 @@
 
 																		</ui:fragment>
 																		<ui:fragment rendered="#{vardiyaGun.izin!=null and vardiyaGun.vardiya!=null}">
-																			<br />[#{vardiyaGun.vardiya.kisaAdi}]</ui:fragment>
+																			<br />#{vardiyaGun.izin.izinTipi.kisaAciklama}<br></br> [#{vardiyaGun.vardiya.kisaAdi}] </ui:fragment>
 																	</ui:fragment>
 
+																	<rich:toolTip for="vardiya#{vardiyaGun.vardiyaKeyStr}">
 
+																		<SPAN style="color: black">#{vardiyaGun.title}</SPAN>
+
+																	</rich:toolTip>
 
 																</ui:fragment>
 															</DIV>

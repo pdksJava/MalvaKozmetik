@@ -748,6 +748,30 @@
 
 											</c:if>
 										</c:if>
+										<c:if test="#{vardiyaPlaniTopluRaporHome.tumVardiyaList!=null }">
+											<c:forEach items="#{vardiyaPlaniTopluRaporHome.tumVardiyaList}" var="vg1">
+												<rich:column style="text-align:center; width:autostretch;white-space: nowrap;">
+													<f:facet name="header">
+														<ui:fragment>
+															<DIV id="vardiya#{vg1.vardiya.id}">#{vardiyaPlaniTopluRaporHome.vardiyaAciklama(vg1)}</DIV>
+															<ui:fragment rendered="#{vg1.vardiya.calisma}">
+																<rich:toolTip for="vardiya#{vg1.vardiya.id}">
+
+																	<SPAN style="color: green; font-size: 12px;"> <B><s:formattedText
+																				value="#{vardiyaPlaniTopluRaporHome.vardiyaTitle(vg1,'P')}" /> </B>
+
+																	</SPAN>
+
+																</rich:toolTip>
+															</ui:fragment>
+														</ui:fragment>
+													</f:facet>
+													<ui:fragment rendered="#{vardiyaPlaniTopluRaporHome.getPersonelVardiyaAdet(vg1.vardiya,ap.pdksPersonel)!=null}">
+														<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaPlaniTopluRaporHome.vardiyaAdet)}" />
+													</ui:fragment>
+												</rich:column>
+											</c:forEach>
+										</c:if>
 										<rich:column rendered="#{vardiyaPlaniTopluRaporHome.hataliPuantajVar}" styleClass="#{ap.trSonucClass}"
 											style="width: 20px; font-family: Arial, Verdana, sans-serif; font-size: 11px; text-align: center">
 											<f:facet name="header">
