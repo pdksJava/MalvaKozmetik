@@ -182,28 +182,30 @@ public class FazlaMesaiOrtakIslemler implements Serializable {
 					if (vg.isAyinGunu()) {
 						cal.setTime(vg.getVardiyaDate());
 						int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-						if (dayOfWeek != Calendar.SUNDAY) {
-							if (vg.getTatil() == null) {
-								double gunSure = dayOfWeek != Calendar.SATURDAY ? cm.getHaftaIci() : cm.getHaftaSonu();
-								sure += gunSure;
-								double izinSure = gunSure > 7.5d ? 7.5d : gunSure;
-								if (dayOfWeek != Calendar.SATURDAY) {
-									if (sutIzniHaftaIci != null && sutIzniHaftaIci.doubleValue() > 0)
-										izinSure = sutIzniHaftaIci;
-								} else if (sutIzniCumartesi != null)
-									izinSure = sutIzniCumartesi;
-								toplamIzinSure += izinSure;
-							} else if (vg.getTatil().isYarimGunMu()) {
-								if (PdksUtil.tarihKarsilastirNumeric(vg.getVardiyaDate(), vg.getTatil().getBasTarih()) == 0) {
-									if (cm.getHaftaSonu() > 0 || dayOfWeek != Calendar.SATURDAY) {
-										sure += cm.getArife();
-										toplamIzinSure += cm.getArife();
-									}
 
+						if (vg.getTatil() == null) {
+							double gunSure = cm.getSaat(dayOfWeek);
+
+							sure += gunSure;
+							double sutIzinSure = cm.getSutIzinSaat(dayOfWeek);
+							double izinSure = sutIzinSure > 7.5d ? 7.5d : sutIzinSure;
+							// if (dayOfWeek != Calendar.SATURDAY ) {
+							// if (sutIzniHaftaIci != null && sutIzniHaftaIci.doubleValue() > 0)
+							// izinSure = sutIzniHaftaIci;
+							// } else if (sutIzniCumartesi != null)
+							// izinSure = sutIzniCumartesi;
+							toplamIzinSure += izinSure;
+						} else if (vg.getTatil().isYarimGunMu()) {
+							if (PdksUtil.tarihKarsilastirNumeric(vg.getVardiyaDate(), vg.getTatil().getBasTarih()) == 0) {
+								if (vg.isHaftaIci() || cm.getSaat(dayOfWeek) > 0.0d) {
+									sure += cm.getArife();
+									toplamIzinSure += cm.getArife();
 								}
 
 							}
+
 						}
+
 					}
 				}
 

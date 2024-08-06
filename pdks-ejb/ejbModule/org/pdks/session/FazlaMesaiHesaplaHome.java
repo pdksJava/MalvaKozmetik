@@ -1632,7 +1632,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 						boolean ekle = (denklestirmeAyDurum || (bakiyeGuncelle != null && bakiyeGuncelle));
 						fazlaMesaiHesapla = personelDenklestirme.isDenklestirmeDurum();
 
-						boolean cumartesiCalisiyor = calismaModeli != null && calismaModeli.getHaftaSonu() > 0.0d;
+						boolean cumartesiCalisiyor = calismaModeli != null && calismaModeli.isHaftaTatilVar();
 						HashMap<Long, List<VardiyaGun>> bosGunMap = new HashMap<Long, List<VardiyaGun>>();
 						if (denklestirmeAyDurum && !haftaTatilDurum.equals("1")) {
 							TreeMap<String, VardiyaGun> vgMap = new TreeMap<String, VardiyaGun>();
@@ -1739,8 +1739,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 										}
 									} else if (vardiyaGun.getTatil() == null && vardiyaGun.getVardiya().isOffGun() && it.isRaporIzin() == false) {
 										if (it.getTakvimGunumu() == null || it.getTakvimGunumu().equals(Boolean.FALSE)) {
-											int haftaGunu = vardiyaGun.getHaftaninGunu();
-											if ((vardiyaGun.isHaftaIci()) || (cumartesiCalisiyor && haftaGunu == Calendar.SATURDAY)) {
+											if (vardiyaGun.isHaftaIci() || cumartesiCalisiyor) {
 												vardiyaGun.setStyle("color:red;");
 												offIzinliGunler.add(vardiyaGun);
 											}
@@ -2141,8 +2140,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 									personelDenklestirme.setDevredenSure(0D);
 									personelDenklestirme.setAksamVardiyaSaatSayisi(0D);
 									personelDenklestirme.setAksamVardiyaSayisi(0D);
-									personelDenklestirme.setHesaplananSure(0D);
-								}
+ 								}
 
 							}
 							if (!hataYok)
@@ -3177,7 +3175,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 	private boolean devamlilikPrimiHesapla(AylikPuantaj aylikPuantaj, PersonelDenklestirmeDinamikAlan denklestirmeDinamikAlan) {
 		Boolean islemDurum = aylikPuantaj.getPersonelDenklestirme().getDurum(), flush = Boolean.FALSE;
 		CalismaModeli cm = denklestirmeDinamikAlan.getPersonelDenklestirme().getCalismaModeli();
-		boolean cumartesiCalisiyor = cm.getHaftaSonu() > 0.0d;
+		boolean cumartesiCalisiyor = cm.isHaftaTatilVar();
 		List<VardiyaGun> vardiyalar = aylikPuantaj.getVardiyalar();
 		int adet = 0;
 		for (VardiyaGun vardiyaGun : vardiyalar) {
@@ -3199,7 +3197,7 @@ public class FazlaMesaiHesaplaHome extends EntityHome<DepartmanDenklestirmeDonem
 				if (vardiya.isOffGun()) {
 					int haftaninGunu = vardiyaGun.getHaftaninGunu();
 					boolean cumartesi = haftaninGunu == Calendar.SATURDAY, pazar = haftaninGunu == Calendar.SUNDAY;
-					if ((pazar == false && cumartesi == false) || (cumartesi && cumartesiCalisiyor)) {
+					if ((pazar == false && cumartesi == false) || (cumartesiCalisiyor)) {
 						adet = 0;
 						break;
 					}

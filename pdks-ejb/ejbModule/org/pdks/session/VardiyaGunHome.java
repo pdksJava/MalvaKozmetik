@@ -2988,9 +2988,9 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 			if (ikRole == false || denklestirmeAyDurum == false || vg.getTatil() != null || vg.getVardiya().isOffGun() == false)
 				izinGuncelleme = true;
 			else if (cm != null) {
-				int haftaGun = vg.getHaftaninGunu();
-				boolean cumartesiCalisiyor = cm.getHaftaSonu() > 0.0d;
-				if (haftaGun != Calendar.SUNDAY && (cumartesiCalisiyor == false || haftaGun != Calendar.SATURDAY))
+				// int haftaGun = vg.getHaftaninGunu();
+				boolean cumartesiCalisiyor = cm.isHaftaTatilVar();
+				if (vg.isHaftaIci() && cumartesiCalisiyor == false)
 					izinGuncelleme = !offIzinGuncelle;
 			}
 			if (izinGuncelleme)
@@ -7660,7 +7660,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 					if (dayOfWeek != Calendar.SUNDAY) {
 						boolean sutIzniYok = vg.getVardiyaDate().before(pdd.getBasTarih()) || vg.getVardiyaDate().after(pdd.getBitTarih());
 						if (vg.getTatil() == null) {
-							double gunSure = dayOfWeek != Calendar.SATURDAY ? cm.getHaftaIci() : cm.getHaftaSonu();
+							double gunSure = cm.getSaat(dayOfWeek);
 							if (sutIzniYok == false)
 								sutIzinSure += gunSure > 7.5d ? 7.5d : gunSure;
 							else
@@ -7669,7 +7669,7 @@ public class VardiyaGunHome extends EntityHome<VardiyaPlan> implements Serializa
 							if (PdksUtil.tarihKarsilastirNumeric(vg.getVardiyaDate(), vg.getTatil().getBasTarih()) == 0) {
 								if (sutIzniYok == false)
 									sutIzinSure += cm.getArife();
-								else if (cm.getHaftaSonu() > 0 || dayOfWeek != Calendar.SATURDAY)
+								else if (cm.isHaftaTatilVar() || vg.isHaftaIci())
 									sure += cm.getArife();
 							}
 						}

@@ -164,7 +164,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		for (Iterator iterator = vardiyaList.iterator(); iterator.hasNext();) {
 			Vardiya vardiya = (Vardiya) iterator.next();
 			if (vardiya.getKisaAdi().equals("TA") || vardiya.getKisaAdi().equals("TG"))
-				logger.info(vardiya.getId() + " " + vardiya.getKisaAdi());
+				logger.debug(vardiya.getId() + " " + vardiya.getKisaAdi());
 			if (cmaDepartmanId != null && vardiya.getDepartman() != null && !vardiya.getDepartman().getId().equals(cmaDepartmanId))
 				iterator.remove();
 			else if (!vardiya.isCalisma() || vardiya.getGenel().equals(Boolean.FALSE)) {

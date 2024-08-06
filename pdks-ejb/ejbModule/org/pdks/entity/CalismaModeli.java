@@ -14,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.pdks.security.entity.User;
@@ -26,6 +27,8 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -445686730459083532L;
+
+	static Logger logger = Logger.getLogger(CalismaModeli.class);
 	public static final String TABLE_NAME = "CALISMA_MODELI";
 	public static final String COLUMN_NAME_DURUM = "DURUM";
 	public static final String COLUMN_NAME_GENEL_VARDIYA = "GENEL_VARDIYA";
@@ -53,11 +56,17 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	public static final String COLUMN_NAME_IDARI_MODEL = "IDARI_MODEL";
 	public static final String COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE = "HAFTA_ICI_SUT_IZNI_SURE";
 	public static final String COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE = "CUMARTESI_SUT_IZNI_SURE";
+	public static final String COLUMN_NAME_CUMARTESI_SAAT = "CUMARTESI_SAAT";
+	public static final String COLUMN_NAME_PAZAR_SAAT = "PAZAR_SAAT";
+	public static final String COLUMN_NAME_IZIN_CUMARTESI_SAAT = "IZIN_CUMARTESI_SAAT";
+	public static final String COLUMN_NAME_IZIN_PAZAR_SAAT = "IZIN_PAZAR_SAAT";
+	public static final String COLUMN_NAME_PAZAR_SUT_IZNI_SURE = "PAZAR_SUT_IZNI_SURE";
+
 	public static final String COLUMN_NAME_ACIKLAMA = "ACIKLAMA";
 
 	private String aciklama = "";
-	private double haftaIci = 0.0d, haftaSonu = 0.0d, arife = 0.0d, izin = 9.0d, izinhaftaSonu = 0.0d, negatifBakiyeDenkSaat = 0.0d;
-	private Double haftaIciSutIzniSure = 7.5d, cumartesiSutIzniSure = 0.0d;
+	private double haftaIci = 0.0d, arife = 0.0d, izin = 9.0d, negatifBakiyeDenkSaat = 0.0d;
+	private Double haftaIciSutIzniSure = 7.5d, cumartesiSaat = 0.0d, cumartesiIzinSaat = 0.0d, cumartesiSutIzniSure = 7.5d, pazarSaat = 0.0d, pazarIzinSaat = 0.0d, pazarSutIzniSure = 0.0d;
 	private Boolean fazlaMesaiVar = Boolean.TRUE, toplamGunGuncelle = Boolean.FALSE, durum = Boolean.TRUE, genelVardiya = Boolean.TRUE, hareketKaydiVardiyaBul = Boolean.FALSE;
 	private Boolean haftaTatilMesaiOde = Boolean.FALSE, geceHaftaTatilMesaiParcala = Boolean.FALSE, geceCalismaOdemeVar = Boolean.FALSE, otomatikFazlaCalismaOnaylansin = Boolean.FALSE;
 	private Boolean ortakVardiya = Boolean.FALSE, fazlaMesaiGoruntulensin = Boolean.TRUE, ilkPlanOnayliDurum = Boolean.FALSE, gunMaxCalismaOdemeDurum = Boolean.TRUE;
@@ -88,13 +97,22 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.haftaIci = haftaIci;
 	}
 
-	@Column(name = "CUMARTESI_SAAT")
-	public double getHaftaSonu() {
-		return haftaSonu;
+	@Column(name = COLUMN_NAME_CUMARTESI_SAAT)
+	public Double getCumartesiSaat() {
+		return cumartesiSaat;
 	}
 
-	public void setHaftaSonu(double haftaSonu) {
-		this.haftaSonu = haftaSonu;
+	public void setCumartesiSaat(Double cumartesiSaat) {
+		this.cumartesiSaat = cumartesiSaat;
+	}
+
+	@Column(name = COLUMN_NAME_PAZAR_SAAT)
+	public Double getPazarSaat() {
+		return pazarSaat;
+	}
+
+	public void setPazarSaat(Double pazarSaat) {
+		this.pazarSaat = pazarSaat;
 	}
 
 	@Column(name = "IZIN_SAAT")
@@ -106,13 +124,22 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.izin = izin;
 	}
 
-	@Column(name = "IZIN_CUMARTESI_SAAT")
-	public double getIzinhaftaSonu() {
-		return izinhaftaSonu;
+	@Column(name = COLUMN_NAME_IZIN_CUMARTESI_SAAT)
+	public Double getCumartesiIzinSaat() {
+		return cumartesiIzinSaat;
 	}
 
-	public void setIzinhaftaSonu(double izinhaftaSonu) {
-		this.izinhaftaSonu = izinhaftaSonu;
+	public void setCumartesiIzinSaat(Double cumartesiIzinSaat) {
+		this.cumartesiIzinSaat = cumartesiIzinSaat;
+	}
+
+	@Column(name = COLUMN_NAME_IZIN_PAZAR_SAAT)
+	public Double getPazarIzinSaat() {
+		return pazarIzinSaat;
+	}
+
+	public void setPazarIzinSaat(Double pazarIzinSaat) {
+		this.pazarIzinSaat = pazarIzinSaat;
 	}
 
 	@Column(name = "ARIFE_SAAT")
@@ -337,6 +364,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		this.cumartesiSutIzniSure = cumartesiSutIzniSure;
 	}
 
+	@Column(name = COLUMN_NAME_PAZAR_SUT_IZNI_SURE)
+	public Double getPazarSutIzniSure() {
+		return pazarSutIzniSure;
+	}
+
+	public void setPazarSutIzniSure(Double pazarSutIzniSure) {
+		this.pazarSutIzniSure = pazarSutIzniSure;
+	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinColumn(name = COLUMN_NAME_GUNCELLEYEN, nullable = true)
 	@Fetch(FetchMode.JOIN)
@@ -402,6 +438,11 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	}
 
 	@Transient
+	public boolean isHaftaTatilVar() {
+		return (cumartesiSaat != null && cumartesiSaat > 0.0d) || (pazarSaat != null && pazarSaat > 0.0d);
+	}
+
+	@Transient
 	public boolean isHareketKaydiVardiyaBulsunmu() {
 		return hareketKaydiVardiyaBul != null && hareketKaydiVardiyaBul.booleanValue();
 	}
@@ -440,14 +481,13 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	@Transient
 	public double getIzinSaat(VardiyaGun pdksVardiyaGun) {
-		double izinSure = this.getIzin();
 		Calendar cal = Calendar.getInstance();
 		Date vardiyaDate = pdksVardiyaGun.getVardiyaDate();
 		cal.setTime(vardiyaDate);
 		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
-		if (dayOfWeek == Calendar.SATURDAY)
-			izinSure = izinhaftaSonu;
-		else if (dayOfWeek == Calendar.SUNDAY) {
+		double izinSure = this.getIzinSaat(dayOfWeek);
+
+		if (dayOfWeek == Calendar.SUNDAY) {
 			if (isHaftaTatilPazardir())
 				izinSure = 0.0d;
 		}
@@ -497,6 +537,72 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public boolean isGenelModelGorunsun() {
 		return genelModel != null && genelModel;
+	}
+
+	@Transient
+	public double getIzinSaat(int dayOfWeek) {
+		Double izinSure = 0.0d;
+		switch (dayOfWeek) {
+		case Calendar.SATURDAY:
+			izinSure = this.getCumartesiIzinSaat();
+			break;
+		case Calendar.SUNDAY:
+			izinSure = this.getPazarIzinSaat();
+			break;
+
+		default:
+			izinSure = this.getIzin();
+			break;
+		}
+		if (izinSure == null)
+			izinSure = getSaat(dayOfWeek);
+		if (izinSure > 0.0d)
+			logger.debug(dayOfWeek + " : " + izinSure);
+		return izinSure;
+	}
+
+	@Transient
+	public double getSutIzinSaat(int dayOfWeek) {
+		Double sutIzinSure = 0.0d;
+		switch (dayOfWeek) {
+		case Calendar.SATURDAY:
+			sutIzinSure = this.getCumartesiSutIzniSure();
+			break;
+		case Calendar.SUNDAY:
+			sutIzinSure = this.getPazarSutIzniSure();
+			break;
+
+		default:
+			sutIzinSure = this.getHaftaIciSutIzniSure();
+			break;
+		}
+		if (sutIzinSure == null)
+			sutIzinSure = 0.0d;
+		if (sutIzinSure > 0.0d)
+			logger.debug(dayOfWeek + " : " + sutIzinSure);
+		return sutIzinSure;
+	}
+
+	@Transient
+	public double getSaat(int dayOfWeek) {
+		Double gunSure = 0.0d;
+		switch (dayOfWeek) {
+		case Calendar.SATURDAY:
+			gunSure = this.getCumartesiSaat();
+			break;
+		case Calendar.SUNDAY:
+			gunSure = this.getPazarSaat();
+			break;
+
+		default:
+			gunSure = this.getHaftaIci();
+			break;
+		}
+		if (gunSure == null)
+			gunSure = 0.0d;
+		if (gunSure > 0.0d)
+			logger.debug(dayOfWeek + " : " + gunSure);
+		return gunSure;
 	}
 
 	@Transient

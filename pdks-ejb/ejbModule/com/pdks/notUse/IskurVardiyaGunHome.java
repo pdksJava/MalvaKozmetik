@@ -1360,7 +1360,7 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 				izinGuncelleme = true;
 			else if (cm != null) {
 				int haftaGun = vg.getHaftaninGunu();
-				boolean cumartesiCalisiyor = cm.getHaftaSonu() > 0.0d;
+				boolean cumartesiCalisiyor = cm.getCumartesiSaat() > 0.0d;
 				if (haftaGun != Calendar.SUNDAY && (cumartesiCalisiyor == false || haftaGun != Calendar.SATURDAY))
 					izinGuncelleme = !offIzinGuncelle;
 			}
@@ -2600,11 +2600,11 @@ public class IskurVardiyaGunHome extends EntityHome<VardiyaPlan> implements Seri
 						int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 						if (dayOfWeek != Calendar.SUNDAY) {
 							if (vg.getTatil() == null) {
-								sure += dayOfWeek != Calendar.SATURDAY ? cm.getHaftaIci() : cm.getHaftaSonu();
+								sure += dayOfWeek != Calendar.SATURDAY ? cm.getHaftaIci() : cm.getCumartesiSaat();
 								toplamIzinSure += dayOfWeek != Calendar.SATURDAY ? 7.5d : 0;
 							} else if (vg.getTatil().isYarimGunMu()) {
 								if (PdksUtil.tarihKarsilastirNumeric(vg.getVardiyaDate(), vg.getTatil().getBasTarih()) == 0) {
-									if (cm.getHaftaSonu() > 0 || dayOfWeek != Calendar.SATURDAY)
+									if (cm.getCumartesiSaat() > 0 || dayOfWeek != Calendar.SATURDAY)
 										sure += cm.getArife();
 									toplamIzinSure += cm.getArife();
 								}
