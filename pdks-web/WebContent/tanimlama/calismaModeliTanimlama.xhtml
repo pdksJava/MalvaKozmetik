@@ -2,7 +2,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:s="http://jboss.com/products/seam/taglib" xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:rich="http://richfaces.org/rich"
-	xmlns:a4j="http://richfaces.org/a4j" template="/layout/template.xhtml">
+	xmlns:a4j="http://richfaces.org/a4j" xmlns:c="http://java.sun.com/jstl/core" template="/layout/template.xhtml">
 	<ui:define name="title">
 		<h:outputText value="#{ortakIslemler.getMenuAdi('calismaModeliTanimlama')}" />
 	</ui:define>
@@ -63,24 +63,28 @@
 							</f:facet>
 							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.pazarSaat)}" rendered="#{calismaModeli.pazarSaat!=0}" />
 						</rich:column>
-						<rich:column>
-							<f:facet name="header">
-								<h:outputText value="İzin (Saat)" />
-							</f:facet>
-							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.izin)}" rendered="#{calismaModeli.izin!=0}" />
-						</rich:column>
-						<rich:column>
-							<f:facet name="header">
-								<h:outputText value="İzin #{ortakIslemler.getGunAdi(6,null)} (Saat)" />
-							</f:facet>
-							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.cumartesiIzinSaat)}" rendered="#{calismaModeli.cumartesiIzinSaat!=0}" />
-						</rich:column>
-						<rich:column>
-							<f:facet name="header">
-								<h:outputText value="İzin #{ortakIslemler.getGunAdi(7,null)} (Saat)" />
-							</f:facet>
-							<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.pazarIzinSaat)}" rendered="#{calismaModeli.pazarIzinSaat!=0}" />
-						</rich:column>
+						<c:if test="#{calismaModeliHome.izinGoster}">
+
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İzin (Saat)" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.izin)}" rendered="#{calismaModeli.izin!=0}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İzin #{ortakIslemler.getGunAdi(6,null)} (Saat)" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.cumartesiIzinSaat)}"
+									rendered="#{calismaModeli.cumartesiIzinSaat!=0}" />
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">
+									<h:outputText value="İzin #{ortakIslemler.getGunAdi(7,null)} (Saat)" />
+								</f:facet>
+								<h:outputText value="#{authenticatedUser.sayiFormatliGoster(calismaModeli.pazarIzinSaat)}" rendered="#{calismaModeli.pazarIzinSaat!=0}" />
+							</rich:column>
+						</c:if>
 						<rich:column>
 							<f:facet name="header">
 								<h:outputText value="Arife (Saat)" />
@@ -284,39 +288,40 @@
 								<f:validateDoubleRange minimum="0" maximum="9" />
 							</h:inputText>
 						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">İzin (Saati)</ui:define>
-							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.izin}" disabled="#{authenticatedUser.admin==false}" size="6"
-								validatorMessage="İzin günü saati giriniz">
-								<f:validateDoubleRange minimum="0" maximum="9" />
-							</h:inputText>
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">İzin #{ortakIslemler.getGunAdi(6,null)} (Saati)</ui:define>
-							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.cumartesiIzinSaat}" disabled="#{authenticatedUser.admin==false}" size="6"
-								validatorMessage="İzin günü saati giriniz">
-								<f:validateDoubleRange minimum="0" maximum="9" />
-							</h:inputText>
-						</s:decorate>
-						<s:decorate template="/layout/edit.xhtml">
-							<ui:define name="label">İzin #{ortakIslemler.getGunAdi(7,null)} (Saati)</ui:define>
-							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.pazarIzinSaat}" disabled="#{authenticatedUser.admin==false}" size="6"
-								validatorMessage="İzin günü saati giriniz">
-								<f:validateDoubleRange minimum="0" maximum="9" />
-							</h:inputText>
-						</s:decorate>
-						
+						<c:if test="#{calismaModeliHome.izinGoster}">
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">İzin (Saati)</ui:define>
+								<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.izin}" disabled="#{authenticatedUser.admin==false}" size="6"
+									validatorMessage="İzin günü saati giriniz">
+									<f:validateDoubleRange minimum="0" maximum="9" />
+								</h:inputText>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">İzin #{ortakIslemler.getGunAdi(6,null)} (Saati)</ui:define>
+								<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.cumartesiIzinSaat}" disabled="#{authenticatedUser.admin==false}"
+									size="6" validatorMessage="İzin günü saati giriniz">
+									<f:validateDoubleRange minimum="0" maximum="9" />
+								</h:inputText>
+							</s:decorate>
+							<s:decorate template="/layout/edit.xhtml">
+								<ui:define name="label">İzin #{ortakIslemler.getGunAdi(7,null)} (Saati)</ui:define>
+								<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.pazarIzinSaat}" disabled="#{authenticatedUser.admin==false}" size="6"
+									validatorMessage="İzin günü saati giriniz">
+									<f:validateDoubleRange minimum="0" maximum="9" />
+								</h:inputText>
+							</s:decorate>
+						</c:if>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Süt İzin (Saati)</ui:define>
-							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.haftaIciSutIzniSure}" disabled="#{authenticatedUser.admin==false}" size="6"
-								validatorMessage="İzin günü saati giriniz">
+							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.haftaIciSutIzniSure}" disabled="#{authenticatedUser.admin==false}"
+								size="6" validatorMessage="İzin günü saati giriniz">
 								<f:validateDoubleRange minimum="0" maximum="9" />
 							</h:inputText>
 						</s:decorate>
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Süt İzin #{ortakIslemler.getGunAdi(6,null)} (Saati)</ui:define>
-							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.cumartesiSutIzniSure}" disabled="#{authenticatedUser.admin==false}" size="6"
-								validatorMessage="İzin günü saati giriniz">
+							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.cumartesiSutIzniSure}" disabled="#{authenticatedUser.admin==false}"
+								size="6" validatorMessage="İzin günü saati giriniz">
 								<f:validateDoubleRange minimum="0" maximum="9" />
 							</h:inputText>
 						</s:decorate>
@@ -327,8 +332,8 @@
 								<f:validateDoubleRange minimum="0" maximum="9" />
 							</h:inputText>
 						</s:decorate>
-						
-						
+
+
 						<s:decorate template="/layout/edit.xhtml">
 							<ui:define name="label">Arife Günü (Saati)</ui:define>
 							<h:inputText required="true" value="#{calismaModeliHome.calismaModeli.arife}" disabled="#{authenticatedUser.admin==false}" size="6"

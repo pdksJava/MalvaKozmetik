@@ -297,6 +297,12 @@ public class DenklestirmeAy extends BaseObject {
 	}
 
 	@Transient
+	public long getDonem() {
+		long donem = yil * 100 + ay;
+		return donem;
+	}
+
+	@Transient
 	public Date getBasTarih() {
 		if (basTarih == null)
 			donemGuncelle();
@@ -320,7 +326,7 @@ public class DenklestirmeAy extends BaseObject {
 
 	public void entityRefresh() {
 		// TODO entityRefresh
-		
+
 	}
 
 }

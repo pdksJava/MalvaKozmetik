@@ -33,6 +33,7 @@ public class Departman extends BaseObject {
 	public static final String COLUMN_NAME_IZIN_GIRILEBILIR = "IZIN_GIRILEBILIR";
 	public static final String COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE = "HAFTA_ICI_SUT_IZNI_SURE";
 	public static final String COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE = "CUMARTESI_SUT_IZNI_SURE";
+	public static final String COLUMN_NAME_PAZAR_SUT_IZNI_SURE = "PAZAR_SUT_IZNI_SURE";
 
 	private Integer version = 0;
 
@@ -44,7 +45,7 @@ public class Departman extends BaseObject {
 
 	private Boolean icapciOlabilir, admin, suaOlabilir = Boolean.FALSE, sirketEklenebilir = Boolean.FALSE, izinGirilebilir = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE;
 
-	private Double haftaIciSutIzniSure = 7.5d, cumartesiSutIzniSure = 0.0d;
+	private Double haftaIciSutIzniSure = 7.5d, cumartesiSutIzniSure = 0.0d, pazarSutIzniSure = 0.0d;
 
 	private String mailBox;
 
@@ -181,6 +182,15 @@ public class Departman extends BaseObject {
 
 	public void setCumartesiSutIzniSure(Double cumartesiSutIzniSure) {
 		this.cumartesiSutIzniSure = cumartesiSutIzniSure;
+	}
+
+	@Column(name = COLUMN_NAME_PAZAR_SUT_IZNI_SURE)
+	public Double getPazarSutIzniSure() {
+		return pazarSutIzniSure;
+	}
+
+	public void setPazarSutIzniSure(Double pazarSutIzniSure) {
+		this.pazarSutIzniSure = pazarSutIzniSure;
 	}
 
 	@Transient

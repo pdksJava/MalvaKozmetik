@@ -57,7 +57,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>(), kayitliVardiyaList = new ArrayList<Vardiya>();
 	private List<Departman> departmanList;
 
-	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, saatlikCalismaVar = false, otomatikFazlaCalismaOnaylansinVar = false;
+	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, saatlikCalismaVar = false, otomatikFazlaCalismaOnaylansinVar = false, izinGoster = false;
 
 	private Session session;
 
@@ -273,7 +273,17 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		return "";
 	}
 
+	/**
+	 * @param d
+	 * @return
+	 */
+	private boolean veriVar(Double d) {
+		boolean v = d != null && d.doubleValue() > 0.0d;
+		return v;
+	}
+
 	public void fillCalismaModeliList() {
+		izinGoster = false;
 		hareketKaydiVardiyaBul = ortakIslemler.getParameterKey("hareketKaydiVardiyaBul").equals("1");
 		saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
 		otomatikFazlaCalismaOnaylansinVar = ortakIslemler.getParameterKey("otomatikFazlaCalismaOnaylansin").equals("1");
@@ -297,6 +307,8 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 			pasifList = null;
 			for (CalismaModeli cm : calismaModeliList) {
 				if (cm.getDurum()) {
+					if (!izinGoster)
+						izinGoster = veriVar(cm.getIzin()) || veriVar(cm.getCumartesiIzinSaat()) || veriVar(cm.getPazarIzinSaat());
 					if (!otomatikFazlaCalismaOnaylansinVar)
 						otomatikFazlaCalismaOnaylansinVar = cm.isOtomatikFazlaCalismaOnaylansinmi();
 					if (!hareketKaydiVardiyaBul)
@@ -399,6 +411,14 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	 */
 	public void setOtomatikFazlaCalismaOnaylansinVar(Boolean otomatikFazlaCalismaOnaylansinVar) {
 		this.otomatikFazlaCalismaOnaylansinVar = otomatikFazlaCalismaOnaylansinVar;
+	}
+
+	public Boolean getIzinGoster() {
+		return izinGoster;
+	}
+
+	public void setIzinGoster(Boolean izinGoster) {
+		this.izinGoster = izinGoster;
 	}
 
 }

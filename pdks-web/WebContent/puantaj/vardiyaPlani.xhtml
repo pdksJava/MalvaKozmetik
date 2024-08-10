@@ -585,9 +585,13 @@
 											<ui:define name="label">Hafta İçi İzin Saati</ui:define>
 											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.izin)}" />
 										</s:decorate>
-										<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.izinhaftaSonu!=0}">
+										<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.cumartesiSaat!=0}">
 											<ui:define name="label">#{ortakIslemler.getGunAdi(6,null)} İzin Saati </ui:define>
-											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.izinhaftaSonu)}" />
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.cumartesiSaat)}" />
+										</s:decorate>
+										<s:decorate template="/layout/edit.xhtml" rendered="#{vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.pazarSaat!=0}">
+											<ui:define name="label">#{ortakIslemler.getGunAdi(7,null)} İzin Saati </ui:define>
+											<h:outputText value="#{authenticatedUser.sayiFormatliGoster(vardiyaGunHome.personelDenklestirme.calismaModeliAy.calismaModeli.pazarSaat)}" />
 										</s:decorate>
 									</h:panelGrid>
 									<rich:dataTable rowClasses="acik,koyu" value="#{vardiyaGunHome.calismaModeliVardiyaList}" var="vardiya" rows="20" rowKeyVar="row"

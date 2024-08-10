@@ -191,12 +191,15 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 					da.setTrClass(renk ? VardiyaGun.STYLE_CLASS_ODD : VardiyaGun.STYLE_CLASS_EVEN);
 					for (Iterator iterator = calismaModeliList.iterator(); iterator.hasNext();) {
 						CalismaModeli cm = (CalismaModeli) iterator.next();
+						long donem = cm.getOlusturmaTarihi() != null ? PdksUtil.getDateField(cm.getOlusturmaTarihi(), Calendar.YEAR) * 100 + 1 : da.getDonem();
 						CalismaModeliAy calismaModeliAy = null;
 						String key = CalismaModeliAy.getKey(da, cm);
 						if (cm.getDurum().booleanValue() == false) {
 							continue;
 						}
 						if (!modelMap.containsKey(key)) {
+							if (donem > da.getDonem())
+								continue;
 							calismaModeliAy = new CalismaModeliAy(da, cm);
 							calismaModeliAy.setDurum(Boolean.FALSE);
 							pdksEntityController.saveOrUpdate(xSession, entityManager, calismaModeliAy);
@@ -719,7 +722,7 @@ public class VardiyaTanimlamaHome extends EntityHome<DenklestirmeAy> implements 
 		if (xSession == null)
 			xSession = session;
 		xSession.clear();
- 		fillCalismaModeller(xSession);
+		fillCalismaModeller(xSession);
 		HashMap map = new HashMap();
 		map.put(PdksEntityController.MAP_KEY_MAP, "getAy");
 		map.put("yil=", yil);
