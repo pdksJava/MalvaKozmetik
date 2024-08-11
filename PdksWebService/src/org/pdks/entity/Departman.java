@@ -15,22 +15,27 @@ import org.hibernate.validator.Max;
 import org.hibernate.validator.Min;
 
 @Entity(name = Departman.TABLE_NAME)
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "DEPARTMAN_ID" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { Departman.COLUMN_NAME_DEPARTMAN }) })
 public class Departman extends BaseObject {
+ 
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4316788642188710164L;
+	private static final long serialVersionUID = -2041353495228095459L;
 
 	public static final String TABLE_NAME = "DEPARTMAN";
 
-	public static final String GIRIS_TIPI_HAFTALIK = "H";
-
-	public static final String GIRIS_TIPI_AYLIK = "A";
-
-	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
+	public static final String COLUMN_NAME_DEPARTMAN = "DEPARTMAN_ID";
 
 	public static final String COLUMN_NAME_ADMIN_DURUM = "ADMIN_DURUM";
+
+	public static final String COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR = "FAZLA_MESAI_TALEP_GIRILEBILIR";
+	public static final String COLUMN_NAME_SIRKET_EKLENEBILIR = "SIRKET_EKLENEBILIR";
+	public static final String COLUMN_NAME_IZIN_GIRILEBILIR = "IZIN_GIRILEBILIR";
+	public static final String COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE = "HAFTA_ICI_SUT_IZNI_SURE";
+	public static final String COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE = "CUMARTESI_SUT_IZNI_SURE";
+	public static final String COLUMN_NAME_PAZAR_SUT_IZNI_SURE = "PAZAR_SUT_IZNI_SURE";
 
 	private Integer version = 0;
 
@@ -40,7 +45,9 @@ public class Departman extends BaseObject {
 
 	private Integer yasliYasAltSiniri;
 
-	private Boolean icapciOlabilir, admin, suaOlabilir = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE;
+	private Boolean icapciOlabilir, admin, suaOlabilir = Boolean.FALSE, sirketEklenebilir = Boolean.FALSE, izinGirilebilir = Boolean.FALSE, fazlaMesaiTalepGirilebilir = Boolean.FALSE, fazlaMesaiOde = Boolean.FALSE;
+
+	private Double haftaIciSutIzniSure = 7.5d, cumartesiSutIzniSure = 0.0d, pazarSutIzniSure = 0.0d;
 
 	private String mailBox;
 
@@ -54,7 +61,7 @@ public class Departman extends BaseObject {
 	}
 
 	@OneToOne(cascade = CascadeType.REFRESH)
-	@JoinColumn(name = "DEPARTMAN_ID", nullable = false, unique = true)
+	@JoinColumn(name = COLUMN_NAME_DEPARTMAN, nullable = false, unique = true)
 	@Fetch(FetchMode.JOIN)
 	public Tanim getDepartmanTanim() {
 		return departmanTanim;
@@ -80,15 +87,6 @@ public class Departman extends BaseObject {
 
 	public void setIcapciOlabilir(Boolean icapciOlabilir) {
 		this.icapciOlabilir = icapciOlabilir;
-	}
-
-	@Column(name = COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR)
-	public Boolean getFazlaMesaiTalepGirilebilir() {
-		return fazlaMesaiTalepGirilebilir;
-	}
-
-	public void setFazlaMesaiTalepGirilebilir(Boolean fazlaMesaiTalepGirilebilir) {
-		this.fazlaMesaiTalepGirilebilir = fazlaMesaiTalepGirilebilir;
 	}
 
 	@Column(name = COLUMN_NAME_ADMIN_DURUM, nullable = false)
@@ -143,8 +141,73 @@ public class Departman extends BaseObject {
 		this.fazlaMesaiOde = fazlaMesaiOde;
 	}
 
+	@Column(name = "IZIN_GIRILEBILIR")
+	public Boolean getIzinGirilebilir() {
+		return izinGirilebilir;
+	}
+
+	public void setIzinGirilebilir(Boolean value) {
+		this.izinGirilebilir = value;
+	}
+
+	@Column(name = COLUMN_NAME_FAZLA_MESAI_TALEP_GIRILEBILIR)
+	public Boolean getFazlaMesaiTalepGirilebilir() {
+		return fazlaMesaiTalepGirilebilir;
+	}
+
+	public void setFazlaMesaiTalepGirilebilir(Boolean fazlaMesaiTalepGirilebilir) {
+		this.fazlaMesaiTalepGirilebilir = fazlaMesaiTalepGirilebilir;
+	}
+
+	@Column(name = COLUMN_NAME_SIRKET_EKLENEBILIR)
+	public Boolean getSirketEklenebilir() {
+		return sirketEklenebilir;
+	}
+
+	public void setSirketEklenebilir(Boolean sirketEklenebilir) {
+		this.sirketEklenebilir = sirketEklenebilir;
+	}
+
+	@Column(name = COLUMN_NAME_HAFTA_ICI_SUT_IZNI_SURE)
+	public Double getHaftaIciSutIzniSure() {
+		return haftaIciSutIzniSure;
+	}
+
+	public void setHaftaIciSutIzniSure(Double haftaIciSutIzniSure) {
+		this.haftaIciSutIzniSure = haftaIciSutIzniSure;
+	}
+
+	@Column(name = COLUMN_NAME_CUMARTESI_SUT_IZNI_SURE)
+	public Double getCumartesiSutIzniSure() {
+		return cumartesiSutIzniSure;
+	}
+
+	public void setCumartesiSutIzniSure(Double cumartesiSutIzniSure) {
+		this.cumartesiSutIzniSure = cumartesiSutIzniSure;
+	}
+
+	@Column(name = COLUMN_NAME_PAZAR_SUT_IZNI_SURE)
+	public Double getPazarSutIzniSure() {
+		return pazarSutIzniSure;
+	}
+
+	public void setPazarSutIzniSure(Double pazarSutIzniSure) {
+		this.pazarSutIzniSure = pazarSutIzniSure;
+	}
+
+	@Transient
+	public String getAciklama() {
+		return departmanTanim != null ? departmanTanim.getAciklama() : "";
+	}
+
 	@Transient
 	public boolean isFazlaMesaiTalepGirer() {
 		return fazlaMesaiTalepGirilebilir != null && fazlaMesaiTalepGirilebilir.booleanValue();
 	}
+
+	public void entityRefresh() {
+		// TODO entityRefresh
+
+	}
+
 }

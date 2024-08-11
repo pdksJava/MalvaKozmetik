@@ -51,6 +51,7 @@
 			
 				<value>org.pdks.entity.CalismaModeli</value>
 				<value>org.pdks.entity.CalismaModeliAy</value>
+				<value>org.pdks.entity.CalismaModeliGun</value>
 				<value>org.pdks.entity.DenklestirmeAy</value>
 				<value>org.pdks.entity.Departman</value>
 				<value>org.pdks.entity.IzinReferansERP</value>
