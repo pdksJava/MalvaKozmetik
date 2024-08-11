@@ -3,6 +3,8 @@ package org.pdks.entity;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -80,6 +83,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	private User guncelleyenUser, olusturanUser;
 	private Date olusturmaTarihi = new Date(), guncellemeTarihi;
+	private Set<CalismaModeliGun> calismaModeliGunler;
 
 	@Column(name = COLUMN_NAME_ACIKLAMA)
 	public String getAciklama() {
@@ -115,6 +119,15 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 
 	public void setPazarSaat(Double pazarSaat) {
 		this.pazarSaat = pazarSaat;
+	}
+
+	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "calismaModeli", targetEntity = CalismaModeliGun.class)
+	public Set<CalismaModeliGun> getCalismaModeliGunler() {
+		return calismaModeliGunler;
+	}
+
+	public void setCalismaModeliGunler(Set<CalismaModeliGun> calismaModeliGunler) {
+		this.calismaModeliGunler = calismaModeliGunler;
 	}
 
 	@Transient
@@ -583,7 +596,9 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 					break;
 
 				default:
-					sutIzinSure = dm.getHaftaIciSutIzniSure();
+					sutIzinSure = this.getGunSure(CalismaModeliGun.GUN_IZIN, dayOfWeek);
+					if (sutIzinSure == null)
+						sutIzinSure = dm.getHaftaIciSutIzniSure();
 					break;
 				}
 			}
@@ -594,6 +609,26 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 		if (sutIzinSure > 0.0d)
 			logger.debug(dayOfWeek + " : " + sutIzinSure);
 		return sutIzinSure;
+	}
+
+	/**
+	 * @param gunTipi
+	 * @param dayOfWeek
+	 * @return
+	 */
+	@Transient
+	public Double getGunSure(int gunTipi, int dayOfWeek) {
+		Double sure = null;
+		if (calismaModeliGunler != null) {
+			for (Iterator iterator = calismaModeliGunler.iterator(); iterator.hasNext();) {
+				CalismaModeliGun gun = (CalismaModeliGun) iterator.next();
+				if (gun.getGunTipi() == gunTipi && gun.getHaftaGun() == dayOfWeek) {
+					sure = gun.getSure();
+					break;
+				}
+			}
+		}
+		return sure;
 	}
 
 	@Transient
@@ -608,7 +643,9 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 			break;
 
 		default:
-			gunSure = this.getHaftaIci();
+			gunSure = this.getGunSure(CalismaModeliGun.GUN_SAAT, dayOfWeek);
+			if (gunSure == null)
+				gunSure = this.getHaftaIci();
 			break;
 		}
 		if (gunSure == null)

@@ -33,6 +33,7 @@ import org.json.simple.parser.JSONParser;
 import org.pdks.entity.AccountPermission;
 import org.pdks.entity.ArifeVardiyaDonem;
 import org.pdks.entity.AylikPuantaj;
+import org.pdks.entity.CalismaModeliGun;
 import org.pdks.entity.CalismaModeliVardiya;
 import org.pdks.entity.DepartmanMailGrubu;
 import org.pdks.entity.IzinHakedisHakki;
@@ -225,6 +226,7 @@ public class StartupAction implements Serializable {
 		long toplamAdet = 0L;
 		try {
 			list.add(AccountPermission.class);
+			list.add(CalismaModeliGun.class);
 			list.add(ArifeVardiyaDonem.class);
 			list.add(CalismaModeliVardiya.class);
 			list.add(DepartmanMailGrubu.class);

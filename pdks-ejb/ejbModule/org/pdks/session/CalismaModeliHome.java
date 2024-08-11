@@ -2,10 +2,12 @@ package org.pdks.session;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.persistence.EntityManager;
 
@@ -21,6 +23,7 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.framework.EntityHome;
 import org.pdks.entity.CalismaModeli;
+import org.pdks.entity.CalismaModeliGun;
 import org.pdks.entity.CalismaModeliVardiya;
 import org.pdks.entity.Departman;
 import org.pdks.entity.Vardiya;
@@ -55,7 +58,11 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	private List<CalismaModeli> calismaModeliList;
 	private List<VardiyaSablonu> sablonList;
 	private List<Vardiya> vardiyaList = new ArrayList<Vardiya>(), kayitliVardiyaList = new ArrayList<Vardiya>();
+	private List<CalismaModeliGun> cmGunList;
 	private List<Departman> departmanList;
+	private HashMap<Integer, List<CalismaModeliGun>> cmGunMap;
+
+	private CalismaModeliGun cmgPage = new CalismaModeliGun();
 
 	private Boolean hareketKaydiVardiyaBul = Boolean.FALSE, saatlikCalismaVar = false, otomatikFazlaCalismaOnaylansinVar = false, izinGoster = false;
 
@@ -93,7 +100,19 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 			xCalismaModeli.setDepartman(departmanList.get(0));
 
 		fillVardiyalar();
+
 		return "";
+	}
+
+	private void gunleriSifirla() {
+		if (cmGunMap == null)
+			cmGunMap = new HashMap<Integer, List<CalismaModeliGun>>();
+		else
+			cmGunMap.clear();
+		if (cmGunList == null)
+			cmGunList = new ArrayList<CalismaModeliGun>();
+		else
+			cmGunList.clear();
 	}
 
 	public String calismaModeliKopyala(CalismaModeli xCalismaModeli) {
@@ -108,6 +127,46 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		fillVardiyalar();
 		return "";
 
+	}
+
+	/**
+	 * @param gunTipi
+	 * @return
+	 */
+	public String fillGunList(int gunTipi) {
+		cmgPage.setGunTipi(gunTipi);
+		List<CalismaModeliGun> list = null;
+		if (cmGunMap.containsKey(gunTipi))
+			list = cmGunMap.get(gunTipi);
+		else {
+			TreeMap<String, CalismaModeliGun> map = null;
+			if (calismaModeli.getId() != null) {
+				HashMap fields = new HashMap();
+				fields.put("calismaModeli.id", calismaModeli.getId());
+				fields.put("gunTipi", gunTipi);
+				fields.put(PdksEntityController.MAP_KEY_MAP, "getKey");
+				if (session != null)
+					fields.put(PdksEntityController.MAP_KEY_SESSION, session);
+				map = pdksEntityController.getObjectByInnerObjectMap(fields, CalismaModeliGun.class, false);
+			} else
+				map = new TreeMap<String, CalismaModeliGun>();
+			list = new ArrayList<CalismaModeliGun>();
+			Double sure = gunTipi == CalismaModeliGun.GUN_SAAT ? calismaModeli.getHaftaIci() : calismaModeli.getHaftaIciSutIzniSure();
+			for (int i = Calendar.MONDAY; i < Calendar.SATURDAY; i++) {
+				String key = CalismaModeliGun.getKey(calismaModeli, gunTipi, i);
+				if (!map.containsKey(key)) {
+					CalismaModeliGun cmg = new CalismaModeliGun(calismaModeli, gunTipi, i);
+					cmg.setSure(sure);
+					map.put(key, cmg);
+				}
+ 				CalismaModeliGun cmg = map.get(key);
+				cmg.setGuncellendi(false);
+				list.add(cmg);
+			}
+			cmGunMap.put(gunTipi, list);
+		}
+		cmGunList = list;
+		return "";
 	}
 
 	public void fillBagliOlduguDepartmanTanimList() {
@@ -129,6 +188,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 	}
 
 	public String fillVardiyalar() {
+		gunleriSifirla();
 		HashMap parametreMap = new HashMap();
 		parametreMap.put("durum", Boolean.TRUE);
 		if (calismaModeli.getDepartman() != null)
@@ -217,7 +277,6 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 
 	@Transactional
 	public String kaydet() {
-
 		try {
 			if (calismaModeli.getId() != null) {
 				calismaModeli.setGuncellemeTarihi(new Date());
@@ -263,6 +322,19 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 			for (Iterator iterator2 = kayitliCalismaModeliVardiyaList.iterator(); iterator2.hasNext();) {
 				CalismaModeliVardiya cmv = (CalismaModeliVardiya) iterator2.next();
 				pdksEntityController.deleteObject(session, entityManager, cmv);
+			}
+			if (cmGunMap != null && !cmGunMap.isEmpty()) {
+				for (Integer gunTipi : cmGunMap.keySet()) {
+					double sure = gunTipi.equals(CalismaModeliGun.GUN_SAAT) ? calismaModeli.getHaftaIci() : calismaModeli.getHaftaIciSutIzniSure();
+					List<CalismaModeliGun> list = cmGunMap.get(gunTipi);
+					for (CalismaModeliGun calismaModeliGun : list) {
+						if (calismaModeliGun.getSure() == sure) {
+							if (calismaModeliGun.getId() != null)
+								session.delete(calismaModeliGun);
+						} else if (calismaModeliGun.isGuncellendi())
+							pdksEntityController.saveOrUpdate(session, entityManager, calismaModeliGun);
+					}
+				}
 			}
 			session.flush();
 		} catch (Exception e) {
@@ -419,6 +491,30 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 
 	public void setIzinGoster(Boolean izinGoster) {
 		this.izinGoster = izinGoster;
+	}
+
+	public List<CalismaModeliGun> getCmGunList() {
+		return cmGunList;
+	}
+
+	public void setCmGunList(List<CalismaModeliGun> cmGunList) {
+		this.cmGunList = cmGunList;
+	}
+
+	public HashMap<Integer, List<CalismaModeliGun>> getCmGunMap() {
+		return cmGunMap;
+	}
+
+	public void setCmGunMap(HashMap<Integer, List<CalismaModeliGun>> cmGunMap) {
+		this.cmGunMap = cmGunMap;
+	}
+
+	public CalismaModeliGun getCmgPage() {
+		return cmgPage;
+	}
+
+	public void setCmgPage(CalismaModeliGun cmgPage) {
+		this.cmgPage = cmgPage;
 	}
 
 }
