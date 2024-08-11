@@ -159,7 +159,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 					cmg.setSure(sure);
 					map.put(key, cmg);
 				}
- 				CalismaModeliGun cmg = map.get(key);
+				CalismaModeliGun cmg = map.get(key);
 				cmg.setGuncellendi(false);
 				list.add(cmg);
 			}
@@ -270,7 +270,6 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		if (session == null)
 			session = PdksUtil.getSessionUser(entityManager, authenticatedUser);
 		session.setFlushMode(FlushMode.MANUAL);
-		session.clear();
 
 		fillCalismaModeliList();
 	}
@@ -340,7 +339,6 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		fillCalismaModeliList();
 		return "";
 	}
@@ -356,6 +354,7 @@ public class CalismaModeliHome extends EntityHome<CalismaModeli> implements Seri
 
 	public void fillCalismaModeliList() {
 		izinGoster = false;
+		session.clear();
 		hareketKaydiVardiyaBul = ortakIslemler.getParameterKey("hareketKaydiVardiyaBul").equals("1");
 		saatlikCalismaVar = ortakIslemler.getParameterKey("saatlikCalismaVar").equals("1");
 		otomatikFazlaCalismaOnaylansinVar = ortakIslemler.getParameterKey("otomatikFazlaCalismaOnaylansin").equals("1");
