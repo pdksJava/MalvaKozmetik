@@ -619,7 +619,7 @@ public class CalismaModeli extends BasePDKSObject implements Serializable {
 	@Transient
 	public Double getGunSure(int gunTipi, int dayOfWeek) {
 		Double sure = null;
-		if (calismaModeliGunler != null) {
+		if (calismaModeliGunler != null && !calismaModeliGunler.isEmpty()) {
 			for (Iterator iterator = calismaModeliGunler.iterator(); iterator.hasNext();) {
 				CalismaModeliGun gun = (CalismaModeliGun) iterator.next();
 				if (gun.getGunTipi() == gunTipi && gun.getHaftaGun() == dayOfWeek) {
