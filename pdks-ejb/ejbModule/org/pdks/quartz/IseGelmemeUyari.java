@@ -1179,8 +1179,21 @@ public class IseGelmemeUyari implements Serializable {
 					TreeMap<String, Sheet> sheetMap = new TreeMap<String, Sheet>();
 					TreeMap<String, Integer> sheetSatirMap = new TreeMap<String, Integer>();
 					TreeMap<String, Integer> sheetSutunMap = new TreeMap<String, Integer>();
+					List<VardiyaGun> izinList = new ArrayList<VardiyaGun>();
 					for (Liste liste : listeler) {
 						List<VardiyaGun> sirketSubeList = PdksUtil.sortObjectStringAlanList((List<VardiyaGun>) liste.getValue(), "getSortBolumKey", null);
+						for (Iterator iterator = sirketSubeList.iterator(); iterator.hasNext();) {
+							VardiyaGun vardiyaGun = (VardiyaGun) iterator.next();
+							if (vardiyaGun.getIzin() != null) {
+								izinList.add(vardiyaGun);
+								iterator.remove();
+							}
+
+						}
+						if (!izinList.isEmpty()) {
+							sirketSubeList.addAll(izinList);
+							izinList.clear();
+						}
 						boolean calismaModeliVar = Boolean.FALSE, hataliHareketGundeVar = Boolean.FALSE, izinGirisVar = Boolean.FALSE, hariciPersonelPlandaVar = Boolean.FALSE, altBolumVar = Boolean.FALSE, altBolumDurum = PdksUtil.isPuantajSorguAltBolumGir();
 						HashMap<Long, Tanim> bolumMap = new HashMap<Long, Tanim>();
 						HashMap<Long, CalismaModeli> calismaModeliMap = new HashMap<Long, CalismaModeli>();
@@ -1457,6 +1470,7 @@ public class IseGelmemeUyari implements Serializable {
 						sheetSutunMap.put(sirketIdStr, uz);
 
 					}
+					izinList = null;
 					mesajGonder = true;
 				}
 			} else {
